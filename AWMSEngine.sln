@@ -5,14 +5,14 @@ VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSEngine", "AWMSEngine\AWMSEngine.csproj", "{2B845DF8-D607-40BF-8356-029F025440E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWMSModel", "AWMSModel\AWMSModel.csproj", "{1803CE9F-D41C-49B7-B680-9DCBAEA9B924}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSModel", "AWMSModel\AWMSModel.csproj", "{1803CE9F-D41C-49B7-B680-9DCBAEA9B924}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AWMSClient", "AWMSClient", "{3ED4FCDC-01ED-4123-9DC5-8BA2BF79068C}"
 	ProjectSection(SolutionItems) = preProject
 		ClientWeb.txt = ClientWeb.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMWUtil", "AMWUtil\AMWUtil.csproj", "{9272C686-D314-472C-B64C-D915AB51C5CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMWUtil", "AMWUtil\AMWUtil.csproj", "{9272C686-D314-472C-B64C-D915AB51C5CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

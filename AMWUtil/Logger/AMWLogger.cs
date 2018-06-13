@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AMWUtil.Logger
 {
-    public class Logger : IDisposable, ILogger
+    public class AMWLogger : IDisposable, ILogger
     {
         private long lastUse;
 
@@ -23,9 +23,9 @@ namespace AMWUtil.Logger
 
         public long LastUse { get { return this.lastUse; } }
 
-        Logger() { }
+        AMWLogger() { }
 
-        internal Logger(string fileName, string refID, string serviceName)
+        internal AMWLogger(string fileName, string refID, string serviceName)
         {
             this._RefID = refID;
             this.ServiceName = serviceName;
@@ -35,7 +35,7 @@ namespace AMWUtil.Logger
             this.UpdateLastUse();
             this.LogBeginTransaction();
         }
-        internal Logger(FileStream fileLogger, string refID, string serviceName)
+        internal AMWLogger(FileStream fileLogger, string refID, string serviceName)
         {
             this.FileName = fileLogger.Name;
             this.STrace = new StackTrace();
@@ -104,6 +104,14 @@ namespace AMWUtil.Logger
         public void LogWarning(string message, [CallerLineNumber]int lineNumber = 0)
         {
             this.LogWrite("[WARNING] " + message, lineNumber);
+        }
+        public void LogExecBegin(string message, [CallerLineNumber]int lineNumber = 0)
+        {
+            this.LogWrite("[EXEC BEGIN] " + message, lineNumber);
+        }
+        public void LogExecEnd(string message, [CallerLineNumber]int lineNumber = 0)
+        {
+            this.LogWrite("[EXEC END] " + message, lineNumber);
         }
         public void LogBegin([CallerLineNumber]int lineNumber = 0)
         {

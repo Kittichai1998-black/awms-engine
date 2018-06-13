@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AMWUtil.Logger
 {
-    public class LoggerManager
+    public class AMWLoggerManager
     {
         private string LogUriFormat { get; set; }
         private string LogFileFormat { get; set; }
@@ -17,31 +17,31 @@ namespace AMWUtil.Logger
         private string LogFileName { get; set; }
         
         private Dictionary<string, FileStream> FileStreamMap { get; set; }
-        private List<Logger> Loggers { get; set; }
+        private List<AMWLogger> Loggers { get; set; }
 
-        private static LoggerManager instant;
+        private static AMWLoggerManager instant;
 
-        public static LoggerManager InitInstant(string rootName= "D:/logs/unittest/", string fileName = "{RefID}.{ServiceName}.{Date}.log")
+        public static AMWLoggerManager InitInstant(string rootName, string fileName)
         {
             if (instant == null)
             {
                 //rootName = "D:/logs/{MachineName}/{Date}/";
                 //fileName = "{RefID}.{ServiceName}.{Date}.log";
-                instant = new LoggerManager(rootName, fileName);
+                instant = new AMWLoggerManager(rootName, fileName);
                 return instant;
             }
             throw new System.Exception("Double LoggerManager.InitInstant");
         }
 
-        private static LoggerManager GetInstant()
+        private static AMWLoggerManager GetInstant()
         {
             if (instant == null) throw new System.Exception("Not LoggerManager.InitInstant");
             return instant;
         }
-        private LoggerManager(string logUriFormat, string logFileFormat)
+        private AMWLoggerManager(string logUriFormat, string logFileFormat)
         {
             this.FileStreamMap = new Dictionary<string, FileStream>();
-            this.Loggers = new List<Logger>();
+            this.Loggers = new List<AMWLogger>();
             this.LogUriFormat = logUriFormat;
             this.LogFileFormat = logFileFormat;
         }
@@ -58,15 +58,15 @@ namespace AMWUtil.Logger
         ///</summary>
         ///
         private static object lockGetLogger = new object();
-        public static Logger GetLogger(string serviceName)
+        public static AMWLogger GetLogger(string serviceName)
         {
             return GetLogger(Guid.NewGuid().ToString(), serviceName);
         }
-        public static Logger GetLogger(string refID, string serviceName)
+        public static AMWLogger GetLogger(string refID, string serviceName)
         {
             lock (lockGetLogger)
             {
-                LoggerManager logManager = LoggerManager.GetInstant();
+                AMWLoggerManager logManager = AMWLoggerManager.GetInstant();
                 string logUriFormat = logManager.LogUriFormat;
                 string logFileFormat = logManager.LogFileFormat;
                 Dictionary<string, string> dicMapKey = new Dictionary<string, string>();
@@ -93,15 +93,15 @@ namespace AMWUtil.Logger
 
                 //logManager.ClearLogUnWrite();
                 string keyFile = logManager.LogUri + logManager.LogFileName;
-                Logger logger = null;
+                AMWLogger logger = null;
                 if (logManager.FileStreamMap.ContainsKey(keyFile) && logManager.FileStreamMap[keyFile] != null && logManager.FileStreamMap[keyFile].CanWrite)
                 {
                     var fileLogger = logManager.FileStreamMap[keyFile];
-                    logger = new Logger(fileLogger, refID, serviceName);
+                    logger = new AMWLogger(fileLogger, refID, serviceName);
                 }
                 else
                 {
-                    logger = new Logger(logManager.LogUri + logManager.LogFileName, refID, serviceName);
+                    logger = new AMWLogger(logManager.LogUri + logManager.LogFileName, refID, serviceName);
                     if (logManager.FileStreamMap.ContainsKey(keyFile)) logManager.FileStreamMap.Remove(keyFile);
                     logManager.FileStreamMap.Add(keyFile, logger.FileLogger);
                 }

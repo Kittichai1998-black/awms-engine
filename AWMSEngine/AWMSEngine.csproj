@@ -5,22 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ADO\" />
     <Folder Include="Engine\General\" />
     <Folder Include="Engine\Business\" />
     <Folder Include="Engine\DataObject\" />
-    <Folder Include="Engine\Validation\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.0-preview1-final" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
+    <ProjectReference Include="..\AWMSModel\AWMSModel.csproj" />
   </ItemGroup>
 
 </Project>
