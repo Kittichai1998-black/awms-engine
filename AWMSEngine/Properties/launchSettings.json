@@ -1,27 +1,29 @@
 ﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:54570",
-      "sslPort": 44353
+      "applicationUrl": "http://localhost:54757",
+      "sslPort": 44366
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "api/values",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HTTPS_PORT": "44353"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "AWMSEngine": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "api/values",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
