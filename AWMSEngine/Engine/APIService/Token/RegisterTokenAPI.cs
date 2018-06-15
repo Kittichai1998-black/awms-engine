@@ -12,17 +12,24 @@ namespace AWMSEngine.Engine.APIService.Token
     {
         protected override void ExecuteEngineManual()
         {
-            new BuVORequiredFields().Execute(this.Logger, this.BuVO,
+            new Validation.RegisterTokenRequestValidate().Execute(this.Logger, this.BuVO);
+            
+            new General.RegisterToken().Execute(this.Logger, this.BuVO,
                 new List<KeyGetSetCriteria>()
                 {
-                    new KeyGetSetCriteria() { KeySet = BuVORequiredFields.IN_KEY_FIELDNAMES, KeyGet="username,password" },
-                    new KeyGetSetCriteria(){KeySet = BuVORequiredFields.IN_KEY_THROWFLAG, KeyGet=YesNoConst.YES}
+                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_Username,BusinessVOConst.KEY_REQUEST_FIELD("username")),
+                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_Password,BusinessVOConst.KEY_REQUEST_FIELD("password")),
+                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_SecretKey,BusinessVOConst.KEY_REQUEST_FIELD("secretKey")),
                 },
                 new List<KeyGetSetCriteria>()
                 {
-                    new KeyGetSetCriteria(){KeyGet = BuVORequiredFields.OUT_KEY_PASSFLAG, KeySet="ValidatePassFlag"}
+                    new KeyGetSetCriteria(General.RegisterToken.KEY_OUT_TokenInfo,BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
                 });
-            
+
+            new General.ResponseObject().Execute(this.Logger, this.BuVO,
+                new List<KeyGetSetCriteria>() {
+                    new KeyGetSetCriteria(General.ResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
+                });
         }
     }
 }

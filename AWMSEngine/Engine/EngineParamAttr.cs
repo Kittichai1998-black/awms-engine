@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class EngineParamAttr : Attribute
     {
         public enum InOutType
@@ -13,14 +13,16 @@ namespace AWMSEngine.Engine
             Request,
             Response
         }
-        //public string PName { get; }
+        public string PName { get; }
+        public string PValue { get; }
         public string PDescription { get; }
-        public Type PType { get; }
+        //public Type PType { get; }
         public InOutType IOType { get; }
-        public EngineParamAttr(InOutType IOType, Type PType, string PDescription = "")
+        public EngineParamAttr(InOutType IOType, string PName, string PValue, string PDescription = "")
         {
-            //this.PName = PName;
-            this.PType = PType;
+            this.PName = PName;
+            this.PValue = PValue;
+            //this.PType = PType;
             this.IOType = IOType;
             this.PDescription = PDescription;
         }

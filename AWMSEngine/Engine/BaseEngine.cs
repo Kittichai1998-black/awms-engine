@@ -1,5 +1,7 @@
 ﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AMWUtil.Logger;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using System;
@@ -16,29 +18,41 @@ namespace AWMSEngine.Engine
         protected abstract void ExecuteEngine();
 
         protected VOCriteria BuVO { get; set; }
-        
+
         protected VOCriteria EngineVO { get; set; }
         protected AMWLogger Logger { get; set; }
         protected string Token => this.BuVO.GetString(BusinessVOConst.KEY_TOKEN);
+        protected string APIKey => this.BuVO.GetString(BusinessVOConst.KEY_APIKEY);
+        protected dynamic RequestParam => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST);
+        protected LanguageType LanguageCode => this.BuVO.Get<LanguageType>(BusinessVOConst.KEY_LANGUAGE_CODE, LanguageType.TH);
         protected string TechMessage
         {
             get => this.BuVO.GetString(BusinessVOConst.KEY_TECHMESSAGE);
             set => this.BuVO.Set(BusinessVOConst.KEY_TECHMESSAGE, value);
         }
 
+        protected AMWException NewAMWException(AMWExceptionCode code, params string[] parameters)
+        {
+            return new AMWException(this.Logger, code, parameters, (AMWException.ENLanguage)LanguageCode);
+        }
+
         public void Execute(AMWLogger logger,
             VOCriteria buVO,
-            List<KeyGetSetCriteria> keyIns,
-            List<KeyGetSetCriteria> keyOuts)
+            List<KeyGetSetCriteria> keyIns = null,
+            List<KeyGetSetCriteria> keyOuts = null)
         {
-            bool isExecPass = false;
+            this.BuVO = buVO;
+            var result = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             try
             {
-                this.BuVO = buVO;
                 this.Logger = logger;
                 this.Logger.LogBegin();
-                this.EngineVO = 
-                    this.MappingAttrVO(EngineParamAttr.InOutType.Request, this.BuVO, keyIns);
+                this.EngineVO = new VOCriteria();
+                var requestVO = 
+                    this.MappingAttrVO(EngineParamAttr.InOutType.Request,
+                    this.BuVO, 
+                    keyIns);
+                this.EngineVO.SetRang(requestVO);
 
                 this.Logger.LogInfo("Input BusinessVO : " + this.BuVO.ToString());
                 this.Logger.LogInfo("Begin ExecuteEngine : " + this.EngineVO.ToString());
@@ -50,17 +64,21 @@ namespace AWMSEngine.Engine
                     keyOuts);
                 this.Logger.LogInfo("Result ResponseVO = " + responseVO.ToString());
                 this.BuVO.SetRang(responseVO);
-                isExecPass = true;
+
             }
             catch (AMWUtil.Exception.AMWException ex)
             {
-                isExecPass = false;
+                result.status = 0;
+                result.code = ex.GetKKFCode();
+                result.message = ex.GetKKFMessage();
                 this.TechMessage = ex.StackTrace;
             }
             catch (System.Exception ex)
             {
-                isExecPass = false;
-                new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.U0000, ex.StackTrace);
+                var e = new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.U0000, ex.StackTrace);
+                result.status = 0;
+                result.code = e.GetKKFCode();
+                result.message = e.GetKKFMessage();
             }
             finally
             {
@@ -72,44 +90,42 @@ namespace AWMSEngine.Engine
             }
         }
 
-        /*public VOCriteria MappingAttrVO2 (
-            EngineParamAttr.InOutType IOType,
-            VOCriteria vo,
-            List<KeyGetSetCriteria> keyGetSets)
-        {
-            VOCriteria res = new VOCriteria();
-            var attrs = AttributeUtil.ListAttributeOfType<EngineParamAttr>(this);
-            foreach(var attr in attrs)
-            {
-                if(attr.IOType == IOType)
-                {
-                    string getBy = keyGetSets.FirstOrDefault(x => x.KeySet == attr.PName).KeyGet.Trim();
-                    if (getBy.StartsWith("*"))
-                        getBy = vo.GetDynamic(getBy.Substring(1));
-                    res.Set(attr.PName, getBy);
-                }
-            }
-
-            return res;
-        }*/
-
         public VOCriteria MappingAttrVO(
             EngineParamAttr.InOutType IOType,
             VOCriteria vo,
             List<KeyGetSetCriteria> keyGetSets)
         {
             VOCriteria res = new VOCriteria();
-            var constInfos = this.GetType().GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-            foreach (var cif in constInfos)
+            if (keyGetSets == null)
+                return res;
+            var infos = this.GetType().GetProperties();
+            foreach (var refVo in infos)
             {
-                var attr = AttributeUtil.FirstAttributeOfType<EngineParamAttr>(cif);
-                if (attr.IOType == IOType)
+                var attr = AttributeUtil.FirstAttributeOfType<EngineParamAttr>(refVo);
+                if (attr != null)
                 {
-                    string PName = (string)cif.GetValue(this);
-                    string getBy = keyGetSets.FirstOrDefault(x => x.KeySet == PName).KeyGet.Trim();
-                    if (getBy.StartsWith("*"))
-                        getBy = vo.GetDynamic(getBy.Substring(1));
-                    res.Set(PName, getBy);
+                    if (attr.IOType == IOType)
+                    {
+                        string PName = attr.PName;
+                        var kgs = keyGetSets.FirstOrDefault(x => x.KeyLocalVar == PName);
+                        if (kgs == null)
+                            throw new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.V0004, PName);
+                        string getBy = (IOType == EngineParamAttr.InOutType.Request) ? kgs.KeyGlobalVar.Trim() : "*"+kgs.KeyLocalVar.Trim();
+                        string setBy = (IOType == EngineParamAttr.InOutType.Response) ? kgs.KeyGlobalVar.Trim() :  kgs.KeyLocalVar.Trim();
+                        if (getBy.StartsWith("*"))
+                        {
+                            string layerObject = getBy.Substring(1);
+                            dynamic _getBy = vo.GetDynamic(layerObject);
+                            res.Set(setBy, _getBy);
+                        }
+                        else
+                            res.Set(setBy, getBy);
+                    }
+                    if (refVo.GetValue(this) == null)
+                    {
+                        var _refVo = Activator.CreateInstance(refVo.PropertyType, new object[] { this.EngineVO, attr.PName });
+                        refVo.SetValue(this, _refVo);
+                    }
                 }
             }
 

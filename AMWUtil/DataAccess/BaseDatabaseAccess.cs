@@ -25,12 +25,12 @@ namespace AMWUtil.DataAccess
             return string.Join(" , ", parameter.ParameterNames.ToList().Select(x => string.Format("@{0}='{1}'", x, parameter.Get<object>(x))));
         }
 
-        protected IEnumerable<T> QuerySP<T>(
+        protected IEnumerable<T> Query<T>(
             string spName,
             CommandType commandType,
             DynamicParameters parameter,
             AMWLogger logger,
-            SqlTransaction transaction)
+            SqlTransaction transaction = null)
         {
             IEnumerable<T> res = null;
             if (logger != null) logger.LogInfo("Query = " + spName + " | " + this.DynamicParametersToString(parameter));
@@ -54,7 +54,7 @@ namespace AMWUtil.DataAccess
             CommandType commandType,
             DynamicParameters parameter,
             AMWLogger logger,
-            SqlTransaction transaction)
+            SqlTransaction transaction = null)
         {
             T res;
             if (logger != null) logger.LogInfo("ExecuteScalar = " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
@@ -78,7 +78,7 @@ namespace AMWUtil.DataAccess
             CommandType commandType,
             DynamicParameters parameter,
             AMWLogger logger,
-            SqlTransaction transaction)
+            SqlTransaction transaction = null)
         {
             int res;
             if (logger != null) logger.LogInfo("Execute = " + cmdTxt + " | " + this.DynamicParametersToString(parameter));

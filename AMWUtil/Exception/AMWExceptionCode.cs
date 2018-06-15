@@ -16,14 +16,18 @@ namespace AMWUtil.Exception
         S0001,
 
         /******VALIDATE*******/
-        [AMWExceptionDescription(TH = "{0}")]
-        V0000,
         /// <summary>ข้อมูล {0} ไม่ถูกต้อง</summary>
-        [AMWExceptionDescription(TH = "ข้อมูล {0} ไม่ถูกต้อง", EN = "{0} data incorrect.")]
+        [AMWExceptionDescription(TH = "ข้อมูล {0} ไม่ถูกต้อง", EN = "{0} Data Incorrect.")]
         V0001,
-        /// <summary>ไม่พบข้อมูล {0}</summary>
-        [AMWExceptionDescription(TH = "ไม่พบ {0}", EN = "{0} Not Found.")]
+        /// <summary>ไม่พบข้อมูล {0} ในระบบ </summary>
+        [AMWExceptionDescription(TH = "ไม่พบข้อมูล {0} ในระบบ", EN = "{0} in System Not Found.")]
         V0002,
+        /// <summary>ข้อมูล {0} ที่ส่งมามีค่าว่าง</summary>
+        [AMWExceptionDescription(TH = "ข้อมูล {0} ที่ส่งมามีค่าว่าง", EN = "Required {0}.")]
+        V0003,
+        /// <summary>ไม่พบข้อมูล {0} ใน Master Setup</summary>
+        [AMWExceptionDescription(TH = "ไม่พบข้อมูล {0} ใน Master Setup", EN = "Required {0}.")]
+        V0004,
 
 
 

@@ -17,9 +17,9 @@ namespace AWMSEngine.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/values/5
+        // GET api/values/5?str=11
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<string> Get([FromQuery]int str)
         {
             return "value";
         }

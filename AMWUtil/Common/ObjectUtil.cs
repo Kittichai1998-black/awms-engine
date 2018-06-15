@@ -11,6 +11,26 @@ namespace AMWUtil.Common
 {
     public static class ObjectUtil
     {
+        public static bool IsEmptyNull(object obj)
+        {
+            if (obj == null) return true;
+            if (obj is JValue)
+            {
+                string v = ((JValue)obj).ToString();
+                float d = 0;
+                if (float.TryParse(v, out d))
+                {
+                    if (d == 0) return true;
+                }
+                else if (string.IsNullOrWhiteSpace(v))
+                {
+                    return true;
+                }
+            }
+
+            if (obj is string && string.IsNullOrWhiteSpace(obj.ToString())) return true;
+            return false;
+        }
         public static bool IsZeroEmptyNull(object obj)
         {
             if (obj == null) return true;

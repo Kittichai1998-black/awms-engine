@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Z.Expressions;
 
 namespace AWMSModel.Criteria
 {
@@ -13,9 +14,12 @@ namespace AWMSModel.Criteria
         }
         public void Set(string key, dynamic val)
         {
-            if (this.VO.ContainsKey(key))
+            if (key.StartsWith("*"))
+                key = key.Substring(1);
+            if (!this.VO.ContainsKey(key))
+                this.VO.Add(key, val);
+            else
                 this.VO[key] = val;
-            this.VO.Add(key, val);
         }
         public void SetRang(VOCriteria vo)
         {
@@ -33,31 +37,55 @@ namespace AWMSModel.Criteria
             }
             return res;
         }
-        public T? Get<T>(string key) where T : struct
+        public T Get<T>(string key)
         {
-            if (this.VO.ContainsKey(key))
-                return this.VO[key];
-            return null;
+            string[] k = key.Split('.', 2);
+            if (this.VO.ContainsKey(k[0]))
+            {
+                if(k.Length == 1)
+                    return this.VO[k[0]];
+                else
+                    return Eval.Execute<T>("return obj." + k[1], new { obj = this.VO[k[0]] });
+            }
+            throw new Exception("VO Key " + key + " not found");
+        }
+        public T Get<T>(string key, T defualt)
+        {
+            try
+            {
+                return this.Get<T>(key);
+            }
+            catch
+            {
+                return defualt;
+            }
         }
         public string GetString(string key)
         {
-            if (this.VO.ContainsKey(key))
-                return this.VO[key];
-            return null;
+            try
+            {
+                var res = this.Get<string>(key);
+                return res.ToString();
+            }
+            catch
+            {
+                return null;
+            }
         }
         public dynamic GetDynamic(string key)
         {
-            if (this.VO.ContainsKey(key))
-                return this.VO[key];
-            return null;
+            try
+            {
+                var res = this.Get<dynamic>(key);
+                return res;
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
         public override string ToString()
         {
-            /*StringBuilder strb = new StringBuilder();
-            foreach(var k in this.vo.Keys)
-            {
-                strb.AppendFormat("{0} = {1} |", k,   this.vo[k]);
-            }*/
             return Newtonsoft.Json.JsonConvert.SerializeObject(this.VO);
         }
     }

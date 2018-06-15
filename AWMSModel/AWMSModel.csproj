@@ -5,12 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Constant\EnumConst\" />
-    <Folder Include="Entity\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Z.Expressions.Eval" Version="2.6.4" />
   </ItemGroup>
 
 </Project>
