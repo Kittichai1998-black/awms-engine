@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AWMSModel.Constant.EnumConst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,5 +14,17 @@ namespace AWMSModel.Entity
         public int ClientSecret_ID;
         public string ClientSecret_SecretKey;
         public DateTime ExpireTime;
+    }
+
+    public class amt_Token_status
+    {
+        public string token;
+        public EntityStatus Status;
+    }
+
+    public class amt_Token_ext
+    {
+        public string token;
+        public string extendKey;
     }
 }

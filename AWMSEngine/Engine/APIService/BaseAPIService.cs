@@ -32,7 +32,7 @@ namespace AWMSEngine.Engine.APIService
                 result.code = AMWExceptionCode.S0000.ToString();
                 result.message = "Success";
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
-                this.Logger = AMWLoggerManager.GetLogger(request._token ?? request._apikey ?? "notkey", this.GetType().Name);
+                this.Logger = AMWLoggerManager.GetLogger(request._token.ToString() ?? request._apikey.ToString() ?? "notkey", this.GetType().Name);
                 this.ExecuteEngineManual();
             }
             catch (AMWException ex)

@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/xxx")]
-    public class TestController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DefaultController : ControllerBase
     {
     }
 }
