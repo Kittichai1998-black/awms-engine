@@ -7,6 +7,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AWMSEngine.Engine.General
 {
@@ -20,13 +22,15 @@ namespace AWMSEngine.Engine.General
         protected override void ExecuteEngine()
         {
             var get_bu = this.BuVO.Get<dynamic>("_REQUEST");
-            var get_table = get_bu.t;
-            var get_ins = get_bu.datas;
-            var get_condition = get_bu.pk;
+            var get_table = get_bu.t.ToString();
+            var get_jins = JsonConvert.SerializeObject(get_bu.datas);
+            var get_jcondition = JsonConvert.SerializeObject(get_bu.pk);
+            List<Dictionary<string, dynamic>> get_ins = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(get_jins);
+            List<Dictionary<string, dynamic>> get_condition = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(get_jcondition);
 
             if (get_condition == null)
             {
-                var tokenModel = ADO.InsUpd.GetInstant().Insert(
+                var tokenModel = ADO.InsUpdADO.GetInstant().Insert(
                     get_table,
                     get_ins,
                     this.Logger);
@@ -35,7 +39,7 @@ namespace AWMSEngine.Engine.General
             }
             else
             {
-                var tokenModel = ADO.InsUpd.GetInstant().Update(
+                var tokenModel = ADO.InsUpdADO.GetInstant().Update(
                     get_table,
                     get_ins,
                     get_condition,
