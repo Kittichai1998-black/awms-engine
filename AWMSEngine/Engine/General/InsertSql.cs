@@ -24,7 +24,7 @@ namespace AWMSEngine.Engine.General
         public RefVO<Dictionary<string, dynamic>> ConditionData { get; set; }
 
         [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Result, "Return Status")]
-        public RefVO<Dictionary<string,dynamic>> OutResult { get; set; }
+        public RefVO<List<Dictionary<string, dynamic>>> OutResult { get; set; }
 
         protected override void ExecuteEngine()
         {
@@ -33,24 +33,14 @@ namespace AWMSEngine.Engine.General
             var get_table = get_bu.t.ToString();
             var get_jins = JsonConvert.SerializeObject(get_bu.datas);
             var get_condition = get_bu.pk.ToString();
-            var get_ins = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(get_jins);
+            List<Dictionary<string, dynamic>> get_ins = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(get_jins);
 
-            if (get_ins[get_condition] == null ?? "")
-            {
-                    tokenModel = ADO.InsUpdADO.GetInstant().Insert(
+            tokenModel = ADO.InsUpdADO.GetInstant().InsUpd(
                     get_table,
                     get_ins,
                     get_condition,
                     this.Logger);
-            }
-            else
-            {
-                    tokenModel = ADO.InsUpdADO.GetInstant().Update(
-                    get_table,
-                    get_ins,
-                    get_condition,
-                    this.Logger);
-            }
+
             if (tokenModel != 0)
             {
                 this.OutResult.Value = get_ins;

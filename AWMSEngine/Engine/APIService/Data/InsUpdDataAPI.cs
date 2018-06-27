@@ -13,21 +13,20 @@ namespace AWMSEngine.Engine.APIService.Data
     {
         protected override void ExecuteEngineManual()
         {
-            new General.RegisterToken().Execute(this.Logger, this.BuVO,
+            new General.InsertSql().Execute(this.Logger, this.BuVO,
                 new List<KeyGetSetCriteria>()
                 {
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_Username,BusinessVOConst.KEY_REQUEST_FIELD("username")),
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_Password,BusinessVOConst.KEY_REQUEST_FIELD("password")),
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_SecretKey,BusinessVOConst.KEY_REQUEST_FIELD("secretKey")),
+                    new KeyGetSetCriteria (General.InsertSql.KEY_IN_Ins,BusinessVOConst.KEY_REQUEST_FIELD("datas")),
+                    new KeyGetSetCriteria (General.InsertSql.KEY_IN_Con, BusinessVOConst.KEY_REQUEST_FIELD("pk"))
                 },
                 new List<KeyGetSetCriteria>()
                 {
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_OUT_TokenInfo,BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
+                    new KeyGetSetCriteria(General.InsertSql.KEY_OUT_Result,BusinessVOConst.KEY_TEMP_FIELD("result"))
                 });
 
             new General.ResponseObject().Execute(this.Logger, this.BuVO,
                 new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria(General.ResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
+                    new KeyGetSetCriteria(General.ResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("result"))
                 });
         }
     }
