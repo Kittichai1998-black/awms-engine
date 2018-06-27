@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSModel", "AWMSModel\AWMS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMWUtil", "AMWUtil\AMWUtil.csproj", "{9272C686-D314-472C-B64C-D915AB51C5CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWMSEngine", "AWMSEngine\AWMSEngine.csproj", "{CF0D3166-2C4F-4591-9CA4-00C03FC7BC15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSEngine", "AWMSEngine\AWMSEngine.csproj", "{CF0D3166-2C4F-4591-9CA4-00C03FC7BC15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{88DC9319-9BEE-4D5D-B50E-9F969BFED4AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{88DC9319-9BEE-4D5D-B50E-9F969BFED4AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
