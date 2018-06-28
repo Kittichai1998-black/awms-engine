@@ -62,6 +62,10 @@ namespace AMWUtil.Logger
         {
             return GetLogger(Guid.NewGuid().ToString(), serviceName);
         }
+        public static AMWLogger GetLogger(dynamic refID, dynamic serviceName)
+        {
+            return GetLogger(refID.ToString(), serviceName.ToString());
+        }
         public static AMWLogger GetLogger(string refID, string serviceName)
         {
             lock (lockGetLogger)
