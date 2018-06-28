@@ -24,9 +24,9 @@ namespace AWMSEngine.Engine.APIService.Data
                     new KeyGetSetCriteria(General.InsertSql.KEY_OUT_Result,BusinessVOConst.KEY_TEMP_FIELD("result"))
                 });
 
-            new General.ResponseObject().Execute(this.Logger, this.BuVO,
+            new General.ListResponseObject().Execute(this.Logger, this.BuVO,
                 new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria(General.ResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("result"))
+                    new KeyGetSetCriteria(General.ListResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("result"))
                 });
         }
     }
