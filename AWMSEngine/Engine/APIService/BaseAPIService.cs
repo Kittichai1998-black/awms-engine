@@ -14,8 +14,10 @@ namespace AWMSEngine.Engine.APIService
     public abstract class BaseAPIService
     {
         public VOCriteria BuVO { get; set; }
+        public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
+
         public AMWLogger Logger { get; set; }
-        protected abstract void ExecuteEngineManual();
+        protected abstract dynamic ExecuteEngineManual();
         public dynamic Execute(dynamic request)
         {
             this.BuVO = new VOCriteria();
@@ -33,7 +35,8 @@ namespace AWMSEngine.Engine.APIService
                 result.message = "Success";
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.Logger = AMWLoggerManager.GetLogger(request._token ?? request._apikey ?? "notkey", this.GetType().Name);
-                this.ExecuteEngineManual();
+                var res = this.ExecuteEngineManual();
+                new General.ResponseObject().Execute(this.Logger, this.BuVO, res);
             }
             catch (AMWException ex)
             {

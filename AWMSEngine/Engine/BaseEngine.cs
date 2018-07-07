@@ -13,9 +13,11 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine
 {
-    public abstract class BaseEngine
+    public abstract class BaseEngine<TReq, TRes>
+        where TRes : class
     {
-        protected abstract void ExecuteEngine();
+
+        protected abstract TRes ExecuteEngine(TReq resVO);
 
         protected VOCriteria BuVO { get; set; }
 
@@ -36,34 +38,24 @@ namespace AWMSEngine.Engine
             return new AMWException(this.Logger, code, parameters, (AMWException.ENLanguage)LanguageCode);
         }
 
-        public void Execute(AMWLogger logger,
+        public TRes Execute(AMWLogger logger,
             VOCriteria buVO,
-            List<KeyGetSetCriteria> keyIns = null,
-            List<KeyGetSetCriteria> keyOuts = null)
+            TReq reqVO)
         {
             this.BuVO = buVO;
+            TRes resVO = null;
             var result = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             try
             {
                 this.Logger = logger;
                 this.Logger.LogBegin();
                 this.EngineVO = new VOCriteria();
-                var requestVO = 
-                    this.MappingAttrVO(EngineParamAttr.InOutType.Request,
-                    this.BuVO, 
-                    keyIns);
-                this.EngineVO.SetRang(requestVO);
 
                 this.Logger.LogInfo("Input BusinessVO : " + this.BuVO.ToString());
                 this.Logger.LogInfo("Begin ExecuteEngine : " + this.EngineVO.ToString());
-                this.ExecuteEngine();
+                resVO = this.ExecuteEngine(reqVO);
                 this.Logger.LogInfo("End ExecuteEngine : " + this.EngineVO.ToString());
-                var responseVO =
-                    this.MappingAttrVO(EngineParamAttr.InOutType.Response,
-                    this.EngineVO,
-                    keyOuts);
-                this.Logger.LogInfo("Result ResponseVO = " + responseVO.ToString());
-                this.BuVO.SetRang(responseVO);
+                this.Logger.LogInfo("Result ResponseVO = " + Newtonsoft.Json.JsonConvert.SerializeObject( resVO));
 
             }
             catch (AMWUtil.Exception.AMWException ex)
@@ -88,6 +80,7 @@ namespace AWMSEngine.Engine
                     this.Logger.LogEnd();
                 }
             }
+            return resVO;
         }
 
         public VOCriteria MappingAttrVO(

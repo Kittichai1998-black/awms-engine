@@ -10,26 +10,18 @@ namespace AWMSEngine.Engine.APIService.Token
 {
     public class RegisterTokenAPI : BaseAPIService
     {
-        protected override void ExecuteEngineManual()
+        protected override dynamic ExecuteEngineManual()
         {
-            new Validation.RegisterTokenRequestValidate().Execute(this.Logger, this.BuVO);
+            new Validation.RegisterTokenRequestValidate().Execute(this.Logger, this.BuVO, null);
             
-            new General.RegisterToken().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>()
+            var res1 = new General.RegisterToken().Execute(this.Logger, this.BuVO,
+                new General.RegisterToken.TReqModel()
                 {
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_Username,BusinessVOConst.KEY_REQUEST_FIELD("username")),
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_Password,BusinessVOConst.KEY_REQUEST_FIELD("password")),
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_IN_SecretKey,BusinessVOConst.KEY_REQUEST_FIELD("secretKey")),
-                },
-                new List<KeyGetSetCriteria>()
-                {
-                    new KeyGetSetCriteria(General.RegisterToken.KEY_OUT_TokenInfo,BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
+                    Username = this.RequestVO.username,
+                    Password = this.RequestVO.password,
+                    SecretKey = this.RequestVO.secretKey
                 });
-
-            new General.ResponseObject().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria(General.ResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
-                });
+            return res1;
         }
     }
 }

@@ -12,14 +12,11 @@ namespace AWMSEngine.Engine.Validation
 {
     public class BuVORequiredFields : BaseEngine
     {
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, "RequiredFields", "ชื่อ Fields ใน BusinessVO ที่ต้องส่ง (ชื่อ Field ขั้นด้วย Comma(,) )")]
-        public RefVO<string> InRequiedFields { get; set; }
-
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, "ThrowFlag", "throw Exception เมื่อ Validate ไม่ผ่าน (Y,N)")]
-        public RefVO<string> InThrowFlag { get; set; }
-
-        [EngineParamAttr(EngineParamAttr.InOutType.Response, "PassFlag", "ผลลัพธ์การ Validate กรณีให้ ThrowFlag=Y (Y,N)")]
-        public RefVO<string> OutPassFlag { get; set; }
+        public class TReqModel
+        {
+            public string RequiedFields;
+            public string ThrowFlag;
+        }
 
         protected override void ExecuteEngine()
         {

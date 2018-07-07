@@ -9,4 +9,8 @@
     <PackageReference Include="Z.Expressions.Eval" Version="2.6.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Criteria\API\Response\" />
+  </ItemGroup>
+
 </Project>

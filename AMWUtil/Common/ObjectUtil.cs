@@ -251,5 +251,10 @@ namespace AMWUtil.Common
                 }
             }
         }
+        public static T DynamicToModel<T>(dynamic obj)
+        {
+            string jsonX = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonX);
+        }
     }
 }

@@ -8,29 +8,23 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.General
 {
-    public class RemoveToken : BaseEngine
+    public class RemoveToken : BaseEngine<RemoveToken.TReqModel, amt_Token_status>
     {
-        public const string KEY_IN_Token = "Token";
-        public const string KEY_IN_SecretKey = "SecretKey";
-        public const string KEY_OUT_Status = "Status";
+        public class TReqModel
+        {
+            public string Token;
+            public string SecretKey;
+        }
 
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_Token, "Authen Token")]
-        public RefVO<string> InTokenInfo { get; set; }
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_SecretKey, "Authen SecretKey")]
-        public RefVO<string> InSecretKey { get; set; }
-
-        [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Status, "Return Status")]
-        public RefVO<amt_Token_status> OutStatus { get; set; }
-
-        protected override void ExecuteEngine()
+        protected override amt_Token_status ExecuteEngine(RemoveToken.TReqModel reqVO)
         {
             var tokenModel = ADO.TokenADO.GetInstant().Remove(
-                this.InTokenInfo.Value,
-                this.InSecretKey.Value, 
+                reqVO.Token,
+                reqVO.SecretKey, 
                 0,
                 this.Logger);
 
-            this.OutStatus.Value = tokenModel;
+            return tokenModel;
         }
     }
 }

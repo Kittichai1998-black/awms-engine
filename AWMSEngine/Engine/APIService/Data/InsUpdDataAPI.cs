@@ -6,28 +6,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AWMSEngine.Common;
+using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.APIService.Data
 {
     public class InsUpdDataAPI : BaseAPIService
     {
-        protected override void ExecuteEngineManual()
+        protected override dynamic ExecuteEngineManual()
         {
-            new General.InsertSql().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>()
+            object x = 1;
+
+            var res1 = new General.InsertSql().Execute(this.Logger, this.BuVO,
+                new General.InsertSql.TReqModel()
                 {
-                    new KeyGetSetCriteria (General.InsertSql.KEY_IN_Ins,BusinessVOConst.KEY_REQUEST_FIELD("datas")),
-                    new KeyGetSetCriteria (General.InsertSql.KEY_IN_Con, BusinessVOConst.KEY_REQUEST_FIELD("pk"))
-                },
-                new List<KeyGetSetCriteria>()
-                {
-                    new KeyGetSetCriteria(General.InsertSql.KEY_OUT_Result,BusinessVOConst.KEY_TEMP_FIELD("result"))
+                    datas = this.RequestVO.datas,
+                    nr = this.RequestVO.nr,
+                    pk = this.RequestVO.pk,
+                    t = this.RequestVO.t
                 });
 
-            new General.ListResponseObject().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria(General.ListResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("result"))
-                });
+            return res1;
         }
     }
 }

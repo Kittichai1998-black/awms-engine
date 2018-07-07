@@ -10,23 +10,14 @@ namespace AWMSEngine.Engine.APIService.Token
 {
     public class EnquiryTokenAPI : BaseAPIService
     {
-        protected override void ExecuteEngineManual()
+        protected override dynamic ExecuteEngineManual()
         {
             //new Validation.EnquiryTokenRequestValidate().Execute(this.Logger, this.BuVO);
             //string qry = "select * from xxx where id=? "
-            new General.EnquiryToken().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria (General.EnquiryToken.KEY_IN_Token,BusinessVOConst.KEY_REQUEST_FIELD("token")),
-                    new KeyGetSetCriteria (General.EnquiryToken.KEY_IN_SecretKey, BusinessVOConst.KEY_REQUEST_FIELD("secretKey"))
-                },
-                new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria (General.EnquiryToken.KEY_OUT_TokenInfo, BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
-                });
+            var res1 = new General.EnquiryToken().Execute(this.Logger, this.BuVO,
+                new EnquiryToken.TReqModle() { Token = this.RequestVO.token, SecretKey = this.RequestVO.secretKey });
 
-            new General.ResponseObject().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria(General.ResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))
-                });
+            return res1;
         }
     }
 }

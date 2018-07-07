@@ -12,28 +12,23 @@ using Newtonsoft.Json.Linq;
 
 namespace AWMSEngine.Engine.General
 {
-    public class InsertSql : BaseEngine
+    public class InsertSql : BaseEngine<InsertSql.TReqModel, Dictionary<string,dynamic>>
     {
-        public const string KEY_IN_Ins = "Insert";
-        public const string KEY_IN_Con = "Condition";
-        public const string KEY_OUT_Result = "Status";
+        public class TReqModel
+        {
+            public string t;
+            public string pk;
+            public string nr;
+            public dynamic datas;
+        }
 
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_Ins, "Insert Data")]
-        public RefVO<Dictionary<string, dynamic>> InsertData { get; set; }
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_Con, "Condition Data")]
-        public RefVO<Dictionary<string, dynamic>> ConditionData { get; set; }
-
-        [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Result, "Return Status")]
-        public RefVO<Dictionary<string, dynamic>> OutResult { get; set; }
-
-        protected override void ExecuteEngine()
+        protected override Dictionary<string, dynamic> ExecuteEngine(InsertSql.TReqModel reqVO)
         {
             var tokenModel = 0;
-            var get_bu = this.BuVO.Get<dynamic>("_REQUEST");
-            var get_table = get_bu.t.ToString();
-            var get_jins = JsonConvert.SerializeObject(get_bu.datas);
-            var get_condition = get_bu.pk.ToString();
-            var get_revision = Convert.ToBoolean(get_bu.nr);
+            var get_table = reqVO.t.ToString();
+            var get_jins = JsonConvert.SerializeObject(reqVO.datas);
+            var get_condition = reqVO.pk.ToString();
+            var get_revision = Convert.ToBoolean(reqVO.nr);
             List<Dictionary<string, dynamic>> get_ins = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(get_jins);
 
             tokenModel = ADO.InsUpdADO.GetInstant().InsUpd(
@@ -43,12 +38,15 @@ namespace AWMSEngine.Engine.General
                     get_revision,
                     this.Logger);
 
+
             if (tokenModel != 0)
             {
                 Dictionary<string, dynamic> list = new Dictionary<string, dynamic>();
-                list.Add(get_bu.datas.Path.ToString(), get_bu.datas);
-                this.OutResult.Value = list;
+                list.Add(reqVO.datas.Path.ToString(), reqVO.datas);
+                return list;
             }
+            return null;
         }
+        
     }
 }

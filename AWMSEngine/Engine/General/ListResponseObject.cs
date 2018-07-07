@@ -8,16 +8,12 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.General
 {
-    public class ListResponseObject : BaseEngine
+    public class ListResponseObject : BaseEngine<dynamic,dynamic>
     {
-        public const string KEY_IN_BuVOKeyResponse = "BuVOKeyResponse";
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_BuVOKeyResponse, "")]
-        public RefVO<dynamic> InBuVOKeyResponse { get; set; }
-
-        protected override void ExecuteEngine()
+        protected override dynamic ExecuteEngine(dynamic reqVO)
         {
             ExpandoObject res = new ExpandoObject();
-            var t = this.InBuVOKeyResponse.Value;
+            var t = reqVO;
             //var infos = t.GetFields();
             foreach(var info in t)
             {
@@ -28,6 +24,7 @@ namespace AWMSEngine.Engine.General
             object resapi = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             res.TryAdd(BusinessVOConst.KEY_RESULT_API, resapi);
             this.BuVO.Set(BusinessVOConst.KEY_RESPONSE, res);
+            return res;
             
         }
     }
