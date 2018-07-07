@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Logger;
 using AWMSModel.Entity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.ADO
 {
-    public class InsUpdADO : BaseMSSQLAccess<InsUpdADO>
+    public class DataADO : BaseMSSQLAccess<DataADO>
     {
-        public int InsUpd(string table_name, List<Dictionary<string,dynamic>> recvlist, string con, bool revision,
+        public int InsUpd(string table_name, List<Dictionary<string, dynamic>> recvlist, string con, bool revision,
             AMWLogger logger, SqlTransaction trans = null)
         {
             Dictionary<string, dynamic> selectlist = new Dictionary<string, dynamic>();
@@ -48,7 +49,7 @@ namespace AWMSEngine.ADO
                     param.Add("@" + data.Key.ToString(), data.Value);
                 }
 
-                if(revision == true)
+                if (revision == true)
                 {
                     insupd = string.Format("update {0} set {1} , [Status] = 2 where {2}",
                         table_name,
@@ -88,6 +89,34 @@ namespace AWMSEngine.ADO
                 }
             }
             return res;
+        }
+
+        public Dictionary<string, dynamic> Select(string fielddata, string tabledata, 
+            dynamic wheredata, string groupdata, dynamic sortdata, string skipdata,
+            string limitdata, string alldata,
+            AMWLogger logger, SqlTransaction trans = null)
+        {
+            var get_where = "";
+            var get_sort = "";
+
+            var str_select = "";
+
+            var param = new Dapper.DynamicParameters();
+            foreach(var data in wheredata)
+            {
+                param.Add("@" + data.Key, data.Value);
+            }
+
+
+
+
+
+            string select = String.Format("select top {4} {0} from {1} where {2} group by {3} order by {5}", fielddata, tabledata, get_where, groupdata, limitdata, get_sort);
+
+
+
+
+            return null;
         }
     }
 }

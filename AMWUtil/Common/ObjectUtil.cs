@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -250,6 +251,16 @@ namespace AMWUtil.Common
                     pi.SetValue(main, val);
                 }
             }
+        }
+
+        public static object QueryStringToObject(string querystring)
+        {
+            var dict = HttpUtility.ParseQueryString(querystring);
+            var qrtstrDict = dict.AllKeys.ToDictionary(key => key, key => dict[key]);
+            var jsons = JsonConvert.SerializeObject(qrtstrDict);
+            var jsond = JsonConvert.DeserializeObject(jsons);
+
+            return jsond;
         }
     }
 }

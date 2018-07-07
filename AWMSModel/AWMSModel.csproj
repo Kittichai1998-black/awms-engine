@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Z.Expressions.Eval" Version="2.6.4" />
+    <PackageReference Include="Z.Expressions.Eval" Version="2.6.5" />
   </ItemGroup>
 
 </Project>

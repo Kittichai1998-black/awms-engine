@@ -15,16 +15,4 @@ namespace AWMSModel.Entity
         public string ClientSecret_SecretKey;
         public DateTime ExpireTime;
     }
-
-    public class amt_Token_status
-    {
-        public string token;
-        public EntityStatus Status;
-    }
-
-    public class amt_Token_ext
-    {
-        public string token;
-        public string extendKey;
-    }
 }

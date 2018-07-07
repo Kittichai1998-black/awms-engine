@@ -13,11 +13,9 @@ namespace AWMSEngine.Engine.APIService.Token
         protected override void ExecuteEngineManual()
         {
             //new Validation.EnquiryTokenRequestValidate().Execute(this.Logger, this.BuVO);
-            //string qry = "select * from xxx where id=? "
             new General.EnquiryToken().Execute(this.Logger, this.BuVO,
                 new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria (General.EnquiryToken.KEY_IN_Token,BusinessVOConst.KEY_REQUEST_FIELD("token")),
-                    new KeyGetSetCriteria (General.EnquiryToken.KEY_IN_SecretKey, BusinessVOConst.KEY_REQUEST_FIELD("secretKey"))
+                    new KeyGetSetCriteria (General.EnquiryToken.KEY_IN_Token,BusinessVOConst.KEY_REQUEST_FIELD("token"))
                 },
                 new List<KeyGetSetCriteria>() {
                     new KeyGetSetCriteria (General.EnquiryToken.KEY_OUT_TokenInfo, BusinessVOConst.KEY_TEMP_FIELD("tokenInfo"))

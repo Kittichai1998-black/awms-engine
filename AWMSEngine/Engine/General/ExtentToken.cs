@@ -9,29 +9,29 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.General
 {
-    public class RemoveToken : BaseEngine
+    public class ExtendToken : BaseEngine
     {
         public const string KEY_IN_Token = "Token";
-        public const string KEY_IN_SecretKey = "SecretKey";
-        public const string KEY_OUT_Status = "Status";
+        public const string KEY_IN_ExtendKey = "ExtendKey";
+        public const string KEY_OUT_Result = "Result";
 
         [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_Token, "Authen Token")]
         public RefVO<string> InTokenInfo { get; set; }
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_SecretKey, "Authen SecretKey")]
-        public RefVO<string> InSecretKey { get; set; }
+        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_ExtendKey, "Authen ExtendKey")]
+        public RefVO<string> InExtendKey { get; set; }
 
-        [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Status, "Return Status")]
-        public RefVO<amt_Token_status> OutStatus { get; set; }
+        [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Result, "Return Result")]
+        public RefVO<amt_Token_ext> OutResult { get; set; }
 
         protected override void ExecuteEngine()
         {
-            var tokenModel = ADO.TokenADO.GetInstant().Remove(
+            var tokenModel = ADO.TokenADO.GetInstant().Extend(
                 this.InTokenInfo.Value,
-                this.InSecretKey.Value, 
+                this.InExtendKey.Value,
                 0,
                 this.Logger);
 
-            this.OutStatus.Value = tokenModel;
+            this.OutResult.Value = tokenModel;
         }
     }
 }
