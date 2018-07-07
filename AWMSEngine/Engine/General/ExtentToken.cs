@@ -9,29 +9,23 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.General
 {
-    public class ExtendToken : BaseEngine
+    public class ExtendToken : BaseEngine<ExtendToken.TReqModel,amt_Token_ext>
     {
-        public const string KEY_IN_Token = "Token";
-        public const string KEY_IN_ExtendKey = "ExtendKey";
-        public const string KEY_OUT_Result = "Result";
+        public class TReqModel
+        {
+            public string Token;
+            public string ExtendKey;
+        }
 
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_Token, "Authen Token")]
-        public RefVO<string> InTokenInfo { get; set; }
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_ExtendKey, "Authen ExtendKey")]
-        public RefVO<string> InExtendKey { get; set; }
-
-        [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Result, "Return Result")]
-        public RefVO<amt_Token_ext> OutResult { get; set; }
-
-        protected override void ExecuteEngine()
+        protected override amt_Token_ext ExecuteEngine(TReqModel reqVO)
         {
             var tokenModel = ADO.TokenADO.GetInstant().Extend(
-                this.InTokenInfo.Value,
-                this.InExtendKey.Value,
+                reqVO.Token,
+                reqVO.ExtendKey,
                 0,
                 this.Logger);
 
-            this.OutResult.Value = tokenModel;
+            return tokenModel;
         }
     }
 }

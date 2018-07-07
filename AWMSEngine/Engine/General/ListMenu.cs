@@ -10,20 +10,20 @@ using System.Dynamic;
 
 namespace AWMSEngine.Engine.General
 {
-    public class ListMenu : BaseEngine
+    public class ListMenu : BaseEngine<ListMenu.TReqModel, ListMenu.TResModel>
     {
-        public const string KEY_IN_Token = "Token";
-        public const string KEY_OUT_Result = "Result";
-
-        [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_Token, "Token Data")]
-        public RefVO<string> GetToken { get; set; }
-
-        [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Result, "Return List")]
-        public RefVO<List<MenuGroup>> Result { get; set; }
-
-        protected override void ExecuteEngine()
+        public class TReqModel
         {
-            var tokenModel = ADO.UserInterfaceADO.GetInstant().ListMenu(GetToken.Value, this.Logger);
+            public string Token;
+        }
+        public class TResModel
+        {
+            public List<MenuGroup> webGroups;
+        }
+
+        protected override TResModel ExecuteEngine(TReqModel reqVO)
+        {
+            var tokenModel = ADO.UserInterfaceADO.GetInstant().ListMenu(reqVO.Token, this.Logger);
             List<MenuPage> pagelist;
             List<MenuGroup> menugroup = new List<MenuGroup>();
 
@@ -65,8 +65,7 @@ namespace AWMSEngine.Engine.General
                 }
 
             }
-
-            Result.Value = menugroup;
+            return new TResModel { webGroups = menugroup };
         }
 
     }

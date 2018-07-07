@@ -9,29 +9,23 @@ namespace AWMSEngine.Engine.APIService.Data
 {
     public class SelectDataAPI : BaseAPIService
     {
-        protected override void ExecuteEngineManual()
+        
+        protected override dynamic ExecuteEngineManual()
         {
-            new General.InsertSql().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>()
+            var res1= new General.SelectSql().Execute(this.Logger, this.BuVO,
+                new General.SelectSql.TReqModel()
                 {
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_Table,BusinessVOConst.KEY_REQUEST_FIELD("t")),
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_Where, BusinessVOConst.KEY_REQUEST_FIELD("q")),
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_Field,BusinessVOConst.KEY_REQUEST_FIELD("f")),
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_Group, BusinessVOConst.KEY_REQUEST_FIELD("g")),
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_Sort,BusinessVOConst.KEY_REQUEST_FIELD("s")),
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_Skip, BusinessVOConst.KEY_REQUEST_FIELD("sk")),
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_Limit,BusinessVOConst.KEY_REQUEST_FIELD("l")),
-                    new KeyGetSetCriteria (General.SelectSql.KEY_IN_All, BusinessVOConst.KEY_REQUEST_FIELD("all"))
-                },
-                new List<KeyGetSetCriteria>()
-                {
-                    new KeyGetSetCriteria(General.SelectSql.KEY_OUT_Result,BusinessVOConst.KEY_TEMP_FIELD("result"))
+                    t = this.RequestVO.t,
+                    all = this.RequestVO.all,
+                    f = this.RequestVO.f,
+                    g= this.RequestVO.g,
+                    l= this.RequestVO.l,
+                    q = this.RequestVO.q,
+                    s = this.RequestVO.s,
+                    sk = this.RequestVO.sk
                 });
 
-            new General.ListResponseObject().Execute(this.Logger, this.BuVO,
-                new List<KeyGetSetCriteria>() {
-                    new KeyGetSetCriteria(General.ListResponseObject.KEY_IN_BuVOKeyResponse,BusinessVOConst.KEY_TEMP_FIELD("result"))
-                });
+            return res1;
         }
     }
 }

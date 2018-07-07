@@ -12,9 +12,22 @@ using Newtonsoft.Json.Linq;
 
 namespace AWMSEngine.Engine.General
 {
-    public class SelectSql : BaseEngine
+    public class SelectSql : BaseEngine<SelectSql.TReqModel, Dictionary<string,dynamic>>
     {
-        public const string KEY_IN_Table = "Table";
+        public class TReqModel
+        {
+            public string t;
+            public string q;
+            public string f;
+            public string g;
+            public string s;
+            public string sk;
+            public string l;
+            public string all;
+        }
+        /*
+         * 
+         * public const string KEY_IN_Table = "Table";
         public const string KEY_IN_Field = "Field";
         public const string KEY_IN_Where = "Where";
         public const string KEY_IN_Group = "Group";
@@ -43,13 +56,14 @@ namespace AWMSEngine.Engine.General
 
         [EngineParamAttr(EngineParamAttr.InOutType.Response, KEY_OUT_Result, "Return Status")]
         public RefVO<Dictionary<string, dynamic>> OutResult { get; set; }
+         * */
 
-        protected override void ExecuteEngine()
+        protected override Dictionary<string,dynamic> ExecuteEngine(TReqModel reqVO)
         {
             var tokenModel = 0;
-            var get_where = JsonConvert.SerializeObject(WhereData.Value);
+            var get_where = JsonConvert.SerializeObject(reqVO.q);
             Dictionary<string, dynamic> get_where_dict = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(get_where);
-            var get_sort = JsonConvert.SerializeObject(SortData.Value);
+            var get_sort = JsonConvert.SerializeObject(reqVO.s);
             Dictionary<string, dynamic> get_sort_dict = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(get_sort);
 
             //tokenModel = ADO.DataADO.GetInstant().Select(
@@ -67,8 +81,9 @@ namespace AWMSEngine.Engine.General
             {
                 Dictionary<string, dynamic> list = new Dictionary<string, dynamic>();
                 //list.Add(get_bu.datas.Path.ToString(), get_bu.datas);
-                this.OutResult.Value = list;
+                return list;
             }
+            return null;
         }
     }
 }

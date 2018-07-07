@@ -31,7 +31,7 @@ namespace AWMSEngine.Engine.General
             var get_revision = Convert.ToBoolean(reqVO.nr);
             List<Dictionary<string, dynamic>> get_ins = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(get_jins);
 
-            tokenModel = ADO.InsUpdADO.GetInstant().InsUpd(
+            tokenModel = ADO.DataADO.GetInstant().InsUpd(
                     get_table,
                     get_ins,
                     get_condition,

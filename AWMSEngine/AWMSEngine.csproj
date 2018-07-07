@@ -9,7 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Engine\APIService\UI\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

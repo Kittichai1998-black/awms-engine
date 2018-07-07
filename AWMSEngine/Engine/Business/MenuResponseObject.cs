@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.General
 {
-    public class MenuResponseObject : BaseEngine
+    /*public class MenuResponseObject : BaseEngine
     {
         public const string KEY_IN_BuVOKeyResponse = "BuVOKeyResponse";
         [EngineParamAttr(EngineParamAttr.InOutType.Request, KEY_IN_BuVOKeyResponse, "")]
@@ -30,5 +30,5 @@ namespace AWMSEngine.Engine.General
             this.BuVO.Set(BusinessVOConst.KEY_RESPONSE, res);
             
         }
-    }
+    }*/
 }

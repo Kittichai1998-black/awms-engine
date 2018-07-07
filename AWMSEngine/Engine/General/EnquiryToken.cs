@@ -23,7 +23,6 @@ namespace AWMSEngine.Engine.General
         {
             amt_Token_status tokenModel = ADO.TokenADO.GetInstant().Enquiry(
                 resVO.Token,
-                resVO.SecretKey,
                 this.Logger);
             return tokenModel;
         }
