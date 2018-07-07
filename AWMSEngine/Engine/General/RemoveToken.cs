@@ -1,5 +1,6 @@
 ﻿using AWMSEngine.Common;
 using AWMSModel.Constant.StringConst;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;

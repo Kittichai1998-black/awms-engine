@@ -63,6 +63,7 @@ namespace AWMSEngine
                 app.UseHsts();
             }
 
+            app.UseCors("AllowCors");
             app.UseHttpsRedirection();
             app.UseMvc();
         }

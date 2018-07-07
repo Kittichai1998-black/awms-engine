@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Logger;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -40,15 +41,28 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public amt_Token_status Enquiry(string token, string secretKey,
+        public amt_Token_status Enquiry(string token,
             AMWLogger logger, SqlTransaction trans = null)
         {
             var param = new Dapper.DynamicParameters();
             param.Add("@token", token);
-            param.Add("@secretKey", secretKey);
             var res = this.Query<amt_Token_status>(
-                                "select token, status from amt_Token where token = @token and ClientSecret_SecretKey = @secretKey",
-                                CommandType.Text, param, logger, trans)
+                                "SP_TOKEN_ENQUIRY",
+                                CommandType.StoredProcedure, param, logger, trans)
+                            .FirstOrDefault();
+            return res;
+        }
+
+        public amt_Token_ext Extend(string token, string extendKey, int actionBy,
+            AMWLogger logger, SqlTransaction trans = null)
+        {
+            var param = new Dapper.DynamicParameters();
+            param.Add("@token", token);
+            param.Add("@extendKey", extendKey);
+            param.Add("@actionBy", actionBy);
+            var res = this.Query<amt_Token_ext>(
+                                "SP_TOKEN_EXTEND",
+                                CommandType.StoredProcedure, param, logger, trans)
                             .FirstOrDefault();
             return res;
         }
