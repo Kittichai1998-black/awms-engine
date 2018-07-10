@@ -13,4 +13,8 @@
     <Folder Include="Criteria\API\Response\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AMWUtil\AMWUtil.csproj" />
+  </ItemGroup>
+
 </Project>

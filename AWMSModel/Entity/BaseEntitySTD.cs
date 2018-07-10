@@ -9,6 +9,7 @@ namespace AWMSModel.Entity
     {
         public int ID;
         public string Code;
+        public string Name;
         public string Description;
         public EntityStatus Status;
         public int CreateBy;

@@ -8,22 +8,22 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.ADO
 {
-    public abstract class BaseMSSQLAccess<T> : AMWUtil.DataAccess.BaseDatabaseAccess
-        where T : BaseDatabaseAccess, new()
+    public abstract class BaseMSSQLAccess<TThis> : AMWUtil.DataAccess.BaseDatabaseAccess
+        where TThis : BaseDatabaseAccess, new()
     {
-        private static Dictionary<string,T> instants;
-        public static T GetInstant()
+        private static Dictionary<string,TThis> instants;
+        public static TThis GetInstant()
         {
-            string key = typeof(T).Name;
+            string key = typeof(TThis).Name;
             if(instants == null)
-                instants = new Dictionary<string, T>();
+                instants = new Dictionary<string, TThis>();
             if (!instants.ContainsKey(key)){
-                instants.Add(key, new T());
+                instants.Add(key, new TThis());
             }
             return instants[key];
         }
 
-        public BaseMSSQLAccess() 
+        protected BaseMSSQLAccess() 
             : base(PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY)[PropertyConst.APP_KEY_DBMSSQL_CONSTR])
         {
 

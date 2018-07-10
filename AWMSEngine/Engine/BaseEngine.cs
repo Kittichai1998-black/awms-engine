@@ -17,7 +17,7 @@ namespace AWMSEngine.Engine
         where TRes : class
     {
 
-        protected abstract TRes ExecuteEngine(TReq resVO);
+        protected abstract TRes ExecuteEngine(TReq reqVO);
 
         protected VOCriteria BuVO { get; set; }
 

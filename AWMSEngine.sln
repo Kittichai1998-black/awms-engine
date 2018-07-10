@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSEngine", "AWMSEngine\AW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{88DC9319-9BEE-4D5D-B50E-9F969BFED4AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTest2", "MyTest2\MyTest2.csproj", "{00E3A86A-8738-4AA8-950C-F58B09408177}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{88DC9319-9BEE-4D5D-B50E-9F969BFED4AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88DC9319-9BEE-4D5D-B50E-9F969BFED4AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88DC9319-9BEE-4D5D-B50E-9F969BFED4AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00E3A86A-8738-4AA8-950C-F58B09408177}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00E3A86A-8738-4AA8-950C-F58B09408177}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00E3A86A-8738-4AA8-950C-F58B09408177}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00E3A86A-8738-4AA8-950C-F58B09408177}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

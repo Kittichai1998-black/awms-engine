@@ -91,6 +91,31 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public List<T> SelectByID<T>(object value)
+             where T : IEntityModel
+        {
+            return SelectBy<T>("ID", value);
+        }
+        public List<T> SelectByCode<T>(object value)
+             where T : IEntityModel
+        {
+            return SelectBy<T>("Code", value);
+        }
+        public List<T> SelectBy<T>(string whereField, object value, AMWLogger logger = null)
+            where T : IEntityModel
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("@value", value);
+            var res = this.Query<T>(
+                    string.Format("select * from {0} where {1}=@value",
+                        typeof(T).Name.Split('.').Last(), whereField),
+                    CommandType.Text, 
+                    param,
+                    logger)
+                    .ToList();
+            return res;
+        }
+
         public Dictionary<string, dynamic> Select(string fielddata, string tabledata, 
             dynamic wheredata, string groupdata, dynamic sortdata, string skipdata,
             string limitdata, string alldata,
