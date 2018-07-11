@@ -8,15 +8,17 @@ namespace AWMSModel.Criteria.SP.Response
     public class SPStorageObjectCriteria
     {
         public int? id;
-        public StorageObjectChildType type;
+        public StorageObjectType type;
         public int? parentID;
-        public StorageObjectChildType? parentType;
+        public StorageObjectType? parentType;
         public string code;
         public string name;
         public decimal? minChildWeiKG;
         public decimal? maxChildWeiKG;
         public decimal? minChildQty;
         public decimal? maxChildQty;
+        public int? sizeLevel;
+        public string innerSizeLevels;
         public string options;
         
     }

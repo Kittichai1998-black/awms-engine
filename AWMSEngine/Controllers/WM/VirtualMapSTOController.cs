@@ -20,9 +20,9 @@ namespace AWMSEngine.Controllers.WM
         }
 
         [HttpPut]
-        public dynamic UpdateSTO(dynamic datas)
+        public dynamic VirtualMapSTOPutToDB(dynamic datas)
         {
-            GetMappingStorageObjectAPI exec = new GetMappingStorageObjectAPI();
+            PutVirtualMapSTOAPI exec = new PutVirtualMapSTOAPI();
             return exec.Execute(datas);
         }
     }

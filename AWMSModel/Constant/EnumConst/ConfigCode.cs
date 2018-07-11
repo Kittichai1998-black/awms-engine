@@ -4,10 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Constant.EnumConst
 {
-    public enum StorageObjectChildType
+    public enum ConfigCode
     {
-        LOCATION = 0,
-        BASE = 1,
-        PACK = 2
     }
 }

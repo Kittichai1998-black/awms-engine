@@ -20,15 +20,15 @@ namespace AMWUtil.Exception
         private int LineNumber;
         private string ClassName;
         private string MethodName;
-        private AMWExceptionCode KKFCode;
-        public string GetKKFCode() { return this.KKFCode.ToString(); }
-        public string GetKKFMessage() { return this.KKFCode.ToString(); }
-        public string GetKKFUserMessage() { return this.KKFCode.ToString() + ":" + this.Message; }
+        private AMWExceptionCode AWMCode;
+        public string GetAMWCode() { return this.AWMCode.ToString(); }
+        public string GetAMWMessage() { return this.Message; }
+        public string GetAMWUserMessage() { return this.AWMCode.ToString() + ":" + this.Message; }
 
         public AMWException(
             ILogger logger,
             AMWExceptionCode code,
-            string[] paramters,
+            string[] paramters = null,
             ENLanguage Language = ENLanguage.TH,
             int extendLv = 1,
             [CallerLineNumber]int lineNumber = 0)
@@ -37,11 +37,11 @@ namespace AMWUtil.Exception
                     + (Language == ENLanguage.EN ? AMWUtil.Common.AttributeUtil.FirstAttributeOfType<AMWExceptionDescription>(code).EN :
                     Language == ENLanguage.CN ? AMWUtil.Common.AttributeUtil.FirstAttributeOfType<AMWExceptionDescription>(code).CN :
                         AMWUtil.Common.AttributeUtil.FirstAttributeOfType<AMWExceptionDescription>(code).TH)
-                    + " #REFID : " + (logger==null ? "NULL" : logger.RefID),
-                    paramters)
+                    + " #" + (logger==null ? "???" : logger.RefID),
+                    paramters??new string[] { })
                   )
         {
-            this.KKFCode = code;
+            this.AWMCode = code;
             StackTrace stackTrace = new StackTrace();
             this.LineNumber = lineNumber;
             this.ClassName = stackTrace.GetFrame(extendLv).GetMethod().DeclaringType.FullName;
@@ -51,7 +51,16 @@ namespace AMWUtil.Exception
             else
                 Console.Error.WriteLine("[ERROR] " + this.Message);
         }
-
+        public AMWException(
+            ILogger logger,
+            AMWExceptionCode code,
+            string paramters,
+            ENLanguage Language = ENLanguage.TH,
+            int extendLv = 2,
+            [CallerLineNumber]int lineNumber = 0) :
+            this(logger, code, new string[] { paramters }, Language, extendLv, lineNumber)
+        { }
+        /*
         public AMWException(ILogger logger, AMWExceptionCode code, string parameter = null, ENLanguage Language = ENLanguage.TH, [CallerLineNumber]int lineNumber = 0)
             : this(logger, code, new string[] { parameter }, Language, 2, lineNumber) { }
 
@@ -60,7 +69,7 @@ namespace AMWUtil.Exception
 
         public AMWException(ILogger logger, string message, ENLanguage Language = ENLanguage.TH, [CallerLineNumber]int lineNumber = 0)
             : this(logger, AMWExceptionCode.U0000, new string[] { message }, Language, 2, lineNumber) { }
-
+            */
 
 
 

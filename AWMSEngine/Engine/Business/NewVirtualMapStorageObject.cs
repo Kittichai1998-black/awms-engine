@@ -13,7 +13,7 @@ namespace AWMSEngine.Engine.Business
         public class TReqModel
         {
             public string code;
-            public decimal amount;
+            //public decimal amount;
             public List<KeyValuePair<string,string>> options;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReqModel reqVO)
@@ -32,9 +32,9 @@ namespace AWMSEngine.Engine.Business
                         {
                             code = packMst.Code,
                             name = packMst.Name,
-                            type = StorageObjectChildType.PACK,
-                            isFocus = true,
-                            amount = reqVO.amount,
+                            type = StorageObjectType.PACK,
+                            isFocus = false,
+                            //amount = reqVO.amount,
                             mapstos = new List<StorageObjectCriteria>(),
                             options = reqVO.options
                         };
@@ -45,9 +45,9 @@ namespace AWMSEngine.Engine.Business
                     {
                         code = baseMst.Code,
                         name = baseMst.Name,
-                        type = StorageObjectChildType.BASE,
+                        type = StorageObjectType.BASE,
                         isFocus = true,
-                        amount = 1,
+                        //amount = 1,
                         mapstos = new List<StorageObjectCriteria>(),
                         options = reqVO.options
                     };
@@ -59,9 +59,9 @@ namespace AWMSEngine.Engine.Business
                 {
                     code = areaMst.Code,
                     name = areaMst.Name,
-                    type = StorageObjectChildType.LOCATION,
+                    type = StorageObjectType.LOCATION,
                     isFocus = true,
-                    amount = 1,
+                    //amount = 1,
                     mapstos = new List<StorageObjectCriteria>(),
                     options = reqVO.options
                 };

@@ -4,15 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using AMWUtil.Common;
 
 namespace AWMSModel.Criteria
 {
     public class StorageObjectCriteria
     {
         public int? id;
-        public StorageObjectChildType type;
+        public StorageObjectType type;
         public int? parentID;
-        public StorageObjectChildType? parentType;
+        public StorageObjectType? parentType;
         public string code;
         public string name;
         public decimal? minChildWeiKG;
@@ -20,7 +21,9 @@ namespace AWMSModel.Criteria
         public decimal? minChildQty;
         public decimal? maxChildQty;
         public bool isFocus;
-        public decimal amount;
+        //public decimal amount;
+        public int? sizeLevel;
+        public List<int> innerSizeLevels;
         public List<KeyValuePair<string, string>> options;
         public List<StorageObjectCriteria> mapstos;
 
@@ -42,10 +45,17 @@ namespace AWMSModel.Criteria
                 maxChildQty = rootSto.maxChildQty,
                 options = AMWUtil.Common.ObjectUtil.QueryStringToListKey(rootSto.options ?? string.Empty),
                 mapstos = generateMapstos(rootSto.id.Value, rootSto.type, out isFucus),
+                sizeLevel = rootSto.sizeLevel,
+                innerSizeLevels = string.IsNullOrEmpty(rootSto.innerSizeLevels) ?
+                    null :
+                    rootSto.innerSizeLevels.Split("|")
+                    .Select(x => { int? y = x.Get<int>(); return y ?? -1; })
+                    .Where(x => x >= 0)
+                    .ToList(),
                 isFocus = isFucus
             };
 
-            List<StorageObjectCriteria> generateMapstos(int parentID, StorageObjectChildType parentType, out bool outParentIsFocus)
+            List<StorageObjectCriteria> generateMapstos(int parentID, StorageObjectType parentType, out bool outParentIsFocus)
             {
                 List<StorageObjectCriteria> r =
                     stos.Where(x => x.parentID == parentID && x.parentType == parentType)
@@ -66,6 +76,13 @@ namespace AWMSModel.Criteria
                             options = AMWUtil.Common.ObjectUtil.QueryStringToListKey(x.options ?? string.Empty),
                             mapstos = generateMapstos(x.id.Value, x.type, out isFocus),
                             isFocus = isFocus,
+                            sizeLevel = x.sizeLevel,
+                            innerSizeLevels = string.IsNullOrEmpty(rootSto.innerSizeLevels) ?
+                                                null :
+                                                x.innerSizeLevels.Split("|")
+                                                .Select(z => { int? y = z.GetTry<int>(); return y ?? -1; })
+                                                .Where(z => z >= 0)
+                                                .ToList(),
                         };
                         if (!s.isFocus && s.code.Equals(codeFocus))
                             s.isFocus = true;
@@ -77,6 +94,6 @@ namespace AWMSModel.Criteria
 
             return res;
         }
-
+        
     }
 }

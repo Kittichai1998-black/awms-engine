@@ -12,6 +12,48 @@ namespace AMWUtil.Common
 {
     public static class ObjectUtil
     {
+        public static T Get<T>(this string s)
+        {
+            if (typeof(T) == typeof(string)) return (T)(object)s;
+            if (typeof(T) == typeof(int)) return (T)(object)int.Parse(s);
+            if (typeof(T) == typeof(decimal)) return (T)(object)decimal.Parse(s);
+            if (typeof(T) == typeof(double)) return (T)(object)double.Parse(s);
+            if (typeof(T) == typeof(float)) return (T)(object)float.Parse(s);
+            if (typeof(T) == typeof(long)) return (T)(object)long.Parse(s);
+            throw new System.Exception("Type " + typeof(T) + " Not Support.");
+        }
+        public static T? GetTry<T>(this string s)
+            where T : struct
+        {
+            try
+            {
+                return s.Get<T>();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static T[] Get<T>(this string[] s)
+            where T : struct
+        {
+            return s.Select(x => x.Get<T>()).ToArray();
+        }
+        public static T?[] GetTry<T>(this string[] s)
+            where T : struct
+        {
+            return s.Select(x => x.GetTry<T>()).ToArray();
+        }
+
+        public static T Json<T>(this string s)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(s);
+        }
+        public static string Json<T>(this T s)
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(s);
+        }
+
         public static bool IsEmptyNull(object obj)
         {
             if (obj == null) return true;
@@ -78,60 +120,6 @@ namespace AMWUtil.Common
         {
             return Comparer<T>.Default.Compare(item, start) >= 0
                 && Comparer<T>.Default.Compare(item, end) <= 0;
-        }
-        public static int? ParseInt(string s)
-        {
-            double? res = ParseDouble(s);
-            if (res.HasValue)
-                return (int)res.Value;
-            return null;
-        }
-        public static int[] ParseInt(string[] s)
-        {
-            List<int> res = new List<int>();
-            foreach (string i in s)
-            {
-                int? v = ParseInt(i);
-                if (v.HasValue)
-                    res.Add(v.Value);
-            }
-            return res.ToArray();
-        }
-        public static decimal? ParseDecimal(string s)
-        {
-            decimal res = 0;
-            if (decimal.TryParse(s, out res))
-                return res;
-            return null;
-        }
-        public static decimal[] ParseDecimal(string[] s)
-        {
-            List<decimal> res = new List<decimal>();
-            foreach (string i in s)
-            {
-                decimal? v = ParseDecimal(i);
-                if (v.HasValue)
-                    res.Add(v.Value);
-            }
-            return res.ToArray();
-        }
-        public static double? ParseDouble(string s)
-        {
-            double res = 0;
-            if (double.TryParse(s, out res))
-                return res;
-            return null;
-        }
-        public static double[] ParseDouble(string[] s)
-        {
-            List<double> res = new List<double>();
-            foreach (string i in s)
-            {
-                double? v = ParseDouble(i);
-                if (v.HasValue)
-                    res.Add(v.Value);
-            }
-            return res.ToArray();
         }
 
 
@@ -202,31 +190,6 @@ namespace AMWUtil.Common
             return res;
         }
 
-        public static List<T> CloneModel<T>(this List<T> input, List<T> output = null)
-            where T : class
-        {
-            if (output == null)
-                output = new List<T>();
-            input.ForEach(x => output.Add(x.CloneModel()));
-            return output;
-        }
-        public static T CloneModel<T>(this T input, T output = null)
-            where T : class
-        {
-            if (output == null)
-                output = (T)Activator.CreateInstance(typeof(T), null);
-
-            PropertyInfo[] pis = typeof(T).GetProperties();
-            foreach (PropertyInfo pi in pis)
-            {
-                var val = pi.GetValue(input);
-                if (val is string || val is int || val is DateTime || val is decimal || val is float || val is double || val is long)
-                {
-                    pi.SetValue(output, val);
-                }
-            }
-            return output;
-        }
         public static void CopyModelShiftID<T>(this T main, T copy)
         {
             PropertyInfo[] pis = typeof(T).GetProperties();
@@ -261,6 +224,11 @@ namespace AMWUtil.Common
             var jsond = JsonConvert.DeserializeObject(jsons);
 
             return jsond;
+        }
+        public static T CloneModel<T>(object obj)
+            where T : new()
+        {
+            return DynamicToModel<T>(obj);
         }
         public static T DynamicToModel<T>(dynamic obj)
             where T : new()

@@ -20,18 +20,13 @@ namespace AWMSEngine.Engine
         protected abstract TRes ExecuteEngine(TReq reqVO);
 
         protected VOCriteria BuVO { get; set; }
-
-        protected VOCriteria EngineVO { get; set; }
+        
         protected AMWLogger Logger { get; set; }
         protected string Token => this.BuVO.GetString(BusinessVOConst.KEY_TOKEN);
         protected string APIKey => this.BuVO.GetString(BusinessVOConst.KEY_APIKEY);
         protected dynamic RequestParam => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST);
         protected LanguageType LanguageCode => this.BuVO.Get<LanguageType>(BusinessVOConst.KEY_LANGUAGE_CODE, LanguageType.TH);
-        protected string TechMessage
-        {
-            get => this.BuVO.GetString(BusinessVOConst.KEY_TECHMESSAGE);
-            set => this.BuVO.Set(BusinessVOConst.KEY_TECHMESSAGE, value);
-        }
+
 
         protected AMWException NewAMWException(AMWExceptionCode code, params string[] parameters)
         {
@@ -48,42 +43,33 @@ namespace AWMSEngine.Engine
             try
             {
                 this.Logger = logger;
-                this.Logger.LogBegin();
-                this.EngineVO = new VOCriteria();
-
-                this.Logger.LogInfo("Input BusinessVO : " + this.BuVO.ToString());
-                this.Logger.LogInfo("Begin ExecuteEngine : " + this.EngineVO.ToString());
+                this.Logger.LogExecBegin("ReqVO : " + resVO.Json());
+                this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 resVO = this.ExecuteEngine(reqVO);
-                this.Logger.LogInfo("End ExecuteEngine : " + this.EngineVO.ToString());
-                this.Logger.LogInfo("Result ResponseVO = " + Newtonsoft.Json.JsonConvert.SerializeObject( resVO));
+                this.Logger.LogSuccess("ResVO : " + resVO.Json());
 
             }
-            catch (AMWUtil.Exception.AMWException ex)
+            catch (AMWException ex)
             {
-                result.status = 0;
-                result.code = ex.GetKKFCode();
-                result.message = ex.GetKKFMessage();
-                this.TechMessage = ex.StackTrace;
+                throw ex;
             }
             catch (System.Exception ex)
             {
-                var e = new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.U0000, ex.StackTrace);
-                result.status = 0;
-                result.code = e.GetKKFCode();
-                result.message = e.GetKKFMessage();
+                var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
+                this.Logger.LogError(ex.StackTrace);
+                throw e;
             }
             finally
             {
                 if (this.Logger != null)
                 {
-                    this.Logger.LogInfo("Output BusinessVO : " + this.BuVO.ToString());
-                    this.Logger.LogEnd();
+                    this.Logger.LogExecEnd("ReqVO : " + resVO.Json());
                 }
             }
             return resVO;
         }
 
-        public VOCriteria MappingAttrVO(
+        /*public VOCriteria MappingAttrVO(
             EngineParamAttr.InOutType IOType,
             VOCriteria vo,
             List<KeyGetSetCriteria> keyGetSets)
@@ -123,6 +109,6 @@ namespace AWMSEngine.Engine
             }
 
             return res;
-        }
+        }*/
     }
 }

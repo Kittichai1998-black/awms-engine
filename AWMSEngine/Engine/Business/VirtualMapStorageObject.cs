@@ -1,4 +1,6 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ namespace AWMSEngine.Engine.Business
         public class TReqModle
         {
             public string scanCode;
-            public decimal amount;
+            public int amount;
             public VirtualMapSTOActionType action;
             public List<KeyValuePair<string, string>> options;
         }
@@ -22,7 +24,7 @@ namespace AWMSEngine.Engine.Business
             if(this.RequestParam.mapsto == null)
             {
                 Logger.LogInfo("Get STO From DB.(First Scan)");
-                mapsto = ADO.StorageObjectADO.GetInstant().GetStorageObjectByRelationCode(reqVO.scanCode, true, this.Logger);
+                mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.scanCode, true, this.Logger);
 
                 if (mapsto == null)
                 {
@@ -31,7 +33,7 @@ namespace AWMSEngine.Engine.Business
                         new NewVirtualMapStorageObject.TReqModel()
                         {
                             code = reqVO.scanCode,
-                            amount = reqVO.amount,
+                            //amount = reqVO.amount,
                             options = reqVO.options
                         });
                 }
@@ -42,11 +44,20 @@ namespace AWMSEngine.Engine.Business
                 mapsto = AMWUtil.Common.ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestParam.mapsto);
                 if (reqVO.action == VirtualMapSTOActionType.Select)
                 {
+                    this.ClaerMapStoFocus(mapsto);
                     mapsto.isFocus = this.ActionSelect(reqVO.scanCode, mapsto.mapstos);
+                    if (mapsto.code.Equals(reqVO.scanCode))
+                        mapsto.isFocus = true;
+                    if (mapsto.isFocus == false)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V0005, "Code");
                 }
-                else if(reqVO.action == VirtualMapSTOActionType.Add)
+                else if (reqVO.action == VirtualMapSTOActionType.Add)
                 {
                     this.ActionAdd(reqVO.scanCode, reqVO.amount, reqVO.options, mapsto);
+                }
+                else if (reqVO.action == VirtualMapSTOActionType.Remove)
+                {
+                    this.ActionRemove(reqVO.scanCode, reqVO.amount, mapsto);
                 }
             }
 
@@ -68,28 +79,63 @@ namespace AWMSEngine.Engine.Business
         }
 
         private void ActionAdd(string scanCode,
-            decimal amount,
+            int amount,
             List<KeyValuePair<string, string>> options,
             StorageObjectCriteria mapsto)
         {
             var msf = GetMapStoLastFocus(mapsto);
             bool isRegis = !mapsto.id.HasValue;
+            List<StorageObjectCriteria> newMSs = new List<StorageObjectCriteria>();
+            StorageObjectCriteria newMS = null;
             if (isRegis)
             {
-                var newMS = new Engine.Business.NewVirtualMapStorageObject()
+                newMS = new Engine.Business.NewVirtualMapStorageObject()
                     .Execute(this.Logger, this.BuVO, new NewVirtualMapStorageObject.TReqModel()
                     {
                         code = scanCode,
-                        amount = amount,
+                        //amount = amount,
                         options = options
                     });
-                msf.mapstos.Add(newMS);
+
+                for (int i = 0; i < amount; i++)
+                {
+                    var v = ObjectUtil.CloneModel<StorageObjectCriteria>(newMS);
+                    v.parentID = msf.id;
+                    v.parentType = msf.type;
+                    newMSs.Add(v);
+                }
             }
             else
             {
-                var tranMS = ADO.StorageObjectADO.GetInstant().GetStorageObjectByRelationCode(scanCode, false, this.Logger);
-                msf.mapstos.Add(tranMS);
+                int freeCount = ADO.StorageObjectADO.GetInstant().GetFreeCount(scanCode, true, this.Logger);
+                if (freeCount < amount)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V0006, scanCode);
+                newMS = new Engine.Business.NewVirtualMapStorageObject()
+                    .Execute(this.Logger, this.BuVO, new NewVirtualMapStorageObject.TReqModel()
+                    {
+                        code = scanCode,
+                        options = options
+                    });
+                if(newMS.type == StorageObjectType.PACK)
+                {
+                    for (int i = 0; i < amount; i++)
+                    {
+                        var v = ObjectUtil.CloneModel<StorageObjectCriteria>(newMS);
+                        v.parentID = msf.id;
+                        v.parentType = msf.type;
+                        newMSs.Add(v);
+                    }
+                }
+                else
+                {
+                    newMS = ADO.StorageObjectADO.GetInstant().Get(scanCode, false, this.Logger);
+                    newMS.parentID = msf.id;
+                    newMS.parentType = msf.type;
+                    newMSs.Add(newMS);
+                }
             }
+
+            msf.mapstos.AddRange(newMSs);
         }
         private void ActionRemove(
             string scanCode,
@@ -98,6 +144,8 @@ namespace AWMSEngine.Engine.Business
         {
             var msf = GetMapStoLastFocus(mapsto);
             var rmItem = msf.mapstos.FirstOrDefault(x => x.code == scanCode);
+            if (rmItem == null)
+                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V0002, scanCode);
             for(int i = 0;i< amount; i++)
             {
                 msf.mapstos.Remove(rmItem);
@@ -117,12 +165,12 @@ namespace AWMSEngine.Engine.Business
             if (res != null)
             {
                 res.isFocus = false;
-                GetMapStoLastFocus(res);
+                this.ClaerMapStoFocus(res);
             }
         }
         private StorageObjectCriteria GetBaseByCode(string scanCode, StorageObjectCriteria mapsto)
         {
-            if (mapsto.type == StorageObjectChildType.BASE && mapsto.code == scanCode)
+            if (mapsto.type == StorageObjectType.BASE && mapsto.code == scanCode)
                 return mapsto;
             foreach(var ms in mapsto.mapstos)
             {

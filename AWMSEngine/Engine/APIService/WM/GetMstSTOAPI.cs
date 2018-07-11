@@ -13,7 +13,7 @@ namespace AWMSEngine.Engine.APIService.WM
                 this.Logger, this.BuVO,
                 new Business.NewVirtualMapStorageObject.TReqModel()
                 {
-                    amount=1,
+                    //amount=1,
                     code=this.RequestVO.code,
                     options= new List<KeyValuePair<string, string>>()
                 });

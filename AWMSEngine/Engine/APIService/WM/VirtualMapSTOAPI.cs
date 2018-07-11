@@ -11,12 +11,13 @@ namespace AWMSEngine.Engine.APIService.WM
     {
         protected override dynamic ExecuteEngineManual()
         {
+            var options = ObjectUtil.DynamicToModel<List<KeyValuePair<string, string>>>(this.RequestVO.options);
             var res = new Engine.Business.VirtualMapStorageObject().Execute(this.Logger, this.BuVO,
                 new Business.VirtualMapStorageObject.TReqModle()
                 {
                     scanCode = this.RequestVO.scanCode,
                     amount = this.RequestVO.amount,
-                    options = ObjectUtil.DynamicToModel<KeyValuePair<string, string>>(this.RequestVO.options),
+                    options = options,
                     action = (AWMSModel.Constant.EnumConst.VirtualMapSTOActionType)this.RequestVO.action,
                 });
             return res;
