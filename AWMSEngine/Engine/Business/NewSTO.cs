@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class NewVirtualMapStorageObject : BaseEngine<NewVirtualMapStorageObject.TReqModel, StorageObjectCriteria>
+    public class NewSTO : BaseEngine<NewSTO.TReqModel, StorageObjectCriteria>
     {
         public class TReqModel
         {
@@ -20,13 +20,13 @@ namespace AWMSEngine.Engine.Business
         {
             StorageObjectCriteria res = new StorageObjectCriteria();
             var dataADO = ADO.DataADO.GetInstant();
-            var areaMst = dataADO.SelectByCode<ams_AreaLocation>(reqVO.code).FirstOrDefault();
+            var areaMst = dataADO.SelectByCode<ams_AreaLocationMaster>(reqVO.code, this.BuVO).FirstOrDefault();
             if (areaMst == null)
             {
-                var baseMst = dataADO.SelectByCode<ams_BaseMaster>(reqVO.code).FirstOrDefault();
+                var baseMst = dataADO.SelectByCode<ams_BaseMaster>(reqVO.code, this.BuVO).FirstOrDefault();
                 if (baseMst == null)
                 {
-                    var packMst = dataADO.SelectByCode<ams_PackMaster>(reqVO.code).FirstOrDefault();
+                    var packMst = dataADO.SelectByCode<ams_PackMaster>(reqVO.code, this.BuVO).FirstOrDefault();
                     if (packMst != null)
                         res = new StorageObjectCriteria()
                         {

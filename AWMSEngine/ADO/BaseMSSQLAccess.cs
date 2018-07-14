@@ -3,6 +3,7 @@ using AMWUtil.PropertyFile;
 using AWMSModel.Constant.StringConst;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,16 +12,12 @@ namespace AWMSEngine.ADO
     public abstract class BaseMSSQLAccess<TThis> : AMWUtil.DataAccess.BaseDatabaseAccess
         where TThis : BaseDatabaseAccess, new()
     {
-        private static Dictionary<string,TThis> instants;
+        private static TThis instants;
         public static TThis GetInstant()
         {
-            string key = typeof(TThis).Name;
-            if(instants == null)
-                instants = new Dictionary<string, TThis>();
-            if (!instants.ContainsKey(key)){
-                instants.Add(key, new TThis());
-            }
-            return instants[key];
+            if (instants == null)
+                instants = new TThis();
+            return instants;
         }
 
         protected BaseMSSQLAccess() 
@@ -28,6 +25,7 @@ namespace AWMSEngine.ADO
         {
 
         }
+
     }
     
 }

@@ -1,10 +1,12 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
+using AWMSEngine.ADO;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +19,42 @@ namespace AWMSEngine.Engine.APIService
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
 
         public AMWLogger Logger { get; set; }
+
+        private SqlConnection _SqlConnection = null;
         protected abstract dynamic ExecuteEngineManual();
+        protected void CreateTransaction()
+        {
+            this.TryRollbackTransaction();
+            var trans = ADO.BaseMSSQLAccess<ADO.DataADO>.GetInstant().CreateTransaction();
+            this._SqlConnection = trans.Connection;
+            this.BuVO.Set(BusinessVOConst.KEY_DB_TRANSACTION, trans);
+        }
+        protected void CommitTransaction()
+        {
+            var trans = this.BuVO.SqlTransaction;
+            if (trans !=null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
+            {
+                trans.Commit();
+                //trans.Connection.Close();
+                trans.Dispose();
+                this.BuVO.SqlTransaction = null;
+                this._SqlConnection = null;
+            }
+        }
+        protected void TryRollbackTransaction()
+        {
+            var trans = this.BuVO.SqlTransaction;
+            if (trans != null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
+            {
+                trans.Rollback();
+                //trans.Connection.Close();
+                trans.Dispose();
+                this.BuVO.SqlTransaction = null;
+                this._SqlConnection = null;
+            }
+        }
+
+
         public dynamic Execute(dynamic request)
         {
             this.BuVO = new VOCriteria();
@@ -27,6 +64,7 @@ namespace AWMSEngine.Engine.APIService
             try
             {
                 this.Logger = AMWLoggerManager.GetLogger(request._token ?? request._apikey ?? "notkey", this.GetType().Name);
+                this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 this.Logger.LogBegin();
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
 
@@ -48,6 +86,7 @@ namespace AWMSEngine.Engine.APIService
                 result.status = 1;
                 result.code = AMWExceptionCode.S0000.ToString();
                 result.message = "Success";
+                this.CommitTransaction();
             }
             catch (AMWException ex)
             {
@@ -67,6 +106,7 @@ namespace AWMSEngine.Engine.APIService
             }
             finally
             {
+                this.TryRollbackTransaction();
                 response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
                 if (response == null)
                 {

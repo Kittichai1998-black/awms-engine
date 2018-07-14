@@ -7,5 +7,6 @@ namespace AWMSModel.Entity
     public class ams_BaseMaster : BaseEntitySTD
     {
         int BaseMasterType_ID;
+        int ObjectSize_ID;
     }
 }

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using AMWUtil.Logger;
+using AWMSModel.Constant.StringConst;
+using AWMSModel.Entity;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Text;
 using Z.Expressions;
 
@@ -39,7 +43,8 @@ namespace AWMSModel.Criteria
         }
         public T Get<T>(string key)
         {
-            string[] k = key.Split('.', 2);
+            return this.VO.ContainsKey(key) ? this.VO[key] : null;
+            /*string[] k = key.Split('.', 2);
             if (this.VO.ContainsKey(k[0]))
             {
                 if(k.Length == 1)
@@ -47,7 +52,7 @@ namespace AWMSModel.Criteria
                 else
                     return Eval.Execute<T>("return obj." + k[1], new { obj = this.VO[k[0]] });
             }
-            throw new Exception("VO Key " + key + " not found");
+            throw new Exception("VO Key " + key + " not found");*/
         }
         public T Get<T>(string key, T defualt)
         {
@@ -86,7 +91,34 @@ namespace AWMSModel.Criteria
         }
         public override string ToString()
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this.VO);
+            Dictionary<string, dynamic> tmps = new Dictionary<string, dynamic>();
+            foreach(string k in this.VO.Keys)
+            {
+                if (!k.Equals(BusinessVOConst.KEY_DB_TRANSACTION) &&
+                    !k.Equals(BusinessVOConst.KEY_LOGGER))
+                {
+                    tmps.Add(k, this.VO[k]);
+                }
+            }
+            return Newtonsoft.Json.JsonConvert.SerializeObject(tmps);
+        }
+
+        private SqlTransaction _SqlTransaction;
+        public SqlTransaction SqlTransaction
+        {
+            get { return this.VO.ContainsKey(BusinessVOConst.KEY_DB_TRANSACTION) ? this.Get<SqlTransaction>(BusinessVOConst.KEY_DB_TRANSACTION) : null; }
+            set { this.Set(BusinessVOConst.KEY_DB_TRANSACTION, value); }
+        }
+        private AMWLogger _Logger;
+        public AMWLogger Logger { get => this.Get<AMWLogger>(BusinessVOConst.KEY_LOGGER); }
+        public int ActionBy
+        {
+            get
+            {
+                var tokenInfo = this.Get<amt_Token>(BusinessVOConst.KEY_TOKEN);
+                if (tokenInfo != null) return tokenInfo.User_ID;
+                return 0;
+            }
         }
     }
 }

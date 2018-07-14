@@ -7,13 +7,8 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class PutSTOAPI : BaseEngine<PutSTOAPI.TReqModel, dynamic>
+    public class PutSTO : BaseEngine<PutSTO.TReqModel, dynamic>
     {
-        protected override dynamic ExecuteEngine(TReqModel reqVO)
-        {
-            throw new NotImplementedException();
-        }
-
         public class TReqModel
         {
             public int? id;
@@ -23,6 +18,10 @@ namespace AWMSEngine.Engine.Business
             public string code;
         }
 
+        protected override dynamic ExecuteEngine(TReqModel reqVO)
+        {
+            return null;
+        }
 
     }
 }

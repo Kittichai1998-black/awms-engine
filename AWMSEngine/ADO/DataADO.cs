@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Logger;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using Newtonsoft.Json;
 using System;
@@ -13,7 +14,7 @@ namespace AWMSEngine.ADO
     public class DataADO : BaseMSSQLAccess<DataADO>
     {
         public int InsUpd(string table_name, List<Dictionary<string, dynamic>> recvlist, string con, bool revision,
-            AMWLogger logger, SqlTransaction trans = null)
+            VOCriteria buVO)
         {
             Dictionary<string, dynamic> selectlist = new Dictionary<string, dynamic>();
 
@@ -57,7 +58,7 @@ namespace AWMSEngine.ADO
                         condition);
 
                     this.Execute(insupd,
-                                    CommandType.Text, param, logger, trans);
+                                    CommandType.Text, param, buVO.Logger, buVO.SqlTransaction);
 
                     insupd = string.Format("insert into {0} ({1}) values ({2})",
                         table_name,
@@ -65,7 +66,7 @@ namespace AWMSEngine.ADO
                         "@" + parameter.Substring(3));
 
                     res = this.Execute(insupd,
-                                    CommandType.Text, param, logger, trans) + res;
+                                    CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) + res;
                 }
                 else
                 {
@@ -85,23 +86,23 @@ namespace AWMSEngine.ADO
                     }
 
                     res = this.Execute(insupd,
-                                    CommandType.Text, param, logger, trans) + res;
+                                    CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) + res;
                 }
             }
             return res;
         }
 
-        public List<T> SelectByID<T>(object value)
+        public List<T> SelectByID<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
-            return SelectBy<T>("ID", value);
+            return SelectBy<T>("ID", value, buVO);
         }
-        public List<T> SelectByCode<T>(object value)
+        public List<T> SelectByCode<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
-            return SelectBy<T>("Code", value);
+            return SelectBy<T>("Code", value, buVO);
         }
-        public List<T> SelectBy<T>(string whereField, object value, AMWLogger logger = null)
+        public List<T> SelectBy<T>(string whereField, object value, VOCriteria buVO)
             where T : IEntityModel
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -111,7 +112,7 @@ namespace AWMSEngine.ADO
                         typeof(T).Name.Split('.').Last(), whereField),
                     CommandType.Text, 
                     param,
-                    logger)
+                    buVO.Logger, buVO.SqlTransaction)
                     .ToList();
             return res;
         }
@@ -119,7 +120,7 @@ namespace AWMSEngine.ADO
         public Dictionary<string, dynamic> Select(string fielddata, string tabledata, 
             dynamic wheredata, string groupdata, dynamic sortdata, string skipdata,
             string limitdata, string alldata,
-            AMWLogger logger, SqlTransaction trans = null)
+            VOCriteria buVO)
         {
             var get_where = "";
             var get_sort = "";
@@ -136,7 +137,8 @@ namespace AWMSEngine.ADO
 
 
 
-            string select = String.Format("select top {4} {0} from {1} where {2} group by {3} order by {5}", fielddata, tabledata, get_where, groupdata, limitdata, get_sort);
+            string select = String.Format("select top {4} {0} from {1} where {2} group by {3} order by {5}",
+                fielddata, tabledata, get_where, groupdata, limitdata, get_sort);
 
 
 

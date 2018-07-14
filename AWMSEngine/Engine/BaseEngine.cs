@@ -7,6 +7,7 @@ using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace AWMSEngine.Engine
         protected AMWLogger Logger { get; set; }
         protected string Token => this.BuVO.GetString(BusinessVOConst.KEY_TOKEN);
         protected string APIKey => this.BuVO.GetString(BusinessVOConst.KEY_APIKEY);
+        protected SqlTransaction Transaction => this.BuVO.Get<SqlTransaction>(BusinessVOConst.KEY_DB_TRANSACTION);
         protected dynamic RequestParam => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST);
         protected LanguageType LanguageCode => this.BuVO.Get<LanguageType>(BusinessVOConst.KEY_LANGUAGE_CODE, LanguageType.TH);
 
@@ -44,7 +46,7 @@ namespace AWMSEngine.Engine
             {
                 this.Logger = logger;
                 this.Logger.LogExecBegin("ReqVO : " + resVO.Json());
-                this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
+                //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 resVO = this.ExecuteEngine(reqVO);
                 this.Logger.LogSuccess("ResVO : " + resVO.Json());
 

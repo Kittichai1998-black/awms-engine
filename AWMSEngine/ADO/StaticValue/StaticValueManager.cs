@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSModel.Criteria;
 
 namespace AWMSEngine.ADO.StaticValue
 {
@@ -36,7 +37,7 @@ namespace AWMSEngine.ADO.StaticValue
                 this.StaticValues.Remove(KEY_FEATURE);
             var confs = new Dictionary<string, string>();
             this.StaticValues.Add(KEY_FEATURE, confs);
-            ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1)
+            ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, new VOCriteria())
                 .ForEach(x => confs.Add(x.Code, x.DataValue));
         }
         public void LoadConfig()
@@ -45,7 +46,7 @@ namespace AWMSEngine.ADO.StaticValue
                 this.StaticValues.Remove(KEY_CONFIG);
             var confs = new Dictionary<string, string>();
             this.StaticValues.Add(KEY_FEATURE, confs);
-            ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1)
+            ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, new VOCriteria())
                 .ForEach(x => confs.Add(x.Code, x.DataValue));
         }
 

@@ -13,6 +13,7 @@ namespace AWMSModel.Entity
         decimal? LengthM;
         decimal? HeightM;
         decimal ItemQty;
+        int ObjectSize_ID;
         int Revision;
     }
 }

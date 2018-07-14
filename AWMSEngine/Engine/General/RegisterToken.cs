@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.General
                 reqVO.Password,
                 reqVO.SecretKey, 
                 0,
-                this.Logger);
+                 this.BuVO);
             return tokenModel;
 
         }

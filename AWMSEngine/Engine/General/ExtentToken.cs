@@ -22,8 +22,7 @@ namespace AWMSEngine.Engine.General
             var tokenModel = ADO.TokenADO.GetInstant().Extend(
                 reqVO.Token,
                 reqVO.ExtendKey,
-                0,
-                this.Logger);
+                0, this.BuVO);
 
             return tokenModel;
         }

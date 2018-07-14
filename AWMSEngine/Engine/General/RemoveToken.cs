@@ -21,9 +21,9 @@ namespace AWMSEngine.Engine.General
         {
             var tokenModel = ADO.TokenADO.GetInstant().Remove(
                 reqVO.Token,
-                reqVO.SecretKey, 
+                reqVO.SecretKey,
                 0,
-                this.Logger);
+                this.BuVO);
 
             return tokenModel;
         }

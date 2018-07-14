@@ -36,7 +36,7 @@ namespace AWMSEngine.Engine.General
                     get_ins,
                     get_condition,
                     get_revision,
-                    this.Logger);
+                    this.BuVO);
 
 
             if (tokenModel != 0)

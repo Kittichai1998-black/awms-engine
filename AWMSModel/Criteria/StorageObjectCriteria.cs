@@ -12,24 +12,30 @@ namespace AWMSModel.Criteria
     {
         public int? id;
         public StorageObjectType type;
+        public int? mstID;
         public int? parentID;
         public StorageObjectType? parentType;
         public string code;
         public string name;
-        public decimal? minChildWeiKG;
-        public decimal? maxChildWeiKG;
-        public decimal? minChildQty;
-        public decimal? maxChildQty;
+        public decimal? weiKG;
         public bool isFocus;
-        //public decimal amount;
-        public int? sizeLevel;
-        public List<int> innerSizeLevels;
+        public int? objectSizeID;
         public List<KeyValuePair<string, string>> options;
         public List<StorageObjectCriteria> mapstos;
 
         public static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, string codeFocus)
         {
+            return Generate(stos, null, codeFocus);
+        }
+        public static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, int idFocus)
+        {
+            return Generate(stos, idFocus, null);
+        }
+
+        private static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, int? idFocus, string codeFocus)
+        {
             var rootSto = stos.FirstOrDefault(x => !x.parentID.HasValue);
+            if (rootSto == null) return null;
             bool isFucus = false;
             var res = new StorageObjectCriteria()
             {
@@ -39,23 +45,21 @@ namespace AWMSModel.Criteria
                 parentType = null,
                 code = rootSto.code,
                 name = rootSto.name,
-                minChildWeiKG = rootSto.minChildWeiKG,
-                maxChildWeiKG = rootSto.maxChildWeiKG,
-                minChildQty = rootSto.minChildQty,
-                maxChildQty = rootSto.maxChildQty,
+                weiKG = rootSto.weiKG,
+                mstID = rootSto.mstID,
                 options = AMWUtil.Common.ObjectUtil.QueryStringToListKey(rootSto.options ?? string.Empty),
-                mapstos = generateMapstos(rootSto.id.Value, rootSto.type, out isFucus),
-                sizeLevel = rootSto.sizeLevel,
-                innerSizeLevels = string.IsNullOrEmpty(rootSto.innerSizeLevels) ?
+                mapstos = generateMapstos(rootSto.id, rootSto.type, out isFucus),
+                objectSizeID = rootSto.objectSizeID,
+                /*innerSizeLevels = string.IsNullOrEmpty(rootSto.innerSizeLevels) ?
                     null :
                     rootSto.innerSizeLevels.Split("|")
                     .Select(x => { int? y = x.Get<int>(); return y ?? -1; })
                     .Where(x => x >= 0)
-                    .ToList(),
+                    .ToList(),*/
                 isFocus = isFucus
             };
 
-            List<StorageObjectCriteria> generateMapstos(int parentID, StorageObjectType parentType, out bool outParentIsFocus)
+            List<StorageObjectCriteria> generateMapstos(int? parentID, StorageObjectType parentType, out bool outParentIsFocus)
             {
                 List<StorageObjectCriteria> r =
                     stos.Where(x => x.parentID == parentID && x.parentType == parentType)
@@ -69,22 +73,20 @@ namespace AWMSModel.Criteria
                             parentType = x.parentType,
                             code = x.code,
                             name = x.name,
-                            minChildWeiKG = x.minChildWeiKG,
-                            maxChildWeiKG = x.maxChildWeiKG,
-                            minChildQty = x.minChildQty,
-                            maxChildQty = x.maxChildQty,
+                            mstID = rootSto.mstID,
+                            weiKG = rootSto.weiKG,
                             options = AMWUtil.Common.ObjectUtil.QueryStringToListKey(x.options ?? string.Empty),
-                            mapstos = generateMapstos(x.id.Value, x.type, out isFocus),
+                            mapstos = generateMapstos(x.id, x.type, out isFocus),
                             isFocus = isFocus,
-                            sizeLevel = x.sizeLevel,
-                            innerSizeLevels = string.IsNullOrEmpty(rootSto.innerSizeLevels) ?
+                            objectSizeID = x.objectSizeID,
+                            /*innerSizeLevels = string.IsNullOrEmpty(rootSto.innerSizeLevels) ?
                                                 null :
                                                 x.innerSizeLevels.Split("|")
                                                 .Select(z => { int? y = z.GetTry<int>(); return y ?? -1; })
                                                 .Where(z => z >= 0)
-                                                .ToList(),
+                                                .ToList(),*/
                         };
-                        if (!s.isFocus && s.code.Equals(codeFocus))
+                        if (!s.isFocus && (s.id == idFocus || s.code == codeFocus))
                             s.isFocus = true;
                         return s;
                     }).ToList();

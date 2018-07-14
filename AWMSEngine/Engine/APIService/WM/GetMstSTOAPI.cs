@@ -9,9 +9,9 @@ namespace AWMSEngine.Engine.APIService.WM
     {
         protected override dynamic ExecuteEngineManual()
         {
-            var res = new Engine.Business.NewVirtualMapStorageObject().Execute(
+            var res = new Engine.Business.NewSTO().Execute(
                 this.Logger, this.BuVO,
-                new Business.NewVirtualMapStorageObject.TReqModel()
+                new Business.NewSTO.TReqModel()
                 {
                     //amount=1,
                     code=this.RequestVO.code,
