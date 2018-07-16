@@ -11,7 +11,7 @@ namespace AWMSEngine.Engine.APIService.WM
     {
         protected override dynamic ExecuteEngineManual()
         {
-            //this.CreateTransaction();
+            this.BeginTransaction();
             var options = ObjectUtil.DynamicToModel<List<KeyValuePair<string, string>>>(this.RequestVO.options);
             var res = new Engine.Business.VirtualMapSTO().Execute(this.Logger, this.BuVO,
                 new Business.VirtualMapSTO.TReqModle()

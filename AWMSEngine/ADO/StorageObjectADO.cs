@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Logger;
+using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
@@ -22,7 +23,7 @@ namespace AWMSEngine.ADO
                     .ToList();
 
             if (r == null) return null;
-            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, code);
+            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, code);
             return res;
         }
         public StorageObjectCriteria GetFree(string code, bool isInStorage, VOCriteria buVO)
@@ -34,7 +35,7 @@ namespace AWMSEngine.ADO
                     .ToList();
 
             if (r == null) return null;
-            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, code);
+            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, code);
             return res;
         }
         public StorageObjectCriteria Get(int id, StorageObjectType type, bool isToRoot, VOCriteria buVO)
@@ -47,7 +48,7 @@ namespace AWMSEngine.ADO
                     .ToList();
 
             if (r == null) return null;
-            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, id);
+            StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, id);
             return res;
         }
         public int GetRootID(string code, StorageObjectType rootType, VOCriteria buVO)

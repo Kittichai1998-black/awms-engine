@@ -11,71 +11,62 @@ namespace AMWUtil.Exception
     {
         /*********SUCCESS***********/
         [AMWExceptionDescription(TH = "สำเร็จ" , EN = "Success")]
-        S0000,
+        I0000,
         [AMWExceptionDescription(TH = "ไม่สำเร็จ", EN = "Fail")]
-        S0001,
+        I0001,
 
         /******VALIDATE*******/
-        /// <summary>ข้อมูล {0} ไม่ถูกต้อง</summary>
-        [AMWExceptionDescription(TH = "ข้อมูล {0} ไม่ถูกต้อง", EN = "{0} Data Incorrect.")]
-        V0001,
-        /// <summary>ไม่พบข้อมูล {0} ในระบบ </summary>
-        [AMWExceptionDescription(TH = "ไม่พบข้อมูล {0} ในระบบ", EN = "{0} in System Not Found.")]
-        V0002,
-        /// <summary>ข้อมูล {0} ที่ส่งมามีค่าว่าง</summary>
-        [AMWExceptionDescription(TH = "ข้อมูล {0} ที่ส่งมามีค่าว่าง", EN = "{0} is Empty.")]
-        V0003,
-        /// <summary>ไม่พบ {0} ใน Master Setup</summary>
-        [AMWExceptionDescription(TH = "ไม่พบ {0} ใน Master Setup", EN = "{0} in Master Setup Not Found.")]
-        V0004,
-        /// <summary>ไม่พบ {0} ในรายการ</summary>
-        [AMWExceptionDescription(TH = "ไม่พบ {0} ในรายการ", EN = "{0} in List Not Found.")]
-        V0005,
-        /// <summary>{0} ในระบบมีไม่พอกับที่ต้องการ</summary>
-        [AMWExceptionDescription(TH = "{0} ในระบบมีไม่พอกับที่ต้องการ", EN = "{0} in System Below")]
-        V0006,
+        /// <summary>Data Input Not Found : {0}</summary>
+        [AMWExceptionDescription(TH = "Data Input Not Found : {0}", EN = "Data Input Not Found : {0}")]
+        V1001,
+        /// <summary>Invalid Data Input : {0}</summary>
+        [AMWExceptionDescription(TH = "Invalid Data Input : {0}", EN = "Invalid Data Input : {0}")]
+        V1002,
+
+        /// <summary>Data System Not Found : {0}</summary>
+        [AMWExceptionDescription(TH = "Data System Not Found : {0}", EN = "Data System Not Found : {0}")]
+        V2001,
+        /// <summary>Invalid Data System : {0}</summary>
+        [AMWExceptionDescription(TH = "Invalid Data System : {0}", EN = "Invalid Data System : {0}")]
+        V2002,
+
+        /// <summary>Data Output Not Found : {0}</summary>
+        [AMWExceptionDescription(TH = "Data Output Not Found : {0}", EN = "Data Output Not Found : {0}")]
+        V3001,
+        /// <summary>Invalid Data Output : {0}</summary>
+        [AMWExceptionDescription(TH = "Invalid Data Output : {0}", EN = "Invalid Data Ouput : {0}")]
+        V3002,
+
+        /// <summary>Condition Error : {0}</summary>
+        [AMWExceptionDescription(TH = "Condition Error : {0}", EN = "Condition Error : {0}")]
+        B0001,
+        /// <summary>{0} Not enough</summary>
+        [AMWExceptionDescription(TH = "{0} Not Enough", EN = "{0} Not Enough")]
+        B0002,
+
+        /// <summary>System Error : {0}</summary>
+        [AMWExceptionDescription(TH = "System Error : {0}", EN = "{0} in System Below")]
+        S0001,
+        /// <summary>Connection Error : {0}</summary>
+        [AMWExceptionDescription(TH = "Connection Error : {0}", EN = "Connection Error : {0}")]
+        S0002,
+        /// <summary>Time Out : {0}</summary>
+        [AMWExceptionDescription(TH = "Time Out : {0}", EN = "Time Out : {0}")]
+        S0003,
+
+        
+        /// <summary>Authentication Error</summary>
+        [AMWExceptionDescription(TH = "Authentication Error", EN = "Authentication Error")]
+        A0001,
+        /// <summary>Authorization Error</summary>
+        [AMWExceptionDescription(TH = "Authorization Error", EN = "Authorization Error")]
+        A0002,
+        /// <summary>Token Error : {0}</summary>
+        [AMWExceptionDescription(TH = "Token Error : {0}", EN = "Token Error : {0}")]
+        A0003,
 
 
-
-        /**********TECHNICAL*************/
-        /// <summary>ไม่สามารถเชื่อมต่อฐานข้อมูลได้</summary>
-        [AMWExceptionDescription(TH = "ไม่สามารถเชื่อมต่อฐานข้อมูลได้")]
-        T0001,
-        /// <summary>ใช้เวลาเชื่อมต่อฐานข้อมูลนานเกินไป (Timeout)</summary>
-        [AMWExceptionDescription(TH = "ใช้เวลาเชื่อมต่อฐานข้อมูลนานเกินไป (Timeout)")]
-        T0002,
-        /// <summary>ผลลัพธ์จากการประมวลผลผิดพลาด</summary>
-        [AMWExceptionDescription(TH = "ผลลัพธ์จากการประมวลผลผิดพลาด")]
-        T0003,
-
-        [AMWExceptionDescription(TH = "{0}", EN = "{0}", CN = "{0}")]
+        [AMWExceptionDescription(TH = "UKNOW : {0}", EN = "UKNOW : {0}", CN = "UKNOW : {0}")]
         U0000,
-
-        /// <summary>ชื่อผู้เข้าใช้งานไม่ถูกต้อง</summary>
-        [AMWExceptionDescription(TH = "ชื่อผู้เข้าใช้งานไม่ถูกต้อง")]
-        O0001,
-        /// <summary>ไม่มีสิทธิ์เข้าใช้งาน</summary>
-        [AMWExceptionDescription(TH = "ไม่มีสิทธิ์เข้าใช้งาน")]
-        O0002,
-
-        //Login
-        /// <summary>{0}</summary>
-        [AMWExceptionDescription(TH = "{0}")]
-        O1000,
-        /// <summary>Username หรือ Password ในการเข้าระบบผิดพลาด</summary>
-        [AMWExceptionDescription(TH = "Username หรือ Password ในการเข้าระบบผิดพลาด", EN = "Fail")]
-        O1001,
-        /// <summary>ไม่พบ Token ในระบบ กรุณา Login ใหม่</summary>
-        [AMWExceptionDescription(TH = "ไม่พบ Token ในระบบ กรุณา Login ใหม่", EN = "Fail")]
-        O1002,
-
-        // for renew
-        [AMWExceptionDescription(TH = "{0}")]
-        O9000,
-        [AMWExceptionDescription(TH = "Token นี้ไม่สามารถใช้งานได้", EN = "Fail")]
-        O9001,
-        [AMWExceptionDescription(TH = "ยืนยัน Password สำหรับต่ออายุ Token ผิดพลาด", EN = "Fail")]
-        O9002
-
     }
 }

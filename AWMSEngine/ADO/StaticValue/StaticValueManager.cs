@@ -11,10 +11,16 @@ namespace AWMSEngine.ADO.StaticValue
 {
     public class StaticValueManager
     {
-        private const string KEY_FEATURE = "FEATURE";
-        private const string KEY_CONFIG = "CONFIG";
+        private List<ams_Feature> _Features;
+        public List<ams_Feature> Features { get => this._Features; }
+
+        private List<ams_Config> _Configs;
+        public List<ams_Config> Configs { get => this._Configs; }
+
+        private List<ams_ObjectSize> _ObjectSizes;
+        public List<ams_ObjectSize> ObjectSizes { get => this._ObjectSizes; }
+
         private static StaticValueManager instant;
-        private Dictionary<string, Dictionary<string, string>> StaticValues { get; set; }
 
         public static StaticValueManager GetInstant()
         {
@@ -30,33 +36,32 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this.LoadConfig();
             this.LoadFeature();
+            this.LoadObjectSize();
         }
         public void LoadFeature()
         {
-            if (this.StaticValues.ContainsKey(KEY_FEATURE))
-                this.StaticValues.Remove(KEY_FEATURE);
-            var confs = new Dictionary<string, string>();
-            this.StaticValues.Add(KEY_FEATURE, confs);
-            ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, new VOCriteria())
-                .ForEach(x => confs.Add(x.Code, x.DataValue));
+            this._Features = ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, new VOCriteria()).ToList();
         }
         public void LoadConfig()
         {
-            if (this.StaticValues.ContainsKey(KEY_FEATURE))
-                this.StaticValues.Remove(KEY_CONFIG);
-            var confs = new Dictionary<string, string>();
-            this.StaticValues.Add(KEY_FEATURE, confs);
-            ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, new VOCriteria())
-                .ForEach(x => confs.Add(x.Code, x.DataValue));
+            this._Configs = ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, new VOCriteria()).ToList();
+        }
+        public void LoadObjectSize()
+        {
+            this._ObjectSizes = ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, new VOCriteria()).ToList();
+            var subVals = ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, new VOCriteria()).ToList();
+            this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
         }
 
         public string GetFeature(FeatureCode code)
         {
-            return this.StaticValues[KEY_FEATURE][code.ToString()];
+            var val = this._Features.FirstOrDefault(x => x.Code == code.ToString());
+            return val == null ? null : val.DataValue;
         }
         public string GetConfig(ConfigCode code)
         {
-            return this.StaticValues[KEY_CONFIG][code.ToString()];
+            var val = this._Configs.FirstOrDefault(x => x.Code == code.ToString());
+            return val == null ? null : val.DataValue;
         }
     }
 }

@@ -13,9 +13,9 @@ namespace AWMSEngine.Engine.Validation
         protected override NullCriteria ExecuteEngine(NullCriteria reqVO)
         {
             if (ObjectUtil.IsEmptyNull(this.RequestParam.token))
-                throw this.NewAMWException(AMWExceptionCode.V0003, "token");
+                throw this.NewAMWException(AMWExceptionCode.V1001, "token");
             if (ObjectUtil.IsEmptyNull(this.RequestParam.secretKey))
-                throw this.NewAMWException(AMWExceptionCode.V0003, "secretKey");
+                throw this.NewAMWException(AMWExceptionCode.V1001, "secretKey");
             return null;
         }
     }

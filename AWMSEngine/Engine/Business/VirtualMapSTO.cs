@@ -40,7 +40,7 @@ namespace AWMSEngine.Engine.Business
                     if (mapsto.code.Equals(reqVO.scanCode))
                         mapsto.isFocus = true;
                     if (mapsto.isFocus == false)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V0005, "Code");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, mapsto.code);
                 }
                 else if (reqVO.action == VirtualMapSTOActionType.Add)
                 {
@@ -106,18 +106,20 @@ namespace AWMSEngine.Engine.Business
                         }
                     }
                     else
-                        throw new AMWException(this.Logger, AMWExceptionCode.V0002, reqVO.scanCode);
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, reqVO.scanCode);
                 }
                 else if (mapsto.type != StorageObjectType.BASE)
                 {
                     Logger.LogDebug("//หา sto ในคลังเจอ แต่ไม่ใช่ประเภท BASE //ที่พบคือ " + mapsto.type);
-                    throw new AMWException(this.Logger, AMWExceptionCode.V0002, reqVO.scanCode);
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, reqVO.scanCode);
                 }
             }
             else if(reqVO.mode == VirtualMapSTOModeType.TRANSFER)
             {
                 Logger.LogDebug("Transfer Mode.");
                 mapsto = ADOSto.Get(reqVO.scanCode, true, this.BuVO);
+                if (mapsto == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, reqVO.scanCode);
             }
 
             mapsto.isFocus = true;
@@ -125,9 +127,7 @@ namespace AWMSEngine.Engine.Business
         }
 
 
-
-
-
+        
         /***********************************/
         /***********************************/
         /***********************************/
@@ -162,12 +162,12 @@ namespace AWMSEngine.Engine.Business
 
             int freeCount = ADOSto.GetFreeCount(scanCode, isInStorage, this.BuVO);
             if (freeCount < amount)
-                throw new AMWException(this.Logger, AMWExceptionCode.V0006, scanCode);
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Amount");
 
             for (int i = 0; i < amount; i++)
             {
                 StorageObjectCriteria newMS = ADOSto.GetFree(scanCode, isInStorage, this.BuVO);
-                if (msf.type == StorageObjectType.LOCATION)
+                if (msf.type == StorageObjectType.LOCATION && newMS.type == StorageObjectType.PACK)
                 {
                     var baseObj = new StorageObjectCriteria()
                     {
@@ -188,6 +188,10 @@ namespace AWMSEngine.Engine.Business
                     newMS.parentType = baseObj.type;
                     ADOSto.Put(newMS, this.BuVO);
                     newMSs.Add(baseObj);
+                }
+                if (msf.type == StorageObjectType.LOCATION && newMS.type == StorageObjectType.LOCATION)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเพิ่ม พื้นที่เข้าไปในพื้นที่ได้");
                 }
                 else
                 {
@@ -212,7 +216,7 @@ namespace AWMSEngine.Engine.Business
             {
                 var rmItem = msf.mapstos.FirstOrDefault(x => x.code == scanCode);
                 if (rmItem == null)
-                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V0006, scanCode);
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, scanCode);
                 rmItem.parentID = null;
                 rmItem.parentType = null;
                 ADOSto.Put(rmItem, this.BuVO);

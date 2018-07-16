@@ -22,9 +22,9 @@ namespace AWMSEngine.Engine.APIService
 
         private SqlConnection _SqlConnection = null;
         protected abstract dynamic ExecuteEngineManual();
-        protected void CreateTransaction()
+        protected void BeginTransaction()
         {
-            this.TryRollbackTransaction();
+            this.RollbackTransaction();
             var trans = ADO.BaseMSSQLAccess<ADO.DataADO>.GetInstant().CreateTransaction();
             this._SqlConnection = trans.Connection;
             this.BuVO.Set(BusinessVOConst.KEY_DB_TRANSACTION, trans);
@@ -34,25 +34,30 @@ namespace AWMSEngine.Engine.APIService
             var trans = this.BuVO.SqlTransaction;
             if (trans !=null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
             {
+                var conn = trans.Connection;
                 trans.Commit();
-                //trans.Connection.Close();
                 trans.Dispose();
+                if (conn != null)
+                    conn.Close();
                 this.BuVO.SqlTransaction = null;
                 this._SqlConnection = null;
             }
         }
-        protected void TryRollbackTransaction()
+        protected void RollbackTransaction()
         {
             var trans = this.BuVO.SqlTransaction;
             if (trans != null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
             {
-                trans.Rollback();
-                //trans.Connection.Close();
+                var conn = trans.Connection;
+                trans.Commit();
                 trans.Dispose();
+                if (conn != null)
+                    conn.Close();
                 this.BuVO.SqlTransaction = null;
                 this._SqlConnection = null;
             }
         }
+
 
 
         public dynamic Execute(dynamic request)
@@ -81,10 +86,10 @@ namespace AWMSEngine.Engine.APIService
                 var res = this.ExecuteEngineManual();
                 this.Logger.LogInfo("[EndExecuteEngineManual]");
                 if (res == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.T0003);
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Response API");
                 var resAPI = new General.ResponseObject().Execute(this.Logger, this.BuVO, res);
                 result.status = 1;
-                result.code = AMWExceptionCode.S0000.ToString();
+                result.code = AMWExceptionCode.I0000.ToString();
                 result.message = "Success";
                 this.CommitTransaction();
             }
@@ -94,6 +99,7 @@ namespace AWMSEngine.Engine.APIService
                 result.code = ex.GetAMWCode();
                 result.message = ex.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
+                this.RollbackTransaction();
             }
             catch (Exception ex)
             {
@@ -103,10 +109,10 @@ namespace AWMSEngine.Engine.APIService
                 result.message = e.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
                 this.Logger.LogError(ex.StackTrace);
+                this.RollbackTransaction();
             }
             finally
             {
-                this.TryRollbackTransaction();
                 response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
                 if (response == null)
                 {
