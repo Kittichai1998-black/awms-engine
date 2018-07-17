@@ -14,11 +14,12 @@ namespace AWMSEngine.ADO
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
-        public StorageObjectCriteria Get(string code, bool isToRoot, VOCriteria buVO)
+        public StorageObjectCriteria Get(string code, bool isToRoot, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@code", code);
             param.Add("@isToRoot", isToRoot);
+            param.Add("@isToChild", isToChild);
             var r = this.Query<SPStorageObjectCriteria>("SP_STO_GET_BYCODE", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
                     .ToList();
 
@@ -26,11 +27,12 @@ namespace AWMSEngine.ADO
             StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, code);
             return res;
         }
-        public StorageObjectCriteria GetFree(string code, bool isInStorage, VOCriteria buVO)
+        public StorageObjectCriteria GetFree(string code, bool isInStorage, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@code", code);
             param.Add("@isInStorage", isInStorage);
+            param.Add("@isToChild", isToChild);
             var r = this.Query<SPStorageObjectCriteria>("SP_STO_GETFREE_BYCODE", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
                     .ToList();
 
@@ -38,12 +40,13 @@ namespace AWMSEngine.ADO
             StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, code);
             return res;
         }
-        public StorageObjectCriteria Get(int id, StorageObjectType type, bool isToRoot, VOCriteria buVO)
+        public StorageObjectCriteria Get(int id, StorageObjectType type, bool isToRoot, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@id", id);
             param.Add("@type", type);
             param.Add("@isToRoot", isToRoot);
+            param.Add("@isToChild", isToChild);
             var r = this.Query<SPStorageObjectCriteria>("SP_STO_GET_BYID", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
                     .ToList();
 
@@ -69,8 +72,21 @@ namespace AWMSEngine.ADO
             this.Query<int>("SP_STO_FREE_COUNT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             return param.Get<int>("res");
         }
-
-
+        public int ReceivingConfirm(int id, StorageObjectType type, bool isConfirm, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("id", id);
+            param.Add("type", type);
+            param.Add("isConfirm", isConfirm);
+            param.Add("actionBy", buVO.ActionBy);
+            var res = this.Execute(
+                "SP_STO_RECEIVING_CONFIRM",
+                System.Data.CommandType.StoredProcedure,
+                param, 
+                buVO.Logger,
+                buVO.SqlTransaction);
+            return res;
+        }
 
         public int Put(StorageObjectCriteria sto, VOCriteria buVO)
         {

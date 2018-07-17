@@ -18,7 +18,7 @@ namespace AWMSEngine.Engine.Business
         {
             StorageObjectCriteria res =
                 ADO.StorageObjectADO.GetInstant()
-                .GetFree(reqVO.code, reqVO.isInStorage, this.BuVO);
+                .GetFree(reqVO.code, reqVO.isInStorage,true, this.BuVO);
             return res;
         }
 

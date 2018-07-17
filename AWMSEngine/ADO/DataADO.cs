@@ -116,6 +116,29 @@ namespace AWMSEngine.ADO
                     .ToList();
             return res;
         }
+        public List<T> UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string,object>[] values)
+             where T : IEntityModel
+        {
+            string commSets = string.Empty;
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            values.ToList().ForEach(x => {
+                commSets +=
+                    string.Format("{1}{0}=@{0}",
+                        x,
+                        string.IsNullOrEmpty(commSets) ? string.Empty : ",");
+                param.Add(x.Key, x.Value);
+            });
+            param.Add("id", id);
+
+            var res = this.Query<T>(
+                    string.Format("update {0} set {1} where id=@value",
+                        typeof(T).Name.Split('.').Last(), commSets),
+                    CommandType.Text,
+                    param,
+                    buVO.Logger, buVO.SqlTransaction)
+                    .ToList();
+            return res;
+        }
 
         public Dictionary<string, dynamic> Select(string fielddata, string tabledata, 
             dynamic wheredata, string groupdata, dynamic sortdata, string skipdata,

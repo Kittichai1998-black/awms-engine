@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using AMWUtil.IUtil;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,12 @@ namespace AMWUtil.Common
             where T : struct
         {
             return s.Select(x => x.GetTry<T>()).ToArray();
+        }
+
+        public static T Generate<T>(this T x)
+            where T : IGenerate, new()
+        {
+            return new T();
         }
 
         public static T Json<T>(this string s)

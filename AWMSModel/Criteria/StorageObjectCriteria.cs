@@ -24,13 +24,18 @@ namespace AWMSModel.Criteria
         public decimal? minWeiKG;
         public decimal? maxWeiKG;
         public bool isFocus;
+        public StorageObjectEventStatus eventStatus;
         public List<ObjectSizeMap> objectSizeMaps;
         public List<KeyValuePair<string, string>> options;
         public List<StorageObjectCriteria> mapstos;
 
         public class ObjectSizeMap
         {
+            public int outerObjectSizeID;
+            public string outerObjectSizeName;
             public int innerObjectSizeID;
+            public string innerObjectSizeName;
+            public decimal? quantity;
             public decimal? minQuantity;
             public decimal? maxQuantity;
         }
@@ -52,35 +57,10 @@ namespace AWMSModel.Criteria
             bool isFucus = false;
 
             var sos = staticObjectSizes.FirstOrDefault(x => x.ID == rootSto.objectSizeID);
-            var res = new StorageObjectCriteria()
-            {
-                id = rootSto.id,
-                type = rootSto.type,
-                parentID = null,
-                parentType = null,
-                code = rootSto.code,
-                name = rootSto.name,
-                weiKG = rootSto.weiKG,
-                mstID = rootSto.mstID,
-                options = AMWUtil.Common.ObjectUtil.QueryStringToListKey(rootSto.options ?? string.Empty),
-                mapstos = generateMapstos(rootSto.id, rootSto.type, out isFucus),
-                objectSizeID = rootSto.objectSizeID,
-                objectSizeMaps = sos != null ?
-                    sos.ObjectSizeInners
-                    .Select(x => new ObjectSizeMap() {
-                        innerObjectSizeID = x.InnerObjectSize_ID,
-                        maxQuantity = x.MaxQuantity,
-                        minQuantity = x.MinQuantity })
-                    .ToList() : null,
-                minWeiKG = sos != null ? sos.MinWeigthKG : null,
-                maxWeiKG = sos != null ? sos.MaxWeigthKG : null,
-                isFocus = isFucus
-            };
-            if (!res.weiKG.HasValue && res.mapstos.TrueForAll(y => y.weiKG.HasValue))
-                res.weiKG = res.mapstos.Sum(y => y.weiKG.Value);
+            var res = generateMapstos(null, null, out isFucus).FirstOrDefault();
+            
 
-
-            List<StorageObjectCriteria> generateMapstos(int? parentID, StorageObjectType parentType, out bool outParentIsFocus)
+            List<StorageObjectCriteria> generateMapstos(int? parentID, StorageObjectType? parentType, out bool outParentIsFocus)
             {
                 List<StorageObjectCriteria> r =
                     stos.Where(x => x.parentID == parentID && x.parentType == parentType)
@@ -101,18 +81,24 @@ namespace AWMSModel.Criteria
                             mapstos = generateMapstos(x.id, x.type, out isFocus),
                             isFocus = isFocus,
                             objectSizeID = x.objectSizeID,
-                            objectSizeMaps = sos2 != null ?
+                            eventStatus = x.eventStatus,
+                            minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
+                            maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
+                        };
+                        s.objectSizeMaps = sos2 != null ?
                                 sos2.ObjectSizeInners
                                 .Select(y => new ObjectSizeMap()
                                 {
                                     innerObjectSizeID = y.InnerObjectSize_ID,
                                     maxQuantity = y.MaxQuantity,
-                                    minQuantity = y.MinQuantity
+                                    minQuantity = y.MinQuantity,
+                                    outerObjectSizeName = sos2.Name,
+                                    innerObjectSizeName = staticObjectSizes.First(z => z.ID == y.InnerObjectSize_ID).Name,
+                                    outerObjectSizeID = sos2.ID,
+                                    quantity = s.mapstos.Count(z => z.objectSizeID == y.InnerObjectSize_ID)
                                 })
-                                .ToList() : null,
-                            minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
-                            maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
-                        };
+                                .ToList() : null;
+
                         if (!s.weiKG.HasValue && s.mapstos.TrueForAll(y => y.weiKG.HasValue))
                             s.weiKG = s.mapstos.Sum(y => y.weiKG.Value);
 

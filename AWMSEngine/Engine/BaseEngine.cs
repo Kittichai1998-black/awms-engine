@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
+using AMWUtil.IUtil;
 using AMWUtil.Logger;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
@@ -14,10 +15,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine
 {
-    public abstract class BaseEngine<TReq, TRes>
+    public abstract class BaseEngine<TReq, TRes>: IGenerate
         where TRes : class
     {
-
         protected abstract TRes ExecuteEngine(TReq reqVO);
 
         protected VOCriteria BuVO { get; set; }

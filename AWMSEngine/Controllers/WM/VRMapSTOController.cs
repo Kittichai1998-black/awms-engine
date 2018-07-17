@@ -8,21 +8,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Controllers.WM
 {
-    [Route("api/wm/vrmapsto")]
+    [Route("api/wm/VRMapSTO")]
     [ApiController]
-    public class VirtualMapSTOController : ControllerBase
+    public class VRMapSTOController : ControllerBase
     {
         [HttpPost]
-        public dynamic VirtualMapSTO(dynamic datas)
+        public dynamic VRMapping(dynamic datas)
         {
-            VirtualMapSTOAPI exec = new VirtualMapSTOAPI();
+            VRMapSTOAPI exec = new VRMapSTOAPI();
             return exec.Execute(datas);
         }
 
-        [HttpPut]
-        public dynamic VirtualMapSTOPutToDB(dynamic datas)
+        [HttpPost("confirm")]
+        public dynamic VRConfrim(dynamic datas)
         {
-            PutVirtualMapSTOAPI exec = new PutVirtualMapSTOAPI();
+            VRMapSTOReceiveConfirmAPI exec = new VRMapSTOReceiveConfirmAPI();
             return exec.Execute(datas);
         }
     }

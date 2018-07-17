@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\WM\MasterSTOController.cs" />
+    <Compile Remove="Engine\APIService\WM\GetMstSTOAPI.cs" />
+    <Compile Remove="Engine\APIService\WM\PutVirtualMapSTOAPI.cs" />
+    <Compile Remove="Engine\Business\VirtualMapStorageObjectPutDatabase.cs" />
     <Compile Remove="Engine\Validation\BuVORequiredFields.cs" />
   </ItemGroup>
 

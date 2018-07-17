@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.APIService
             if (trans != null && trans.Connection != null && trans.Connection.State == System.Data.ConnectionState.Open)
             {
                 var conn = trans.Connection;
-                trans.Commit();
+                trans.Rollback();
                 trans.Dispose();
                 if (conn != null)
                     conn.Close();

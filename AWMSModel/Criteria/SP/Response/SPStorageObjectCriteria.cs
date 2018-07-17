@@ -16,6 +16,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string name;
         public decimal? weiKG;
         public int? objectSizeID;
+        public StorageObjectEventStatus eventStatus;
         //public int? sizeLevel;
         //public string innerSizeLevels;
         public string options;
