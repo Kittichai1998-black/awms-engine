@@ -94,7 +94,7 @@ namespace AWMSModel.Criteria
                                     minQuantity = y.MinQuantity,
                                     outerObjectSizeName = sos2.Name,
                                     innerObjectSizeName = staticObjectSizes.First(z => z.ID == y.InnerObjectSize_ID).Name,
-                                    outerObjectSizeID = sos2.ID,
+                                    outerObjectSizeID = sos2.ID.Value,
                                     quantity = s.mapstos.Count(z => z.objectSizeID == y.InnerObjectSize_ID)
                                 })
                                 .ToList() : null;

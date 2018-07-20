@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class amt_BaseObject : BaseEntitySTD
+    public class ams_SKUMaster : BaseEntitySTD
     {
     }
 }

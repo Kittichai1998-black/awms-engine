@@ -8,6 +8,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using AMWUtil.Common;
+using AWMSModel.Criteria.Attribute;
+using AWMSModel.Constant.EnumConst;
 
 namespace AWMSEngine.ADO
 {
@@ -95,44 +98,143 @@ namespace AWMSEngine.ADO
         public List<T> SelectByID<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
-            return SelectBy<T>("ID", value, buVO);
+            return SelectBy<T>(
+                new SQLConditionCriteria[] { new SQLConditionCriteria("ID", value, SQLOperatorType.EQUALS) },
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO);
         }
         public List<T> SelectByCode<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
-            return SelectBy<T>("Code", value, buVO);
+            return SelectBy<T>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Code", value, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",1, SQLOperatorType.EQUALS)
+                },
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO);
         }
-        public List<T> SelectBy<T>(string whereField, object value, VOCriteria buVO)
+        public List<T> SelectBy<T>(string field, object value, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                new SQLConditionCriteria[] { new SQLConditionCriteria(field, value, SQLOperatorType.EQUALS) },
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO);
+        }
+        public List<T> SelectBy<T>(SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys,  int? limit, int? skip, VOCriteria buVO)
             where T : IEntityModel
         {
+            return SelectBy<T>(null, "*", wheres, orderBys, limit, skip, buVO);
+        }
+        public List<T> SelectBy<T>(string table, string select, SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys, int? limit, int? skip, VOCriteria buVO)
+        
+        {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@value", value);
+            string commWhere = string.Empty;
+            string commOrderBy = string.Empty;
+
+            foreach (var w in wheres)
+            {
+                commWhere += string.Format("{3} {0}{1}@{2}",
+                                        w.field,
+                                        w.operatorType.Attribute<ValueAttribute>().Value,
+                                        w.field,
+                                        w.conditionRight.HasValue ? w.conditionRight.Value.Attribute<ValueAttribute>().Value : string.Empty);
+                param.Add(w.field, w.value);
+            }
+            foreach (var o in orderBys)
+            {
+                commOrderBy += string.Format("{2}{0} {1}",
+                                        o.field,
+                                        o.orderBy.Attribute<ValueAttribute>().Value,
+                                        string.IsNullOrEmpty(commOrderBy) ? string.Empty : ",");
+            }
+            string commTxt = string.Format(@"select {4} * from (select {5} from {0} {1} {2} {3} ) x",
+                        table ?? typeof(T).Name.Split('.').Last(),
+                        string.IsNullOrEmpty(commWhere) ? string.Empty : "WHERE " + commWhere,
+                        string.IsNullOrEmpty(commOrderBy) ? string.Empty : "ORDER BY " + commOrderBy,
+                        skip.HasValue ? "OFFSET " + skip.Value + " ROWS" : string.Empty,
+                        limit.HasValue ? "TOP " + limit.Value : string.Empty,
+                        select);
             var res = this.Query<T>(
-                    string.Format("select * from {0} where {1}=@value",
-                        typeof(T).Name.Split('.').Last(), whereField),
-                    CommandType.Text, 
+                    commTxt,
+                    CommandType.Text,
                     param,
                     buVO.Logger, buVO.SqlTransaction)
                     .ToList();
             return res;
         }
+
         public List<T> UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string,object>[] values)
              where T : IEntityModel
         {
             string commSets = string.Empty;
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            values.ToList().ForEach(x => {
+            foreach(var x in values.ToList())
+            {
+                if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
+                    continue;
+
                 commSets +=
                     string.Format("{1}{0}=@{0}",
-                        x,
+                        x.Key,
                         string.IsNullOrEmpty(commSets) ? string.Empty : ",");
                 param.Add(x.Key, x.Value);
-            });
+            }
+            if (typeof(T) == typeof(BaseEntityCreateModify))
+            {
+                commSets += ",ModifyBy='@actionBy',ModifyTime=getdate()";
+                param.Add("actionBy", buVO.ActionBy);
+            }
             param.Add("id", id);
 
             var res = this.Query<T>(
                     string.Format("update {0} set {1} where id=@value",
                         typeof(T).Name.Split('.').Last(), commSets),
+                    CommandType.Text,
+                    param,
+                    buVO.Logger, buVO.SqlTransaction)
+                    .ToList();
+            return res;
+        }
+        public List<T> Insert<T>(VOCriteria buVO, params KeyValuePair<string, object>[] values)
+             where T : IEntityModel
+        {
+            string commFields = string.Empty;
+            string commVals = string.Empty;
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            foreach (var x in values.ToList())
+            {
+                if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
+                    continue;
+
+                commFields +=
+                    string.Format("{0}{1}",
+                        x.Key,
+                        string.IsNullOrEmpty(commFields) ? string.Empty : ",");
+                commVals +=
+                    string.Format("@{0}{1}",
+                        x.Key,
+                        string.IsNullOrEmpty(commFields) ? string.Empty : ",");
+                param.Add(x.Key, x.Value);
+            };
+            if (typeof(T) == typeof(BaseEntityCreateOnly))
+            {
+                commFields = ",CreateBy,CreateTime";
+                commVals += ",'@actionBy',getdate()";
+                param.Add("actionBy", buVO.ActionBy);
+            }
+
+            var res = this.Query<T>(
+                    string.Format("insert into {0} ({1}) values ({2})",
+                        typeof(T).Name.Split('.').Last(), commFields, commVals),
                     CommandType.Text,
                     param,
                     buVO.Logger, buVO.SqlTransaction)

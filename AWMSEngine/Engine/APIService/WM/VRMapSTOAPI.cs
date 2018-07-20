@@ -24,7 +24,7 @@ namespace AWMSEngine.Engine.APIService.WM
                     options = options,
                     action = (VirtualMapSTOActionType)this.RequestVO.action,
                 });
-            if ((VirtualMapSTOActionType)this.RequestVO.action == VirtualMapSTOActionType.Add)
+            if ((VirtualMapSTOActionType)this.RequestVO.action == VirtualMapSTOActionType.ADD)
                 new Validation.ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, res);
 
             return res;

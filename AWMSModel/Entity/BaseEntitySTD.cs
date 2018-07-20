@@ -5,16 +5,11 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public abstract class BaseEntitySTD : IEntityModel
+    public abstract class BaseEntitySTD : BaseEntityCreateModify
     {
-        public int ID;
+        public int? ID;
         public string Code;
         public string Name;
         public string Description;
-        public EntityStatus Status;
-        public int CreateBy;
-        public DateTime CreateTime;
-        public int ModifyBy;
-        public DateTime ModifyTime;
     }
 }

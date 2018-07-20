@@ -89,13 +89,13 @@ namespace AWMSEngine.Engine.Business
             
             Logger.LogInfo("Get STO From Request.(Action)");
             StorageObjectCriteria mapsto = AMWUtil.Common.ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestParam.mapsto);
-            if (reqVO.action == VirtualMapSTOActionType.Select)
+            if (reqVO.action == VirtualMapSTOActionType.SELECT)
             {
                 this.ActionSelect(reqVO.scanCode, mapsto);
                 if (mapsto.isFocus == false)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, mapsto.code);
             }
-            else if (reqVO.action == VirtualMapSTOActionType.Add)
+            else if (reqVO.action == VirtualMapSTOActionType.ADD)
             {
                 this.ActionAdd(
                     reqVO.scanCode,
@@ -104,7 +104,7 @@ namespace AWMSEngine.Engine.Business
                     reqVO.options,
                     mapsto);
             }
-            else if (reqVO.action == VirtualMapSTOActionType.Remove)
+            else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
             {
                 this.ActionRemove(reqVO.scanCode, reqVO.amount, mapsto);
             }

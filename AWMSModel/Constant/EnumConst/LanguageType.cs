@@ -7,7 +7,7 @@ namespace AWMSModel.Constant.EnumConst
     public enum LanguageType
     {
         TH = 0,
-        EN,
-        CH
+        EN = 1,
+        CH = 2
     }
 }

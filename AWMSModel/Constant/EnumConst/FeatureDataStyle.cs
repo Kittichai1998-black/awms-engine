@@ -7,7 +7,7 @@ namespace AWMSModel.Constant.EnumConst
     public enum FeatureDataStyle
     {
         TEXT = 0,
-        FLAG,
-        ARRAY
+        FLAG = 1,
+        ARRAY = 2
     }
 }

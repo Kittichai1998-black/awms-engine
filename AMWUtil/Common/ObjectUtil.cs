@@ -1,4 +1,5 @@
 ﻿using AMWUtil.IUtil;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -45,13 +46,7 @@ namespace AMWUtil.Common
         {
             return s.Select(x => x.GetTry<T>()).ToArray();
         }
-
-        public static T Generate<T>(this T x)
-            where T : IGenerate, new()
-        {
-            return new T();
-        }
-
+        
         public static T Json<T>(this string s)
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(s);
@@ -197,33 +192,14 @@ namespace AMWUtil.Common
             return res;
         }
 
-        public static void CopyModelShiftID<T>(this T main, T copy)
+
+
+
+        public static dynamic QueryStringToObject(QueryString querystring)
         {
-            PropertyInfo[] pis = typeof(T).GetProperties();
-            foreach (PropertyInfo pi in pis)
-            {
-                if (pi.Name.ToLower().Equals("id")) continue;
-                Type t = pi.PropertyType;
-                if (t == typeof(Nullable))
-                    if (t.GenericTypeArguments.Length == 1)
-                        t = t.GenericTypeArguments[0];
-                    else
-                        continue;
-
-                if (t == typeof(string) || t == typeof(int) || t == typeof(DateTime) ||
-                    t == typeof(decimal) || t == typeof(float) || t == typeof(double) ||
-                    t == typeof(long) ||
-                    t == typeof(Nullable<int>) || t == typeof(Nullable<DateTime>) ||
-                    t == typeof(Nullable<decimal>) || t == typeof(Nullable<float>) || t == typeof(Nullable<double>) ||
-                    t == typeof(Nullable<long>))
-                {
-                    var val = pi.GetValue(copy);
-                    pi.SetValue(main, val);
-                }
-            }
+            return QueryStringToObject(querystring.Value);
         }
-
-        public static object QueryStringToObject(string querystring)
+        public static dynamic QueryStringToObject(string querystring)
         {
             var dict = HttpUtility.ParseQueryString(querystring);
             var qrtstrDict = dict.AllKeys.ToDictionary(key => key, key => dict[key]);
@@ -243,6 +219,42 @@ namespace AMWUtil.Common
             if (obj == null) return new T();
             string jsonX = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonX);
+        }
+
+        public static List<KeyValuePair<string, object>> FieldKeyValuePairs<T>(this T obj)
+            where T : class
+        {
+            List<KeyValuePair<string, object>> res = new List<KeyValuePair<string, object>>();
+            var fs = typeof(T).GetFields();
+            foreach (var f in fs)
+            {
+                var k = f.Name;
+                var v = f.GetValue(obj);
+                res.Add(new KeyValuePair<string, object>(k, v));
+            }
+            return res;
+        }
+        public static List<KeyValuePair<string, object>> PropertieKeyValuePairs<T>(this T obj)
+            where T : class
+        {
+            List<KeyValuePair<string, object>> res = new List<KeyValuePair<string, object>>();
+            var fs = typeof(T).GetProperties();
+            foreach (var f in fs)
+            {
+                var k = f.Name;
+                var v = f.GetValue(obj);
+                res.Add(new KeyValuePair<string, object>(k, v));
+            }
+            return res;
+        }
+        public static bool Equals(this object obj, params object[] comps)
+        {
+            foreach(var comp in comps)
+            {
+                if (obj.Equals(comp))
+                    return true;
+            }
+            return false;
         }
     }
 }

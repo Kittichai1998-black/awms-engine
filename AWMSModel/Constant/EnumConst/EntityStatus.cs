@@ -6,8 +6,8 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum EntityStatus
     {
-        Inactive = 0,
-        Active = 1,
-        Remove = 2
+        INACTIVE = 0,
+        ACTIVE = 1,
+        REMOVE = 2
     }
 }

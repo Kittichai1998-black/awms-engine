@@ -34,9 +34,9 @@ namespace AMWUtil.Exception
             [CallerLineNumber]int lineNumber = 0)
             : base(
                 string.Format(code + ":" 
-                    + (Language == ENLanguage.EN ? AMWUtil.Common.AttributeUtil.FirstAttributeOfType<AMWExceptionDescription>(code).EN :
-                    Language == ENLanguage.CN ? AMWUtil.Common.AttributeUtil.FirstAttributeOfType<AMWExceptionDescription>(code).CN :
-                        AMWUtil.Common.AttributeUtil.FirstAttributeOfType<AMWExceptionDescription>(code).TH)
+                    + (Language == ENLanguage.EN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).EN :
+                    Language == ENLanguage.CN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).CN :
+                        AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).TH)
                     + " #" + (logger==null ? "???" : logger.RefID),
                     paramters??new string[] { })
                   )

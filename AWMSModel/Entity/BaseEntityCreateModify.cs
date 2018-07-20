@@ -5,11 +5,8 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class BaseEntityCreateModify : IEntityModel
+    public class BaseEntityCreateModify : BaseEntityCreateOnly
     {
-        public EntityStatus Status;
-        public int CreateBy;
-        public DateTime CreateTime;
         public int ModifyBy;
         public DateTime ModifyTime;
     }

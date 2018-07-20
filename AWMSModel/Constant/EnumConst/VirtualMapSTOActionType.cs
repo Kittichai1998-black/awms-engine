@@ -6,8 +6,8 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum VirtualMapSTOActionType
     {
-        Select = 0,
-        Add,
-        Remove
+        SELECT = 0,
+        ADD = 1,
+        REMOVE = 2
     }
 }

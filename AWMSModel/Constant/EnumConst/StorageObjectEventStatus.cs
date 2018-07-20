@@ -7,8 +7,8 @@ namespace AWMSModel.Constant.EnumConst
     public enum StorageObjectEventStatus
     {
         RECEIVEDING = 0,
-        INV_IDEL,
-        RETRIEVED,
-        INV_LOCK_QUEUE,
+        INV_IDEL = 1,
+        RETRIEVED = 2,
+        INV_LOCK_QUEUE = 3,
     }
 }

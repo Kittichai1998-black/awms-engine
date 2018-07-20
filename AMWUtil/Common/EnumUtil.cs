@@ -16,14 +16,14 @@ namespace AMWUtil.Common
              where T : struct, IComparable, IFormattable, IConvertible
         {
             if (!typeof(T).IsEnum) throw new System.Exception("Not Enum Type.");
-            return AttributeUtil.FirstAttributeOfType<DisplayAttribute>(enumVal).Name;
+            return AttributeUtil.Attribute<DisplayAttribute>(enumVal).Name;
         }
         public static string GetDisplayName<T>(string strVal)
              where T : struct, IComparable, IFormattable, IConvertible
         {
             int val = (int)strVal[0];
             object e = Enum.ToObject(typeof(T), val);
-            return AttributeUtil.FirstAttributeOfType<DisplayAttribute>((T)e).Name;
+            return AttributeUtil.Attribute<DisplayAttribute>((T)e).Name;
         }
 
         public static List<KeyValuePair<string, char>> ListKeyValuesChar<T>() where T : struct, IComparable, IFormattable, IConvertible
@@ -50,7 +50,7 @@ namespace AMWUtil.Common
             List<KeyValuePair<string, int>> res = new List<KeyValuePair<string, int>>();
             foreach (T e in list)
             {
-                DisplayAttribute attr = AttributeUtil.FirstAttributeOfType<DisplayAttribute>(e);
+                DisplayAttribute attr = AttributeUtil.Attribute<DisplayAttribute>(e);
                 string key = EnumUtil.GetDisplayName<T>(e);
                 if (string.IsNullOrWhiteSpace(key)) continue;
                 int val = (int)Enum.Parse(typeof(T), e.ToString());
