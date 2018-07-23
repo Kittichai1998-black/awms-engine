@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using System.Dynamic;
 using AMWUtil.Common;
 using AWMSModel.Criteria;
+using AMWUtil.Exception;
 
 namespace AWMSEngine.Engine.General
 {
@@ -35,39 +36,43 @@ namespace AWMSEngine.Engine.General
 
         protected override TResModel ExecuteEngine(TReqModel reqVO)
         {
-            dynamic get_where = JsonConvert.DeserializeObject<dynamic>(reqVO.q);
             List<SQLConditionCriteria> whares = new List<SQLConditionCriteria>();
-            foreach (var q in get_where)
+            if(reqVO.q != null)
             {
-                SQLConditionCriteria w = new SQLConditionCriteria((string)q.f, (string)q.v, (string)q.c, (string)q.o);
-                whares.Add(w);
+                dynamic get_where = JsonConvert.DeserializeObject<dynamic>(reqVO.q);
+                foreach (var q in get_where)
+                {
+                    SQLConditionCriteria w = new SQLConditionCriteria((string)q.f, (string)q.v, (string)q.c, (string)q.o);
+                    whares.Add(w);
+                }
             }
 
-            dynamic get_sort = JsonConvert.DeserializeObject<dynamic>(reqVO.s);
             List<SQLOrderByCriteria> orders = new List<SQLOrderByCriteria>();
-            foreach (var s in get_sort)
+            if (reqVO.s != null)
             {
-                SQLOrderByCriteria o = new SQLOrderByCriteria((string)s.f, (string)s.od);
-                orders.Add(o);
+                dynamic get_sort = JsonConvert.DeserializeObject<dynamic>(reqVO.s);
+                foreach (var s in get_sort)
+                {
+                    SQLOrderByCriteria o = new SQLOrderByCriteria((string)s.f, (string)s.od);
+                    orders.Add(o);
+                }
             }
 
-
-            if (reqVO.t.ToLower().Equals("skumaster"))
-                return Query("ams_SKUMaster");
-            if (reqVO.t.ToLower().Equals("packmaster"))
-                return Query("ams_PackMaster");
-            if (reqVO.t.ToLower().Equals("basemaster"))
-                return Query("ams_BaseMaster");
-
+            if(reqVO.sk != null && reqVO.s == null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "การใช้ skip ต้องส่ง field sort มาด้วย");
+            }
+            
             TResModel Query(string tb)
             {
-                var datas = ADO.DataADO.GetInstant().SelectBy<dynamic>(tb, reqVO.f, whares.ToArray(), orders.ToArray(), reqVO.l.GetTry<int>(), reqVO.sk.GetTry<int>(), this.BuVO);
+                var datas = ADO.DataADO.GetInstant().SelectBy<dynamic>("ams_" + tb, reqVO.f, reqVO.g, whares.ToArray(), orders.ToArray(), reqVO.l.GetTry<int>(), reqVO.sk.GetTry<int>(), this.BuVO);
                 TResModel res = new TResModel();
                 res.datas = datas;
                 return res;
             }
 
-            return null;
+            return Query(reqVO.t);
+
         }
     }
 }

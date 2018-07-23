@@ -202,7 +202,20 @@ namespace AMWUtil.Common
         public static dynamic QueryStringToObject(string querystring)
         {
             var dict = HttpUtility.ParseQueryString(querystring);
-            var qrtstrDict = dict.AllKeys.ToDictionary(key => key, key => dict[key]);
+            var qrtstrDict = dict.AllKeys.Where(x => {
+                try
+                {
+                    if (x == null || x == "null")
+                        return false;
+                    var v = dict[x];
+                    return !string.IsNullOrEmpty(dict.Get(x));
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            ).ToDictionary(key => key, key => dict[key]);
             var jsons = JsonConvert.SerializeObject(qrtstrDict);
             var jsond = JsonConvert.DeserializeObject(jsons);
 

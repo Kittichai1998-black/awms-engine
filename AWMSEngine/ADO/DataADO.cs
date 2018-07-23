@@ -131,9 +131,9 @@ namespace AWMSEngine.ADO
         public List<T> SelectBy<T>(SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys,  int? limit, int? skip, VOCriteria buVO)
             where T : IEntityModel
         {
-            return SelectBy<T>(null, "*", wheres, orderBys, limit, skip, buVO);
+            return SelectBy<T>(null, "*", null, wheres, orderBys, limit, skip, buVO);
         }
-        public List<T> SelectBy<T>(string table, string select, SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys, int? limit, int? skip, VOCriteria buVO)
+        public List<T> SelectBy<T>(string table, string select, string groupBys, SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys, int? limit, int? skip, VOCriteria buVO)
         
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -156,13 +156,14 @@ namespace AWMSEngine.ADO
                                         o.orderBy.Attribute<ValueAttribute>().Value,
                                         string.IsNullOrEmpty(commOrderBy) ? string.Empty : ",");
             }
-            string commTxt = string.Format(@"select {4} * from (select {5} from {0} {1} {2} {3} ) x",
+            string commTxt = string.Format(@"select {4} * from (select {5} from {0} {1} {6} {2} {3} ) x",
                         table ?? typeof(T).Name.Split('.').Last(),
                         string.IsNullOrEmpty(commWhere) ? string.Empty : "WHERE " + commWhere,
                         string.IsNullOrEmpty(commOrderBy) ? string.Empty : "ORDER BY " + commOrderBy,
                         skip.HasValue ? "OFFSET " + skip.Value + " ROWS" : string.Empty,
                         limit.HasValue ? "TOP " + limit.Value : string.Empty,
-                        select);
+                        select,
+                        string.IsNullOrEmpty(groupBys)?string.Empty:" GROUP BY "+ groupBys);
             var res = this.Query<T>(
                     commTxt,
                     CommandType.Text,
