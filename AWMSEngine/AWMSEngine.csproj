@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\SqlDataController.cs" />
     <Compile Remove="Controllers\WM\MasterSTOController.cs" />
     <Compile Remove="Controllers\WM\VRMapSTOReceiveController.cs" />
     <Compile Remove="Engine\APIService\WM\GetMstSTOAPI.cs" />
