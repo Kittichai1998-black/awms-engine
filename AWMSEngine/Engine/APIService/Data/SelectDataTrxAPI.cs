@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.APIService.Data
 {
-    public class SelectDataAPI : BaseAPIService
+    public class SelectDataTrxAPI : BaseAPIService
     {
         
         protected override dynamic ExecuteEngineManual()
@@ -15,7 +15,7 @@ namespace AWMSEngine.Engine.APIService.Data
             var res1= new General.SelectSql().Execute(this.Logger, this.BuVO,
                 new General.SelectSql.TReqModel()
                 {
-                    table_prefix = "ams_",
+                    table_prefix = "amt_",
                     t = this.RequestVO.t,
                     ft = this.RequestVO.ft,
                     f = this.RequestVO.f,

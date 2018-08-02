@@ -5,16 +5,19 @@ using Xunit;
 
 namespace MyTest2
 {
+    public interface IA { }
+    public class A : IA { }
+    public class B : A { }
+    public class C : B { }
     public class UnitTest1
     {
         [Fact]
         public void Test1()
         {
-            PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY,
-                @"D:\Application\Web\AWMSEngine\AWMSEngine\app.property");
-            
-            //var res = AWMSEngine.ADO.StorageObjectADO.GetInstant().GetStorageObjectByRelationCode("ST-S01-1/1/1");
-            //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(res));
+            Console.WriteLine("typeof(A)==typeof(C) : " + (typeof(A).IsSubclassOf(typeof(C))));
+            Console.WriteLine("typeof(C)==typeof(A) : " + (typeof(C).IsSubclassOf(typeof(C))));
+            Console.WriteLine("new A() is C : " + (new A() is C));
+            Console.WriteLine("new C() is A : " + (new C() is C));
         }
     }
 }

@@ -7,7 +7,6 @@ namespace AWMSModel.Entity
 {
     public abstract class BaseEntitySTD : BaseEntityCreateModify
     {
-        public int? ID;
         public string Code;
         public string Name;
         public string Description;

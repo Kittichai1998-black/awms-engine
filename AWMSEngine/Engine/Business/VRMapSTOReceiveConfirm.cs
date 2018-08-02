@@ -25,18 +25,25 @@ namespace AWMSEngine.Engine.Business
             this.ADOSto = ADO.StorageObjectADO.GetInstant();
             var mapsto = this.ADOSto.Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
             this.ConfirmReceive(reqVO.isConfirm, mapsto);
-            mapsto = this.ADOSto.Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
+            //mapsto = this.ADOSto.Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
             return mapsto;
         }
 
         private void ConfirmReceive(bool isConfirm, StorageObjectCriteria mapsto)
         {
-            if(mapsto.eventStatus == StorageObjectEventStatus.RECEIVEDING)
+            if(mapsto.eventStatus == StorageObjectEventStatus.RECEIVING)
+            {
                 this.ADOSto.ReceivingConfirm(mapsto.id.Value, mapsto.type, isConfirm, this.BuVO);
+                mapsto._onchange = true;
+                mapsto.eventStatus = isConfirm ? StorageObjectEventStatus.RECEIVED : StorageObjectEventStatus.RECEIVING;
+            }
             if (mapsto.mapstos != null)
             {
                 mapsto.mapstos.ForEach(x => ConfirmReceive(isConfirm, x));
             }
+
+            if (!isConfirm)
+                mapsto.mapstos.RemoveAll(x => x.eventStatus == StorageObjectEventStatus.RECEIVING);
         }
     }
 }

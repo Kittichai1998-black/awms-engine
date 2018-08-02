@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.General
     {
         public class TReqModel
         {
+            public string table_prefix;
             public string t;
             public string q;
             public string f;
@@ -27,7 +28,7 @@ namespace AWMSEngine.Engine.General
             public string s;
             public string sk;
             public string l;
-            public string all;
+            public string ft;
         }
         public class TResModel
         {
@@ -65,13 +66,16 @@ namespace AWMSEngine.Engine.General
             
             TResModel Query(string tb)
             {
-                var datas = ADO.DataADO.GetInstant().SelectBy<dynamic>("ams_" + tb, reqVO.f, reqVO.g, whares.ToArray(), orders.ToArray(), reqVO.l.GetTry<int>(), reqVO.sk.GetTry<int>(), this.BuVO);
+                var datas = ADO.DataADO.GetInstant().SelectBy<dynamic>(reqVO.table_prefix + tb, reqVO.f, reqVO.g, whares.ToArray(), orders.ToArray(), reqVO.l.GetTry<int>(), reqVO.sk.GetTry<int>(), this.BuVO);
                 TResModel res = new TResModel();
                 res.datas = datas;
                 return res;
             }
 
-            return Query(reqVO.t);
+            var res2 = Query(reqVO.t);
+            if(!string.IsNullOrEmpty(reqVO.ft))
+                res2.datas.Insert(0, new { ID = "", Code = reqVO.ft, Name = reqVO.ft });
+            return res2;
 
         }
     }

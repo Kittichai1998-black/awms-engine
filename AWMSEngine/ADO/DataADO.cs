@@ -95,7 +95,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<T> SelectByID<T>(object value, VOCriteria buVO)
+        public T SelectByID<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
             return SelectBy<T>(
@@ -103,7 +103,8 @@ namespace AWMSEngine.ADO
                 new SQLOrderByCriteria[] { },
                 null,
                 null,
-                buVO);
+                buVO)
+                .FirstOrDefault();
         }
         public List<T> SelectByCode<T>(object value, VOCriteria buVO)
              where T : IEntityModel
@@ -142,11 +143,12 @@ namespace AWMSEngine.ADO
 
             foreach (var w in wheres)
             {
-                commWhere += string.Format("{3} {0}{1}@{2}",
+                commWhere += string.Format("{3} {0}{1}@{2} ",
                                         w.field,
                                         w.operatorType.Attribute<ValueAttribute>().Value,
                                         w.field,
-                                        w.conditionRight.HasValue ? w.conditionRight.Value.Attribute<ValueAttribute>().Value : string.Empty);
+                                        w.conditionLeft != SQLConditionType.NONE ? w.conditionLeft.Attribute<ValueAttribute>().Value :
+                                            string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
                 param.Add(w.field, w.value);
             }
             foreach (var o in orderBys)
@@ -156,14 +158,29 @@ namespace AWMSEngine.ADO
                                         o.orderBy.Attribute<ValueAttribute>().Value,
                                         string.IsNullOrEmpty(commOrderBy) ? string.Empty : ",");
             }
-            string commTxt = string.Format(@"select {4} * from (select {5} from {0} {1} {6} {2} {3} ) x",
+            string commTxt = string.Empty;
+            if (skip.HasValue)
+            {
+                commTxt = string.Format(@"select {4} * from (select {5} from {0} {1} {6} {2} {3} ) x",
                         table ?? typeof(T).Name.Split('.').Last(),
                         string.IsNullOrEmpty(commWhere) ? string.Empty : "WHERE " + commWhere,
                         string.IsNullOrEmpty(commOrderBy) ? string.Empty : "ORDER BY " + commOrderBy,
                         skip.HasValue ? "OFFSET " + skip.Value + " ROWS" : string.Empty,
                         limit.HasValue ? "TOP " + limit.Value : string.Empty,
                         select,
-                        string.IsNullOrEmpty(groupBys)?string.Empty:" GROUP BY "+ groupBys);
+                        string.IsNullOrEmpty(groupBys) ? string.Empty : " GROUP BY " + groupBys);
+            }
+            else
+            {
+                commTxt = string.Format(@"select {4} {5} from {0} {1} {6} {2} {3}",
+                        table ?? typeof(T).Name.Split('.').Last(),
+                        string.IsNullOrEmpty(commWhere) ? string.Empty : "WHERE " + commWhere,
+                        string.IsNullOrEmpty(commOrderBy) ? string.Empty : "ORDER BY " + commOrderBy,
+                        string.Empty,//skip
+                        limit.HasValue ? "TOP " + limit.Value : string.Empty,
+                        select,
+                        string.IsNullOrEmpty(groupBys) ? string.Empty : " GROUP BY " + groupBys);
+            }
             var res = this.Query<T>(
                     commTxt,
                     CommandType.Text,
@@ -173,7 +190,12 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<T> UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string,object>[] values)
+        public int UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
+             where T : IEntityModel
+        {
+            return UpdateByID<T>((long)id, buVO, values);
+        }
+        public int UpdateByID<T>(long id, VOCriteria buVO, params KeyValuePair<string,object>[] values)
              where T : IEntityModel
         {
             string commSets = string.Empty;
@@ -189,23 +211,22 @@ namespace AWMSEngine.ADO
                         string.IsNullOrEmpty(commSets) ? string.Empty : ",");
                 param.Add(x.Key, x.Value);
             }
-            if (typeof(T) == typeof(BaseEntityCreateModify))
+            if (typeof(BaseEntityCreateModify).IsAssignableFrom(typeof(T)))
             {
                 commSets += ",ModifyBy='@actionBy',ModifyTime=getdate()";
                 param.Add("actionBy", buVO.ActionBy);
             }
             param.Add("id", id);
 
-            var res = this.Query<T>(
+            var res = this.Execute(
                     string.Format("update {0} set {1} where id=@value",
                         typeof(T).Name.Split('.').Last(), commSets),
                     CommandType.Text,
                     param,
-                    buVO.Logger, buVO.SqlTransaction)
-                    .ToList();
+                    buVO.Logger, buVO.SqlTransaction);
             return res;
         }
-        public List<T> Insert<T>(VOCriteria buVO, params KeyValuePair<string, object>[] values)
+        public long? Insert<T>(VOCriteria buVO, params KeyValuePair<string, object>[] values)
              where T : IEntityModel
         {
             string commFields = string.Empty;
@@ -226,20 +247,20 @@ namespace AWMSEngine.ADO
                         string.IsNullOrEmpty(commFields) ? string.Empty : ",");
                 param.Add(x.Key, x.Value);
             };
-            if (typeof(T) == typeof(BaseEntityCreateOnly))
+            if (typeof(BaseEntityCreateOnly).IsAssignableFrom(typeof(T)))
             {
                 commFields = ",CreateBy,CreateTime";
                 commVals += ",'@actionBy',getdate()";
                 param.Add("actionBy", buVO.ActionBy);
             }
 
-            var res = this.Query<T>(
-                    string.Format("insert into {0} ({1}) values ({2})",
+            var res = this.ExecuteScalar<long?>(
+                    string.Format("insert into {0} ({1}) values ({2});SELECT SCOPE_IDENTITY();",
                         typeof(T).Name.Split('.').Last(), commFields, commVals),
                     CommandType.Text,
                     param,
-                    buVO.Logger, buVO.SqlTransaction)
-                    .ToList();
+                    buVO.Logger, buVO.SqlTransaction);
+
             return res;
         }
 
@@ -270,6 +291,47 @@ namespace AWMSEngine.ADO
 
 
             return null;
+        }
+
+        public long NextNum(string key, bool prefixYM, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("key", key);
+            param.Add("prefixYM", prefixYM);
+            param.Add("res", null, DbType.Int64, ParameterDirection.Output);
+
+            this.Execute("SP_NEXTNUM", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+
+            long res = param.Get<long>("res");
+            return res;
+        }
+        public string NextTextNum(string key, bool prefixYM, int space, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("key", key);
+            param.Add("numZ", false);
+            param.Add("prefixYM", prefixYM);
+            param.Add("numspace", space);
+            param.Add("res", null, DbType.String, ParameterDirection.Output);
+
+            this.Execute("SP_NEXTNUM_TEXT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+
+            string res = param.Get<string>("res");
+            return res;
+        }
+        public string NextTextZ(string key,bool prefixYM,int space, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("key", key);
+            param.Add("numZ", true);
+            param.Add("prefixYM", prefixYM);
+            param.Add("numspace", space);
+            param.Add("res", null, DbType.String, ParameterDirection.Output);
+
+            this.Execute("SP_NEXTNUM_TEXT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+
+            string res = param.Get<string>("res");
+            return res;
         }
     }
 }

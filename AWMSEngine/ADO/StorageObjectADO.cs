@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Common;
+using AMWUtil.Logger;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -40,7 +41,7 @@ namespace AWMSEngine.ADO
             StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, code);
             return res;
         }
-        public StorageObjectCriteria Get(int id, StorageObjectType type, bool isToRoot, bool isToChild, VOCriteria buVO)
+        public StorageObjectCriteria Get(long id, StorageObjectType type, bool isToRoot, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@id", id);
@@ -72,7 +73,7 @@ namespace AWMSEngine.ADO
             this.Query<int>("SP_STO_FREE_COUNT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             return param.Get<int>("res");
         }
-        public int ReceivingConfirm(int id, StorageObjectType type, bool isConfirm, VOCriteria buVO)
+        public long ReceivingConfirm(long id, StorageObjectType type, bool isConfirm, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("id", id);
@@ -88,7 +89,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public int Put(StorageObjectCriteria sto, VOCriteria buVO)
+        public long Put(StorageObjectCriteria sto, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("id", sto.id);
@@ -97,7 +98,7 @@ namespace AWMSEngine.ADO
             //param.Add("code", sto.code);
             param.Add("parentID", sto.parentID);
             param.Add("parentType", sto.parentType);
-            param.Add("options", sto.options);
+            param.Add("options", ObjectUtil.ListKeyToQueryString(sto.options));
             param.Add("actionBy", buVO.ActionBy);
             param.Add("resID", null, System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
             var r = this.Query<int>("SP_STO_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)

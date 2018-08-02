@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AMWUtil.IUtil;
 using AMWUtil.Logger;
+using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -21,7 +22,7 @@ namespace AWMSEngine.Engine
         protected abstract TRes ExecuteEngine(TReq reqVO);
 
         protected VOCriteria BuVO { get; set; }
-        
+        protected StaticValueManager StaticValue { get; set; }
         protected AMWLogger Logger { get; set; }
         protected string Token => this.BuVO.GetString(BusinessVOConst.KEY_TOKEN);
         protected string APIKey => this.BuVO.GetString(BusinessVOConst.KEY_APIKEY);
@@ -46,6 +47,7 @@ namespace AWMSEngine.Engine
             {
                 this.Logger = logger;
                 this.Logger.LogExecBegin("ReqVO : " + resVO.Json());
+                this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 resVO = this.ExecuteEngine(reqVO);
                 this.Logger.LogSuccess("ResVO : " + resVO.Json());

@@ -11,10 +11,10 @@ namespace AWMSModel.Criteria
 {
     public class StorageObjectCriteria
     {
-        public int? id;
+        public long? id;
         public StorageObjectType type;
-        public int? mstID;
-        public int? parentID;
+        public long? mstID;
+        public long? parentID;
         public StorageObjectType? parentType;
         public string code;
         public string name;
@@ -28,10 +28,12 @@ namespace AWMSModel.Criteria
         public List<ObjectSizeMap> objectSizeMaps;
         public List<KeyValuePair<string, string>> options;
         public List<StorageObjectCriteria> mapstos;
+        
+        public bool _onchange = false;
 
         public class ObjectSizeMap
         {
-            public int outerObjectSizeID;
+            public long outerObjectSizeID;
             public string outerObjectSizeName;
             public int innerObjectSizeID;
             public string innerObjectSizeName;
@@ -44,13 +46,13 @@ namespace AWMSModel.Criteria
         {
             return Generate(stos, staticObjectSizes, null, codeFocus);
         }
-        public static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, List<ams_ObjectSize> staticObjectSizes, int idFocus)
+        public static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, List<ams_ObjectSize> staticObjectSizes, long idFocus)
         {
             return Generate(stos, staticObjectSizes, idFocus, null);
         }
 
         private static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, List<ams_ObjectSize> staticObjectSizes,
-            int? idFocus, string codeFocus)
+            long? idFocus, string codeFocus)
         {
             var rootSto = stos.FirstOrDefault(x => !x.parentID.HasValue);
             if (rootSto == null) return null;
@@ -75,8 +77,8 @@ namespace AWMSModel.Criteria
                             parentType = x.parentType,
                             code = x.code,
                             name = x.name,
-                            mstID = rootSto.mstID,
-                            weiKG = rootSto.weiKG,
+                            mstID = x.mstID,
+                            weiKG = x.weiKG,
                             options = AMWUtil.Common.ObjectUtil.QueryStringToListKey(x.options ?? string.Empty),
                             mapstos = generateMapstos(x.id, x.type, out isFocus),
                             isFocus = isFocus,

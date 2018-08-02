@@ -1,4 +1,5 @@
-﻿using AWMSEngine.Engine.Business;
+﻿using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Engine.Business;
 using AWMSModel.Constant.EnumConst;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,15 @@ namespace AWMSEngine.Engine.APIService.WM
 
             new Engine.Validation.ValidateInnerSTOLowerlimit().Execute(this.Logger, this.BuVO, res);
 
+            if (StaticValueManager.GetInstant().IsFeature(FeatureCode.RC0102))
+            {
+                var doc = new Engine.Business.DocGoodsReceivedCreateBySTO().Execute(this.Logger, this.BuVO,
+                    new DocGoodsReceivedCreateBySTO.TReq() { stomap = res });
+                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.RC0103))
+                {
+                    new Engine.Business.DocGoodsReceivedClose().Execute(this.Logger, this.BuVO, new DocGoodsReceivedClose.TReq() { DocumentID = doc.ID.Value });
+                }
+            }
             return res;
         }
     }

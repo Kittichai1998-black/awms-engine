@@ -6,14 +6,14 @@ namespace AWMSModel.Entity
 {
     public class ams_PackMaster : BaseEntitySTD
     {
-        int SKU_ID;
-        int PackType_ID;
-        decimal? WeightKG;
-        decimal? WidthM;
-        decimal? LengthM;
-        decimal? HeightM;
-        decimal ItemQty;
-        int ObjectSize_ID;
-        int Revision;
+        public int SKU_ID;
+        public int PackType_ID;
+        public decimal? WeightKG;
+        public decimal? WidthM;
+        public decimal? LengthM;
+        public decimal? HeightM;
+        public decimal ItemQty;
+        public int ObjectSize_ID;
+        public int Revision;
     }
 }

@@ -75,11 +75,11 @@ namespace AMWUtil.Common
         {
             return (int)Enum.Parse(typeof(T), enumVal.ToString());
         }
-        public static T GetValueEnum<T>(string strVal)
+        public static T GetValueEnum<T>(char val)
              where T : struct, IComparable, IFormattable, IConvertible
         {
-            int val = (int)strVal[0];
-            object e = Enum.ToObject(typeof(T), val);
+            int v = (int)val;
+            object e = Enum.ToObject(typeof(T), v);
             return (T)e;
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class BaseEntityCreateOnly : IEntityModel
+    public class BaseEntityCreateOnly : BaseEntityID
     {
         public EntityStatus Status;
         public int CreateBy;

@@ -86,7 +86,6 @@ namespace AWMSEngine.Engine.Business
 
         private StorageObjectCriteria ExecNextScan(TReqModle reqVO)
         {
-            
             Logger.LogInfo("Get STO From Request.(Action)");
             StorageObjectCriteria mapsto = AMWUtil.Common.ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestParam.mapsto);
             if (reqVO.action == VirtualMapSTOActionType.SELECT)
@@ -106,7 +105,7 @@ namespace AWMSEngine.Engine.Business
             }
             else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
             {
-                this.ActionRemove(reqVO.scanCode, reqVO.amount, mapsto);
+                this.ActionRemove(reqVO.mode,reqVO.scanCode, reqVO.amount, mapsto);
             }
 
             return mapsto;
@@ -136,7 +135,8 @@ namespace AWMSEngine.Engine.Business
         /***********************************/
         private bool ActionSelect(string scanCode, StorageObjectCriteria mapsto)
         {
-            mapsto.isFocus = mapsto.code.Equals(scanCode);
+            if (mapsto.type != StorageObjectType.PACK)
+                mapsto.isFocus = mapsto.code.Equals(scanCode);
             mapsto.mapstos.ForEach(x =>
             {
                 mapsto.isFocus = mapsto.type != StorageObjectType.PACK & (ActionSelect(scanCode, x) | mapsto.isFocus);
@@ -186,6 +186,7 @@ namespace AWMSEngine.Engine.Business
                 {
                     newMS.parentID = msf.id;
                     newMS.parentType = msf.type;
+                    newMS.options = options;
                     ADOSto.Put(newMS, this.BuVO);
                     newMSs.Add(newMS);
                 }
@@ -195,14 +196,18 @@ namespace AWMSEngine.Engine.Business
             msf.mapstos.AddRange(newMSs);
         }
         private void ActionRemove(
+            VirtualMapSTOModeType mode,
             string scanCode,
             decimal amount,
             StorageObjectCriteria mapsto)
         {
             var msf = GetMapStoLastFocus(mapsto);
 
-            if (msf.mapstos.Count(x => x.code == scanCode) < amount)
+            if (mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == scanCode && x.eventStatus == StorageObjectEventStatus.RECEIVING) < amount)
+                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนไม่เพียงพอ นำออกได้เฉพาะรายการที่รอรับเข้า");
+            else if (msf.mapstos.Count(x => x.code == scanCode) < amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนไม่เพียงพอ");
+
             var mapstos = msf.mapstos.OrderBy(x => x.eventStatus).ThenByDescending(x => x.id);
             for (int i = 0; i < amount; i++)
             {

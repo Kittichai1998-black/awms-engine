@@ -113,6 +113,7 @@ namespace AWMSEngine.Engine.APIService
             }
             finally
             {
+                this.RollbackTransaction();
                 response = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESPONSE);
                 if (response == null)
                 {

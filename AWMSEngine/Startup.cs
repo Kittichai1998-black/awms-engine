@@ -53,7 +53,7 @@ namespace AWMSEngine
             string rootName = appProperty[PropertyConst.APP_KEY_LOG_ROOTPATH];
             string fileName = appProperty[PropertyConst.APP_KEY_LOG_FILENAME];
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
-
+            ADO.StaticValue.StaticValueManager.GetInstant();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

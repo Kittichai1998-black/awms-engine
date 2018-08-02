@@ -6,11 +6,11 @@ namespace AWMSModel.Entity
 {
     public class ams_AreaLocationMaster : BaseEntitySTD
     {
-        int Area_ID;
-        string Gate;
-        int? Bank;
-        int? Bay;
-        int? Lavel;
-        int ObjectSize_ID;
+        public int AreaMaster_ID;
+        public string Gate;
+        public int? Bank;
+        public int? Bay;
+        public int? Lavel;
+        public int ObjectSize_ID;
     }
 }
