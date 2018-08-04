@@ -15,7 +15,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet]
         public dynamic Get(dynamic data)
         {
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             //var res = 
             return null;
         }

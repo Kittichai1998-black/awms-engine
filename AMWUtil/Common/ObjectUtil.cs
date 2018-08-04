@@ -1,5 +1,4 @@
 ﻿using AMWUtil.IUtil;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -194,11 +193,7 @@ namespace AMWUtil.Common
 
 
 
-
-        public static dynamic QueryStringToObject(QueryString querystring)
-        {
-            return QueryStringToObject(querystring.Value);
-        }
+        
         public static dynamic QueryStringToObject(string querystring)
         {
             var dict = HttpUtility.ParseQueryString(querystring);
