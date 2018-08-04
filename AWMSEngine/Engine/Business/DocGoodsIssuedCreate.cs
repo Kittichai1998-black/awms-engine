@@ -11,11 +11,13 @@ namespace AWMSEngine.Engine.Business
 
         public class TDocReq
         {
+
         }
 
         protected override amt_Document ExecuteEngine(TDocReq reqVO)
         {
             return null;
         }
+
     }
 }
