@@ -19,7 +19,7 @@ namespace AWMSModel.Criteria
         public SQLOrderByCriteria(string field, string orderBy)
         {
             this.field = field;
-            this.orderBy = SQLOrderByType.DESC.Attribute<ValueAttribute>().Value == orderBy ? SQLOrderByType.DESC : SQLOrderByType.ASC;
+            this.orderBy = SQLOrderByType.DESC.Attribute<ValueAttribute>().Value == orderBy.ToUpper() ? SQLOrderByType.DESC : SQLOrderByType.ASC;
         }
     }
 }

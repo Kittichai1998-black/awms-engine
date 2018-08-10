@@ -22,7 +22,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost]
         public dynamic Post(dynamic data)
         {
-
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             return null;
         }
     }
