@@ -143,7 +143,7 @@ namespace AWMSEngine.ADO
 
             foreach (var w in wheres)
             {
-                commWhere += string.Format("{3} {0}{1}@{2} ",
+                commWhere += string.Format("{3} {0} {1} @{2} ",
                                         w.field,
                                         w.operatorType.Attribute<ValueAttribute>().Value,
                                         w.field,

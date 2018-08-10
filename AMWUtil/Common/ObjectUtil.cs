@@ -136,7 +136,14 @@ namespace AMWUtil.Common
         public static string ListKeyToQueryString(params KeyValuePair<string, string>[] param)
         {
             return ListKeyToQueryString(param.ToList());
-
+        }
+        public static string ListKeyToQueryString(params KeyValuePair<string, object>[] param)
+        {
+            return ListKeyToQueryString(param.Select(x => new KeyValuePair<string, string>(x.Key, (string)x.Value)).ToList());
+        }
+        public static string ListKeyToQueryString(List<KeyValuePair<string, object>> param)
+        {
+            return ListKeyToQueryString(param.Select(x => new KeyValuePair<string, string>(x.Key, (string)x.Value)).ToList());
         }
         public static string ListKeyToQueryString(List<KeyValuePair<string, string>> param)
         {

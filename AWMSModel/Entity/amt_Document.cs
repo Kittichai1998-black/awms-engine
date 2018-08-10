@@ -23,6 +23,8 @@ namespace AWMSModel.Entity
         public long? Des_Warehouse_ID;
         public long? Des_AreaMaster_ID;
 
+        public string TransportNo;
+
         public string Options;
         public string Remark;
         public DateTime? ActionTime;

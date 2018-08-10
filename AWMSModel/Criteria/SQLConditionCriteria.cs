@@ -25,12 +25,12 @@ namespace AWMSModel.Criteria
             this.field = field;
             this.value = value;
 
-            this.operatorType = SQLOperatorType.EQUALS.Attribute<ValueAttribute>().Value == operatorType ? SQLOperatorType.EQUALS :
-                SQLOperatorType.LESS.Attribute<ValueAttribute>().Value == operatorType ? SQLOperatorType.LESS :
-                SQLOperatorType.LESS_EQUALS.Attribute<ValueAttribute>().Value == operatorType ? SQLOperatorType.LESS_EQUALS :
-                SQLOperatorType.LIKE.Attribute<ValueAttribute>().Value == operatorType ? SQLOperatorType.LIKE :
-                SQLOperatorType.MORE.Attribute<ValueAttribute>().Value == operatorType ? SQLOperatorType.MORE :
-                SQLOperatorType.MORE_EQUALS.Attribute<ValueAttribute>().Value == operatorType ? SQLOperatorType.MORE_EQUALS :
+            this.operatorType = SQLOperatorType.EQUALS.Attribute<ValueAttribute>().Value == operatorType.ToUpper() ? SQLOperatorType.EQUALS :
+                SQLOperatorType.LESS.Attribute<ValueAttribute>().Value == operatorType.ToUpper() ? SQLOperatorType.LESS :
+                SQLOperatorType.LESS_EQUALS.Attribute<ValueAttribute>().Value == operatorType.ToUpper() ? SQLOperatorType.LESS_EQUALS :
+                SQLOperatorType.LIKE.Attribute<ValueAttribute>().Value == operatorType.ToUpper() ? SQLOperatorType.LIKE :
+                SQLOperatorType.MORE.Attribute<ValueAttribute>().Value == operatorType.ToUpper() ? SQLOperatorType.MORE :
+                SQLOperatorType.MORE_EQUALS.Attribute<ValueAttribute>().Value == operatorType.ToUpper() ? SQLOperatorType.MORE_EQUALS :
                 0;
             this.conditionLeft = SQLConditionType.AND.Attribute<ValueAttribute>().Value == conditionRight ? SQLConditionType.AND :
                 SQLConditionType.AND.Attribute<ValueAttribute>().Value == conditionRight ? SQLConditionType.OR :
