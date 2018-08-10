@@ -73,7 +73,7 @@ namespace AWMSEngine.ADO
                 }
                 else
                 {
-                    if (row[con] == null ?? "")
+                    if (row[con] == null || row[con] == "")
                     {
                         insupd = string.Format("insert into {0} ({1}) values ({2})",
                             table_name,
