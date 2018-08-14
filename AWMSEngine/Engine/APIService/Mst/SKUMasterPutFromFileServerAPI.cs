@@ -10,8 +10,8 @@ namespace AWMSEngine.Engine.APIService.Mst
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var res = new Engine.General.PutMasterDateFromFileServer().Execute(this.Logger, this.BuVO,
-                new General.PutMasterDateFromFileServer.TReq()
+            var res = new Engine.General.TransferMasterFromFileServer().Execute(this.Logger, this.BuVO,
+                new General.TransferMasterFromFileServer.TReq()
                 {
                     APICode = "Product_Master_Transfer",
                     TableName = "ams_SKUMaster",

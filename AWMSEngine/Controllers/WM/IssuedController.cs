@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.Engine.APIService.Doc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Controllers.WM
 {
-    [Route("api/wm/DocReceive")]
+    [Route("api/wm/issued")]
     [ApiController]
-    public class DocReceiveController : ControllerBase
+    public class IssuedController : ControllerBase
     {
-        [HttpGet]
-        public dynamic Get(dynamic data)
+        [HttpGet("doc")]
+        public dynamic Get()
         {
             var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            //var res = 
             return null;
         }
-        [HttpPost]
-        public dynamic Post(dynamic data)
+        [HttpPost("doc")]
+        public dynamic Post([FromBody] dynamic req)
         {
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            return null;
+            IssuedDocumentCreateAPI exec = new IssuedDocumentCreateAPI();
+            var res = exec.Execute(req);
+            return res;
         }
     }
 }

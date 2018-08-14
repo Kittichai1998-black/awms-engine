@@ -6,5 +6,6 @@ namespace AWMSModel.Entity
 {
     public class ams_Config : ams_Feature
     {
+        public string DataStyle;
     }
 }

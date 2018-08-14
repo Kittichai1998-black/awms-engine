@@ -1,11 +1,12 @@
-﻿using System;
+﻿using AMWUtil.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.APIService.Doc
 {
-    public class DocIssuedCreateAPI : BaseAPIService
+    public class IssuedDocumentCreateAPI : BaseAPIService
     {
         protected override dynamic ExecuteEngineManual()
         {
@@ -14,7 +15,8 @@ namespace AWMSEngine.Engine.APIService.Doc
                 this.BuVO,
                 new Business.DocGoodsIssuedCreate.TDocReq()
                 {
-
+                    actionTime = DateTimeUtil.GetDate(this.RequestVO.actionTime),
+                    
                 });
             return res;
         }

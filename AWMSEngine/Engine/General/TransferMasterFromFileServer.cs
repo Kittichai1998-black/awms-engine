@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.General
 {
-    public class PutMasterDateFromFileServer : BaseEngine<PutMasterDateFromFileServer.TReq,PutMasterDateFromFileServer.TRes>
+    public class TransferMasterFromFileServer : BaseEngine<TransferMasterFromFileServer.TReq,TransferMasterFromFileServer.TRes>
     {
         public class TReq
         {
@@ -33,7 +33,7 @@ namespace AWMSEngine.Engine.General
         {
             TRes res = new TRes();
             res.apiResults = new List<TRes.APIResult>();
-            string rootPath = "D:/logs/api/";
+            string rootPath = StaticValue.GetConfig(AWMSModel.Constant.EnumConst.ConfigCode.APIFS_TRANS_MST_ROOTFILE);
             string apiRequestPath = string.Format("{0}{1}/request/", rootPath, reqVO.APICode);
             string apiResponsePath = string.Format("{0}{1}/response/", rootPath, reqVO.APICode);
 
