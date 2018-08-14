@@ -16,7 +16,6 @@ namespace AWMSEngine.Controllers
         [HttpPut]
         public dynamic PutData([FromBody]dynamic request)
         {
-            //{"token":"","apiKey":"","t":"",pk:"","datas":[{"test":"xx"}]}
             var api = new AWMSEngine.Engine.APIService.Data.InsUpdDataAPI();
             var res = api.Execute(request);
 
@@ -27,36 +26,28 @@ namespace AWMSEngine.Controllers
         public dynamic GetData()
         {
             var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            //{"token":"","apiKey":"","t":"",pk:"","datas":[{"test":"xx"}]}
             var api = new AWMSEngine.Engine.APIService.Data.SelectDataAPI();
             var res = api.Execute(jsond);
-
             return res;
         }
 
         [HttpPost("TransferFileServer/SKUMst")]
-        public dynamic TransferSF_SKUMst()
+        public dynamic TransferSF_SKUMst([FromBody]dynamic request)
         {
-            var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             SKUMasterPutFromFileServerAPI api = new SKUMasterPutFromFileServerAPI();
-
-            return api.Execute(jsond);
+            return api.Execute(request);
         }
         [HttpPost("TransferFileServer/DealerMst")]
-        public dynamic TransferSF_DealerMst()
+        public dynamic TransferSF_DealerMst([FromBody]dynamic request)
         {
-            var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             DealerPutFromFileServerAPI api = new DealerPutFromFileServerAPI();
-
-            return api.Execute(jsond);
+            return api.Execute(request);
         }
         [HttpPost("TransferFileServer/SupplierMst")]
-        public dynamic TransferFileServer_SupplierMst()
+        public dynamic TransferFileServer_SupplierMst([FromBody]dynamic request)
         {
-            var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             SupplierPutFromFileServerAPI api = new SupplierPutFromFileServerAPI();
-
-            return api.Execute(jsond);
+            return api.Execute(request);
         }
     }
 }
