@@ -9,6 +9,8 @@ namespace AMWUtil.Common
 {
     public static class DateTimeUtil
     {
+        public const string DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
+        public const string DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
         static GregorianCalendar _gc = new GregorianCalendar();
         public static string GetDateTimeString(this DateTime? dt)
         {

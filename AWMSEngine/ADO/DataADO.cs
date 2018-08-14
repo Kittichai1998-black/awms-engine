@@ -161,10 +161,10 @@ namespace AWMSEngine.ADO
 
             foreach (var w in wheres)
             {
-                commWhere += string.Format("{3} {0} {1} @{2} ",
+                commWhere += string.Format("{3} {0} {1} {2} ",
                                         w.field,
                                         w.operatorType.Attribute<ValueAttribute>().Value,
-                                        w.field,
+                                        w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL?"": "@" + w.field,
                                         w.conditionLeft != SQLConditionType.NONE ? w.conditionLeft.Attribute<ValueAttribute>().Value :
                                             string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
                 param.Add(w.field, w.value);

@@ -29,10 +29,10 @@ namespace MyTest2
         [Fact]
         public void TestDateTime()
         {
-            string dateStr = "12-01-2018 16:30:00";
-            string dateFormat = "dd-MM-yyyy hh:mm:ss";
-            DateTime dt = DateTime.ParseExact(dateStr, dateFormat, new CultureInfo("en-EN"););
-            sysout.WriteLine("");
+            string dateStr = "02-01-2018 13:50:01";
+            string dateFormat = "dd-MM-yyyy HH:mm:ss";
+            DateTime dt = DateTime.ParseExact(dateStr, dateFormat, CultureInfo.InvariantCulture);
+            sysout.WriteLine(dt.ToString());
         }
     }
 }

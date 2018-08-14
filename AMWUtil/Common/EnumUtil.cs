@@ -41,6 +41,13 @@ namespace AMWUtil.Common
             return res;
         }
 
+        public static List<T> List<T>()
+            where T : struct, IComparable, IFormattable, IConvertible
+        {
+            if (!typeof(T).IsEnum) throw new System.Exception("Not Type Enum.");
+            List<T> list = Enum.GetValues(typeof(T)).Cast<T>().ToList<T>();
+            return list;
+        }
         public static List<KeyValuePair<string, int>> ListKeyValuesInt<T>()
             where T : struct, IComparable, IFormattable, IConvertible
         {
