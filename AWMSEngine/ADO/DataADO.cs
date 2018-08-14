@@ -16,6 +16,13 @@ namespace AWMSEngine.ADO
 {
     public class DataADO : BaseMSSQLAccess<DataADO>
     {
+        public int InsUpd(string table_name, Dictionary<string, dynamic> recv, string con, bool revision,
+            VOCriteria buVO)
+        {
+            var recvList = new List<Dictionary<string, dynamic>>();
+            recvList.Add(recv);
+            return InsUpd(table_name, recvList, con, revision, buVO);
+        }
         public int InsUpd(string table_name, List<Dictionary<string, dynamic>> recvlist, string con, bool revision,
             VOCriteria buVO)
         {
@@ -46,8 +53,11 @@ namespace AWMSEngine.ADO
             int res = 0;
             foreach (var row in recvlist)
             {
-                condition = string.Format(con + " = {0}", row[con] ?? String.Empty);
+                condition = con + " = @_condition and status != 2";
                 var param = new Dapper.DynamicParameters();
+                param.Add("@_condition", row[con]);
+                param.Add("@actionBy", buVO.ActionBy);
+
                 foreach (var data in row.SkipWhile(pk => pk.Key == con))
                 {
                     param.Add("@" + data.Key.ToString(), data.Value);
@@ -55,34 +65,42 @@ namespace AWMSEngine.ADO
 
                 if (revision == true)
                 {
-                    insupd = string.Format("update {0} set {1} , [Status] = 2 where {2}",
+                    insupd = string.Format("update {0} set [Status] = 2,ModifyBy=@actionBy,ModifyTime=getdate() where {1}; select max(revision) from {0} where {2};",
                         table_name,
-                        update.Substring(2),
-                        condition);
+                        condition,
+                        con + " = @_condition ");
 
-                    this.Execute(insupd,
-                                    CommandType.Text, param, buVO.Logger, buVO.SqlTransaction);
+                    int nextRevision = this.ExecuteScalar<int>(insupd,
+                                    CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) + 1;
 
-                    insupd = string.Format("insert into {0} ({1}) values ({2})",
+                    insupd = string.Format("insert into {0} ({1}, revision,CreateBy,CreateTime) values ({2},{3},@actionBy,getdate())",
                         table_name,
                         columns.Substring(2),
-                        "@" + parameter.Substring(3));
+                        "@" + parameter.Substring(3),
+                        nextRevision);
 
                     res = this.Execute(insupd,
                                     CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) + res;
                 }
                 else
                 {
-                    if (row[con] == null || row[con] == "")
+                    bool isInsert =
+                        (row[con] == null ?? "")
+                        ||
+                        this.ExecuteScalar<int>(
+                        string.Format("select top 1 1 from {0} where {1};",
+                            table_name,
+                            condition), CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) != 1;
+                    if (isInsert)
                     {
-                        insupd = string.Format("insert into {0} ({1}) values ({2})",
+                        insupd = string.Format("insert into {0} ({1},CreateBy,CreateTime) values ({2},@actionBy,getdate())",
                             table_name,
                             columns.Substring(2),
                             "@" + parameter.Substring(3));
                     }
                     else
                     {
-                        insupd = string.Format("update {0} set {1} where {2}",
+                        insupd = string.Format("update {0} set {1},ModifyBy=@actionBy,ModifyTime=getdate() where {2}",
                             table_name,
                             update.Substring(2),
                             condition);
@@ -129,13 +147,13 @@ namespace AWMSEngine.ADO
                 null,
                 buVO);
         }
-        public List<T> SelectBy<T>(SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys,  int? limit, int? skip, VOCriteria buVO)
+        public List<T> SelectBy<T>(SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys, int? limit, int? skip, VOCriteria buVO)
             where T : IEntityModel
         {
             return SelectBy<T>(null, "*", null, wheres, orderBys, limit, skip, buVO);
         }
         public List<T> SelectBy<T>(string table, string select, string groupBys, SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys, int? limit, int? skip, VOCriteria buVO)
-        
+
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             string commWhere = string.Empty;
@@ -195,12 +213,12 @@ namespace AWMSEngine.ADO
         {
             return UpdateByID<T>((long)id, buVO, values);
         }
-        public int UpdateByID<T>(long id, VOCriteria buVO, params KeyValuePair<string,object>[] values)
+        public int UpdateByID<T>(long id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
              where T : IEntityModel
         {
             string commSets = string.Empty;
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            foreach(var x in values.ToList())
+            foreach (var x in values.ToList())
             {
                 if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
                     continue;
@@ -264,7 +282,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public Dictionary<string, dynamic> Select(string fielddata, string tabledata, 
+        public Dictionary<string, dynamic> Select(string fielddata, string tabledata,
             dynamic wheredata, string groupdata, dynamic sortdata, string skipdata,
             string limitdata, string alldata,
             VOCriteria buVO)
@@ -275,7 +293,7 @@ namespace AWMSEngine.ADO
             var str_select = "";
 
             var param = new Dapper.DynamicParameters();
-            foreach(var data in wheredata)
+            foreach (var data in wheredata)
             {
                 param.Add("@" + data.Key, data.Value);
             }
@@ -319,7 +337,7 @@ namespace AWMSEngine.ADO
             string res = param.Get<string>("res");
             return res;
         }
-        public string NextTextZ(string key,bool prefixYM,int space, VOCriteria buVO)
+        public string NextTextZ(string key, bool prefixYM, int space, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("key", key);
