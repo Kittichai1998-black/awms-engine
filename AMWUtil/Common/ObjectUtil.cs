@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -203,6 +204,7 @@ namespace AMWUtil.Common
         
         public static dynamic QueryStringToObject(string querystring)
         {
+            querystring = Regex.Replace(querystring, "^[?]+", "");
             var dict = HttpUtility.ParseQueryString(querystring);
             var qrtstrDict = dict.AllKeys.Where(x => {
                 try
