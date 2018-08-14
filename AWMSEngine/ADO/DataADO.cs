@@ -16,13 +16,6 @@ namespace AWMSEngine.ADO
 {
     public class DataADO : BaseMSSQLAccess<DataADO>
     {
-        public int InsUpd(string table_name, Dictionary<string, dynamic> recv, string con, bool revision,
-            VOCriteria buVO)
-        {
-            var recvList = new List<Dictionary<string, dynamic>>();
-            recvList.Add(recv);
-            return InsUpd(table_name, recvList, con, revision, buVO);
-        }
         public int InsUpd(string table_name, List<Dictionary<string, dynamic>> recvlist, string con, bool revision,
             VOCriteria buVO)
         {
@@ -53,11 +46,8 @@ namespace AWMSEngine.ADO
             int res = 0;
             foreach (var row in recvlist)
             {
-                condition = con + " = @_condition and status != 2";
+                condition = string.Format(con + " = {0}", row[con] ?? String.Empty);
                 var param = new Dapper.DynamicParameters();
-                param.Add("@_condition", row[con]);
-                param.Add("@actionBy", buVO.ActionBy);
-
                 foreach (var data in row.SkipWhile(pk => pk.Key == con))
                 {
                     param.Add("@" + data.Key.ToString(), data.Value);
@@ -65,42 +55,34 @@ namespace AWMSEngine.ADO
 
                 if (revision == true)
                 {
-                    insupd = string.Format("update {0} set [Status] = 2,ModifyBy=@actionBy,ModifyTime=getdate() where {1}; select max(revision) from {0} where {2};",
+                    insupd = string.Format("update {0} set {1} , [Status] = 2 where {2}",
                         table_name,
-                        condition,
-                        con + " = @_condition ");
+                        update.Substring(2),
+                        condition);
 
-                    int nextRevision = this.ExecuteScalar<int>(insupd,
-                                    CommandType.Text, param, buVO.Logger, buVO.SqlTransaction)+1;
+                    this.Execute(insupd,
+                                    CommandType.Text, param, buVO.Logger, buVO.SqlTransaction);
 
-                    insupd = string.Format("insert into {0} ({1}, revision,CreateBy,CreateTime) values ({2},{3},@actionBy,getdate())",
+                    insupd = string.Format("insert into {0} ({1}) values ({2})",
                         table_name,
                         columns.Substring(2),
-                        "@" + parameter.Substring(3),
-                        nextRevision);
+                        "@" + parameter.Substring(3));
 
                     res = this.Execute(insupd,
                                     CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) + res;
                 }
                 else
                 {
-                    bool isInsert = 
-                        (row[con] == null ?? "") 
-                        ||
-                        this.ExecuteScalar<int>(
-                        string.Format("select top 1 1 from {0} where {1};",
-                            table_name,
-                            condition), CommandType.Text, param, buVO.Logger, buVO.SqlTransaction) != 1;
-                    if (isInsert)
+                    if (row[con] == null || row[con] == "")
                     {
-                        insupd = string.Format("insert into {0} ({1},CreateBy,CreateTime) values ({2},@actionBy,getdate())",
+                        insupd = string.Format("insert into {0} ({1}) values ({2})",
                             table_name,
                             columns.Substring(2),
                             "@" + parameter.Substring(3));
                     }
                     else
                     {
-                        insupd = string.Format("update {0} set {1},ModifyBy=@actionBy,ModifyTime=getdate() where {2}",
+                        insupd = string.Format("update {0} set {1} where {2}",
                             table_name,
                             update.Substring(2),
                             condition);
