@@ -9,6 +9,12 @@ namespace AWMSModel.Constant.EnumConst
     {
         [ValueAttribute("=")]
         EQUALS,
+        [ValueAttribute("!=")]
+        NOTEQUALS,
+        [ValueAttribute("is null")]
+        ISNULL,
+        [ValueAttribute("is not null")]
+        ISNOTNULL,
         [ValueAttribute(">")]
         MORE,
         [ValueAttribute("<")]
