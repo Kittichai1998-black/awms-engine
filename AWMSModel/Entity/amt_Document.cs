@@ -12,13 +12,14 @@ namespace AWMSModel.Entity
 
         public long? ParentDocument_ID;
 
-        public long? Dealer_ID;
-        public long? Supplier_ID;
-
+        public long? Sou_Dealer_ID;
+        public long? Sou_Supplier_ID;
         public long? Sou_Branch_ID;
         public long? Sou_Warehouse_ID;
         public long? Sou_AreaMaster_ID;
 
+        public long? Des_Dealer_ID;
+        public long? Des_Supplier_ID;
         public long? Des_Branch_ID;
         public long? Des_Warehouse_ID;
         public long? Des_AreaMaster_ID;
@@ -29,9 +30,14 @@ namespace AWMSModel.Entity
         public string Remark;
         public DateTime? ActionTime;
         public DateTime DocumentDate;
+        public string RefID;
         public string Ref1;
         public string Ref2;
-        public string Ref3;
+
+        public int? For_Supplier_ID;
+        public string Barch;
+        public string Lot;
+
         public DocumentEventStatus EventStatus;
 
         public List<amt_DocumentItem> DocumentItems;

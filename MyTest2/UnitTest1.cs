@@ -1,3 +1,4 @@
+using AMWUtil.Common;
 using AMWUtil.PropertyFile;
 using AWMSModel.Constant.StringConst;
 using System;
@@ -29,10 +30,16 @@ namespace MyTest2
         [Fact]
         public void TestDateTime()
         {
-            string dateStr = "02-01-2018 13:50:01";
-            string dateFormat = "dd-MM-yyyy HH:mm:ss";
-            DateTime dt = DateTime.ParseExact(dateStr, dateFormat, CultureInfo.InvariantCulture);
-            sysout.WriteLine(dt.ToString());
+            var dtORG = DateTime.Now;
+            string dtStr = dtORG.GetDateTimeString();
+            string dStr = dtORG.GetDateString();
+            DateTime dt = dtStr.GetDateTime();
+            DateTime d = dStr.GetDate();
+            sysout.WriteLine("ORG : " + dtORG);
+            sysout.WriteLine("dtStr : " + dtStr);
+            sysout.WriteLine("dStr : " + dStr);
+            sysout.WriteLine("dt : " + dt);
+            sysout.WriteLine("d : " + d.GetDateTimeString());
         }
     }
 }

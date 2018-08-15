@@ -13,7 +13,7 @@ namespace AWMSEngine.Engine.APIService.Mst
             var res = new Engine.General.TransferMasterFromFileServer().Execute(this.Logger, this.BuVO,
                 new General.TransferMasterFromFileServer.TReq()
                 {
-                    APICode = "Product_Master_Transfer",
+                    APICode = "SKU_Master_Transfer",
                     TableName = "ams_SKUMaster",
                     FieldWhere = "Code",
                     ReqFieldNames = new string[] { "Code", "Name", "Description", "SKUMasterType_ID" },

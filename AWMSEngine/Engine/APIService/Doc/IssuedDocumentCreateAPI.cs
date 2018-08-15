@@ -15,8 +15,10 @@ namespace AWMSEngine.Engine.APIService.Doc
                 this.BuVO,
                 new Business.DocGoodsIssuedCreate.TDocReq()
                 {
-                    actionTime = DateTimeUtil.GetDate(this.RequestVO.actionTime),
-                    
+                    actionTime = DateTimeUtil.GetDateTime((string)this.RequestVO.actionTime),
+                    //dealerID = this.RequestVO.dealerID,
+                    //warehouseID = this.RequestVO.warehouseID,
+
                 });
             return res;
         }

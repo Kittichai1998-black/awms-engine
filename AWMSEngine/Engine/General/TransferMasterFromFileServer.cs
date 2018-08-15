@@ -38,7 +38,9 @@ namespace AWMSEngine.Engine.General
             string apiResponsePath = string.Format("{0}{1}/response/", rootPath, reqVO.APICode);
 
             if (!Directory.Exists(apiRequestPath)) Directory.CreateDirectory(apiRequestPath);
+            if (!Directory.Exists(apiRequestPath + "log/")) Directory.CreateDirectory(apiRequestPath + "log/");
             if (!Directory.Exists(apiResponsePath)) Directory.CreateDirectory(apiResponsePath);
+            if (!Directory.Exists(apiResponsePath + "log/")) Directory.CreateDirectory(apiResponsePath + "log/");
 
             string[] fileNames = Directory.GetFiles(apiRequestPath).Where(x => x.EndsWith(".req")).ToArray();
             foreach(string fn in fileNames)

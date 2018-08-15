@@ -11,11 +11,11 @@ namespace AWMSEngine.ADO.StaticValue
 {
     public class StaticValueManager
     {
-        private List<ams_Feature> _Features;
-        public List<ams_Feature> Features { get => this._Features; }
+        private Dictionary<string, ams_Feature> _Features;
+        public Dictionary<string, ams_Feature> Features { get => this._Features; }
 
-        private List<ams_Config> _Configs;
-        public List<ams_Config> Configs { get => this._Configs; }
+        private Dictionary<string, ams_Config> _Configs;
+        public Dictionary<string, ams_Config> Configs { get => this._Configs; }
 
         private List<ams_ObjectSize> _ObjectSizes;
         public List<ams_ObjectSize> ObjectSizes { get => this._ObjectSizes; }
@@ -57,11 +57,13 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadFeature()
         {
-            this._Features = ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, new VOCriteria()).ToList();
+            this._Features = new Dictionary<string, ams_Feature>();
+            ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, new VOCriteria()).ForEach(x => this._Features.Add(x.Code, x));
         }
         public void LoadConfig()
         {
-            this._Configs = ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, new VOCriteria()).ToList();
+            this._Configs = new Dictionary<string, ams_Config>();
+            ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, new VOCriteria()).ForEach(x => this._Configs.Add(x.Code, x));
         }
         public void LoadObjectSize()
         {
@@ -93,18 +95,18 @@ namespace AWMSEngine.ADO.StaticValue
         public bool IsFeature(FeatureCode code)
         {
             string c = code.ToString();
-            return this._Features.Any(x => x.Code == c);
+            return this._Features.ContainsKey(c) ? 
+                this._Features[c].DataValue != AWMSModel.Constant.StringConst.YesNoConst.NO : false;
         }
         public string GetFeatureValue(FeatureCode code)
         {
             string c = code.ToString();
-            var f = this._Features.FirstOrDefault(x => x.Code == c);
-            return f == null ? null : f.DataValue;
+            return this._Features.ContainsKey(c) ? this._Features[c].DataValue : null;
         }
         public string GetConfig(ConfigCode code)
         {
-            var val = this._Configs.FirstOrDefault(x => x.Code == code.ToString());
-            return val == null ? null : val.DataValue;
+            string c = code.ToString();
+            return this._Configs.ContainsKey(c) ? this._Configs[c].DataValue : null;
         }
     }
 }

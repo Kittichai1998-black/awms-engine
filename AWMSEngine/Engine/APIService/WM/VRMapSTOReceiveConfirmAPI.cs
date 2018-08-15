@@ -23,11 +23,11 @@ namespace AWMSEngine.Engine.APIService.WM
 
             new Engine.Validation.ValidateInnerSTOLowerlimit().Execute(this.Logger, this.BuVO, res);
 
-            if (StaticValueManager.GetInstant().IsFeature(FeatureCode.RC0102))
+            if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102))
             {
                 var doc = new Engine.Business.DocGoodsReceivedCreateBySTO().Execute(this.Logger, this.BuVO,
                     new DocGoodsReceivedCreateBySTO.TReq() { stomap = res });
-                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.RC0103))
+                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0103))
                 {
                     new Engine.Business.DocGoodsReceivedClose().Execute(this.Logger, this.BuVO, new DocGoodsReceivedClose.TReq() { DocumentID = doc.ID.Value });
                 }

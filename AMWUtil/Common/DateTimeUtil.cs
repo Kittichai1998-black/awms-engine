@@ -10,33 +10,31 @@ namespace AMWUtil.Common
     public static class DateTimeUtil
     {
         public const string DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
-        public const string DATE_FORMAT = "dd-MM-yyyy HH:mm:ss";
+        public const string DATE_FORMAT = "dd-MM-yyyy";
         static GregorianCalendar _gc = new GregorianCalendar();
+        public static string GetDateTimeString(this DateTime dt)
+        {
+            return dt.ToString(DATETIME_FORMAT);
+        }
         public static string GetDateTimeString(this DateTime? dt)
         {
-            string dtx = "";
             if (dt.HasValue)
             {
-                dtx += dt.Value.Year.ToString() + "-";
-                dtx += (dt.Value.Month < 10 ? "0" + dt.Value.Month.ToString() : dt.Value.Month.ToString()) + "-";
-                dtx += (dt.Value.Day < 10 ? "0" + dt.Value.Day.ToString() : dt.Value.Day.ToString());
-                dtx += " ";
-                dtx += (dt.Value.Hour < 10 ? "0" + dt.Value.Hour.ToString() : dt.Value.Hour.ToString()) + ":";
-                dtx += (dt.Value.Minute < 10 ? "0" + dt.Value.Minute.ToString() : dt.Value.Minute.ToString()) + ":";
-                dtx += (dt.Value.Second < 10 ? "0" + dt.Value.Second.ToString() : dt.Value.Second.ToString());
+                return dt.Value.ToString(DATETIME_FORMAT);
             }
-            return dtx;
+            return null;
+        }
+        public static string GetDateString(this DateTime d)
+        {
+            return d.ToString(DATE_FORMAT);
         }
         public static string GetDateString(this DateTime? d)
         {
-            string dx = "";
             if (d.HasValue)
             {
-                dx += d.Value.Year.ToString() + "-";
-                dx += (d.Value.Month < 10 ? "0" + d.Value.Month.ToString() : d.Value.Month.ToString()) + "-";
-                dx += (d.Value.Day < 10 ? "0" + d.Value.Day.ToString() : d.Value.Day.ToString());
+                return d.Value.ToString(DATE_FORMAT);
             }
-            return dx;
+            return null;
         }
         
         public static string GetDateTimeISO(this DateTime? dt)
@@ -59,18 +57,14 @@ namespace AMWUtil.Common
             return _gc.GetWeekOfYear(time, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
         }
 
-        public static DateTime GetDateTime(string dt)
+        public static DateTime GetDateTime(this string dt)
         {
-            var tmp = dt.Split(' ');
-            var d = tmp[0].Split('-');
-            var t = tmp[1].Split(':');
-            return new DateTime(int.Parse(d[0]), int.Parse(d[1]), int.Parse(d[2]), int.Parse(t[0]), int.Parse(t[1]), int.Parse(t[2]));
+            return DateTime.ParseExact(dt, DATETIME_FORMAT, CultureInfo.InvariantCulture);
         }
 
-        public static DateTime GetDate(string d)
+        public static DateTime GetDate(this string d)
         {
-            var tmp = d.Split('-');
-            return new DateTime(int.Parse(tmp[0]), int.Parse(tmp[1]), int.Parse(tmp[2]));
+            return DateTime.ParseExact(d, DATE_FORMAT, CultureInfo.InvariantCulture);
         }
     }
     

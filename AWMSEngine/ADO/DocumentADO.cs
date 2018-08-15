@@ -15,22 +15,31 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@parentDocument_ID", doc.ParentDocument_ID);
             param.Add("@documentType_ID", doc.DocumentType_ID);
-            param.Add("@dealer_ID", doc.Dealer_ID);
 
+
+            param.Add("@sou_dealer_ID", doc.Sou_Dealer_ID);
+            param.Add("@sou_supplier_ID", doc.Sou_Supplier_ID);
             param.Add("@sou_branch_ID", doc.Sou_Branch_ID);
             param.Add("@sou_warehouse_ID", doc.Sou_Warehouse_ID);
             param.Add("@sou_areaMaster_ID", doc.Sou_AreaMaster_ID);
+
+            param.Add("@des_dealer_ID", doc.Des_Dealer_ID);
+            param.Add("@des_supplier_ID", doc.Des_Supplier_ID);
             param.Add("@des_branch_ID", doc.Des_Branch_ID);
             param.Add("@des_warehouse_ID", doc.Des_Warehouse_ID);
             param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID); 
 
-            param.Add("@supplier_ID", doc.Supplier_ID);
             param.Add("@actionTime", doc.ActionTime);
             param.Add("@documentDate", doc.DocumentDate);
             param.Add("@options", doc.Options);
+            param.Add("@refID", doc.RefID);
             param.Add("@ref1", doc.Ref1);
             param.Add("@ref2", doc.Ref2);
-            param.Add("@ref3", doc.Ref3);
+
+            param.Add("@for_supplier_ID", doc.For_Supplier_ID);
+            param.Add("@batch", doc.Barch);
+            param.Add("@lot", doc.Lot);
+
             param.Add("@remark", doc.Remark);
             param.Add("@eventStatus", 0);
             param.Add("@actionBy", buVO.ActionBy);
@@ -59,6 +68,19 @@ namespace AWMSEngine.ADO
 
         }
 
+
+        public STOCountDocLockCriteria STOCountDocLock(int skuID, int? packMstID, int? supplierID, string batch, string lot, DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("skuID", skuID);
+            param.Add("packMstID", packMstID);
+            param.Add("supplierID", supplierID);
+            param.Add("batch", string.IsNullOrWhiteSpace(batch) ? null : batch);
+            param.Add("lot", string.IsNullOrWhiteSpace(lot) ? null : lot);
+            param.Add("docTypeID", docTypeID);
+            var res = this.Query<STOCountDocLockCriteria>("SP_STO_COUNT_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            return res;
+        }
         public int UpdateEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
         {
             var res = DataADO.GetInstant().UpdateByID<amt_Document>(id, buVO,

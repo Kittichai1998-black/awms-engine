@@ -147,6 +147,16 @@ namespace AWMSEngine.ADO
                 null,
                 buVO);
         }
+        public List<T> SelectBy<T>(KeyValuePair<string,object>[] wheres, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                wheres.Select(x => new SQLConditionCriteria(x.Key, x.Value, SQLOperatorType.EQUALS, SQLConditionType.AND)).ToArray(),
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO);
+        }
         public List<T> SelectBy<T>(SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys, int? limit, int? skip, VOCriteria buVO)
             where T : IEntityModel
         {
@@ -158,7 +168,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             string commWhere = string.Empty;
             string commOrderBy = string.Empty;
-
+            
             foreach (var w in wheres)
             {
                 commWhere += string.Format("{3} {0} {1} {2} ",
