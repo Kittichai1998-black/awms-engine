@@ -16,12 +16,12 @@ namespace AWMSEngine.ADO
 {
     public class DataADO : BaseMSSQLAccess<DataADO>
     {
-        public int InsUpd(string table_name, Dictionary<string, dynamic> recv, string con, bool revision,
+        public int InsUpd(string table_name, Dictionary<string, dynamic> recv, string con, bool isNextRevision,
             VOCriteria buVO)
         {
             var recvList = new List<Dictionary<string, dynamic>>();
             recvList.Add(recv);
-            return InsUpd(table_name, recvList, con, revision, buVO);
+            return InsUpd(table_name, recvList, con, isNextRevision, buVO);
         }
         public int InsUpd(string table_name, List<Dictionary<string, dynamic>> recvlist, string con, bool revision,
             VOCriteria buVO)
@@ -124,7 +124,7 @@ namespace AWMSEngine.ADO
                 buVO)
                 .FirstOrDefault();
         }
-        public List<T> SelectByCode<T>(object value, VOCriteria buVO)
+        public T SelectByCodeActive<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
             return SelectBy<T>(
@@ -135,7 +135,7 @@ namespace AWMSEngine.ADO
                 new SQLOrderByCriteria[] { },
                 null,
                 null,
-                buVO);
+                buVO).FirstOrDefault();
         }
         public List<T> SelectBy<T>(string field, object value, VOCriteria buVO)
              where T : IEntityModel

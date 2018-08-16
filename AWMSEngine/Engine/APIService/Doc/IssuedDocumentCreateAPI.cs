@@ -10,16 +10,11 @@ namespace AWMSEngine.Engine.APIService.Doc
     {
         protected override dynamic ExecuteEngineManual()
         {
+            var reqDoc = ObjectUtil.DynamicToModel<Business.DocGoodsIssuedCreate.TDocReq>(this.RequestVO);
             var res = new Engine.Business.DocGoodsIssuedCreate().Execute(
                 this.Logger,
                 this.BuVO,
-                new Business.DocGoodsIssuedCreate.TDocReq()
-                {
-                    actionTime = DateTimeUtil.GetDateTime((string)this.RequestVO.actionTime),
-                    //dealerID = this.RequestVO.dealerID,
-                    //warehouseID = this.RequestVO.warehouseID,
-
-                });
+                reqDoc);
             return res;
         }
     }

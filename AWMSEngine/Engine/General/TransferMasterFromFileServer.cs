@@ -78,7 +78,7 @@ namespace AWMSEngine.Engine.General
                                 rec.Add(x, lBody[iField]);
                                 iField++;
                             });
-                            ADO.DataADO.GetInstant().InsUpd(reqVO.TableName, rec, reqVO.FieldWhere, true, this.BuVO);
+                            ADO.DataADO.GetInstant().InsUpd(reqVO.TableName, rec, reqVO.FieldWhere, false, this.BuVO);
                             resBodys.Add("B|1|" + string.Join('|', lBody.Skip(2)));
                         }
                         //Insert Update

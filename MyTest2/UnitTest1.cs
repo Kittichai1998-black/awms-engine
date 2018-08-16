@@ -33,8 +33,8 @@ namespace MyTest2
             var dtORG = DateTime.Now;
             string dtStr = dtORG.GetDateTimeString();
             string dStr = dtORG.GetDateString();
-            DateTime dt = dtStr.GetDateTime();
-            DateTime d = dStr.GetDate();
+            DateTime dt = dtStr.GetDateTime().Value;
+            DateTime d = dStr.GetDate().Value;
             sysout.WriteLine("ORG : " + dtORG);
             sysout.WriteLine("dtStr : " + dtStr);
             sysout.WriteLine("dStr : " + dStr);

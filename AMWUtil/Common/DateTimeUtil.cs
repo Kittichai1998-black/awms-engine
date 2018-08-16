@@ -57,14 +57,28 @@ namespace AMWUtil.Common
             return _gc.GetWeekOfYear(time, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
         }
 
-        public static DateTime GetDateTime(this string dt)
+        public static DateTime? GetDateTime(this string dt)
         {
-            return DateTime.ParseExact(dt, DATETIME_FORMAT, CultureInfo.InvariantCulture);
+            try
+            {
+                return DateTime.ParseExact(dt, DATETIME_FORMAT, CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
-        public static DateTime GetDate(this string d)
+        public static DateTime? GetDate(this string d)
         {
-            return DateTime.ParseExact(d, DATE_FORMAT, CultureInfo.InvariantCulture);
+            try
+            {
+                return DateTime.ParseExact(d, DATE_FORMAT, CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }        
         }
     }
     

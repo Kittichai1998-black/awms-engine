@@ -69,7 +69,11 @@ namespace AWMSEngine.ADO
         }
 
 
-        public STOCountDocLockCriteria STOCountDocLock(int skuID, int? packMstID, int? supplierID, string batch, string lot, DocumentTypeID docTypeID, VOCriteria buVO)
+        public STOCountDocLockCriteria STOCountDocLock(long skuID, long? packMstID, long? supplierID, string batch, string lot, DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            return this.STOCountDocLock(skuID, packMstID, supplierID, batch, lot, new DocumentTypeID[] { docTypeID }, buVO);
+        }
+        public STOCountDocLockCriteria STOCountDocLock(long skuID, long? packMstID, long? supplierID, string batch, string lot, DocumentTypeID[] docTypeIDs, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("skuID", skuID);
@@ -77,8 +81,8 @@ namespace AWMSEngine.ADO
             param.Add("supplierID", supplierID);
             param.Add("batch", string.IsNullOrWhiteSpace(batch) ? null : batch);
             param.Add("lot", string.IsNullOrWhiteSpace(lot) ? null : lot);
-            param.Add("docTypeID", docTypeID);
-            var res = this.Query<STOCountDocLockCriteria>("SP_STO_COUNT_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            param.Add("docTypeID", string.Join(',', docTypeIDs.Select(x => (int)x)));
+            var res = this.Query<STOCountDocLockCriteria>("SP_STO_COUNT_DOCLOCK_V2", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
             return res;
         }
         public int UpdateEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)

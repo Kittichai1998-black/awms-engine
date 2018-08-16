@@ -34,7 +34,7 @@ namespace AWMSModel.Entity
         public string Ref1;
         public string Ref2;
 
-        public int? For_Supplier_ID;
+        public long? For_Supplier_ID;
         public string Barch;
         public string Lot;
 

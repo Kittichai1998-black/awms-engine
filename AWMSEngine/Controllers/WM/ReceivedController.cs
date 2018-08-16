@@ -13,17 +13,18 @@ namespace AWMSEngine.Controllers.WM
     public class ReceivedController : ControllerBase
     {
         [HttpGet("doc")]
-        public dynamic Get(dynamic data)
+        public dynamic Get()
         {
             var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             //var res = 
             return null;
         }
         [HttpPost("doc")]
-        public dynamic Post(dynamic data)
+        public dynamic Create([FromBody]dynamic data)
         {
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            return null;
+            Engine.APIService.Doc.ReceivedDocumentCreateAPI exec = new Engine.APIService.Doc.ReceivedDocumentCreateAPI();
+            var res = exec.Execute(data);
+            return res;
         }
     }
 }
