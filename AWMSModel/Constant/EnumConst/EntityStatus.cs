@@ -8,6 +8,7 @@ namespace AWMSModel.Constant.EnumConst
     {
         INACTIVE = 0,
         ACTIVE = 1,
-        REMOVE = 2
+        REMOVE = 2,
+        DONE = 3
     }
 }

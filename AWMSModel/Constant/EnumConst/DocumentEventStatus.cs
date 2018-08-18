@@ -6,11 +6,16 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum DocumentEventStatus
     {
-        NEW = 10,
-        ONPROGRESS = 11,
-        CLOSING = 20,
-        CLOSED = 21,
-        REJECTING = 22,
-        REJECTED = 23
+        IDEL = 10,
+        WORKING = 11,
+        WORKED = 12,
+
+        REMOVING = 21,
+        REMOVED = 22,
+        REJECTING = 23,
+        REJECTED = 24,
+
+        CLOSING = 31,
+        CLOSED = 32,
     }
 }

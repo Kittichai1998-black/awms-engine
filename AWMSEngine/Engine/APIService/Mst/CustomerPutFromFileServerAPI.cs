@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.APIService.Mst
 {
-    public class DealerPutFromFileServerAPI : BaseAPIService
+    public class CustomerPutFromFileServerAPI : BaseAPIService
     {
         protected override dynamic ExecuteEngineManual()
         {
@@ -13,8 +13,8 @@ namespace AWMSEngine.Engine.APIService.Mst
             var res = new Engine.General.TransferMasterFromFileServer().Execute(this.Logger, this.BuVO,
                 new General.TransferMasterFromFileServer.TReq()
                 {
-                    APICode = "Dealer_Master_Transfer",
-                    TableName = "ams_Dealer",
+                    APICode = "Customer_Master_Transfer",
+                    TableName = "ams_Customer",
                     FieldWhere = "Code",
                     ReqFieldNames = new string[] { "Code", "Name", "Description" },
                     ReqFieldNamesMandatory = new string[] { "Code", "Name" },

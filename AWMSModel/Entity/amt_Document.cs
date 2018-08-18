@@ -12,13 +12,13 @@ namespace AWMSModel.Entity
 
         public long? ParentDocument_ID;
 
-        public long? Sou_Dealer_ID;
+        public long? Sou_Customer_ID;
         public long? Sou_Supplier_ID;
         public long? Sou_Branch_ID;
         public long? Sou_Warehouse_ID;
         public long? Sou_AreaMaster_ID;
 
-        public long? Des_Dealer_ID;
+        public long? Des_Customer_ID;
         public long? Des_Supplier_ID;
         public long? Des_Branch_ID;
         public long? Des_Warehouse_ID;
@@ -34,7 +34,7 @@ namespace AWMSModel.Entity
         public string Ref1;
         public string Ref2;
 
-        public long? For_Supplier_ID;
+        public long? For_Customer_ID;
         public string Barch;
         public string Lot;
 

@@ -12,7 +12,7 @@ namespace AWMSEngine.Engine.Validation
         protected override NullCriteria ExecuteEngine(StorageObjectCriteria reqVO)
         {
             if (!reqVO.objectSizeMaps.Any(x => reqVO.mapstos.Any(y => y.objectSizeID == x.innerObjectSizeID)))
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ยังไม่ได้กำหนดค่า ไม่สามารถใส่ลงกล่อง หรือ พาเลทได้");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถนำลงกล่องหรือพาเลทได้ ตั้งค่าการจัดการขนาดสินค้าและพาเลท");
             this.ValidateWeight(reqVO);
             this.ValidateQuantity(reqVO);
 

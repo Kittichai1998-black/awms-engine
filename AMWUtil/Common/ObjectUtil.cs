@@ -14,6 +14,7 @@ namespace AMWUtil.Common
 {
     public static class ObjectUtil
     {
+
         public static T Get<T>(this string s)
         {
             if (typeof(T) == typeof(string)) return (T)(object)s;
@@ -136,18 +137,22 @@ namespace AMWUtil.Common
         }
         public static string ListKeyToQueryString(params KeyValuePair<string, string>[] param)
         {
+            if (param == null) return string.Empty;
             return ListKeyToQueryString(param.ToList());
         }
         public static string ListKeyToQueryString(params KeyValuePair<string, object>[] param)
         {
+            if (param == null) return string.Empty;
             return ListKeyToQueryString(param.Select(x => new KeyValuePair<string, string>(x.Key, (string)x.Value)).ToList());
         }
         public static string ListKeyToQueryString(List<KeyValuePair<string, object>> param)
         {
+            if (param == null) return string.Empty;
             return ListKeyToQueryString(param.Select(x => new KeyValuePair<string, string>(x.Key, (string)x.Value)).ToList());
         }
         public static string ListKeyToQueryString(List<KeyValuePair<string, string>> param)
         {
+            if (param == null) return string.Empty;
             StringBuilder res = new StringBuilder();
             foreach (KeyValuePair<string, string> p in param)
             {

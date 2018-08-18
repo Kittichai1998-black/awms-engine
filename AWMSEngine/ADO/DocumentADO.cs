@@ -10,65 +10,16 @@ namespace AWMSEngine.ADO
 {
     public class DocumentADO : ADO.BaseMSSQLAccess<DocumentADO>
     {
-        public amt_Document Create(amt_Document doc, VOCriteria buVO)
+        
+
+        public List<amt_DocumentItemStorageObject> ListSTOInDocLock(List<long> stoids, DocumentTypeID docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@parentDocument_ID", doc.ParentDocument_ID);
-            param.Add("@documentType_ID", doc.DocumentType_ID);
-
-
-            param.Add("@sou_dealer_ID", doc.Sou_Dealer_ID);
-            param.Add("@sou_supplier_ID", doc.Sou_Supplier_ID);
-            param.Add("@sou_branch_ID", doc.Sou_Branch_ID);
-            param.Add("@sou_warehouse_ID", doc.Sou_Warehouse_ID);
-            param.Add("@sou_areaMaster_ID", doc.Sou_AreaMaster_ID);
-
-            param.Add("@des_dealer_ID", doc.Des_Dealer_ID);
-            param.Add("@des_supplier_ID", doc.Des_Supplier_ID);
-            param.Add("@des_branch_ID", doc.Des_Branch_ID);
-            param.Add("@des_warehouse_ID", doc.Des_Warehouse_ID);
-            param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID); 
-
-            param.Add("@actionTime", doc.ActionTime);
-            param.Add("@documentDate", doc.DocumentDate);
-            param.Add("@options", doc.Options);
-            param.Add("@refID", doc.RefID);
-            param.Add("@ref1", doc.Ref1);
-            param.Add("@ref2", doc.Ref2);
-
-            param.Add("@for_supplier_ID", doc.For_Supplier_ID);
-            param.Add("@batch", doc.Barch);
-            param.Add("@lot", doc.Lot);
-
-            param.Add("@remark", doc.Remark);
-            param.Add("@eventStatus", 0);
-            param.Add("@actionBy", buVO.ActionBy);
-            param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
-            param.Add("@resCode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 150);
-
-            this.Execute("SP_DOC_CREATE",
-                                System.Data.CommandType.StoredProcedure,
-                                param,
-                                buVO.Logger, buVO.SqlTransaction);
-            var newid = param.Get<long>("@resID");
-            var newcode = param.Get<string>("@resCode");
-
-            doc.ID = newid;
-            doc.Code = newcode;
-            doc.CreateBy = buVO.ActionBy;
-            doc.CreateTime = DateTime.Now;
-
-            doc.DocumentItems.ForEach(x =>
-            {
-                x.Document_ID = doc.ID.Value;
-                this.CreateItem(x, buVO);
-            });
-
-            return doc;
-
+            param.Add("storageObjectIDs", string.Join(',', stoids));
+            param.Add("documentTypeID", docTypeID);
+            var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_IN_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
         }
-
-
         public STOCountDocLockCriteria STOCountDocLock(long skuID, long? packMstID, long? supplierID, string batch, string lot, DocumentTypeID docTypeID, VOCriteria buVO)
         {
             return this.STOCountDocLock(skuID, packMstID, supplierID, batch, lot, new DocumentTypeID[] { docTypeID }, buVO);
@@ -92,6 +43,58 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public amt_Document Create(amt_Document doc, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("@parentDocument_ID", doc.ParentDocument_ID);
+            param.Add("@documentType_ID", doc.DocumentType_ID);
+
+
+            param.Add("@sou_customer_ID", doc.Sou_Customer_ID);
+            param.Add("@sou_supplier_ID", doc.Sou_Supplier_ID);
+            param.Add("@sou_branch_ID", doc.Sou_Branch_ID);
+            param.Add("@sou_warehouse_ID", doc.Sou_Warehouse_ID);
+            param.Add("@sou_areaMaster_ID", doc.Sou_AreaMaster_ID);
+
+            param.Add("@des_customer_ID", doc.Des_Customer_ID);
+            param.Add("@des_supplier_ID", doc.Des_Supplier_ID);
+            param.Add("@des_branch_ID", doc.Des_Branch_ID);
+            param.Add("@des_warehouse_ID", doc.Des_Warehouse_ID);
+            param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID);
+
+            param.Add("@actionTime", doc.ActionTime);
+            param.Add("@documentDate", doc.DocumentDate);
+            param.Add("@options", doc.Options);
+            param.Add("@refID", doc.RefID);
+            param.Add("@ref1", doc.Ref1);
+            param.Add("@ref2", doc.Ref2);
+
+            param.Add("@for_customer_ID", doc.For_Customer_ID);
+            param.Add("@batch", doc.Barch);
+            param.Add("@lot", doc.Lot);
+
+            param.Add("@remark", doc.Remark);
+            param.Add("@eventStatus", doc.EventStatus);
+            param.Add("@actionBy", buVO.ActionBy);
+            var docItems = doc.DocumentItems;
+
+            doc = this.Query<amt_Document>("SP_DOC_CREATE",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction)
+                                .FirstOrDefault();
+            doc.DocumentItems = new List<amt_DocumentItem>();
+
+            docItems.ForEach(x =>
+            {
+                x.Document_ID = doc.ID.Value;
+                var docItem = this.CreateItem(x, buVO);
+                doc.DocumentItems.Add(docItem);
+            });
+
+            return doc;
+
+        }
         public amt_DocumentItem CreateItem(amt_DocumentItem docItem, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -106,20 +109,23 @@ namespace AWMSEngine.ADO
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);
             param.Add("@ref3", docItem.Ref3);
-            param.Add("@eventStatus", 0);
+            param.Add("@eventStatus", docItem.EventStatus);
             param.Add("@storageObject_IDs", string.Join(",", docItem.StorageObjectIDs));
             param.Add("@actionBy", buVO.ActionBy);
-            param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
 
-            this.Execute("SP_DOCITEM_CREATE",
+            docItem = this.Query<amt_DocumentItem>("SP_DOCITEM_CREATE",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
-                                buVO.Logger, buVO.SqlTransaction);
-            var newid = param.Get<long>("@resID");
+                                buVO.Logger, buVO.SqlTransaction)
+                                .FirstOrDefault();
 
-            docItem.ID = newid;
-            docItem.CreateBy = buVO.ActionBy;
-            docItem.CreateTime = DateTime.Now;
+            
+
+            docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
+                .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
+                .Select(x=>x.StorageObject_ID)
+                .ToList();
+            
             return docItem;
         }
         public int Close(long documentID, bool needClose, VOCriteria buVO)
@@ -128,13 +134,13 @@ namespace AWMSEngine.ADO
             param.Add("@documentID", documentID);
             param.Add("@needClose", needClose);
 
-            return this.Execute("SP_DOC_CLOSE",
+            return this.Execute("SP_DOC_CLOSED",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
-        public int MappingSTO(long documentItemID, List<long> storageObjectIDs,VOCriteria buVO)
+        public int MappingSTO(long documentItemID, List<long> storageObjectIDs, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@documentItemID", documentItemID);
@@ -145,5 +151,16 @@ namespace AWMSEngine.ADO
                                 param,
                                 buVO.Logger, buVO.SqlTransaction);
         }
+        public List<amt_Document> ListBySTO(List<long> storageObjectIDs, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("storageObjectIDs", string.Join(",", storageObjectIDs));
+            return this.Query<amt_Document>("SP_DOC_LIST_BYSTOID",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+        }
+
+
     }
 }

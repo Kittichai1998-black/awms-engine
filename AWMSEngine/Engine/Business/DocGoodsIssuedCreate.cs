@@ -24,7 +24,7 @@ namespace AWMSEngine.Engine.Business
             public string souWarehouseCode;//คลังต้นทาง
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
 
-            public string desDealerCode;//ผู้ผลิตต้นทาง
+            public string desCustomerCode;//ผู้ผลิตต้นทาง
             public string desSupplierCode;//ผู้จัดจำหน่ายต้นทาง
 
             public string actionTime;//วันที่ส่ง
@@ -52,7 +52,7 @@ namespace AWMSEngine.Engine.Business
             {
                 Lot = reqVO.lot,
                 Barch = reqVO.batch,
-                For_Supplier_ID = string.IsNullOrWhiteSpace(reqVO.forSupplierCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.forSupplierCode).ID,
+                For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forSupplierCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.forSupplierCode).ID,
                 RefID = reqVO.refID,
 
                 Sou_Warehouse_ID = string.IsNullOrWhiteSpace(reqVO.souWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.souWarehouseCode).ID,
@@ -60,11 +60,13 @@ namespace AWMSEngine.Engine.Business
                 Sou_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.souAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.souAreaMasterCode).ID,
 
                 Des_Supplier_ID = string.IsNullOrWhiteSpace(reqVO.desSupplierCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.desSupplierCode).ID,
-                Des_Dealer_ID = string.IsNullOrWhiteSpace(reqVO.desDealerCode) ? null : this.StaticValue.Dealer.First(x => x.Code == reqVO.desDealerCode).ID,
+                Des_Customer_ID = string.IsNullOrWhiteSpace(reqVO.desCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.desCustomerCode).ID,
 
                 ActionTime = DateTimeUtil.GetDateTime( reqVO.actionTime),
                 DocumentDate = reqVO.documentDate.GetDate().Value,
                 Remark = reqVO.remark,
+
+                EventStatus = DocumentEventStatus.WORKING,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };
@@ -95,7 +97,7 @@ namespace AWMSEngine.Engine.Business
                 var countDocLock = ADO.DocumentADO.GetInstant().STOCountDocLock(
                                          skuMst.ID.Value,
                                          packID,
-                                         newDoc.For_Supplier_ID,
+                                         newDoc.For_Customer_ID,
                                          reqVO.batch,
                                          reqVO.lot,
                                          DocumentTypeID.GOODS_ISSUED,
@@ -123,7 +125,7 @@ namespace AWMSEngine.Engine.Business
                     SKU_ID = skuMst.ID.Value,
                     Quantity = skuItem.packQty,
                     PackMaster_ID = packID,
-                    EventStatus = DocumentEventStatus.NEW                    
+                    EventStatus = DocumentEventStatus.WORKING                    
                 });
             }
 

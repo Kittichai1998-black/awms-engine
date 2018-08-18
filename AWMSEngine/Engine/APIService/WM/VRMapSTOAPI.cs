@@ -19,6 +19,8 @@ namespace AWMSEngine.Engine.APIService.WM
                 new Business.VRMapSTO.TReqModle()
                 {
                     scanCode = this.RequestVO.scanCode,
+                    batch = this.RequestVO.batch,
+                    lot = this.RequestVO.lot,
                     amount = this.RequestVO.amount,
                     mode = (VirtualMapSTOModeType)this.RequestVO.mode,
                     options = options,

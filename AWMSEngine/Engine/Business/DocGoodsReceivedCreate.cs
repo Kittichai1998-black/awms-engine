@@ -18,12 +18,12 @@ namespace AWMSEngine.Engine.Business
         public class TReq
         {
             public string refID;
-            public string forSupplierCode;
+            public string forCustomerCode;
             public string batch;
             public string lot;
 
             public string souSupplierCode;
-            public string souDealerCode;
+            public string souCustomerCode;
             public string souBranchCode;//สาขาต้นทาง
             public string souWarehouseCode;//คลังต้นทาง
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
@@ -32,8 +32,8 @@ namespace AWMSEngine.Engine.Business
             public string desWarehouseCode;//คลังต้นทาง
             public string desAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
 
-            public string actionTime;//วันที่ส่ง
-            public string documentDate;
+            public DateTime actionTime;//วันที่ส่ง
+            public DateTime documentDate;
             public string remark;
             public string ref1;
             public string ref2;
@@ -47,8 +47,8 @@ namespace AWMSEngine.Engine.Business
                 public int packItemQty;
                 public int quantity;
 
-                public string expireDate;
-                public string productionDate;
+                public DateTime? expireDate;
+                public DateTime? productionDate;
 
                 public string ref1;
                 public string ref2;
@@ -66,28 +66,28 @@ namespace AWMSEngine.Engine.Business
 
                 Lot = reqVO.lot,
                 Barch = reqVO.batch,
-                For_Supplier_ID = string.IsNullOrWhiteSpace(reqVO.forSupplierCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.forSupplierCode).ID,
+                For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
 
-                Sou_Dealer_ID = string.IsNullOrWhiteSpace(reqVO.souDealerCode) ? null : this.StaticValue.Dealer.First(x => x.Code == reqVO.souDealerCode).ID,
+                Sou_Customer_ID = string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID,
                 Sou_Supplier_ID = string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.souSupplierCode).ID,
                 Sou_Branch_ID = string.IsNullOrWhiteSpace(reqVO.souBranchCode) ? null : this.StaticValue.Branchs.First(x => x.Code == reqVO.souBranchCode).ID,
                 Sou_Warehouse_ID = string.IsNullOrWhiteSpace(reqVO.souWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.souWarehouseCode).ID,
                 Sou_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.souAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.souAreaMasterCode).ID,
 
-                Des_Dealer_ID = null,
+                Des_Customer_ID = null,
                 Des_Supplier_ID = null,
                 Des_Branch_ID = string.IsNullOrWhiteSpace(reqVO.desBranchCode) ? null : this.StaticValue.Branchs.First(x => x.Code == reqVO.desBranchCode).ID,
                 Des_Warehouse_ID = string.IsNullOrWhiteSpace(reqVO.desWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.desWarehouseCode).ID,
                 Des_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.desAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desAreaMasterCode).ID,
-                DocumentDate = reqVO.documentDate.GetDate().Value,
-                ActionTime = reqVO.actionTime.GetDateTime().Value,
+                DocumentDate = reqVO.documentDate,
+                ActionTime = reqVO.actionTime,
 
                 RefID = reqVO.refID,
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
 
                 DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                EventStatus = DocumentEventStatus.ONPROGRESS,
+                EventStatus = DocumentEventStatus.WORKING,
 
                 Remark = reqVO.remark,
                 Options = null,
@@ -112,11 +112,11 @@ namespace AWMSEngine.Engine.Business
                     PackMaster_ID = packMst.ID.Value,
                     Quantity = skuItem.quantity,
                     
-                    EventStatus = DocumentEventStatus.ONPROGRESS,
+                    EventStatus = DocumentEventStatus.WORKING,
 
                     Options = AMWUtil.Common.ObjectUtil.ListKeyToQueryString(skuItem.options),
-                    ExpireDate = DateTimeUtil.GetDate(skuItem.expireDate),
-                    ProductionDate = DateTimeUtil.GetDate(skuItem.productionDate),
+                    ExpireDate = skuItem.expireDate,
+                    ProductionDate = skuItem.productionDate,
                     Ref1 = skuItem.ref1,
                     Ref2 = skuItem.ref2,
                     Ref3 = skuItem.ref3,

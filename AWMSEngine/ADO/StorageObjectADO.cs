@@ -64,16 +64,18 @@ namespace AWMSEngine.ADO
             this.Query<int>("SP_STO_GETROOTID", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             return param.Get<int>("rootID");
         }
-        public int GetFreeCount(string code, bool isInStorage, VOCriteria buVO)
+        public int GetFreeCount(string code, bool isInStorage, string batch, string lot, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("code", code);
             param.Add("isInStorage", isInStorage);
+            param.Add("batch", batch);
+            param.Add("lot", lot);
             param.Add("res", null, System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
             this.Query<int>("SP_STO_FREE_COUNT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             return param.Get<int>("res");
         }
-        public long ReceivingConfirm(long id, StorageObjectType type, bool isConfirm, VOCriteria buVO)
+        /*public long ReceivingConfirm(long id, StorageObjectType type, bool isConfirm, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("id", id);
@@ -87,9 +89,38 @@ namespace AWMSEngine.ADO
                 buVO.Logger,
                 buVO.SqlTransaction);
             return res;
+        }*/
+
+        public int UpdateStatusToChild(long stoRootID, 
+            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus, EntityStatus? toStatus, 
+            VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("rootid", stoRootID);
+            param.Add("fromEventStatus", fromEventStatus);
+            param.Add("fromStatus", fromStatus);
+            param.Add("toEventStatus", toEventStatus);
+            param.Add("toStatus", toStatus);
+            param.Add("actionBy", buVO.ActionBy);
+            var res = this.Execute(
+                "SP_STO_UPDATE_STATUS_TO_CHILD",
+                System.Data.CommandType.StoredProcedure,
+                param,
+                buVO.Logger,
+                buVO.SqlTransaction);
+            return res;
         }
 
-        public long Put(StorageObjectCriteria sto, VOCriteria buVO)
+        public long Create(StorageObjectCriteria sto, string batch, string lot, VOCriteria buVO)
+        {
+            sto.id = null;
+            return this.Put(sto, batch, lot, buVO);
+        }
+        public long Update(StorageObjectCriteria sto, VOCriteria buVO)
+        {
+            return this.Put(sto, null, null, buVO);
+        }
+        private long Put(StorageObjectCriteria sto,string batch, string lot, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("id", sto.id);
@@ -99,6 +130,8 @@ namespace AWMSEngine.ADO
             param.Add("parentID", sto.parentID);
             param.Add("parentType", sto.parentType);
             param.Add("options", ObjectUtil.ListKeyToQueryString(sto.options));
+            param.Add("batch", batch);
+            param.Add("lot", lot);
             param.Add("actionBy", buVO.ActionBy);
             param.Add("resID", null, System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
             var r = this.Query<int>("SP_STO_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)

@@ -24,7 +24,11 @@ namespace AWMSEngine.Engine.Business
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            var stopacks = this.GetPackForNewDoc(reqVO.stomap);
+            var stopacks = this.ListPackSTOIDs(reqVO.stomap);
+            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListSTOInDocLock(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+
+            stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.StorageObject_ID == x.id));
+
             amt_Document doc = null;
 
             long? sou_Branch_ID = null;
@@ -45,13 +49,13 @@ namespace AWMSEngine.Engine.Business
             {
                 ActionTime = null,
                 Code = null,
-                Sou_Dealer_ID = null,
+                Sou_Customer_ID = null,
                 Sou_Supplier_ID = null,
                 Sou_Branch_ID = sou_Branch_ID,
                 Sou_Warehouse_ID = sou_Warehouse_ID,
                 Sou_AreaMaster_ID = sou_AreaMaster_ID,
 
-                Des_Dealer_ID = null,
+                Des_Customer_ID = null,
                 Des_Supplier_ID = null,
                 Des_Branch_ID = reqVO.Des_Branch_ID,
                 Des_Warehouse_ID = reqVO.Des_Warehouse_ID,
@@ -60,7 +64,7 @@ namespace AWMSEngine.Engine.Business
                 DocumentDate = DateTime.Now,
                 DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
                 ID = null,
-                EventStatus = DocumentEventStatus.ONPROGRESS,
+                EventStatus = DocumentEventStatus.WORKING,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
@@ -81,7 +85,7 @@ namespace AWMSEngine.Engine.Business
                     PackMaster_ID = p.key.mstID.Value,
                     Code = p.key.code,
                     ID = null,
-                    EventStatus = DocumentEventStatus.ONPROGRESS,
+                    EventStatus = DocumentEventStatus.WORKING,
                     Options = p.key.options,
                     Quantity = p.count,
                     ExpireDate = null,
@@ -103,16 +107,15 @@ namespace AWMSEngine.Engine.Business
             return doc;
         }
 
-        private List<StorageObjectCriteria> GetPackForNewDoc(StorageObjectCriteria mapsto, List<StorageObjectCriteria> outMapstos = null)
+        private List<StorageObjectCriteria> ListPackSTOIDs(StorageObjectCriteria mapsto)
         {
-            if (outMapstos == null)
-                outMapstos = new List<StorageObjectCriteria>();
-            if (mapsto._onchange && mapsto.type == StorageObjectType.PACK)
+            List<StorageObjectCriteria> mapstos = new List<StorageObjectCriteria>();
+            if (mapsto.type == StorageObjectType.PACK)
             {
-                outMapstos.Add(mapsto);
+                mapstos.Add(mapsto);
             }
-            mapsto.mapstos.ForEach(x => GetPackForNewDoc(x, outMapstos));
-            return outMapstos;
+            mapsto.mapstos.ForEach(x => mapstos.AddRange(ListPackSTOIDs(x)));
+            return mapstos;
         }
     }
 }

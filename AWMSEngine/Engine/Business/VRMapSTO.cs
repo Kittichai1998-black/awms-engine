@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AWMSEngine.ADO;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace AWMSEngine.Engine.Business
         public class TReqModle
         {
             public string scanCode;
+            public string batch;
+            public string lot;
             public int amount;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
@@ -50,12 +53,24 @@ namespace AWMSEngine.Engine.Business
                 mapsto = ADOSto.Get(reqVO.scanCode, false, false, this.BuVO);
                 if (mapsto == null || mapsto.type == StorageObjectType.PACK)
                 {
+                    int freeCount = ADOSto.GetFreeCount(reqVO.scanCode, false, reqVO.batch, reqVO.lot, this.BuVO);
+                    if (freeCount < reqVO.amount && (!false && this.StaticValue.IsFeature(FeatureCode.IB0100)))
+                    {
+                        if (!false && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.scanCode, this.BuVO) != null)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่สามารถเพิ่มรายการสินค้าได้ เนื่องจากจำนวนที่รับเข้าเกินจากเอกสาร Received");
+                        else
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1002, "รหัสสินค้า/พาเลท ไม่ถูกต้อง");
+                    }
+
                     Logger.LogDebug("//ไม่พบในคลัง ให้หา sto นอกคลังแบบ Free");
                     mapsto = ADOSto.GetFree(reqVO.scanCode, false, true, this.BuVO);
                     if (mapsto != null)
                     {
                         Logger.LogDebug("//พบ sto ว่างประเภท " + mapsto.type);
-                        ADOSto.Put(mapsto, this.BuVO);
+                        if(!mapsto.id.HasValue)
+                            ADOSto.Create(mapsto, reqVO.batch, reqVO.lot, this.BuVO);
+                        else
+                            ADOSto.Update(mapsto, this.BuVO);
                         Logger.LogDebug("//รับเข้าคลัง สถานะ WAIT");
                     }
                     else
@@ -98,6 +113,8 @@ namespace AWMSEngine.Engine.Business
             {
                 this.ActionAdd(
                     reqVO.scanCode,
+                    reqVO.batch,
+                    reqVO.lot,
                     reqVO.amount,
                     reqVO.mode == VirtualMapSTOModeType.TRANSFER,
                     reqVO.options,
@@ -145,6 +162,8 @@ namespace AWMSEngine.Engine.Business
         }
 
         private void ActionAdd(string scanCode,
+            string batch,
+            string lot,
             int amount,
             bool isInStorage,
             List<KeyValuePair<string, string>> options,
@@ -154,6 +173,7 @@ namespace AWMSEngine.Engine.Business
             //mapsto = ADOSto.Get(mapsto.code, true, true, this.BuVO);
             //this.ActionSelect(oldCode, mapsto);
             var msf = this.GetMapStoLastFocus(mapsto);
+            
 
             List<StorageObjectCriteria> newMSs = new List<StorageObjectCriteria>();
 
@@ -162,15 +182,33 @@ namespace AWMSEngine.Engine.Business
             else
                 Logger.LogInfo("Mapping Object Storage to Storage");
 
-            int freeCount = ADOSto.GetFreeCount(scanCode, isInStorage, this.BuVO);
-            if (freeCount < amount)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนที่มีไม่เพียงพอ");
+            int freeCount = ADOSto.GetFreeCount(scanCode, isInStorage, batch, lot, this.BuVO);
+            if (freeCount < amount && (isInStorage || (!isInStorage && this.StaticValue.IsFeature(FeatureCode.IB0100))))
+            {
+                if (!isInStorage && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(scanCode, this.BuVO) != null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่สามารถเพิ่มรายการสินค้าได้ เนื่องจากจำนวนที่รับเข้าเกินจากเอกสาร Received");
+                else if(!isInStorage)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "รหัสสินค้า/พาเลท ไม่ถูกต้อง");
+                else
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "รหัสสินค้า/พาเลทหรือจำนวนที่อยู่ในคลัง ไม่ถูกต้อง");
+            }
 
             for (int i = 0; i < amount; i++)
             {
                 StorageObjectCriteria newMS = ADOSto.GetFree(scanCode, isInStorage, true, this.BuVO);
-                newMS.isFocus = false;
-                if (amount > 1 && newMS.type != StorageObjectType.PACK)
+
+                if (newMS == null)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ว่างอยู่");
+                }
+                else if (!this.StaticValue.IsFeature(FeatureCode.IB0104)
+                    && newMS.parentType == StorageObjectType.PACK
+                    && msf.mapstos.Count() > 0
+                    && !msf.mapstos.TrueForAll(x => x.type == newMS.type && x.code == newMS.code))
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่รองรับ Multi SKU");
+                }
+                else if (amount > 1 && newMS.type != StorageObjectType.PACK)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่สามารถเพิ่มจำนวนหลายชิ้นในครั้งเดียวได้");
                 }
@@ -184,10 +222,20 @@ namespace AWMSEngine.Engine.Business
                 }
                 else
                 {
+                    newMS.isFocus = false;
                     newMS.parentID = msf.id;
                     newMS.parentType = msf.type;
                     newMS.options = options;
-                    ADOSto.Put(newMS, this.BuVO);
+                    if (newMS.id.HasValue)
+                        ADOSto.Update(newMS, this.BuVO);
+                    else
+                    {
+                        newMS.eventStatus = StorageObjectEventStatus.IDEL;
+                        ADOSto.Create(newMS, batch, lot, this.BuVO);
+                    }
+                    //ADOSto.Put(newMS,batch,lot, this.BuVO);
+                    if (!isInStorage && newMS.type != StorageObjectType.PACK)
+                        newMS.isFocus = true;
                     newMSs.Add(newMS);
                 }
             }
@@ -203,10 +251,10 @@ namespace AWMSEngine.Engine.Business
         {
             var msf = GetMapStoLastFocus(mapsto);
 
-            if (mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == scanCode && x.eventStatus == StorageObjectEventStatus.RECEIVING) < amount)
-                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนไม่เพียงพอ นำออกได้เฉพาะรายการที่รอรับเข้า");
+            if (mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == scanCode && x.eventStatus == StorageObjectEventStatus.IDEL) < amount)
+                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             else if (msf.mapstos.Count(x => x.code == scanCode) < amount)
-                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนไม่เพียงพอ");
+                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก");
 
             var mapstos = msf.mapstos.OrderBy(x => x.eventStatus).ThenByDescending(x => x.id);
             for (int i = 0; i < amount; i++)
@@ -214,7 +262,8 @@ namespace AWMSEngine.Engine.Business
                 var rmItem = mapstos.FirstOrDefault(x => x.code == scanCode);
                 rmItem.parentID = null;
                 rmItem.parentType = null;
-                ADOSto.Put(rmItem, this.BuVO);
+                ADOSto.Update(rmItem, this.BuVO);
+                //ADOSto.Put(rmItem, null, null, this.BuVO);
                 msf.mapstos.Remove(rmItem);
             }
         }

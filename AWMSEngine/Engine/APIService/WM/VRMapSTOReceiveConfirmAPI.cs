@@ -20,16 +20,38 @@ namespace AWMSEngine.Engine.APIService.WM
                     rootStoID = this.RequestVO.rootStoID,
                     type = (StorageObjectType)this.RequestVO.type
                 });
+            
+               
 
-            new Engine.Validation.ValidateInnerSTOLowerlimit().Execute(this.Logger, this.BuVO, res);
-
-            if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102))
+            if (this.RequestVO.isConfirm == true)
             {
-                var doc = new Engine.Business.DocGoodsReceivedCreateBySTO().Execute(this.Logger, this.BuVO,
-                    new DocGoodsReceivedCreateBySTO.TReq() { stomap = res });
-                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0103))
+
+                //Validate
+                new Engine.Validation.ValidateInnerSTOLowerlimit().Execute(this.Logger, this.BuVO, res);
+
+                List<long> docIDs = new List<long>();
+                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102) &&
+                    !StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
                 {
-                    new Engine.Business.DocGoodsReceivedClose().Execute(this.Logger, this.BuVO, new DocGoodsReceivedClose.TReq() { DocumentID = doc.ID.Value });
+                    //Create Doc AUTO
+                    var doc = new Engine.Business.DocGoodsReceivedCreateBySTO().Execute(this.Logger, this.BuVO,
+                        new DocGoodsReceivedCreateBySTO.TReq() { stomap = res });
+                    docIDs.Add(doc.ID.Value);
+                }
+                else if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
+                {
+                    //List Doc in Database
+                    docIDs = new Engine.Business.DocRelationBySTO().Execute(this.Logger, this.BuVO, res).documents.Select(x => x.ID.Value).ToList();
+                }
+
+
+                //Close Doc ALL
+                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100) || StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102))
+                {
+                    if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0103))
+                    {
+                        new Engine.Business.DocGoodsReceivedClose().Execute(this.Logger, this.BuVO, new DocGoodsReceivedClose.TReq() { DocumentIDs = docIDs });
+                    }
                 }
             }
             return res;

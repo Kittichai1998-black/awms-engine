@@ -37,10 +37,10 @@ namespace AWMSEngine.Controllers
             SKUMasterPutFromFileServerAPI api = new SKUMasterPutFromFileServerAPI();
             return api.Execute(request);
         }
-        [HttpPost("TransferFileServer/DealerMst")]
-        public dynamic TransferSF_DealerMst([FromBody]dynamic request)
+        [HttpPost("TransferFileServer/CustomerMst")]
+        public dynamic TransferSF_CustomerMst([FromBody]dynamic request)
         {
-            DealerPutFromFileServerAPI api = new DealerPutFromFileServerAPI();
+            CustomerPutFromFileServerAPI api = new CustomerPutFromFileServerAPI();
             return api.Execute(request);
         }
         [HttpPost("TransferFileServer/SupplierMst")]

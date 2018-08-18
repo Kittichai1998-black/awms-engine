@@ -30,16 +30,32 @@ namespace MyTest2
         [Fact]
         public void TestDateTime()
         {
-            var dtORG = DateTime.Now;
-            string dtStr = dtORG.GetDateTimeString();
-            string dStr = dtORG.GetDateString();
+            string dtStr = "2018-08-17T04:00:02.461Z";
+            string dStr = "2017-09-02Z";
             DateTime dt = dtStr.GetDateTime().Value;
             DateTime d = dStr.GetDate().Value;
-            sysout.WriteLine("ORG : " + dtORG);
+
             sysout.WriteLine("dtStr : " + dtStr);
             sysout.WriteLine("dStr : " + dStr);
             sysout.WriteLine("dt : " + dt);
-            sysout.WriteLine("d : " + d.GetDateTimeString());
+            sysout.WriteLine("d : " + dt.ToISOString());
+            sysout.WriteLine("d : " + dt.ToISODateString());
         }
+
+        [Fact]
+        public void TestDateTime_JSON()
+        {
+            dynamic dy = new { dt = "2019-01-07T08:00Z" };
+            ClassDT dy2 = ObjectUtil.DynamicToModel<ClassDT>(dy);
+
+            sysout.WriteLine("Date ISO : " + dy.dt);
+            sysout.WriteLine("Date ToUniversalTime : " + dy2.dt.ToUniversalTime());
+            sysout.WriteLine("Date ToLocalTime : " + dy2.dt.ToLocalTime());
+            sysout.WriteLine("Date Json : " + dy2.dt.Json());
+        }
+    }
+    class ClassDT
+    {
+        public DateTime dt;
     }
 }

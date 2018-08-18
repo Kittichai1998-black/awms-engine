@@ -29,8 +29,8 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_Supplier> _Supplier;
         public List<ams_Supplier> Supplier { get => this._Supplier; }
-        private List<ams_Dealer> _Dealer;
-        public List<ams_Dealer> Dealer { get => this._Dealer; }
+        private List<ams_Customer> _Customers;
+        public List<ams_Customer> Customers { get => this._Customers; }
 
         private static StaticValueManager instant;
 
@@ -53,7 +53,7 @@ namespace AWMSEngine.ADO.StaticValue
             this.LoadAreaMaster();
             this.LoadBranch();
             this.LoadSupplier();
-            this.LoadDealer();
+            this.LoadCustomer();
         }
         public void LoadFeature()
         {
@@ -83,9 +83,9 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this._Branch = ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, new VOCriteria()).ToList();
         }
-        public void LoadDealer()
+        public void LoadCustomer()
         {
-            this._Dealer = ADO.DataADO.GetInstant().SelectBy<ams_Dealer>("status", 1, new VOCriteria()).ToList();
+            this._Customers = ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, new VOCriteria()).ToList();
         }
         public void LoadSupplier()
         {

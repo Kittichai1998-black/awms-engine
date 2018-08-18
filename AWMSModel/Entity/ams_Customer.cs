@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class ams_Dealer : BaseEntitySTD
+    public class ams_Customer : BaseEntitySTD
     {
     }
 }

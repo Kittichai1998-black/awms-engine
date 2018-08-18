@@ -10,11 +10,14 @@ namespace AWMSEngine.Engine.Business
     {
         public class TReq
         {
-            public long DocumentID;
+            public List<long> DocumentIDs;
         }
         protected override NullCriteria ExecuteEngine(TReq reqVO)
         {
-            ADO.DocumentADO.GetInstant().Close(reqVO.DocumentID, false, this.BuVO);
+            foreach(long docID in reqVO.DocumentIDs)
+            {
+                ADO.DocumentADO.GetInstant().Close(docID, false, this.BuVO);
+            }
             return null;
         }
     }

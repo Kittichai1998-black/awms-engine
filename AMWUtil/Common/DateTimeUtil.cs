@@ -9,43 +9,34 @@ namespace AMWUtil.Common
 {
     public static class DateTimeUtil
     {
-        public const string DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
-        public const string DATE_FORMAT = "dd-MM-yyyy";
+        public const string DATETIME_FORMAT = "s";
+        public const string DATE_FORMAT = "yyyy-MM-dd";
         static GregorianCalendar _gc = new GregorianCalendar();
-        public static string GetDateTimeString(this DateTime dt)
+        public static string ToISOString(this DateTime dt)
         {
             return dt.ToString(DATETIME_FORMAT);
         }
-        public static string GetDateTimeString(this DateTime? dt)
+        public static string ToISOString(this DateTime? dtUTC)
         {
-            if (dt.HasValue)
+            if (dtUTC.HasValue)
             {
-                return dt.Value.ToString(DATETIME_FORMAT);
+                return dtUTC.Value.ToString(DATETIME_FORMAT);
             }
             return null;
         }
-        public static string GetDateString(this DateTime d)
+        public static string ToISODateString(this DateTime d)
         {
-            return d.ToString(DATE_FORMAT);
+            return d.ToUniversalTime().ToString(DATE_FORMAT);
         }
-        public static string GetDateString(this DateTime? d)
+        public static string ToISODateString(this DateTime? d)
         {
             if (d.HasValue)
             {
-                return d.Value.ToString(DATE_FORMAT);
+                return d.Value.ToUniversalTime().ToString(DATE_FORMAT);
             }
             return null;
         }
         
-        public static string GetDateTimeISO(this DateTime? dt)
-        {
-            string dx = "";
-            if (dt.HasValue)
-            {
-                dx = dt.Value.ToUniversalTime().ToString("s") + "Z";
-            }
-            return dx;
-        }
         public static int GetWeekOfMonth(this DateTime time)
         {
             DateTime first = new DateTime(time.Year, time.Month, 1);
@@ -57,11 +48,12 @@ namespace AMWUtil.Common
             return _gc.GetWeekOfYear(time, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
         }
 
-        public static DateTime? GetDateTime(this string dt)
+        public static DateTime? GetDateTime(this string dtISO)
         {
             try
             {
-                return DateTime.ParseExact(dt, DATETIME_FORMAT, CultureInfo.InvariantCulture);
+                return DateTime.Parse(dtISO, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                //return DateTime.ParseExact(dt, DATETIME_FORMAT, CultureInfo.InvariantCulture);
             }
             catch
             {
@@ -69,11 +61,12 @@ namespace AMWUtil.Common
             }
         }
 
-        public static DateTime? GetDate(this string d)
+        public static DateTime? GetDate(this string dISO)
         {
             try
             {
-                return DateTime.ParseExact(d, DATE_FORMAT, CultureInfo.InvariantCulture);
+                return DateTime.Parse(dISO, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                //return DateTime.ParseExact(dISO, DATE_FORMAT, CultureInfo.InvariantCulture);
             }
             catch
             {

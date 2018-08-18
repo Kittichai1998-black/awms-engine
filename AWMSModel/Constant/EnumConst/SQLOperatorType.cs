@@ -24,6 +24,8 @@ namespace AWMSModel.Constant.EnumConst
         [ValueAttribute("<=")]
         LESS_EQUALS,
         [ValueAttribute("LIKE")]
-        LIKE
+        LIKE,
+        [ValueAttribute("IN")]
+        IN
     }
 }
