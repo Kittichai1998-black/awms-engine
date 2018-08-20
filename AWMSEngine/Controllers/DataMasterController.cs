@@ -11,7 +11,7 @@ namespace AWMSEngine.Controllers
 {
     [Route("api/mst")]
     [ApiController]
-    public class MasterDataController : ControllerBase
+    public class DataMasterController : ControllerBase
     {
         [HttpPut]
         public dynamic PutData([FromBody]dynamic request)
@@ -26,7 +26,7 @@ namespace AWMSEngine.Controllers
         public dynamic GetData()
         {
             var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var api = new AWMSEngine.Engine.APIService.Data.SelectDataAPI();
+            var api = new AWMSEngine.Engine.APIService.Data.SelectDataMstAPI();
             var res = api.Execute(jsond);
             return res;
         }

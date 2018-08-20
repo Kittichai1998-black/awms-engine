@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.APIService.Data
 {
-    public class SelectDataAPI : BaseAPIService
+    public class SelectDataMstAPI : BaseAPIService
     {
         
         protected override dynamic ExecuteEngineManual()
