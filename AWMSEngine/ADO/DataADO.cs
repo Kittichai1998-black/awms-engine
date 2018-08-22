@@ -177,7 +177,8 @@ namespace AWMSEngine.ADO
                                         w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL?"": "@" + w.field,
                                         w.conditionLeft != SQLConditionType.NONE ? w.conditionLeft.Attribute<ValueAttribute>().Value :
                                             string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
-                param.Add(w.field, w.value);
+
+                param.Add(w.field, w.value == null ? null : w.value.ToString().Replace('*', '%'));
             }
             foreach (var o in orderBys)
             {

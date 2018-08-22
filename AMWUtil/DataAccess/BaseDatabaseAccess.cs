@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Common;
+using AMWUtil.Logger;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -97,6 +98,19 @@ namespace AMWUtil.DataAccess
             return res;
         }
         
+        public DynamicParameters CreateDynamicParameters(object criteria)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            criteria.GetType()
+                .GetFields()
+                .ToList()
+                .ForEach(x => {
+                    var val = x.GetValue(criteria);
+                    var v = ObjectUtil.IsEmptyNull(val) ? null : val;
+                    param.Add(x.Name, v);
+                });
+            return param;
+        }
 
         public SqlConnection CreateConnection()
         {

@@ -230,7 +230,7 @@ namespace AMWUtil.Common
 
             return jsond;
         }
-        public static T CloneModel<T>(object obj)
+        public static T ObjectToModel<T>(object obj)
             where T : new()
         {
             return DynamicToModel<T>(obj);

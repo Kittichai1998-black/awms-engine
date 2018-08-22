@@ -42,16 +42,16 @@ namespace AWMSModel.Criteria
             public decimal? maxQuantity;
         }
 
-        public static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, List<ams_ObjectSize> staticObjectSizes, string codeFocus)
+        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes, string codeFocus)
         {
             return Generate(stos, staticObjectSizes, null, codeFocus);
         }
-        public static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, List<ams_ObjectSize> staticObjectSizes, long idFocus)
+        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes, long idFocus)
         {
             return Generate(stos, staticObjectSizes, idFocus, null);
         }
 
-        private static StorageObjectCriteria Generate(List<SPStorageObjectCriteria> stos, List<ams_ObjectSize> staticObjectSizes,
+        private static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes,
             long? idFocus, string codeFocus)
         {
             var rootSto = stos.FirstOrDefault(x => !x.parentID.HasValue);

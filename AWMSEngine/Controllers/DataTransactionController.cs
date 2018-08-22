@@ -23,5 +23,12 @@ namespace AWMSEngine.Controllers
 
             return res;
         }
+        [HttpGet("sto/search")]
+        public dynamic SearchSTO()
+        {
+            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var res = new Engine.APIService.UI.StorageObjectSearchAPI().Execute(req);
+            return res;
+        }
     }
 }

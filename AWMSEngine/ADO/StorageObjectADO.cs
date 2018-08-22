@@ -3,6 +3,7 @@ using AMWUtil.Logger;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Criteria.SP.Response;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace AWMSEngine.ADO
             param.Add("@code", code);
             param.Add("@isToRoot", isToRoot);
             param.Add("@isToChild", isToChild);
-            var r = this.Query<SPStorageObjectCriteria>("SP_STO_GET_BYCODE", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
+            var r = this.Query<SPOutSTOMiniCriteria>("SP_STO_GET_BYCODE", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
                     .ToList();
 
             if (r == null) return null;
@@ -34,7 +35,7 @@ namespace AWMSEngine.ADO
             param.Add("@code", code);
             param.Add("@isInStorage", isInStorage);
             param.Add("@isToChild", isToChild);
-            var r = this.Query<SPStorageObjectCriteria>("SP_STO_GETFREE_BYCODE", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
+            var r = this.Query<SPOutSTOMiniCriteria>("SP_STO_GETFREE_BYCODE", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
                     .ToList();
 
             if (r == null) return null;
@@ -48,7 +49,7 @@ namespace AWMSEngine.ADO
             param.Add("@type", type);
             param.Add("@isToRoot", isToRoot);
             param.Add("@isToChild", isToChild);
-            var r = this.Query<SPStorageObjectCriteria>("SP_STO_GET_BYID", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
+            var r = this.Query<SPOutSTOMiniCriteria>("SP_STO_GET_BYID", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
                     .ToList();
 
             if (r == null) return null;
@@ -138,6 +139,13 @@ namespace AWMSEngine.ADO
                     .ToList();
             sto.id = param.Get<int>("resID");
             return sto.id.Value;
+        }
+        public List<StorageObjectFullCriteria> Search(SPInSTOSearchCriteria search, VOCriteria buVO)
+        {
+            var param = this.CreateDynamicParameters(search);
+            var qry = this.Query<StorageObjectFullCriteria>("SP_STO_SEARCH_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+            List<StorageObjectFullCriteria> res = StorageObjectFullCriteria.Generate(qry);
+            return res;
         }
     }
 

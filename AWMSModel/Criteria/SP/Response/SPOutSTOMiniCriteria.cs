@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Criteria.SP.Response
 {
-    public class SPStorageObjectCriteria
+    public class SPOutSTOMiniCriteria
     {
         public int? id;
         public StorageObjectType type;
