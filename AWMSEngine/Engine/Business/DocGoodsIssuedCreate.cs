@@ -16,7 +16,7 @@ namespace AWMSEngine.Engine.Business
         public class TDocReq
         {
             public string refID;
-            public string forSupplierCode;
+            public string forCustomerCode;
             public string batch;
             public string lot;
 
@@ -31,28 +31,27 @@ namespace AWMSEngine.Engine.Business
             public string documentDate;
             public string remark;
 
-
-            public List<SKUItem> skuItems;
-            public class SKUItem
+            public List<IssueItem> issueItems;
+            public class IssueItem
             {
-                public int skuCode;
+                public string skuCode;
                 public int unitQtyPerPack;
                 public int packQty;
+                public string warehouseCode;
             }
         }
 
         protected override amt_Document ExecuteEngine(TDocReq reqVO)
         {
-            if (reqVO.skuItems.GroupBy(x => new { skuCode = x.skuCode, qtyPerPack = x.unitQtyPerPack }).Any(x => x.Count() > 1))
+            if (reqVO.issueItems.GroupBy(x => new { skuCode = x.skuCode, qtyPerPack = x.unitQtyPerPack }).Any(x => x.Count() > 1))
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "SKU Duplicate in List ");
-
-
+            
 
             amt_Document newDoc = new amt_Document()
             {
                 Lot = reqVO.lot,
                 Barch = reqVO.batch,
-                For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forSupplierCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.forSupplierCode).ID,
+                For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.forCustomerCode).ID,
                 RefID = reqVO.refID,
 
                 Sou_Warehouse_ID = string.IsNullOrWhiteSpace(reqVO.souWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.souWarehouseCode).ID,
@@ -70,11 +69,12 @@ namespace AWMSEngine.Engine.Business
 
                 DocumentItems = new List<amt_DocumentItem>()
             };
-            foreach (var skuItem in reqVO.skuItems)
+            foreach (var issueItem in reqVO.issueItems)
             {
-                var skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(skuItem.skuCode, this.BuVO);
+                var skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(issueItem.skuCode, this.BuVO);
                 if (skuMst == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "SKU Code = " + skuItem.skuCode);
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "SKU Code = " + issueItem.skuCode);
+                var whMst = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == issueItem.warehouseCode);
 
                 long? packID = null;
                 ams_PackMaster packMst = null;
@@ -84,19 +84,22 @@ namespace AWMSEngine.Engine.Business
                     packMst = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
                         new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("SKUMaster_ID",skuMst.ID),
-                        new KeyValuePair<string, object>("ItemQty",skuItem.unitQtyPerPack),
+                        new KeyValuePair<string, object>("ItemQty",issueItem.unitQtyPerPack),
                         new KeyValuePair<string, object>("status",AWMSModel.Constant.EnumConst.EntityStatus.ACTIVE),
                         }, this.BuVO).FirstOrDefault();
 
                     if (packMst == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบ Pack ที่มีจำนวน QTY = " + skuItem.unitQtyPerPack + " ในระบบ");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบ Pack ที่มีจำนวน QTY = " + issueItem.unitQtyPerPack + " ในระบบ");
 
                     packID = packMst.ID;
                 }
 
+
                 var countDocLock = ADO.DocumentADO.GetInstant().STOCountDocLock(
                                          skuMst.ID.Value,
                                          packID,
+                                         whMst == null ? null : whMst.ID,
+                                         //warehouseID,
                                          newDoc.For_Customer_ID,
                                          reqVO.batch,
                                          reqVO.lot,
@@ -106,13 +109,13 @@ namespace AWMSEngine.Engine.Business
                 string code;
                 if (packMst != null)
                 {
-                    if (this.StaticValue.IsFeature(FeatureCode.OB0200) && skuItem.packQty > countDocLock.freePackQty)
+                    if (this.StaticValue.IsFeature(FeatureCode.OB0200) && issueItem.packQty > countDocLock.freePackQty)
                         throw new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.B0001, "Receive over the amount in the warehouse.");
                     code = packMst.Code;
                 }
                 else
                 {
-                    if (this.StaticValue.IsFeature(FeatureCode.OB0200) && skuItem.packQty * skuItem.unitQtyPerPack > countDocLock.freeUnitQty)
+                    if (this.StaticValue.IsFeature(FeatureCode.OB0200) && issueItem.packQty * issueItem.unitQtyPerPack > countDocLock.freeUnitQty)
                         throw new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.B0001, "Receive over the amount in the warehouse.");
                     code = skuMst.Code;
 
@@ -123,7 +126,7 @@ namespace AWMSEngine.Engine.Business
                 {
                     Code = code,
                     SKU_ID = skuMst.ID.Value,
-                    Quantity = skuItem.packQty,
+                    Quantity = issueItem.packQty,
                     PackMaster_ID = packID,
                     EventStatus = DocumentEventStatus.WORKING                    
                 });

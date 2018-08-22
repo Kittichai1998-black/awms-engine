@@ -49,7 +49,25 @@ namespace AWMSEngine.Controllers
             SupplierPutFromFileServerAPI api = new SupplierPutFromFileServerAPI();
             return api.Execute(request);
         }
+        [HttpPost("TransferFileServer/SKUMst/Csv")]
+        public dynamic TransferSF_SKUMst_Csv([FromBody]dynamic request)
+        {
+            SKUMasterPutFromFileServerCsvAPI api = new SKUMasterPutFromFileServerCsvAPI();
+            return api.Execute(request);
+        }
+        [HttpPost("TransferFileServer/CustomerMst/Csv")]
+        public dynamic TransferSF_CustomerMst_Csv([FromBody]dynamic request)
+        {
+            CustomerPutFromFileServerCsvAPI api = new CustomerPutFromFileServerCsvAPI();
+            return api.Execute(request);
+        }
+        [HttpPost("TransferFileServer/SupplierMst/Csv")]
+        public dynamic TransferFileServer_SupplierMst_Csv([FromBody]dynamic request)
+        {
+            SupplierPutFromFileServerCsvAPI api = new SupplierPutFromFileServerCsvAPI();
+            return api.Execute(request);
+        }
 
-        
+
     }
 }

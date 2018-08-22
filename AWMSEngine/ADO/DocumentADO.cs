@@ -20,16 +20,17 @@ namespace AWMSEngine.ADO
             var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_IN_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
-        public STOCountDocLockCriteria STOCountDocLock(long skuID, long? packMstID, long? supplierID, string batch, string lot, DocumentTypeID docTypeID, VOCriteria buVO)
+        public STOCountDocLockCriteria STOCountDocLock(long skuID, long? packMstID, long? warehouseID, long? forCustomerID, string batch, string lot, DocumentTypeID docTypeID, VOCriteria buVO)
         {
-            return this.STOCountDocLock(skuID, packMstID, supplierID, batch, lot, new DocumentTypeID[] { docTypeID }, buVO);
+            return this.STOCountDocLock(skuID, packMstID, warehouseID, forCustomerID, batch, lot, new DocumentTypeID[] { docTypeID }, buVO);
         }
-        public STOCountDocLockCriteria STOCountDocLock(long skuID, long? packMstID, long? supplierID, string batch, string lot, DocumentTypeID[] docTypeIDs, VOCriteria buVO)
+        public STOCountDocLockCriteria STOCountDocLock(long skuID, long? packMstID, long? warehouseID, long? forCustomerID, string batch, string lot, DocumentTypeID[] docTypeIDs, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("skuID", skuID);
             param.Add("packMstID", packMstID);
-            param.Add("supplierID", supplierID);
+            param.Add("forCustomerID", forCustomerID);
+            param.Add("warehouseID", warehouseID);
             param.Add("batch", string.IsNullOrWhiteSpace(batch) ? null : batch);
             param.Add("lot", string.IsNullOrWhiteSpace(lot) ? null : lot);
             param.Add("docTypeID", string.Join(',', docTypeIDs.Select(x => (int)x)));
