@@ -6,8 +6,8 @@ namespace AWMSModel.Entity
 {
     public class ams_PackMaster : BaseEntitySTD
     {
-        public int SKU_ID;
-        public int PackType_ID;
+        public int SKUMaster_ID;
+        public int PackMasterType_ID;
         public decimal? WeightKG;
         public decimal? WidthM;
         public decimal? LengthM;

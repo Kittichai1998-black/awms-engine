@@ -13,8 +13,8 @@ namespace AWMSModel.Criteria.SP.Response
         public StorageObjectType ObjectType;
         public string Batch;
         public string Lot;
-        public DateTime ExpiryDate;
-        public DateTime ProductDate;
+        public DateTime? ExpiryDate;
+        public DateTime? ProductDate;
         public decimal? WeigthKG;
         public decimal? WidthM;
         public decimal? LengthM;
@@ -39,6 +39,8 @@ namespace AWMSModel.Criteria.SP.Response
         public string AreaMaster_Name;
 
         public long? AreaLocationMaster_ID;
+        public string AreaLocationMaster_Code;
+        public string AreaLocationMaster_Gate;
         public string AreaLocationMaster_Bank;
         public string AreaLocationMaster_Bay;
         public string AreaLocationMaster_Level;
@@ -54,7 +56,7 @@ namespace AWMSModel.Criteria.SP.Response
         public decimal? PackMaster_WidthM;
         public decimal? PackMaster_LengthM;
         public decimal? PackMaster_HeightM;
-        public decimal? PackMaster_ItemQty;
+        public int? PackMaster_ItemQty;
 
         public long? SKUMaster_ID;
         public string SKUMaster_Code;
@@ -63,6 +65,20 @@ namespace AWMSModel.Criteria.SP.Response
         public long? Customer_ID;
         public string Customer_Code;
         public string Customer_Name;
+
+
+        public List<string> ChildSKUMaster_Codes;
+        public List<string> ChildSKUMaster_Names;
+        public List<string> ChildPackMaster_Codes;
+        public List<string> ChildPackMaster_Names;
+
+        public string ViewChildSKUMaster_Codes;
+        public string ViewChildSKUMaster_Names;
+        public int ViewChildSKUMaster_Qty;
+
+        public string ViewChildPackMaster_Codes;
+        public string ViewChildPackMaster_Names;
+        public int ViewChildPackMaster_Qty;
 
     }
 }

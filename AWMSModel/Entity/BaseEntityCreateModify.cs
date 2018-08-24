@@ -7,7 +7,7 @@ namespace AWMSModel.Entity
 {
     public class BaseEntityCreateModify : BaseEntityCreateOnly
     {
-        public int ModifyBy;
-        public DateTime ModifyTime;
+        public int? ModifyBy;
+        public DateTime? ModifyTime;
     }
 }

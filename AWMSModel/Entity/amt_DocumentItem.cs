@@ -9,7 +9,7 @@ namespace AWMSModel.Entity
     {
         public long Document_ID;
         public string Code;
-        public long SKU_ID;
+        public long SKUMaster_ID;
         public long? PackMaster_ID;
         public int Quantity;
         public string Options;

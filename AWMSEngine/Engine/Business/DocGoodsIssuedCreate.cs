@@ -27,115 +27,141 @@ namespace AWMSEngine.Engine.Business
             public string desCustomerCode;//ผู้ผลิตต้นทาง
             public string desSupplierCode;//ผู้จัดจำหน่ายต้นทาง
 
-            public string actionTime;//วันที่ส่ง
-            public string documentDate;
+            public DateTime? actionTime;//วันที่ส่ง
+            public DateTime documentDate;
             public string remark;
 
             public List<IssueItem> issueItems;
             public class IssueItem
             {
                 public string skuCode;
-                public int unitQtyPerPack;
+                //public PickingType pickingType;
+                //public string baseTypeCode;
+                public string packTypeCode;
                 public int packQty;
-                public string warehouseCode;
             }
         }
 
         protected override amt_Document ExecuteEngine(TDocReq reqVO)
         {
-            if (reqVO.issueItems.GroupBy(x => new { skuCode = x.skuCode, qtyPerPack = x.unitQtyPerPack }).Any(x => x.Count() > 1))
+            if (reqVO.issueItems.GroupBy(x => new { a = x.skuCode, b = x.packTypeCode, c = x.packQty }).Any(x => x.Count() > 1))
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "SKU Duplicate in List ");
-            
+
+            var newDoc = this.NewDocument(reqVO);
+            newDoc.DocumentItems = this.NewDocumentItem(reqVO, newDoc);
+            var res = ADO.DocumentADO.GetInstant().Create(newDoc, this.BuVO);
+
+            return res;
+        }
+
+        private amt_Document NewDocument(TDocReq reqVO)
+        {
+            var forCustomerModel = this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.forCustomerCode);
+            var souWarehouseModel = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.souWarehouseCode);
+            var souBranchModel = this.StaticValue.Branchs.FirstOrDefault(x => x.Code == reqVO.souBranchCode);
+            var souAreaMasterModel = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.souAreaMasterCode);
+            var desSupplierModel = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
+            var desCustomerModel = this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
+
+            if (forCustomerModel == null && !string.IsNullOrWhiteSpace(reqVO.forCustomerCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "forCustomerCode ไม่ถูกต้อง");
+            if (souWarehouseModel == null && !string.IsNullOrWhiteSpace(reqVO.souWarehouseCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souWarehouseCode ไม่ถูกต้อง");
+            if (souBranchModel == null && !string.IsNullOrWhiteSpace(reqVO.souBranchCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souBranchCode ไม่ถูกต้อง");
+            if (souAreaMasterModel == null && !string.IsNullOrWhiteSpace(reqVO.souAreaMasterCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souAreaMasterCode ไม่ถูกต้อง");
+            if (desSupplierModel == null && !string.IsNullOrWhiteSpace(reqVO.desSupplierCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desSupplierCode ไม่ถูกต้อง");
+
+            if (desCustomerModel == null && !string.IsNullOrWhiteSpace(reqVO.desCustomerCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desCustomerCode ไม่ถูกต้อง");
+            else if (desCustomerModel == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "กรุณาส่ง desCustomerCode");
 
             amt_Document newDoc = new amt_Document()
             {
+                RefID = reqVO.refID,
                 Lot = reqVO.lot,
                 Barch = reqVO.batch,
-                For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.forCustomerCode).ID,
-                RefID = reqVO.refID,
+                For_Customer_ID = forCustomerModel == null ? null : forCustomerModel.ID,
 
-                Sou_Warehouse_ID = string.IsNullOrWhiteSpace(reqVO.souWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.souWarehouseCode).ID,
-                Sou_Branch_ID = string.IsNullOrWhiteSpace(reqVO.souBranchCode) ? null : this.StaticValue.Branchs.First(x => x.Code == reqVO.souBranchCode).ID,
-                Sou_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.souAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.souAreaMasterCode).ID,
+                Sou_Warehouse_ID = souWarehouseModel == null ? null : souWarehouseModel.ID,
+                Sou_Branch_ID = souBranchModel == null ? null : souBranchModel.ID,
+                Sou_AreaMaster_ID = souAreaMasterModel == null ? null : souAreaMasterModel.ID,
 
-                Des_Supplier_ID = string.IsNullOrWhiteSpace(reqVO.desSupplierCode) ? null : this.StaticValue.Supplier.First(x => x.Code == reqVO.desSupplierCode).ID,
-                Des_Customer_ID = string.IsNullOrWhiteSpace(reqVO.desCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.desCustomerCode).ID,
+                Des_Supplier_ID = desSupplierModel == null ? null : desSupplierModel.ID,
+                Des_Customer_ID = desCustomerModel == null ? null : desCustomerModel.ID,
 
-                ActionTime = DateTimeUtil.GetDateTime( reqVO.actionTime),
-                DocumentDate = reqVO.documentDate.GetDate().Value,
+                ActionTime = reqVO.actionTime,
+                DocumentDate = reqVO.documentDate,
+                DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
+
                 Remark = reqVO.remark,
 
                 EventStatus = DocumentEventStatus.WORKING,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };
+            return newDoc;
+        }
+
+        private List<amt_DocumentItem> NewDocumentItem(TDocReq reqVO ,amt_Document newDoc)
+        {
+            List<amt_DocumentItem> newDocItems = new List<amt_DocumentItem>();
+            //สร้าง Item Document สำหรับเบิก
             foreach (var issueItem in reqVO.issueItems)
             {
                 var skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(issueItem.skuCode, this.BuVO);
                 if (skuMst == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "SKU Code = " + issueItem.skuCode);
-                var whMst = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == issueItem.warehouseCode);
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Code " + issueItem.skuCode);
+                var packMstType = this.StaticValue.PackMasterType.FirstOrDefault(x => x.Code == issueItem.packTypeCode);
+                if (packMstType == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pack Type Code " + issueItem.skuCode);
 
                 long? packID = null;
-                ams_PackMaster packMst = null;
-                //Goods Issued from Storage: เบิกโดยใช้ SKU ที่ Pack ต่างกันได้
-                if (this.StaticValue.IsFeature(FeatureCode.OB0100))
-                {
-                    packMst = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
+                ams_PackMaster packMst = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
                         new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("SKUMaster_ID",skuMst.ID),
-                        new KeyValuePair<string, object>("ItemQty",issueItem.unitQtyPerPack),
+                        new KeyValuePair<string, object>("PackMasterType_ID",packMstType.ID),
                         new KeyValuePair<string, object>("status",AWMSModel.Constant.EnumConst.EntityStatus.ACTIVE),
                         }, this.BuVO).FirstOrDefault();
 
-                    if (packMst == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบ Pack ที่มีจำนวน QTY = " + issueItem.unitQtyPerPack + " ในระบบ");
-
-                    packID = packMst.ID;
-                }
+                if (packMst == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pack ประเภท " + packMstType.Code + " ของสินค้า " + skuMst.Code);
 
 
-                var countDocLock = ADO.DocumentADO.GetInstant().STOCountDocLock(
-                                         skuMst.ID.Value,
-                                         packID,
-                                         whMst == null ? null : whMst.ID,
-                                         //warehouseID,
-                                         newDoc.For_Customer_ID,
-                                         reqVO.batch,
-                                         reqVO.lot,
-                                         DocumentTypeID.GOODS_ISSUED,
-                                         this.BuVO);
 
-                string code;
-                if (packMst != null)
-                {
-                    if (this.StaticValue.IsFeature(FeatureCode.OB0200) && issueItem.packQty > countDocLock.freePackQty)
+
+
+                if (!this.StaticValue.IsFeature(FeatureCode.OB0200)) {
+
+                    var countDocLock = ADO.DocumentADO.GetInstant().STOCountDocLock(
+                                             skuMst.ID.Value,
+                                             packMst.ID.Value,
+                                             newDoc.Sou_Warehouse_ID,
+                                             newDoc.For_Customer_ID,
+                                             reqVO.batch,
+                                             reqVO.lot,
+                                             new DocumentTypeID[] { DocumentTypeID.GOODS_ISSUED },
+                                             this.BuVO);
+                    if (issueItem.packQty > countDocLock.freePackQty)
                         throw new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.B0001, "Receive over the amount in the warehouse.");
-                    code = packMst.Code;
-                }
-                else
-                {
-                    if (this.StaticValue.IsFeature(FeatureCode.OB0200) && issueItem.packQty * issueItem.unitQtyPerPack > countDocLock.freeUnitQty)
-                        throw new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.B0001, "Receive over the amount in the warehouse.");
-                    code = skuMst.Code;
-
                 }
 
-
-                newDoc.DocumentItems.Add(new amt_DocumentItem()
+                var newDocItem = new amt_DocumentItem()
                 {
-                    Code = code,
-                    SKU_ID = skuMst.ID.Value,
+                    Code = packMst.Code,
+                    SKUMaster_ID = skuMst.ID.Value,
+                    PackMaster_ID = packMst.ID.Value,
                     Quantity = issueItem.packQty,
-                    PackMaster_ID = packID,
-                    EventStatus = DocumentEventStatus.WORKING                    
-                });
+                    EventStatus = DocumentEventStatus.WORKING
+                };
+                newDocItems.Add(newDocItem);
+
             }
 
-
-            var res = ADO.DocumentADO.GetInstant().Create(newDoc, this.BuVO);
-            return res;
+            return newDocItems;
         }
-
     }
 }

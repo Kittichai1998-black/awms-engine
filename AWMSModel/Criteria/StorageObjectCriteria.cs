@@ -15,6 +15,7 @@ namespace AWMSModel.Criteria
         public StorageObjectType type;
         public long? mstID;
         public long? parentID;
+        public int warehouseID;
         public StorageObjectType? parentType;
         public string code;
         public string name;
@@ -75,6 +76,7 @@ namespace AWMSModel.Criteria
                             type = x.type,
                             parentID = x.parentID,
                             parentType = x.parentType,
+                            warehouseID = x.warehouseID,
                             code = x.code,
                             name = x.name,
                             mstID = x.mstID,

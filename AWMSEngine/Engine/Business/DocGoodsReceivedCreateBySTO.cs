@@ -81,7 +81,7 @@ namespace AWMSEngine.Engine.Business
                 var packmst = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(p.key.mstID, this.BuVO);
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
-                    SKU_ID = packmst.SKU_ID,
+                    SKUMaster_ID = packmst.SKUMaster_ID,
                     PackMaster_ID = p.key.mstID.Value,
                     Code = p.key.code,
                     ID = null,

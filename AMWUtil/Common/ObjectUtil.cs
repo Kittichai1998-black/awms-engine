@@ -47,7 +47,7 @@ namespace AMWUtil.Common
         {
             return s.Select(x => x.GetTry<T>()).ToArray();
         }
-        
+
         public static T Json<T>(this string s)
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(s);
@@ -108,16 +108,19 @@ namespace AMWUtil.Common
             if (IsZeroEmptyNull(obj)) return true;
             return item.Equals(obj);
         }
-
-        public static bool IsBetween<T>(this T item, System.Nullable<T> start, System.Nullable<T> end) where T : struct
+        public static object EmptyToNull(object obj)
         {
-            return (!start.HasValue || Comparer<T>.Default.Compare(item, start.Value) >= 0)
-                && (!end.HasValue || Comparer<T>.Default.Compare(item, end.Value) <= 0);
+            return IsEmptyNull(obj) ? null : obj;
         }
         public static string TrimNull(this string item)
         {
             if (string.IsNullOrWhiteSpace(item)) return string.Empty;
             return item.Trim();
+        }
+        public static bool IsBetween<T>(this T item, System.Nullable<T> start, System.Nullable<T> end) where T : struct
+        {
+            return (!start.HasValue || Comparer<T>.Default.Compare(item, start.Value) >= 0)
+                && (!end.HasValue || Comparer<T>.Default.Compare(item, end.Value) <= 0);
         }
         public static bool IsBetween<T>(this T item, T start, T end)
         {

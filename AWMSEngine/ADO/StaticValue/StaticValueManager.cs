@@ -31,6 +31,8 @@ namespace AWMSEngine.ADO.StaticValue
         public List<ams_Supplier> Supplier { get => this._Supplier; }
         private List<ams_Customer> _Customers;
         public List<ams_Customer> Customers { get => this._Customers; }
+        private List<ams_PackMasterType> _PackMasterType;
+        public List<ams_PackMasterType> PackMasterType { get => this._PackMasterType; }
 
         private static StaticValueManager instant;
 
@@ -46,14 +48,13 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadAll()
         {
-            this.LoadConfig();
-            this.LoadFeature();
-            this.LoadObjectSize();
-            this.LoadWarehouses();
-            this.LoadAreaMaster();
-            this.LoadBranch();
-            this.LoadSupplier();
-            this.LoadCustomer();
+            foreach(var md in this.GetType().GetMethods())
+            {
+                if (md.Name.StartsWith("Load") && md.Name != "LoadAll")
+                {
+                    md.Invoke(this, null);
+                }
+            }
         }
         public void LoadFeature()
         {
@@ -90,6 +91,10 @@ namespace AWMSEngine.ADO.StaticValue
         public void LoadSupplier()
         {
             this._Supplier = ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, new VOCriteria()).ToList();
+        }
+        public void LoadPackMasterType()
+        {
+            this._PackMasterType = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, new VOCriteria()).ToList();
         }
 
         public bool IsFeature(FeatureCode code)

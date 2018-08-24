@@ -10,6 +10,7 @@ namespace AWMSEngine.Engine.APIService.Doc
     {
         protected override dynamic ExecuteEngineManual()
         {
+            this.BeginTransaction();
             var reqDoc = ObjectUtil.DynamicToModel<Business.DocGoodsIssuedCreate.TDocReq>(this.RequestVO);
             var res = new Engine.Business.DocGoodsIssuedCreate().Execute(
                 this.Logger,

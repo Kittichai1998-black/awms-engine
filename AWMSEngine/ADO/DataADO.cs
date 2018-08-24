@@ -151,7 +151,7 @@ namespace AWMSEngine.ADO
              where T : IEntityModel
         {
             return SelectBy<T>(
-                wheres.Select(x => new SQLConditionCriteria(x.Key, x.Value, SQLOperatorType.EQUALS, SQLConditionType.AND)).ToArray(),
+                wheres.Select(x => new SQLConditionCriteria(x.Key, x.Value, SQLOperatorType.EQUALS)).ToArray(),
                 new SQLOrderByCriteria[] { },
                 null,
                 null,
@@ -175,10 +175,14 @@ namespace AWMSEngine.ADO
                                         w.field,
                                         w.operatorType.Attribute<ValueAttribute>().Value,
                                         w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL?"": "@" + w.field,
-                                        w.conditionLeft != SQLConditionType.NONE ? w.conditionLeft.Attribute<ValueAttribute>().Value :
+                                        w.conditionLeft != SQLConditionType.NONE && !string.IsNullOrEmpty(commWhere) ? w.conditionLeft.Attribute<ValueAttribute>().Value :
                                             string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
 
-                param.Add(w.field, w.value == null ? null : w.value.ToString().Replace('*', '%'));
+                object v = null;
+                if (w.value == null) v = null;
+                else if (w.value is string && w.operatorType == SQLOperatorType.LIKE) v = w.value.ToString().Replace('*', '%');
+                else v = w.value;
+                param.Add(w.field, v);
             }
             foreach (var o in orderBys)
             {

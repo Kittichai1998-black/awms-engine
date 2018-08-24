@@ -108,7 +108,7 @@ namespace AWMSEngine.Engine.Business
                 {
                     ID = null,
                     Code = skuMst.Code,
-                    SKU_ID = skuMst.ID.Value,
+                    SKUMaster_ID = skuMst.ID.Value,
                     PackMaster_ID = packMst.ID.Value,
                     Quantity = skuItem.quantity,
                     

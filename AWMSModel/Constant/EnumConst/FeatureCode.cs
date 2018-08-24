@@ -19,7 +19,7 @@ namespace AWMSModel.Constant.EnumConst
         IB0104,
 
         /// <summary> Goods Issued from Storage: เบิกโดยใช้ SKU ที่ Pack ต่างกันได้ </summary>
-        OB0100,
+        //OB0100,
         /// <summary> Goods Issuer Module Cross Dock : สร้างเอกสาร Goods Issued ได้เกินจำนวนสินค้าที่อยู่ในคลัง และ จำนวนใน Goods Receive </summary>
         OB0200,
 

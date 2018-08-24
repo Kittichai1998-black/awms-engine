@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.Business
             public string batch;
             public string lot;
             public int amount;
+            public int warehouseID;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
             public List<KeyValuePair<string, string>> options;
@@ -50,10 +51,10 @@ namespace AWMSEngine.Engine.Business
             {
                 Logger.LogDebug("Register Mode.");
                 Logger.LogDebug("//หา sto ในคลัง ทั้งแบบ Free และ No Free");
-                mapsto = ADOSto.Get(reqVO.scanCode, false, false, this.BuVO);
+                mapsto = ADOSto.Get(reqVO.scanCode,reqVO.warehouseID, false, false, this.BuVO);
                 if (mapsto == null || mapsto.type == StorageObjectType.PACK)
                 {
-                    int freeCount = ADOSto.GetFreeCount(reqVO.scanCode, false, reqVO.batch, reqVO.lot, this.BuVO);
+                    int freeCount = ADOSto.GetFreeCount(reqVO.scanCode,reqVO.warehouseID, false, reqVO.batch, reqVO.lot, this.BuVO);
                     if (freeCount < reqVO.amount && (!false && this.StaticValue.IsFeature(FeatureCode.IB0100)))
                     {
                         if (!false && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.scanCode, this.BuVO) != null)
@@ -63,14 +64,14 @@ namespace AWMSEngine.Engine.Business
                     }
 
                     Logger.LogDebug("//ไม่พบในคลัง ให้หา sto นอกคลังแบบ Free");
-                    mapsto = ADOSto.GetFree(reqVO.scanCode, false, true, this.BuVO);
+                    mapsto = ADOSto.GetFree(reqVO.scanCode,reqVO.warehouseID, false, true, this.BuVO);
                     if (mapsto != null)
                     {
                         Logger.LogDebug("//พบ sto ว่างประเภท " + mapsto.type);
                         if(!mapsto.id.HasValue)
-                            ADOSto.Create(mapsto, reqVO.batch, reqVO.lot, this.BuVO);
+                            ADOSto.Create(mapsto,reqVO.warehouseID, reqVO.batch, reqVO.lot, this.BuVO);
                         else
-                            ADOSto.Update(mapsto, this.BuVO);
+                            ADOSto.Update(mapsto,reqVO.warehouseID, this.BuVO);
                         Logger.LogDebug("//รับเข้าคลัง สถานะ WAIT");
                     }
                     else
@@ -79,7 +80,7 @@ namespace AWMSEngine.Engine.Business
                 else if (mapsto != null)
                 {
                     Logger.LogDebug("//พบในคลัง ดึงข้อมูลคลังมาแสดง");
-                    mapsto = ADOSto.Get(reqVO.scanCode, true, true, this.BuVO);
+                    mapsto = ADOSto.Get(reqVO.scanCode,reqVO.warehouseID, true, true, this.BuVO);
                 }
                 /*else if (mapsto.type == StorageObjectType.PACK)
                 {
@@ -90,7 +91,7 @@ namespace AWMSEngine.Engine.Business
             else if(reqVO.mode == VirtualMapSTOModeType.TRANSFER)
             {
                 Logger.LogDebug("Transfer Mode.");
-                mapsto = ADOSto.Get(reqVO.scanCode, true, true, this.BuVO);
+                mapsto = ADOSto.Get(reqVO.scanCode,reqVO.warehouseID, true, true, this.BuVO);
                 if (mapsto == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V2001, reqVO.scanCode);
             }
@@ -113,6 +114,7 @@ namespace AWMSEngine.Engine.Business
             {
                 this.ActionAdd(
                     reqVO.scanCode,
+                    reqVO.warehouseID,
                     reqVO.batch,
                     reqVO.lot,
                     reqVO.amount,
@@ -122,7 +124,7 @@ namespace AWMSEngine.Engine.Business
             }
             else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
             {
-                this.ActionRemove(reqVO.mode,reqVO.scanCode, reqVO.amount, mapsto);
+                this.ActionRemove(reqVO.mode,reqVO.scanCode,reqVO.warehouseID, reqVO.amount, mapsto);
             }
 
             return mapsto;
@@ -162,6 +164,7 @@ namespace AWMSEngine.Engine.Business
         }
 
         private void ActionAdd(string scanCode,
+            int warehouseID,
             string batch,
             string lot,
             int amount,
@@ -182,7 +185,7 @@ namespace AWMSEngine.Engine.Business
             else
                 Logger.LogInfo("Mapping Object Storage to Storage");
 
-            int freeCount = ADOSto.GetFreeCount(scanCode, isInStorage, batch, lot, this.BuVO);
+            int freeCount = ADOSto.GetFreeCount(scanCode,warehouseID, isInStorage, batch, lot, this.BuVO);
             if (freeCount < amount && (isInStorage || (!isInStorage && this.StaticValue.IsFeature(FeatureCode.IB0100))))
             {
                 if (!isInStorage && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(scanCode, this.BuVO) != null)
@@ -195,7 +198,7 @@ namespace AWMSEngine.Engine.Business
 
             for (int i = 0; i < amount; i++)
             {
-                StorageObjectCriteria newMS = ADOSto.GetFree(scanCode, isInStorage, true, this.BuVO);
+                StorageObjectCriteria newMS = ADOSto.GetFree(scanCode,warehouseID, isInStorage, true, this.BuVO);
 
                 if (newMS == null)
                 {
@@ -227,11 +230,11 @@ namespace AWMSEngine.Engine.Business
                     newMS.parentType = msf.type;
                     newMS.options = options;
                     if (newMS.id.HasValue)
-                        ADOSto.Update(newMS, this.BuVO);
+                        ADOSto.Update(newMS,warehouseID, this.BuVO);
                     else
                     {
                         newMS.eventStatus = StorageObjectEventStatus.IDEL;
-                        ADOSto.Create(newMS, batch, lot, this.BuVO);
+                        ADOSto.Create(newMS,warehouseID, batch, lot, this.BuVO);
                     }
                     //ADOSto.Put(newMS,batch,lot, this.BuVO);
                     if (!isInStorage && newMS.type != StorageObjectType.PACK)
@@ -246,6 +249,7 @@ namespace AWMSEngine.Engine.Business
         private void ActionRemove(
             VirtualMapSTOModeType mode,
             string scanCode,
+            int warehouseID,
             decimal amount,
             StorageObjectCriteria mapsto)
         {
@@ -262,7 +266,7 @@ namespace AWMSEngine.Engine.Business
                 var rmItem = mapstos.FirstOrDefault(x => x.code == scanCode);
                 rmItem.parentID = null;
                 rmItem.parentType = null;
-                ADOSto.Update(rmItem, this.BuVO);
+                ADOSto.Update(rmItem,warehouseID, this.BuVO);
                 //ADOSto.Put(rmItem, null, null, this.BuVO);
                 msf.mapstos.Remove(rmItem);
             }
