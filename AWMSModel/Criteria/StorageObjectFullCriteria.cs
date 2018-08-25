@@ -51,6 +51,9 @@ namespace AWMSModel.Criteria
                 x.ViewChildPackMaster_Names = string.Join(", ", x.ChildPackMaster_Names);
                 x.ViewChildSKUMaster_Codes = string.Join(", ", x.ChildSKUMaster_Codes);
                 x.ViewChildSKUMaster_Names = string.Join(", ", x.ChildSKUMaster_Names);
+
+                x.ViewPackMaster_Qty = x.ViewChildPackMaster_Qty + (x.ObjectType == StorageObjectType.PACK ? 1 : 0);
+                x.ViewSKUMaster_Qty = x.ViewChildSKUMaster_Qty + (x.PackMaster_ItemQty ?? 0);
             });
 
             return stoRoots;

@@ -9,7 +9,12 @@ namespace AWMSEngine.Engine.APIService.WM
     {
         protected override dynamic ExecuteEngineManual()
         {
-            throw new NotImplementedException();
+            var req = new Business.PackingListGet.TReq()
+            {
+
+            };
+            var res = new Engine.Business.PackingListGet().Execute(this.Logger, this.BuVO, req);
+            return res;
         }
     }
 }

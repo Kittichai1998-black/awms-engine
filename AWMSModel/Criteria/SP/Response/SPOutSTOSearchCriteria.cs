@@ -79,6 +79,9 @@ namespace AWMSModel.Criteria.SP.Response
         public string ViewChildPackMaster_Codes;
         public string ViewChildPackMaster_Names;
         public int ViewChildPackMaster_Qty;
+        
+        public int ViewSKUMaster_Qty;        
+        public int ViewPackMaster_Qty;
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -162,12 +163,12 @@ namespace AWMSEngine.ADO
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
         }
-        public List<amt_Document> Target(List<long> docIDs, VOCriteria buVO)
+        public List<SPOutDocTargetCriteria> Target(List<long> docIDs, DocumentTypeID docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("docIDs", string.Join(",", docIDs));
-            param.Add("docTypeID", string.Join(",", docIDs));
-            return this.Query<amt_Document>("SP_DOC_TARGET",
+            param.Add("docTypeID", docTypeID);
+            return this.Query<SPOutDocTargetCriteria>("SP_DOC_TARGET",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
