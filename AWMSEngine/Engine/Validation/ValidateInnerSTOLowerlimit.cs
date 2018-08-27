@@ -11,8 +11,8 @@ namespace AWMSEngine.Engine.Validation
     {
         protected override NullCriteria ExecuteEngine(StorageObjectCriteria reqVO)
         {
-            if (!reqVO.objectSizeMaps.Any(x => reqVO.mapstos.Any(y => y.objectSizeID == x.innerObjectSizeID)))
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถนำลงกล่องหรือพาเลทได้ ตั้งค่าการจัดการขนาดสินค้าและพาเลท");
+            //if (!reqVO.objectSizeMaps.Any(x => reqVO.mapstos.Any(y => y.objectSizeID == x.innerObjectSizeID)))
+            //    throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถนำลงกล่องหรือพาเลทได้ ตั้งค่าการจัดการขนาดสินค้าและพาเลท");
             this.ValidateWeight(reqVO);
             this.ValidateQuantity(reqVO);
 
@@ -39,6 +39,8 @@ namespace AWMSEngine.Engine.Validation
             if (sto.objectSizeID.HasValue)
             {
                 this.Logger.LogDebug("//Validate Quantity : " + sto.code);
+                if (sto.mapstos.Count() == 0 && sto.objectSizeMaps.Any(x => x.minQuantity > 0))
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3002, "ต่ำกว่าจำนวนที่กำหนด");
                 foreach (var s in sto.mapstos.GroupBy(x => x.objectSizeID).Select(x => new { objectSizeID = x.Key, count = (decimal)x.Count() }))
                 {
                     var osm = sto.objectSizeMaps.FirstOrDefault(x => x.innerObjectSizeID == s.objectSizeID);

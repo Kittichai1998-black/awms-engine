@@ -20,8 +20,8 @@ namespace AWMSEngine.Engine.APIService.WM
                     rootStoID = this.RequestVO.rootStoID,
                     type = (StorageObjectType)this.RequestVO.type
                 });
-            
-               
+
+
 
             if (this.RequestVO.isConfirm == true)
             {
