@@ -1,4 +1,5 @@
-﻿using AWMSEngine.ADO;
+﻿using AMWUtil.Exception;
+using AWMSEngine.ADO;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -14,13 +15,24 @@ namespace AWMSEngine.Engine.Business
 
         public class TReqModle
         {
-            public int rootStoID;
+            public long rootStoID;
             public bool isConfirm;
             public StorageObjectType type;
         }
 
         protected override StorageObjectCriteria ExecuteEngine(VRMapSTOReceiveConfirm.TReqModle reqVO)
         {
+            if (reqVO.type == StorageObjectType.LOCATION)
+            {
+                var sto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new KeyValuePair<string, object>[] {
+                new KeyValuePair<string, object>("AreaLocationMaster_ID",reqVO.rootStoID),
+                new KeyValuePair<string, object>("status",1),
+                }, this.BuVO).FirstOrDefault();
+                if (sto == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "AreaLocationMaster.ID");
+                reqVO.rootStoID = sto.ID.Value;
+                reqVO.type = StorageObjectType.BASE;
+            }
             
             if (reqVO.isConfirm)
             {

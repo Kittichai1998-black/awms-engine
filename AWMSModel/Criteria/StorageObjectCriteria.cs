@@ -21,6 +21,7 @@ namespace AWMSModel.Criteria
         public string name;
 
         public int? objectSizeID;
+        public string objectSizeName;
         public decimal? weiKG;
         public decimal? minWeiKG;
         public decimal? maxWeiKG;
@@ -85,6 +86,7 @@ namespace AWMSModel.Criteria
                             mapstos = generateMapstos(x.id, x.type, out isFocus),
                             isFocus = isFocus,
                             objectSizeID = x.objectSizeID,
+                            objectSizeName = sos2.Name,
                             eventStatus = x.eventStatus,
                             minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
                             maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
