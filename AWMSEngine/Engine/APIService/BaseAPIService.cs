@@ -82,8 +82,10 @@ namespace AWMSEngine.Engine.APIService
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 this.Logger.LogBegin();
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
-                    this.APIServiceID(), 
-                    this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(), 
+                    this.APIServiceID(),
+                    this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
+                    this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
+                    System.Environment.MachineName,
                     this.RequestVO,
                     this.BuVO);
                 this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);

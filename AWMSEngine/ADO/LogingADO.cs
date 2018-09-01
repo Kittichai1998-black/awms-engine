@@ -9,7 +9,7 @@ namespace AWMSEngine.ADO
 {
     public class LogingADO : BaseMSSQLAccess<LogingADO>
     {
-        public long BeginAPIService(int? serviceID, string ipaddress, object request, VOCriteria buVO)
+        public long BeginAPIService(int? serviceID, string ipRemote, string ipLocal, string serverName, object request, VOCriteria buVO)
         {
             var service = StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == serviceID);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -19,7 +19,9 @@ namespace AWMSEngine.ADO
             param.Add("@APIService_ID ", service != null ? service.ID : null);
             param.Add("@APIService_Code ", service != null ? service.ID : null);
             param.Add("@APIService_Name ", service != null ? service.ID : null);
-            param.Add("@IPAddress ", ipaddress);
+            param.Add("@IPRemote", ipRemote);
+            param.Add("@IPLocal", ipLocal);
+            param.Add("@ServerName ", serverName);
             param.Add("@InputText ", AMWUtil.Common.ObjectUtil.Json(request));
             param.Add("@ActionBy", buVO.ActionBy);
             param.Add("@ID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.InputOutput);
