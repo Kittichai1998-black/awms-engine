@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AWMSEngine.Common;
 using AMWUtil.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Engine.APIService.Data
 {
     public class InsUpdDataAPI : BaseAPIService
     {
+        public InsUpdDataAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             object x = 1;

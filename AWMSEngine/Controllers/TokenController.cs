@@ -17,7 +17,7 @@ namespace AWMSEngine.Controllers
         [HttpPost("register")]  
         public dynamic RegisterToken([FromBody] dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Token.RegisterTokenAPI();
+            var api = new AWMSEngine.Engine.APIService.Token.RegisterTokenAPI(this);
             var res = api.Execute(request);
             return res;
         }
@@ -25,7 +25,7 @@ namespace AWMSEngine.Controllers
         [HttpDelete("remove")]
         public dynamic RemoveToken([FromBody] dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Token.RemoveTokenAPI();
+            var api = new AWMSEngine.Engine.APIService.Token.RemoveTokenAPI(this);
             var res = api.Execute(request);
             return res;
         }
@@ -35,7 +35,7 @@ namespace AWMSEngine.Controllers
         {
             var qrystr = this.Request.QueryString.Value.Replace("?", "");
             var jsond = ObjectUtil.QueryStringToObject(qrystr);
-            var api = new AWMSEngine.Engine.APIService.Token.EnquiryTokenAPI();
+            var api = new AWMSEngine.Engine.APIService.Token.EnquiryTokenAPI(this);
             var res = api.Execute(jsond);
 
             return res;
@@ -44,7 +44,7 @@ namespace AWMSEngine.Controllers
         [HttpPut("extend")]
         public dynamic ExtendToken([FromBody] dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Token.ExtendTokenAPI();
+            var api = new AWMSEngine.Engine.APIService.Token.ExtendTokenAPI(this);
             var res = api.Execute(request);
 
             return res;

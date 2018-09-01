@@ -1,5 +1,6 @@
 ﻿using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,10 @@ namespace AWMSEngine.Engine.APIService.Data
 {
     public class SelectDataMstAPI : BaseAPIService
     {
-        
+        public SelectDataMstAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             var res1= new General.SelectSql().Execute(this.Logger, this.BuVO,

@@ -1,6 +1,5 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
-using AMWUtil.IUtil;
 using AMWUtil.Logger;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
@@ -16,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine
 {
-    public abstract class BaseEngine<TReq, TRes>: IGenerate
+    public abstract class BaseEngine<TReq, TRes>
         where TRes : class
     {
         protected abstract TRes ExecuteEngine(TReq reqVO);
@@ -43,24 +42,30 @@ namespace AWMSEngine.Engine
             this.BuVO = buVO;
             TRes resVO = null;
             var result = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
+            long dbLogID = this.BuVO.Get<long>(BusinessVOConst.KEY_DB_LOGID);
+            long dbLogActionID = 0;
+            var resultStatus = new { status = -1,code="", message = "", techmessage = "" };
             try
             {
+                dbLogActionID = ADO.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
                 this.Logger = logger;
                 this.Logger.LogExecBegin("ReqVO : " + resVO.Json());
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 resVO = this.ExecuteEngine(reqVO);
                 this.Logger.LogSuccess("ResVO : " + resVO.Json());
-
+                resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", techmessage = "" };
             }
             catch (AMWException ex)
             {
+                resultStatus = new { status = 0, code = ex.GetAMWCode(), message = ex.Message, techmessage = ex.StackTrace };
                 throw ex;
             }
             catch (System.Exception ex)
             {
                 var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
                 this.Logger.LogError(ex.StackTrace);
+                resultStatus = new { status = 0, code = AMWExceptionCode.U0000.ToString(), message = ex.Message, techmessage = ex.StackTrace };
                 throw e;
             }
             finally
@@ -69,6 +74,7 @@ namespace AWMSEngine.Engine
                 {
                     this.Logger.LogExecEnd("ReqVO : " + resVO.Json());
                 }
+                ADO.LogingADO.GetInstant().EndAPIServiceAction(dbLogActionID,resultStatus.status,resultStatus.code,resultStatus.message,resultStatus.techmessage, this.BuVO);
             }
             return resVO;
         }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AMWUtil.IUtil
+namespace AWMSModel.Entity
 {
-    public interface IGenerate
+    public class ams_APIService : BaseEntitySTD
     {
     }
 }

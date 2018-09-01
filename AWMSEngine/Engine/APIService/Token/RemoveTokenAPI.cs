@@ -1,6 +1,7 @@
 ﻿using AWMSEngine.Engine.Validation;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,10 @@ namespace AWMSEngine.Engine.APIService.Token
 {
     public class RemoveTokenAPI : BaseAPIService
     {
+        public RemoveTokenAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             new Validation.RemoveTokenRequestValidate().Execute(this.Logger, this.BuVO, null);

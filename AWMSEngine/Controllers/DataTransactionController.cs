@@ -18,7 +18,7 @@ namespace AWMSEngine.Controllers
             var qrystr = this.Request.QueryString.Value.Replace("?", "");
             var jsond = ObjectUtil.QueryStringToObject(qrystr);
             //{"token":"","apiKey":"","t":"",pk:"","datas":[{"test":"xx"}]}
-            var api = new AWMSEngine.Engine.APIService.Data.SelectDataTrxAPI();
+            var api = new AWMSEngine.Engine.APIService.Data.SelectDataTrxAPI(this);
             var res = api.Execute(jsond);
 
             return res;
@@ -27,7 +27,7 @@ namespace AWMSEngine.Controllers
         public dynamic SearchSTO()
         {
             var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var res = new Engine.APIService.UI.StorageObjectSearchAPI().Execute(req);
+            var res = new Engine.APIService.UI.StorageObjectSearchAPI(this).Execute(req);
             return res;
         }
     }

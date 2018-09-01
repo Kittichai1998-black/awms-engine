@@ -259,8 +259,14 @@ namespace AWMSEngine.ADO
                     buVO.Logger, buVO.SqlTransaction);
             return res;
         }
-        public long? Insert<T>(VOCriteria buVO, params KeyValuePair<string, object>[] values)
+        public long? Insert<T>(VOCriteria buVO, T data)
              where T : IEntityModel
+        {
+            var d = AMWUtil.Common.ObjectUtil.ObjectToKeyValue<T>(data);
+            return Insert<T>(buVO, d.ToArray());
+        }
+        public long? Insert<T>(VOCriteria buVO, params KeyValuePair<string, object>[] values)
+         where T : IEntityModel
         {
             string commFields = string.Empty;
             string commVals = string.Empty;

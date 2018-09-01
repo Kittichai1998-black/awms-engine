@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Engine.APIService.Mst
 {
     public class SupplierPutFromFileServerAPI : BaseAPIService
     {
+        public SupplierPutFromFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();

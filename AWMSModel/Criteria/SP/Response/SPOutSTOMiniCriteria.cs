@@ -11,10 +11,11 @@ namespace AWMSModel.Criteria.SP.Response
         public StorageObjectType type;
         public int? mstID;
         public int? parentID;
-        public int warehouseID;
         public StorageObjectType? parentType;
         public string code;
         public string name;
+        public int warehouseID;
+        public int areaID;
         public decimal? weiKG;
         public int? objectSizeID;
         public StorageObjectEventStatus eventStatus;

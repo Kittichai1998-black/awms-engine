@@ -16,7 +16,7 @@ namespace AWMSEngine.Controllers
         [HttpPut]
         public dynamic PutData([FromBody]dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Data.InsUpdDataAPI();
+            var api = new AWMSEngine.Engine.APIService.Data.InsUpdDataAPI(this);
             var res = api.Execute(request);
              
             return res;
@@ -26,7 +26,7 @@ namespace AWMSEngine.Controllers
         public dynamic GetData()
         {
             var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var api = new AWMSEngine.Engine.APIService.Data.SelectDataMstAPI();
+            var api = new AWMSEngine.Engine.APIService.Data.SelectDataMstAPI(this);
             var res = api.Execute(jsond);
             return res;
         }
@@ -34,37 +34,37 @@ namespace AWMSEngine.Controllers
         [HttpPost("TransferFileServer/SKUMst")]
         public dynamic TransferSF_SKUMst([FromBody]dynamic request)
         {
-            SKUMasterPutFromFileServerAPI api = new SKUMasterPutFromFileServerAPI();
+            SKUMasterPutFromFileServerAPI api = new SKUMasterPutFromFileServerAPI(this);
             return api.Execute(request);
         }
         [HttpPost("TransferFileServer/CustomerMst")]
         public dynamic TransferSF_CustomerMst([FromBody]dynamic request)
         {
-            CustomerPutFromFileServerAPI api = new CustomerPutFromFileServerAPI();
+            CustomerPutFromFileServerAPI api = new CustomerPutFromFileServerAPI(this);
             return api.Execute(request);
         }
         [HttpPost("TransferFileServer/SupplierMst")]
         public dynamic TransferFileServer_SupplierMst([FromBody]dynamic request)
         {
-            SupplierPutFromFileServerAPI api = new SupplierPutFromFileServerAPI();
+            SupplierPutFromFileServerAPI api = new SupplierPutFromFileServerAPI(this);
             return api.Execute(request);
         }
         [HttpPost("TransferFileServer/SKUMst/Csv")]
         public dynamic TransferSF_SKUMst_Csv([FromBody]dynamic request)
         {
-            SKUMasterPutFromFileServerCsvAPI api = new SKUMasterPutFromFileServerCsvAPI();
+            SKUMasterPutFromFileServerCsvAPI api = new SKUMasterPutFromFileServerCsvAPI(this);
             return api.Execute(request);
         }
         [HttpPost("TransferFileServer/CustomerMst/Csv")]
         public dynamic TransferSF_CustomerMst_Csv([FromBody]dynamic request)
         {
-            CustomerPutFromFileServerCsvAPI api = new CustomerPutFromFileServerCsvAPI();
+            CustomerPutFromFileServerCsvAPI api = new CustomerPutFromFileServerCsvAPI(this);
             return api.Execute(request);
         }
         [HttpPost("TransferFileServer/SupplierMst/Csv")]
         public dynamic TransferFileServer_SupplierMst_Csv([FromBody]dynamic request)
         {
-            SupplierPutFromFileServerCsvAPI api = new SupplierPutFromFileServerCsvAPI();
+            SupplierPutFromFileServerCsvAPI api = new SupplierPutFromFileServerCsvAPI(this);
             return api.Execute(request);
         }
 

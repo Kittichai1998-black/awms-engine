@@ -18,7 +18,7 @@ namespace AWMSEngine.Controllers
         public dynamic Get(string token)
         {
             var jsond = ObjectUtil.QueryStringToObject(token);
-            var api = new AWMSEngine.Engine.APIService.UI.ListMenuAPI();
+            var api = new AWMSEngine.Engine.APIService.UI.ListMenuAPI(this);
             var res = api.Execute(jsond);
             return res;
         }

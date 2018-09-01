@@ -18,7 +18,7 @@ namespace AWMSEngine.Controllers
         public dynamic GetData()
         {
             var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var api = new AWMSEngine.Engine.APIService.Data.SelectDataLogAPI();
+            var api = new AWMSEngine.Engine.APIService.Data.SelectDataLogAPI(this);
             var res = api.Execute(jsond);
             return res;
         }

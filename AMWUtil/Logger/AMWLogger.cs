@@ -14,8 +14,10 @@ namespace AMWUtil.Logger
         private long lastUse;
 
         public FileStream FileLogger { get; set; }
+        private string _LogRefID;
+        public string LogRefID { get { return this._LogRefID; } }
         private string _RefID;
-        public string RefID { get { return _RefID; } }
+        public string ServiceRefID { get { return _RefID; } }
         private string ServiceName { get; set; }
         private string FileName { get; set; }
         private StackTrace STrace;
@@ -23,10 +25,11 @@ namespace AMWUtil.Logger
 
         public long LastUse { get { return this.lastUse; } }
 
-        AMWLogger() { }
+        AMWLogger() {  }
 
         internal AMWLogger(string fileName, string refID, string serviceName)
         {
+            this._LogRefID = Guid.NewGuid().ToString("N");
             this._RefID = refID;
             this.ServiceName = serviceName;
             //this.FileLogger = new StreamWriter(fileFullName, true);
@@ -37,6 +40,7 @@ namespace AMWUtil.Logger
         }
         internal AMWLogger(FileStream fileLogger, string refID, string serviceName)
         {
+            this._LogRefID = Guid.NewGuid().ToString("N");
             this.FileName = fileLogger.Name;
             this.STrace = new StackTrace();
             this._RefID = refID;
@@ -63,6 +67,7 @@ namespace AMWUtil.Logger
 
         public void LogWrite(string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "")
         {
+            return;
             lock (this.FileLogger)
             {
                 this.STrace = new StackTrace();

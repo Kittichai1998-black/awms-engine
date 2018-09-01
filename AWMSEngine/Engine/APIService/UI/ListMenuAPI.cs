@@ -6,11 +6,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using AWMSEngine.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Engine.APIService.UI
 {
     public class ListMenuAPI : BaseAPIService
     {
+        public ListMenuAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             var res1 = new General.ListMenu().Execute(this.Logger, this.BuVO,

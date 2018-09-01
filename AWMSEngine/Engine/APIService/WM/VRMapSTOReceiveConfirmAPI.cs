@@ -1,6 +1,7 @@
 ﻿using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Engine.Business;
 using AWMSModel.Constant.EnumConst;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,10 @@ namespace AWMSEngine.Engine.APIService.WM
 {
     public class VRMapSTOReceiveConfirmAPI : BaseAPIService
     {
+        public VRMapSTOReceiveConfirmAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();

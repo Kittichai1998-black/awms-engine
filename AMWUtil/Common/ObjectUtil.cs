@@ -1,5 +1,4 @@
-﻿using AMWUtil.IUtil;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -169,7 +168,7 @@ namespace AMWUtil.Common
         public static Dictionary<string,string> QueryStringToDictionary(string param)
         {
             Dictionary<string, string> res = new Dictionary<string, string>();
-            var values = QueryStringToListKey(param);
+            var values = QueryStringToKeyValues(param);
 
             foreach (KeyValuePair<string,string> v in values)
             {
@@ -179,7 +178,7 @@ namespace AMWUtil.Common
             return res;
         }
 
-        public static List<KeyValuePair<string, string>> QueryStringToListKey(string param)
+        public static List<KeyValuePair<string, string>> QueryStringToKeyValues(string param)
         {
             List<KeyValuePair<string, string>> res = new List<KeyValuePair<string, string>>();
             try
@@ -203,13 +202,39 @@ namespace AMWUtil.Common
         public static List<string> QueryStringToKeys(string param)
         {
             List<string> res = new List<string>();
-            QueryStringToListKey(param).ForEach(x => res.Add(x.Key));
+            QueryStringToKeyValues(param).ForEach(x => res.Add(x.Key));
+            return res;
+        }
+        public static T KeyValueToObject<T>(List<KeyValuePair<string, object>> values)
+            where T : new()
+        {
+            T res = new T();
+            foreach (var v in values)
+            {
+                FieldInfo fi = res.GetType().GetField(v.Key);
+                if (fi != null)
+                {
+                    fi.SetValue(res, v.Value);
+                }
+            }
+
+            return res;
+        }
+        public static List<KeyValuePair<string, object>> ObjectToKeyValue<T>(T obj)
+        {
+            List<KeyValuePair<string, object>> res = new List<KeyValuePair<string, object>>();
+            FieldInfo[] fis = obj.GetType().GetFields();
+            foreach (var fi in fis)
+            {
+                res.Add(new KeyValuePair<string, object>(fi.Name, fi.GetValue(obj)));
+            }
+
             return res;
         }
 
 
 
-        
+
         public static dynamic QueryStringToObject(string querystring)
         {
             querystring = Regex.Replace(querystring, "^[?]+", "");

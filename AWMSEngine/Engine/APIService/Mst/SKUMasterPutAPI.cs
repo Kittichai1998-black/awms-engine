@@ -5,10 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using Microsoft.AspNetCore.Mvc;
+
 namespace AWMSEngine.Engine.APIService.Mst
 {
     public class SKUMasterPutAPI : BaseAPIService
     {
+        public SKUMasterPutAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             List<ams_SKUMaster> req1 = ObjectUtil.DynamicToModel<ams_SKUMaster>(this.RequestVO);

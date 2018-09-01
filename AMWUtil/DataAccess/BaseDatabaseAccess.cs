@@ -117,11 +117,11 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = new SqlConnection(ConnectionString);
             return conn;
         }
-        public SqlTransaction CreateTransaction()
+        public SqlTransaction CreateTransaction(string transName = null)
         {
             var conn = CreateConnection();
             conn.Open();
-            return conn.BeginTransaction();
+            return conn.BeginTransaction(transName);
         }
     }
 }

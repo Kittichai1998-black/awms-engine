@@ -17,6 +17,7 @@ namespace AWMSModel.Constant.StringConst
         public const string KEY_LOGGER = "_LOGGER";
         public const string KEY_DB_TRANSACTION= "_DB_TRANSACTION";
         public const string KEY_RESULT_API = "_result";
+        public const string KEY_DB_LOGID = "_db_logID";
 
         public static string KEY_REQUEST_FIELD(string fields)
         {

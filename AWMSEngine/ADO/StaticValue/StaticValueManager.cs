@@ -27,12 +27,14 @@ namespace AWMSEngine.ADO.StaticValue
         private List<ams_AreaMaster> _AreaMaster;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMaster; }
 
-        private List<ams_Supplier> _Supplier;
-        public List<ams_Supplier> Supplier { get => this._Supplier; }
+        private List<ams_Supplier> _Suppliers;
+        public List<ams_Supplier> Suppliers { get => this._Suppliers; }
         private List<ams_Customer> _Customers;
         public List<ams_Customer> Customers { get => this._Customers; }
         private List<ams_PackMasterType> _PackMasterType;
         public List<ams_PackMasterType> PackMasterType { get => this._PackMasterType; }
+        private List<ams_APIService> _APIServices;
+        public List<ams_APIService> APIServices { get => this._APIServices; }
 
         private static StaticValueManager instant;
 
@@ -90,11 +92,15 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadSupplier()
         {
-            this._Supplier = ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, new VOCriteria()).ToList();
+            this._Suppliers = ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, new VOCriteria()).ToList();
         }
         public void LoadPackMasterType()
         {
             this._PackMasterType = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, new VOCriteria()).ToList();
+        }
+        public void LoadAPIService()
+        {
+            this._APIServices = ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, new VOCriteria()).ToList();
         }
 
         public bool IsFeature(FeatureCode code)

@@ -2,6 +2,7 @@
 using AWMSEngine.Engine.Business;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,10 @@ namespace AWMSEngine.Engine.APIService.WM
 {
     public class VRMapSTOAPI : BaseAPIService
     {
+        public VRMapSTOAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
@@ -20,6 +25,7 @@ namespace AWMSEngine.Engine.APIService.WM
                 {
                     scanCode = this.RequestVO.scanCode,
                     warehouseID = this.RequestVO.warehouseID,
+                    areaID = this.RequestVO.areaID,
                     batch = this.RequestVO.batch,
                     lot = this.RequestVO.lot,
                     amount = this.RequestVO.amount,

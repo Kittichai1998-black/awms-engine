@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,10 @@ namespace AWMSEngine.Engine.APIService.Doc
 {
     public class IssuedDocumentCreateAPI : BaseAPIService
     {
+        public IssuedDocumentCreateAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        {
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();

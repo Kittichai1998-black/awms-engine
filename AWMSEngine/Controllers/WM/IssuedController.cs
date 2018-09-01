@@ -22,7 +22,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("doc")]
         public dynamic Post([FromBody] dynamic req)
         {
-            IssuedDocumentCreateAPI exec = new IssuedDocumentCreateAPI();
+            IssuedDocumentCreateAPI exec = new IssuedDocumentCreateAPI(this);
             var res = exec.Execute(req);
             return res;
         }

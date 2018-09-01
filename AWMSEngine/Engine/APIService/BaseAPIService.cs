@@ -4,6 +4,8 @@ using AMWUtil.Logger;
 using AWMSEngine.ADO;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -15,17 +17,25 @@ namespace AWMSEngine.Engine.APIService
 {
     public abstract class BaseAPIService
     {
+        public int APIServiceID() { return 0; }
         public VOCriteria BuVO { get; set; }
+        public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
 
         public AMWLogger Logger { get; set; }
 
-        private SqlConnection _SqlConnection = null;
         protected abstract dynamic ExecuteEngineManual();
+
+        public BaseAPIService(ControllerBase controllerAPI)
+        {
+            this.ControllerAPI = controllerAPI;
+        }
+
+        private SqlConnection _SqlConnection = null;
         protected void BeginTransaction()
         {
             this.RollbackTransaction();
-            var trans = ADO.BaseMSSQLAccess<ADO.DataADO>.GetInstant().CreateTransaction();
+            var trans = ADO.BaseMSSQLAccess<ADO.DataADO>.GetInstant().CreateTransaction(this.Logger.LogRefID);
             this._SqlConnection = trans.Connection;
             this.BuVO.Set(BusinessVOConst.KEY_DB_TRANSACTION, trans);
         }
@@ -65,12 +75,18 @@ namespace AWMSEngine.Engine.APIService
             this.BuVO = new VOCriteria();
             dynamic response = new { };
             dynamic result = new ExpandoObject();
-
+            long dbLogID = 0;
             try
             {
                 this.Logger = AMWLoggerManager.GetLogger(request._token ?? request._apikey ?? "notkey", this.GetType().Name);
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 this.Logger.LogBegin();
+                dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
+                    this.APIServiceID(), 
+                    this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(), 
+                    this.RequestVO,
+                    this.BuVO);
+                this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
 
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
@@ -91,6 +107,7 @@ namespace AWMSEngine.Engine.APIService
                 result.status = 1;
                 result.code = AMWExceptionCode.I0000.ToString();
                 result.message = "Success";
+                result.stacktrace = string.Empty;
                 this.CommitTransaction();
             }
             catch (AMWException ex)
@@ -121,6 +138,11 @@ namespace AWMSEngine.Engine.APIService
                 }
                 this.Logger.LogInfo("API Response : " + ObjectUtil.Json(response));
                 this.Logger.LogEnd();
+                int _status = result.status;
+                string _code = result.code;
+                string _message = result.message;
+                string _stacktrace = result.stacktrace;
+                ADO.LogingADO.GetInstant().EndAPIService(dbLogID, _status, _code, _message, _stacktrace, this.BuVO);
             }
             return response;
         }
