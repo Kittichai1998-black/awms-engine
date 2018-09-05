@@ -22,5 +22,6 @@ namespace AWMSModel.Constant.EnumConst
         SHIPPING = 33,
         SHIPPED = 34,
 
+        CHANGE_BASE = 90
     }
 }

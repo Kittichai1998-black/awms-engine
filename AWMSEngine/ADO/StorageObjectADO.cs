@@ -146,10 +146,10 @@ namespace AWMSEngine.ADO
             param.Add("batch", batch);
             param.Add("lot", lot);
             param.Add("actionBy", buVO.ActionBy);
-            param.Add("resID", null, System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
+            param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             var r = this.Query<int>("SP_STO_PUT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
                     .ToList();
-            sto.id = param.Get<int>("resID");
+            sto.id = param.Get<long>("resID");
             return sto.id.Value;
         }
         public List<StorageObjectFullCriteria> Search(SPInSTOSearchCriteria search, VOCriteria buVO)
