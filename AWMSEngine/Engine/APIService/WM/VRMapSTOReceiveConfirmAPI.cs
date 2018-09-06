@@ -32,6 +32,7 @@ namespace AWMSEngine.Engine.APIService.WM
             {
 
                 //Validate
+                new Engine.Validation.ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, res);
                 new Engine.Validation.ValidateInnerSTOLowerlimit().Execute(this.Logger, this.BuVO, res);
 
                 List<long> docIDs = new List<long>();
