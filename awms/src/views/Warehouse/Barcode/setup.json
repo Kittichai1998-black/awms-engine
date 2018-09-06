@@ -1,0 +1,25 @@
+{
+    "barcodetype": 1,
+    "barcodesetup":[
+        {
+            "type":1,
+            "width":"100mm",
+            "height":"50mm"
+        },
+        {
+            "type":2,
+            "width":"50mm",
+            "height":"25mm"
+        },
+        {
+            "type":3,
+            "width":"20mm",
+            "height":"10mm"
+        },
+        {
+            "type":4,
+            "width":"40mm",
+            "height":"20mm"
+        }
+    ]
+}
