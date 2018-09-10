@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSEngine.Engine.APIService.Mst;
+using AWMSEngine.APIService.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +18,7 @@ namespace AWMSEngine.Controllers
         public dynamic GetData()
         {
             var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var api = new AWMSEngine.Engine.APIService.Data.SelectDataLogAPI(this);
+            var api = new SelectDataLogAPI(this);
             var res = api.Execute(jsond);
             return res;
         }

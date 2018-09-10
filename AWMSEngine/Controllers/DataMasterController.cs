@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSEngine.Engine.APIService.Mst;
+using AWMSEngine.APIService.Data;
+using AWMSEngine.APIService.Mst;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace AWMSEngine.Controllers
         [HttpPut]
         public dynamic PutData([FromBody]dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Data.InsUpdDataAPI(this);
+            var api = new InsUpdDataAPI(this);
             var res = api.Execute(request);
              
             return res;
@@ -26,7 +27,7 @@ namespace AWMSEngine.Controllers
         public dynamic GetData()
         {
             var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var api = new AWMSEngine.Engine.APIService.Data.SelectDataMstAPI(this);
+            var api = new SelectDataMstAPI(this);
             var res = api.Execute(jsond);
             return res;
         }

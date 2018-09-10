@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.APIService.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ namespace AWMSEngine.Controllers
         public dynamic Get(string token)
         {
             var jsond = ObjectUtil.QueryStringToObject(token);
-            var api = new AWMSEngine.Engine.APIService.UI.ListMenuAPI(this);
+            var api = new ListMenuAPI(this);
             var res = api.Execute(jsond);
             return res;
         }

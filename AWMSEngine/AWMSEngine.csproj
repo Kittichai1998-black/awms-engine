@@ -8,8 +8,8 @@
     <Compile Remove="Controllers\SqlDataController.cs" />
     <Compile Remove="Controllers\WM\MasterSTOController.cs" />
     <Compile Remove="Controllers\WM\VRMapSTOReceiveController.cs" />
-    <Compile Remove="Engine\APIService\WM\GetMstSTOAPI.cs" />
-    <Compile Remove="Engine\APIService\WM\PutVirtualMapSTOAPI.cs" />
+    <Compile Remove="APIService\WM\GetMstSTOAPI.cs" />
+    <Compile Remove="APIService\WM\PutVirtualMapSTOAPI.cs" />
     <Compile Remove="Engine\Business\FreeSTO.cs" />
     <Compile Remove="Engine\Business\MenuResponseObject.cs" />
     <Compile Remove="Engine\Business\NewSTO.cs" />
