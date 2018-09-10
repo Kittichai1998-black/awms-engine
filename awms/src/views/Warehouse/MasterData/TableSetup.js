@@ -1,19 +1,26 @@
 import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import {Input, Card, Button, CardBody} from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import 'primereact/resources/themes/omega/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-import {Dropdown as DDLP} from 'primereact/dropdown';
-import Axois from 'axios';
-import {AutoComplete} from 'primereact/autocomplete';
+import ReactTable from 'react-table'
+import Axios from 'axios';
+import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 
-const createQueryString = (select) => {
+const getColumnWidth = (rows, accessor, headerText) => {
+  const maxWidth = 500
+  const magicSpacing = 10
+  let cellLength = 10
+  if(rows > 0 && rows !== undefined){
+    cellLength = Math.max(
+      ...rows.map(row => (`${row[accessor]}` || '').length),
+      headerText.length,)
+  }
+  return Math.min(maxWidth, cellLength * magicSpacing)
+}
+
+const createQueryString = (select,wherequery) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
   + (select.q === "" ? "" : "&q=" + select.q)
   + (select.f === "" ? "" : "&f=" + select.f)
@@ -25,6 +32,18 @@ const createQueryString = (select) => {
   return queryS
 }
 
+const createQueryStringStorage = (url,field,order) => {
+  let sortfield = new RegExp("([?&])" + "s_f" + "=.*?(&|$)", "i");
+  let sortorder = new RegExp("([?&])" + "s_od" + "=.*?(&|$)", "i");
+  const urledit = url.replace(sortfield, '$1' + "s_f" + "=" + field + '$2').replace(sortorder, '$1' + "s_od" + "=" + order + '$2')
+  return urledit;
+}
+
+const createQueryStringPage = (url, size) => {
+  let sortskip = new RegExp("([?&])" + "sk" + "=.*?(&|$)", "i");
+  const urledit = url.replace(sortskip, '$1' + "sk" + "=" + size + '$2')
+  return urledit;
+}
 
 class TableGen extends Component{
   constructor(props) {
@@ -46,19 +65,15 @@ class TableGen extends Component{
       dataSuggestions:null,
       uneditable:[],
       datetime:moment(),
+      autocomplete:[],
     };
-    
-    this.actionTemplate = this.actionTemplate.bind(this);
-    this.dropdownFilter = this.dropdownFilter.bind(this);
-    this.customFilter = this.customFilter.bind(this);
-    this.onEditChange = this.onEditChange.bind(this);
+
     this.customSorting = this.customSorting.bind(this);
     this.onHandleClickAdd = this.onHandleClickAdd.bind(this);
     this.removedata = this.removedata.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.paginationButton = this.paginationButton.bind(this)
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.autocompleteBody = this.autocompleteBody.bind(this);
     this.datePickerBody = this.datePickerBody.bind(this)
     this.onEditDateChange = this.onEditDateChange.bind(this)
     this.datetimeBody = this.datetimeBody.bind(this)
@@ -71,98 +86,56 @@ class TableGen extends Component{
 
   componentWillReceiveProps(nextProps){
     this.queryInitialData();
-    //this.setState({dropdownfilter:nextProps.ddlfilter})
     this.setState({dropdownfilter:nextProps.ddlfilter})
+    console.log(this.props.autocomplete)
+    console.log(nextProps.autocomplete)
+    this.setState({autocomplete:nextProps.autocomplete})
   }
 
-  componentDidMount(props){
+  componentDidMount(){
     this.queryInitialData();
-    
-    this.props.column.forEach((row) => {
-      let uneditable = this.state.uneditable
-      if(row.updateable !== undefined && row.updateable === false){
-        uneditable.push(row.field)
-      }
-      this.setState({uneditable: uneditable})
-    })
+  }
+  
+  componentWillUnmount(){
+    Axios.isCancel(true);
   }
 
   queryInitialData(){
-    this.setState({select:this.props.data})
-    let queryString = createQueryString(this.props.data)
-    Axois.get(queryString).then(
+    if(this.props.url === null || this.props.url === undefined){
+      const dataselect = this.props.data
+      this.setState({dataselect:dataselect})
+      let queryString = createQueryString(this.props.data)
+      Axios.get(queryString).then(
       (res) => {
+        console.log(res)
         this.setState({data:res.data.datas})
         this.setState({loading:false})
-      }
-    )
-    
-    const ddl = [...this.props.statuslist]
-    let ddvalue = [...this.state.dropdownvalue]
-    ddl.map((row,index) => {
-      let field= {};
-      field[row.field] = "*"
-      ddvalue.push(field)
-    })
-    this.setState({dropdownvalue:ddvalue})
-    if(this.dt.table.children[1].children.length > 1)
-    {
-      for(let i = 0; i < this.dt.table.children[1].children.length; i++){
-        this.dt.table.children[1].children[i].classList.remove('ui-state-highlight')
-      }
+      })        
+    }
+    else{
+      Axios.get(this.props.url).then(
+        (res) => {
+            this.setState({data:res.data.datas})
+            this.setState({loading:false})
+        })
     }
   }
 
   onHandleClickCancel(event){
     this.queryInitialData();
   }
-
-  onEditorValueChange(props, value) {
-    const data = [...this.state.data];
-    data[props.rowIndex][props.field] = value;
-    this.setState({ data });
-    const dataedit = [...this.state.dataedit];
-    dataedit.forEach((datarow,index) => {
-      if(datarow.ID === data[props.rowIndex]["ID"]){
-        dataedit.splice(index,1);
-      }
-    })
-    this.dt.table.children[1].children[props.rowIndex].classList.add('ui-state-highlight')
-    dataedit.push(data[props.rowIndex]);
-    this.setState({dataedit}, () => console.log(this.state.dataedit));
-  }
-
-  inputTextEditor(props, field) {
-      return <Input type="text" value={props.rowData[field]} onChange={(e) => {return this.onEditorValueChange(props, e.target.value)}} />;
-  }
-
-  actionTemplate(column, event, rowData) {
-    let listbtn = column.map((data,index) => {
-      if(data === 'barcode'){
-        return <Button key={index} type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} to={'/mst/sku/manage/barcode?barcode='+event.Code+'&Name='+event.Name}>Print</Link>}</Button>
-      }
-      else if(data === 'remove'){
-        return <Button key={index} type="button" color="danger" onClick={() => this.removedata(rowData, 2)}>Remove</Button>
-      }
-      else{
-        return <Button key={index} type="button" color="danger" onClick={() => this.removedata(rowData, 2)}>Remove</Button>
-      }
-    })
-    return listbtn
-  }
   
-  removedata(props, value){
+  removedata(rowdata){
     const data = [...this.state.data];
-    data[props.rowIndex]["Status"] = value;
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
-      if(datarow.ID === data[props.rowIndex]["ID"]){
+      if(datarow.ID === rowdata.ID){
         dataedit.splice(index,1);
       }
     })
-    dataedit.push(data[props.rowIndex]);
+    dataedit.push(rowdata);
     data.forEach((datarow,index) => {
-      if(datarow.ID === data[props.rowIndex]["ID"]){
+      if(datarow.ID === rowdata.ID){
         data.splice(index,1);
       }
     })
@@ -170,247 +143,83 @@ class TableGen extends Component{
     this.setState({dataedit});
   }
 
-  booleanTemplate(row,rowData,status) {
-    return <input
-    type="checkbox"
-    className="checkbox"
-    contentEditable
-    suppressContentEditableWarning
-    defaultChecked={row.Status === 1} 
-    onChange={ (e) => {
-      this.onEditorValueChange(rowData, e.target.checked === false ? 0 : 1)
-    }}
-    disabled={status}/>
-  }
-
-  onEditChange(field, value) {
-    let filter = [...this.state.datafilter]
-      filter.forEach((datarow,index) => {
-        if(Object.keys(datarow)[0] === field){
-          filter.splice(index,1);
-        }
-      })
-      if(value !== ""){
-        filter.push({[field]: value})
-      }
-      this.setState({datafilter:filter}, this.onCheckFliter(filter))
-  }
-
-  onDropdownValue(field){
-    let result = ""
-    this.state.dropdownvalue.forEach((data) => {
-      if(Object.keys(data)[0] === field){
-        result = data[Object.keys(data)[0]]
-      }
-    })
-    return result
-  }
-
-  suggestData(event,field) {
-    let result = [];
-    const filterlist = [...this.state.dropdownfilter]
-    filterlist.forEach((row) => {
-      if(row.field === field){
-        result = row.data.filter((obj) => {
-          return obj[Object.keys(obj)[1]].toLowerCase().startsWith(event.query.toLowerCase())
-        })
-      }
-    })
-    let result1 = [...result]
-    this.setState({suggestWithData:result1})
-    let result2 = []
-    result1.forEach((row) => {
-      result2.push(row.Code)
-    })
-    this.setState({dataSuggestions:result2})
-  }
-
-  autocompleteBody(rowCom,field){
-    return <AutoComplete value={rowCom.rowData[field]} onChange={(e) => this.onEditorDropdownChange(rowCom,e.value)}
-            dropdown={true} suggestions={this.state.dataSuggestions} completeMethod={(event) => this.suggestData(event,field)} />
-  }
-
-  datetimeBody(rowData,rowCom){
-    if(rowData[rowCom["field"]] !== null){
-      const date = moment(rowData[rowCom["field"]]);
-      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
-    }
-  }
-
-  datePickerBody(format,rowCom,field){
-    if(format === 'date')
-    {
-      return <DatePicker selected={moment(rowCom.rowData[field])}
-        onChange={(e) => {return this.onEditDateChange(e,rowCom)}}/>
-    }
-    else if(format === 'datetime'){
-      return <DatePicker selected={moment(rowCom.rowData[field])}
-        onChange={(e) => {return this.onEditDateChange(e,rowCom)}}
-        showTimeSelect
-        timeFormat="hh:mm"
-        dateFormat="LLL"
-        timeCaption="time"/>
-    }
-    else{
-      return <DatePicker selected={moment(rowCom.rowData[field])}
-        onChange={(e) => {return this.onEditDateChange(e,rowCom)}}
-        showTimeSelectOnly
-        dateFormat="LT"
-        timeCaption="Time"/>
-    }
-  }
-
-  onEditDateChange(date,component){
-    console.log(date)
-    const dateformat = date.format('YYYY-MM-DDTHH:mm:ss')
-    this.onEditorValueChange(component,dateformat)
-  }
-  
-  onEditorDropdownChange(props, value) {
-    setTimeout(()=>{
-      if(this.state.suggestWithData !== undefined){
-        const data = [...this.state.data];
-        let result = this.state.suggestWithData.filter((obj) => {
-          return obj[Object.keys(obj)[1]].toLowerCase() === value.toLowerCase()
-        })
-        if(result.length === 1){
-          result.forEach((row) => {
-            data[props.rowIndex][props.field] = row[Object.keys(row)[1]];
-            data[props.rowIndex][Object.keys(row)[0]] = row[Object.keys(row)[0]];
-          })
-          this.setState({ data });
-        }
-        const dataedit = [...this.state.dataedit];
-        dataedit.forEach((datarow,index) => {
-          if(datarow.ID === data[props.rowIndex]["ID"]){
-            dataedit.splice(index,1);
-          }
-        })
-        this.dt.table.children[1].children[props.rowIndex].classList.add('ui-state-highlight')
-        dataedit.push(data[props.rowIndex]);
-        this.setState({dataedit});
-      }
-    },100)
-  }
-
-  dropdownFilter(field){
-    const ddl = [...this.props.statuslist]
-    const ddlvalue = [...this.state.dropdownvalue]
-    let result = ddl.map((row,index) => {
-      return <DDLP key={row.header} style={{width: '100%'}} className="ui-column-filter"
-        value={this.onDropdownValue(row.field)}
-        options={row.status}
-        onChange={(e) => {
-          ddlvalue.forEach((data) =>{
-            if(Object.keys(data)[0] === row.field){
-              data[Object.keys(data)] = e.value
-            }
-            this.setState({status:e.value})
-          })
-          this.onEditChange(field, e.value)
-        }}/>
-    })
-    let res = result.filter((ele) => {
-      return ele.key === field
-    })
-    return res;
-  }
-  
-  customFilter(field){
-    return <Input type="text" onBlur={(e) => {
-      this.onEditChange(field, e.target.value)
-    }}
-    
-    onKeyPress={(e) => {
-      if (e.key === 'Enter'){
-        this.onEditChange(field, e.target.value)
-      }}
-    } />;
-  }
-  
-  onCheckFliter(filter){
+  onCheckFliter(filter,dataselect){
     let filterlist = []
-    
-    this.setState({dataedit:[]})
-    this.setState({dataremove:[]})
     
     if(filter.length > 0)
     {
-      filter.map((data, id) => {
+      filter.forEach((data, id) => {
         if(data[1] !== ""){
-          switch(data[Object.keys(data)[0]].toString().charAt(0)){
+          switch(data["value"].toString().charAt(0)){
             case "=":
-              filterlist.push([{"f":Object.keys(data)[0], "c":"=", "v": data[Object.keys(data)[0]].replace("=","")}])
+              filterlist.push({"f":data["id"], "c":"=", "v": data["value"].replace("=","")})
               break
             case ">":
-              filterlist.push([{"f":Object.keys(data)[0], "c":">", "v": data[Object.keys(data)[0]].replace(">","")}])
+              filterlist.push({"f":data["id"], "c":">", "v": data["value"].replace(">","")})
               break
             case "<":
-              filterlist.push([{"f":Object.keys(data)[0], "c":"<", "v": data[Object.keys(data)[0]].replace("<","")}])
+              filterlist.push({"f":data["id"], "c":"<", "v": data["value"].replace("<","")})
               break
             case ">=":
-              filterlist.push([{"f":Object.keys(data)[0], "c":">=", "v": data[Object.keys(data)[0]].replace(">=","")}])
+              filterlist.push({"f":data["id"], "c":">=", "v": data["value"].replace(">=","")})
               break
             case "<=":
-              filterlist.push([{"f":Object.keys(data)[0], "c":"<=", "v": data[Object.keys(data)[0]].replace("<=","")}])
+              filterlist.push({"f":data["id"], "c":"<=", "v": data["value"].replace("<=","")})
               break
             case "%":
-              filterlist.push([{"f":Object.keys(data)[0], "c":"like", "v": data[Object.keys(data)[0]]}])
+              filterlist.push({"f":data["id"], "c":"like", "v": data["value"]})
               break
             case "*":
-              filterlist.push([{"f":Object.keys(data)[0], "c":"!=", "v":2}])
+              filterlist.push({"f":data["id"], "c":"!=", "v":2})
               break
             default:
-              filterlist.push([{"f":Object.keys(data)[0], "c":"=", "v": data[Object.keys(data)[0]]}])
+              filterlist.push({"f":data["id"], "c":"=", "v": data["value"]})
           }
-          const select = this.state.select
-          select["q"] = JSON.stringify(...filterlist)
-          let queryString = createQueryString(select)
-          Axois.get(queryString).then(
-              (res) => {
-                this.setState({data:res.data.datas})
-              }
-          )
         }
       })
-    }
-    else{
-      const select = this.state.select
-      select["q"] = ""
+      
+      const select = dataselect
+      select["q"] = JSON.stringify(filterlist)
       let queryString = createQueryString(select)
-      Axois.get(queryString).then(
+      Axios.get(queryString).then(
           (res) => {
-            this.setState({data:res.data.datas})
+            console.log(queryString)
+            this.setState({data:res.data.datas, loading:false});
           }
       )
     }
-  }
-  
-  customSorting(event){
-    if(this.sortstatus !== event.order)
-    {
-      this.setState({dataedit:[]})
-      this.setState({dataremove:[]})
-      this.sortstatus = event.order
-      this.order = event.order
-      const select = this.state.select
-      select["s"] = JSON.stringify([{'f':event.field,'od':event.order === -1 ? 'asc' : 'desc'}])
+    else{
+      const select = dataselect
+      select["q"] = ""
       let queryString = createQueryString(select)
-      Axois.get(queryString).then(
-      (res) => {
-        this.setState({data:res.data.datas})
-       }
+      Axios.get(queryString).then(
+          (res) => {
+            this.setState({data:res.data.datas, loading:false});
+          }
       )
     }
-
-    return this.state.data
   }
 
   onHandleClickAdd(event){
     event.preventDefault();
     let adddata = [...this.state.data];
-    adddata.push({'ID':this.addkey,'Status':1})
+    let cretdata = {}
+    const col = this.props.column
+    col.forEach(row => {
+      if(row.accessor === 'ID')
+        cretdata.ID = this.addkey
+      else if(row.accessor === 'Status')
+        cretdata.Status = 1
+      else
+        cretdata[row.accessor] = ""
+      if(row.dateformat === 'datetime' || row.dateformat === 'date'){
+        let date = new Date();
+        cretdata[row.accessor] = date
+      }
+    })
+    adddata.push(cretdata)
     this.addkey += -1
+    
     this.setState({data:adddata.sort((a,b) => a.ID - b.ID)});
   }
 
@@ -432,7 +241,7 @@ class TableGen extends Component{
           "nr": false
         }
     
-        Axois.put(this.state.select.queryString, updjson).then((result) =>{
+        Axios.put(this.state.select.queryString, updjson).then((result) =>{
           this.queryInitialData();
         })
   
@@ -440,31 +249,73 @@ class TableGen extends Component{
       }
   }
 
-  pageOnHandleClick(position){
-    let queryString = "";
-    this.setState({loading:true})
-    const select = this.state.select
-    if(position === 'next'){
-      select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
+  customSorting(data){
+    const select = this.props.data
+    select["s"] = JSON.stringify([{'f':data[0].id,'od':data[0].desc === false ? 'asc' : 'desc'}])
+    let queryString = ""
+    if(this.props.url === undefined || null){
       queryString = createQueryString(select)
     }
     else{
-      if(select.sk - select.l >= 0){
-        select.sk = select.sk - select.l
-      }
-      queryString = createQueryString(select)
+      queryString = createQueryStringStorage(this.props.url,data[0].id,data[0].desc === false ? 'asc' : 'desc')
     }
-    Axois.get(queryString).then(
-      (res) => {
-        if(res.data.datas.length > 0){
-          this.setState({data:res.data.datas})
-        }
-        for(let i = 0; i < this.dt.table.children[1].children.length; i++){
-          this.dt.table.children[1].children[i].classList.remove('ui-state-highlight')
-        }
-        this.setState({loading:false})
+    Axios.get(queryString).then(
+    (res) => {
+        this.setState({data:res.data.datas, loading:false})
+    })
+  }
+
+  pageOnHandleClick(position){
+    if(this.props.url === undefined || this.props.url === null)
+    {
+      let queryString = "";
+      this.setState({loading:true})
+      const select = this.state.dataselect
+      console.log(select)
+      if(position === 'next'){
+        select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
+        queryString = createQueryString(select)
       }
-    )
+      else{
+        if(select.sk - select.l >= 0){
+          select.sk = select.sk - select.l
+        }
+        queryString = createQueryString(select)
+      }
+      Axios.get(queryString).then(
+        (res) => {
+          if(res.data.datas.length > 0){
+            this.setState({data:res.data.datas})
+          }
+          this.setState({loading:false})
+        }
+      )
+    }
+    else{
+      let queryString = "";
+      this.setState({loading:true})
+      let select = this.state.pageSize
+      if(position === 'next'){
+        select = parseInt(select === "" ? 0 : select, 10) + parseInt(select, 10)
+        queryString = createQueryStringPage(this.props.url, select)
+        this.setState({pageSize:select})
+      }
+      else{
+        if(select - 10 >= 0){
+          select = select - 10
+          this.setState({pageSize:select})
+        }
+        queryString = createQueryStringPage(this.props.url, select)
+      }
+      Axios.get(queryString).then(
+        (res) => {
+          if(res.data.datas.length > 0){
+            this.setState({data:res.data.datas})
+          }
+          this.setState({loading:false})
+        }
+      )
+    }
   }
 
   paginationButton(){
@@ -480,76 +331,240 @@ class TableGen extends Component{
     )
   }
 
-  expandRow(){
+  createSelectButton(event){
+    return <input type="checkbox"/>
+  }
 
+  createDropdownFilter(name,func,selectdata){
+    let filter = [...this.state.datafilter]
+    let item = null
+    let list = null
+    this.props.dropdownfilter.forEach(row => {
+      if(row.field === name){
+        item = row.status.map((data, index) => {
+          return <option key={index} value={data.value}>{data.label}</option>
+        })
+        list = <select onChange={(e) => {
+          filter.forEach((datarow,index) => {
+            if(datarow.id === name){
+                filter.splice(index,1);
+            }
+          })
+          if(e.target.value !== ""){
+              filter.push({id: name, value:e.target.value})
+          }
+          this.onCheckFliter(filter,this.state.dataselect)
+          this.setState({datafilter:filter, loading:true})
+        }}>{item}</select>
+      }
+    })
+    return list
+  }
+
+  createCustomFilter(name){
+    let filter = [...this.state.datafilter]
+    return <Input type="text" id={name}
+      onKeyPress={(e) => {
+        if (e.key === 'Enter'){
+            filter.forEach((datarow,index) => {
+                if(datarow.id === name){
+                    filter.splice(index,1);
+                }
+            })
+            if(e.target.value !== ""){
+                filter.push({id: name, value:e.target.value})
+            }
+            this.onCheckFliter(filter,this.state.dataselect)
+            this.setState({datafilter:filter, loading:true})
+        }}
+      } />
+  }
+
+  createCustomButton(type,text,data){
+    if(type === "Remove"){
+      return <Button type="button" color="danger" onClick={() => this.removedata(data)}>Remove</Button>
+    }
+    else if(type === "Link"){
+      return <Button type="button" color="info">{
+        <Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+        to={data}>{text}</Link>}
+        </Button>
+    }
+    else if(type === "Barcode"){
+      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+      to={'/mst/sku/manage/barcode?barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+    }
+  }
+
+  datetimeBody(value){
+    if(value !== null){
+      const date = moment(value);
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+    }
+  }
+  
+  checkboxBody(rowdata){
+    return <input
+    type="checkbox"
+    className="checkbox"
+    contentEditable
+    suppressContentEditableWarning
+    defaultChecked={rowdata.value === 1 || rowdata.value === true} 
+    onChange={ (e) => {
+      this.onEditorValueChange(rowdata.index , e.target.checked === false ? 0 : 1, rowdata.column.id)
+    }}/>
+  }
+
+  datePickerBody(format, value, rowdata){
+    if(format === 'date')
+    {
+      return <DatePicker selected={moment(value)} style={{width:'1000px'}}
+        onChange={(e) => {this.onEditDateChange(e, rowdata)}}
+        onChangeRaw={(e) => {
+          if (moment(value).isValid())
+               this.onEditDateChange(e, rowdata);
+       }}/>
+    }
+    else if(format === 'datetime'){
+      return <DatePicker selected={moment(value)}
+        onChange={(e) => {this.onEditDateChange(e, rowdata)}}
+        onChangeRaw={(e) => {
+          console.log(e.target.value)
+          if (moment(e.target.value).isValid())
+               this.onEditDateChange(e, rowdata);
+       }}
+        dateFormat="DD/MM/YYYY HH:mm:ss"
+        />
+    }
+    else{
+      return <DatePicker selected={moment(value)}
+        onChange={(e) => {return this.onEditDateChange(e, rowdata)}}
+        showTimeSelectOnly
+        dateFormat="LT"
+        timeCaption="Time"/>
+    }
+  }
+  
+  onEditDateChange(value, rowdata){
+    const dateformat = moment(value).format('YYYY-MM-DDTHH:mm:ss')
+    this.onEditorValueChange(rowdata.index ,dateformat, rowdata.column.id)
+  }
+
+  inputTextEditor(rowdata) {
+    return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
+    onChange={(e) => {this.onEditorValueChange(rowdata.index, e.target.value, rowdata.column.id)}} />;
+  }
+  
+  onEditorValueChange(rowindex, value, field) {
+    const data = [...this.state.data];
+    data[rowindex][field] = value;
+    this.setState({ data });
+    const dataedit = [...this.state.dataedit];
+    dataedit.forEach((datarow,index) => {
+      if(datarow.ID === data[rowindex]["ID"]){
+        dataedit.splice(index,1);
+      }
+    })
+    dataedit.push(data[rowindex]);
+    this.setState({dataedit}, () => console.log(this.state.dataedit));
+  }
+
+  createAutocomplete(rowdata){
+    if(this.state.autocomplete.length > 0){
+      console.log(this.state.autocomplete)
+      const getdata = this.state.autocomplete.filter(row=>{
+        return row.field  === rowdata.column.id
+      })
+      if(getdata.length > 0){
+        return <ReactAutocomplete 
+        getItemValue={(item) => item.Code}
+        items={getdata[0].data}
+        shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
+        renderItem={(item, isHighlighted) =>
+          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+            {item.Code}
+          </div>
+        }
+        value={rowdata.value}
+        onChange={(e) => {
+          this.onEditorValueChange(rowdata.index, e.target.value, rowdata.column.id)
+        }}
+        onSelect={(val, row) => {
+          this.onEditorValueChange(rowdata.index, row.Code, rowdata.column.id)
+          this.onEditorValueChange(rowdata.index, row.ID, getdata[0].pair)
+        }}
+      />
+      }
+      
+    }
   }
 
   render(){
-    let dynamicColumns = this.props.column.map((col,i) => {
-      if(col.body === 'checkbox'){
-        if(col.editable === false)
-        {
-          return <Column style={{overflowX:'initial'}} filterElement={this.dropdownFilter(col.field)} filter={true} 
-          key={col.field} field={col.field} header={col.header} body={(rowData,rowCom) => {return this.booleanTemplate(rowData,rowCom,true)}}/>;
-        }
-        else{
-          return <Column style={{overflowX:'initial'}} filterElement={this.dropdownFilter(col.field)} filter={true} 
-          key={col.field} field={col.field} header={col.header} body={(rowData,rowCom) => {return this.booleanTemplate(rowData,rowCom,false)}}/>;
-        }
-      }
-      else if(col.body === 'dropdown'){
-        if(col.editable === false)
-        {
-          return <Column style={{overflowX:'initial'}} filter={true} 
-          key={col.field} field={col.field} header={col.header}/>;
-        }
-        else{
-          return <Column style={{overflowX:'initial'}} filter={true} 
-          key={col.field} field={col.field} header={col.header}
-          editor={(rowCom) => {return this.autocompleteBody(rowCom, col.field)}}/>;
-        }
-      }
-      else if(col.body === 'datetime'){
-        if(col.editable === false)
-        {
-          return <Column filterElement={this.customFilter(col.field)} filter={true} 
-          body={(rowData,rowCom) => {return this.datetimeBody(rowData,rowCom)}} sortable="custom" sortFunction={this.customSorting} key={col.field} field={col.field} header={col.header}/>;
-        }
-        else{
-          return <Column filterElement={this.customFilter(col.field)} filter={true} 
-          sortable="custom" sortFunction={this.customSorting} key={col.field} field={col.field} header={col.header}
-          body={(rowData,rowCom) => {return this.datetimeBody(rowData,rowCom)}} 
-          editor={(rowCom) => {return this.datePickerBody('datetime',rowCom, col.field)}}/>;
-        }
-      }
-      else if(col.sortable === false){
-        return <Column filterElement={this.customFilter(col.field)} filter={true} 
-        key={col.field} field={col.field} header={col.header} 
-        editor={(dataRow) => {return this.inputTextEditor(dataRow, col.field)}}/>;
-      }
-      else if(col.manage !== undefined){
-        return <Column key={col.field} body={(e,rowCom) => this.actionTemplate(col.manage,e,rowCom)} style={{textAlign:'center', width: '6em'}}/>
-      }
-      else if(col.editable !== false){
-        return <Column filterElement={this.customFilter(col.field)} filter={true} 
-        sortable="custom" sortFunction={this.customSorting} key={col.field} field={col.field} header={col.header} 
-        editor={(dataRow) => {return this.inputTextEditor(dataRow, col.field)}}/>;
-      }
-      else{
-        return <Column filterElement={this.customFilter(col.field)} filter={true} 
-        sortable="custom" sortFunction={this.customSorting} key={col.field} field={col.field} header={col.header}/>;
-      }
-    });
-    
+    const col = this.props.column
+      col.forEach((row) => {
+          //set กล่อง Filter
+          //row.width = getColumnWidth(this.state.data, row.accessor, row.Header)
+
+          if(row.Filter === "text"){
+            row.Filter = () => this.createCustomFilter(row.accessor,this.state.dataselect)
+          }
+          else if(row.Filter === "dropdown"){
+            row.Filter = () => this.createDropdownFilter(row.accessor,this.state.dataselect)
+          }
+
+          if(row.editable && (row.body === undefined || !row.body)){
+            row.Cell = (e) => (this.inputTextEditor(e))
+          }
+          if(row.Type === "datetime"){
+            if(row.editable === true)
+              row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
+            else
+              row.Cell = (e) => this.datetimeBody(e.value)
+          }
+          else if(row.Type === "checkbox"){
+              row.Cell = (e) => this.checkboxBody(e)
+          }
+          else if(row.Type === "button"){
+            row.Cell = (e) => this.createCustomButton(row.btntype, row.btntext, e.original)
+          }
+          else if(row.Type === "autocomplete"){
+            row.Cell = (e) => this.createAutocomplete(e)
+          }
+
+          if(row.Aggregated === "blank"){
+            row.Aggregated = (e) => {return (<span></span>);}
+          }
+          else if(row.Aggregated === "button"){
+            row.Aggregated = (e) => this.createCustomButton(row.btntype, row.btntext, e.original)
+          }
+          else if(row.Aggregated === "select"){
+            row.Aggregated = (e) => this.createSelectButton(e.row._subRows[0]._original)
+          }
+        })
+
     return(
       <div style={{overflowX:'auto'}}>
         <Button onClick={this.onHandleClickAdd} style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
-        {this.paginationButton()}
-        <DataTable ref={(el) => this.dt = el} value={this.state.data} loading={this.state.loading}
+        {/* <DataTable ref={(el) => this.dt = el} value={this.state.data} loading={this.state.loading}
         editable={true} resizableColumns={true} columnResizeMode="expand"
         paginatorPosition="top">
             {dynamicColumns}
-        </DataTable>
+        </DataTable> */}
+        <ReactTable data={this.state.data}
+            style={{backgroundColor:'white'}}
+            loading={this.state.loading}
+            filterable={this.props.filterable}
+            columns={col}
+            pivotBy={this.props.pivotBy}
+            multiSort={false}
+            showPagination={true}
+            minRows={5}
+            SubComponent={this.subTable}
+            PaginationComponent={this.paginationButton}
+            onSortedChange={(sorted) => {
+                this.setState({data:[], loading:true });
+                this.customSorting(sorted)}
+            }/>
         <Card>
         <CardBody>
           <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>

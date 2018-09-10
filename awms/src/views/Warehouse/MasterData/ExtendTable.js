@@ -4,7 +4,6 @@ import {Link}from 'react-router-dom';
 import ReactTable from 'react-table'
 import Axois from 'axios';
 import moment from 'moment';
-import queryString from 'query-string'
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 400
@@ -39,11 +38,13 @@ const createQueryStringStorage = (url,field,order) => {
   const urledit = url.replace(sortfield, '$1' + "s_f" + "=" + field + '$2').replace(sortorder, '$1' + "s_od" + "=" + order + '$2')
   return urledit;
 }
+
 const createQueryStringPage = (url, size) => {
   let sortskip = new RegExp("([?&])" + "sk" + "=.*?(&|$)", "i");
   const urledit = url.replace(sortskip, '$1' + "sk" + "=" + size + '$2')
   return urledit;
 }
+
 const makeDefaultState = () => ({
     sorted: [],
     page: 0,
@@ -93,9 +94,6 @@ class ExtendTable extends Component{
               this.setState({loading:false})
           })
       }
-    }
-
-    componentDidUpdate(prevState,nextState){
     }
 
     onCheckFilterExpand(filter){
@@ -447,6 +445,7 @@ class ExtendTable extends Component{
 
         return(
             <ReactTable data={this.state.data}
+            style={{backgroundColor:'white'}}
             loading={this.state.loading}
             filterable={this.props.filterable}
             columns={col}

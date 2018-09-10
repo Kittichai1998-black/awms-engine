@@ -58,6 +58,7 @@ const routes = [
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
   { path: '/wms/storageObject/register', exact: true, name: 'StorageManagement', component: StorageManagement },
   { path: '/wms/storageObject/transfer', exact: true, name: 'StorageManagement', component: StorageManagement },
+  { path: '/wms/issueddoc/manage', exact: true, name: 'StorageManagement', component: StorageManagement },
 ];
 
 export default routes;

@@ -161,7 +161,6 @@ class StorageManagement extends Component{
             let areawhere = JSON.parse(area.q)
             areawhere.push({'f':'warehouse_ID','c':'=','v':item.ID})
             area.q = JSON.stringify(areawhere)
-            console.log(createQueryString(area))
             Axios.get(createQueryString(area)).then((res) => {
               this.setState({areadata:res.data.datas})
             })
