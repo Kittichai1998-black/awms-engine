@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.Business.Received
 {
-    public class DocGoodsReceivedCreateBySTO : BaseEngine<DocGoodsReceivedCreateBySTO.TReq, amt_Document>
+    public class GRDocCreateBySTO : BaseEngine<GRDocCreateBySTO.TReq, amt_Document>
     {
         public class TReq
         {

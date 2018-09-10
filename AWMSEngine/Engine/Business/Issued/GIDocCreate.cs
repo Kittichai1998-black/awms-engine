@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.Business.Issued
 {
-    public class DocGoodsIssuedCreate : BaseEngine<DocGoodsIssuedCreate.TDocReq, amt_Document>
+    public class GIDocCreate : BaseEngine<GIDocCreate.TDocReq, amt_Document>
     {
 
         public class TDocReq

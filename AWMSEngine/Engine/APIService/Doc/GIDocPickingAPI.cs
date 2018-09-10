@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Engine.APIService.Doc
 {
-    public class IssuedDocumentPickingAPI : BaseAPIService
+    public class GIDocPickingAPI : BaseAPIService
     {
-        public IssuedDocumentPickingAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GIDocPickingAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 

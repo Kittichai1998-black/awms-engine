@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.Business.Issued
 {
-    public class DocPickingCreate : BaseEngine<DocPickingCreate.TDocReq, amt_Document>
+    public class PKDocCreate : BaseEngine<PKDocCreate.TDocReq, amt_Document>
     {
 
         public class TDocReq

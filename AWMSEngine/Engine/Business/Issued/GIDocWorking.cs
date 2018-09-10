@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.Business.Issued
 {
-    public class DocGoodsIssuedRejected : BaseEngine<DocGoodsIssuedRejected.TDocReq, DocGoodsIssuedRejected.TDocRes>
+    public class GIDocWorking : BaseEngine<GIDocWorking.TDocReq, GIDocWorking.TDocRes>
     {
 
         public class TDocReq
@@ -34,14 +34,10 @@ namespace AWMSEngine.Engine.Business
                 if (doc.Status == EntityStatus.DONE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is Done");
                 if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL)
-                {
-                    var stos = ADO.DocumentADO.GetInstant().ListSTOInDocLock(doc.ID.Value, this.BuVO);
-                    if (stos.Count > 0)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
-                }
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
-                    null, DocumentEventStatus.REJECTED, 
-                    EntityStatus.ACTIVE, EntityStatus.REMOVE,
+                    DocumentEventStatus.IDEL, DocumentEventStatus.WORKING, 
+                    EntityStatus.ACTIVE, null,
                     this.BuVO);
 
                 doc.EventStatus = DocumentEventStatus.REJECTED;

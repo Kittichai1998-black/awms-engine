@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.APIService.UI
 {
-    public class StorageObjectSearchAPI : BaseAPIService
+    public class STOSearchAPI : BaseAPIService
     {
-        public StorageObjectSearchAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public STOSearchAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 

@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AWMSEngine.Engine.Business.Issued;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -7,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.APIService.Doc
 {
-    public class ReceivedDocumentCreateAPI : BaseAPIService
+    public class GIDocCreateAPI : BaseAPIService
     {
-        public ReceivedDocumentCreateAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GIDocCreateAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<Business.DocGoodsReceivedCreate.TReq>(this.RequestVO);
-            var res = new Engine.Business.DocGoodsReceivedCreate().Execute(
+            var reqDoc = ObjectUtil.DynamicToModel<GIDocCreate.TDocReq>(this.RequestVO);
+            var res = new GIDocCreate().Execute(
                 this.Logger,
                 this.BuVO,
                 reqDoc);

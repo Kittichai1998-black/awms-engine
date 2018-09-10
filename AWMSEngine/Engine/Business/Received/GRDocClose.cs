@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWMSModel.Criteria;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.Business.Received
 {
-    public class DocGoodsReceivedClose : BaseEngine<DocGoodsReceivedClose.TReq, AWMSModel.Criteria.NullCriteria>
+    public class GRDocClose : BaseEngine<GRDocClose.TReq, AWMSModel.Criteria.NullCriteria>
     {
         public class TReq
         {

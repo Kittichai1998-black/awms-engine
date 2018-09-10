@@ -1,5 +1,6 @@
 ﻿using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Engine.Business;
+using AWMSEngine.Engine.Business.Received;
 using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -40,8 +41,8 @@ namespace AWMSEngine.Engine.APIService.WM
                     !StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
                 {
                     //Create Doc AUTO
-                    var doc = new Engine.Business.DocGoodsReceivedCreateBySTO().Execute(this.Logger, this.BuVO,
-                        new DocGoodsReceivedCreateBySTO.TReq() { stomap = res });
+                    var doc = new GRDocCreateBySTO().Execute(this.Logger, this.BuVO,
+                        new GRDocCreateBySTO.TReq() { stomap = res });
                     docIDs.Add(doc.ID.Value);
                 }
                 else if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
@@ -56,7 +57,7 @@ namespace AWMSEngine.Engine.APIService.WM
                 {
                     if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0103))
                     {
-                        new Engine.Business.DocGoodsReceivedClose().Execute(this.Logger, this.BuVO, new DocGoodsReceivedClose.TReq() { DocumentIDs = docIDs });
+                        new GRDocClose().Execute(this.Logger, this.BuVO, new GRDocClose.TReq() { DocumentIDs = docIDs });
                     }
                 }
             }
