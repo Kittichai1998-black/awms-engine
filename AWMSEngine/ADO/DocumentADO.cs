@@ -12,12 +12,21 @@ namespace AWMSEngine.ADO
 {
     public class DocumentADO : ADO.BaseMSSQLAccess<DocumentADO>
     {
-        
+
 
         public List<amt_DocumentItemStorageObject> ListSTOInDocLock(List<long> stoids, DocumentTypeID docTypeID, VOCriteria buVO)
         {
+            return ListSTOInDocLock(null, stoids, docTypeID, buVO);
+        }
+        public List<amt_DocumentItemStorageObject> ListSTOInDocLock(long docID, VOCriteria buVO)
+        {
+            return ListSTOInDocLock(docID, null, null, buVO);
+        }
+        public List<amt_DocumentItemStorageObject> ListSTOInDocLock(long? docID, List<long> stoids, DocumentTypeID? docTypeID, VOCriteria buVO)
+        {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("storageObjectIDs", string.Join(',', stoids));
+            param.Add("documentID", docID);
+            param.Add("storageObjectIDs", stoids == null ? string.Empty : string.Join(',', stoids));
             param.Add("documentTypeID", docTypeID);
             var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_IN_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
@@ -174,6 +183,22 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
         }
 
+        public int UpdateStatusToChild(long docID, 
+            DocumentEventStatus? fromEventStatus, DocumentEventStatus? toEventStatus,
+            EntityStatus? fromStatus, EntityStatus? toStatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("@docID", docID);
+            param.Add("@fromStatus", fromStatus);
+            param.Add("@toStatus", toStatus);
+            param.Add("@fromEventStatus", fromEventStatus);
+            param.Add("@toEventStatus", toEventStatus);
+            param.Add("@actionBy", buVO.ActionBy);
+            return this.Execute("SP_DOC_UPDATE_STATUS_TO_CHILD",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction);
+        }
 
     }
 }

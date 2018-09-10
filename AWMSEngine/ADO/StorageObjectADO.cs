@@ -5,6 +5,7 @@ using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Criteria.SP.Response;
+using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -158,6 +159,24 @@ namespace AWMSEngine.ADO
             var qry = this.Query<StorageObjectFullCriteria>("SP_STO_SEARCH", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
             List<StorageObjectFullCriteria> res = StorageObjectFullCriteria.Generate(qry);
             return res;
+        }
+        public ams_BaseMaster GetBaseMasterMatchDocLock(string baseCode, long? docID, int? documentTypeID,int? docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("@baseCode", baseCode);
+            param.Add("@docID", docID);
+            param.Add("@desCustomerID", docTypeID);
+            param.Add("@docTypeID", docTypeID);
+            var res = this.Query<ams_BaseMaster>("SP_BASE_CHECK_DOCLOCK", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            return res;
+        }
+        public ams_BaseMaster GetBaseMasterMatchDocLock(string baseCode, long? docID, VOCriteria buVO)
+        {
+            return GetBaseMasterMatchDocLock(baseCode, docID, null, null, buVO);
+        }
+        public ams_BaseMaster GetBaseMasterMatchDocLock(string baseCode, int? documentTypeID, int? desCustomerID, VOCriteria buVO)
+        {
+            return GetBaseMasterMatchDocLock(baseCode, null, documentTypeID, desCustomerID, buVO);
         }
     }
 

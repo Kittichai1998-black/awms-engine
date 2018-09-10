@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class DocGoodsIssuedCreate : BaseEngine<DocGoodsIssuedCreate.TDocReq, amt_Document>
+    public class DocPickingCreate : BaseEngine<DocPickingCreate.TDocReq, amt_Document>
     {
 
         public class TDocReq

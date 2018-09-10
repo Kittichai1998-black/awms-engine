@@ -26,5 +26,19 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
+        [HttpPost("doc/reject")]
+        public dynamic Reject([FromBody] dynamic req)
+        {
+            IssuedDocumentRejectAPI exec = new IssuedDocumentRejectAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpPost("doc/picking")]
+        public dynamic Picking([FromBody] dynamic req)
+        {
+            IssuedDocumentPickingAPI exec = new IssuedDocumentPickingAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
     }
 }
