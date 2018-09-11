@@ -32,6 +32,11 @@ const Supplier = Loadable({
   loading: Loading,
 });
 
+const Area = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Area'),
+  loading: Loading,
+});
+
 const Storage = Loadable({
   loader: () => import('./views/Warehouse/Storage'),
   loading: Loading,
@@ -55,6 +60,7 @@ const routes = [
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/dealer/manage', exact: true, name: 'Dealer', component: Dealer },
   { path: '/mst/supplier/manage', exact: true, name: 'Supplier', component: Supplier },
+  { path: '/mst/area/manage', exact: true, name: 'Area', component: Area },
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
   { path: '/wms/storageObject/register', exact: true, name: 'StorageManagement', component: StorageManagement },
   { path: '/wms/storageObject/transfer', exact: true, name: 'StorageManagement', component: StorageManagement },

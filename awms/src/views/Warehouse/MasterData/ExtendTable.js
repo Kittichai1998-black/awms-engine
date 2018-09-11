@@ -336,7 +336,7 @@ class ExtendTable extends Component{
         </Button>
     }
 
-    createSelectButton(event){
+     createSelectButton(event){
       return <input type="checkbox"/>
     }
 

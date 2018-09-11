@@ -142,7 +142,7 @@ class ListProduct extends Component{
     
       */}
         <TableGen column={cols} data={this.state.select} ddlfilter={this.state.dropdownfilter} addbtn={true}
-        statuslist = {this.state.statuslist} table="ams_PackMaster"/>
+        statuslist = {this.state.statuslist} table="ams_SKUMaster"/>
       </div>
     )
   }
