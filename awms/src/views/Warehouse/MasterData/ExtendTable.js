@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Input, Card, Button, CardBody} from 'reactstrap';
+import {Input, Button} from 'reactstrap';
 import {Link}from 'react-router-dom';
 import ReactTable from 'react-table'
 import Axois from 'axios';
@@ -33,14 +33,14 @@ const createQueryString = (select,wherequery) => {
 }
 
 const createQueryStringStorage = (url,field,order) => {
-  let sortfield = new RegExp("([?&])" + "s_f" + "=.*?(&|$)", "i");
-  let sortorder = new RegExp("([?&])" + "s_od" + "=.*?(&|$)", "i");
-  const urledit = url.replace(sortfield, '$1' + "s_f" + "=" + field + '$2').replace(sortorder, '$1' + "s_od" + "=" + order + '$2')
+  let sortfield = new RegExp("([?&]).*?(&|$)", "i");
+  let sortorder = new RegExp("([?&]).*?(&|$)", "i");
+  const urledit = url.replace(sortfield, "$1s_f=" + field + '$2').replace(sortorder, "$1s_od=" + order + '$2')
   return urledit;
 }
 
 const createQueryStringPage = (url, size) => {
-  let sortskip = new RegExp("([?&])" + "sk" + "=.*?(&|$)", "i");
+  let sortskip = new RegExp("([?&]).*?(&|$)", "i");
   const urledit = url.replace(sortskip, '$1' + "sk" + "=" + size + '$2')
   return urledit;
 }

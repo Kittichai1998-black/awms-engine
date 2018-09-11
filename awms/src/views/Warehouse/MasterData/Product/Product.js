@@ -28,10 +28,12 @@ class ListProduct extends Component{
       l:20,
       all:"",},
       sortstatus:0,
+      selectiondata:[]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
     this.filterList = this.filterList.bind(this)
+    this.getSelectionData = this.getSelectionData.bind(this)
   }
 
   onHandleClickCancel(event){
@@ -101,13 +103,18 @@ class ListProduct extends Component{
     })))
   }
 
+  getSelectionData(data){
+    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
+  }
+
   render(){
     const cols = [
+      {Header: '', Type:"selection", sortable:false, Filter:"select",},
       {accessor: 'SKU_ID', Header: 'SKU'},
       {accessor: 'PackCode', Header: 'PackType',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
-      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",},
+      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true, },
       {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
       {accessor: 'WidthM', Header: 'WidthM', editable:true,Filter:"text",},
       {accessor: 'LengthM', Header: 'LengthM', editable:true,Filter:"text",},
@@ -136,11 +143,14 @@ class ListProduct extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
         addbtn = เปิดปิดปุ่ม Add
-        accept = สถานะของในการสั่ง update หรือ insert 
+        accept = สถานะของในการสั่ง update หรือ insert
+        autocomplete = data field ที่ต้องการทำ autocomplete
+        filterable = เปิดปิดโหมด filter
+        getselection = เก็บค่าที่เลือก
     
       */}
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-        filterable={true} autocomplete={this.state.autocomplete}
+        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={false}
          table="ams_PackMaster"/>
       </div>
     )

@@ -33,14 +33,14 @@ const createQueryString = (select,wherequery) => {
 }
 
 const createQueryStringStorage = (url,field,order) => {
-  let sortfield = new RegExp("([?&])" + "s_f" + "=.*?(&|$)", "i");
-  let sortorder = new RegExp("([?&])" + "s_od" + "=.*?(&|$)", "i");
-  const urledit = url.replace(sortfield, '$1' + "s_f" + "=" + field + '$2').replace(sortorder, '$1' + "s_od" + "=" + order + '$2')
+  let sortfield = new RegExp("([?&]).*?(&|$)", "i");
+  let sortorder = new RegExp("([?&]).*?(&|$)", "i");
+  const urledit = url.replace(sortfield, "$1s_f=" + field + '$2').replace(sortorder, "$1s_od=" + order + '$2')
   return urledit;
 }
 
 const createQueryStringPage = (url, size) => {
-  let sortskip = new RegExp("([?&])" + "sk" + "=.*?(&|$)", "i");
+  let sortskip = new RegExp("([?&]).*?(&|$)", "i");
   const urledit = url.replace(sortskip, '$1' + "sk" + "=" + size + '$2')
   return urledit;
 }
@@ -66,6 +66,8 @@ class TableGen extends Component{
       uneditable:[],
       datetime:moment(),
       autocomplete:[],
+      rowselect:[],
+      selectAll:false,
     };
 
     this.customSorting = this.customSorting.bind(this);
@@ -77,6 +79,7 @@ class TableGen extends Component{
     this.datePickerBody = this.datePickerBody.bind(this)
     this.onEditDateChange = this.onEditDateChange.bind(this)
     this.datetimeBody = this.datetimeBody.bind(this)
+    this.onHandleSelection = this.onHandleSelection.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -87,8 +90,6 @@ class TableGen extends Component{
   componentWillReceiveProps(nextProps){
     this.queryInitialData();
     this.setState({dropdownfilter:nextProps.ddlfilter})
-    console.log(this.props.autocomplete)
-    console.log(nextProps.autocomplete)
     this.setState({autocomplete:nextProps.autocomplete})
   }
 
@@ -107,7 +108,6 @@ class TableGen extends Component{
       let queryString = createQueryString(this.props.data)
       Axios.get(queryString).then(
       (res) => {
-        console.log(res)
         this.setState({data:res.data.datas})
         this.setState({loading:false})
       })        
@@ -471,7 +471,6 @@ class TableGen extends Component{
 
   createAutocomplete(rowdata){
     if(this.state.autocomplete.length > 0){
-      console.log(this.state.autocomplete)
       const getdata = this.state.autocomplete.filter(row=>{
         return row.field  === rowdata.column.id
       })
@@ -495,8 +494,38 @@ class TableGen extends Component{
         }}
       />
       }
-      
     }
+  }
+
+  onHandleSelection(rowdata, value){
+    let rowselect = this.state.rowselect;
+    if(value){
+      rowselect.push(rowdata.original)
+    }
+    else{
+      rowselect.forEach((row,index) => {
+        if(row.ID === rowdata.original.ID){
+          rowselect.splice(index,1)
+        }
+        this.setState({rowselect}, () => this.props.getselection(this.state.rowselect))
+      })
+    }
+  }
+  createSelectAll(){
+    return <input
+    type="checkbox"
+    onChange={(e)=> {
+      this.props.getselection(this.state.data);
+      if(e.value.checked)
+        this.setState({selectAll:true})
+      else
+        this.setState({selectAll:false})
+    }}/>
+  }
+  createSelection(rowdata){
+    return <input
+    type="checkbox"
+    onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked)}/>//
   }
 
   render(){
@@ -510,6 +539,9 @@ class TableGen extends Component{
           }
           else if(row.Filter === "dropdown"){
             row.Filter = () => this.createDropdownFilter(row.accessor,this.state.dataselect)
+          }
+          else if(row.Filter === "select"){
+            row.Filter = (e) => this.createSelectAll()
           }
 
           if(row.editable && (row.body === undefined || !row.body)){
@@ -530,6 +562,9 @@ class TableGen extends Component{
           else if(row.Type === "autocomplete"){
             row.Cell = (e) => this.createAutocomplete(e)
           }
+          else if(row.Type === "selection"){
+            row.Cell = (e) => this.createSelection(e)
+          }
 
           if(row.Aggregated === "blank"){
             row.Aggregated = (e) => {return (<span></span>);}
@@ -545,11 +580,6 @@ class TableGen extends Component{
     return(
       <div style={{overflowX:'auto'}}>
         <Button onClick={this.onHandleClickAdd} style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
-        {/* <DataTable ref={(el) => this.dt = el} value={this.state.data} loading={this.state.loading}
-        editable={true} resizableColumns={true} columnResizeMode="expand"
-        paginatorPosition="top">
-            {dynamicColumns}
-        </DataTable> */}
         <ReactTable data={this.state.data}
             style={{backgroundColor:'white'}}
             loading={this.state.loading}
