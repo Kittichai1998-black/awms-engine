@@ -516,7 +516,7 @@ class TableGen extends Component{
     type="checkbox"
     onChange={(e)=> {
       this.props.getselection(this.state.data);
-      if(e.value.checked)
+      if(e.target.checked)
         this.setState({selectAll:true})
       else
         this.setState({selectAll:false})
