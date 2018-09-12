@@ -47,6 +47,11 @@ const StorageManagement = Loadable({
   loading: Loading,
 });
 
+const IssuedDoc = Loadable({
+  loader: () => import('./views/Warehouse/IssuedDoc'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -58,7 +63,7 @@ const routes = [
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
   { path: '/wms/storageObject/register', exact: true, name: 'StorageManagement', component: StorageManagement },
   { path: '/wms/storageObject/transfer', exact: true, name: 'StorageManagement', component: StorageManagement },
-  { path: '/wms/issueddoc/manage', exact: true, name: 'StorageManagement', component: StorageManagement },
+  { path: '/wms/issueddoc/manage', exact: true, name: 'IssuedDoc', component: IssuedDoc },
 ];
 
 export default routes;

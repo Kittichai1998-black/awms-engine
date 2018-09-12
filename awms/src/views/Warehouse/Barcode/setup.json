@@ -3,35 +3,39 @@
     "barcodesetup":[
         {
             "type":1,
-            "width":"100mm",
-            "height":"50mm",
+            "width":"10cm",
+            "height":"5cm",
             "bwidth":1.9,
             "bheight":120,
-            "size":1.9
+            "size":1.9,
+            "fontsize":13
         },
         {
             "type":2,
-            "width":"50mm",
-            "height":"25mm",
+            "width":"5cm",
+            "height":"2.5cm",
             "bwidth":1.5,
             "bheight":100,
-            "size":1.9
+            "size":1.9,
+            "fontsize":10
         },
         {
             "type":3,
-            "width":"20mm",
-            "height":"10mm",
+            "width":"3cm",
+            "height":"2cm",
             "bwidth":0.7,
-            "bheight":40,
-            "size":1.9
+            "bheight":22,
+            "size":55,
+            "fontsize":7
         },
         {
             "type":4,
-            "width":"50mm",
-            "height":"35mm",
+            "width":"5cm",
+            "height":"3cm",
             "bwidth":1,
-            "bheight":60,
-            "size":70
+            "bheight":55,
+            "size":95,
+            "fontsize":10
         }
     ],
     "multiplebarcodesize":[
@@ -39,13 +43,21 @@
             "type":1,
             "width":1.9,
             "height":50,
-            "qr":60
+            "qr":60,
+            "fontsize":10
         },
         {
             "type":4,
-            "width":0.8,
-            "height":60,
-            "qr":60
+            "width":1.3,
+            "height":10,
+            "qr":40,
+            "fontsize":10
+        },
+        {
+            "type":3,
+            "width":0,
+            "height":0,
+            "qr":0
         }
     ]
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
-import Axios from '../../../../../node_modules/axios';
+import Axios from 'axios';
 
 class ListProduct extends Component{
   constructor(props) {
@@ -18,8 +18,8 @@ class ListProduct extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/mst",
-      t:"vPackMaster",
+      select:{queryString:"https://localhost:44366/api/viw",
+      t:"PackMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,SKU_ID,Code,PackType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
       g:"",
@@ -130,12 +130,7 @@ class ListProduct extends Component{
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
     ];
-
-    const ddlfilter = [{
-      'status' : [{'value':'0','label':'Code'},{'value':'1','label':'Name'},{'value':'2','label':'Description'},{'value':'null','label':'All'}],
-      'header' : 'Table',
-      'field' : '',
-    }];
+    
     return(
       <div>
       {/*

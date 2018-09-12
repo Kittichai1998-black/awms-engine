@@ -1,17 +1,44 @@
 import React, { Component } from 'react';
+import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
-import {TableGen} from '../TableSetup';
-import Axios from '../../../../../node_modules/axios';
-import ReactTable from 'react-table'
+import {TableGen} from '../MasterData/TableSetup';
+import Axios from 'axios';
 
 class IssuedDoc extends Component{
   constructor(props) {
     super(props);
 
     this.state = {
-      
+      data : [],
+      autocomplete:[],
+      statuslist:[{
+        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'header' : 'Status',
+        'field' : 'Status',
+        'mode' : 'check',
+      },{
+        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'header' : 'E',
+        'field' : 'Status',
+        'mode' : 'check',
+      }],
+      acceptstatus : false,
+      select:{queryString:"https://localhost:44366/api/viw",
+      t:"Document",
+      q:"[{ 'f': 'DocumentType_ID', c:'<', 'v': 1002}]",
+      f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+      g:"",
+      s:"[{'f':'Code','od':'asc'}]",
+      sk:0,
+      l:20,
+      all:"",},
+      sortstatus:0,
+      selectiondata:[]
     };
+    this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
+    this.createQueryString = this.createQueryString.bind(this)
+    this.getSelectionData = this.getSelectionData.bind(this)
   }
 
   onHandleClickCancel(event){
@@ -20,7 +47,6 @@ class IssuedDoc extends Component{
   }
 
   componentDidMount(){
-    this.filterList();
   }
 
   createQueryString = (select) => {
@@ -35,81 +61,59 @@ class IssuedDoc extends Component{
     return queryS
   }
 
-  filterList(){
-    const objselect = {queryString:"https://localhost:44366/api/mst",
-      t:"ObjectSize",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID as ObjectSize_ID,Code",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:0,
-      l:20,
-      all:"",}
+  getSelectionData(data){
+    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
+  }
 
-    const packselect = {queryString:"https://localhost:44366/api/mst",
-    t:"PackMasterType",
-    q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-    f:"ID as PackType_ID,Code",
-    g:"",
-    s:"[{'f':'ID','od':'asc'}]",
-    sk:0,
-    l:20,
-    all:"",}
+  workingData(data,status){
+    let postdata = {docIDs:[]}
+    if(data.length > 0){
+      data.forEach(rowdata => {
+        postdata["docIDs"].push(rowdata.ID)
+      })
+      if(status==="accept"){
+        Axios.post("https://localhost:44366/api/wm/issued/doc/working", postdata).then(() => this.forceUpdate())
+      }
+      else{
+        Axios.post("https://localhost:44366/api/wm/issued/doc/rejected", postdata).then(() => this.forceUpdate())
+      }
+    }
+  }
 
-    Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(objselect))]).then(
-      (Axios.spread((packresult, objresult) => 
-    {
-      let ddl = [...this.state.dropdownfilter]
-      let packList = {}
-      let objList = {}
-      packList["data"] = packresult.data.datas
-      packList["field"] = "PackCode"
-      packList["header"] = "PackCode"
-      packList["mode"] = "Dropdown"
-      
-      objList["data"] = objresult.data.datas
-      objList["field"] = "ObjCode"
-      objList["header"] = "ObjCode"
-      objList["mode"] = "Dropdown"
-
-      ddl = ddl.concat(packList).concat(objList)
-      this.setState({dropdownfilter:ddl})
-    })))
+  onClickToDesc(data){
+    return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+      to={'/mst/sku/manage/barcode?barcode='+data.Code+'&Name='+data.Name}>Link</Link>}</Button>
   }
 
   render(){
     const cols = [
-      {field: 'SKU_ID', header: 'SKU'},
-      {field: 'PackCode', header: 'PackType', body:'dropdown',updateable:false},
-      {field: 'Code', header: 'Code', editable:true,},
-      {field: 'Name', header: 'Name', editable:true},
-      {field: 'Description', header: 'Description', sortable:false},
-      {field: 'Status', header: 'Status', editable:true, body:'checkbox'},
-      {field: 'WidthM', header: 'WidthM', editable:true},
-      {field: 'LengthM', header: 'LengthM', editable:true},
-      {field: 'HeightM', header: 'HeightM', editable:true},
-      {field: 'WeightKG', header: 'Weight', editable:true},
-      {field: 'ItemQty', header: 'ItemQty', editable:true},
-      {field: 'ObjCode', header: 'Object', body:'dropdown',updateable:false},
-      {field: 'Revision', header: 'Revision', editable:false},
-      {field: 'CreateBy', header: 'CreateBy', editable:false,updateable:false},
-      {field: 'CreateTime', header: 'CreateBy', editable:true,updateable:false, body:"datetime"},
-      {field: 'ModifyBy', header: 'ModifyBy', editable:false,updateable:false},
-      {field: 'ModifyTime', header: 'ModifyTime', editable:false,updateable:false, body:"datetime"},
-      {field: 'QR Code', header: 'QR Code', editable:false,updateable:false},
-      {field: '', header: '', manage:['barcode','remove']},
+      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+      {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
+      {accessor: 'SouBranch', Header: 'Branch',editable:false, Filter:"text"},
+      {accessor: 'SouWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
+      {accessor: 'SouArea', Header: 'Area', editable:false, Filter:"text",},
+      {accessor: 'DesCustomer', Header: 'Customer', editable:false, Filter:"text",},
+      {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
+      {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
+      {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
+      {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text",},
+      {accessor: 'RefID', Header: 'RefID', editable:false,},
+      {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
+      {accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
+      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
+      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link2"},
     ];
 
-    const ddlfilter = [{
-      'status' : [{'value':'0','label':'Code'},{'value':'1','label':'Name'},{'value':'2','label':'Description'},{'value':'null','label':'All'}],
-      'header' : 'Table',
-      'field' : '',
-    },
-    {
-      'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
-      'header' : 'Status',
-      'field' : 'Status',
-    }];
+    const btnfunc = [{
+      btntype:"Link",
+      func:this.onClickToDesc
+    },{
+      btntype:"Link2",
+      func:this.onClickToDesc
+    }]
+    
 
     return(
       <div>
@@ -121,8 +125,19 @@ class IssuedDoc extends Component{
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <TableGen column={cols} data={this.state.select} ddlfilter={this.state.dropdownfilter} addbtn={true}
-        statuslist = {this.state.statuslist} table="ams_PackMaster"/>
+        <div className="clearfix">
+          <Button className="float-right">Create Document</Button>
+        </div>
+        <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
+        statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
+        btn={btnfunc}
+        accept={false}/>
+        <Card>
+          <CardBody>
+            <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
+            <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
+          </CardBody>
+        </Card>
       </div>
     )
   }
