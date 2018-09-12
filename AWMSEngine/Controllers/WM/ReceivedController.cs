@@ -23,7 +23,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("doc")]
         public dynamic Create([FromBody]dynamic data)
         {
-            GRDocCreateAPI exec = new GRDocCreateAPI(this);
+            CreateGRDocAPI exec = new CreateGRDocAPI(this);
             var res = exec.Execute(data);
             return res;
         }

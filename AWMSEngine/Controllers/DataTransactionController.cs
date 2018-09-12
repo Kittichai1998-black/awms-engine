@@ -29,7 +29,7 @@ namespace AWMSEngine.Controllers
         public dynamic SearchSTO()
         {
             var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var res = new STOSearchAPI(this).Execute(req);
+            var res = new SearchSTOFullAPI(this).Execute(req);
             return res;
         }
     }

@@ -10,17 +10,17 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService.WM
 {
-    public class VRMapSTOReceiveConfirmAPI : BaseAPIService
+    public class ConfirmMapSTOReceiveAPI : BaseAPIService
     {
-        public VRMapSTOReceiveConfirmAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ConfirmMapSTOReceiveAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var res = new VRMapSTOReceiveConfirm().Execute(this.Logger, this.BuVO,
-                new VRMapSTOReceiveConfirm.TReqModle()
+            var res = new ConfirmReceivedMapSTO().Execute(this.Logger, this.BuVO,
+                new ConfirmReceivedMapSTO.TReqModle()
                 {
                     isConfirm = this.RequestVO.isConfirm,
                     rootStoID = this.RequestVO.rootStoID,
@@ -41,14 +41,14 @@ namespace AWMSEngine.APIService.WM
                     !StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
                 {
                     //Create Doc AUTO
-                    var doc = new GRDocCreateBySTO().Execute(this.Logger, this.BuVO,
-                        new GRDocCreateBySTO.TReq() { stomap = res });
+                    var doc = new CreateGRDocumentBySTO().Execute(this.Logger, this.BuVO,
+                        new CreateGRDocumentBySTO.TReq() { stomap = res });
                     docIDs.Add(doc.ID.Value);
                 }
                 else if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
                 {
                     //List Doc in Database
-                    docIDs = new Engine.Business.DocRelationBySTO().Execute(this.Logger, this.BuVO, res).documents.Select(x => x.ID.Value).ToList();
+                    docIDs = new Engine.Business.GetDocumnetRelationBySTO().Execute(this.Logger, this.BuVO, res).documents.Select(x => x.ID.Value).ToList();
                 }
 
 
@@ -57,7 +57,7 @@ namespace AWMSEngine.APIService.WM
                 {
                     if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0103))
                     {
-                        new GRDocClose().Execute(this.Logger, this.BuVO, new GRDocClose.TReq() { DocumentIDs = docIDs });
+                        new ClosedGRDocument().Execute(this.Logger, this.BuVO, new ClosedGRDocument.TReq() { DocumentIDs = docIDs });
                     }
                 }
             }

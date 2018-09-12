@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class VRMapSTO : BaseEngine<VRMapSTO.TReqModle, StorageObjectCriteria>
+    public class ScanMapSTO : BaseEngine<ScanMapSTO.TReqModle, StorageObjectCriteria>
     {
         private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
 

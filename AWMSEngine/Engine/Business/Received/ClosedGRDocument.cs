@@ -6,7 +6,7 @@ using AWMSModel.Criteria;
 
 namespace AWMSEngine.Engine.Business.Received
 {
-    public class GRDocClose : BaseEngine<GRDocClose.TReq, AWMSModel.Criteria.NullCriteria>
+    public class ClosedGRDocument : BaseEngine<ClosedGRDocument.TReq, AWMSModel.Criteria.NullCriteria>
     {
         public class TReq
         {
