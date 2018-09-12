@@ -40,8 +40,8 @@ namespace AWMSEngine.Engine.Business.Issued
                     EntityStatus.ACTIVE, null,
                     this.BuVO);
 
-                doc.EventStatus = DocumentEventStatus.REJECTED;
-                doc.Status = EntityStatus.REMOVE;
+                doc.EventStatus = DocumentEventStatus.WORKING;
+                doc.Status = EntityStatus.ACTIVE;
                 res.documents.Add(doc);
             }
 

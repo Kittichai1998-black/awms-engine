@@ -25,12 +25,13 @@ namespace AWMSModel.Criteria
         {
             this.field = field;
             this.value = value;
-
+            operatorType = operatorType == null ? string.Empty : operatorType.ToLower();
+            conditionLeft = conditionLeft == null ? string.Empty : conditionLeft.ToLower();
             this.operatorType = AMWUtil.Common.EnumUtil.List<SQLOperatorType>()
-                .FirstOrDefault(x => AttributeUtil.Attribute<ValueAttribute>(x).Value == operatorType);
+                .FirstOrDefault(x => AttributeUtil.Attribute<ValueAttribute>(x).Value.ToLower() == operatorType);
                 
             this.conditionLeft = AMWUtil.Common.EnumUtil.List<SQLConditionType>()
-                .FirstOrDefault(x => AttributeUtil.Attribute<ValueAttribute>(x).Value == conditionLeft);
+                .FirstOrDefault(x => AttributeUtil.Attribute<ValueAttribute>(x).Value.ToLower() == conditionLeft);
         }
     }
 }

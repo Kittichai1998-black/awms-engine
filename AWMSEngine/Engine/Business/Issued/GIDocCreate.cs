@@ -134,7 +134,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 Remark = reqVO.remark,
 
-                EventStatus = DocumentEventStatus.WORKING,
+                EventStatus = DocumentEventStatus.IDEL,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };

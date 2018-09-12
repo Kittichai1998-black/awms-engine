@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AWMSEngine.Engine.Business.Consolidate;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AWMSEngine.APIService.UI
+namespace AWMSEngine.APIService.WM
 {
     public class BSTOMatchGIDocCheckAPI : BaseAPIService
     {
@@ -15,14 +15,14 @@ namespace AWMSEngine.APIService.UI
 
         protected override dynamic ExecuteEngineManual()
         {
-            var res = new BSTOMatchDocCheck().Execute(this.Logger, this.RequestVO,
-                new BSTOMatchDocCheck.TReq()
-                {
-                    baseCode = this.RequestVO.baseCode,
-                    desCustomerID = this.RequestVO.desCustomerID,
-                    docID = this.RequestVO.docID,
-                    docType = AWMSModel.Constant.EnumConst.DocumentTypeID.GOODS_ISSUED
-                });
+            var req = new BSTOMatchDocCheck.TReq()
+            {
+                baseCode = this.RequestVO.baseCode,
+                desCustomerID = this.RequestVO.desCustomerID,
+                docID = this.RequestVO.docID,
+                docType = AWMSModel.Constant.EnumConst.DocumentTypeID.GOODS_ISSUED
+            };
+            var res = new BSTOMatchDocCheck().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

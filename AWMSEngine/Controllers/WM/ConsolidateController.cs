@@ -11,11 +11,5 @@ namespace AWMSEngine.Controllers.WM
     [ApiController]
     public class ConsolidateController : ControllerBase
     {
-        [HttpPost("checkbase")]
-        public dynamic CheckBase([FromBody] dynamic request)
-        {
-
-            return null;
-        }
     }
 }
