@@ -68,6 +68,7 @@ class TableGen extends Component{
       autocomplete:[],
       rowselect:[],
       selectAll:false,
+      accept:this.props.accept,
     };
 
     this.customSorting = this.customSorting.bind(this);
@@ -95,6 +96,7 @@ class TableGen extends Component{
 
   componentDidMount(){
     this.queryInitialData();
+    this.setState({originalselect:this.props.data.q})
   }
   
   componentWillUnmount(){
@@ -178,19 +180,18 @@ class TableGen extends Component{
         }
       })
       
-      const select = dataselect
+      let select = dataselect
       select["q"] = JSON.stringify(filterlist)
       let queryString = createQueryString(select)
       Axios.get(queryString).then(
           (res) => {
-            console.log(queryString)
             this.setState({data:res.data.datas, loading:false});
           }
       )
     }
     else{
       const select = dataselect
-      select["q"] = ""
+      select["q"] = this.state.originalselect
       let queryString = createQueryString(select)
       Axios.get(queryString).then(
           (res) => {
@@ -374,6 +375,7 @@ class TableGen extends Component{
             if(e.target.value !== ""){
                 filter.push({id: name, value:e.target.value})
             }
+            console.log(filter)
             this.onCheckFliter(filter,this.state.dataselect)
             this.setState({datafilter:filter, loading:true})
         }}
@@ -507,10 +509,11 @@ class TableGen extends Component{
         if(row.ID === rowdata.original.ID){
           rowselect.splice(index,1)
         }
-        this.setState({rowselect}, () => this.props.getselection(this.state.rowselect))
       })
     }
+    this.setState({rowselect}, () => this.props.getselection(this.state.rowselect))
   }
+
   createSelectAll(){
     return <input
     type="checkbox"
@@ -555,15 +558,26 @@ class TableGen extends Component{
           }
           else if(row.Type === "checkbox"){
               row.Cell = (e) => this.checkboxBody(e)
+              row.className="text-center"
           }
           else if(row.Type === "button"){
-            row.Cell = (e) => this.createCustomButton(row.btntype, row.btntext, e.original)
+            this.props.btn.find(btnrow => {
+              if(row.btntype === "Remove" && btnrow.btntype){
+                row.Cell = (e) => <Button type="button" color="danger" onClick={() => this.removedata(this.state.dataremove)}>Remove</Button>
+              }
+              else{
+                if(row.btntype === btnrow.btntype){
+                  row.Cell = (e) => btnrow.func(e.original)
+                }
+              }
+            })
           }
           else if(row.Type === "autocomplete"){
             row.Cell = (e) => this.createAutocomplete(e)
           }
           else if(row.Type === "selection"){
             row.Cell = (e) => this.createSelection(e)
+            row.className="text-center"
           }
 
           if(row.Aggregated === "blank"){
@@ -595,11 +609,11 @@ class TableGen extends Component{
                 this.setState({data:[], loading:true });
                 this.customSorting(sorted)}
             }/>
-        <Card>
-        <CardBody>
-          <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>
-          <Button onClick={() => this.onHandleClickCancel()} color="danger"className="mr-sm-1">Cancel</Button>
-        </CardBody>
+        <Card style={{display:this.state.accept === true ? 'inline' : 'none'}}>
+          <CardBody>
+            <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger"className="mr-sm-1">Cancel</Button>
+          </CardBody>
         </Card>
       </div>
     )
