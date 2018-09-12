@@ -562,10 +562,15 @@ class TableGen extends Component{
           }
           else if(row.Type === "button"){
             this.props.btn.find(btnrow => {
-              if(row.btntype === btnrow.btntype){
-                row.Cell = (e) => btnrow.func(e.original)
+              if(row.btntype === "Remove" && btnrow.btntype){
+                row.Cell = (e) => <Button type="button" color="danger" onClick={() => this.removedata(this.state.dataremove)}>Remove</Button>
               }
-            })//this.createCustomButton(row.btntype, row.btntext, e.original)
+              else{
+                if(row.btntype === btnrow.btntype){
+                  row.Cell = (e) => btnrow.func(e.original)
+                }
+              }
+            })
           }
           else if(row.Type === "autocomplete"){
             row.Cell = (e) => this.createAutocomplete(e)
