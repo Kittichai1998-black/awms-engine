@@ -27,11 +27,10 @@ class Supplier extends Component{
       l:20,
       all:"",},
       sortstatus:0,
-      loaddata:false,
-      updateflag:false,
+      selectiondata:[],
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
-    this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
+    this.onHandleClickCancel = this.onHandleClickCancel.bind(this); 
   }
 
   onHandleClickCancel(event){
@@ -45,18 +44,19 @@ class Supplier extends Component{
 
   render(){
     const cols = [
-      {field: 'ID', header: 'ID', editable:false,}, 
-      {field: 'Code', header: 'Code', editable:true,},
-      {field: 'Name', header: 'Name', editable:true},
-      {field: 'Description', header: 'Description', sortable:false},
-      {field: 'Status', header: 'Status', editable:true, body:'checkbox'},
-      {field: 'Revision', header: 'Revision', editable:false},
-      {field: 'CreateBy', header: 'CreateBy', editable:false},
-      {field: 'CreateTime', header: 'CreateTime', editable:false},
-      {field: 'ModifyBy', header: 'ModifyBy', editable:false},
-      {field: 'ModifyTime', header: 'ModifyTime', editable:false},
-      {field: '', header: '', manage:['remove']},
+      {accessor: 'ID', Header: 'ID', editable:false,}, 
+      {accessor: 'Code', Header: 'Code', editable:true,},
+      {accessor: 'Name', Header: 'Name', editable:true},
+      {accessor: 'Description', Header: 'Description', sortable:false},
+      {accessor: 'Status', Header: 'Status', editable:true, body:'checkbox'},
+      {accessor: 'Revision', Header: 'Revision', editable:false},
+      {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
+      {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
+      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
+      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
+      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ];
+
     return(
       <div>
       {/*
@@ -64,8 +64,11 @@ class Supplier extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-      <TableGen column={cols} data={this.state.select} ddlfilter={this.state.dropdownfilter} addbtn={true}
-      statuslist = {this.state.statuslist} table="ams_Supplier"/>
+     
+      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+      filterable={true} getselection={this.getSelectionData} accept={false}
+      table="ams_Supplier"/>
+
       <Card>
         <CardBody style={{textAlign:'right'}}>
           <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Supplier</Button>

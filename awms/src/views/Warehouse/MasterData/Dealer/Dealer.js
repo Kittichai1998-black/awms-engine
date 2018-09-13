@@ -4,18 +4,6 @@ import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
-
 class Dealer extends Component{
   constructor(props) {
     super(props);
@@ -29,7 +17,7 @@ class Dealer extends Component{
         'field' : 'Status',
         'mode' : 'check',
       }],
-      select:{queryString:"https://localhost:44366/api/mst",
+      select:{queryString:"https://localhost:44366/api/viw",
       t:"Customer",
       q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
       f:"*",
@@ -39,8 +27,7 @@ class Dealer extends Component{
       l:20,
       all:"",},
       sortstatus:0,
-      loaddata:false,
-      updateflag:false,
+      selectiondata:[],
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -67,7 +54,6 @@ class Dealer extends Component{
       {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
       {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
     ];
 
     const ddlfilter = [
@@ -84,8 +70,8 @@ class Dealer extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-      <TableGen column={cols} data={this.state.select} dropdownfilter={ddlfilter} 
-      addbtn={true} filterable={true}
+      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+      filterable={true} getselection={this.getSelectionData} accept={false}
       table="ams_Customer"/>
       <Card>
         <CardBody style={{textAlign:'right'}}>
