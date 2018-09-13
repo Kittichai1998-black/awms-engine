@@ -22,19 +22,20 @@ class ListProduct extends Component{
       select:{queryString:"https://localhost:44366/api/viw",
       t:"PackMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,SKU_ID,Code,PackType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
+      f:"ID,SKUMaster_ID,Code,PackMasterType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
       l:20,
       all:"",},
       sortstatus:0,
-      selectiondata:[]
+      selectiondata:[],
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
     this.filterList = this.filterList.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
+    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
   }
 
   onHandleClickCancel(event){
@@ -116,12 +117,12 @@ class ListProduct extends Component{
   render(){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select",},
-      {accessor: 'SKU_ID', Header: 'SKU'},
+      {accessor: 'SKUMaster_ID', Header: 'SKU',Filter:"text",},
       {accessor: 'PackCode', Header: 'PackType',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
       {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true, },
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
+      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",},
       {accessor: 'WidthM', Header: 'WidthM', editable:true,Filter:"text",},
       {accessor: 'LengthM', Header: 'LengthM', editable:true,Filter:"text",},
       {accessor: 'HeightM', Header: 'HeightM', editable:true,Filter:"text",},
@@ -156,8 +157,8 @@ class ListProduct extends Component{
     
       */}
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={false}
-        btn={btnfunc}
+        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
+        btn={btnfunc} uneditcolumn={this.uneditcolumn}
          table="ams_PackMaster"/>
       </div>
     )
