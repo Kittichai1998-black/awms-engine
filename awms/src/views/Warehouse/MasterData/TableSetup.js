@@ -563,7 +563,7 @@ class TableGen extends Component{
           else if(row.Type === "button"){
             this.props.btn.find(btnrow => {
               if(row.btntype === "Remove" && btnrow.btntype){
-                row.Cell = (e) => <Button type="button" color="danger" onClick={() => this.removedata(this.state.dataremove)}>Remove</Button>
+                row.Cell = (e) => <Button type="button" color="danger" onClick={() => this.removedata(e.original)}>Remove</Button>
               }
               else{
                 if(row.btntype === btnrow.btntype){

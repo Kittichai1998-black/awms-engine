@@ -22,7 +22,7 @@ class ListProduct extends Component{
       select:{queryString:"https://localhost:44366/api/viw",
       t:"PackMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,SKU_ID,Code,PackType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
+      f:"ID,SKUMaster_ID,Code,PackMasterType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -156,7 +156,7 @@ class ListProduct extends Component{
     
       */}
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={false}
+        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
         btn={btnfunc}
          table="ams_PackMaster"/>
       </div>

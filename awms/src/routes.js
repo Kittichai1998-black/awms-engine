@@ -37,6 +37,11 @@ const Area = Loadable({
   loading: Loading,
 });
 
+const Base = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Base'),
+  loading: Loading,
+});
+
 const Storage = Loadable({
   loader: () => import('./views/Warehouse/Storage'),
   loading: Loading,
@@ -66,6 +71,7 @@ const routes = [
   { path: '/mst/dealer/manage', exact: true, name: 'Dealer', component: Dealer },
   { path: '/mst/supplier/manage', exact: true, name: 'Supplier', component: Supplier },
   { path: '/mst/area/manage', exact: true, name: 'Area', component: Area },
+  { path: '/mst/base/manage', exact: true, name: 'Base', component: Base },
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
   { path: '/wms/storageObject/register', exact: true, name: 'StorageManagement', component: StorageManagement },
   { path: '/wms/storageObject/transfer', exact: true, name: 'StorageManagement', component: StorageManagement },

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
@@ -10,13 +11,14 @@ class Supplier extends Component{
 
     this.state = {
       data : [],
-      acceptstatus : false,
+      autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
       }],
+      acceptstatus : false,
       select:{queryString:"https://localhost:44366/api/mst",
       t:"Supplier",
       q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
@@ -35,6 +37,15 @@ class Supplier extends Component{
 
   onHandleClickCancel(event){
     this.forceUpdate();
+    event.preventDefault();
+  }
+
+  componentWillMount(){
+    /* this.filterList(); */
+  }
+
+  componentWillUnmount(){
+    Axios.isCancel(true);
   }
 
   onHandleClickLoad(event){
@@ -48,7 +59,7 @@ class Supplier extends Component{
       {accessor: 'Code', Header: 'Code', editable:true,},
       {accessor: 'Name', Header: 'Name', editable:true},
       {accessor: 'Description', Header: 'Description', sortable:false},
-      {accessor: 'Status', Header: 'Status', editable:true, body:'checkbox'},
+      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
       {accessor: 'Revision', Header: 'Revision', editable:false},
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
@@ -56,6 +67,11 @@ class Supplier extends Component{
       {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ];
+
+    const btnfunc = [{
+      btntype:"Barcode",
+      func:this.createBarcodeBtn
+    }]
 
     return(
       <div>
@@ -66,7 +82,7 @@ class Supplier extends Component{
       */}
      
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-      filterable={true} getselection={this.getSelectionData} accept={false}
+      filterable={true} accept={true} btn={btnfunc}
       table="ams_Supplier"/>
 
       <Card>
