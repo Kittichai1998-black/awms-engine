@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.Mst
 {
-    public class SKUMasterPutFromFileServerCsvAPI : BaseAPIService
+    public class PutSKUMasterFromFileServerCsvAPI : BaseAPIService
     {
-        public SKUMasterPutFromFileServerCsvAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutSKUMasterFromFileServerCsvAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 

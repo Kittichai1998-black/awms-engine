@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.Mst
 {
-    public class SKUMasterPutAPI : BaseAPIService
+    public class PutSKUMasterAPI : BaseAPIService
     {
-        public SKUMasterPutAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutSKUMasterAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 

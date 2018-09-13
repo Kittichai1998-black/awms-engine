@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService.Doc
 {
-    public class GRDocCreateAPI : BaseAPIService
+    public class CreateGRDocAPI : BaseAPIService
     {
-        public GRDocCreateAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateGRDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<GRDocCreate.TReq>(this.RequestVO);
-            var res = new GRDocCreate().Execute(
+            var reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<CreateGRDocument.TReq>(this.RequestVO);
+            var res = new CreateGRDocument().Execute(
                 this.Logger,
                 this.BuVO,
                 reqDoc);

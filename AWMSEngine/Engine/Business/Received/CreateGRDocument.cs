@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Received
 {
-    public class GRDocCreate : BaseEngine<GRDocCreate.TReq, amt_Document>
+    public class CreateGRDocument : BaseEngine<CreateGRDocument.TReq, amt_Document>
     {
         public class TReq
         {

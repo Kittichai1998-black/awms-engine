@@ -17,36 +17,39 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("doc")]
         public dynamic CreateDoc([FromBody] dynamic req)
         {
-            GIDocCreateAPI exec = new GIDocCreateAPI(this);
+            CreateGIDocAPI exec = new CreateGIDocAPI(this);
             var res = exec.Execute(req);
             return res;
         }
         [HttpPost("doc/rejected")]
         public dynamic ActionDocReject([FromBody] dynamic req)
         {
-            GIDocRejectAPI exec = new GIDocRejectAPI(this);
+            RejectedGIDocAPI exec = new RejectedGIDocAPI(this);
             var res = exec.Execute(req);
             return res;
         }
         [HttpPost("doc/working")]
         public dynamic ActionDocWorking([FromBody] dynamic req)
         {
-            GIDocWorkingAPI exec = new GIDocWorkingAPI(this);
+            WorkingGIDocAPI exec = new WorkingGIDocAPI(this);
             var res = exec.Execute(req);
             return res;
         }
-        [HttpGet("bsto/forconso")]
-        public dynamic GetBSTOForConso()
+        [HttpGet("bsto/canConso")]
+        public dynamic GetBSTOCanConso()
         {
             var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            BSTOMatchGIDocCheckAPI exec = new BSTOMatchGIDocCheckAPI(this);
+            CheckBSTOCanConsoAPI exec = new CheckBSTOCanConsoAPI(this);
             var res = exec.Execute(req);
             return res;
         }
-        [HttpGet("location/forpick")]
-        public dynamic GetLocationForPick([FromBody] dynamic req)
+        [HttpGet("location/canPick")]
+        public dynamic GetLocationCanPick()
         {
-            return null;
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            ListAreaLocationCanPickingAPI exec = new ListAreaLocationCanPickingAPI(this);
+            var res = exec.Execute(req);
+            return res;
         }
         [HttpPost("sto/pick")]
         public dynamic StoPick([FromBody] dynamic req)
