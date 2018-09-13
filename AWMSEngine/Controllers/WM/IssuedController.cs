@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.APIService.Doc;
+using AWMSEngine.APIService.WM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,32 +14,51 @@ namespace AWMSEngine.Controllers.WM
     [ApiController]
     public class IssuedController : ControllerBase
     {
-        [HttpGet("doc")]
-        public dynamic Get()
+        [HttpPost("doc")]
+        public dynamic CreateDoc([FromBody] dynamic req)
+        {
+            CreateGIDocAPI exec = new CreateGIDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpPost("doc/rejected")]
+        public dynamic ActionDocReject([FromBody] dynamic req)
+        {
+            RejectedGIDocAPI exec = new RejectedGIDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpPost("doc/working")]
+        public dynamic ActionDocWorking([FromBody] dynamic req)
+        {
+            WorkingGIDocAPI exec = new WorkingGIDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpGet("bsto/canConso")]
+        public dynamic GetBSTOCanConso()
         {
             var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            CheckBSTOCanConsoAPI exec = new CheckBSTOCanConsoAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpGet("location/canPick")]
+        public dynamic GetLocationCanPick()
+        {
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            ListAreaLocationCanPickingAPI exec = new ListAreaLocationCanPickingAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpPost("sto/pick")]
+        public dynamic StoPick([FromBody] dynamic req)
+        {
             return null;
         }
-        [HttpPost("doc")]
-        public dynamic Post([FromBody] dynamic req)
-        {
-            GIDocCreateAPI exec = new GIDocCreateAPI(this);
-            var res = exec.Execute(req);
-            return res;
-        }
-        [HttpPost("doc/reject")]
-        public dynamic Reject([FromBody] dynamic req)
-        {
-            GIDocRejectAPI exec = new GIDocRejectAPI(this);
-            var res = exec.Execute(req);
-            return res;
-        }
-        [HttpPost("doc/picking")]
-        public dynamic Picking([FromBody] dynamic req)
-        {
-            GIDocPickingAPI exec = new GIDocPickingAPI(this);
-            var res = exec.Execute(req);
-            return res;
-        }
+
+
+
+
     }
 }

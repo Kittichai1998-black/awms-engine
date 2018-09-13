@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Issued
 {
-    public class PKDocCreate : BaseEngine<PKDocCreate.TDocReq, amt_Document>
+    public class CreateGIDocument : BaseEngine<CreateGIDocument.TDocReq, amt_Document>
     {
 
         public class TDocReq
@@ -134,7 +134,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 Remark = reqVO.remark,
 
-                EventStatus = DocumentEventStatus.WORKING,
+                EventStatus = DocumentEventStatus.IDEL,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };

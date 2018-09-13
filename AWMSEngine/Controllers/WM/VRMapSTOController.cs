@@ -15,14 +15,14 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost]
         public dynamic VRMapping(dynamic datas)
         {
-            VRMapSTOAPI exec = new VRMapSTOAPI(this);
+            ScanMapSTOAPI exec = new ScanMapSTOAPI(this);
             return exec.Execute(datas);
         }
 
         [HttpPost("confirm")]
         public dynamic VRConfrim(dynamic datas)
         {
-            VRMapSTOReceiveConfirmAPI exec = new VRMapSTOReceiveConfirmAPI(this);
+            ConfirmMapSTOReceiveAPI exec = new ConfirmMapSTOReceiveAPI(this);
             return exec.Execute(datas);
         }
     }

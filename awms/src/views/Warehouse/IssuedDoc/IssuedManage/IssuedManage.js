@@ -5,7 +5,7 @@ import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import Axios from 'axios';
 
-class IssuedDoc extends Component{
+class IssuedManage extends Component{
   constructor(props) {
     super(props);
 
@@ -142,4 +142,4 @@ class IssuedDoc extends Component{
   }
 }
 
-export default IssuedDoc;
+export default IssuedManage;

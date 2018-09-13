@@ -182,6 +182,16 @@ namespace AWMSEngine.ADO
         {
             return MatchDocLock(baseCode, null, docTypeID, desCustomerID, null, null, null, buVO);
         }
+
+        public List<SPOutSTORootIssued> FindRootForIssued(long? docItemID, VOCriteria buVO)
+        {
+
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docItemID", docItemID);
+            var res = this.Query<SPOutSTORootIssued>("SP_STOROOT_FIND_ISSUED_BYDOCITEM", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            return res.ToList();
+            //SP_STOROOT_FIND_ISSUED_BYDOCITEM
+        }
     }
 
 }

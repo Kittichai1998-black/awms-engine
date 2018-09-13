@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class VRMapSTOReceiveConfirm : BaseEngine<VRMapSTOReceiveConfirm.TReqModle, StorageObjectCriteria>
+    public class ConfirmReceivedMapSTO : BaseEngine<ConfirmReceivedMapSTO.TReqModle, StorageObjectCriteria>
     {
 
         public class TReqModle
@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.Business
             public StorageObjectType type;
         }
 
-        protected override StorageObjectCriteria ExecuteEngine(VRMapSTOReceiveConfirm.TReqModle reqVO)
+        protected override StorageObjectCriteria ExecuteEngine(ConfirmReceivedMapSTO.TReqModle reqVO)
         {
             if (reqVO.type == StorageObjectType.LOCATION)
             {

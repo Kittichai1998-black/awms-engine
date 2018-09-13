@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class VRMapSTO : BaseEngine<VRMapSTO.TReqModle, StorageObjectCriteria>
+    public class ScanMapSTO : BaseEngine<ScanMapSTO.TReqModle, StorageObjectCriteria>
     {
         private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
 
@@ -233,7 +233,21 @@ namespace AWMSEngine.Engine.Business
                     newMS.parentType = msf.type;
                     newMS.options = options;
                     if (newMS.id.HasValue)
-                        ADOSto.Update(newMS, msf.areaID, this.BuVO);
+                    {
+                        if(newMS.areaID != msf.areaID)
+                        {
+                            UpdateAreaAllChilds(newMS, msf.areaID);
+                            void UpdateAreaAllChilds(StorageObjectCriteria ms,int aid)
+                            {
+                                ADOSto.Update(ms, aid, this.BuVO);
+                                ms.mapstos.ForEach(x => UpdateAreaAllChilds(x, aid));
+                            }
+                        }
+                        else
+                        {
+                            ADOSto.Update(newMS, msf.areaID, this.BuVO);
+                        }
+                    }
                     else
                     {
                         newMS.eventStatus = StorageObjectEventStatus.IDEL;

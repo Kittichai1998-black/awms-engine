@@ -19,6 +19,7 @@ class SetBarcode extends Component{
       barcodesize:[],
       multiplebarcodesize:[],
       qrcodesize:0,
+      fontsize:0,
       width:"",
       height:"",
       name:"",
@@ -61,6 +62,7 @@ class SetBarcode extends Component{
       name:values.Name,
       barcodesize:{width:setup.bwidth,height:setup.bheight},
       qrcodesize:setup.size,
+      fontsize:setup.fontsize,
       multiplebarcodesize:{width:setup2.width,height:setup2.height,qr:setup2.qr}
     })
   }
@@ -101,9 +103,9 @@ class SetBarcode extends Component{
     if(this.state.chkbar === true && this.state.chkqr === false){
       for(let i=0; i< this.state.column; i++){
         element_column.push(<Card key={i} style={divstyle}>
-        <CardBody style={{ padding :'10px'}}>
-          <span>{this.state.name}</span>
-          <Barcode renderAs="svg" value={getbarcode} width={this.state.barcodesize.width} height={this.state.barcodesize.height} fontSize={13}/>
+        <CardBody style={{ padding :'1px'}}>
+          <span style={{fontSize:this.state.fontsize}}>{this.state.name}</span>
+          <Barcode renderAs="svg" value={getbarcode} width={this.state.barcodesize.width} height={this.state.barcodesize.height} fontSize={this.state.fontsize}/>
         </CardBody>
       </Card>)
       }
@@ -115,10 +117,10 @@ class SetBarcode extends Component{
     else if(this.state.chkqr === true && this.state.chkbar === false){
       for(let i=0; i< this.state.column; i++){
         element_column.push(<Card key={i} style={divstyle}>
-        <CardBody style={{ padding :'10px'}}>
-          <span>{this.state.name}</span><br/>
-          <QRCode renderAs="svg" value={getbarcode} size={this.state.qrcodesize} /><br/>
-          <span>{this.state.barcode}</span>
+        <CardBody style={{ padding :'1px'}}>
+          <QRCode renderAs="svg" value={getbarcode} size={this.state.qrcodesize} style={{paddingTop:'5px', position:"relative"}} className="float-left"/>
+          <span className="clearfix" style={{fontSize:this.state.fontsize, textAlign:'left'}}>{this.state.name}</span>
+          <span style={{fontSize:this.state.fontsize, position:"absolute", left:0, right:0,}}>{this.state.barcode}</span>
         </CardBody>
       </Card>)
       }
@@ -130,14 +132,13 @@ class SetBarcode extends Component{
     else{
       for(let i=0; i< this.state.column; i++){
         element_column.push(<Card key={i} style={divstyle}>
-        <CardBody style={{ padding :'10px'}}>
-          <span>{this.state.name}</span><br/>
-          <div style={{width:'45%', float:'left', marginTop:'10px'}}>
-            <QRCode renderAs="svg" value={getbarcode} size={this.state.multiplebarcodesize.qr} />
-          </div>
-          <div style={{width:'50%', float:'right'}}>
+        <CardBody style={{ padding :'1px'}}>
+          <span style={{fontSize:this.state.fontsize}}>{this.state.name}</span><br/>
+          <div style={{marginTop:'1px'}}>
             <Barcode value={getbarcode} width={this.state.multiplebarcodesize.width} 
-            height={this.state.multiplebarcodesize.height} fontSize={13}/>
+            height={this.state.multiplebarcodesize.height} fontSize={this.state.fontsize}/>
+            <br/>
+            <QRCode renderAs="svg" value={getbarcode} size={this.state.multiplebarcodesize.qr} style={{display:'inline-block'}}/>
           </div>
         </CardBody>
       </Card>)

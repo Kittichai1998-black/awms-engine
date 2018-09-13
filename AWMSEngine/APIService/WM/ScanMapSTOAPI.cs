@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService.WM
 {
-    public class VRMapSTOAPI : BaseAPIService
+    public class ScanMapSTOAPI : BaseAPIService
     {
-        public VRMapSTOAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ScanMapSTOAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
@@ -21,8 +21,8 @@ namespace AWMSEngine.APIService.WM
         {
             this.BeginTransaction();
             var options = ObjectUtil.DynamicToModel<List<KeyValuePair<string, string>>>(this.RequestVO.options);
-            var res = new VRMapSTO().Execute(this.Logger, this.BuVO,
-                new VRMapSTO.TReqModle()
+            var res = new ScanMapSTO().Execute(this.Logger, this.BuVO,
+                new ScanMapSTO.TReqModle()
                 {
                     scanCode = this.RequestVO.scanCode,
                     warehouseID = this.RequestVO.warehouseID,

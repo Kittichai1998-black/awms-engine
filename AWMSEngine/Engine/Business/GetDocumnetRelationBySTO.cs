@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class DocRelationBySTO : BaseEngine<StorageObjectCriteria, DocRelationBySTO.TRes>
+    public class GetDocumnetRelationBySTO : BaseEngine<StorageObjectCriteria, GetDocumnetRelationBySTO.TRes>
     {
         public class TRes
         {

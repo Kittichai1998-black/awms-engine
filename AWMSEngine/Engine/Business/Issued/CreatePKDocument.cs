@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Issued
 {
-    public class GIDocCreate : BaseEngine<GIDocCreate.TDocReq, amt_Document>
+    public class CreatePKDocument : BaseEngine<CreatePKDocument.TDocReq, amt_Document>
     {
 
         public class TDocReq

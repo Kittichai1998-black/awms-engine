@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
-import Axios from '../../../../../node_modules/axios';
+import Axios from 'axios';
 
 class ListProduct extends Component{
   constructor(props) {
@@ -107,6 +108,11 @@ class ListProduct extends Component{
     this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
   }
 
+  createBarcodeBtn(data){
+    return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+      to={'/mst/sku/manage/barcode?barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+  }
+
   render(){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select",},
@@ -127,15 +133,15 @@ class ListProduct extends Component{
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
       {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ];
+    
+    const btnfunc = [{
+      btntype:"Barcode",
+      func:this.createBarcodeBtn
+    }]
 
-    const ddlfilter = [{
-      'status' : [{'value':'0','label':'Code'},{'value':'1','label':'Name'},{'value':'2','label':'Description'},{'value':'null','label':'All'}],
-      'header' : 'Table',
-      'field' : '',
-    }];
     return(
       <div>
       {/*
@@ -151,6 +157,7 @@ class ListProduct extends Component{
       */}
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
         filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={false}
+        btn={btnfunc}
          table="ams_PackMaster"/>
       </div>
     )

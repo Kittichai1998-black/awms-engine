@@ -181,6 +181,7 @@ namespace AWMSEngine.ADO
                 object v = null;
                 if (w.value == null) v = null;
                 else if (w.value is string && w.operatorType == SQLOperatorType.LIKE) v = w.value.ToString().Replace('*', '%');
+                else if (w.value is string && w.operatorType == SQLOperatorType.IN) v = w.value.ToString().Split(",");
                 else v = w.value;
                 param.Add(w.field, v);
             }

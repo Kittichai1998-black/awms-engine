@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.Mst
 {
-    public class CustomerPutFromFileServerCsvAPI : BaseAPIService
+    public class PutSupplierFromFileServerCsvAPI : BaseAPIService
     {
-        public CustomerPutFromFileServerCsvAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutSupplierFromFileServerCsvAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
@@ -19,8 +19,8 @@ namespace AWMSEngine.APIService.Mst
             var res = new Engine.General.TransferMasterFromFileServerCsv().Execute(this.Logger, this.BuVO,
                 new TransferMasterFromFileServerCsv.TReq()
                 {
-                    apiCode = "Customer_Master_Transfer",
-                    tableName = "ams_Customer",
+                    apiCode = "Supplier_Master_Transfer",
+                    tableName = "ams_Supplier",
                     fieldWhere = "Code",
                     beginRowIndex = 1,
                     columnInfos = new List<TransferMasterFromFileServerCsv.TReq.ColumnInfo>()
