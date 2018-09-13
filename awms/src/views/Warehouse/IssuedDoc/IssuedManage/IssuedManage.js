@@ -5,40 +5,111 @@ import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import Axios from 'axios';
 
+
+const createQueryString = (select) => {
+  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
+  + (select.q === "" ? "" : "&q=" + select.q)
+  + (select.f === "" ? "" : "&f=" + select.f)
+  + (select.g === "" ? "" : "&g=" + select.g)
+  + (select.s === "" ? "" : "&s=" + select.s)
+  + (select.sk === "" ? "" : "&sk=" + select.sk)
+  + (select.l === 0 ? "" : "&l=" + select.l)
+  + (select.all === "" ? "" : "&all=" + select.all)
+  return queryS
+}
+
 class IssuedManage extends Component{
   constructor(props) {
     super(props);
 
     this.state = {
       data : [],
-      autocomplete:[],
-      statuslist:[{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
-        'header' : 'Status',
-        'field' : 'Status',
-        'mode' : 'check',
-      },{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
-        'header' : 'E',
-        'field' : 'Status',
-        'mode' : 'check',
-      }],
-      acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/viw",
-      t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'<', 'v': 1002}]",
-      f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+      branch:{queryString:"https://localhost:44366/api/mst",
+      t:"Branch",
+      q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
+      f:"*",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
-      sk:0,
-      l:20,
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:"",
+      l:"",
       all:"",},
-      sortstatus:0,
-      selectiondata:[]
+      warehouse:{queryString:"https://localhost:44366/api/mst",
+      t:"Warehouse",
+      q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
+      f:"*",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:"",
+      l:"",
+      all:"",},
+      customer:{queryString:"https://localhost:44366/api/mst",
+      t:"Customer",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"*",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:"",
+      l:"",
+      all:"",},
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
+    this.Date = new Date()
+  }
+
+  dropdownAuto(data, field){
+    const style = {borderRadius: '3px',
+    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+    background: 'rgba(255, 255, 255, 0.9)',
+    padding: '2px 0',
+    fontSize: '90%',
+    position: 'fixed',
+    overflow: 'auto',
+    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+    zIndex: '998',}
+    
+    return <div>
+      <label style={{width:'80px'}}>{field}</label>
+      <ReactAutocomplete
+      menuStyle={style}
+      shouldItemRender={(item, value) => item.Name.toLowerCase().indexOf(value.toLowerCase()) > -1}
+      getItemValue={(item) => {
+        {
+          field === "Warehouse" ? this.setState({warehousevalue:{'key':item.Name,'value':item.ID}},() => {
+            const area = this.state.area
+            let areawhere = JSON.parse(area.q)
+            areawhere.push({'f':'warehouse_ID','c':'=','v':item.ID})
+            area.q = JSON.stringify(areawhere)
+            Axios.get(createQueryString(area)).then((res) => {
+              this.setState({areadata:res.data.datas})
+            })
+          }) : 
+          field === "Supplier" ? this.setState({suppliervalue:[{'key':item.Name,'value':item.ID}]}) : 
+          this.setState({areavalue:{'key':item.Name,'value':item.ID}})
+        }
+        return item.Name
+      }}
+      items={data}
+      renderItem={(item, isHighlighted) =>
+        <div key={item.id} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+          {item.Name}
+        </div>
+      }
+      value={field === "Warehouse" ? this.state.warehouseres : field === "Supplier" ? this.state.supplierres : this.state.areares }
+      onChange={(e) => {
+        field === "Warehouse" ? this.setState({warehouseres:e.target.value, ddlwarehouse:true}) : 
+        field === "Supplier" ? this.setState({supplierres:e.target.value, ddlsupplier:true}) : 
+        this.setState({areares:e.target.value, ddlarea:true})
+      }}
+      onSelect={value => {
+        field === "Warehouse" ? this.setState({warehouseres:value, ddlwarehouse:true}) : 
+        field === "Supplier" ? this.setState({supplierres:value, ddlsupplier:true}) : 
+        this.setState({areares:value, ddlarea:true})
+      }}/>
+      <span>{field === "Warehouse" && this.state.ddlwarehouse===true?"": 
+        field === "Supplier" && this.state.ddlsupplier===true?"": field === "Area" && this.state.ddlarea===true?"":" *"}</span>
+    </div>
   }
 
   onHandleClickCancel(event){
@@ -47,18 +118,6 @@ class IssuedManage extends Component{
   }
 
   componentDidMount(){
-  }
-
-  createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    return queryS
   }
 
   getSelectionData(data){
@@ -80,40 +139,7 @@ class IssuedManage extends Component{
     }
   }
 
-  onClickToDesc(data){
-    return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-      to={'/mst/sku/manage/barcode?ID='+data.ID}>Detail</Link>}</Button>
-  }
-
   render(){
-    const cols = [
-      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-      {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'SouBranch', Header: 'Branch',editable:false, Filter:"text"},
-      {accessor: 'SouWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
-      {accessor: 'SouArea', Header: 'Area', editable:false, Filter:"text",},
-      {accessor: 'DesCustomer', Header: 'Customer', editable:false, Filter:"text",},
-      {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
-      {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
-      {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
-      {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text",},
-      {accessor: 'RefID', Header: 'RefID', editable:false,},
-      {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
-      {accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
-    ];
-
-    const btnfunc = [{
-      btntype:"Link",
-      func:this.onClickToDesc
-    },{
-      btntype:"Link2",
-      func:this.onClickToDesc
-    }]
-    
-
     return(
       <div>
       {/*
@@ -124,13 +150,7 @@ class IssuedManage extends Component{
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <div className="clearfix">
-          <Button className="float-right">Create Document</Button>
-        </div>
-        <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
-        statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc}
-        accept={false}/>
+      
         <Card>
           <CardBody>
             <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>

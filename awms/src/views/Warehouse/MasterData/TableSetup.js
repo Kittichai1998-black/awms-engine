@@ -54,7 +54,6 @@ class TableGen extends Component{
       dataedit : [],
       dropdownvalue:[],
       dropdownfilter:[],
-      dataremove:[],
       status:"*",
       datafilter :[],
       select:{},
@@ -89,9 +88,8 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    this.queryInitialData();
-    this.setState({dropdownfilter:nextProps.ddlfilter})
-    this.setState({autocomplete:nextProps.autocomplete})
+    //this.queryInitialData();
+    this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete})
   }
 
   componentDidMount(){
@@ -110,15 +108,13 @@ class TableGen extends Component{
       let queryString = createQueryString(this.props.data)
       Axios.get(queryString).then(
       (res) => {
-        this.setState({data:res.data.datas})
-        this.setState({loading:false})
+        this.setState({data:res.data.datas,loading:false})
       })        
     }
     else{
       Axios.get(this.props.url).then(
         (res) => {
-            this.setState({data:res.data.datas})
-            this.setState({loading:false})
+            this.setState({data:res.data.datas,loading:false})
         })
     }
   }
@@ -135,6 +131,7 @@ class TableGen extends Component{
         dataedit.splice(index,1);
       }
     })
+    rowdata.Status = 2
     dataedit.push(rowdata);
     data.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
@@ -225,12 +222,15 @@ class TableGen extends Component{
   }
 
   updateData(){
-      const dataedit = Object.assign([],[...this.state.dataedit])
+      const dataedit = this.state.dataedit
       if(dataedit.length > 0){
         dataedit.forEach((row) => {
           row["ID"] = row["ID"] <= 0 ? "" : row["ID"]
-          for(let col of this.state.uneditable){
+          console.log(this.props.uneditcolumn)
+          for(let col of this.props.uneditcolumn){
+            console.log(col)
             delete row[col]
+            console.log(dataedit)
           }
         })
         let updjson = {
@@ -241,8 +241,7 @@ class TableGen extends Component{
           "datas": dataedit,
           "nr": false
         }
-    
-        Axios.put(this.state.select.queryString, updjson).then((result) =>{
+        Axios.put("https://localhost:44366/api/mst", updjson).then((result) =>{
           this.queryInitialData();
         })
   
@@ -375,7 +374,6 @@ class TableGen extends Component{
             if(e.target.value !== ""){
                 filter.push({id: name, value:e.target.value})
             }
-            console.log(filter)
             this.onCheckFliter(filter,this.state.dataselect)
             this.setState({datafilter:filter, loading:true})
         }}
@@ -413,14 +411,15 @@ class TableGen extends Component{
     suppressContentEditableWarning
     defaultChecked={rowdata.value === 1 || rowdata.value === true} 
     onChange={ (e) => {
-      this.onEditorValueChange(rowdata.index , e.target.checked === false ? 0 : 1, rowdata.column.id)
+      this.onEditorValueChange(rowdata , e.target.checked === false ? 0 : 1, rowdata.column.id)
     }}/>
   }
 
   datePickerBody(format, value, rowdata){
+    const date = moment(value);
     if(format === 'date')
     {
-      return <DatePicker selected={moment(value)} style={{width:'1000px'}}
+      return <DatePicker selected={date} style={{width:'1000px'}}
         onChange={(e) => {this.onEditDateChange(e, rowdata)}}
         onChangeRaw={(e) => {
           if (moment(value).isValid())
@@ -428,10 +427,9 @@ class TableGen extends Component{
        }}/>
     }
     else if(format === 'datetime'){
-      return <DatePicker selected={moment(value)}
+      return <DatePicker selected={date}
         onChange={(e) => {this.onEditDateChange(e, rowdata)}}
         onChangeRaw={(e) => {
-          console.log(e.target.value)
           if (moment(e.target.value).isValid())
                this.onEditDateChange(e, rowdata);
        }}
@@ -439,7 +437,7 @@ class TableGen extends Component{
         />
     }
     else{
-      return <DatePicker selected={moment(value)}
+      return <DatePicker selected={date}
         onChange={(e) => {return this.onEditDateChange(e, rowdata)}}
         showTimeSelectOnly
         dateFormat="LT"
@@ -449,25 +447,26 @@ class TableGen extends Component{
   
   onEditDateChange(value, rowdata){
     const dateformat = moment(value).format('YYYY-MM-DDTHH:mm:ss')
-    this.onEditorValueChange(rowdata.index ,dateformat, rowdata.column.id)
+    this.onEditorValueChange(rowdata ,dateformat, rowdata.column.id)
   }
 
   inputTextEditor(rowdata) {
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
-    onChange={(e) => {this.onEditorValueChange(rowdata.index, e.target.value, rowdata.column.id)}} />;
+    onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
   }
   
-  onEditorValueChange(rowindex, value, field) {
+  onEditorValueChange(rowdata, value, field) {
     const data = [...this.state.data];
-    data[rowindex][field] = value;
+    data[rowdata.index][field] = value;
     this.setState({ data });
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
-      if(datarow.ID === data[rowindex]["ID"]){
+      if(datarow.ID === data[rowdata.index]["ID"]){
         dataedit.splice(index,1);
       }
     })
-    dataedit.push(data[rowindex]);
+    dataedit.push(data[rowdata.index]);
+    console.log(rowdata)
     this.setState({dataedit}, () => console.log(this.state.dataedit));
   }
 
@@ -488,11 +487,11 @@ class TableGen extends Component{
         }
         value={rowdata.value}
         onChange={(e) => {
-          this.onEditorValueChange(rowdata.index, e.target.value, rowdata.column.id)
+          this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)
         }}
         onSelect={(val, row) => {
-          this.onEditorValueChange(rowdata.index, row.Code, rowdata.column.id)
-          this.onEditorValueChange(rowdata.index, row.ID, getdata[0].pair)
+          this.onEditorValueChange(rowdata, row.Code, rowdata.column.id)
+          this.onEditorValueChange(rowdata, row.ID, getdata[0].pair)
         }}
       />
       }
@@ -550,6 +549,7 @@ class TableGen extends Component{
           if(row.editable && (row.body === undefined || !row.body)){
             row.Cell = (e) => (this.inputTextEditor(e))
           }
+          
           if(row.Type === "datetime"){
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
@@ -604,12 +604,25 @@ class TableGen extends Component{
             showPagination={true}
             minRows={5}
             SubComponent={this.subTable}
+            getTrProps={(state, rowInfo) => {
+              let result = false
+              this.state.dataedit.forEach(row => {
+                if(rowInfo && rowInfo.row){
+                  if(row.ID === rowInfo.original.ID)
+                    result = true
+                }
+              })
+              if(result === true)
+                return {style:{background:"gray"}}
+              else
+                return {}              
+            }}
             PaginationComponent={this.paginationButton}
             onSortedChange={(sorted) => {
-                this.setState({data:[], loading:true });
+                this.setState({data:[],dataedit:[], loading:true });
                 this.customSorting(sorted)}
             }/>
-        <Card style={{display:this.state.accept === true ? 'inline' : 'none'}}>
+        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
           <CardBody>
             <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>
             <Button onClick={() => this.onHandleClickCancel()} color="danger"className="mr-sm-1">Cancel</Button>
