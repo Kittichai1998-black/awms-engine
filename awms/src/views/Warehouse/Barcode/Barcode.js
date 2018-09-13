@@ -16,6 +16,9 @@ class SetBarcode extends Component{
       chkbar:true,
       chkqr:false,
       element:[],
+      barcodesize:[],
+      multiplebarcodesize:[],
+      qrcodesize:0,
       width:"",
       height:"",
       name:"",
@@ -39,12 +42,27 @@ class SetBarcode extends Component{
     });
   }
 
+  componentDidUpdate(prevState){
+
+  }
+
   componentDidMount(){
     let setup = json.barcodesetup.find((data) => {
       return data.type === json.barcodetype;
     })
+    let setup2 = json.multiplebarcodesize.find((data) => {
+      return data.type === json.barcodetype;
+    })
     const values = queryString.parse(this.props.location.search)
-    this.setState({barcode:values.barcode,width:setup.width, height:setup.height, name:values.Name})
+    this.setState({
+      barcode:values.barcode,
+      width:setup.width, 
+      height:setup.height, 
+      name:values.Name,
+      barcodesize:{width:setup.bwidth,height:setup.bheight},
+      qrcodesize:setup.size,
+      multiplebarcodesize:{width:setup2.width,height:setup2.height,qr:setup2.qr}
+    })
   }
 
   columnChange(event){
@@ -63,6 +81,18 @@ class SetBarcode extends Component{
   }
 
   createBarcode(event){
+    const divstyle = {
+      width:this.state.width, 
+      textAlign:'center', 
+      height:this.state.height, 
+      margin:'0 5px 5px 0',
+      display:'inline-block'
+    }
+
+    const groupstyle = {
+      margin:'0 5px 5px 0',
+    }
+
     event.preventDefault()
     const getbarcode = this.state.barcode
     let element_column = [];
@@ -70,50 +100,51 @@ class SetBarcode extends Component{
 
     if(this.state.chkbar === true && this.state.chkqr === false){
       for(let i=0; i< this.state.column; i++){
-        element_column.push(<Card key={i} style={{width:this.state.width, textAlign:'center', height:this.state.height,margin:'0 5px 5px 0'}}>
+        element_column.push(<Card key={i} style={divstyle}>
         <CardBody style={{ padding :'10px'}}>
           <span>{this.state.name}</span>
-          <Barcode value={getbarcode} width={1.9} height={120} fontSize={13}/>
+          <Barcode renderAs="svg" value={getbarcode} width={this.state.barcodesize.width} height={this.state.barcodesize.height} fontSize={13}/>
         </CardBody>
       </Card>)
       }
 
       for(let j=0; j< this.state.row; j++){
-        element_row.push(<FormGroup style={{margin:'0 5px 5px 0'}} key={j}>{element_column}</FormGroup>);
+        element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
       }
     }
     else if(this.state.chkqr === true && this.state.chkbar === false){
       for(let i=0; i< this.state.column; i++){
-        element_column.push(<Card key={i} style={{width:'10cm', textAlign:'center', height:this.state.height,margin:'0 5px 5px 0'}}>
+        element_column.push(<Card key={i} style={divstyle}>
         <CardBody style={{ padding :'10px'}}>
           <span>{this.state.name}</span><br/>
-          <QRCode value={getbarcode} size={120} /><br/>
+          <QRCode renderAs="svg" value={getbarcode} size={this.state.qrcodesize} /><br/>
           <span>{this.state.barcode}</span>
         </CardBody>
       </Card>)
       }
 
       for(let j=0; j< this.state.row; j++){
-        element_row.push(<FormGroup style={{margin:'0 5px 5px 0'}} key={j}>{element_column}</FormGroup>);
+        element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
       }
     }
     else{
       for(let i=0; i< this.state.column; i++){
-        element_column.push(<Card key={i} style={{width:'10cm', textAlign:'center', height:this.state.height,margin:'0 5px 5px 0'}}>
+        element_column.push(<Card key={i} style={divstyle}>
         <CardBody style={{ padding :'10px'}}>
           <span>{this.state.name}</span><br/>
           <div style={{width:'45%', float:'left', marginTop:'10px'}}>
-            <QRCode value={getbarcode} size={100} />
+            <QRCode renderAs="svg" value={getbarcode} size={this.state.multiplebarcodesize.qr} />
           </div>
           <div style={{width:'50%', float:'right'}}>
-            <Barcode value={getbarcode} width={1.5} height={120} fontSize={13}/>
+            <Barcode value={getbarcode} width={this.state.multiplebarcodesize.width} 
+            height={this.state.multiplebarcodesize.height} fontSize={13}/>
           </div>
         </CardBody>
       </Card>)
       }
 
       for(let j=0; j< this.state.row; j++){
-        element_row.push(<FormGroup style={{margin:'0 5px 5px 0'}} key={j}>{element_column}</FormGroup>);
+        element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
       }
     }
     const div = document.createElement('div');
@@ -129,7 +160,7 @@ class SetBarcode extends Component{
       </Form></div>)
     }
     else if(this.state.column > 1){
-      return(<div ref={form => {this.form = form;}}><Form inline style={{ margin :'10px'}}>
+      return(<div ref={form => {this.form = form;}}><Form style={{ margin :'10px'}}>
           {this.state.element.map((ele,key) => {
             return ele
           })}

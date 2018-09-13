@@ -1,0 +1,121 @@
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
+using AWMSEngine.ADO;
+using AWMSEngine.ADO.StaticValue;
+using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
+using AWMSModel.Criteria;
+using AWMSModel.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace AWMSEngine.Engine.Business.Received
+{
+    public class GRDocCreateBySTO : BaseEngine<GRDocCreateBySTO.TReq, amt_Document>
+    {
+        public class TReq
+        {
+            public int? Des_Branch_ID;
+            public int? Des_Warehouse_ID;
+            public int? Des_AreaMaster_ID;
+            public StorageObjectCriteria stomap;
+        }
+        protected override amt_Document ExecuteEngine(TReq reqVO)
+        {
+            var stopacks = this.ListPackSTOIDs(reqVO.stomap);
+            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListSTOInDocLock(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+
+            stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.StorageObject_ID == x.id));
+
+            amt_Document doc = null;
+
+            long? sou_Branch_ID = null;
+            long? sou_Warehouse_ID = null;
+            long? sou_AreaMaster_ID = null;
+            if (reqVO.stomap.type == StorageObjectType.LOCATION)
+            {
+                var locationMst = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(reqVO.stomap.id, BuVO);
+                var areaMst = this.StaticValue.AreaMasters.Where(x => x.ID == locationMst.AreaMaster_ID).FirstOrDefault();
+                var warehouseMst = areaMst == null ? null : this.StaticValue.Warehouses.Where(x => x.ID == areaMst.Warehouses_ID).FirstOrDefault();
+                var branchMst = warehouseMst == null ? null : this.StaticValue.Branchs.Where(x => x.ID == warehouseMst.Branch_ID).FirstOrDefault();
+                sou_AreaMaster_ID = areaMst != null ? areaMst.ID : null;
+                sou_Warehouse_ID = warehouseMst != null ? warehouseMst.ID : null;
+                sou_Branch_ID = branchMst != null ? branchMst.ID : null;
+            }
+
+            doc = new amt_Document()
+            {
+                ActionTime = null,
+                Code = null,
+                Sou_Customer_ID = null,
+                Sou_Supplier_ID = null,
+                Sou_Branch_ID = sou_Branch_ID,
+                Sou_Warehouse_ID = sou_Warehouse_ID,
+                Sou_AreaMaster_ID = sou_AreaMaster_ID,
+
+                Des_Customer_ID = null,
+                Des_Supplier_ID = null,
+                Des_Branch_ID = reqVO.Des_Branch_ID,
+                Des_Warehouse_ID = reqVO.Des_Warehouse_ID,
+                Des_AreaMaster_ID = reqVO.Des_AreaMaster_ID,
+                Options = null,
+                DocumentDate = DateTime.Now,
+                DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
+                ID = null,
+                EventStatus = DocumentEventStatus.WORKING,
+                RefID = null,
+                Ref1 = null,
+                Ref2 = null,
+                ParentDocument_ID = null,
+                DocumentItems = new List<amt_DocumentItem>(),
+                Remark = null
+
+            };
+            var packs = stopacks
+                .GroupBy(x => new { code = x.code, mstID = x.mstID, options = ObjectUtil.ListKeyToQueryString(x.options) })
+                .Select(x => new { key = x.Key, count = x.Count(), stoIDs = x.Select(y => y.id.Value).ToList() });
+            foreach (var p in packs)
+            {
+                var packmst = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(p.key.mstID, this.BuVO);
+                doc.DocumentItems.Add(new amt_DocumentItem()
+                {
+                    SKUMaster_ID = packmst.SKUMaster_ID,
+                    PackMaster_ID = p.key.mstID.Value,
+                    Code = p.key.code,
+                    ID = null,
+                    EventStatus = DocumentEventStatus.WORKING,
+                    Options = p.key.options,
+                    Quantity = p.count,
+                    ExpireDate = null,
+                    ProductionDate = null,
+                    Ref1 = null,
+                    Ref2 = null,
+                    Ref3 = null,
+                    StorageObjectIDs = p.stoIDs
+                });
+            }
+
+
+            doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
+
+            /*foreach (var docItem in doc.DocumentItems)
+            {
+                ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, docItem.StorageObjectIDs, this.BuVO);
+            }*/
+            return doc;
+        }
+
+        private List<StorageObjectCriteria> ListPackSTOIDs(StorageObjectCriteria mapsto)
+        {
+            List<StorageObjectCriteria> mapstos = new List<StorageObjectCriteria>();
+            if (mapsto.type == StorageObjectType.PACK)
+            {
+                mapstos.Add(mapsto);
+            }
+            mapsto.mapstos.ForEach(x => mapstos.AddRange(ListPackSTOIDs(x)));
+            return mapstos;
+        }
+    }
+}

@@ -31,6 +31,7 @@ class Pallet extends Component{
       sortstatus:0,
       loaddata:false,
       updateflag:false,
+      autocomplete:[]
     };
   }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using AMWUtil.Common;
+using AWMSEngine.APIService.Token;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -17,7 +18,7 @@ namespace AWMSEngine.Controllers
         [HttpPost("register")]  
         public dynamic RegisterToken([FromBody] dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Token.RegisterTokenAPI(this);
+            var api = new RegisterTokenAPI(this);
             var res = api.Execute(request);
             return res;
         }
@@ -25,7 +26,7 @@ namespace AWMSEngine.Controllers
         [HttpDelete("remove")]
         public dynamic RemoveToken([FromBody] dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Token.RemoveTokenAPI(this);
+            var api = new RemoveTokenAPI(this);
             var res = api.Execute(request);
             return res;
         }
@@ -35,7 +36,7 @@ namespace AWMSEngine.Controllers
         {
             var qrystr = this.Request.QueryString.Value.Replace("?", "");
             var jsond = ObjectUtil.QueryStringToObject(qrystr);
-            var api = new AWMSEngine.Engine.APIService.Token.EnquiryTokenAPI(this);
+            var api = new EnquiryTokenAPI(this);
             var res = api.Execute(jsond);
 
             return res;
@@ -44,7 +45,7 @@ namespace AWMSEngine.Controllers
         [HttpPut("extend")]
         public dynamic ExtendToken([FromBody] dynamic request)
         {
-            var api = new AWMSEngine.Engine.APIService.Token.ExtendTokenAPI(this);
+            var api = new ExtendTokenAPI(this);
             var res = api.Execute(request);
 
             return res;

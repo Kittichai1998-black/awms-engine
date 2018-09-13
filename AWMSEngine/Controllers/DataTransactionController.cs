@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.APIService.Data;
+using AWMSEngine.APIService.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +20,7 @@ namespace AWMSEngine.Controllers
             var qrystr = this.Request.QueryString.Value.Replace("?", "");
             var jsond = ObjectUtil.QueryStringToObject(qrystr);
             //{"token":"","apiKey":"","t":"",pk:"","datas":[{"test":"xx"}]}
-            var api = new AWMSEngine.Engine.APIService.Data.SelectDataTrxAPI(this);
+            var api = new SelectDataTrxAPI(this);
             var res = api.Execute(jsond);
 
             return res;
@@ -27,7 +29,7 @@ namespace AWMSEngine.Controllers
         public dynamic SearchSTO()
         {
             var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var res = new Engine.APIService.UI.StorageObjectSearchAPI(this).Execute(req);
+            var res = new STOSearchAPI(this).Execute(req);
             return res;
         }
     }

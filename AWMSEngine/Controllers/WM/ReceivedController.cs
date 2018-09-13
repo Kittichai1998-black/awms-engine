@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.APIService.Doc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("doc")]
         public dynamic Create([FromBody]dynamic data)
         {
-            Engine.APIService.Doc.ReceivedDocumentCreateAPI exec = new Engine.APIService.Doc.ReceivedDocumentCreateAPI(this);
+            GRDocCreateAPI exec = new GRDocCreateAPI(this);
             var res = exec.Execute(data);
             return res;
         }

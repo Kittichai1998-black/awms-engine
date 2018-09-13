@@ -10,7 +10,7 @@ class ListProduct extends Component{
 
     this.state = {
       data : [],
-      dropdownfilter:[],
+      autocomplete:[],
       statuslist:[{
         'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
         'header' : 'Status',
@@ -27,11 +27,13 @@ class ListProduct extends Component{
       sk:0,
       l:20,
       all:"",},
-      sortstatus:0
+      sortstatus:0,
+      selectiondata:[]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
     this.filterList = this.filterList.bind(this)
+    this.getSelectionData = this.getSelectionData.bind(this)
   }
 
   onHandleClickCancel(event){
@@ -39,8 +41,12 @@ class ListProduct extends Component{
     event.preventDefault();
   }
 
-  componentDidMount(){
+  componentWillMount(){
     this.filterList();
+  }
+
+  componentWillUnmount(){
+    Axios.isCancel(true);
   }
 
   createQueryString = (select) => {
@@ -59,7 +65,7 @@ class ListProduct extends Component{
     const objselect = {queryString:"https://localhost:44366/api/mst",
       t:"ObjectSize",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID as ObjectSize_ID,Code",
+      f:"ID,Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -67,70 +73,69 @@ class ListProduct extends Component{
       all:"",}
 
     const packselect = {queryString:"https://localhost:44366/api/mst",
-    t:"PackMasterType",
-    q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-    f:"ID as PackType_ID,Code",
-    g:"",
-    s:"[{'f':'ID','od':'asc'}]",
-    sk:0,
-    l:20,
-    all:"",}
+      t:"PackMasterType",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+      f:"ID,Code",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      l:20,
+      all:"",}
 
     Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(objselect))]).then(
       (Axios.spread((packresult, objresult) => 
     {
-      let ddl = [...this.state.dropdownfilter]
+      let ddl = [...this.state.autocomplete]
       let packList = {}
       let objList = {}
       packList["data"] = packresult.data.datas
       packList["field"] = "PackCode"
-      packList["header"] = "PackCode"
+      packList["pair"] = "PackType_ID"
       packList["mode"] = "Dropdown"
       
       objList["data"] = objresult.data.datas
       objList["field"] = "ObjCode"
-      objList["header"] = "ObjCode"
+      objList["pair"] = "ObjectSize_ID"
       objList["mode"] = "Dropdown"
 
       ddl = ddl.concat(packList).concat(objList)
-      this.setState({dropdownfilter:ddl})
+      this.setState({autocomplete:ddl})
     })))
+  }
+
+  getSelectionData(data){
+    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
   }
 
   render(){
     const cols = [
-      {field: 'SKU_ID', header: 'SKU'},
-      {field: 'PackCode', header: 'PackType', body:'dropdown',updateable:false},
-      {field: 'Code', header: 'Code', editable:true,},
-      {field: 'Name', header: 'Name', editable:true},
-      {field: 'Description', header: 'Description', sortable:false},
-      {field: 'Status', header: 'Status', editable:true, body:'checkbox'},
-      {field: 'WidthM', header: 'WidthM', editable:true},
-      {field: 'LengthM', header: 'LengthM', editable:true},
-      {field: 'HeightM', header: 'HeightM', editable:true},
-      {field: 'WeightKG', header: 'Weight', editable:true},
-      {field: 'ItemQty', header: 'ItemQty', editable:true},
-      {field: 'ObjCode', header: 'Object', body:'dropdown',updateable:false},
-      {field: 'Revision', header: 'Revision', editable:false},
-      {field: 'CreateBy', header: 'CreateBy', editable:false,updateable:false},
-      {field: 'CreateTime', header: 'CreateBy', editable:true,updateable:false, body:"datetime"},
-      {field: 'ModifyBy', header: 'ModifyBy', editable:false,updateable:false},
-      {field: 'ModifyTime', header: 'ModifyTime', editable:false,updateable:false, body:"datetime"},
-      {field: 'QR Code', header: 'QR Code', editable:false,updateable:false},
-      {field: '', header: '', manage:['barcode','remove']},
+      {Header: '', Type:"selection", sortable:false, Filter:"select",},
+      {accessor: 'SKU_ID', Header: 'SKU'},
+      {accessor: 'PackCode', Header: 'PackType',updateable:false,Filter:"text", Type:"autocomplete"},
+      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
+      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
+      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true, },
+      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
+      {accessor: 'WidthM', Header: 'WidthM', editable:true,Filter:"text",},
+      {accessor: 'LengthM', Header: 'LengthM', editable:true,Filter:"text",},
+      {accessor: 'HeightM', Header: 'HeightM', editable:true,Filter:"text",},
+      {accessor: 'WeightKG', Header: 'Weight', editable:true,Filter:"text",},
+      {accessor: 'ItemQty', Header: 'ItemQty', editable:true,Filter:"text",},
+      {accessor: 'ObjCode', Header: 'Object',updateable:false,Filter:"text", Type:"autocomplete"},
+      {accessor: 'Revision', Header: 'Revision', editable:false,},
+      {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+      {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
     ];
 
     const ddlfilter = [{
       'status' : [{'value':'0','label':'Code'},{'value':'1','label':'Name'},{'value':'2','label':'Description'},{'value':'null','label':'All'}],
       'header' : 'Table',
       'field' : '',
-    },
-    {
-      'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
-      'header' : 'Status',
-      'field' : 'Status',
     }];
-
     return(
       <div>
       {/*
@@ -138,11 +143,15 @@ class ListProduct extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
         addbtn = เปิดปิดปุ่ม Add
-        accept = สถานะของในการสั่ง update หรือ insert 
+        accept = สถานะของในการสั่ง update หรือ insert
+        autocomplete = data field ที่ต้องการทำ autocomplete
+        filterable = เปิดปิดโหมด filter
+        getselection = เก็บค่าที่เลือก
     
       */}
-        <TableGen column={cols} data={this.state.select} ddlfilter={this.state.dropdownfilter} addbtn={true}
-        statuslist = {this.state.statuslist} table="ams_SKUMaster"/>
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={false}
+         table="ams_PackMaster"/>
       </div>
     )
   }

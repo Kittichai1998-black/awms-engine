@@ -160,23 +160,27 @@ namespace AWMSEngine.ADO
             List<StorageObjectFullCriteria> res = StorageObjectFullCriteria.Generate(qry);
             return res;
         }
-        public ams_BaseMaster GetBaseMasterMatchDocLock(string baseCode, long? docID, int? documentTypeID,int? docTypeID, VOCriteria buVO)
+        public ams_BaseMaster MatchDocLock(string baseCode, long? docID, DocumentTypeID? docTypeID,
+            long? desCustomerID, long? desBranchID, long? desSupplierID, long? desWarehouseID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@baseCode", baseCode);
             param.Add("@docID", docID);
-            param.Add("@desCustomerID", docTypeID);
             param.Add("@docTypeID", docTypeID);
-            var res = this.Query<ams_BaseMaster>("SP_BASE_CHECK_DOCLOCK", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            param.Add("@desCustomerID", desCustomerID);
+            param.Add("@desBranchID", desBranchID);
+            param.Add("@desSupplierID", desSupplierID);
+            param.Add("@desWarehouseID", desWarehouseID);
+            var res = this.Query<ams_BaseMaster>("SP_BASE_MATCH_DOCLOCK", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
             return res;
         }
-        public ams_BaseMaster GetBaseMasterMatchDocLock(string baseCode, long? docID, VOCriteria buVO)
+        public ams_BaseMaster MatchDocLock(string baseCode, long? docID, VOCriteria buVO)
         {
-            return GetBaseMasterMatchDocLock(baseCode, docID, null, null, buVO);
+            return MatchDocLock(baseCode, docID, null, null, null, null, null, buVO);
         }
-        public ams_BaseMaster GetBaseMasterMatchDocLock(string baseCode, int? documentTypeID, int? desCustomerID, VOCriteria buVO)
+        public ams_BaseMaster MatchDocLock(string baseCode, DocumentTypeID? docTypeID, long? desCustomerID, VOCriteria buVO)
         {
-            return GetBaseMasterMatchDocLock(baseCode, null, documentTypeID, desCustomerID, buVO);
+            return MatchDocLock(baseCode, null, docTypeID, desCustomerID, null, null, null, buVO);
         }
     }
 

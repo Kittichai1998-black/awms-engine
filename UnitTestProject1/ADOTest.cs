@@ -11,8 +11,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            var res = AWMSEngine.ADO.StorageObjectADO.GetInstant().GetStorageObjectByRelationCode("ST-S01-1/1/1");
-            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(res));
+            //var res = AWMSEngine.ADO.StorageObjectADO.GetInstant().GetStorageObjectByRelationCode("ST-S01-1/1/1");
+            //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(res));
         }
     }
 }

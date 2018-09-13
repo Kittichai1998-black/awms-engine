@@ -1,25 +1,51 @@
 {
-    "barcodetype": 1,
+    "barcodetype": 4,
     "barcodesetup":[
         {
             "type":1,
             "width":"100mm",
-            "height":"50mm"
+            "height":"50mm",
+            "bwidth":1.9,
+            "bheight":120,
+            "size":1.9
         },
         {
             "type":2,
             "width":"50mm",
-            "height":"25mm"
+            "height":"25mm",
+            "bwidth":1.5,
+            "bheight":100,
+            "size":1.9
         },
         {
             "type":3,
             "width":"20mm",
-            "height":"10mm"
+            "height":"10mm",
+            "bwidth":0.7,
+            "bheight":40,
+            "size":1.9
         },
         {
             "type":4,
-            "width":"40mm",
-            "height":"20mm"
+            "width":"50mm",
+            "height":"35mm",
+            "bwidth":1,
+            "bheight":60,
+            "size":70
+        }
+    ],
+    "multiplebarcodesize":[
+        {
+            "type":1,
+            "width":1.9,
+            "height":50,
+            "qr":60
+        },
+        {
+            "type":4,
+            "width":0.8,
+            "height":60,
+            "qr":60
         }
     ]
 }

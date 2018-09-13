@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSEngine.Engine.APIService.Doc;
+using AWMSEngine.APIService.Doc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,21 +22,21 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("doc")]
         public dynamic Post([FromBody] dynamic req)
         {
-            IssuedDocumentCreateAPI exec = new IssuedDocumentCreateAPI(this);
+            GIDocCreateAPI exec = new GIDocCreateAPI(this);
             var res = exec.Execute(req);
             return res;
         }
         [HttpPost("doc/reject")]
         public dynamic Reject([FromBody] dynamic req)
         {
-            IssuedDocumentRejectAPI exec = new IssuedDocumentRejectAPI(this);
+            GIDocRejectAPI exec = new GIDocRejectAPI(this);
             var res = exec.Execute(req);
             return res;
         }
         [HttpPost("doc/picking")]
         public dynamic Picking([FromBody] dynamic req)
         {
-            IssuedDocumentPickingAPI exec = new IssuedDocumentPickingAPI(this);
+            GIDocPickingAPI exec = new GIDocPickingAPI(this);
             var res = exec.Execute(req);
             return res;
         }
