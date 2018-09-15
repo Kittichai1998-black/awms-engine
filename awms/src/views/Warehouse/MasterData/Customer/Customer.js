@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 
-class Dealer extends Component{
+class Customer extends Component{
   constructor(props) {
     super(props);
 
@@ -33,6 +32,7 @@ class Dealer extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
+    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
   }
 
   onHandleClickCancel(event){
@@ -88,4 +88,4 @@ class Dealer extends Component{
   }
 }
 
-export default Dealer;
+export default Customer;

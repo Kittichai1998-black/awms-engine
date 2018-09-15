@@ -22,8 +22,8 @@ const Barcode = Loadable({
   loading: Loading,
 });
 
-const Dealer = Loadable({
-  loader: () => import('./views/Warehouse/MasterData/Dealer'),
+const Customer = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Customer'),
   loading: Loading,
 });
 
@@ -37,8 +37,23 @@ const Area = Loadable({
   loading: Loading,
 });
 
+const AreaLocation = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaLocation'),
+  loading: Loading,
+});
+
 const Base = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Base'),
+  loading: Loading,
+});
+
+const Branch = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Branch'),
+  loading: Loading,
+});
+
+const Warehouse = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Warehouse'),
   loading: Loading,
 });
 
@@ -68,10 +83,13 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/mst/sku/manage', exact: true, name: 'Product', component: Products },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
-  { path: '/mst/dealer/manage', exact: true, name: 'Dealer', component: Dealer },
+  { path: '/mst/customer/manage', exact: true, name: 'Customer', component: Customer },
   { path: '/mst/supplier/manage', exact: true, name: 'Supplier', component: Supplier },
   { path: '/mst/area/manage', exact: true, name: 'Area', component: Area },
+  { path: '/mst/arealocation/manage', exact: true, name: 'Area Location', component: AreaLocation },
   { path: '/mst/base/manage', exact: true, name: 'Base', component: Base },
+  { path: '/mst/branch/manage', exact: true, name: 'Branch', component: Branch },
+  { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
   { path: '/wms/storageObject/register', exact: true, name: 'StorageManagement', component: StorageManagement },
   { path: '/wms/storageObject/transfer', exact: true, name: 'StorageManagement', component: StorageManagement },

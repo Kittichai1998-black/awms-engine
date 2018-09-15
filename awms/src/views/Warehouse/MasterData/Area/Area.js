@@ -33,6 +33,7 @@ class Area extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
     this.filterList = this.filterList.bind(this)
+    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
   }
 
   onHandleClickCancel(event){
@@ -104,10 +105,10 @@ class Area extends Component{
 
   render(){
     const cols = [
-      {accessor: 'ID', Header: 'ID', editable:false}, 
-      {accessor: 'Code', Header: 'Code', editable:true},
-      {accessor: 'Name', Header: 'Name', editable:true},
-      {accessor: 'Description', Header: 'Description', sortable:false},
+      {accessor: 'ID', Header: 'ID', Filter:"text", editable:false,}, 
+      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
+      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
+      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
       {accessor: 'Warehouse_Code', Header: 'Warehouse',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'AreaMasterType_Code', Header: 'AreaMasterType',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
@@ -134,7 +135,7 @@ class Area extends Component{
       */}
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
               filterable={true} autocomplete={this.state.autocomplete} accept={true}
-              btn={btnfunc}
+              btn={btnfunc} uneditcolumn={this.uneditcolumn}
         table="ams_Area"/>
       </div>
     )

@@ -33,6 +33,7 @@ class Supplier extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this); 
+    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
   }
 
   onHandleClickCancel(event){

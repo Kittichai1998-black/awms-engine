@@ -33,6 +33,7 @@ class Area extends Component{
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.createQueryString = this.createQueryString.bind(this)
         this.filterList = this.filterList.bind(this)
+        this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
     }
 
     onHandleClickCancel(event){

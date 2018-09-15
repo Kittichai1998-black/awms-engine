@@ -120,6 +120,7 @@ class TableGen extends Component{
   }
 
   onHandleClickCancel(event){
+    this.setState({dataedit:[]});
     this.queryInitialData();
   }
   

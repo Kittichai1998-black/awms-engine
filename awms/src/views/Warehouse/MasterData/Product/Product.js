@@ -13,7 +13,7 @@ class ListProduct extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
