@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
-import {TableGen} from '../MasterData/TableSetup';
+import {Input, Card, CardBody, Button, Row} from 'reactstrap';
+import ReactTable from 'react-table'
 import Axios from 'axios';
+import ReactAutocomplete from 'react-autocomplete';
+import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import EventStatus from '../../EventStatus'
+import queryString from 'query-string'
 
 
 const createQueryString = (select) => {
@@ -24,41 +29,91 @@ class IssuedManage extends Component{
 
     this.state = {
       data : [],
-      branch:{queryString:"https://localhost:44366/api/mst",
-      t:"Branch",
-      q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
-      f:"*",
+      branch:[],
+      auto_branch:[],
+      auto_warehouse:[],
+      auto_customer:[],
+      branch:"",
+      customer:"",
+      warehouse:"",
+      documentStatus:10,
+      issuedNo:"-",
+      select:{queryString:"https://localhost:44366/api/viw",
+      t:"Document",
+      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+      f:"ID,Code,",
       g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:"",
-      l:"",
+      s:"[{'f':'Code','od':'asc'}]",
+      sk:0,
+      l:20,
       all:"",},
-      warehouse:{queryString:"https://localhost:44366/api/mst",
-      t:"Warehouse",
-      q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
-      f:"*",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:"",
-      l:"",
-      all:"",},
-      customer:{queryString:"https://localhost:44366/api/mst",
-      t:"Customer",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
-      f:"*",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:"",
-      l:"",
-      all:"",},
+      
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
-    this.Date = new Date()
+    this.DateNow = moment()
+
+    this.branchselect = {queryString:"https://localhost:44366/api/mst",
+      t:"Branch",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"ID,Code, Name",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      l:20,
+      all:"",}
+
+    this.warehouseselect = {queryString:"https://localhost:44366/api/mst",
+      t:"Warehouse",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"ID,Code, Name",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      l:20,
+      all:"",}
+
+    this.customerselect = {queryString:"https://localhost:44366/api/mst",
+       t:"Customer",
+       q:'[{ "f": "Status", "c":"=", "v": 1}]',
+       f:"ID,Code, Name",
+       g:"",
+       s:"[{'f':'ID','od':'asc'}]",
+       sk:0,
+       l:20,
+       all:"",}
   }
 
-  dropdownAuto(data, field){
+  componentDidMount(){
+    const values = queryString.parse(this.props.location.search)
+
+    if(values.ID !== undefined){
+      const select = this.state.select
+      const whereselect = JSON.parse(select.q)
+      whereselect.push({ 'f': 'ID', 'c':'=', 'v': values.ID})
+      select.q = JSON.stringify(whereselect)
+      this.setState({select})
+      Axios.get(createQueryString(this.branchselect))
+    }
+
+    this.renderDocumentStatus();
+    var today = moment();
+    var tomorrow = moment(today).add(1, 'days');
+    this.setState({date:tomorrow})
+
+    Axios.all([Axios.get(createQueryString(this.branchselect)),
+      Axios.get(createQueryString(this.warehouseselect)),
+      Axios.get(createQueryString(this.customerselect))]).then(
+      (Axios.spread((branchresult, warehouseresult, customerresult) => 
+    {
+      this.setState({auto_branch : branchresult.data.datas,
+        auto_warehouse:warehouseresult.data.datas,
+        auto_customer:customerresult.data.datas
+      })}
+    )))
+  }
+
+  createAutocomplete(data,field){
     const style = {borderRadius: '3px',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
     background: 'rgba(255, 255, 255, 0.9)',
@@ -66,50 +121,27 @@ class IssuedManage extends Component{
     fontSize: '90%',
     position: 'fixed',
     overflow: 'auto',
-    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+    maxHeight: '50%',
     zIndex: '998',}
-    
-    return <div>
-      <label style={{width:'80px'}}>{field}</label>
-      <ReactAutocomplete
+
+    return <ReactAutocomplete
       menuStyle={style}
-      shouldItemRender={(item, value) => item.Name.toLowerCase().indexOf(value.toLowerCase()) > -1}
-      getItemValue={(item) => {
-        {
-          field === "Warehouse" ? this.setState({warehousevalue:{'key':item.Name,'value':item.ID}},() => {
-            const area = this.state.area
-            let areawhere = JSON.parse(area.q)
-            areawhere.push({'f':'warehouse_ID','c':'=','v':item.ID})
-            area.q = JSON.stringify(areawhere)
-            Axios.get(createQueryString(area)).then((res) => {
-              this.setState({areadata:res.data.datas})
-            })
-          }) : 
-          field === "Supplier" ? this.setState({suppliervalue:[{'key':item.Name,'value':item.ID}]}) : 
-          this.setState({areavalue:{'key':item.Name,'value':item.ID}})
-        }
-        return item.Name
-      }}
+      getItemValue={(item) => item.Code + ' : ' + item.Name}
       items={data}
+      shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
       renderItem={(item, isHighlighted) =>
-        <div key={item.id} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-          {item.Name}
+        <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+          {item.Code + ' : ' + item.Name}
         </div>
       }
-      value={field === "Warehouse" ? this.state.warehouseres : field === "Supplier" ? this.state.supplierres : this.state.areares }
+      value={this.state[field]}
       onChange={(e) => {
-        field === "Warehouse" ? this.setState({warehouseres:e.target.value, ddlwarehouse:true}) : 
-        field === "Supplier" ? this.setState({supplierres:e.target.value, ddlsupplier:true}) : 
-        this.setState({areares:e.target.value, ddlarea:true})
+        this.setState({[field]:e.target.ID})
       }}
-      onSelect={value => {
-        field === "Warehouse" ? this.setState({warehouseres:value, ddlwarehouse:true}) : 
-        field === "Supplier" ? this.setState({supplierres:value, ddlsupplier:true}) : 
-        this.setState({areares:value, ddlarea:true})
-      }}/>
-      <span>{field === "Warehouse" && this.state.ddlwarehouse===true?"": 
-        field === "Supplier" && this.state.ddlsupplier===true?"": field === "Area" && this.state.ddlarea===true?"":" *"}</span>
-    </div>
+      onSelect={(val, row) => {
+        this.setState({[field]:val})
+      }}
+    />
   }
 
   onHandleClickCancel(event){
@@ -117,44 +149,82 @@ class IssuedManage extends Component{
     event.preventDefault();
   }
 
-  componentDidMount(){
-  }
-
   getSelectionData(data){
-    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
+    this.setState({selectiondata:data})
   }
 
-  workingData(data,status){
+  createDocument(){
     let postdata = {docIDs:[]}
-    if(data.length > 0){
-      data.forEach(rowdata => {
-        postdata["docIDs"].push(rowdata.ID)
-      })
-      if(status==="accept"){
-        Axios.post("https://localhost:44366/api/wm/issued/doc/working", postdata).then(() => this.forceUpdate())
+    Axios.post("https://localhost:44366/api/wm/issued/doc", postdata).then(() => this.forceUpdate())
+  }
+
+  dateTimePicker(){
+    return <DatePicker selected={this.state.date}
+    onChange={(e) => {this.setState({date:e})}}
+    onChangeRaw={(e) => {
+      console.log(moment(e.target.value).isValid())
+      if (moment(e.target.value).isValid()){
+        this.setState({date:e.target.value})
       }
-      else{
-        Axios.post("https://localhost:44366/api/wm/issued/doc/rejected", postdata).then(() => this.forceUpdate())
-      }
+   }}
+   dateFormat="DD/MM/YYYY HH:mm:ss"/>
+  }
+
+  renderDocumentStatus(){
+    for(let name in EventStatus){
+      if(EventStatus[name] === this.state.documentStatus)
+        return name
     }
   }
 
+  inputCell(field, rowdata){
+    return  <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
+    onChange={(e) => {console.log("x")}} />;
+  }
+  
+  addData(packid, value){
+    const data = this.state.data
+    data.push({PackItem:"x",PackQty:0,SKU:"x",UnitType:"xxx"})
+    this.setState({data})
+  }
+
   render(){
+    const style={width:"100px", textAlign:"right", paddingRight:"10px"}
+    const cols = [
+      {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.inputCell("item", e),},
+      {accessor:"SKU",Header:"SKU",},
+      {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e),},
+      {accessor:"UnitType",Header:"UnitType",}
+    ]
+
     return(
       <div>
-      {/*
-        column = คอลัมที่ต้องการแสดง
-        data = json ข้อมูลสำหรับ select ผ่าน url
-        ddlfilter = json dropdown สำหรับทำ dropdown filter
-        addbtn = เปิดปิดปุ่ม Add
-        accept = สถานะของในการสั่ง update หรือ insert 
-    
-      */}
-      
+        <div className="clearfix">
+          <div className="float-right">
+            <div>Document Date : <span>{this.DateNow.format('DD-MMMM-YYYY HH:mm:ss')}</span></div>
+            <div>Event Status : {this.renderDocumentStatus()}</div>
+          </div>
+          <div className="d-block"><label style={style}>Issued No : </label><span>{this.state.issuedNo}</span></div>
+          <div className="d-block"><label style={style}>Action Time : </label><div style={{display:"inline-block"}}>{this.dateTimePicker()}</div></div>
+        </div>
+        <div className="clearfix">
+          <Row>
+            <div className="col-6">
+              <div className=""><label style={style}>Branch : </label>{this.createAutocomplete(this.state.auto_branch, "branch")}</div>
+              <div className=""><label style={style}>Customer : </label>{this.createAutocomplete(this.state.auto_customer, "customer")}</div>
+            </div>
+            <div className="col-6">
+              <div className=""><label style={style}>Warehouse : </label>{this.createAutocomplete(this.state.auto_warehouse, "warehouse")}</div>
+              <div className=""><label style={style}>Remark : </label><input onChange={(e) => this.setState({remark:e.target.value})} value={this.state.remark === undefined ? "" : this.state.remark}/></div>
+            </div>
+          </Row>
+        </div>
+        <Button onClick={() => this.addData()} color="primary"className="mr-sm-1">Add</Button>
+        <ReactTable columns={cols} minRows={10} data={this.state.data} sortable={false}/>
         <Card>
           <CardBody>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
+            <Button onClick={() => this.createDocument()} color="primary"className="mr-sm-1">Working</Button>
+            <Button onClick={() => this.createDocument()} color="danger"className="mr-sm-1">Reject</Button>
           </CardBody>
         </Card>
       </div>
