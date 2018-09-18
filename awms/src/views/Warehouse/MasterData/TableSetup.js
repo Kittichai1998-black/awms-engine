@@ -20,6 +20,12 @@ const getColumnWidth = (rows, accessor, headerText) => {
   return Math.min(maxWidth, cellLength * magicSpacing)
 }
 
+function isInt(value) {
+  return !isNaN(value) && 
+         parseInt(Number(value)) == value && 
+         !isNaN(parseInt(value, 10));
+}
+
 const createQueryString = (select,wherequery) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
   + (select.q === "" ? "" : "&q=" + select.q)
@@ -120,6 +126,7 @@ class TableGen extends Component{
   }
 
   onHandleClickCancel(event){
+    this.setState({dataedit:[]})
     this.queryInitialData();
   }
   
@@ -203,13 +210,15 @@ class TableGen extends Component{
     let adddata = [...this.state.data];
     let cretdata = {}
     const col = this.props.column
-    col.forEach(row => {
-      if(row.accessor === 'ID')
-        cretdata.ID = this.addkey
-      else if(row.accessor === 'Status')
+    const getcol = this.state.dataselect.f.split(",")
+    getcol.forEach(row => {
+      cretdata.ID = this.addkey
+      if(row === 'Status')
         cretdata.Status = 1
       else
-        cretdata[row.accessor] = ""
+        cretdata[row] = ""
+    })
+    col.forEach(row => {
       if(row.dateformat === 'datetime' || row.dateformat === 'date'){
         let date = new Date();
         cretdata[row.accessor] = date
@@ -225,12 +234,22 @@ class TableGen extends Component{
       const dataedit = this.state.dataedit
       if(dataedit.length > 0){
         dataedit.forEach((row) => {
-          row["ID"] = row["ID"] <= 0 ? "" : row["ID"]
-          console.log(this.props.uneditcolumn)
+          row["ID"] = row["ID"] <= 0 ? null : row["ID"]
+          this.props.column.forEach(col => {
+            if(col.datatype === "int" && row[col.accessor] === ""){
+              if(col.accessor === "Revision"){
+                if(row[col.accessor] === ""){
+                  row[col.accessor] = 1
+                }
+              }
+              else{
+                row[col.accessor] = null
+              }
+            }
+          })
+
           for(let col of this.props.uneditcolumn){
-            console.log(col)
             delete row[col]
-            console.log(dataedit)
           }
         })
         let updjson = {
@@ -271,7 +290,6 @@ class TableGen extends Component{
       let queryString = "";
       this.setState({loading:true})
       const select = this.state.dataselect
-      console.log(select)
       if(position === 'next'){
         select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
         queryString = createQueryString(select)
@@ -457,7 +475,19 @@ class TableGen extends Component{
   
   onEditorValueChange(rowdata, value, field) {
     const data = [...this.state.data];
-    data[rowdata.index][field] = value;
+    if(rowdata.column.datatype === "int"){
+      let conv = value === '' ? 0 : value
+      const type = isInt(conv)
+      if(type){
+        data[rowdata.index][field] = (conv === 0 ? null : conv);
+      }
+      else{
+        alert("เฉพาะตัวเลขเท่านั้น")
+      }
+    }
+    else{
+      data[rowdata.index][field] = value;
+    }
     this.setState({ data });
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
@@ -466,17 +496,27 @@ class TableGen extends Component{
       }
     })
     dataedit.push(data[rowdata.index]);
-    console.log(rowdata)
-    this.setState({dataedit}, () => console.log(this.state.dataedit));
+    this.setState({dataedit});
   }
 
   createAutocomplete(rowdata){
+    console.log(rowdata.value)
+    const style = {borderRadius: '3px',
+    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+    background: 'rgba(255, 255, 255, 0.9)',
+    padding: '2px 0',
+    fontSize: '90%',
+    position: 'fixed',
+    overflow: 'auto',
+    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+    zIndex: '998',}
     if(this.state.autocomplete.length > 0){
       const getdata = this.state.autocomplete.filter(row=>{
         return row.field  === rowdata.column.id
       })
       if(getdata.length > 0){
         return <ReactAutocomplete 
+        menuStyle={style}
         getItemValue={(item) => item.Code}
         items={getdata[0].data}
         shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
@@ -537,7 +577,7 @@ class TableGen extends Component{
           //row.width = getColumnWidth(this.state.data, row.accessor, row.Header)
 
           if(row.Filter === "text"){
-            row.Filter = () => this.createCustomFilter(row.accessor,this.state.dataselect)
+            row.Filter = () => this.createCustomFilter(row.accessor,row)
           }
           else if(row.Filter === "dropdown"){
             row.Filter = () => this.createDropdownFilter(row.accessor,this.state.dataselect)

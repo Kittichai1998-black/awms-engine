@@ -22,7 +22,7 @@ class ListProduct extends Component{
       select:{queryString:"https://localhost:44366/api/viw",
       t:"PackMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,SKUMaster_ID,Code,PackMasterType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
+      f:"ID,SKUMaster_ID,Code,PackMasterType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -33,9 +33,9 @@ class ListProduct extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
-    this.filterList = this.filterList.bind(this)
+    this.getAutocomplete = this.getAutocomplete.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
-    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
+    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime","CreateBy","CreateTime"]
   }
 
   onHandleClickCancel(event){
@@ -44,7 +44,7 @@ class ListProduct extends Component{
   }
 
   componentWillMount(){
-    this.filterList();
+    this.getAutocomplete();
   }
 
   componentWillUnmount(){
@@ -63,10 +63,10 @@ class ListProduct extends Component{
     return queryS
   }
 
-  filterList(){
+  getAutocomplete(){
     const objselect = {queryString:"https://localhost:44366/api/mst",
       t:"ObjectSize",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -76,7 +76,7 @@ class ListProduct extends Component{
 
     const packselect = {queryString:"https://localhost:44366/api/mst",
       t:"PackMasterType",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -92,9 +92,9 @@ class ListProduct extends Component{
       let objList = {}
       packList["data"] = packresult.data.datas
       packList["field"] = "PackCode"
-      packList["pair"] = "PackType_ID"
+      packList["pair"] = "PackMasterType_ID"
       packList["mode"] = "Dropdown"
-      
+      console.log(packList)
       objList["data"] = objresult.data.datas
       objList["field"] = "ObjCode"
       objList["pair"] = "ObjectSize_ID"
@@ -117,19 +117,19 @@ class ListProduct extends Component{
   render(){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select",},
-      {accessor: 'SKUMaster_ID', Header: 'SKU',Filter:"text",},
-      {accessor: 'PackCode', Header: 'PackType',updateable:false,Filter:"text", Type:"autocomplete"},
+      {accessor: 'SKUMaster_ID', Header: 'SKU',Filter:"text", editable:true, datatype:"int",},
+      {accessor: 'PackCode', Header: 'PackType',updateable:false, Filter:"text", Type:"autocomplete"},
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
       {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true, },
       {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",},
-      {accessor: 'WidthM', Header: 'WidthM', editable:true,Filter:"text",},
-      {accessor: 'LengthM', Header: 'LengthM', editable:true,Filter:"text",},
-      {accessor: 'HeightM', Header: 'HeightM', editable:true,Filter:"text",},
-      {accessor: 'WeightKG', Header: 'Weight', editable:true,Filter:"text",},
-      {accessor: 'ItemQty', Header: 'ItemQty', editable:true,Filter:"text",},
+      {accessor: 'WidthM', Header: 'WidthM', editable:true,Filter:"text", datatype:"int",},
+      {accessor: 'LengthM', Header: 'LengthM', editable:true,Filter:"text", datatype:"int",},
+      {accessor: 'HeightM', Header: 'HeightM', editable:true,Filter:"text", datatype:"int",},
+      {accessor: 'WeightKG', Header: 'Weight', editable:true,Filter:"text", datatype:"int",},
+      {accessor: 'ItemQty', Header: 'ItemQty', editable:true,Filter:"text", datatype:"int",},
       {accessor: 'ObjCode', Header: 'Object',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'Revision', Header: 'Revision', editable:false,},
+      {accessor: 'Revision', Header: 'Revision', editable:false, datatype:"int",},
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},

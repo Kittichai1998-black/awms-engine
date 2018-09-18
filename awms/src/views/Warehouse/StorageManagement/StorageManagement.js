@@ -199,7 +199,6 @@ class StorageManagement extends Component{
   }
 
   addtolist = (data) => {
-    console.log(data)
     const condata = [...data]
     const focus = {color:'red'}
     const focusf = {color:'green'}
