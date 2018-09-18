@@ -11,26 +11,27 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class ScanMapSTO : BaseEngine<ScanMapSTO.TReqModle, StorageObjectCriteria>
+    public class ScanMapSTO : BaseEngine<ScanMapSTO.TReqel, StorageObjectCriteria>
     {
         private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
 
-        public class TReqModle
+        public class TReqel
         {
             public string scanCode;
             public string batch;
             public string lot;
             public int amount;
-            public int warehouseID;
-            public int? areaID;
+            public long? warehouseID;
+            public long? areaID;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
             public List<KeyValuePair<string, string>> options;
+            public StorageObjectCriteria mapsto;
         }
-        protected override StorageObjectCriteria ExecuteEngine(TReqModle reqVO)
+        protected override StorageObjectCriteria ExecuteEngine(TReqel reqVO)
         {
             StorageObjectCriteria mapsto = null;
-            if(this.RequestParam.mapsto == null)
+            if(reqVO.mapsto == null)
             {
                 mapsto = this.ExecFirstScan(reqVO);
             }
@@ -44,7 +45,7 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria ExecFirstScan(TReqModle reqVO)
+        private StorageObjectCriteria ExecFirstScan(TReqel reqVO)
         {
             StorageObjectCriteria mapsto = null;
             Logger.LogDebug("//สแกนครั้งแรก");
@@ -101,10 +102,10 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria ExecNextScan(TReqModle reqVO)
+        private StorageObjectCriteria ExecNextScan(TReqel reqVO)
         {
             Logger.LogInfo("Get STO From Request.(Action)");
-            StorageObjectCriteria mapsto = AMWUtil.Common.ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestParam.mapsto);
+            StorageObjectCriteria mapsto = reqVO.mapsto;
             if (reqVO.action == VirtualMapSTOActionType.SELECT)
             {
                 this.ActionSelect(reqVO.scanCode, mapsto);
@@ -166,8 +167,8 @@ namespace AWMSEngine.Engine.Business
         }
 
         private void ActionAdd(string scanCode,
-            int warehouseID,
-            int? areaID,
+            long? warehouseID,
+            long? areaID,
             string batch,
             string lot,
             int amount,

@@ -234,7 +234,7 @@ namespace AWMSEngine.ADO
         {
             string commSets = string.Empty;
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            foreach (var x in values.ToList())
+            foreach (var x in Enumerable.ToList(values))
             {
                 if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
                     continue;
@@ -272,7 +272,7 @@ namespace AWMSEngine.ADO
             string commFields = string.Empty;
             string commVals = string.Empty;
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            foreach (var x in values.ToList())
+            foreach (var x in Enumerable.ToList(values))
             {
                 if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
                     continue;
@@ -303,35 +303,7 @@ namespace AWMSEngine.ADO
 
             return res;
         }
-
-        public Dictionary<string, dynamic> Select(string fielddata, string tabledata,
-            dynamic wheredata, string groupdata, dynamic sortdata, string skipdata,
-            string limitdata, string alldata,
-            VOCriteria buVO)
-        {
-            var get_where = "";
-            var get_sort = "";
-
-            var str_select = "";
-
-            var param = new Dapper.DynamicParameters();
-            foreach (var data in wheredata)
-            {
-                param.Add("@" + data.Key, data.Value);
-            }
-
-
-
-
-
-            string select = String.Format("select top {4} {0} from {1} where {2} group by {3} order by {5}",
-                fielddata, tabledata, get_where, groupdata, limitdata, get_sort);
-
-
-
-
-            return null;
-        }
+        
 
         public long NextNum(string key, bool prefixYM, VOCriteria buVO)
         {

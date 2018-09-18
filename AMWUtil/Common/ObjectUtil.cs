@@ -140,17 +140,17 @@ namespace AMWUtil.Common
         public static string ListKeyToQueryString(params KeyValuePair<string, string>[] param)
         {
             if (param == null) return string.Empty;
-            return ListKeyToQueryString(param.ToList());
+            return ListKeyToQueryString(Enumerable.ToList(param));
         }
         public static string ListKeyToQueryString(params KeyValuePair<string, object>[] param)
         {
             if (param == null) return string.Empty;
-            return ListKeyToQueryString(param.Select(x => new KeyValuePair<string, string>(x.Key, (string)x.Value)).ToList());
+            return ListKeyToQueryString(Enumerable.ToList(param.Select((KeyValuePair<string, object> x) => new KeyValuePair<string, string>(x.Key, (string)x.Value))));
         }
         public static string ListKeyToQueryString(List<KeyValuePair<string, object>> param)
         {
             if (param == null) return string.Empty;
-            return ListKeyToQueryString(param.Select(x => new KeyValuePair<string, string>(x.Key, (string)x.Value)).ToList());
+            return ListKeyToQueryString(Enumerable.ToList(param.Select((KeyValuePair<string, object> x) => new KeyValuePair<string, string>(x.Key, (string)x.Value))));
         }
         public static string ListKeyToQueryString(List<KeyValuePair<string, string>> param)
         {
@@ -165,16 +165,16 @@ namespace AMWUtil.Common
             }
             return res.ToString();
         }
-        public static Dictionary<string,string> QueryStringToDictionary(string param)
+        public static Dictionary<string, string> QueryStringToDictionary(string param)
         {
             Dictionary<string, string> res = new Dictionary<string, string>();
             var values = QueryStringToKeyValues(param);
 
-            foreach (KeyValuePair<string,string> v in values)
+            foreach (KeyValuePair<string, string> v in values)
             {
                 res.Add(v.Key, v.Value);
             }
-            
+
             return res;
         }
 
@@ -259,14 +259,14 @@ namespace AMWUtil.Common
             return jsond;
         }
         public static T ObjectToModel<T>(object obj)
-            where T : new()
+            where T : class
         {
             return DynamicToModel<T>(obj);
         }
         public static T DynamicToModel<T>(dynamic obj)
-            where T : new()
+            where T : class
         {
-            if (obj == null) return new T();
+            if (obj == null) return null;
             string jsonX = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonX);
         }
@@ -299,12 +299,16 @@ namespace AMWUtil.Common
         }
         public static bool Equals(this object obj, params object[] comps)
         {
-            foreach(var comp in comps)
+            foreach (var comp in comps)
             {
                 if (obj.Equals(comp))
                     return true;
             }
             return false;
+        }
+        public static T Clone<T>(this T obj)
+        {
+            return (T)Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Newtonsoft.Json.JsonConvert.SerializeObject(obj));
         }
     }
 }

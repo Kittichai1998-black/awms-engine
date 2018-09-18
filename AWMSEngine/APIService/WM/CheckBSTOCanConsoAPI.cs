@@ -18,9 +18,9 @@ namespace AWMSEngine.APIService.WM
             var req = new CheckBSTOCanUseInDocument.TReq()
             {
                 baseCode = this.RequestVO.baseCode,
-                desCustomerID = this.RequestVO.desCustomerID,
+                //desCustomerID = this.RequestVO.desCustomerID,
                 docID = this.RequestVO.docID,
-                docType = AWMSModel.Constant.EnumConst.DocumentTypeID.GOODS_ISSUED
+                //docType = AWMSModel.Constant.EnumConst.DocumentTypeID.GOODS_ISSUED
             };
             var res = new CheckBSTOCanUseInDocument().Execute(this.Logger, this.BuVO, req);
             return res;

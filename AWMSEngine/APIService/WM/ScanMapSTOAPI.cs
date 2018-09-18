@@ -21,8 +21,9 @@ namespace AWMSEngine.APIService.WM
         {
             this.BeginTransaction();
             var options = ObjectUtil.DynamicToModel<List<KeyValuePair<string, string>>>(this.RequestVO.options);
+            var mapsto = ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestVO.mapsto);
             var res = new ScanMapSTO().Execute(this.Logger, this.BuVO,
-                new ScanMapSTO.TReqModle()
+                new ScanMapSTO.TReqel()
                 {
                     scanCode = this.RequestVO.scanCode,
                     warehouseID = this.RequestVO.warehouseID,
@@ -33,6 +34,7 @@ namespace AWMSEngine.APIService.WM
                     mode = (VirtualMapSTOModeType)this.RequestVO.mode,
                     options = options,
                     action = (VirtualMapSTOActionType)this.RequestVO.action,
+                    mapsto = mapsto
                 });
             if ((VirtualMapSTOActionType)this.RequestVO.action == VirtualMapSTOActionType.ADD)
                 new ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, res);

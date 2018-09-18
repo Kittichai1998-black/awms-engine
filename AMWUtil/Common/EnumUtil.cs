@@ -64,7 +64,7 @@ namespace AMWUtil.Common
                 displayAttr.Add(new KeyValuePair<int, KeyValuePair<string, int>>(attr.Order,
                     new KeyValuePair<string, int>(key, val)));
             }
-            res = displayAttr.OrderBy(x => x.Key).Select(x => x.Value).ToList();
+            res = Enumerable.ToList(displayAttr.OrderBy((KeyValuePair<int, KeyValuePair<string, int>> x) => x.Key).Select((KeyValuePair<int, KeyValuePair<string, int>> x) => x.Value));
             return res;
         }
         public static string GetValueString<T>(this T enumVal)
@@ -93,7 +93,7 @@ namespace AMWUtil.Common
         public static List<string> ListValueString<T>()
              where T : struct, IComparable, IFormattable, IConvertible
         {
-            List<string> res = ListKeyValuesChar<T>().Select(x => x.Value.ToString()).ToList();
+            List<string> res = Enumerable.ToList(ListKeyValuesChar<T>().Select((KeyValuePair<string, char> x) => x.Value.ToString()));
             return res;
         }
         public static List<string> ListValueString<T>(params T[] param)

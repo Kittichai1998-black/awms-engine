@@ -118,7 +118,7 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 RefID = reqVO.refID,
                 Lot = reqVO.lot,
-                Barch = reqVO.batch,
+                Batch = reqVO.batch,
                 For_Customer_ID = forCustomerModel == null ? null : forCustomerModel.ID,
 
                 Sou_Warehouse_ID = souWarehouseModel == null ? null : souWarehouseModel.ID,

@@ -35,7 +35,7 @@ namespace AWMSModel.Entity
         public string Ref2;
 
         public long? For_Customer_ID;
-        public string Barch;
+        public string Batch;
         public string Lot;
 
         public DocumentEventStatus EventStatus;
