@@ -247,13 +247,13 @@ namespace AWMSEngine.ADO
             }
             if (typeof(BaseEntityCreateModify).IsAssignableFrom(typeof(T)))
             {
-                commSets += ",ModifyBy='@actionBy',ModifyTime=getdate()";
+                commSets += ",ModifyBy=@actionBy,ModifyTime=getdate()";
                 param.Add("actionBy", buVO.ActionBy);
             }
             param.Add("id", id);
 
             var res = this.Execute(
-                    string.Format("update {0} set {1} where id=@value",
+                    string.Format("update {0} set {1} where id=@id",
                         typeof(T).Name.Split('.').Last(), commSets),
                     CommandType.Text,
                     param,

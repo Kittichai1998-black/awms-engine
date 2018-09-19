@@ -1,4 +1,5 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -36,6 +37,8 @@ namespace AWMSEngine.Engine.Business
                 },
                 new SQLOrderByCriteria[] { },
                 null,null,this.BuVO).FirstOrDefault();
+            if (doc == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document");
             var docItems = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string, object>("Document_ID",doc.ID),

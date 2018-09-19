@@ -98,8 +98,10 @@ namespace AWMSEngine.Engine.Business
                     res.mapstoConsos = new List<StorageObjectCriteria>() { bstoConso };
                 }
 
+                this.DoneBaseNotChilds(res.mapsto);
+                if (res.mapsto.eventStatus == StorageObjectEventStatus.REMOVED)
+                    res.mapsto = null;
             }
-            this.DoneBaseNotChilds(res.mapsto);
 
             return res;
         }
@@ -109,7 +111,7 @@ namespace AWMSEngine.Engine.Business
             mapsto.mapstos.ForEach(x => this.DoneBaseNotChilds(x));
             mapsto.mapstos.RemoveAll(x => x.eventStatus == StorageObjectEventStatus.REMOVED);
 
-            if(mapsto.type == StorageObjectType.BASE && mapsto.mapstos.Count() == 0)
+            if(mapsto.type != StorageObjectType.PACK && mapsto.mapstos.Count() == 0)
             {
                 mapsto.eventStatus = StorageObjectEventStatus.REMOVED;
                 ADO.DataADO.GetInstant()

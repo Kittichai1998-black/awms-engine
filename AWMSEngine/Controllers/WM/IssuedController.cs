@@ -16,9 +16,17 @@ namespace AWMSEngine.Controllers.WM
     public class IssuedController : ControllerBase
     {
         [HttpGet("doc")]
-        public dynamic GetDoc(long docID)
+        public dynamic GetDoc()
         {
             GetDocAPI exec = new GetDocAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpGet("sto/indoc")]
+        public dynamic GetDocSTO()
+        {
+            GetMapSTOInDocAPI exec = new GetMapSTOInDocAPI(this);
             var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
             var res = exec.Execute(req);
             return res;
