@@ -19,7 +19,7 @@ class ListProduct extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/viw",
+      select:{queryString:window.apipath + "/api/viw",
       t:"PackMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,SKUMaster_ID,Code,PackMasterType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
@@ -64,7 +64,7 @@ class ListProduct extends Component{
   }
 
   getAutocomplete(){
-    const objselect = {queryString:"https://localhost:44366/api/mst",
+    const objselect = {queryString:window.apipath + "/api/mst",
       t:"ObjectSize",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",
@@ -74,7 +74,7 @@ class ListProduct extends Component{
       l:20,
       all:"",}
 
-    const packselect = {queryString:"https://localhost:44366/api/mst",
+    const packselect = {queryString:window.apipath + "/api/mst",
       t:"PackMasterType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",
@@ -87,14 +87,14 @@ class ListProduct extends Component{
     Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(objselect))]).then(
       (Axios.spread((packresult, objresult) => 
     {
-      let ddl = [...this.state.autocomplete]
+      let ddl = this.state.autocomplete
       let packList = {}
       let objList = {}
       packList["data"] = packresult.data.datas
       packList["field"] = "PackCode"
       packList["pair"] = "PackMasterType_ID"
       packList["mode"] = "Dropdown"
-      console.log(packList)
+      
       objList["data"] = objresult.data.datas
       objList["field"] = "ObjCode"
       objList["pair"] = "ObjectSize_ID"
@@ -116,7 +116,7 @@ class ListProduct extends Component{
 
   render(){
     const cols = [
-      {Header: '', Type:"selection", sortable:false, Filter:"select",},
+      {Header: '', Type:"selectrow", sortable:false, Filter:"select",},
       {accessor: 'SKUMaster_ID', Header: 'SKU',Filter:"text", editable:true, datatype:"int",},
       {accessor: 'PackCode', Header: 'PackType',updateable:false, Filter:"text", Type:"autocomplete"},
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},

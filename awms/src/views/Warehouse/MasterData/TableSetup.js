@@ -94,12 +94,21 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    //this.queryInitialData();
+    this.queryInitialData(nextProps.data);
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete})
   }
 
+  componentDidUpdate(){
+    if(this.props.updData)
+      this.props.updData(this.state.updateData)
+    if(this.props.rmvData)
+      this.props.rmvData(this.state.removedata)
+    if(this.props.chkData)
+      this.props.chkData(this.state.data)
+  }
+
   componentDidMount(){
-    this.queryInitialData();
+    this.queryInitialData(this.props.data);
     this.setState({originalselect:this.props.data.q})
   }
   
@@ -107,11 +116,11 @@ class TableGen extends Component{
     Axios.isCancel(true);
   }
 
-  queryInitialData(){
+  queryInitialData(data){
     if(this.props.url === null || this.props.url === undefined){
-      const dataselect = this.props.data
+      const dataselect = data
       this.setState({dataselect:dataselect})
-      let queryString = createQueryString(this.props.data)
+      let queryString = createQueryString(data)
       Axios.get(queryString).then(
       (res) => {
         this.setState({data:res.data.datas,loading:false})
@@ -260,7 +269,7 @@ class TableGen extends Component{
           "datas": dataedit,
           "nr": false
         }
-        Axios.put("https://localhost:44366/api/mst", updjson).then((result) =>{
+        Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
           this.queryInitialData();
         })
   
@@ -500,7 +509,6 @@ class TableGen extends Component{
   }
 
   createAutocomplete(rowdata){
-    console.log(rowdata.value)
     const style = {borderRadius: '3px',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
     background: 'rgba(255, 255, 255, 0.9)',
@@ -538,19 +546,28 @@ class TableGen extends Component{
     }
   }
 
-  onHandleSelection(rowdata, value){
-    let rowselect = this.state.rowselect;
-    if(value){
-      rowselect.push(rowdata.original)
+  onHandleSelection(rowdata, value, type){
+    if(type === "checkbox"){
+      let rowselect = this.state.rowselect;
+      if(value){
+        rowselect.push(rowdata.original)
+      }
+      else{
+        rowselect.forEach((row,index) => {
+          if(row.ID === rowdata.original.ID){
+            rowselect.splice(index,1)
+          }
+        })
+      }
+      this.setState({rowselect}, () => {this.props.getselection(this.state.rowselect)})
     }
     else{
-      rowselect.forEach((row,index) => {
-        if(row.ID === rowdata.original.ID){
-          rowselect.splice(index,1)
-        }
-      })
+      let rowselect = [];
+      if(value){
+        rowselect.push(rowdata.original)
+      }
+      this.setState({rowselect:rowselect}, () => {this.props.getselection(...this.state.rowselect)})
     }
-    this.setState({rowselect}, () => this.props.getselection(this.state.rowselect))
   }
 
   createSelectAll(){
@@ -558,16 +575,26 @@ class TableGen extends Component{
     type="checkbox"
     onChange={(e)=> {
       this.props.getselection(this.state.data);
-      if(e.target.checked)
-        this.setState({selectAll:true})
-      else
-        this.setState({selectAll:false})
+      var arr = Array.from(document.getElementsByClassName('selection'));
+      if(e.target.checked){
+        arr.forEach(row => {
+          row.checked = true
+        })
+      }
+      else{
+        arr.forEach(row => {
+          row.checked = false
+        })
+      }
     }}/>
   }
-  createSelection(rowdata){
+
+  createSelection(rowdata, type){
     return <input
-    type="checkbox"
-    onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked)}/>//
+    className="selection"
+    name="selection"
+    type={type}
+    onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>//
   }
 
   render(){
@@ -616,7 +643,11 @@ class TableGen extends Component{
             row.Cell = (e) => this.createAutocomplete(e)
           }
           else if(row.Type === "selection"){
-            row.Cell = (e) => this.createSelection(e)
+            row.Cell = (e) => this.createSelection(e, "checkbox")
+            row.className="text-center"
+          }
+          else if(row.Type === "selectrow"){
+            row.Cell = (e) => this.createSelection(e, "radio")
             row.className="text-center"
           }
 
@@ -634,7 +665,7 @@ class TableGen extends Component{
     return(
       <div style={{overflowX:'auto'}}>
         <Button onClick={this.onHandleClickAdd} style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
-        <ReactTable data={this.state.data}
+        <ReactTable data={this.state.data} ref={ref => this.tableComponent = ref}
             style={{backgroundColor:'white'}}
             loading={this.state.loading}
             filterable={this.props.filterable}
