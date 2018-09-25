@@ -19,7 +19,7 @@ class AreaLocation extends Component{
         'mode' : 'check',
         }],
         acceptstatus : false,
-        select:{queryString:"https://localhost:44366/api/viw",
+        select:{queryString:window.apipath + "/api/viw",
         t:"AreaLocationMaster",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
         f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -63,7 +63,7 @@ class AreaLocation extends Component{
     }
 
     filterList(){
-      const objselect = {queryString:"https://localhost:44366/api/mst",
+      const objselect = {queryString:window.apipath + "/api/mst",
         t:"ObjectSize",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}",
         f:"ID,Code",
@@ -73,7 +73,7 @@ class AreaLocation extends Component{
         l:20,
         all:"",}
 
-      const areatypeselect = {queryString:"https://localhost:44366/api/mst",
+      const areatypeselect = {queryString:window.apipath + "/api/mst",
         t:"AreaMaster",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}",
         f:"ID,Code",

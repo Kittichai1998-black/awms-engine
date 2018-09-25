@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import guid from 'guid';
@@ -19,7 +18,7 @@ class User extends Component{
                 'mode' : 'check',
             }],
             acceptstatus : false,
-            select:{queryString:"https://localhost:44366/api/mst",
+            select:{queryString:window.apipath + "/api/mst",
             t:"User",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
             f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",

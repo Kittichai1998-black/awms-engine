@@ -18,7 +18,7 @@ class Area extends Component{
       'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/viw",
+      select:{queryString:window.apipath + "/api/viw",
       t:"AreaMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code,Name,Description,Warehouse_ID,Warehouse_Code,Warehouse_Name,Warehouse_Description,AreaMasterType_ID,AreaMasterType_Code,AreaMasterType_Name,AreaMasterType_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -62,7 +62,7 @@ class Area extends Component{
   }
 
   filterList(){
-    const whselect = {queryString:"https://localhost:44366/api/mst",
+    const whselect = {queryString:window.apipath + "/api/mst",
       t:"Warehouse",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
       f:"ID,Code",
@@ -72,7 +72,7 @@ class Area extends Component{
       l:20,
       all:"",}
 
-    const areatypeselect = {queryString:"https://localhost:44366/api/mst",
+    const areatypeselect = {queryString:window.apipath + "/api/mst",
       t:"AreaMasterType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
       f:"ID,Code",

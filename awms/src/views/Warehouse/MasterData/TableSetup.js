@@ -95,7 +95,7 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    this.queryInitialData(nextProps.data);
+    //this.queryInitialData();
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete})
   }
 
@@ -110,9 +110,9 @@ class TableGen extends Component{
 
   queryInitialData(){
     if(this.props.url === null || this.props.url === undefined){
-      const dataselect = data
+      const dataselect = this.props.data
       this.setState({dataselect:dataselect})
-      let queryString = createQueryString(data)
+      let queryString = createQueryString(this.props.data)
       Axios.get(queryString).then(
       (res) => {
         this.setState({data:res.data.datas,loading:false})
@@ -649,8 +649,8 @@ class TableGen extends Component{
               row.className="text-center"
           }
           else if(row.Type === "password"){
-            row.Cell = (e) => <Input type="password">*****</Input>
-            //row.className="text-center"
+            row.Cell = (e) => <Input type="password"></Input>
+            row.className="text-center"
           }
           else if(row.Type === "button"){
             this.props.btn.find(btnrow => {
