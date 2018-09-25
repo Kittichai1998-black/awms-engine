@@ -31,7 +31,7 @@ namespace AWMSEngine.Engine.Business.Issued
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            List<SPOutSTORootIssued> stos = ADO.StorageObjectADO.GetInstant().FindRootForIssued(reqVO.docItemID, this.BuVO);
+            List<SPOutSTORootIssued> stos = ADO.StorageObjectADO.GetInstant().ListFreeForPick(reqVO.docItemID, this.BuVO);
             TRes res = new TRes();
             res.datas = stos
                 .GroupBy(x => new {

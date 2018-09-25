@@ -101,9 +101,9 @@ namespace AMWUtil.DataAccess
         public DynamicParameters CreateDynamicParameters(object criteria)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            criteria.GetType()
+            Enumerable.ToList(criteria.GetType()
                 .GetFields()
-                .ToList()
+)
                 .ForEach(x => {
                     var val = x.GetValue(criteria);
                     var v = ObjectUtil.IsEmptyNull(val) ? null : val;

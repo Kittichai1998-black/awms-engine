@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.Business.Received
                 ParentDocument_ID = null,
 
                 Lot = reqVO.lot,
-                Barch = reqVO.batch,
+                Batch = reqVO.batch,
                 For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
 
                 Sou_Customer_ID = string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID,

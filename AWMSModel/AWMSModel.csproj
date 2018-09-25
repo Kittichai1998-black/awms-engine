@@ -5,16 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Criteria\MapSTOCriteria.cs" />
     <Compile Remove="Entity\amt_PackObject.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Z.Expressions.Eval" Version="2.6.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Criteria\API\Response\" />
   </ItemGroup>
 
   <ItemGroup>

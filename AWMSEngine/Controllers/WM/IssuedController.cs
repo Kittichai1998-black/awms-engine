@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.APIService.Doc;
 using AWMSEngine.APIService.WM;
+using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,22 @@ namespace AWMSEngine.Controllers.WM
     [ApiController]
     public class IssuedController : ControllerBase
     {
+        [HttpGet("doc")]
+        public dynamic GetDoc()
+        {
+            GetDocAPI exec = new GetDocAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpGet("sto/indoc")]
+        public dynamic GetDocSTO()
+        {
+            GetMapSTOInDocAPI exec = new GetMapSTOInDocAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
+            var res = exec.Execute(req);
+            return res;
+        }
         [HttpPost("doc")]
         public dynamic CreateDoc([FromBody] dynamic req)
         {
@@ -51,10 +68,12 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
-        [HttpPost("sto/pick")]
+        [HttpPost("sto/pickConso")]
         public dynamic StoPick([FromBody] dynamic req)
         {
-            return null;
+            ScanPickingAndConsoAPI exec = new ScanPickingAndConsoAPI(this);
+            var res = exec.Execute(req);
+            return res;
         }
 
 

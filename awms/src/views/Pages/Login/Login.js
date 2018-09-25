@@ -46,7 +46,7 @@ class Login extends Component {
     let config = {
       headers: { 'Access-Control-Allow-Origin':'*','Content-Type': 'application/json; charset=utf-8' ,'accept': 'application/json'}
     };
-    await Axios.post('https://localhost:44366/api/token/register', data, config)
+    await Axios.post(window.apipath + '/api/token/register', data, config)
      .then((res) => {
        this.setState({data : res.data});
        this.savetoSession();
@@ -73,7 +73,7 @@ class Login extends Component {
   }
 
   async GetMenu(token){
-    await Axios.get('https://localhost:44366/api/PageSetup/menucoreui?token=' + token)
+    await Axios.get(window.apipath + '/api/PageSetup/menucoreui?token=' + token)
      .then((res) => {
        sessionStorage.setItem('MenuItems',JSON.stringify(res.data.items));
      }).catch((error) => {

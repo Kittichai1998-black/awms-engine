@@ -48,9 +48,8 @@ class SetBarcode extends Component{
   }
 
   componentDidMount(){
-    
     const values = queryString.parse(this.props.location.search)
-    console.log(values)
+    console.log()
     let setup = json.barcodesetup.find((data) => {
       return data.type.toString() === values.barcodesize;
     })
@@ -58,7 +57,6 @@ class SetBarcode extends Component{
     let setup2 = json.multiplebarcodesize.find((data) => {
       return data.type.toString() === values.barcodesize;
     })
-    
     this.setState({
       barcode:values.barcode,
       width:setup.width, 
@@ -134,7 +132,7 @@ class SetBarcode extends Component{
         element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
       }
     }
-    else{
+    else if(this.state.chkqr === true && this.state.chkbar === true){
       for(let i=0; i< this.state.column; i++){
         element_column.push(<Card key={i} style={divstyle}>
         <CardBody style={{ padding :'1px'}}>

@@ -57,10 +57,8 @@ namespace AWMSEngine.Engine.Business
                         this.BuVO);
             }
             StorageObjectCriteria res = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
-            if (res == null) res = new StorageObjectCriteria();
-            //var mapsto = this.ADOSto.Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
-            //this.ConfirmReceive(reqVO.isConfirm, mapsto);
-            //mapsto = this.ADOSto.Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
+            //if (res == null) res = new StorageObjectCriteria();
+
             return res;
         }
 

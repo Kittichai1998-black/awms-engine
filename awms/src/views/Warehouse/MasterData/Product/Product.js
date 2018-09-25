@@ -87,7 +87,7 @@ class ListProduct extends Component{
     Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(unitselect))]).then(
       (Axios.spread((packresult, unitresult) => 
     {
-      let ddl = [...this.state.autocomplete]
+      let ddl = this.state.autocomplete
       let packList = {}
       let unitList = {}
       packList["data"] = packresult.data.datas

@@ -9,7 +9,7 @@ using AWMSModel.Entity;
 
 namespace AWMSModel.Criteria
 {
-    public class StorageObjectCriteria
+    public class StorageObjectCriteria : ITreeObject
     {
         public long? id;
         public StorageObjectType type;

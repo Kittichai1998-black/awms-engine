@@ -14,12 +14,15 @@ namespace AWMSEngine.Engine.General
         protected override dynamic ExecuteEngine(object reqVO)
         {
             ExpandoObject res = new ExpandoObject();
-            var t = reqVO.GetType();
-            var infos = t.GetFields();
-            foreach(var info in infos)
+            if(reqVO != null)
             {
-                object v = info.GetValue(reqVO);
-                bool x = res.TryAdd(info.Name, v);
+                var t = reqVO.GetType();
+                var infos = t.GetFields();
+                foreach (var info in infos)
+                {
+                    object v = info.GetValue(reqVO);
+                    bool x = res.TryAdd(info.Name, v);
+                }
             }
             object resapi = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             res.TryAdd(BusinessVOConst.KEY_RESULT_API, resapi);

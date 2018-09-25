@@ -70,37 +70,37 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadObjectSize()
         {
-            this._ObjectSizes = ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, new VOCriteria()).ToList();
-            var subVals = ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, new VOCriteria()).ToList();
+            this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, new VOCriteria()));
+            var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, new VOCriteria()));
             this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
         }
         public void LoadAreaMaster()
         {
-            this._AreaMaster = ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, new VOCriteria()).ToList();
+            this._AreaMaster = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, new VOCriteria()));
         }
         public void LoadWarehouses()
         {
-            this._Warehouses = ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, new VOCriteria()).ToList();
+            this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, new VOCriteria()));
         }
         public void LoadBranch()
         {
-            this._Branch = ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, new VOCriteria()).ToList();
+            this._Branch = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, new VOCriteria()));
         }
         public void LoadCustomer()
         {
-            this._Customers = ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, new VOCriteria()).ToList();
+            this._Customers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, new VOCriteria()));
         }
         public void LoadSupplier()
         {
-            this._Suppliers = ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, new VOCriteria()).ToList();
+            this._Suppliers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, new VOCriteria()));
         }
         public void LoadPackMasterType()
         {
-            this._PackMasterType = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, new VOCriteria()).ToList();
+            this._PackMasterType = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, new VOCriteria()));
         }
         public void LoadAPIService()
         {
-            this._APIServices = ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, new VOCriteria()).ToList();
+            this._APIServices = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, new VOCriteria()));
         }
 
         public bool IsFeature(FeatureCode code)

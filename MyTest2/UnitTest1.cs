@@ -2,6 +2,7 @@ using AMWUtil.Common;
 using AMWUtil.PropertyFile;
 using AWMSModel.Constant.StringConst;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 using Xunit.Abstractions;
@@ -53,9 +54,43 @@ namespace MyTest2
             sysout.WriteLine("Date ToLocalTime : " + dy2.dt.ToLocalTime());
             sysout.WriteLine("Date Json : " + dy2.dt.Json());
         }
+        [Fact]
+        public void TestTreeChild()
+        {
+            ClassChild root = new ClassChild() { ID = 1, ParentID = null, ChildRight = new List<ClassChild>(), ChildLeft = new List<ClassChild>() };
+            ClassChild c2 = new ClassChild() { ID = 2, ParentID = 1, ChildRight = new List<ClassChild>() };
+            root.ChildRight.Add(c2);
+            ClassChild c3 = new ClassChild() { ID = 3, ParentID = 1, ChildRight = new List<ClassChild>() };
+            root.ChildRight.Add(c3);
+            ClassChild c4 = new ClassChild() { ID = 4, ParentID = 1, ChildRight = new List<ClassChild>() };
+            root.ChildRight.Add(c4);
+            ClassChild c2_1 = new ClassChild() { ID = 21, ParentID = 2, ChildRight = new List<ClassChild>() };
+            c2.ChildRight.Add(c2_1);
+            ClassChild c2_2 = new ClassChild() { ID = 22, ParentID = 2, ChildRight = new List<ClassChild>() };
+            c2.ChildRight.Add(c2_2);
+            ClassChild c2_2_1 = new ClassChild() { ID = 221, ParentID = 2, ChildRight = new List<ClassChild>() };
+            c2_2.ChildRight.Add(c2_2_1);
+            ClassChild c900 = new ClassChild() { ID = 221, ParentID = 2, ChildRight = new List<ClassChild>() };
+            root.ChildLeft.Add(c900);
+
+
+            var lis = TreeUtil.ToList<ClassChild>(root);
+            foreach(var l in lis)
+            {
+                sysout.WriteLine(l.ID.ToString());
+            }
+        }
     }
-    class ClassDT
+
+    public class ClassDT
     {
         public DateTime dt;
+    }
+    public class ClassChild
+    {
+        public int ID;
+        public int? ParentID;
+        public List<ClassChild> ChildRight;
+        public List<ClassChild> ChildLeft;
     }
 }

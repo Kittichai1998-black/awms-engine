@@ -24,9 +24,9 @@ class IssuedDoc extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/viw",
+      select:{queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'<', 'v': 1002}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
       f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
@@ -62,7 +62,7 @@ class IssuedDoc extends Component{
   }
 
   getSelectionData(data){
-    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
+    this.setState({selectiondata:data})
   }
 
   workingData(data,status){
@@ -72,17 +72,17 @@ class IssuedDoc extends Component{
         postdata["docIDs"].push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post("https://localhost:44366/api/wm/issued/doc/working", postdata).then(() => this.forceUpdate())
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then(() => this.forceUpdate())
       }
       else{
-        Axios.post("https://localhost:44366/api/wm/issued/doc/rejected", postdata).then(() => this.forceUpdate())
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => this.forceUpdate())
       }
     }
   }
 
   onClickToDesc(data){
     return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-      to={'/mst/sku/manage/barcode?ID='+data.ID}>Detail</Link>}</Button>
+      to={'/wms/issueddoc/manage/issuedmanage?ID='+data.ID}>Detail</Link>}</Button>
   }
 
   render(){
@@ -125,7 +125,7 @@ class IssuedDoc extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right">Create Document</Button>
+          <Button className="float-right">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} to={'/wms/issueddoc/manage/issuedmanage'}>Create Document</Link>}</Button>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}

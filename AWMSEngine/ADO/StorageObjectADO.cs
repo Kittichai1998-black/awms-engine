@@ -17,7 +17,7 @@ namespace AWMSEngine.ADO
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
-        public StorageObjectCriteria Get(string code, int warehouseID, int? areaID, bool isToRoot, bool isToChild, VOCriteria buVO)
+        public StorageObjectCriteria Get(string code, long? warehouseID, long? areaID, bool isToRoot, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@code", code);
@@ -32,7 +32,7 @@ namespace AWMSEngine.ADO
             StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, code);
             return res;
         }
-        public StorageObjectCriteria GetFree(string code, int warehouseID, int? areaID, bool isInStorage, bool isToChild, VOCriteria buVO)
+        public StorageObjectCriteria GetFree(string code, long? warehouseID, long? areaID, bool isInStorage, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@code", code);
@@ -74,7 +74,7 @@ namespace AWMSEngine.ADO
             return param.Get<int>("rootID");
         }*/
 
-        public int GetFreeCount(string code, int warehouseID, int? areaID, bool isInStorage, string batch, string lot, VOCriteria buVO)
+        public int GetFreeCount(string code, long? warehouseID, long? areaID, bool isInStorage, string batch, string lot, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("code", code);
@@ -124,16 +124,25 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public long Create(StorageObjectCriteria sto, int areaID, string batch, string lot, VOCriteria buVO)
+        public long Create(StorageObjectCriteria sto, long areaID, string batch, string lot, VOCriteria buVO)
         {
             sto.id = null;
             return this.Put(sto, areaID, batch, lot, buVO);
         }
-        public long Update(StorageObjectCriteria sto, int areaID, VOCriteria buVO)
+        public long Create(StorageObjectCriteria sto, string batch, string lot, VOCriteria buVO)
+        {
+            sto.id = null;
+            return this.Put(sto, sto.areaID, batch, lot, buVO);
+        }
+        public long Update(StorageObjectCriteria sto, long areaID, VOCriteria buVO)
         {
             return this.Put(sto, areaID, null, null, buVO);
         }
-        private long Put(StorageObjectCriteria sto, int areaID, string batch, string lot, VOCriteria buVO)
+        public long Update(StorageObjectCriteria sto, VOCriteria buVO)
+        {
+            return this.Put(sto, sto.areaID, null, null, buVO);
+        }
+        private long Put(StorageObjectCriteria sto, long areaID, string batch, string lot, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("id", sto.id);
@@ -183,15 +192,33 @@ namespace AWMSEngine.ADO
             return MatchDocLock(baseCode, null, docTypeID, desCustomerID, null, null, null, buVO);
         }
 
-        public List<SPOutSTORootIssued> FindRootForIssued(long? docItemID, VOCriteria buVO)
+        public List<SPOutSTORootIssued> ListFreeForPick(long? docItemID, VOCriteria buVO)
         {
 
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("docItemID", docItemID);
-            var res = this.Query<SPOutSTORootIssued>("SP_STOROOT_FIND_ISSUED_BYDOCITEM", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            var res = this.Query<SPOutSTORootIssued>("SP_STOROOT_LISTFREE_FORPICK", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             return res.ToList();
             //SP_STOROOT_FIND_ISSUED_BYDOCITEM
         }
+        public List<StorageObjectCriteria> ListInDoc(long? docID, long? docItemID,DocumentTypeID? docTypeID, VOCriteria buVO)
+        {
+
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docID", docID);
+            param.Add("docItemID", docItemID);
+            param.Add("docTypeID", docTypeID); 
+            List<StorageObjectCriteria> res = new List<StorageObjectCriteria>();
+            var stoids = this.Query<SPOutSTORootIssued>("SP_STOID_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            foreach(var stoid in stoids)
+            {
+                var sto = this.Get(stoid.rootID, stoid.objectType, false, true, buVO);
+                res.Add(sto);
+            }
+
+            return res;
+        }
+        
     }
 
 }

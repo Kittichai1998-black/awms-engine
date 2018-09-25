@@ -82,7 +82,7 @@ namespace AWMSEngine.ADO
             param.Add("@ref2", doc.Ref2);
 
             param.Add("@for_customer_ID", doc.For_Customer_ID);
-            param.Add("@batch", doc.Barch);
+            param.Add("@batch", doc.Batch);
             param.Add("@lot", doc.Lot);
 
             param.Add("@remark", doc.Remark);

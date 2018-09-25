@@ -87,6 +87,11 @@ const IssuedManage = Loadable({
   loading: Loading,
 });
 
+const PickConso = Loadable({
+  loader: () => import('./views/Warehouse/Picking/PickAndConso'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -107,7 +112,8 @@ const routes = [
   { path: '/wms/storageObject/register', exact: true, name: 'StorageManagement', component: StorageManagement },
   { path: '/wms/storageObject/transfer', exact: true, name: 'StorageManagement', component: StorageManagement },
   { path: '/wms/issueddoc/manage', exact: true, name: 'IssuedDoc', component: IssuedDoc },
-  { path: '/wms/issuedmanage/manage', exact: true, name: 'IssuedManage', component: IssuedManage },
+  { path: '/wms/issueddoc/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
+  { path: '/wms/picking/manage', exact: true, name: 'PickConso', component: PickConso },
 ];
 
 export default routes;

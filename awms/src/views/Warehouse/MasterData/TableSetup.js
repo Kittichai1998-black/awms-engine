@@ -95,7 +95,7 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    //this.queryInitialData();
+    this.queryInitialData(nextProps.data);
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete})
   }
 
@@ -110,9 +110,9 @@ class TableGen extends Component{
 
   queryInitialData(){
     if(this.props.url === null || this.props.url === undefined){
-      const dataselect = this.props.data
+      const dataselect = data
       this.setState({dataselect:dataselect})
-      let queryString = createQueryString(this.props.data)
+      let queryString = createQueryString(data)
       Axios.get(queryString).then(
       (res) => {
         this.setState({data:res.data.datas,loading:false})
@@ -270,7 +270,7 @@ class TableGen extends Component{
           "datas": dataedit,
           "nr": false
         }
-        Axios.put("https://localhost:44366/api/mst", updjson).then((result) =>{
+        Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
           this.queryInitialData();
         })
   

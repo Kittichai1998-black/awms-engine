@@ -8,7 +8,7 @@ async function logout(){
     let config = {
         headers: { 'Access-Control-Allow-Origin':'*','Content-Type': 'application/json; charset=utf-8' ,'accept': 'application/json'}
       };
-    await Axios.post('https://localhost:44366/api/token/remove',data,config)
+    await Axios.post(window.apipath + '/api/token/remove',data,config)
     .then((res) => {
         return res.data;
     }).catch((error) => {
