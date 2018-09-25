@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
@@ -12,7 +13,7 @@ class AreaLocation extends Component{
         data : [],
         autocomplete:[],
         statuslist:[{
-        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
+        'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
@@ -23,7 +24,7 @@ class AreaLocation extends Component{
         q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
         f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
         g:"",
-        s:"[{'f':'Code','od':'asc'}]",
+        s:"[{'f':'ID','od':'asc'}]",
         sk:0,
         l:20,
         all:"",},
@@ -33,7 +34,7 @@ class AreaLocation extends Component{
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
       this.createQueryString = this.createQueryString.bind(this)
       this.filterList = this.filterList.bind(this)
-      this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
+      this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
     } 
 
     onHandleClickCancel(event){
@@ -73,7 +74,7 @@ class AreaLocation extends Component{
         all:"",}
 
       const areatypeselect = {queryString:"https://localhost:44366/api/mst",
-        t:"AreaMasterType",
+        t:"AreaMaster",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}",
         f:"ID,Code",
         g:"",
@@ -103,30 +104,36 @@ class AreaLocation extends Component{
       })))
     }
 
+    createBarcodeBtn(data){
+      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+        to={'/mst/arealocation/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+    }
+
     render(){
         const cols = [
-          {accessor: 'ID', Header: 'ID', editable:false}, 
-          {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
+          {accessor: 'ID', Header: 'ID', editable:false,}, 
           {accessor: 'Code', Header: 'Code', editable:false},
+          {accessor: 'Code', Header: 'Code', Type:"autogenloc", editable:false},
           {accessor: 'Name', Header: 'Name', editable:true},
-          {accessor: 'Description', Header: 'Description', sortable:false},
+          {accessor: 'Description', Header: 'Description', sortable:false, editable:true},
           {accessor: 'Gate', Header: 'Gate', editable:true},
           {accessor: 'Bank', Header: 'Bank', editable:true},
           {accessor: 'Bay', Header: 'Bay', editable:true},
           {accessor: 'Level', Header: 'Level', editable:true},
+          {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
           {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
           {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
           {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
           {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+          {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
           {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ]; 
       
         const btnfunc = [{
           btntype:"Barcode",
           func:this.createBarcodeBtn
-     
      
         }]
     
@@ -136,12 +143,18 @@ class AreaLocation extends Component{
             column = คอลัมที่ต้องการแสดง
             data = json ข้อมูลสำหรับ select ผ่าน url
             ddlfilter = json dropdown สำหรับทำ dropdown filter
+            addbtn = เปิดปิดปุ่ม Add
+            accept = สถานะของในการสั่ง update หรือ insert
+            autocomplete = data field ที่ต้องการทำ autocomplete
+            filterable = เปิดปิดโหมด filter
+            getselection = เก็บค่าที่เลือก
           */}
-          <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-                  filterable={true} autocomplete={this.state.autocomplete} accept={true}
-                  btn={btnfunc}
-            table="ams_AreaLocation"/>
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+                      filterable={true} autocomplete={this.state.autocomplete} accept={true}
+                      btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                      table="ams_AreaLocationMaster"/>
           </div>
+          
         )
     }
 }

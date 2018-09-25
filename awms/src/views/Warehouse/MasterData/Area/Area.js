@@ -33,7 +33,7 @@ class Area extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
     this.filterList = this.filterList.bind(this)
-    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
+    this.uneditcolumn = ["Warehouse_Code","Warehouse_Name","Warehouse_Description","AreaMasterType_Code","AreaMasterType_Name","AreaMasterType_Description","CreateBy","CreateTime","ModifyBy","ModifyTime"]
   }
 
   onHandleClickCancel(event){
@@ -122,8 +122,6 @@ class Area extends Component{
     const btnfunc = [{
       btntype:"Barcode",
       func:this.createBarcodeBtn
- 
- 
     }]
 
     return(
@@ -136,7 +134,7 @@ class Area extends Component{
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
               filterable={true} autocomplete={this.state.autocomplete} accept={true}
               btn={btnfunc} uneditcolumn={this.uneditcolumn}
-        table="ams_Area"/>
+        table="ams_AreaMaster"/>
       </div>
     )
   }

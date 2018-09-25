@@ -21,8 +21,8 @@ class Supplier extends Component{
       acceptstatus : false,
       select:{queryString:"https://localhost:44366/api/mst",
       t:"Supplier",
-      q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
-      f:"*",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+      f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:"",
@@ -33,16 +33,12 @@ class Supplier extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this); 
-    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
+    this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
   }
 
   onHandleClickCancel(event){
     this.forceUpdate();
     event.preventDefault();
-  }
-
-  componentWillMount(){
-    /* this.filterList(); */
   }
 
   componentWillUnmount(){
@@ -59,7 +55,7 @@ class Supplier extends Component{
       {accessor: 'ID', Header: 'ID', editable:false,}, 
       {accessor: 'Code', Header: 'Code', editable:true,},
       {accessor: 'Name', Header: 'Name', editable:true},
-      {accessor: 'Description', Header: 'Description', sortable:false},
+      {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text",},
       {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
       {accessor: 'Revision', Header: 'Revision', editable:false},
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
@@ -83,7 +79,7 @@ class Supplier extends Component{
       */}
      
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-      filterable={true} accept={true} btn={btnfunc}
+      filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Supplier"/>
 
       <Card>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
@@ -106,6 +107,11 @@ class Area extends Component{
     this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
     }
 
+    createBarcodeBtn(data){
+        return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+          to={'/mst/base/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+      }
+
     render(){
         const cols = [
             {accessor: 'ID', Header: 'ID', editable:false}, 
@@ -119,9 +125,9 @@ class Area extends Component{
             {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
             {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
-        
         
         const btnfunc = [{
           btntype:"Barcode",
@@ -144,7 +150,7 @@ class Area extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
             filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
             btn={btnfunc}
-             table="ams_PackMaster"/>
+             table="ams_BaseMaster"/>
           </div>
         )
       }

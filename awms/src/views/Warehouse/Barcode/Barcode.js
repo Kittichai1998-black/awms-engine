@@ -48,13 +48,17 @@ class SetBarcode extends Component{
   }
 
   componentDidMount(){
-    let setup = json.barcodesetup.find((data) => {
-      return data.type === json.barcodetype;
-    })
-    let setup2 = json.multiplebarcodesize.find((data) => {
-      return data.type === json.barcodetype;
-    })
+    
     const values = queryString.parse(this.props.location.search)
+    console.log(values)
+    let setup = json.barcodesetup.find((data) => {
+      return data.type.toString() === values.barcodesize;
+    })
+    console.log(setup)
+    let setup2 = json.multiplebarcodesize.find((data) => {
+      return data.type.toString() === values.barcodesize;
+    })
+    
     this.setState({
       barcode:values.barcode,
       width:setup.width, 
@@ -65,6 +69,7 @@ class SetBarcode extends Component{
       fontsize:setup.fontsize,
       multiplebarcodesize:{width:setup2.width,height:setup2.height,qr:setup2.qr}
     })
+
   }
 
   columnChange(event){
