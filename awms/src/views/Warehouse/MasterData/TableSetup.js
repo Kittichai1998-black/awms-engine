@@ -110,9 +110,9 @@ class TableGen extends Component{
 
   queryInitialData(){
     if(this.props.url === null || this.props.url === undefined){
-      const dataselect = data
+      const dataselect = this.props.data
       this.setState({dataselect:dataselect})
-      let queryString = createQueryString(data)
+      let queryString = createQueryString(this.props.data)
       Axios.get(queryString).then(
       (res) => {
         this.setState({data:res.data.datas,loading:false})

@@ -19,7 +19,7 @@ class User extends Component{
                 'mode' : 'check',
             }],
             acceptstatus : false,
-            select:{queryString:"https://localhost:44366/api/mst",
+            select:{queryString:window.apipath + "/api/mst",
             t:"User",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
             f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",

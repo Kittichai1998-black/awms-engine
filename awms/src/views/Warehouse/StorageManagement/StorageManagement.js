@@ -272,7 +272,6 @@ class StorageManagement extends Component{
         {
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
             const clonemapsto = clone(this.state.mapSTOView)
-            console.log(clonemapsto)
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
           })

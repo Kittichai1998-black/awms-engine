@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
+import "./componentstyle.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import Select from 'react-select';
 import Axios from 'axios';
@@ -78,5 +79,5 @@ const Clone = (obj) => {
   
     throw new Error("Unable to copy obj! Its type isn't supported.");
   }
-  
+
 export {AutoSelect, Clone}

@@ -18,7 +18,7 @@ const createQueryString = (select) => {
   return queryS
 }
 
-class PickAndConso extends Component{
+class Loading extends Component{
   constructor(props) {
     super(props);
     this.state ={
@@ -239,41 +239,11 @@ class PickAndConso extends Component{
 
     return(
       <div>
-        {this.createModal()}
-        <Row>
-          <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
-          <Col sm="11" xs="10"><AutoSelect data={this.state.autocomplete} multi={true} result={result => this.renderTable(result)}/></Col>
-        </Row>
-        <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
-        <div>
-          <label>Barcode : </label><Input type="text" onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
-          <Button color="primary" onClick={() => this.onHandleClickCheckConso(this.state.rowselect, this.state.consoBarcode)} style={{display:"inline"}}>Scan</Button>
-          <Button color="danger" onClick={() => this.setState({consoStatus:2})} style={{display:"inline-block"}}>Clear Result</Button>
-          <Alert color={this.state.consoStatus === 0 ? "danger" : this.state.consoStatus === 1 ? "success" : "primary"} style={{display:"inline-block"}}>
-            {this.state.consoStatus === 0 ? "Can't Use" : this.state.consoStatus === 1 ? "Ready" : "Unset"}
-          </Alert>
-        </div>
-        <Card>
-          <CardBody>
-            <ButtonGroup style={{margin:'0 0 10px 0'}}>
-              <Button color="primary" onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
-              <Button color="primary" onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 1 ? false : true}>Consolidate</Button>
-            </ButtonGroup>
-            <div>
-              <label>Picking : </label>
-              <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} style={{display:"inline-block", width:"180px"}}/>
-              <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
-              <Button color="primary" style={{display:"inline"}} onClick={() => this.onHandleClickPickingScan()}>Scan</Button>
-              <Button color="danger" style={{display:"inline-block"}} onClick={() => this.setState({pickingList:null, pickingAmount:1, pickingBarcode:""})}>Clear Result</Button>
-            </div>
-            <div>
-              {this.state.pickingList}
-            </div>
-          </CardBody>
-        </Card>
+        <label>Car No : </label><AutoSelect/><Button></Button>
+        <label>Issued No : </label><AutoSelect/>
       </div>
     )
   }
 }
 
-export default PickAndConso;
+export default Loading;
