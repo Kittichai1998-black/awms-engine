@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 
@@ -18,7 +18,7 @@ class Customer extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/mst",
+      select:{queryString:window.apipath + "/api/mst",
       t:"Customer",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -45,7 +45,7 @@ class Customer extends Component{
   }
 
   onHandleClickLoad(event){
-    Axios.post("https://localhost:44366/api/mst/TransferFileServer/DealerMst",{})
+    Axios.post(window.apipath + "/api/mst/TransferFileServer/DealerMst",{})
     this.forceUpdate();
   }
 
@@ -62,8 +62,7 @@ class Customer extends Component{
       {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ];
-
-        const btnfunc = [{
+    const btnfunc = [{
       btntype:"Barcode",
       func:this.createBarcodeBtn
     }]
@@ -80,7 +79,7 @@ class Customer extends Component{
       table="ams_Customer"/>
       <Card>
         <CardBody style={{textAlign:'right'}}>
-          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Dealer</Button>
+          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Customer</Button>
         </CardBody>
       </Card>
       </div>

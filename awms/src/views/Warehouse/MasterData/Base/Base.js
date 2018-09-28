@@ -19,7 +19,7 @@ class Area extends Component{
             'mode' : 'check',
             }],
             acceptstatus : false,
-            select:{queryString:"https://localhost:44366/api/viw",
+            select:{queryString:window.apipath + "/api/viw",
             t:"BaseMaster",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
             f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,BaseMasterType_Name,BaseMasterType_Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -63,7 +63,7 @@ class Area extends Component{
     }
 
     filterList(){
-        const objselect = {queryString:"https://localhost:44366/api/mst",
+        const objselect = {queryString:window.apipath + "/api/mst",
             t:"ObjectSize",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}",
             f:"ID,Code",
@@ -73,7 +73,7 @@ class Area extends Component{
             l:20,
             all:"",}
 
-        const basetypeselect = {queryString:"https://localhost:44366/api/mst",
+        const basetypeselect = {queryString:window.apipath + "/api/mst",
             t:"BaseMasterType",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}",
             f:"ID,Code",

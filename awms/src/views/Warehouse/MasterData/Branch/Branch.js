@@ -18,7 +18,7 @@ class Branch extends Component{
           'mode' : 'check',
         }],
         acceptstatus : false,
-        select:{queryString:"https://localhost:44366/api/mst",
+        select:{queryString:window.apipath + "/api/mst",
         t:"Branch",
         q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
         f:"*",
@@ -30,7 +30,6 @@ class Branch extends Component{
         sortstatus:0,
         selectiondata:[],
       };
-      this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
       this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
     }
@@ -43,11 +42,6 @@ class Branch extends Component{
     componentWillUnmount(){
         Axios.isCancel(true);
     }
-
-    onHandleClickLoad(event){
-        /* Axios.post("https://localhost:44366/api/mst/TransferFileServer/DealerMst",{}) */
-        this.forceUpdate();
-      }
 
     render(){
         const cols = [
@@ -63,11 +57,6 @@ class Branch extends Component{
           {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];
     
-            const btnfunc = [{
-          btntype:"Barcode",
-          func:this.createBarcodeBtn
-        }]
-    
         return(
           <div>
           {/*
@@ -76,13 +65,8 @@ class Branch extends Component{
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
           <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-          filterable={true} accept={true} btn={btnfunc}
-          table="ams_Customer"/>
-          <Card>
-            <CardBody style={{textAlign:'right'}}>
-              <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Branch</Button>
-            </CardBody>
-          </Card>
+          filterable={true} accept={true}
+          table="ams_Branch"/>
           </div>
         )
     }

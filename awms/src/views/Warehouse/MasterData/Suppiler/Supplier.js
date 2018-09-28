@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 
@@ -19,7 +18,7 @@ class Supplier extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/mst",
+      select:{queryString:window.apipath + "/api/mst",
       t:"Supplier",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -46,7 +45,7 @@ class Supplier extends Component{
   }
 
   onHandleClickLoad(event){
-    Axios.post("https://localhost:44366/api/mst/TransferFileServer/SupplierMst",{})
+    Axios.post(window.apipath + "/api/mst/TransferFileServer/SupplierMst",{})
     this.forceUpdate();
   }
 

@@ -19,7 +19,7 @@ class ListProduct extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/viw",
+      select:{queryString:window.apipath + "/api/viw",
       t:"SKUMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,SKUMasterType_ID,SKUMasterType_Code,SKUMasterType_Name,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -64,7 +64,7 @@ class ListProduct extends Component{
   }
 
   getAutocomplete(){
-    const unitselect = {queryString:"https://localhost:44366/api/mst",
+    const unitselect = {queryString:window.apipath + "/api/mst",
       t:"UnitType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",
@@ -74,7 +74,7 @@ class ListProduct extends Component{
       l:20,
       all:"",}
 
-    const packselect = {queryString:"https://localhost:44366/api/mst",
+    const packselect = {queryString:window.apipath + "/api/mst",
       t:"SKUMasterType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",

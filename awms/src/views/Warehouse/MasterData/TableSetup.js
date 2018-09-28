@@ -95,7 +95,7 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    this.queryInitialData(nextProps.data);
+    //this.queryInitialData();
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete})
   }
 
@@ -649,8 +649,8 @@ class TableGen extends Component{
               row.className="text-center"
           }
           else if(row.Type === "password"){
-            row.Cell = (e) => <Input type="password">*****</Input>
-            //row.className="text-center"
+            row.Cell = (e) => <Input type="password"></Input>
+            row.className="text-center"
           }
           else if(row.Type === "button"){
             this.props.btn.find(btnrow => {
