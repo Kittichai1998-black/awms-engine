@@ -25,11 +25,14 @@ namespace AWMSEngine.APIService.WM
 
             if(req.action == VirtualMapSTOActionType.SELECT)
             {
-                var doc = new Engine.Business.Consolidate.CheckBSTOCanUseInDocument().Execute(this.Logger, this.BuVO, new Engine.Business.Consolidate.CheckBSTOCanUseInDocument.TReq()
+                if (!String.IsNullOrWhiteSpace(req.baseCode))
                 {
-                    baseCode = req.baseCode,
-                    docID = docItem.Document_ID
-                });
+                    var doc = new Engine.Business.Consolidate.CheckBSTOCanUseInDocument().Execute(this.Logger, this.BuVO, new Engine.Business.Consolidate.CheckBSTOCanUseInDocument.TReq()
+                    {
+                        baseCode = req.baseCode,
+                        docID = docItem.Document_ID
+                    });
+                }
             }
             else if(req.action != VirtualMapSTOActionType.REMOVE)
             {

@@ -86,6 +86,7 @@ class TableGen extends Component{
     this.onEditDateChange = this.onEditDateChange.bind(this)
     this.datetimeBody = this.datetimeBody.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
+    this.autoGenLocation = this.autoGenLocation.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -98,13 +99,13 @@ class TableGen extends Component{
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete})
   }
 
-  componentDidMount(){
-    this.queryInitialData();
-    this.setState({originalselect:this.props.data.q})
-  }
-  
-  componentWillUnmount(){
-    Axios.isCancel(true);
+  componentDidUpdate(){
+    if(this.props.updData)
+      this.props.updData(this.state.updateData)
+    if(this.props.rmvData)
+      this.props.rmvData(this.state.removedata)
+    if(this.props.chkData)
+      this.props.chkData(this.state.data)
   }
 
   queryInitialData(){
@@ -123,6 +124,15 @@ class TableGen extends Component{
             this.setState({data:res.data.datas,loading:false})
         })
     }
+  }
+
+  componentDidMount(){
+    this.queryInitialData();
+    this.setState({originalselect:this.props.data.q})
+  }
+  
+  componentWillUnmount(){
+    Axios.isCancel(true);
   }
 
   onHandleClickCancel(event){
@@ -260,7 +270,7 @@ class TableGen extends Component{
           "datas": dataedit,
           "nr": false
         }
-        Axios.put("https://localhost:44366/api/mst", updjson).then((result) =>{
+        Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
           this.queryInitialData();
         })
   
@@ -432,6 +442,11 @@ class TableGen extends Component{
       this.onEditorValueChange(rowdata , e.target.checked === false ? 0 : 1, rowdata.column.id)
     }}/>
   }
+  
+  leadingZero(size,num) {
+    var sign = Math.sign(num) === -1 ? '-' : '';
+    return sign + new Array(size).concat([Math.abs(num)]).join('0').slice(-size);
+  }
 
   datePickerBody(format, value, rowdata){
     const date = moment(value);
@@ -472,7 +487,18 @@ class TableGen extends Component{
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
     onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
   }
-  
+
+  autoGenLocation(rowdata){
+    if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
+      const codeLoc = rowdata.row["AreaMaster_Code"] + this.leadingZero(3,rowdata.row["Bank"]) + 
+      this.leadingZero(3,rowdata.row["Bay"]) + this.leadingZero(3,rowdata.row["Level"])
+      return <Input type="text" value={codeLoc === null ? "" : codeLoc} editable="false"
+          onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
+    }else{
+      return <Input type="text" value={rowdata.row["Code"] === null ? "" : rowdata.row["Code"]} editable="false" />;
+    }
+  }
+
   onEditorValueChange(rowdata, value, field) {
     const data = [...this.state.data];
     if(rowdata.column.datatype === "int"){
@@ -538,19 +564,28 @@ class TableGen extends Component{
     }
   }
 
-  onHandleSelection(rowdata, value){
-    let rowselect = this.state.rowselect;
-    if(value){
-      rowselect.push(rowdata.original)
+  onHandleSelection(rowdata, value, type){
+    if(type === "checkbox"){
+      let rowselect = this.state.rowselect;
+      if(value){
+        rowselect.push(rowdata.original)
+      }
+      else{
+        rowselect.forEach((row,index) => {
+          if(row.ID === rowdata.original.ID){
+            rowselect.splice(index,1)
+          }
+        })
+      }
+      this.setState({rowselect}, () => {this.props.getselection(this.state.rowselect)})
     }
     else{
-      rowselect.forEach((row,index) => {
-        if(row.ID === rowdata.original.ID){
-          rowselect.splice(index,1)
-        }
-      })
+      let rowselect = [];
+      if(value){
+        rowselect.push(rowdata.original)
+      }
+      this.setState({rowselect:rowselect}, () => {this.props.getselection(this.state.rowselect)})
     }
-    this.setState({rowselect}, () => this.props.getselection(this.state.rowselect))
   }
 
   createSelectAll(){
@@ -558,16 +593,25 @@ class TableGen extends Component{
     type="checkbox"
     onChange={(e)=> {
       this.props.getselection(this.state.data);
-      if(e.target.checked)
-        this.setState({selectAll:true})
-      else
-        this.setState({selectAll:false})
+      var arr = Array.from(document.getElementsByClassName('selection'));
+      if(e.target.checked){
+        arr.forEach(row => {
+          row.checked = true
+        })
+      }
+      else{
+        arr.forEach(row => {
+          row.checked = false
+        })
+      }
     }}/>
   }
-  createSelection(rowdata){
+  createSelection(rowdata,type){
     return <input
-    type="checkbox"
-    onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked)}/>//
+    className="selection"
+    type={type}
+    name="selection"
+    onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>//
   }
 
   render(){
@@ -600,6 +644,14 @@ class TableGen extends Component{
               row.Cell = (e) => this.checkboxBody(e)
               row.className="text-center"
           }
+          else if(row.Type === "autogenloc" && (row.body === undefined || !row.body)){
+              row.Cell = (e) => (this.autoGenLocation(e))
+              row.className="text-center"
+          }
+          else if(row.Type === "password"){
+            row.Cell = (e) => <Input type="password"></Input>
+            row.className="text-center"
+          }
           else if(row.Type === "button"){
             this.props.btn.find(btnrow => {
               if(row.btntype === "Remove" && btnrow.btntype){
@@ -616,7 +668,11 @@ class TableGen extends Component{
             row.Cell = (e) => this.createAutocomplete(e)
           }
           else if(row.Type === "selection"){
-            row.Cell = (e) => this.createSelection(e)
+            row.Cell = (e) => this.createSelection(e,"checkbox")
+            row.className="text-center"
+          }
+          else if(row.Type === "selectrow"){
+            row.Cell = (e) => this.createSelection(e,"radio")
             row.className="text-center"
           }
 
@@ -634,34 +690,36 @@ class TableGen extends Component{
     return(
       <div style={{overflowX:'auto'}}>
         <Button onClick={this.onHandleClickAdd} style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
-        <ReactTable data={this.state.data}
-            style={{backgroundColor:'white'}}
-            loading={this.state.loading}
-            filterable={this.props.filterable}
-            columns={col}
-            pivotBy={this.props.pivotBy}
-            multiSort={false}
-            showPagination={true}
-            minRows={5}
-            SubComponent={this.subTable}
-            getTrProps={(state, rowInfo) => {
-              let result = false
-              this.state.dataedit.forEach(row => {
-                if(rowInfo && rowInfo.row){
-                  if(row.ID === rowInfo.original.ID)
-                    result = true
-                }
-              })
-              if(result === true)
-                return {style:{background:"gray"}}
-              else
-                return {}              
-            }}
-            PaginationComponent={this.paginationButton}
-            onSortedChange={(sorted) => {
-                this.setState({data:[],dataedit:[], loading:true });
-                this.customSorting(sorted)}
-            }/>
+        <ReactTable 
+          data={this.state.data} 
+          ref={ref => this.tableComponent = ref}
+          style={{backgroundColor:'white'}}
+          loading={this.state.loading}
+          filterable={this.props.filterable}
+          columns={col}
+          pivotBy={this.props.pivotBy}
+          multiSort={false}
+          showPagination={true}
+          minRows={5}
+          SubComponent={this.subTable}
+          getTrProps={(state, rowInfo) => {
+            let result = false
+            this.state.dataedit.forEach(row => {
+              if(rowInfo && rowInfo.row){
+                if(row.ID === rowInfo.original.ID)
+                  result = true
+              }
+            })
+            if(result === true)
+              return {style:{background:"gray"}}
+            else
+              return {}              
+          }}
+          PaginationComponent={this.paginationButton}
+          onSortedChange={(sorted) => {
+              this.setState({data:[],dataedit:[], loading:true });
+              this.customSorting(sorted)}
+          }/>
         <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
           <CardBody>
             <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>

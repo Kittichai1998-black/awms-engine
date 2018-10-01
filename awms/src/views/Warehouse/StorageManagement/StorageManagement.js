@@ -62,7 +62,7 @@ class StorageManagement extends Component{
       mapSTOView:null,
       Mode:0,
       radiostate:false,
-      supplier:{queryString:"https://localhost:44366/api/mst",
+      supplier:{queryString:window.apipath + "/api/mst",
       t:"Supplier",
       q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
       f:"*",
@@ -71,7 +71,7 @@ class StorageManagement extends Component{
       sk:"",
       l:"",
       all:"",},
-      warehouse:{queryString:"https://localhost:44366/api/mst",
+      warehouse:{queryString:window.apipath + "/api/mst",
       t:"Warehouse",
       q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
       f:"*",
@@ -80,7 +80,7 @@ class StorageManagement extends Component{
       sk:"",
       l:"",
       all:"",},
-      area:{queryString:"https://localhost:44366/api/mst",
+      area:{queryString:window.apipath + "/api/mst",
       t:"AreaMaster",
       q:'[{ "f": "Status", "c":"=", "v": 1}]',
       f:"*",
@@ -246,11 +246,7 @@ class StorageManagement extends Component{
     })
     return getdata
   }
-
-  checklimitqty(){
-
-  }
-
+  
   createListTable(){
     this.setState({poststatus:true})
     let status = true;
@@ -270,13 +266,12 @@ class StorageManagement extends Component{
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
       "mode":this.state.Mode,"options":this.state.suppliervalue,
       "areaID":this.state.areavalue.value.toString(),"warehouseID":this.state.warehousevalue.value.toString(),"mapsto":this.state.mapSTO};
-      Axios.post("https://localhost:44366/api/wm/VRMapSTO",data).then(res => {
+      Axios.post(window.apipath + "/api/wm/VRMapSTO",data).then(res => {
         let header = []
         if(res.data._result.status !== 0)
         {
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
             const clonemapsto = clone(this.state.mapSTOView)
-            console.log(clonemapsto)
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
           })
@@ -363,7 +358,7 @@ class StorageManagement extends Component{
       "mode":this.state.Mode,"options":this.state.suppliervalue,
       "areaID":this.state.areavalue.value.toString(),"warehouseID":this.state.warehousevalue.value.toString(),"mapsto":this.state.mapSTO};
 
-    Axios.post("https://localhost:44366/api/wm/VRMapSTO",).then((res) => {
+    Axios.post(window.apipath + "/api/wm/VRMapSTO",).then((res) => {
       this.setState({warehousedata:res.data.datas})
     }).then(() => this.createListTable())
   }
@@ -378,7 +373,7 @@ class StorageManagement extends Component{
     }
     if(conf === true){
       const approvedata = {isConfirm:flag,rootStoID:this.state.mapSTO.id,type:this.state.mapSTO.type}
-      Axios.post("https://localhost:44366/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
+      Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
         if(res.data._result.status === 0){
           alert(res.data._result.status)
           this.setState({result:null,mapSTOView:null})

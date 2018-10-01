@@ -3,12 +3,12 @@
     "barcodesetup":[
         {
             "type":1,
-            "width":"10cm",
-            "height":"5cm",
-            "bwidth":1.9,
-            "bheight":120,
-            "size":1.9,
-            "fontsize":13
+            "width":"5cm",
+            "height":"3cm",
+            "bwidth":1,
+            "bheight":55,
+            "size":95,
+            "fontsize":10
         },
         {
             "type":2,

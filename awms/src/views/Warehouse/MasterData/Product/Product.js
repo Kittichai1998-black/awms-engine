@@ -13,18 +13,18 @@ class ListProduct extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:"https://localhost:44366/api/viw",
-      t:"PackMaster",
+      select:{queryString:window.apipath + "/api/viw",
+      t:"SKUMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,SKUMaster_ID,Code,PackMasterType_ID,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,ObjectSize_ID,CreateBy,CreateTime,ModifyBy,ModifyTime,ObjCode,PackCode",
+      f:"ID,SKUMasterType_ID,SKUMasterType_Code,SKUMasterType_Name,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
+      s:"[{'f':'ID','od':'asc'}]",
       sk:0,
       l:20,
       all:"",},
@@ -33,9 +33,9 @@ class ListProduct extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
-    this.getAutocomplete = this.getAutocomplete.bind(this)
+    this.getAutocompletee = this.getAutocomplete.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
-    this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime","CreateBy","CreateTime"]
+    this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
   }
 
   onHandleClickCancel(event){
@@ -64,8 +64,8 @@ class ListProduct extends Component{
   }
 
   getAutocomplete(){
-    const objselect = {queryString:"https://localhost:44366/api/mst",
-      t:"ObjectSize",
+    const unitselect = {queryString:window.apipath + "/api/mst",
+      t:"UnitType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",
       g:"",
@@ -74,8 +74,8 @@ class ListProduct extends Component{
       l:20,
       all:"",}
 
-    const packselect = {queryString:"https://localhost:44366/api/mst",
-      t:"PackMasterType",
+    const packselect = {queryString:window.apipath + "/api/mst",
+      t:"SKUMasterType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code",
       g:"",
@@ -84,23 +84,23 @@ class ListProduct extends Component{
       l:20,
       all:"",}
 
-    Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(objselect))]).then(
-      (Axios.spread((packresult, objresult) => 
+    Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(unitselect))]).then(
+      (Axios.spread((packresult, unitresult) => 
     {
-      let ddl = [...this.state.autocomplete]
+      let ddl = this.state.autocomplete
       let packList = {}
-      let objList = {}
+      let unitList = {}
       packList["data"] = packresult.data.datas
-      packList["field"] = "PackCode"
-      packList["pair"] = "PackMasterType_ID"
+      packList["field"] = "SKUMasterType_Code"
+      packList["pair"] = "SKUMasterType_ID"
       packList["mode"] = "Dropdown"
       console.log(packList)
-      objList["data"] = objresult.data.datas
-      objList["field"] = "ObjCode"
-      objList["pair"] = "ObjectSize_ID"
-      objList["mode"] = "Dropdown"
+      unitList["data"] = unitresult.data.datas
+      unitList["field"] = "UnitType_Code"
+      unitList["pair"] = "UnitType_ID"
+      unitList["mode"] = "Dropdown"
 
-      ddl = ddl.concat(packList).concat(objList)
+      ddl = ddl.concat(packList).concat(unitList)
       this.setState({autocomplete:ddl})
     })))
   }
@@ -111,14 +111,14 @@ class ListProduct extends Component{
 
   createBarcodeBtn(data){
     return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-      to={'/mst/sku/manage/barcode?barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+      to={'/mst/sku/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
   }
 
   render(){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select",},
-      {accessor: 'SKUMaster_ID', Header: 'SKU',Filter:"text", editable:true, datatype:"int",},
-      {accessor: 'PackCode', Header: 'PackType',updateable:false, Filter:"text", Type:"autocomplete"},
+      {accessor: 'ID', Header: 'SKU',Filter:"text", editable:true, datatype:"int",},
+      {accessor: 'SKUMasterType_Code', Header: 'SKU Type',updateable:false, Filter:"text", Type:"autocomplete"},
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
       {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true, },
@@ -127,8 +127,7 @@ class ListProduct extends Component{
       {accessor: 'LengthM', Header: 'LengthM', editable:true,Filter:"text", datatype:"int",},
       {accessor: 'HeightM', Header: 'HeightM', editable:true,Filter:"text", datatype:"int",},
       {accessor: 'WeightKG', Header: 'Weight', editable:true,Filter:"text", datatype:"int",},
-      {accessor: 'ItemQty', Header: 'ItemQty', editable:true,Filter:"text", datatype:"int",},
-      {accessor: 'ObjCode', Header: 'Object',updateable:false,Filter:"text", Type:"autocomplete"},
+      {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'Revision', Header: 'Revision', editable:false, datatype:"int",},
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
@@ -159,7 +158,7 @@ class ListProduct extends Component{
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
         filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
         btn={btnfunc} uneditcolumn={this.uneditcolumn}
-         table="ams_PackMaster"/>
+         table="ams_SKUMaster"/>
       </div>
     )
   }

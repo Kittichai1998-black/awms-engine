@@ -1,18 +1,19 @@
-const EventStatus = {
-    IDEL : 10,
-    RECEIVING : 11,
-    RECEIVED : 12,
-    MOVING : 13,
-    MOVED : 14,
-    REMOVING : 21,
-    REMOVED : 22,
-    REJECTING : 23,
-    REJECTED : 24,
-    ISSUING : 31,
-    ISSUED : 32,
-    SHIPPING : 33,
-    SHIPPED : 34, 
-    CHANGE_BASE : 90
-}
+const EventStatus = [
+    {status:'IDEL' , code:10,},
+    {status:'RECEIVING' , code:11,},
+    {status:'RECEIVED' , code:12,},
+    {status:'MOVING' , code:13,},
+    {status:'MOVED' , code:14,},
+    {status:'REMOVING' , code:21,},
+    {status:'REMOVED' , code:22,},
+    {status:'REJECTING' , code:23,},
+    {status:'REJECTED' , code:24,},
+    {status:'IDEL' , code:24,},
+    {status:'ISSUING' , code:31,},
+    {status:'ISSUED' , code:32,},
+    {status:'SHIPPING' , code:33,},
+    {status:'SHIPPED' , code:34,},
+    {status:'CHANGE_BASE' , code:90,}
+]
 
 export default EventStatus

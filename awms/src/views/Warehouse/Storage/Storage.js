@@ -37,37 +37,26 @@ class Pallet extends Component{
 
   render(){
     const cols = [
-      {accessor: 'baseMaster_Code', Header: 'BaseMaster Code', Filter:"text"},
+      {accessor: 'baseMaster_ID', Header: 'BaseMaster Code', Filter:"text"},
+      {accessor: 'baseMaster_Code', Header: 'BaseMaster Type Code', Filter:"text"},
       {accessor: 'baseMaster_Name', Header: 'BaseMasterName', Filter:"text"},
-      {accessor: 'packMaster_Code', Header: 'Pack Master Code', Filter:"text"},
-      {accessor: 'packMaster_Name', Header: 'Pack Master Name', Filter:"text"},
-      {accessor: 'customer_Code', Header: 'Customer Code', Filter:"text"},
-      {accessor: 'customer_Name', Header: 'Customer Name', Filter:"text"},
-      {accessor: 'code', Header: 'Code', Filter:"text", sortable:false},
-      {accessor: 'objectType', Header: 'Name', Filter:"text", sortable:false},
-      {accessor: 'skuMaster_Code', Header: 'SKU Master Code', Filter:"text", sortable:false},
-      {accessor: 'skuMaster_Name', Header: 'SKU Master Name', Filter:"text", sortable:false},
-      {accessor: 'batch', Header: 'Batch', Filter:"text", sortable:false},
-      {accessor: 'lot', Header: 'Lot', Filter:"text", sortable:false},
-      {accessor: 'packMaster_WeightKG', Header: 'Pack Master WeightKG', Filter:"text", sortable:false},
-      {accessor: 'packMaster_WidthM', Header: 'Pack Master WidthM', Filter:"text", sortable:false},
-      {accessor: 'packMaster_LengthM', Header: 'Pack Master LengthM', Filter:"text", sortable:false},
-      {accessor: 'packMaster_HeightM', Header: 'Pack Master HeightM', Filter:"text", sortable:false},
-      {accessor: 'packMaster_ItemQty', Header: 'Pack Master Qty', Filter:"text", sortable:false},
-      {accessor: 'weigthKG', Header: 'WeigthKG', Filter:"text"},
-      {accessor: 'widthM', Header: 'WidthM', Filter:"text"},
-      {accessor: 'lengthM', Header: 'LengthM', Filter:"text"},
-      {accessor: 'heightM', Header: 'HeightM', Filter:"text"},
+      {accessor: 'packMaster_Code', Header: 'Pack Code', Filter:"text", sortable:false},
+      {accessor: 'packMaster_Name', Header: 'Pack Name', Filter:"text", sortable:false},
+      {accessor: 'packMaster_ItemQty', Header: 'Pack Qty', Filter:"text", sortable:false},
+      {accessor: 'skuMaster_Code', Header: 'SKU Code', Filter:"text", sortable:false},
+      {accessor: 'skuMaster_Name', Header: 'SKU Name', Filter:"text", sortable:false},
+      {accessor: 'skuMaster_Name', Header: 'SKU Qty', Filter:"text", sortable:false},
       {accessor: 'branch_Code', Header: 'Branch Code', Filter:"text"},
       {accessor: 'branch_Name', Header: 'Branch Name', Filter:"text"},
       {accessor: 'warehouse_Code', Header: 'Warehouse Code', Filter:"text"},
       {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
-      {accessor: 'areaMaster_Code', Header: 'AreaMaster Code', Filter:"text"},
-      {accessor: 'areaMaster_Name', Header: 'AreaMaster Name', Filter:"text"},
+      {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
+      {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
       {accessor: 'areaLocationMaster_Bank', Header: 'AreaLocationMaster Bank', Filter:"text"},
       {accessor: 'areaLocationMaster_Bay', Header: 'AreaLocationMaster Bay', Filter:"text"},
       {accessor: 'areaLocationMaster_Level', Header: 'AreaLocationMaster Level', Filter:"text"},
       {accessor: 'holeStatus', Header: 'Hole Status'},
+      {accessor: 'holeStatus', Header: 'Event'},
       {accessor: 'status', Header: 'Status', Cell:"checkbox" ,Filter:"dropdown"},
       {accessor: 'productDate', Header: 'Product Date', Cell:"datetime"},
       {accessor: 'expiryDate', Header: 'Expiry Date', Cell:"datetime"},
@@ -95,7 +84,7 @@ class Pallet extends Component{
       'field' : 'Status',
     }];
 
-    const url = "https://localhost:44366/api/trx/sto/search/?stoID&objectType&holdStatus&eventStatus&status&productDate&expireDate&batch&lot&rootBaseCode&rootBaseTypeCode&rootBaseTypeName&sKUCode&sKUName&packCode&packName&branchCode&branchName&warehouseCode&warehouseName&areaCode&areaName&customerCode&customerName&s_f=ID&s_od=ASC&sk=0&l=222"
+    const url = "https://localhost:44366/api/trx/sto/search/?stoID&objectType&holdStatus&eventStatus&status&productDate&expireDate&batch&lot&rootBaseCode&rootBaseTypeCode&rootBaseTypeName&sKUCode&sKUName&packCode&packName&branchCode&branchName&warehouseCode&warehouseName&areaCode&areaName&customerCode&customerName&s_f=ID&s_od=ASC&sk=0&l=9"
     return(
       <div>
         <ExtendTable data={this.state.select} column={maincols} subcolumn={subcols} dropdownfilter={ddlfilter} pivotBy={this.state.pivot} subtablewidth={700}

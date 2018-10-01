@@ -4,7 +4,7 @@ import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 
-class Supplier extends Component{
+class Customer extends Component{
   constructor(props) {
     super(props);
 
@@ -19,7 +19,7 @@ class Supplier extends Component{
       }],
       acceptstatus : false,
       select:{queryString:window.apipath + "/api/mst",
-      t:"Supplier",
+      t:"Customer",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
       f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
       g:"",
@@ -31,7 +31,7 @@ class Supplier extends Component{
       selectiondata:[],
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
-    this.onHandleClickCancel = this.onHandleClickCancel.bind(this); 
+    this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
   }
 
@@ -45,25 +45,23 @@ class Supplier extends Component{
   }
 
   onHandleClickLoad(event){
-    Axios.post(window.apipath + "/api/mst/TransferFileServer/SupplierMst",{})
+    Axios.post(window.apipath + "/api/mst/TransferFileServer/DealerMst",{})
     this.forceUpdate();
   }
 
   render(){
     const cols = [
-      {accessor: 'ID', Header: 'ID', editable:false,}, 
-      {accessor: 'Code', Header: 'Code', editable:true,},
-      {accessor: 'Name', Header: 'Name', editable:true},
+      {accessor: 'ID', Header: 'ID', Filter:"text", editable:false,}, 
+      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
+      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
       {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text",},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-      {accessor: 'Revision', Header: 'Revision', editable:false},
-      {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
-      {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
-      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
-      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
+      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
+      {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+      {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
+      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ];
-
     const btnfunc = [{
       btntype:"Barcode",
       func:this.createBarcodeBtn
@@ -76,14 +74,12 @@ class Supplier extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-     
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
       filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
-      table="ams_Supplier"/>
-
+      table="ams_Customer"/>
       <Card>
         <CardBody style={{textAlign:'right'}}>
-          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Supplier</Button>
+          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Customer</Button>
         </CardBody>
       </Card>
       </div>
@@ -91,4 +87,4 @@ class Supplier extends Component{
   }
 }
 
-export default Supplier;
+export default Customer;
