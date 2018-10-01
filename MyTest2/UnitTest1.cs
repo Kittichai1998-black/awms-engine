@@ -73,12 +73,7 @@ namespace MyTest2
             ClassChild c900 = new ClassChild() { ID = 221, ParentID = 2, ChildRight = new List<ClassChild>() };
             root.ChildLeft.Add(c900);
 
-
-            var lis = TreeUtil.ToList<ClassChild>(root);
-            foreach(var l in lis)
-            {
-                sysout.WriteLine(l.ID.ToString());
-            }
+            
         }
     }
 
