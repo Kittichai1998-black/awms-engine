@@ -46,9 +46,29 @@ namespace AWMSEngine.ADO
 
             foreach (var rowlist in selectlist.SkipWhile(pk => pk.Key == con))
             {
-                columns = columns + ", " + rowlist.Key;
-                parameter = parameter + ", @" + rowlist.Key;
-                update = update + ", " + rowlist.Key + " = @" + rowlist.Key;
+                if (!string.IsNullOrEmpty(columns))
+                    columns += ",";
+                columns += rowlist.Key;
+
+                string v = rowlist.Value.ToString();
+                if (v != null && v.StartsWith("@@sql"))
+                {
+                    if (!string.IsNullOrEmpty(parameter))
+                        parameter += ",";
+                    if (!string.IsNullOrEmpty(update))
+                        update += ",";
+                    parameter += CommandByConfig(v);
+                    update += rowlist.Key + " = " + CommandByConfig(v);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(parameter))
+                        parameter += ",";
+                    if (!string.IsNullOrEmpty(update))
+                        update += ",";
+                    parameter += "@" + rowlist.Key;
+                    update +=  rowlist.Key + " = @" + rowlist.Key;
+                }
             }
 
             int res = 0;
@@ -61,7 +81,9 @@ namespace AWMSEngine.ADO
 
                 foreach (var data in row.SkipWhile(pk => pk.Key == con))
                 {
-                    param.Add("@" + data.Key.ToString(), data.Value);
+                    string v = data.Value.ToString();
+                    if (v == null || !v.StartsWith("@@sql"))
+                        param.Add("@" + data.Key.ToString(), data.Value);
                 }
 
                 if (revision == true)
@@ -76,8 +98,8 @@ namespace AWMSEngine.ADO
 
                     insupd = string.Format("insert into {0} ({1}, revision,CreateBy,CreateTime) values ({2},{3},@actionBy,getdate())",
                         table_name,
-                        columns.Substring(2),
-                        "@" + parameter.Substring(3),
+                        columns,
+                        parameter,
                         nextRevision);
 
                     res = this.Execute(insupd,
@@ -96,14 +118,14 @@ namespace AWMSEngine.ADO
                     {
                         insupd = string.Format("insert into {0} ({1},CreateBy,CreateTime) values ({2},@actionBy,getdate())",
                             table_name,
-                            columns.Substring(2),
-                            "@" + parameter.Substring(3));
+                            columns,
+                            parameter);
                     }
                     else
                     {
                         insupd = string.Format("update {0} set {1},ModifyBy=@actionBy,ModifyTime=getdate() where {2}",
                             table_name,
-                            update.Substring(2),
+                            update,
                             condition);
                     }
 
@@ -227,11 +249,14 @@ namespace AWMSEngine.ADO
 
         public string CommandByConfig(string key)
         {
+            //if (key.StartsWith("@@sql_")) key = key.Remove(0, 6);
+            //else if (key.StartsWith("@@sql")) key = key.Remove(0, 5);
+
             var conf = key.Split(',');
             var comm = StaticValue.StaticValueManager.GetInstant().GetConfig(conf[0]);
             for (int i = 1; i < conf.Length; i++)
             {
-                comm = comm.Replace("{" + (i - 1) + "}", conf[i - 1]);
+                comm = comm.Replace("{" + (i - 1) + "}", conf[i]);
             }
             comm = Regex.Replace(comm, "{[0-9]+}", "");
 
