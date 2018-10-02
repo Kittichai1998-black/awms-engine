@@ -105,15 +105,14 @@ class AreaLocation extends Component{
     }
 
     createBarcodeBtn(data){
-      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-        to={'/mst/arealocation/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+      return <Button type="button" color="info"
+      onClick={() => this.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
     }
 
     render(){
         const cols = [
-          {accessor: 'ID', Header: 'ID', editable:false,}, 
-          {accessor: 'Code', Header: 'Code', editable:false},
-          {accessor: 'Code', Header: 'Code', Type:"autogenloc", editable:false},
+          {accessor: 'Code', Header: 'Data', editable:false},
+          {accessor: 'Code', Header: 'Code Edit', Type:"autogenloc", editable:false},
           {accessor: 'Name', Header: 'Name', editable:true},
           {accessor: 'Description', Header: 'Description', sortable:false, editable:true},
           {accessor: 'Gate', Header: 'Gate', editable:true},
@@ -132,6 +131,7 @@ class AreaLocation extends Component{
         ]; 
       
         const btnfunc = [{
+          history:this.props.history,
           btntype:"Barcode",
           func:this.createBarcodeBtn
      

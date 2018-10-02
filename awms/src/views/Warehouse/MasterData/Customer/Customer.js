@@ -12,7 +12,7 @@ class Customer extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
+        'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
@@ -45,13 +45,12 @@ class Customer extends Component{
   }
 
   onHandleClickLoad(event){
-    Axios.post(window.apipath + "/api/mst/TransferFileServer/DealerMst",{})
+    Axios.post(window.apipath + "/api/mst/TransferFileServer/CustomerMst",{})
     this.forceUpdate();
   }
 
   render(){
     const cols = [
-      {accessor: 'ID', Header: 'ID', Filter:"text", editable:false,}, 
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
       {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text",},

@@ -177,7 +177,6 @@ class SetBarcode extends Component{
           })}
       </Form></div>)
     }
-
   }
 
   render(){

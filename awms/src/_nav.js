@@ -9,8 +9,10 @@ function getmenu(){
       {id: 5,name: 'Area',url: '/mst/area/manage',icon: 'cui-home',},
       {id: 6,name: 'Area Location',url: '/mst/arealocation/manage',icon: 'cui-layers',},
       {id: 7,name: 'Base',url: '/mst/base/manage',icon: 'cui-bug',},
-      {id: 8,name: 'User',url: '/mst/user/manage',icon: 'cui-user',},
-      {id: 9,name: 'Register in',url: '/wms/storageObject/register',icon: 'cui-arrow-bottom',},
+      {id: 8,name: 'Warehouse',url: '/mst/warehouse/manage',icon: 'cui-bug',},
+      {id: 9,name: 'Branch',url: '/mst/branch/manage',icon: 'cui-bug',},
+      {id: 10,name: 'User',url: '/mst/user/manage',icon: 'cui-user',},
+      {id: 11,name: 'Register in',url: '/wms/storageObject/register',icon: 'cui-arrow-bottom',},
     ]};
     
     return result;

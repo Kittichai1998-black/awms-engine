@@ -7,6 +7,8 @@ import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
+import guid from 'guid';
+import hash from 'hash.js';
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
@@ -74,6 +76,7 @@ class TableGen extends Component{
       rowselect:[],
       selectAll:false,
       accept:this.props.accept,
+      currentPage: 1,
     };
 
     this.customSorting = this.customSorting.bind(this);
@@ -223,10 +226,13 @@ class TableGen extends Component{
     const getcol = this.state.dataselect.f.split(",")
     getcol.forEach(row => {
       cretdata.ID = this.addkey
-      if(row === 'Status')
+      if(row === 'Status'){
         cretdata.Status = 1
-      else
+      }
+      else{
         cretdata[row] = ""
+      }
+
     })
     col.forEach(row => {
       if(row.dateformat === 'datetime' || row.dateformat === 'date'){
@@ -255,6 +261,13 @@ class TableGen extends Component{
               else{
                 row[col.accessor] = null
               }
+            }
+            
+            if(col.accessor === "Password"){
+              var guidstr = guid.raw().toUpperCase().replaceAll('-','').toUpperCase();
+              var hash256password = hash.sha256().update((hash.sha256().update(row[col.accessor]).digest('hex').toUpperCase())+guidstr).digest('hex').toUpperCase()
+              row[col.accessor] = hash256password
+              row["SoftPassword"] = guidstr
             }
           })
 
@@ -352,6 +365,7 @@ class TableGen extends Component{
         <nav>
           <ul className="pagination">
             <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
+            <li className="page-item"><span className="page-link" >1</span></li>
             <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
           </ul>
         </nav>
@@ -488,6 +502,15 @@ class TableGen extends Component{
     onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
   }
 
+  inputText(rowdata) {
+    if(rowdata.value !== null && rowdata.value !== ""){
+      return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} editable='false' />;
+    }else{
+      return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
+      onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
+    }
+  }
+
   autoGenLocation(rowdata){
     if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
       const codeLoc = rowdata.row["AreaMaster_Code"] + this.leadingZero(3,rowdata.row["Bank"]) + 
@@ -495,8 +518,13 @@ class TableGen extends Component{
       return <Input type="text" value={codeLoc === null ? "" : codeLoc} editable="false"
           onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
     }else{
-      return <Input type="text" value={rowdata.row["Code"] === null ? "" : rowdata.row["Code"]} editable="false" />;
+      return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
     }
+  }
+
+  inputPassword(rowdata){
+    return <Input type="password" maxLength="8" value={rowdata.value === null ? "" : rowdata.value} 
+    onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />
   }
 
   onEditorValueChange(rowdata, value, field) {
@@ -526,7 +554,6 @@ class TableGen extends Component{
   }
 
   createAutocomplete(rowdata){
-    console.log(rowdata.value)
     const style = {borderRadius: '3px',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
     background: 'rgba(255, 255, 255, 0.9)',
@@ -630,10 +657,20 @@ class TableGen extends Component{
             row.Filter = (e) => this.createSelectAll()
           }
 
-          if(row.editable && (row.body === undefined || !row.body)){
+          if(row.editable && row.insertable){
+            row.Cell = (e) => {
+              console.log(e)
+              if(e.original.ID<1)
+                return this.inputTextEditor(e)
+              else
+                return <span>{e.value}</span>
+            }
+          }
+          else if(row.editable && (row.body === undefined || !row.body)){
             row.Cell = (e) => (this.inputTextEditor(e))
           }
-          
+ 
+                 
           if(row.Type === "datetime"){
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
@@ -649,7 +686,7 @@ class TableGen extends Component{
               row.className="text-center"
           }
           else if(row.Type === "password"){
-            row.Cell = (e) => <Input type="password"></Input>
+            row.Cell = (e) => (this.inputPassword(e))
             row.className="text-center"
           }
           else if(row.Type === "button"){
