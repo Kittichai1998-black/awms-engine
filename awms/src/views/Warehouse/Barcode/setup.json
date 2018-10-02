@@ -3,12 +3,13 @@
     "barcodesetup":[
         {
             "type":1,
-            "width":"5cm",
-            "height":"3cm",
-            "bwidth":1,
-            "bheight":55,
-            "size":95,
-            "fontsize":10
+            "width":"10cm",
+            "height":"3.5cm",
+            "bwidth":2,
+            "bheight":50,
+            "size":120,
+            "fontsize":10,
+            "fontsizeqr":30
         },
         {
             "type":2,
@@ -17,7 +18,8 @@
             "bwidth":1.5,
             "bheight":100,
             "size":1.9,
-            "fontsize":10
+            "fontsize":10,
+            "fontsizeqr":30
         },
         {
             "type":3,
@@ -26,16 +28,18 @@
             "bwidth":0.7,
             "bheight":22,
             "size":55,
-            "fontsize":7
+            "fontsize":7,
+            "fontsizeqr":30
         },
         {
             "type":4,
-            "width":"5cm",
+            "width":"4.6cm",
             "height":"3cm",
             "bwidth":1,
             "bheight":55,
             "size":95,
-            "fontsize":10
+            "fontsize":10,
+            "fontsizeqr":30
         }
     ],
     "multiplebarcodesize":[
