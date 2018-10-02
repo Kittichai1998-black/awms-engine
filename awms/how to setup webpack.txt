@@ -1,0 +1,93 @@
+--------------------Install Webpack
+yarn add webpack webpack-cli --dev
+
+--------------------Add Scrip to ./package.json
+"scripts": {
+  "build": "webpack"
+}
+
+###################################################
+--------------------Install path
+yarn add path --dev
+
+--------------------Add Scrip to ./webpack.config.js (module.exports)
+const { resolve } = require('path')
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: resolve(__dirname, 'dist'),
+  },
+}
+
+################################################
+-------------------Install Babel for javascript : JSX, ES6 , ES7
+yarn add babel-loader@7 --dev
+yarn add babel-core --dev
+yarn add babel-preset-es2015 --dev
+yarn add babel-preset-react --dev
+yarn add babel-preset-stage-0 --dev
+yarn add babel-polyfill --dev
+
+--------------------Add Scrip to ./webpack.config.js (module.exports)
+module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['babel-preset-es2015', 'babel-preset-stage-0', 'babel-preset-react'],
+          },
+        },
+      },
+    ],
+  },
+
+  
+################################################
+-------------------Install Babel for CSS , SASS
+yarn add css-loader --dev
+
+--------------------Add Scrip to ./webpack.config.js (module.exports)
+module: {
+    rules: [
+		{
+		  test: /\.css$/,
+		  use: [ 'style-loader', 'css-loader' ]
+		},
+    ],
+  },
+
+  
+################################################
+-------------------Install Babel for Load File
+yarn add file-loader --dev
+
+--------------------Add Scrip to ./webpack.config.js (module.exports)
+module: {
+    rules: [
+		{
+			test: /\.(png|jpg|gif|svg|ttf|woff|woff2|eot)$/,
+			use: [
+			  {
+				loader: 'file-loader',
+				options: {}
+			  }
+			]
+		}
+    ],
+  },
+
+##############################################
+-------------------Install Babel for Load File 
+yarn add html-webpack-plugin --dev
+
+
+--------------------Add Scrip to ./webpack.config.js (module.exports)
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'src/index.html',
+    }),
+  ],

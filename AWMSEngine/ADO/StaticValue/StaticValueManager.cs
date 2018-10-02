@@ -116,7 +116,11 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public string GetConfig(ConfigCode code)
         {
-            string c = code.ToString();
+            return GetConfig(code.ToString());
+        }
+        public string GetConfig(string code)
+        {
+            string c = code;
             return this._Configs.ContainsKey(c) ? this._Configs[c].DataValue : null;
         }
     }
