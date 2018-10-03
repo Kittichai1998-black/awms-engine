@@ -89,7 +89,7 @@ class TableGen extends Component{
     this.onEditDateChange = this.onEditDateChange.bind(this)
     this.datetimeBody = this.datetimeBody.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
-    this.autoGenLocation = this.autoGenLocation.bind(this)
+    this.autoGenCode = this.autoGenCode.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -365,7 +365,6 @@ class TableGen extends Component{
         <nav>
           <ul className="pagination">
             <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
-            <li className="page-item"><span className="page-link" >1</span></li>
             <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
           </ul>
         </nav>
@@ -451,7 +450,7 @@ class TableGen extends Component{
     className="checkbox"
     contentEditable
     suppressContentEditableWarning
-    defaultChecked={rowdata.value === 1 || rowdata.value === true} 
+    checked={rowdata.value === 1 || rowdata.value === true} 
     onChange={ (e) => {
       this.onEditorValueChange(rowdata , e.target.checked === false ? 0 : 1, rowdata.column.id)
     }}/>
@@ -511,7 +510,8 @@ class TableGen extends Component{
     }
   }
 
-  autoGenLocation(rowdata){
+  autoGenCode(rowdata){
+    console.log(this.props.autocode)
     if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
       const codeLoc = rowdata.row["AreaMaster_Code"] + this.leadingZero(3,rowdata.row["Bank"]) + 
       this.leadingZero(3,rowdata.row["Bay"]) + this.leadingZero(3,rowdata.row["Level"])
@@ -681,8 +681,8 @@ class TableGen extends Component{
               row.Cell = (e) => this.checkboxBody(e)
               row.className="text-center"
           }
-          else if(row.Type === "autogenloc" && (row.body === undefined || !row.body)){
-              row.Cell = (e) => (this.autoGenLocation(e))
+          else if(row.Type === "autocode" && (row.body === undefined || !row.body)){
+              row.Cell = (e) => (this.autoGenCode(e))
               row.className="text-center"
           }
           else if(row.Type === "password"){

@@ -51,10 +51,10 @@ class Customer extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
-      {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text",},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
+      {accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
+      {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
       {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
@@ -73,8 +73,8 @@ class Customer extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-      filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+      filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Customer"/>
       <Card>
         <CardBody style={{textAlign:'right'}}>
