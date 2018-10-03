@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
+import {Link,Redirect}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Card, CardBody, Button, Row} from 'reactstrap';
 import ReactTable from 'react-table'
@@ -182,8 +182,7 @@ class IssuedManage extends Component{
   }
 
   closePage(){
-    return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-      to={'/wms/issueddoc/manage'}>Close</Link>}</Button>
+    return 
   }
 
   dateTimePicker(){
@@ -225,7 +224,7 @@ class IssuedManage extends Component{
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else{
-        alert("à©¾ÒÐµÑÇàÅ¢à·èÒ¹Ñé¹")
+        alert("à©¾ï¿½Ðµï¿½ï¿½ï¿½Å¢ï¿½ï¿½Ò¹ï¿½ï¿½")
       }
     }
     else{
@@ -294,7 +293,6 @@ class IssuedManage extends Component{
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
         {Cell:(e) => <Button onClick={()=>{
-          console.log(e)
           const data = this.state.data;
           data.forEach((row, index)=>{
             if(row.ID === e.original.ID){
@@ -341,7 +339,7 @@ class IssuedManage extends Component{
         <Card>
           <CardBody>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
-            {this.closePage()}
+            <Button style={{color:"#FFF"}} type="button" color="info" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
           </CardBody>
         </Card>
 

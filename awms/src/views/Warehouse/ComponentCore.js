@@ -5,6 +5,8 @@ import "./componentstyle.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import Select from 'react-select';
 import Axios from 'axios';
+import TableGen from '../Warehouse/MasterData/TableSetup'
+import ExtendTable from '../Warehouse/MasterData/ExtendTable'
 
 class AutoSelect extends Component{
     constructor(){
@@ -47,7 +49,7 @@ class AutoSelect extends Component{
 }
 
 const Clone = (obj) => {
-    var copy;
+    let copy;
   
     // Handle the 3 simple types, and null or undefined
     if (null == obj || "object" != typeof obj) return obj;
@@ -62,7 +64,7 @@ const Clone = (obj) => {
     // Handle Array
     if (obj instanceof Array) {
         copy = [];
-        for (var i = 0, len = obj.length; i < len; i++) {
+        for (let i = 0, len = obj.length; i < len; i++) {
             copy[i] = Clone(obj[i]);
         }
         return copy;
@@ -71,7 +73,7 @@ const Clone = (obj) => {
     // Handle Object
     if (obj instanceof Object) {
         copy = {};
-        for (var attr in obj) {
+        for (let attr in obj) {
             if (obj.hasOwnProperty(attr)) copy[attr] = Clone(obj[attr]);
         }
         return copy;
@@ -80,4 +82,4 @@ const Clone = (obj) => {
     throw new Error("Unable to copy obj! Its type isn't supported.");
   }
 
-export {AutoSelect, Clone}
+export {AutoSelect, Clone, TableGen, ExtendTable}

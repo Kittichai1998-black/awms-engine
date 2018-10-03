@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import Axios from 'axios';
 

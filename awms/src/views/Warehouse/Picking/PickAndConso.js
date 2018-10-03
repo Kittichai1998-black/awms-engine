@@ -66,7 +66,6 @@ class PickAndConso extends Component{
   }
 
   componentDidMount(){
-    console.log(window.apipath)
     Axios.get(createQueryString(this.select)).then((rowselect) => {
       const autocomplete = []
       rowselect.data.datas.forEach(row => {
@@ -94,9 +93,7 @@ class PickAndConso extends Component{
       Axios.get(createQueryString(documentItemCount)).then((countrow) => {
         const initdata = this.state.data
         initdata.forEach(row => {
-          console.log(row.ID)
           countrow.data.datas.forEach(crow => {
-            console.log(crow.qty)
             if(row.ID === crow.DocumentItem_ID){
               row.Quantity = crow.qty + "/" + row.Quantity
             }
@@ -114,9 +111,8 @@ class PickAndConso extends Component{
   sumChild(data){
     let getdata = []
     data.forEach(row1 => {
-      let xx = getdata.filter(row => row.code == row1.code)
+      let xx = getdata.filter(row => row.code === row1.code)
       if(xx.length > 0){
-        let qty = xx[0].allqty
         xx[0].allqty = xx[0].allqty + 1
         if(row1.mapstos.length > 0)
           this.sumChild(row1.mapstos)
@@ -144,8 +140,8 @@ class PickAndConso extends Component{
   createDocumentItemList(data){
     return data.map((rowdata, index) => {
       return <ul key={index}>
-        <span>{this.getStatusName(rowdata.eventStatus)} //</span><span>{rowdata.code} : {rowdata.name}//</span>
-        <span>Object Name{rowdata.objectSizeName} //</span><span>Qty : {rowdata.allqty} //</span><span>Weight : {rowdata.weiKG} //</span>
+        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
+        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} /</span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
@@ -176,8 +172,8 @@ class PickAndConso extends Component{
   createPickingList(data){
     return data.map((rowdata, index) => {
       return <ul>
-        <span>{this.getStatusName(rowdata.eventStatus)} //</span><span>{rowdata.code} : {rowdata.name}//</span>
-        <span>Object Name : {rowdata.objectSizeName} //</span><span>Qty : {rowdata.allqty} //</span><span>Weight : {rowdata.weiKG} //</span>
+        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
+        <span>Object Name : {rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} /</span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
@@ -186,15 +182,14 @@ class PickAndConso extends Component{
   async createPickingItemList(data){
     return data.map((rowdata, index) => {
       return <ul key={index}>
-        <span>{this.getStatusName(rowdata.eventStatus)} //</span><span>{rowdata.code} : {rowdata.name}//</span>
-        <span>Object Name{rowdata.objectSizeName} //</span><span>Qty : {rowdata.allqty} //</span><span>Weight : {rowdata.weiKG} //</span>
+        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
+        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} /</span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
   }
 
   onHandleClickCheckConso(data,barcode){
-    console.log(data & barcode)
     if(data && barcode){
       Axios.get(window.apipath + "/api/wm/issued/bsto/canconso?docID=" + data.ID + "&baseCode=" + barcode).then((res) => {
         this.setState({consoStatus:res.data._result.status})
