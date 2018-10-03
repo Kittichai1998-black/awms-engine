@@ -328,9 +328,7 @@ class ExtendTable extends Component{
       }
     
     createCustomButton(url){
-      return <Button type="button" color="info">{
-        <Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-        to={url}>History</Link>}
+      return <Button type="button" color="info" onClick={() => this.props.history.push(url)}>History
         </Button>
     }
 
