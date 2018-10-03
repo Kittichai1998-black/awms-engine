@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSModel.Criteria.Attribute;
 using AWMSModel.Constant.EnumConst;
+using System.Text.RegularExpressions;
 
 namespace AWMSEngine.ADO
 {
@@ -224,6 +225,18 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public string CommandByConfig(string key)
+        {
+            var conf = key.Split(',');
+            var comm = StaticValue.StaticValueManager.GetInstant().GetConfig(conf[0]);
+            for (int i = 1; i < conf.Length; i++)
+            {
+                comm = comm.Replace("{" + (i - 1) + "}", conf[i - 1]);
+            }
+            comm = Regex.Replace(comm, "{[0-9]+}", "");
+
+            return comm;
+        }
         public int UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
              where T : IEntityModel
         {
@@ -239,11 +252,22 @@ namespace AWMSEngine.ADO
                 if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
                     continue;
 
-                commSets +=
-                    string.Format("{1}{0}=@{0}",
-                        x.Key,
-                        string.IsNullOrEmpty(commSets) ? string.Empty : ",");
-                param.Add(x.Key, x.Value);
+                if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
+                {
+                    commSets +=
+                        string.Format("{0}{1}={1}",
+                            string.IsNullOrEmpty(commSets) ? string.Empty : ",",
+                            x.Key,
+                            this.CommandByConfig(x.Value.ToString()));
+                }
+                else
+                {
+                    commSets +=
+                        string.Format("{0}{1}=@{1}",
+                            string.IsNullOrEmpty(commSets) ? string.Empty : ",",
+                            x.Key);
+                    param.Add(x.Key, x.Value);
+                }
             }
             if (typeof(BaseEntityCreateModify).IsAssignableFrom(typeof(T)))
             {
@@ -281,11 +305,22 @@ namespace AWMSEngine.ADO
                     string.Format("{0}{1}",
                         x.Key,
                         string.IsNullOrEmpty(commFields) ? string.Empty : ",");
-                commVals +=
+
+                if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
+                {
+                    commVals +=
+                        string.Format("{0}{1}",
+                            this.CommandByConfig(x.Value.ToString()),
+                            string.IsNullOrEmpty(commFields) ? string.Empty : ",");
+                }
+                else
+                {
+                    commVals +=
                     string.Format("@{0}{1}",
                         x.Key,
                         string.IsNullOrEmpty(commFields) ? string.Empty : ",");
-                param.Add(x.Key, x.Value);
+                    param.Add(x.Key, x.Value);
+                }
             };
             if (typeof(BaseEntityCreateOnly).IsAssignableFrom(typeof(T)))
             {

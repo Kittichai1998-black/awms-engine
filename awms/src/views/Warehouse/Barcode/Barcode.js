@@ -5,6 +5,16 @@ import queryString from 'query-string'
 import {Input, Form, FormGroup, Card, CardBody, Button} from 'reactstrap';
 import ReactToPrint from "react-to-print";
 import json from "./setup.json";
+import jsPDF from "jspdf";
+import html2canvas from 'html2canvas'
+
+function myRenderFunction(imgData){
+  var a = document.createElement('a');
+  // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+  a.href = imgData.replace("image/jpeg", "image/octet-stream");//canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+  a.download = 'somefilename.jpg';
+  a.click();
+}
 
 class SetBarcode extends Component{
   constructor(props){
@@ -13,16 +23,18 @@ class SetBarcode extends Component{
       barcode:"",
       row:1,
       column:1,
-      chkbar:true,
-      chkqr:false,
+      chkbar:false,
+      chkqr:true,
       element:[],
       barcodesize:[],
       multiplebarcodesize:[],
       qrcodesize:0,
       fontsize:0,
+      fontsizeqr:0,
       width:"",
       height:"",
       name:"",
+      barcodetype:"barcode"
     };
     this.createBarcode = this.createBarcode.bind(this)
     this.columnChange = this.columnChange.bind(this)
@@ -30,14 +42,16 @@ class SetBarcode extends Component{
     this.handleInputChange = this.handleInputChange.bind(this)
     this.listBarcode = this.listBarcode.bind(this)
     this.componentRef = React.createRef()
-
+    this.printDocument = this.printDocument.bind(this)
+    this.createMultipleBarcode = this.createMultipleBarcode.bind(this)
+    this.barcodeID = 1
   }
 
   handleInputChange(event) {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-
+    
     this.setState({
       [name]: value
     });
@@ -49,25 +63,25 @@ class SetBarcode extends Component{
 
   componentDidMount(){
     const values = queryString.parse(this.props.location.search)
-    console.log()
     let setup = json.barcodesetup.find((data) => {
       return data.type.toString() === values.barcodesize;
     })
-    console.log(setup)
     let setup2 = json.multiplebarcodesize.find((data) => {
       return data.type.toString() === values.barcodesize;
     })
-    this.setState({
-      barcode:values.barcode,
-      width:setup.width, 
-      height:setup.height, 
-      name:values.Name,
-      barcodesize:{width:setup.bwidth,height:setup.bheight},
-      qrcodesize:setup.size,
-      fontsize:setup.fontsize,
-      multiplebarcodesize:{width:setup2.width,height:setup2.height,qr:setup2.qr}
-    })
-
+    if(values.barcodesize){
+      this.setState({
+        barcode:values.barcode,
+        barcodetype:values.barcodetype,
+        width:setup.width, 
+        height:setup.height,
+        barcodesize:{width:setup.bwidth,height:setup.bheight},
+        qrcodesize:setup.size,
+        fontsize:setup.fontsize,
+        fontsizeqr:setup.fontsizeqr,
+        multiplebarcodesize:{width:setup2.width,height:setup2.height,qr:setup2.qr}
+      })
+    }
   }
 
   columnChange(event){
@@ -85,97 +99,136 @@ class SetBarcode extends Component{
   });
   }
 
-  createBarcode(event){
+  printDocument() {
+    const width = this.state.width.replace("cm","") * this.state.column
+    const height = this.state.height.replace("cm","") * this.state.row
+    const format = [width, height]
+    
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'cm',
+      format: format
+    });
+    for(let i = 1; i < this.barcodeID; i++){
+      var xyzz = document.getElementById("barcode"+i)
+      html2canvas(xyzz)
+        .then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          pdf.addImage(imgData, 'PNG', 0,0, format[0], format[1]);
+          if(this.barcodeID - i !== 1 )
+            pdf.addPage();
+
+          // pdf.output('dataurlnewwindow');
+          // myRenderFunction(imgData)
+        })
+    }
+    setTimeout(() => pdf.save("barcode.pdf"), 1500)
+  }
+
+  createMultipleBarcode(event){
+    this.barcodeID = 1
+    this.setState({element:[]})
+    const arrbarcodedata = JSON.parse(this.state.barcode)
+    arrbarcodedata.forEach(row => {
+      this.createBarcode(event, row.barcode, row.Name)
+    })
+  }
+  
+
+  createBarcode(event, barcode, Name){
     const divstyle = {
       width:this.state.width, 
       textAlign:'center', 
       height:this.state.height, 
-      margin:'0 5px 5px 0',
+      margin:'0',
       display:'inline-block'
     }
 
     const groupstyle = {
-      margin:'0 5px 5px 0',
+      margin:'0',
     }
 
     event.preventDefault()
     const getbarcode = this.state.barcode
     let element_column = [];
-    let element_row = []; 
+    let element_row = this.state.element; 
+    const text = {
+      display: 'block',
+      width: '250px',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    }
 
-    if(this.state.chkbar === true && this.state.chkqr === false){
+    if(this.state.barcodetype === "barcode"){
       for(let i=0; i< this.state.column; i++){
-        element_column.push(<Card key={i} style={divstyle}>
+        element_column.push(<Card id={"barcode"+ this.barcodeID} style={divstyle}  key={"barcode"+ this.barcodeID + i}>
         <CardBody style={{ padding :'1px'}}>
-          <span style={{fontSize:this.state.fontsize}}>{this.state.name}</span>
-          <Barcode renderAs="svg" value={getbarcode} width={this.state.barcodesize.width} height={this.state.barcodesize.height} fontSize={this.state.fontsize}/>
+          <span style={{fontSize:this.state.fontsize}}>{Name}</span>
+          <Barcode renderAs="svg" value={barcode} width={this.state.barcodesize.width} height={this.state.barcodesize.height} fontSize={this.state.fontsize}/>
         </CardBody>
       </Card>)
       }
-
-      for(let j=0; j< this.state.row; j++){
-        element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
-      }
     }
-    else if(this.state.chkqr === true && this.state.chkbar === false){
+    else if(this.state.barcodetype === "qr"){
       for(let i=0; i< this.state.column; i++){
-        element_column.push(<Card key={i} style={divstyle}>
+        element_column.push(<Card id={"barcode"+ this.barcodeID} style={divstyle} key={"barcode"+ this.barcodeID + i}>
         <CardBody style={{ padding :'1px'}}>
-          <QRCode renderAs="svg" value={getbarcode} size={this.state.qrcodesize} style={{paddingTop:'5px', position:"relative"}} className="float-left"/>
-          <span className="clearfix" style={{fontSize:this.state.fontsize, textAlign:'left'}}>{this.state.name}</span>
-          <span style={{fontSize:this.state.fontsize, position:"absolute", left:0, right:0,}}>{this.state.barcode}</span>
+          <QRCode renderAs="canvas" value={barcode} size={this.state.qrcodesize} style={{padding:'5px 5px 0px 5px'}} className="float-left"/>
+          <span className="clearfix float-left" style={{fontSize:this.state.fontsizeqr, textAlign:'left'}}>
+            <span style={text}>{Name}</span>
+            <span style={text}>{barcode}</span>
+          </span>
         </CardBody>
       </Card>)
       }
-
-      for(let j=0; j< this.state.row; j++){
-        element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
-      }
     }
-    else if(this.state.chkqr === true && this.state.chkbar === true){
+    else if(this.state.barcodetype === "both"){
       for(let i=0; i< this.state.column; i++){
-        element_column.push(<Card key={i} style={divstyle}>
+        element_column.push(<Card id={"barcode"+ this.barcodeID} style={divstyle} key={"barcode"+ this.barcodeID + i}>
         <CardBody style={{ padding :'1px'}}>
-          <span style={{fontSize:this.state.fontsize}}>{this.state.name}</span><br/>
+          <span style={{fontSize:this.state.fontsize}}>{Name}</span><br/>
           <div style={{marginTop:'1px'}}>
-            <Barcode value={getbarcode} width={this.state.multiplebarcodesize.width} 
+            <Barcode value={barcode} width={this.state.multiplebarcodesize.width} 
             height={this.state.multiplebarcodesize.height} fontSize={this.state.fontsize}/>
             <br/>
-            <QRCode renderAs="svg" value={getbarcode} size={this.state.multiplebarcodesize.qr} style={{display:'inline-block'}}/>
+            <QRCode renderAs="svg" value={barcode} size={this.state.multiplebarcodesize.qr} style={{display:'inline-block'}}/>
           </div>
         </CardBody>
       </Card>)
       }
-
-      for(let j=0; j< this.state.row; j++){
-        element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
-      }
     }
+
+    for(let j=0; j< this.state.row; j++){
+      element_row.push(<FormGroup style={groupstyle} key={j}>{element_column}</FormGroup>);
+    }
+
     const div = document.createElement('div');
+    this.barcodeID += 1
     this.setState({element:element_row})
   }
 
   listBarcode(){
     if(this.state.column === 1){
-      return(<div ref={form => {this.form = form;}}><Form style={{ margin :'10px'}}>
+      return(<Form style={{ marginTop :'10px'}}>
           {this.state.element.map((ele,key) => {
             return ele
           })}
-      </Form></div>)
+      </Form>)
     }
     else if(this.state.column > 1){
-      return(<div ref={form => {this.form = form;}}><Form style={{ margin :'10px'}}>
+      return(<Form style={{ marginTop :'10px'}}>
           {this.state.element.map((ele,key) => {
             return ele
           })}
-      </Form></div>)
+      </Form>)
     }
     else{
-      return(<div ref={form => {this.form = form;}}><Form style={{ margin :'10px'}}>
+      return(<Form style={{ marginTop :'10px'}}>
           {this.state.element.map((ele,key) => {
             return ele
           })}
-      </Form></div>)
+      </Form>)
     }
   }
 
@@ -187,18 +240,15 @@ class SetBarcode extends Component{
               <Input ref={input => this.columnz = input} className="mr-sm-1" type="text" name="column" id="txbcolumn" placeholder="1" style={{width:'55px'}} maxLength="2" onChange={this.rowChange}/>
               <span className="mr-sm-1">x</span>
               <Input className="mr-sm-1" type="text" name="row" id="txbrow" placeholder="1" style={{width:'55px'}} maxLength="3" onChange={this.rowChange}/>
-              <Input className="mr-sm-1" type="checkbox" name="chkqr" checked={this.state.chkqr}  onChange={this.handleInputChange}/>
+              {/* <Input className="mr-sm-1" type="checkbox" name="chkqr" checked={this.state.chkqr}  onChange={this.handleInputChange}/>
               <span className="mr-sm-1"> : QRCode</span>
               <Input  className="mr-sm-1" type="checkbox" name="chkbar" checked={this.state.chkbar}  onChange={this.handleInputChange}/>
-              <span className="mr-sm-1"> : Barcode</span>
-              <Button className="mr-sm-1" onClick={this.createBarcode}>Create</Button>
-              <ReactToPrint
-                trigger={() => <Button className="mr-sm-1">Print</Button>}
-                content={() => this.form}
-              />
+              <span className="mr-sm-1"> : Barcode</span> */}
+              <Button className="mr-sm-1" onClick={this.createMultipleBarcode}>Create</Button>
+              <Button className="mr-sm-1" onClick={this.printDocument}>Print</Button>
             </FormGroup>
           </Form>
-          {this.listBarcode()}
+          <div  style={{maxWidth:'10cm',}} ref={form => {this.form = form;}}>{this.listBarcode()}</div>
       </div>
     )
   }

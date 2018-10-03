@@ -1,0 +1,30 @@
+.tablerow{
+    display: table-row
+}
+.tablecell{
+    display: table-cell
+}
+.table{
+    display: table
+}
+.textindent-1{
+    text-indent: 10px
+}
+.textindent-2{
+    text-indent: 20px
+}
+.textindent-3{
+    text-indent: 30px
+}
+.textindent-4{
+    text-indent: 40px
+}
+.tableheader{
+    background: red;
+    color: yellow;
+    text-align: center;
+    font-weight: bolder;
+}
+.tbody{
+    display:table-row-group;
+}
