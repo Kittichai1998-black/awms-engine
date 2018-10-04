@@ -1,10 +1,23 @@
 import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {Input, Button, ButtonGroup , Row, Col,
+  Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {AutoSelect} from '../../ComponentCore'
+
+createQueryString = (select) => {
+  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
+  + (select.q === "" ? "" : "&q=" + select.q)
+  + (select.f === "" ? "" : "&f=" + select.f)
+  + (select.g === "" ? "" : "&g=" + select.g)
+  + (select.s === "" ? "" : "&s=" + select.s)
+  + (select.sk === "" ? "" : "&sk=" + select.sk)
+  + (select.l === 0 ? "" : "&l=" + select.l)
+  + (select.all === "" ? "" : "&all=" + select.all)
+  return queryS
+}
 
 class AreaLocation extends Component{
     constructor(props) {
@@ -36,17 +49,10 @@ class AreaLocation extends Component{
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
       this.createQueryString = this.createQueryString.bind(this)
       this.filterList = this.filterList.bind(this)
+      this.dropdownAuto = this.dropdownAuto.bind(this)
+      this.autoSelectData = this.autoSelectData.bind(this)
       this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
 
-      this.warehouseselect = {queryString:window.apipath + "/api/mst",
-      t:"Warehouse",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID,Code, Name",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:0,
-      l:20,
-      all:"",}
     } 
 
     onHandleClickCancel(event){
@@ -62,17 +68,35 @@ class AreaLocation extends Component{
     Axios.isCancel(true);
     }
 
-    createQueryString = (select) => {
-        let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-        + (select.q === "" ? "" : "&q=" + select.q)
-        + (select.f === "" ? "" : "&f=" + select.f)
-        + (select.g === "" ? "" : "&g=" + select.g)
-        + (select.s === "" ? "" : "&s=" + select.s)
-        + (select.sk === "" ? "" : "&sk=" + select.sk)
-        + (select.l === 0 ? "" : "&l=" + select.l)
-        + (select.all === "" ? "" : "&all=" + select.all)
-        return queryS
+    dropdownAuto(data, field, fieldres){    
+      return <div>
+          <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
+          <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
+            <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)}/>
+          </div>
+        </div>
     }
+
+    autoSelectData(field, resdata, resfield){
+      this.setState({[resfield]:resdata.value}, () => {
+        if(field === "Warehouse"){
+          const area = this.state.area
+          let areawhere = JSON.parse(area.q)
+          areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
+          area.q = JSON.stringify(areawhere)
+    
+          Axios.get(createQueryString(this.state.area)).then((res) => {
+          const areadata = []
+            res.data.datas.forEach(row => {
+              areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+            })
+            this.setState({areadata})
+          })
+        }
+      })
+    }
+
+    
 
     filterList(){
       const objselect = {queryString:window.apipath + "/api/mst",
@@ -154,14 +178,11 @@ arealocation
         return(
           
           <div>
-            {/* <div className="clearfix">
-              <Row>
-                <div className="col-6">
-                  <div className=""><label >Branch : </label>{this.state.pageID ? this.createText(this.state.auto_branch, this.state.data.sou_Branch_ID) : 
-                    <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label})}/></div>}</div>
-                </div>
-              </Row>
-            </div> */}
+            <Row>
+              <Col>
+                  {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres")}
+              </Col>
+            </Row>
           {/*
             column = คอลัมที่ต้องการแสดง
             data = json ข้อมูลสำหรับ select ผ่าน url
