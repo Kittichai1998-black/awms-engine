@@ -5,7 +5,7 @@ import {Input, Button, ButtonGroup , Row, Col,
   Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {AutoSelect} from '../../ComponentCore'
+import {AutoSelect, NumberInput} from '../../ComponentCore'
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -173,7 +173,7 @@ class StorageManagement extends Component{
   dropdownAuto(data, field, fieldres){    
     return <div>
         <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
-        <div style={{display:"inline-block", width:"40%", minWidth:"250px"}}>
+        <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
           <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)}/>
         </div>
       </div>
@@ -187,8 +187,8 @@ class StorageManagement extends Component{
 
   addtolist = (data) => {
     const condata = [...data]
-    const focus = {color:'red'}
-    const focusf = {color:'green'}
+    const focus = {color:'red', marginLeft:"-20px", fontSize:"13px"}
+    const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return condata.map((child,i) => {
       let disQtys;
       if(child.objectSizeMaps.length > 0){
@@ -248,7 +248,6 @@ class StorageManagement extends Component{
       }
     }
     if(status){
-      this.setState({poststatus:true,control:"inline-block",rSelect:'1'})
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
       "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
       "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO};
@@ -256,6 +255,7 @@ class StorageManagement extends Component{
         let header = []
         if(res.data._result.status !== 0)
         {
+          this.setState({poststatus:true,control:"block",rSelect:'1',barcode:"", qty:1, response:"",})
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
             const clonemapsto = clone(this.state.mapSTOView)
             header = clonemapsto
@@ -264,7 +264,7 @@ class StorageManagement extends Component{
           return [header]
         }
         else{
-          alert(res.data._result.message)
+          this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>})
           if([this.state.mapSTOView].length > 0)
           {
             const clonemapsto = clone(this.state.mapSTOView)
@@ -358,29 +358,23 @@ class StorageManagement extends Component{
       conf = window.confirm("ต้องการลบหรือไม่")
     }
     if(conf === true){
-      const approvedata = {isConfirm:flag,rootStoID:this.state.mapSTO.id,type:this.state.mapSTO.type}
-      Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
-        if(res.data._result.status === 0){
-          alert(res.data._result.status)
-          this.setState({result:null,mapSTOView:null})
-          return null
-        }
-        else{
-          let header = []
-          this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
-            const clonemapsto = clone(this.state.mapSTOView)
-            console.log(clonemapsto)
-            header = clonemapsto
-            header.mapstos = this.sumChild(clonemapsto.mapstos)
-          })
-          return [header]
-        }
-      }).then(res =>  res!==null?this.addtolist(res):null).then(res => {this.setState({result:res})})
+      if(this.state.mapSTO){
+        const approvedata = {isConfirm:flag,rootStoID:this.state.mapSTO.id,type:this.state.mapSTO.type}
+        Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
+          if(res.data._result.status !== 0){
+            this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
+            return null
+          }else{
+            console.log(res.data._result.message)
+            this.setState({response:<span class="text-center">{res.data._result.message}</span>})
+          }
+        })
+      }
     }
   }
 
   clearTable(){
-    this.setState({result:null,mapSTOView:null})
+    this.setState({result:null,mapSTOView:null, mapSTO:null, control:"none", response:""})
   }
 
   render(){
@@ -390,7 +384,7 @@ class StorageManagement extends Component{
         {this.barcodeReaderPopup()}
         <Row>
           <Col sm="6">
-            <label>Mode : {this.state.Mode===0?'Register':'Transfer'}</label>
+            <label style={{fontWeight:"bold", fontSize:"1.1em"}}>Mode : {this.state.Mode===0?'Register':'Transfer'}</label>
           </Col>
           <Col sm="6">
             <ButtonGroup style={{margin:'0 0 10px 0', width:"100%"}}>
@@ -429,18 +423,18 @@ class StorageManagement extends Component{
           </Col>
           <Col sm="6">
             <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Quantity : </label>
-            <Input style={{width:'40%',display:'inline-block'}}
-              value={this.state.qty}
-              onChange={e => {this.setState({qty:e.target.qty})}}
-              type="text"/>{' '}
+            <NumberInput value={this.state.qty} onChange={value => this.setState({qty:value})} style={{width:'40%',display:'inline-block'}}/>{' '}
             <Button id="start" onClick={() => {this.setState({barcodemodal:true})}} color="danger" style={{display:'none'}}>Scan</Button>{' '}
             <Button onClick={this.createListTable} color="danger" style={{display:'inline-block'}} disabled={this.state.poststatus}>Post</Button>
           </Col>
         </Row>
         <Row>
+          {this.state.response}
+        </Row>
+        <Row>
           {this.state.result}
         </Row>
-        <Row style={{display:this.state.control}}>
+        <Row className="text-center" style={{display:this.state.control}}>
             <Button onClick={() => this.approvemapsto(true)} style={this.state.Mode===0?null:display}>Save</Button>
             <Button onClick={() => this.approvemapsto(false)} style={this.state.Mode===0?null:display} color="danger">Cancel</Button>
             <Button onClick={this.clearTable} color="danger" >Clear</Button>

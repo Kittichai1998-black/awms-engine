@@ -9,7 +9,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import EventStatus from '../../EventStatus'
 import queryString from 'query-string'
-import {AutoSelect} from '../../ComponentCore'
+import {AutoSelect, NumberInput} from '../../ComponentCore'
 import 'react-datepicker/dist/react-datepicker.css';
 
 function isInt(value) {
@@ -61,6 +61,7 @@ class IssuedManage extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
+    this.initialData = this.initialData.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
 
@@ -95,7 +96,7 @@ class IssuedManage extends Component{
        all:"",}
   }
 
-  componentDidMount(){
+  initialData(){
     const values = queryString.parse(this.props.location.search)
     if(values.ID){
       
@@ -155,6 +156,14 @@ class IssuedManage extends Component{
     )))
   }
 
+  componentDidMount(){
+    this.initialData()
+  }
+
+  componentDidUpdate(){
+    
+  }  
+
   onHandleClickCancel(event){
     this.forceUpdate();
     event.preventDefault();
@@ -171,8 +180,8 @@ class IssuedManage extends Component{
     })
     let postdata = {
       refID:'', forCustomerID:null, batch:null, lot:null,
-      souBranchID:this.state.branchresult,souWarehouseID:this.state.warehouseresult,souAreaMasterID:null,
-      desCustomerID:this.state.customerresult,desSupplierID:null,
+      souBranchID:this.state.branch,souWarehouseID:this.state.warehouse,souAreaMasterID:null,
+      desCustomerID:this.state.customer,desSupplierID:null,
       actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
       remark:this.state.remark,issueItems:acceptdata
     }
@@ -204,13 +213,15 @@ class IssuedManage extends Component{
   }
 
   inputCell(field, rowdata){
-    return  <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
-    onChange={(e) => {this.editData(rowdata, e.target.value, "PackQty")}} />;
+    /* return  <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
+    onChange={(e) => {this.editData(rowdata, e.target.value, "PackQty")}} />; */
+    return <NumberInput value={rowdata.value}
+    onChange={(e) => {this.editData(rowdata, e, "PackQty")}}/>
   }
   
   addData(){
     const data = this.state.data
-    data.push({ID:this.addIndex,PackItem:"",PackQty:0,SKU:"",UnitType:"", PackID:""})
+    data.push({ID:this.addIndex,PackItem:"",PackQty:1,SKU:"",UnitType:"", PackID:""})
     this.addIndex += 1
     this.setState({data})
   }
@@ -224,7 +235,7 @@ class IssuedManage extends Component{
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else{
-        alert("੾�е���Ţ��ҹ��")
+        alert("??")
       }
     }
     else{
@@ -233,7 +244,7 @@ class IssuedManage extends Component{
       data[rowdata.index]["UnitType"] = value.UnitType;
       data[rowdata.index]["PackID"] = value.ID;
     }
-    this.setState({ data });
+    this.setState({ data }, () => console.log(this.state.data));
   }
 
   createText(data,field){

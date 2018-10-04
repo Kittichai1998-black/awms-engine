@@ -72,10 +72,10 @@ class IssuedDoc extends Component{
         postdata["docIDs"].push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then(() => this.forceUpdate())
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then(() => {this.forceUpdate()})
       }
       else{
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => this.forceUpdate())
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => {this.forceUpdate()})
       }
     }
   }
@@ -123,7 +123,7 @@ class IssuedDoc extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} to={'/wms/issueddoc/manage/issuedmanage'}>Create Document</Link>}</Button>
+          <Button className="float-right" onClick={() => this.props.history.push('/wms/issueddoc/manage/issuedmanage')}>Create Document</Button>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
