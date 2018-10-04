@@ -234,8 +234,8 @@ class SetBarcode extends Component{
         <Form inline>
             <FormGroup>
               <Input ref={input => this.columnz = input} className="mr-sm-1" type="text" name="column" id="txbcolumn" placeholder="1" style={{width:'55px'}} maxLength="2" onChange={this.rowChange}/>
-              <span className="mr-sm-1">x</span>
-              <Input className="mr-sm-1" type="text" name="row" id="txbrow" placeholder="1" style={{width:'55px'}} maxLength="3" onChange={this.rowChange}/>
+              {/* <span className="mr-sm-1">x</span>
+              <Input className="mr-sm-1" type="text" name="row" id="txbrow" placeholder="1" style={{width:'55px'}} maxLength="3" onChange={this.rowChange}/> */}
               {/* <Input className="mr-sm-1" type="checkbox" name="chkqr" checked={this.state.chkqr}  onChange={this.handleInputChange}/>
               <span className="mr-sm-1"> : QRCode</span>
               <Input  className="mr-sm-1" type="checkbox" name="chkbar" checked={this.state.chkbar}  onChange={this.handleInputChange}/>
