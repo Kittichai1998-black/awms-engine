@@ -31,10 +31,11 @@ class ListProduct extends Component{
       sortstatus:0,
       selectiondata:[],
     };
+    this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this)
-    this.getAutocompletee = this.getAutocomplete.bind(this)
-    this.getSelectionData = this.getSelectionData.bind(this)
+    this.createQueryString = this.createQueryString.bind(this);
+    this.getAutocompletee = this.getAutocomplete.bind(this);
+    this.getSelectionData = this.getSelectionData.bind(this);
     this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
   }
 
@@ -114,10 +115,10 @@ class ListProduct extends Component{
     this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
   }
 
- /*  createBarcodeBtn(data){
+  createBarcodeBtn(data){
     return <Button type="button" color="info" 
     onClick={() => this.history.push('/mst/sku/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
-  } */
+  }
 
   render(){
     const cols = [
@@ -135,7 +136,7 @@ class ListProduct extends Component{
       {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
       {accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
     
     const btnfunc = [{
@@ -168,8 +169,6 @@ class ListProduct extends Component{
           </CardBody>
         </Card>
       </div>
-
-      
     )
   }
 }

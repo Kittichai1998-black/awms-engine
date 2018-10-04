@@ -18,10 +18,10 @@ class Warehouse extends Component{
           'mode' : 'check',
         }],
         acceptstatus : false,
-        select:{queryString:window.apipath + "/api/mst",
-        t:"Warehouse",
+        select:{queryString:window.apipath + "/api/viw",
+        t:"WarehouseMaster",
         q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
-        f:"*",
+        f:"ID,Code,Name,Description,Branch_ID,Branch_Code,Branch_Name,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:"",
@@ -31,23 +31,84 @@ class Warehouse extends Component{
         selectiondata:[],
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-      this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]  
+      this.createQueryString = this.createQueryString.bind(this)
+      this.filterList = this.filterList.bind(this)
+      this.uneditcolumn = ["Branch_Code","Branch_Name","CreateBy","CreateTime","ModifyBy","ModifyTime"]  
     }
 
     onHandleClickCancel(event){
         this.forceUpdate();
         event.preventDefault();
     }
+
+    componentWillMount(){
+        this.filterList();
+      }
     
     componentWillUnmount(){
         Axios.isCancel(true);
     }
+
+    createQueryString = (select) => {
+        let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
+        + (select.q === "" ? "" : "&q=" + select.q)
+        + (select.f === "" ? "" : "&f=" + select.f)
+        + (select.g === "" ? "" : "&g=" + select.g)
+        + (select.s === "" ? "" : "&s=" + select.s)
+        + (select.sk === "" ? "" : "&sk=" + select.sk)
+        + (select.l === 0 ? "" : "&l=" + select.l)
+        + (select.all === "" ? "" : "&all=" + select.all)
+        return queryS
+      }
+
+      filterList(){
+        const whselect = {queryString:window.apipath + "/api/mst",
+          t:"Branch",
+          q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+          f:"ID,Code",
+          g:"",
+          s:"[{'f':'ID','od':'asc'}]",
+          sk:0,
+          l:20,
+          all:"",}
+    
+        /* const areatypeselect = {queryString:window.apipath + "/api/mst",
+          t:"AreaMasterType",
+          q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+          f:"ID,Code",
+          g:"",
+          s:"[{'f':'ID','od':'asc'}]",
+          sk:0,
+          l:20,
+          all:"",} */
+    
+        Axios.all([Axios.get(this.createQueryString(whselect))]).then(
+          (Axios.spread((whresult) => 
+        {
+          let ddl = [...this.state.autocomplete]
+          let whList = {}
+          let areatypelist = {}
+          whList["data"] = whresult.data.datas
+          whList["field"] = "Branch_Code"
+          whList["pair"] = "Branch_ID"
+          whList["mode"] = "Dropdown"
+    
+          /* areatypelist["data"] = areatyperesult.data.datas
+          areatypelist["field"] = "AreaMasterType_Code"
+          areatypelist["pair"] = "AreaMasterType_ID"
+          areatypelist["mode"] = "Dropdown" */
+    
+          ddl = ddl.concat(whList)
+          this.setState({autocomplete:ddl})
+        })))
+      }
 
     render(){
         const cols = [
             {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
             {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
+            {accessor: 'Branch_Code', Header: 'Branch',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
             {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
             {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
@@ -69,7 +130,7 @@ class Warehouse extends Component{
                     ddlfilter = json dropdown สำหรับทำ dropdown filter
                 */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-                            filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                            filterable={true} autocomplete={this.state.autocomplete} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                             table="ams_Warehouse"/>
 
             </div>

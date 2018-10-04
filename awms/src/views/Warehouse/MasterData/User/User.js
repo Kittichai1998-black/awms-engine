@@ -72,15 +72,6 @@ class User extends Component{
             {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
-        
-        String.prototype.replaceAll = function(search, replace)
-        {
-            if (replace === undefined) {
-                return this.toString();
-            }
-            return this.replace(new RegExp('[' + search + ']', 'g'), replace);
-        };
-        
 
         const btnfunc = [{
             btntype:"Barcode",

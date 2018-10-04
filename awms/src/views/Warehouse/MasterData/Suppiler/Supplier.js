@@ -51,8 +51,8 @@ class Supplier extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:false,},
-      {accessor: 'Name', Header: 'Name', editable:false},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text"},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text"},
       {accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
       /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
@@ -60,7 +60,7 @@ class Supplier extends Component{
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
       {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
       {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
 
     const btnfunc = [{

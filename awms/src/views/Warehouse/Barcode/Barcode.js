@@ -127,11 +127,12 @@ class SetBarcode extends Component{
 
   createMultipleBarcode(event){
     this.barcodeID = 1
-    this.setState({element:[]})
-    const arrbarcodedata = JSON.parse(this.state.barcode)
-    arrbarcodedata.forEach(row => {
-      this.createBarcode(event, row.barcode, row.Name)
-    })
+    this.setState({element:[]}, () =>{
+      const arrbarcodedata = JSON.parse(this.state.barcode)
+      arrbarcodedata.forEach(row => {
+        this.createBarcode(event, row.barcode, row.Name)
+      })})
+    
   }
   
 
@@ -176,8 +177,8 @@ class SetBarcode extends Component{
         <CardBody style={{ padding :'1px'}}>
           <QRCode renderAs="canvas" value={barcode} size={this.state.qrcodesize} style={{padding:'5px 5px 0px 5px'}} className="float-left"/>
           <span className="clearfix float-left" style={{fontSize:this.state.fontsizeqr, textAlign:'left'}}>
-            <span style={text}>{Name}</span>
             <span style={text}>{barcode}</span>
+            <span style={text}>{Name}</span>
           </span>
         </CardBody>
       </Card>)
@@ -238,8 +239,8 @@ class SetBarcode extends Component{
         <Form inline>
             <FormGroup>
               <Input ref={input => this.columnz = input} className="mr-sm-1" type="text" name="column" id="txbcolumn" placeholder="1" style={{width:'55px'}} maxLength="2" onChange={this.rowChange}/>
-              <span className="mr-sm-1">x</span>
-              <Input className="mr-sm-1" type="text" name="row" id="txbrow" placeholder="1" style={{width:'55px'}} maxLength="3" onChange={this.rowChange}/>
+              {/* <span className="mr-sm-1">x</span>
+              <Input className="mr-sm-1" type="text" name="row" id="txbrow" placeholder="1" style={{width:'55px'}} maxLength="3" onChange={this.rowChange}/> */}
               {/* <Input className="mr-sm-1" type="checkbox" name="chkqr" checked={this.state.chkqr}  onChange={this.handleInputChange}/>
               <span className="mr-sm-1"> : QRCode</span>
               <Input  className="mr-sm-1" type="checkbox" name="chkbar" checked={this.state.chkbar}  onChange={this.handleInputChange}/>

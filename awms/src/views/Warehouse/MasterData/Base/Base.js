@@ -31,10 +31,12 @@ class Area extends Component{
             sortstatus:0,
             selectiondata:[]
         };
+        this.getSelectionData = this.getSelectionData.bind(this)
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.createQueryString = this.createQueryString.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","ModifyBy","ModifyTime"]
+        this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
+        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","CreateBy","CreateTime","ModifyBy","ModifyTime"]
     }
 
     onHandleClickCancel(event){
@@ -104,19 +106,35 @@ class Area extends Component{
         })))
     }
     getSelectionData(data){
-    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
+        console.log(data)
+        let obj = []
+        data.forEach((datarow,index) => {
+            obj.push({"barcode":datarow.Code,"Name":datarow.Name});
+        })
+        const xx = JSON.stringify(obj)
+        this.setState({barcodeObj:xx}, () => console.log(this.state.barcodeObj))
     }
 
-    createBarcodeBtn(data){
+    createBarcodeBtn(rowdata){
         return <Button type="button" color="info"
-        onClick={() => this.history.push('/mst/base/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
+        onClick={() => {
+            let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
+            let barcodestr = JSON.stringify(barcode)
+            if(!this.state.barcodeObj){
+                this.setState({barcodeObj:barcodestr}, () =>
+                this.props.history.push('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj)) 
+            }else{
+                this.props.history.push('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj) 
+            }
+            }}>Print</Button>
       }
 
     render(){
         const cols = [
-            {accessor: 'Code', Header: 'Code', editable:true},
-            {accessor: 'Name', Header: 'Name', editable:true},
-            {accessor: 'Description', Header: 'Description', sortable:false},
+            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text"},
+            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text"},
+            {accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
@@ -150,7 +168,7 @@ class Area extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
             filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
-             table="ams_BaseMaster"/>
+             table="ams_BaseMaster" autocode="@@sql_gen_base_code"/>
           </div>
         )
       }

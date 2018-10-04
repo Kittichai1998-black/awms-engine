@@ -4,6 +4,7 @@ import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import {AutoSelect} from '../../ComponentCore'
 
 class AreaLocation extends Component{
     constructor(props) {
@@ -11,6 +12,7 @@ class AreaLocation extends Component{
 
       this.state = {
         data : [],
+        auto_warehouse:[],
         autocomplete:[],
         statuslist:[{
         'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
@@ -35,6 +37,16 @@ class AreaLocation extends Component{
       this.createQueryString = this.createQueryString.bind(this)
       this.filterList = this.filterList.bind(this)
       this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
+
+      this.warehouseselect = {queryString:window.apipath + "/api/mst",
+      t:"Warehouse",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"ID,Code, Name",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      l:20,
+      all:"",}
     } 
 
     onHandleClickCancel(event){
@@ -103,18 +115,8 @@ class AreaLocation extends Component{
         this.setState({autocomplete:ddl})
       })))
     }
-
+arealocation
     createBarcodeBtn(){
-      /* let filter = [...this.state.res] */
-      /* console.log(this.state.res) */
-      let barcodejson = {
-        "barcode": null,
-        "Name": null,
-       /*  "t": this.props.table,
-        "pk": "ID",
-        "datas": dataedit,
-        "nr": false */
-      }
       let barcode=[{"barcode":"xxx","Name":"nameXXX"},{"barcode":"555","Name":"name555"}]
       let barcodestr = JSON.stringify(barcode)
       return <Button type="button" color="info"
@@ -124,13 +126,13 @@ class AreaLocation extends Component{
     render(){
         const cols = [
           {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-          {accessor: 'Code', Header: 'Code', Type:"autocode", editable:false},
-          {accessor: 'Name', Header: 'Name', editable:true},
-          {accessor: 'Description', Header: 'Description', sortable:false, editable:true},
-          {accessor: 'Gate', Header: 'Gate', editable:true},
-          {accessor: 'Bank', Header: 'Bank', editable:true},
-          {accessor: 'Bay', Header: 'Bay', editable:true},
-          {accessor: 'Level', Header: 'Level', editable:true},
+          {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
+          {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+          {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+          {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
+          {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
+          {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
+          {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
           {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
           {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
           {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
@@ -150,7 +152,16 @@ class AreaLocation extends Component{
         }]
     
         return(
+          
           <div>
+            {/* <div className="clearfix">
+              <Row>
+                <div className="col-6">
+                  <div className=""><label >Branch : </label>{this.state.pageID ? this.createText(this.state.auto_branch, this.state.data.sou_Branch_ID) : 
+                    <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label})}/></div>}</div>
+                </div>
+              </Row>
+            </div> */}
           {/*
             column = คอลัมที่ต้องการแสดง
             data = json ข้อมูลสำหรับ select ผ่าน url
@@ -165,10 +176,11 @@ class AreaLocation extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} autocomplete={this.state.autocomplete} accept={true}
                       btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={(res) => this.setState({test:res})}
-                      table="ams_AreaLocationMaster" autocode="@@sql_gen_base_code"/>
+                      table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code"/>
           </div>
           
         )
+        
     }
 }
 
