@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import guid from 'guid';
+import hash from 'hash.js';
 
 class User extends Component{
     constructor(props) {
@@ -10,7 +12,7 @@ class User extends Component{
         this.state={
             data:[],
             statuslist:[{
-                'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
+                'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
                 'header' : 'Status',
                 'field' : 'Status',
                 'mode' : 'check',
@@ -21,7 +23,7 @@ class User extends Component{
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
             f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
             g:"",
-            s:"[{'f':'Code','od':'asc'}]",
+            s:"[{'f':'ID','od':'asc'}]",
             sk:0,
             l:20,
             all:"",},
@@ -31,14 +33,18 @@ class User extends Component{
 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.createQueryString = this.createQueryString.bind(this)
-        this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
+        //this.filterList = this.filterList.bind(this)
+        this.uneditcolumn = []
     }
-
     onHandleClickCancel(event){
         this.forceUpdate();
         event.preventDefault();
     }
     
+    /* componentWillMount(){
+    //this.filterList();
+    } */
+
     componentWillUnmount(){
     Axios.isCancel(true);
     }
@@ -55,16 +61,21 @@ class User extends Component{
         return queryS
     }
 
+    hash256password() {
+        var guid1 = guid.raw().toUpperCase()
+        return guid1;
+    }
+
     render(){
         const cols = [
-            {accessor: 'Code', Header: 'Username', editable:true, filterable:true, Filter:"text", insertable:true},
-            {accessor: 'Password', Header: 'Password', editable:true, filterable:false, Type:"password" },
+            {accessor: 'ID', Header: 'ID', editable:false}, 
+            {accessor: 'Code', Header: 'Code', editable:false,Filter:"text"},
             {accessor: 'Name', Header: 'Name', editable:true},
+            {accessor: 'Password', Header: 'Password', sortable:false, editable:true,filter:false,Type:"password" },
             {accessor: 'EmailAddress', Header: 'Email Address', editable:true},
             {accessor: 'LineID', Header: 'Line ID', editable:true},
             {accessor: 'FacebookID', Header: 'Facebook ID', editable:true},
-            {accessor: 'TelOffice', Header: 'Office Tel.', editable:true},
-            {accessor: 'TelMobile', Header: 'Mobile', editable:true},
+            {accessor: 'TelOffice', Header: 'Tel Office', editable:true},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
             {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
@@ -80,7 +91,9 @@ class User extends Component{
             }
             return this.replace(new RegExp('[' + search + ']', 'g'), replace);
         };
-        
+        var str = this.hash256password().replaceAll('-','').toUpperCase();
+        var testst = hash.sha256().update('pass').digest('hex').toUpperCase()
+        var hashabc = hash.sha256().update('abc').digest('hex').toUpperCase()
 
         const btnfunc = [{
             btntype:"Barcode",
@@ -103,6 +116,13 @@ class User extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
+         
+            {'guid:  '+str}<br />
+            {'hash256 of guid: '+testst}<br />
+            {'hash256 of abc: '+hashabc}<br />
+            DDD2CE1CF716F6613F637208D6A2C1B5213D9DBB3416851430F5E052C44ACF28<br />
+            3B57C7547673D33C89BECFE19FCD3163<br />
+        049984508E397F42106531E2C08FA315
             </div>) 
     }
 }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import Axios from 'axios';
 
@@ -26,7 +26,7 @@ class IssuedDoc extends Component{
       acceptstatus : false,
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{ 'f': 'status', c:'=', 'v': 1}]",
       f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
@@ -72,10 +72,10 @@ class IssuedDoc extends Component{
         postdata["docIDs"].push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => this.setState({resp:res.data._result.message}))
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then(() => this.forceUpdate())
       }
       else{
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => {this.forceUpdate()})
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => this.forceUpdate())
       }
     }
   }
@@ -123,7 +123,7 @@ class IssuedDoc extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right" onClick={() => this.props.history.push('/wms/issueddoc/manage/issuedmanage')}>Create Document</Button>
+          <Button className="float-right">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} to={'/wms/issueddoc/manage/issuedmanage'}>Create Document</Link>}</Button>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}

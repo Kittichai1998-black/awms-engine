@@ -104,27 +104,16 @@ class AreaLocation extends Component{
       })))
     }
 
-    createBarcodeBtn(){
-      /* let filter = [...this.state.res] */
-      /* console.log(this.state.res) */
-      let barcodejson = {
-        "barcode": null,
-        "Name": null,
-       /*  "t": this.props.table,
-        "pk": "ID",
-        "datas": dataedit,
-        "nr": false */
-      }
-      let barcode=[{"barcode":"xxx","Name":"nameXXX"},{"barcode":"555","Name":"name555"}]
-      let barcodestr = JSON.stringify(barcode)
-      return <Button type="button" color="info"
-      onClick={() => this.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr)}>Print</Button>
+    createBarcodeBtn(data){
+      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+        to={'/mst/arealocation/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
     }
 
     render(){
         const cols = [
-          {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-          {accessor: 'Code', Header: 'Code', Type:"autocode", editable:false},
+          {accessor: 'ID', Header: 'ID', editable:false,}, 
+          {accessor: 'Code', Header: 'Code', editable:false},
+          {accessor: 'Code', Header: 'Code', Type:"autogenloc", editable:false},
           {accessor: 'Name', Header: 'Name', editable:true},
           {accessor: 'Description', Header: 'Description', sortable:false, editable:true},
           {accessor: 'Gate', Header: 'Gate', editable:true},
@@ -143,7 +132,6 @@ class AreaLocation extends Component{
         ]; 
       
         const btnfunc = [{
-          history:this.props.history,
           btntype:"Barcode",
           func:this.createBarcodeBtn
      
@@ -161,11 +149,10 @@ class AreaLocation extends Component{
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-          
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} autocomplete={this.state.autocomplete} accept={true}
-                      btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={(res) => this.setState({test:res})}
-                      table="ams_AreaLocationMaster" autocode="@@sql_gen_base_code"/>
+                      btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                      table="ams_AreaLocationMaster"/>
           </div>
           
         )

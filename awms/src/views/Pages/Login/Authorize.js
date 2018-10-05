@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Route, Switch, BrowserRouter } from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 import Axios from 'axios';
 
 async function logout(){

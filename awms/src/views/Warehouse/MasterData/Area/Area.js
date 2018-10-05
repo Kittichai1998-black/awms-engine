@@ -12,7 +12,7 @@ class Area extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-      'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
+      'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
       'header' : 'Status',
       'field' : 'Status',
       'mode' : 'check',
@@ -105,6 +105,7 @@ class Area extends Component{
 
   render(){
     const cols = [
+      {accessor: 'ID', Header: 'ID', Filter:"text", editable:false,}, 
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
       {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},

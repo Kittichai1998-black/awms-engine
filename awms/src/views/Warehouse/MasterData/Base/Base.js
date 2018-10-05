@@ -13,7 +13,7 @@ class Area extends Component{
             data : [],
             autocomplete:[],
             statuslist:[{
-            'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
+            'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
             'header' : 'Status',
             'field' : 'Status',
             'mode' : 'check',
@@ -34,7 +34,7 @@ class Area extends Component{
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.createQueryString = this.createQueryString.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","ModifyBy","ModifyTime"]
+        this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
     }
 
     onHandleClickCancel(event){
@@ -108,12 +108,13 @@ class Area extends Component{
     }
 
     createBarcodeBtn(data){
-        return <Button type="button" color="info"
-        onClick={() => this.history.push('/mst/base/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
+        return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
+          to={'/mst/base/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
       }
 
     render(){
         const cols = [
+            {accessor: 'ID', Header: 'ID', editable:false}, 
             {accessor: 'Code', Header: 'Code', editable:true},
             {accessor: 'Name', Header: 'Name', editable:true},
             {accessor: 'Description', Header: 'Description', sortable:false},
@@ -129,9 +130,8 @@ class Area extends Component{
           ]; 
         
         const btnfunc = [{
-            history:this.props.history,
-            btntype:"Barcode",
-            func:this.createBarcodeBtn
+          btntype:"Barcode",
+          func:this.createBarcodeBtn
         }]
     
         return(
@@ -149,7 +149,7 @@ class Area extends Component{
           */}
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
             filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
-            btn={btnfunc} uneditcolumn={this.uneditcolumn}
+            btn={btnfunc}
              table="ams_BaseMaster"/>
           </div>
         )

@@ -36,7 +36,7 @@ class DefaultMenu extends Component{
     )
   }
 }
-/* 
+
 function checkstatus(){
   if(sessionStorage.getItem("tokendata") !== null){
     return <Redirect from="/" to="/Dashboard" />
@@ -44,12 +44,13 @@ function checkstatus(){
   else{
     return <Redirect from="/" to="/login" />
   }
-} */
+}
 
 class DefaultLayout extends Component {
   render() {
     return (
       <div className="app">
+      {/* {checkstatus()} */}
         <AppHeader fixed>
           <DefaultHeader />
         </AppHeader>
