@@ -115,8 +115,7 @@ class SetBarcode extends Component{
             pdf.addPage();
         })
     }
-
-    setTimeout(() => pdf.save("barcode.pdf"), 4000)
+      pdf.save("barcode.pdf")
   }
 
   createMultipleBarcode(event){
