@@ -33,6 +33,8 @@ namespace AWMSEngine.ADO.StaticValue
         public List<ams_Customer> Customers { get => this._Customers; }
         private List<ams_PackMasterType> _PackMasterType;
         public List<ams_PackMasterType> PackMasterType { get => this._PackMasterType; }
+        private List<ams_SKUMasterType> _SKUMasterType;
+        public List<ams_SKUMasterType> SKUMasterType { get => this._SKUMasterType; }
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
 
@@ -101,6 +103,10 @@ namespace AWMSEngine.ADO.StaticValue
         public void LoadAPIService()
         {
             this._APIServices = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, new VOCriteria()));
+        }
+        public void LoadSKUMasterType()
+        {
+            this._SKUMasterType = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, new VOCriteria()));
         }
 
         public bool IsFeature(FeatureCode code)

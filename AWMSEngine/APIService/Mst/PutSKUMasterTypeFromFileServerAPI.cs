@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.Mst
 {
-    public class PutCustomerFromFileServerAPI : BaseAPIService
+    public class PutSKUMasterTypeFromFileServerAPI : BaseAPIService
     {
-        public PutCustomerFromFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutSKUMasterTypeFromFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
@@ -20,8 +20,9 @@ namespace AWMSEngine.APIService.Mst
             var res = new Engine.General.TransferMasterFromFileServer().Execute(this.Logger, this.BuVO,
                 new TransferMasterFromFileServer.TReq()
                 {
-                    TableName = "ams_Customer",
-                    FieldWhere = "Code"
+                    TableName = "ams_SKUMasterType",
+                    FieldWhere = "Code",
+
 
                 });
             return res;

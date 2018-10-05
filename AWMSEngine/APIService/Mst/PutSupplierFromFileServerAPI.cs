@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.General;
+using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.Mst
@@ -19,12 +20,8 @@ namespace AWMSEngine.APIService.Mst
             var res = new Engine.General.TransferMasterFromFileServer().Execute(this.Logger, this.BuVO,
                 new TransferMasterFromFileServer.TReq()
                 {
-                    APICode = "Supplier_Master_Transfer",
                     TableName = "ams_Supplier",
                     FieldWhere = "Code",
-                    ReqFieldNames = new string[] { "Code", "Name", "Description" },
-                    ReqFieldNamesMandatory = new string[] { "Code", "Name" },
-                    ResFieldNames = new string[] { "Code", "Name", "Description" },
 
                 });
             return res;

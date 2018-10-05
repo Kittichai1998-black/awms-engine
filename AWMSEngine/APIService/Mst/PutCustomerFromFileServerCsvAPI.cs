@@ -19,7 +19,7 @@ namespace AWMSEngine.APIService.Mst
             var res = new Engine.General.TransferMasterFromFileServerCsv().Execute(this.Logger, this.BuVO,
                 new TransferMasterFromFileServerCsv.TReq()
                 {
-                    apiCode = "Customer_Master_Transfer",
+                    path = "Customer_Master_Transfer",
                     tableName = "ams_Customer",
                     fieldWhere = "Code",
                     beginRowIndex = 1,

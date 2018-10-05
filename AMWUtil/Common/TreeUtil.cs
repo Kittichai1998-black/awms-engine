@@ -6,12 +6,12 @@ namespace AMWUtil.Common
 {
     public static class TreeUtil
     {
-        public static List<TSource> ToList<TSource>(this TSource source)
+        public static List<TSource> ToTreeList<TSource>(this TSource source)
             where TSource : ITreeObject
         {
-            return ToList(source,null);
+            return ToTreeList(source,null);
         }
-        private static List<TSource> ToList<TSource>(this TSource source, List<dynamic> childFieldInfos)
+        private static List<TSource> ToTreeList<TSource>(this TSource source, List<dynamic> childFieldInfos)
             where TSource : ITreeObject
         {
             List<TSource> res = new List<TSource>();
@@ -92,7 +92,7 @@ namespace AMWUtil.Common
                 }
 
                 res.AddRange(lis);
-                lis.ForEach(x => { res.AddRange(ToList<TSource>(x, childFieldInfos)); });
+                lis.ForEach(x => { res.AddRange(ToTreeList<TSource>(x, childFieldInfos)); });
             }
             return res;
         }

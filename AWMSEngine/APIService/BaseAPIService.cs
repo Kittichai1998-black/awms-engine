@@ -104,8 +104,8 @@ namespace AWMSEngine.APIService
                 this.Logger.LogInfo("[BeginExecuteEngineManual]");
                 var res = this.ExecuteEngineManual();
                 this.Logger.LogInfo("[EndExecuteEngineManual]");
-                if (res == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Response API");
+                //if (res == null)
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Response API");
                 var resAPI = new ResponseObject().Execute(this.Logger, this.BuVO, res);
                 result.status = 1;
                 result.code = AMWExceptionCode.I0000.ToString();
