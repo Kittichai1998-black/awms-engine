@@ -18,10 +18,10 @@ class Warehouse extends Component{
           'mode' : 'check',
         }],
         acceptstatus : false,
-        select:{queryString:window.apipath + "/api/mst",
-        t:"Warehouse",
+        select:{queryString:window.apipath + "/api/viw",
+        t:"WarehouseMaster",
         q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
-        f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        f:"ID,Code,Name,Description,Branch_ID,Branch_Code,Branch_Name,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:"",
@@ -31,9 +31,9 @@ class Warehouse extends Component{
         selectiondata:[],
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-      /* this.createQueryString = this.createQueryString.bind(this)
-      this.filterList = this.filterList.bind(this) */
-      this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]  
+      this.createQueryString = this.createQueryString.bind(this)
+      this.filterList = this.filterList.bind(this)
+      this.uneditcolumn = ["Branch_Code","Branch_Name","CreateBy","CreateTime","ModifyBy","ModifyTime"]  
     }
 
     onHandleClickCancel(event){
@@ -72,7 +72,7 @@ class Warehouse extends Component{
           l:20,
           all:"",}
     
-        const areatypeselect = {queryString:window.apipath + "/api/mst",
+        /* const areatypeselect = {queryString:window.apipath + "/api/mst",
           t:"AreaMasterType",
           q:"[{ 'f': 'Status', c:'<', 'v': 2}",
           f:"ID,Code",
@@ -80,9 +80,8 @@ class Warehouse extends Component{
           s:"[{'f':'ID','od':'asc'}]",
           sk:0,
           l:20,
-          all:"",}
-          /* Axios.all([Axios.get(this.createQueryString(whselect)),Axios.get(this.createQueryString(areatypeselect))]).then(
-            (Axios.spread((whresult, areatyperesult) =>  */
+          all:"",} */
+    
         Axios.all([Axios.get(this.createQueryString(whselect))]).then(
           (Axios.spread((whresult) => 
         {
@@ -109,7 +108,7 @@ class Warehouse extends Component{
             {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
             {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
-            /* {accessor: 'Branch_Code', Header: 'Branch',updateable:false,Filter:"text", Type:"autocomplete"}, */
+            {accessor: 'Branch_Code', Header: 'Branch',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
             {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
             {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
@@ -131,8 +130,7 @@ class Warehouse extends Component{
                     ddlfilter = json dropdown สำหรับทำ dropdown filter
                 */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-                            filterable={true} autocomplete={this.state.autocomplete} accept={true} 
-                            btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                            filterable={true} autocomplete={this.state.autocomplete} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                             table="ams_Warehouse"/>
 
             </div>

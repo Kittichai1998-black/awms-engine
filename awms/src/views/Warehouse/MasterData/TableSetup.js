@@ -90,7 +90,8 @@ class TableGen extends Component{
     this.onEditDateChange = this.onEditDateChange.bind(this)
     this.datetimeBody = this.datetimeBody.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
-    this.autoGenCode = this.autoGenCode.bind(this)
+    this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
+    this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -163,7 +164,7 @@ class TableGen extends Component{
     this.setState({dataedit});
   }
 
-  onCheckFliter(filter,dataselect, status){
+  onCheckFliter(filter,dataselect){
     let filterlist = [{"f":"Status", "c":"!=", "v": 2}]
     
     if(filter.length > 0)
@@ -217,6 +218,7 @@ class TableGen extends Component{
     let cretdata = {}
     const col = this.props.column
     const getcol = this.state.dataselect.f.split(",")
+    console.log(getcol)
     getcol.forEach(row => {
       cretdata.ID = this.addkey
       if(row === 'Status'){
@@ -509,19 +511,36 @@ class TableGen extends Component{
     if(rowdata.value !== null && rowdata.value !== ""){
       return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} editable='false' />;
     }else{
-      return <Input type="text" value={rowdata.value} 
+      return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
       onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
     }
   }
 
-  autoGenCode(rowdata){
+  autoGenLocationCode(rowdata){
+    /* console.log(this.props.autocode) */
+    var codestr=this.props.autocode+","+rowdata.original["AreaMaster_ID"]
+    /* console.log(codestr) */
     if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
-      const codeLoc = rowdata.row["AreaMaster_Code"] + this.leadingZero(3,rowdata.row["Bank"]) + 
-      this.leadingZero(3,rowdata.row["Bay"]) + this.leadingZero(3,rowdata.row["Level"])
+      const codeLoc = rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
+      codestr = codestr+codeLoc
+      /* console.log(codestr) */
       return <Input type="text" value={codeLoc === null ? "" : codeLoc} editable="false"
           onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
     }else{
       return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
+    }
+  }
+  autoGenBaseCode(rowdata){
+    if(rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== ""){
+      var codestr=this.props.autocode+","+rowdata.original["BaseMasterType_ID"]
+
+      this.onEditorValueChange(rowdata, codestr, rowdata.column.id)
+
+    }else{
+      var test = rowdata.row["Code"]
+      if(!test.includes(this.props.autocode)){
+        return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
+      }
     }
   }
 
@@ -684,9 +703,13 @@ class TableGen extends Component{
               row.Cell = (e) => this.checkboxBody(e)
               row.className="text-center"
           }
-          else if(row.Type === "autocode" && (row.body === undefined || !row.body)){
-              row.Cell = (e) => (this.autoGenCode(e))
+          else if(row.Type === "autolocationcode" && (row.body === undefined || !row.body)){
+              row.Cell = (e) => (this.autoGenLocationCode(e))
               row.className="text-center"
+          }
+          else if(row.Type === "autobasecode" && (row.body === undefined || !row.body)){
+            row.Cell = (e) => (this.autoGenBaseCode(e))
+            row.className="text-center"
           }
           else if(row.Type === "password"){
             row.Cell = (e) => (this.inputPassword(e))
@@ -729,7 +752,7 @@ class TableGen extends Component{
 
     return(
       <div style={{overflowX:'auto'}}>
-        <Button onClick={this.onHandleClickAdd} style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
+        <Button onClick={this.onHandleClickAdd}  style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
         <ReactTable 
           data={this.state.data} 
           ref={ref => this.tableComponent = ref}
