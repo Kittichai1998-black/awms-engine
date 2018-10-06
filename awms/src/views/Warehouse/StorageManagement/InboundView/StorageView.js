@@ -72,10 +72,10 @@ class IssuedDoc extends Component{
         postdata["docIDs"].push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then(() => this.forceUpdate())
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => this.setState({resp:res.data._result.message}))
       }
       else{
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => this.forceUpdate())
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => this.setState({resp:res.data._result.message}))
       }
     }
   }

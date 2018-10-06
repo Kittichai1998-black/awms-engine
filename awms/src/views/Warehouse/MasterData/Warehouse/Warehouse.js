@@ -25,7 +25,7 @@ class Warehouse extends Component{
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:"",
-        l:20,
+        l:10,
         all:"",},
         sortstatus:0,
         selectiondata:[],
@@ -69,7 +69,6 @@ class Warehouse extends Component{
           g:"",
           s:"[{'f':'ID','od':'asc'}]",
           sk:0,
-          l:20,
           all:"",}
     
         /* const areatypeselect = {queryString:window.apipath + "/api/mst",

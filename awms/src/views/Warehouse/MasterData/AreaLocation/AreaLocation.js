@@ -42,7 +42,7 @@ class AreaLocation extends Component{
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
-        l:20,
+        l:10,
         all:"",},
         warehouse:{queryString:window.apipath + "/api/mst",
         t:"Warehouse",
@@ -176,7 +176,6 @@ class AreaLocation extends Component{
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
-        l:20,
         all:"",}
 
       const areatypeselect = {queryString:window.apipath + "/api/mst",
@@ -186,7 +185,6 @@ class AreaLocation extends Component{
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
-        l:20,
         all:"",}
   
       Axios.all([Axios.get(this.createQueryStringin(objselect)),Axios.get(this.createQueryStringin(areatypeselect))]).then(
@@ -224,7 +222,7 @@ class AreaLocation extends Component{
       var groupTypeStr = JSON.stringify(myKey)
       console.log(groupTypeStr)
       let cols1 =[]
-      if(groupTypeStr==="[2]"){
+      if(groupTypeStr==="[1]"){
         cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
@@ -243,7 +241,7 @@ class AreaLocation extends Component{
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
-     }else if(groupTypeStr==="[1]"){
+     }else /* if(groupTypeStr==="[1]") */{
       cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},

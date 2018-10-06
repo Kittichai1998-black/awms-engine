@@ -26,7 +26,7 @@ class Area extends Component{
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
-            l:20,
+            l:10,
             all:"",},
             sortstatus:0,
             selectiondata:[]
@@ -72,7 +72,6 @@ class Area extends Component{
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
-            l:20,
             all:"",}
 
         const basetypeselect = {queryString:window.apipath + "/api/mst",
@@ -82,7 +81,6 @@ class Area extends Component{
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
-            l:20,
             all:"",}
 
     Axios.all([Axios.get(this.createQueryString(objselect)),Axios.get(this.createQueryString(basetypeselect))]).then(
