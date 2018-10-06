@@ -10,6 +10,7 @@ import moment from 'moment';
 import guid from 'guid';
 import hash from 'hash.js';
 import Select from 'react-select'
+import _ from 'lodash'
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
@@ -214,7 +215,7 @@ class TableGen extends Component{
 
   onHandleClickAdd(event){
     event.preventDefault();
-    let adddata = this.state.data
+    let adddata = [...this.state.data]
     let cretdata = {}
     const col = this.props.column
     const getcol = this.state.dataselect.f.split(",")
@@ -321,7 +322,16 @@ class TableGen extends Component{
       Axios.get(queryString).then(
         (res) => {
           if(res.data.datas.length > 0){
+            if(position === 'next'){
+              ++this.state.currentPage
+            }
+            else{
+              --this.state.currentPage
+            }
             this.setState({data:res.data.datas})
+          }
+          else{
+            select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
           }
           this.setState({loading:false})
         }
@@ -356,8 +366,9 @@ class TableGen extends Component{
 
   paginationButton(){
     return(
-      <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'132px'}}>
+      <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'300px'}}>
         <nav>
+          <p className="float-right" style={{width:"100px"}}>Page : {this.state.currentPage}</p>
           <ul className="pagination">
             <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
             <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
