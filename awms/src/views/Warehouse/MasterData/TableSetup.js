@@ -214,7 +214,7 @@ class TableGen extends Component{
 
   onHandleClickAdd(event){
     event.preventDefault();
-    let adddata = this.state.data
+    let adddata = [...this.state.data];
     let cretdata = {}
     const col = this.props.column
     const getcol = this.state.dataselect.f.split(",")
