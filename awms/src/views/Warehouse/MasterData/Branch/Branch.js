@@ -24,7 +24,7 @@ class Branch extends Component{
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
-        l:20,
+        l:10,
         all:"",},
         sortstatus:0,
         selectiondata:[],

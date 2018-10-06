@@ -26,7 +26,7 @@ class ListProduct extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:20,
+      l:10,
       all:"",},
       sortstatus:0,
       selectiondata:[],
@@ -77,7 +77,6 @@ class ListProduct extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:20,
       all:"",}
 
     const packselect = {queryString:window.apipath + "/api/mst",
@@ -87,7 +86,6 @@ class ListProduct extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:20,
       all:"",}
 
     Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(unitselect))]).then(
