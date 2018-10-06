@@ -326,7 +326,8 @@ class TableGen extends Component{
               ++this.state.currentPage
             }
             else{
-              --this.state.currentPage
+              if(this.state.currentPage !== 1)
+                --this.state.currentPage
             }
             this.setState({data:res.data.datas})
           }
