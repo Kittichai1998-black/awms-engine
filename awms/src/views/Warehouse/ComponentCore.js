@@ -7,6 +7,7 @@ import Select from 'react-select';
 import Axios from 'axios';
 import TableGen from '../Warehouse/MasterData/TableSetup'
 import ExtendTable from '../Warehouse/MasterData/ExtendTable'
+import _ from 'lodash'
 
 class AutoSelect extends Component{
     constructor(){
@@ -20,15 +21,22 @@ class AutoSelect extends Component{
     }
 
     componentDidMount(){
-        this.setState({dataselect:this.props.defaultValue})
-        this.setState({data:this.props.data})
-        this.setState({multi:this.props.multi? this.props.multi : false})
+        this.setState({dataselect:this.props.defaultValue, data:this.props.data, multi:this.props.multi? this.props.multi : false})
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({data:nextProps.data})
+        if(nextProps.child === true){
+            this.setState({dataselect:this.state.dataselect})
+        }
     }
 
+    componentDidUpdate(nextProps, prevProps){
+        if(!_.isEqual(this.state.data, prevProps.data)){
+            this.setState({dataselect:[]})
+        }
+    }
+    
     handleChange(dataselect){
         this.setState({dataselect:dataselect},() =>{
         if(this.props.result)

@@ -9,6 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import guid from 'guid';
 import hash from 'hash.js';
+import {EventStatus, DocumentStatus} from '../Status'
 import Select from 'react-select'
 import _ from 'lodash'
 
@@ -649,6 +650,27 @@ class TableGen extends Component{
     }
   }
 
+  createStatusField(data, type){
+    if(type === "Event"){
+      return <span>
+        {
+          EventStatus.filter(row => {
+            return row.code === data
+          })[0].status
+        }
+      </span>
+    }
+    else if(type = "Document"){
+      return <span>
+      {
+        DocumentStatus.filter(row => {
+          return row.code === data
+        })[0].status
+      }
+      </span>
+    }
+  }
+
   createSelectAll(){
     return <input
     type="checkbox"
@@ -749,6 +771,12 @@ class TableGen extends Component{
           else if(row.Type === "selectrow"){
             row.Cell = (e) => this.createSelection(e,"radio")
             row.className="text-center"
+          }
+          else if(row.Type === "DocumentStatus"){
+            row.Cell = (e) => this.createStatusField(e.value, "Document")
+          }
+          else if(row.Type === "EventStatus"){
+            row.Cell = (e) => this.createStatusField(e.value, "Event")
           }
 
           if(row.Aggregated === "blank"){

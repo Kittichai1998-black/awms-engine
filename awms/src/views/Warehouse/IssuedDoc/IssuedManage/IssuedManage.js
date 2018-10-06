@@ -7,7 +7,7 @@ import Axios from 'axios';
 import ReactAutocomplete from 'react-autocomplete';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
-import EventStatus from '../../EventStatus'
+import {EventStatus} from '../../Status'
 import queryString from 'query-string'
 import {AutoSelect, NumberInput} from '../../ComponentCore'
 import 'react-datepicker/dist/react-datepicker.css';
@@ -52,7 +52,7 @@ class IssuedManage extends Component{
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
-      l:20,
+      l:10,
       all:"",},
       inputstatus:true,
       pageID:null,
@@ -72,7 +72,6 @@ class IssuedManage extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:20,
       all:"",}
 
     this.warehouseselect = {queryString:window.apipath + "/api/mst",
@@ -82,7 +81,6 @@ class IssuedManage extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:20,
       all:"",}
 
     this.customerselect = {queryString:window.apipath + "/api/mst",
@@ -92,7 +90,6 @@ class IssuedManage extends Component{
        g:"",
        s:"[{'f':'ID','od':'asc'}]",
        sk:0,
-       l:20,
        all:"",}
   }
 

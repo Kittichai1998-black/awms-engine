@@ -78,7 +78,7 @@ const InboundManagement = Loadable({
 });
 
 const InboundView = Loadable({
-  loader: () => import('./views/Warehouse/StorageManagement/InboundManagement'),
+  loader: () => import('./views/Warehouse/StorageManagement/InboundView'),
   loading: Loading,
 });
 

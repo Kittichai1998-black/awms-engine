@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
-import {TableGen} from '../MasterData/TableSetup';
+import {TableGen} from '../../MasterData/TableSetup';
 import Axios from 'axios';
 
 class IssuedDoc extends Component{
@@ -13,25 +13,20 @@ class IssuedDoc extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'status' : [{'value':'1','label':'Working'},{'value':'2','label':'Reject'},{'value':'3','label':'Complete'},{'value':'*','label':'All'}],
         'header' : 'Status',
-        'field' : 'Status',
-        'mode' : 'check',
-      },{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
-        'header' : 'E',
         'field' : 'Status',
         'mode' : 'check',
       }],
       acceptstatus : false,
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{ 'f': 'status', c:'=', 'v': 1}]",
-      f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]",
+      f:"ID,Code,SouBranch,Status,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
-      l:20,
+      l:10,
       all:"",},
       sortstatus:0,
       selectiondata:[]
@@ -87,7 +82,6 @@ class IssuedDoc extends Component{
 
   render(){
     const cols = [
-      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
       {accessor: 'SouBranch', Header: 'Branch',editable:false, Filter:"text"},
       {accessor: 'SouWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
@@ -96,13 +90,14 @@ class IssuedDoc extends Component{
       {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
       {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
+      {accessor: 'Status', Header: 'status', editable:false, Filter:"text", Type:"DocumentStatus"},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"EventStatus"},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text",},
       {accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
       {accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
+      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"}, */
     ];
 
     const btnfunc = [{
@@ -122,19 +117,19 @@ class IssuedDoc extends Component{
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <div className="clearfix">
+        {/* <div className="clearfix">
           <Button className="float-right">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} to={'/wms/issueddoc/manage/issuedmanage'}>Create Document</Link>}</Button>
-        </div>
+        </div> */}
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc}
         accept={false}/>
-        <Card>
+        {/* <Card>
           <CardBody>
             <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
             <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
           </CardBody>
-        </Card>
+        </Card> */}
       </div>
     )
   }
