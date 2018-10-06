@@ -72,8 +72,13 @@ const History = Loadable({
   loading: Loading,
 });
 
-const StorageManagement = Loadable({
-  loader: () => import('./views/Warehouse/StorageManagement'),
+const InboundManagement = Loadable({
+  loader: () => import('./views/Warehouse/StorageManagement/InboundManagement'),
+  loading: Loading,
+});
+
+const InboundView = Loadable({
+  loader: () => import('./views/Warehouse/StorageManagement/InboundManagement'),
   loading: Loading,
 });
 
@@ -109,8 +114,9 @@ const routes = [
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
-  { path: '/wms/storageObject/register', exact: true, name: 'StorageManagement', component: StorageManagement },
-  { path: '/wms/storageObject/transfer', exact: true, name: 'StorageManagement', component: StorageManagement },
+  { path: '/wms/storageObject/register', exact: true, name: 'InboundManagement', component: InboundManagement },
+  { path: '/wms/storageObject/transfer', exact: true, name: 'InboundManagement', component: InboundManagement },
+  { path: '/wms/storageObject/manage', exact: true, name: 'InboundView', component: InboundView },
   { path: '/wms/issueddoc/manage', exact: true, name: 'IssuedDoc', component: IssuedDoc },
   { path: '/wms/issueddoc/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
   { path: '/wms/picking/manage', exact: true, name: 'PickConso', component: PickConso },

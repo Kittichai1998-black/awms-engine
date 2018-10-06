@@ -57,10 +57,6 @@ class SetBarcode extends Component{
     });
   }
 
-  componentDidUpdate(prevState){
-
-  }
-
   componentDidMount(){
     const values = queryString.parse(this.props.location.search)
     let setup = json.barcodesetup.find((data) => {
@@ -100,8 +96,8 @@ class SetBarcode extends Component{
   }
 
   printDocument() {
-    const width = this.state.width.replace("cm","") * this.state.column
-    const height = this.state.height.replace("cm","") * this.state.row
+    const width = this.state.width.replace("cm","") * 1
+    const height = this.state.height.replace("cm","") * 1
     const format = [width, height]
     
     const pdf = new jsPDF({
@@ -110,31 +106,28 @@ class SetBarcode extends Component{
       format: format
     });
     for(let i = 1; i < this.barcodeID; i++){
-      var xyzz = document.getElementById("barcode"+i)
-      html2canvas(xyzz)
+      var bc = document.getElementById("barcode"+i)
+      html2canvas(bc)
         .then((canvas) => {
           const imgData = canvas.toDataURL('image/png');
           pdf.addImage(imgData, 'PNG', 0,0, format[0], format[1]);
           if(this.barcodeID - i !== 1 )
             pdf.addPage();
-
-          // pdf.output('dataurlnewwindow');
-          // myRenderFunction(imgData)
         })
     }
-    setTimeout(() => pdf.save("barcode.pdf"), 1500)
+
+    setTimeout(() => pdf.save("barcode.pdf"), 4000)
   }
 
   createMultipleBarcode(event){
     this.barcodeID = 1
-    this.setState({element:[]}, () =>{
+    this.setState({element:[]} , () => {
       const arrbarcodedata = JSON.parse(this.state.barcode)
       arrbarcodedata.forEach(row => {
         this.createBarcode(event, row.barcode, row.Name)
-      })})
-    
+      })
+    })
   }
-  
 
   createBarcode(event, barcode, Name){
     const divstyle = {
@@ -148,9 +141,6 @@ class SetBarcode extends Component{
     const groupstyle = {
       margin:'0',
     }
-
-    event.preventDefault()
-    const getbarcode = this.state.barcode
     let element_column = [];
     let element_row = this.state.element; 
     const text = {
@@ -163,12 +153,14 @@ class SetBarcode extends Component{
 
     if(this.state.barcodetype === "barcode"){
       for(let i=0; i< this.state.column; i++){
-        element_column.push(<Card id={"barcode"+ this.barcodeID} style={divstyle}  key={"barcode"+ this.barcodeID + i}>
+        element_column.push(<Card id={"barcode"+ this.barcodeID} style={divstyle}  key={"barcode"+ this.barcodeID}>
         <CardBody style={{ padding :'1px'}}>
           <span style={{fontSize:this.state.fontsize}}>{Name}</span>
           <Barcode renderAs="svg" value={barcode} width={this.state.barcodesize.width} height={this.state.barcodesize.height} fontSize={this.state.fontsize}/>
         </CardBody>
       </Card>)
+      
+      this.barcodeID += 1
       }
     }
     else if(this.state.barcodetype === "qr"){
@@ -182,6 +174,8 @@ class SetBarcode extends Component{
           </span>
         </CardBody>
       </Card>)
+      
+      this.barcodeID += 1
       }
     }
     else if(this.state.barcodetype === "both"){
@@ -197,6 +191,8 @@ class SetBarcode extends Component{
           </div>
         </CardBody>
       </Card>)
+      
+      this.barcodeID += 1
       }
     }
 
@@ -205,7 +201,6 @@ class SetBarcode extends Component{
     }
 
     const div = document.createElement('div');
-    this.barcodeID += 1
     this.setState({element:element_row})
   }
 

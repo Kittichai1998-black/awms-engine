@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import "./style.css";
-import {Input, Button, ButtonGroup , Tooltip ,
-  Nav, NavItem, NavLink, Row, Col, Table,
+import "../style.css";
+import {Input, Button, ButtonGroup , Row, Col,
   Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 import Axios from 'axios';
-import ReactAutocomplete from 'react-autocomplete';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {AutoSelect, NumberInput} from '../../ComponentCore'
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -58,6 +57,7 @@ class StorageManagement extends Component{
   constructor(props) {
     super(props);
     this.state = {
+      control:"none",
       mapSTO:null,
       mapSTOView:null,
       Mode:0,
@@ -92,12 +92,6 @@ class StorageManagement extends Component{
       supplierdata:[],
       warehousedata:[],
       areadata:[],
-      supplierres:"",
-      warehouseres:"",
-      areares:"",
-      suppliervalue:[],
-      warehousevalue:[],
-      areavalue:[],
       barcode:"",
       qty:"1",
       barcodemodal:false,
@@ -115,15 +109,28 @@ class StorageManagement extends Component{
     this.clickSubmit = this.clickSubmit.bind(this)
     this.approvemapsto = this.approvemapsto.bind(this)
     this.clearTable = this.clearTable.bind(this)
+    this.autoSelectData = this.autoSelectData.bind(this)
   }
   
   componentDidMount(){
-    Axios.get(createQueryString(this.state.supplier)).then((res) => {
-      this.setState({supplierdata:res.data.datas})
-    })
-    Axios.get(createQueryString(this.state.warehouse)).then((res) => {
-      this.setState({warehousedata:res.data.datas})
-    })
+    Axios.all([Axios.get(createQueryString(this.state.supplier)),
+      Axios.get(createQueryString(this.state.warehouse))]).then(
+      (Axios.spread((supplierresult, warehouseresult) => 
+    {
+      this.setState({supplierdata : supplierresult.data.datas,
+        warehousedata:warehouseresult.data.datas,
+      }, () => {
+        const supplierdata = []
+        this.state.supplierdata.forEach(row => {
+          supplierdata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+        })
+        const warehousedata = []
+        this.state.warehousedata.forEach(row => {
+          warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+        })
+        this.setState({supplierdata,warehousedata})
+      })}
+    )))
 
     const script3 = document.createElement("script");
     script3.src = "https://code.jquery.com/jquery-3.3.1.min.js";
@@ -138,58 +145,38 @@ class StorageManagement extends Component{
     }
   }
 
-  dropdownAuto(data, field){
-    const style = {borderRadius: '3px',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    background: 'rgba(255, 255, 255, 0.9)',
-    padding: '2px 0',
-    fontSize: '90%',
-    position: 'fixed',
-    overflow: 'auto',
-    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
-    zIndex: '998',}
-    
-    return <div>
-      <label style={{width:'80px'}}>{field}</label>
-      <ReactAutocomplete
-      menuStyle={style}
-      shouldItemRender={(item, value) => item.Name.toLowerCase().indexOf(value.toLowerCase()) > -1}
-      getItemValue={(item) => {
-        {
-          field === "Warehouse" ? this.setState({warehousevalue:{'key':item.Name,'value':item.ID}},() => {
-            const area = this.state.area
-            let areawhere = JSON.parse(area.q)
-            areawhere.push({'f':'warehouse_ID','c':'=','v':item.ID})
-            area.q = JSON.stringify(areawhere)
-            Axios.get(createQueryString(area)).then((res) => {
-              this.setState({areadata:res.data.datas})
-            })
-          }) : 
-          field === "Supplier" ? this.setState({suppliervalue:[{'key':item.Name,'value':item.ID}]}) : 
-          this.setState({areavalue:{'key':item.Name,'value':item.ID}})
-        }
-        return item.Name
-      }}
-      items={data}
-      renderItem={(item, isHighlighted) =>
-        <div key={item.id} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-          {item.Name}
-        </div>
+  componentDidUpdate(nextState, prevState){
+    if(this.state.warehouseres === nextState.warehouseres){
+      
+    }
+  }
+
+  autoSelectData(field, resdata, resfield){
+    this.setState({[resfield]:resdata.value}, () => {
+      if(field === "Warehouse"){
+        const area = this.state.area
+        let areawhere = JSON.parse(area.q)
+        areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
+        area.q = JSON.stringify(areawhere)
+  
+        Axios.get(createQueryString(this.state.area)).then((res) => {
+        const areadata = []
+          res.data.datas.forEach(row => {
+            areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+          })
+          this.setState({areadata})
+        })
       }
-      value={field === "Warehouse" ? this.state.warehouseres : field === "Supplier" ? this.state.supplierres : this.state.areares }
-      onChange={(e) => {
-        field === "Warehouse" ? this.setState({warehouseres:e.target.value, ddlwarehouse:true}) : 
-        field === "Supplier" ? this.setState({supplierres:e.target.value, ddlsupplier:true}) : 
-        this.setState({areares:e.target.value, ddlarea:true})
-      }}
-      onSelect={value => {
-        field === "Warehouse" ? this.setState({warehouseres:value, ddlwarehouse:true}) : 
-        field === "Supplier" ? this.setState({supplierres:value, ddlsupplier:true}) : 
-        this.setState({areares:value, ddlarea:true})
-      }}/>
-      <span>{field === "Warehouse" && this.state.ddlwarehouse===true?"": 
-        field === "Supplier" && this.state.ddlsupplier===true?"": field === "Area" && this.state.ddlarea===true?"":" *"}</span>
-    </div>
+    })
+  }
+
+  dropdownAuto(data, field, fieldres){    
+    return <div>
+        <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
+        <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
+          <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)}/>
+        </div>
+      </div>
   }
 
   dropdownOption(obj){
@@ -200,8 +187,8 @@ class StorageManagement extends Component{
 
   addtolist = (data) => {
     const condata = [...data]
-    const focus = {color:'red'}
-    const focusf = {color:'green'}
+    const focus = {color:'red', marginLeft:"-20px", fontSize:"13px"}
+    const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return condata.map((child,i) => {
       let disQtys;
       if(child.objectSizeMaps.length > 0){
@@ -248,28 +235,27 @@ class StorageManagement extends Component{
   }
   
   createListTable(){
-    this.setState({poststatus:true})
     let status = true;
     if(this.state.Mode === 0){
-      if(this.state.barcode === "" || this.state.qty === 0 || this.state.suppliervalue.length === 0 || this.state.areavalue.length === 0
-      || this.state.warehousevalue.length === 0){
+      if(this.state.barcode === "" || this.state.qty === 0 || this.state.supplierres === "" || this.state.areares === ""
+      || this.state.warehouseres === ""){
         status = false;
       }
     }
     else{
-      if(this.state.barcode === "" || this.state.qty === 0 || this.state.warehousevalue.length === 0 || this.state.areavalue.length === 0){
+      if(this.state.barcode === "" || this.state.qty === 0 || this.state.warehouseres || this.state.areares){
         status = false;
       }
     }
     if(status){
-      this.setState({rSelect:'1'})
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
-      "mode":this.state.Mode,"options":this.state.suppliervalue,
-      "areaID":this.state.areavalue.value.toString(),"warehouseID":this.state.warehousevalue.value.toString(),"mapsto":this.state.mapSTO};
+      "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
+      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO};
       Axios.post(window.apipath + "/api/wm/VRMapSTO",data).then(res => {
         let header = []
         if(res.data._result.status !== 0)
         {
+          this.setState({poststatus:true,control:"block",rSelect:'1',barcode:"", qty:1, response:"",})
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
             const clonemapsto = clone(this.state.mapSTOView)
             header = clonemapsto
@@ -278,7 +264,7 @@ class StorageManagement extends Component{
           return [header]
         }
         else{
-          alert(res.data._result.message)
+          this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>})
           if([this.state.mapSTOView].length > 0)
           {
             const clonemapsto = clone(this.state.mapSTOView)
@@ -355,8 +341,8 @@ class StorageManagement extends Component{
 
   clickSubmit(){
     const data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
-      "mode":this.state.Mode,"options":this.state.suppliervalue,
-      "areaID":this.state.areavalue.value.toString(),"warehouseID":this.state.warehousevalue.value.toString(),"mapsto":this.state.mapSTO};
+      "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
+      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO};
 
     Axios.post(window.apipath + "/api/wm/VRMapSTO",).then((res) => {
       this.setState({warehousedata:res.data.datas})
@@ -372,29 +358,23 @@ class StorageManagement extends Component{
       conf = window.confirm("ต้องการลบหรือไม่")
     }
     if(conf === true){
-      const approvedata = {isConfirm:flag,rootStoID:this.state.mapSTO.id,type:this.state.mapSTO.type}
-      Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
-        if(res.data._result.status === 0){
-          alert(res.data._result.status)
-          this.setState({result:null,mapSTOView:null})
-          return null
-        }
-        else{
-          let header = []
-          this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
-            const clonemapsto = clone(this.state.mapSTOView)
-            console.log(clonemapsto)
-            header = clonemapsto
-            header.mapstos = this.sumChild(clonemapsto.mapstos)
-          })
-          return [header]
-        }
-      }).then(res =>  res!==null?this.addtolist(res):null).then(res => {this.setState({result:res})})
+      if(this.state.mapSTO){
+        const approvedata = {isConfirm:flag,rootStoID:this.state.mapSTO.id,type:this.state.mapSTO.type}
+        Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
+          if(res.data._result.status !== 0){
+            this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
+            return null
+          }else{
+            console.log(res.data._result.message)
+            this.setState({response:<span class="text-center">{res.data._result.message}</span>})
+          }
+        })
+      }
     }
   }
 
   clearTable(){
-    this.setState({result:null,mapSTOView:null})
+    this.setState({result:null,mapSTOView:null, mapSTO:null, control:"none", response:""})
   }
 
   render(){
@@ -404,34 +384,34 @@ class StorageManagement extends Component{
         {this.barcodeReaderPopup()}
         <Row>
           <Col sm="6">
-            <label>Mode : {this.state.Mode===0?'Register':'Transfer'}</label>
+            <label style={{fontWeight:"bold", fontSize:"1.1em"}}>Mode : {this.state.Mode===0?'Register':'Transfer'}</label>
           </Col>
           <Col sm="6">
-            <ButtonGroup  style={{margin:'0 0 10px 0'}}>
-              <Button color="primary" onClick={() => this.selectMode("0")} active={this.state.rSelect === "0"}>Select</Button>
-              <Button color="primary" onClick={() => this.selectMode("1")} active={this.state.rSelect === "1"}>Push</Button>
-              <Button color="primary" onClick={() => this.selectMode("2")} active={this.state.rSelect === "2"}>Remove</Button>
+            <ButtonGroup style={{margin:'0 0 10px 0', width:"100%"}}>
+              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("0")} active={this.state.rSelect === "0"}>Select</Button>
+              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("1")} active={this.state.rSelect === "1"}>Push</Button>
+              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("2")} active={this.state.rSelect === "2"}>Remove</Button>
             </ButtonGroup>
           </Col>
         </Row>
         <Row>
           <Col>
-              {this.dropdownAuto(this.state.warehousedata, "Warehouse")}
+              {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres")}
           </Col>
         </Row>
         <Row>
           <Col>
-              {this.dropdownAuto(this.state.areadata, "Area")}
+              {this.dropdownAuto(this.state.areadata, "Area", "areares")}
           </Col>
         </Row>
         <Row style={this.state.Mode===0?null:display}>
           <Col>
-              {this.dropdownAuto(this.state.supplierdata, "Supplier")}
+              {this.dropdownAuto(this.state.supplierdata, "Supplier", "supplierres")}
           </Col>
         </Row>
         <Row>
           <Col sm="6">
-            <label style={{width:'70px'}}>Barcode</label>
+          <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
               <Input id="barcodetext" style={{width:'40%',display:'inline-block'}} type="text"
                 value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ด"
                 onChange={e => {this.setState({barcode:e.target.value})}}
@@ -442,19 +422,19 @@ class StorageManagement extends Component{
               }}/>
           </Col>
           <Col sm="6">
-            <label style={{width:'70px',display:'inline-block'}}>Quantity</label>
-            <Input style={{width:'40%',display:'inline-block'}}
-              value={this.state.qty}
-              onChange={e => {this.setState({qty:e.target.qty})}}
-              type="text"/>{' '}
+            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Quantity : </label>
+            <NumberInput value={this.state.qty} onChange={value => this.setState({qty:value})} style={{width:'40%',display:'inline-block'}}/>{' '}
             <Button id="start" onClick={() => {this.setState({barcodemodal:true})}} color="danger" style={{display:'none'}}>Scan</Button>{' '}
             <Button onClick={this.createListTable} color="danger" style={{display:'inline-block'}} disabled={this.state.poststatus}>Post</Button>
           </Col>
         </Row>
         <Row>
-          {this.state.result}
+          {this.state.response}
         </Row>
         <Row>
+          {this.state.result}
+        </Row>
+        <Row className="text-center" style={{display:this.state.control}}>
             <Button onClick={() => this.approvemapsto(true)} style={this.state.Mode===0?null:display}>Save</Button>
             <Button onClick={() => this.approvemapsto(false)} style={this.state.Mode===0?null:display} color="danger">Cancel</Button>
             <Button onClick={this.clearTable} color="danger" >Clear</Button>

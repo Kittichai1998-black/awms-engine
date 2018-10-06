@@ -164,36 +164,28 @@ class TableGen extends Component{
   }
 
   onCheckFliter(filter,dataselect){
-    let filterlist = []
+    let filterlist = [{"f":"Status", "c":"!=", "v": 2}]
     
     if(filter.length > 0)
     {
       filter.forEach((data, id) => {
         if(data[1] !== ""){
           switch(data["value"].toString().charAt(0)){
-            case "=":
-              filterlist.push({"f":data["id"], "c":"=", "v": data["value"].replace("=","")})
-              break
-            case ">":
-              filterlist.push({"f":data["id"], "c":">", "v": data["value"].replace(">","")})
-              break
-            case "<":
-              filterlist.push({"f":data["id"], "c":"<", "v": data["value"].replace("<","")})
-              break
-            case ">=":
-              filterlist.push({"f":data["id"], "c":">=", "v": data["value"].replace(">=","")})
-              break
-            case "<=":
-              filterlist.push({"f":data["id"], "c":"<=", "v": data["value"].replace("<=","")})
-              break
             case "%":
-              filterlist.push({"f":data["id"], "c":"like", "v": data["value"]})
+              filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
               break
             case "*":
-              filterlist.push({"f":data["id"], "c":"like", "v": data["value"]})
+              if(data["id"] !== "Status")
+                filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
+              
               break
             default:
-              filterlist.push({"f":data["id"], "c":"=", "v": data["value"]})
+              if(data["id"] === "Status"){
+                filterlist.splice(0,1)
+                filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
+              }
+              else
+              filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
           }
         }
       })
@@ -513,13 +505,13 @@ class TableGen extends Component{
   }
 
   autoGenLocationCode(rowdata){
-    console.log(this.props.autocode)
+    /* console.log(this.props.autocode) */
     var codestr=this.props.autocode+","+rowdata.original["AreaMaster_ID"]
-    console.log(codestr)
+    /* console.log(codestr) */
     if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
       const codeLoc = rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
       codestr = codestr+codeLoc
-      console.log(codestr)
+      /* console.log(codestr) */
       return <Input type="text" value={codeLoc === null ? "" : codeLoc} editable="false"
           onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
     }else{

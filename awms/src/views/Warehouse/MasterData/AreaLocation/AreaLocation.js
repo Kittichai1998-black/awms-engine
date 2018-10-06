@@ -7,7 +7,7 @@ import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {AutoSelect} from '../../ComponentCore'
 
-createQueryString = (select) => {
+const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
   + (select.q === "" ? "" : "&q=" + select.q)
   + (select.f === "" ? "" : "&f=" + select.f)
@@ -25,8 +25,9 @@ class AreaLocation extends Component{
 
       this.state = {
         data : [],
-        auto_warehouse:[],
         autocomplete:[],
+        cols2:[],
+        grouptype:1,
         statuslist:[{
         'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
@@ -43,17 +44,59 @@ class AreaLocation extends Component{
         sk:0,
         l:20,
         all:"",},
+        warehouse:{queryString:window.apipath + "/api/mst",
+        t:"Warehouse",
+        q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
+        f:"*",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:"",
+        l:"",
+        all:"",},
+        supplier:{queryString:window.apipath + "/api/mst",
+        t:"Supplier",
+        q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
+        f:"*",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:"",
+        l:"",
+        all:"",},
+        area:{queryString:window.apipath + "/api/viw",
+        t:"AreaMaster",
+        q:'[{ "f": "Status", "c":"=", "v": 1}]',
+        f:"ID,Code,Name,Description,Warehouse_ID,AreaMasterType_ID,GroupType",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:"",
+        l:"",
+        all:"",},
         sortstatus:0,
-        selectiondata:[]
+        selectiondata:[],
+        warehousedata:[],
+        supplierdata:[],
+        areadata:[]
       };
-      this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-      this.createQueryString = this.createQueryString.bind(this)
+      this.setColumns = this.setColumns.bind(this)
+      this.onHandleClickCancel = this.onHandleClickCancel.bind(this)
       this.filterList = this.filterList.bind(this)
       this.dropdownAuto = this.dropdownAuto.bind(this)
       this.autoSelectData = this.autoSelectData.bind(this)
       this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
 
     } 
+
+    createQueryStringin = (select) => {
+      let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
+      + (select.q === "" ? "" : "&q=" + select.q)
+      + (select.f === "" ? "" : "&f=" + select.f)
+      + (select.g === "" ? "" : "&g=" + select.g)
+      + (select.s === "" ? "" : "&s=" + select.s)
+      + (select.sk === "" ? "" : "&sk=" + select.sk)
+      + (select.l === 0 ? "" : "&l=" + select.l)
+      + (select.all === "" ? "" : "&all=" + select.all)
+      return queryS
+    }
 
     onHandleClickCancel(event){
         this.forceUpdate();
@@ -68,6 +111,48 @@ class AreaLocation extends Component{
     Axios.isCancel(true);
     }
 
+    componentDidMount(){
+      Axios.all([Axios.get(createQueryString(this.state.supplier)),
+        Axios.get(createQueryString(this.state.warehouse))]).then(
+        (Axios.spread((supplierresult, warehouseresult) => 
+      {
+        this.setState({supplierdata : supplierresult.data.datas,
+          warehousedata:warehouseresult.data.datas,
+        }, () => {
+          const supplierdata = []
+          this.state.supplierdata.forEach(row => {
+            supplierdata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+          })
+          const warehousedata = []
+          this.state.warehousedata.forEach(row => {
+            warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+          })
+          this.setState({supplierdata,warehousedata})
+        })}
+      )))
+    }
+
+    autoSelectData(field, resdata, resfield){
+      this.setState({[resfield]:resdata.value}, () => {
+        if(field === "Warehouse"){
+          const area = this.state.area
+          let areawhere = JSON.parse(area.q)
+          console.log(areawhere)
+          areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
+          area.q = JSON.stringify(areawhere)
+    
+          Axios.get(createQueryString(this.state.area)).then((res) => {
+          const areadata = []
+            res.data.datas.forEach(row => {
+              areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name, grouptype:row.GroupType })
+            })
+            this.setState({areadata})
+            console.log(areadata)
+          })
+        }
+      })
+    }
+
     dropdownAuto(data, field, fieldres){    
       return <div>
           <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
@@ -77,26 +162,11 @@ class AreaLocation extends Component{
         </div>
     }
 
-    autoSelectData(field, resdata, resfield){
-      this.setState({[resfield]:resdata.value}, () => {
-        if(field === "Warehouse"){
-          const area = this.state.area
-          let areawhere = JSON.parse(area.q)
-          areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
-          area.q = JSON.stringify(areawhere)
-    
-          Axios.get(createQueryString(this.state.area)).then((res) => {
-          const areadata = []
-            res.data.datas.forEach(row => {
-              areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
-            })
-            this.setState({areadata})
-          })
-        }
+    dropdownOption(obj){
+      obj.map((data,index) => {
+        return <option key={index} value={data.key}>{data.value}</option>
       })
     }
-
-    
 
     filterList(){
       const objselect = {queryString:window.apipath + "/api/mst",
@@ -119,7 +189,7 @@ class AreaLocation extends Component{
         l:20,
         all:"",}
   
-      Axios.all([Axios.get(this.createQueryString(objselect)),Axios.get(this.createQueryString(areatypeselect))]).then(
+      Axios.all([Axios.get(this.createQueryStringin(objselect)),Axios.get(this.createQueryStringin(areatypeselect))]).then(
         (Axios.spread((objresult, areatyperesult) => 
       {
         let ddl = [...this.state.autocomplete]
@@ -139,35 +209,63 @@ class AreaLocation extends Component{
         this.setState({autocomplete:ddl})
       })))
     }
-arealocation
+
     createBarcodeBtn(){
       let barcode=[{"barcode":"xxx","Name":"nameXXX"},{"barcode":"555","Name":"name555"}]
       let barcodestr = JSON.stringify(barcode)
       return <Button type="button" color="info"
       onClick={() => this.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr)}>Print</Button>
     }
+    
+    setColumns(){
+      let open = [...this.state.areadata];
+      console.log(open)
+      let myKey = open.map((data,index) => {return data.grouptype})
+      var groupTypeStr = JSON.stringify(myKey)
+      console.log(groupTypeStr)
+      let cols1 =[]
+      if(groupTypeStr==="[2]"){
+        cols1 = [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
+        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
+        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
+        {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
+     }else if(groupTypeStr==="[1]"){
+      cols1 = [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
+        {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
+      
+    }
+    return cols1
+    }
 
     render(){
-        const cols = [
-          {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-          {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
-          {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-          {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
-          {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
-          {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
-          {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
-          {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
-          {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-          {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-          {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-          {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-          {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
-        ]; 
-      
         const btnfunc = [{
           history:this.props.history,
           btntype:"Barcode",
@@ -183,6 +281,12 @@ arealocation
                   {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres")}
               </Col>
             </Row>
+            <Row>
+              <Col>
+                  {this.dropdownAuto(this.state.areadata, "Area", "areares")}
+              </Col>
+            </Row>
+            <Row><Col></Col></Row>
           {/*
             column = คอลัมที่ต้องการแสดง
             data = json ข้อมูลสำหรับ select ผ่าน url
@@ -193,16 +297,13 @@ arealocation
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-          
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-                      filterable={true} autocomplete={this.state.autocomplete} accept={true}
+
+            <TableGen column={this.setColumns()} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+                      filterable={true} autocomplete={this.state.autocomplete} accept={true} areagrouptype={this.state.grouptype}
                       btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={(res) => this.setState({test:res})}
                       table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code"/>
-          </div>
-          
-        )
-        
+          </div>  
+        )   
     }
 }
-
 export default AreaLocation;
