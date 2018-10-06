@@ -72,16 +72,15 @@ class IssuedDoc extends Component{
         postdata["docIDs"].push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => this.setState({resp:res.data._result.message}))
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {this.setState({resp:res.data._result.message, select:[]})})
       }
       else{
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => {this.forceUpdate()})
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message, select:[]})})
       }
     }
   }
 
   onClickToDesc(data){
-    console.log(this)
     return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID='+data.ID)}>Detail</Button>
   }
 
@@ -127,12 +126,13 @@ class IssuedDoc extends Component{
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc}
+        btn={btnfunc} update={this.state.updatetable}
         accept={false}/>
         <Card>
           <CardBody>
             <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
             <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
+            {this.state.resp}
           </CardBody>
         </Card>
       </div>

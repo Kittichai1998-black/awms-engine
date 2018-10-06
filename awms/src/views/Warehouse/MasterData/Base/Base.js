@@ -13,7 +13,7 @@ class Area extends Component{
             data : [],
             autocomplete:[],
             statuslist:[{
-            'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
+            'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
             'header' : 'Status',
             'field' : 'Status',
             'mode' : 'check',
@@ -31,10 +31,12 @@ class Area extends Component{
             sortstatus:0,
             selectiondata:[]
         };
+        this.getSelectionData = this.getSelectionData.bind(this)
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.createQueryString = this.createQueryString.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["ObjCode","PackCode","ModifyBy","ModifyTime"]
+        this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
+        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","CreateBy","CreateTime","ModifyBy","ModifyTime"]
     }
 
     onHandleClickCancel(event){
@@ -104,20 +106,35 @@ class Area extends Component{
         })))
     }
     getSelectionData(data){
-    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
+        console.log(data)
+        let obj = []
+        data.forEach((datarow,index) => {
+            obj.push({"barcode":datarow.Code,"Name":datarow.Name});
+        })
+        const xx = JSON.stringify(obj)
+        this.setState({barcodeObj:xx}, () => console.log(this.state.barcodeObj))
     }
 
-    createBarcodeBtn(data){
-        return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-          to={'/mst/base/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+    createBarcodeBtn(rowdata){
+        return <Button type="button" color="info"
+        onClick={() => {
+            let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
+            let barcodestr = JSON.stringify(barcode)
+            if(!this.state.barcodeObj){
+                this.setState({barcodeObj:barcodestr}, () =>
+                this.props.history.push('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj)) 
+            }else{
+                this.props.history.push('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj) 
+            }
+            }}>Print</Button>
       }
 
     render(){
         const cols = [
-            {accessor: 'ID', Header: 'ID', editable:false}, 
-            {accessor: 'Code', Header: 'Code', editable:true},
-            {accessor: 'Name', Header: 'Name', editable:true},
-            {accessor: 'Description', Header: 'Description', sortable:false},
+            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text"},
+            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text"},
+            {accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
@@ -130,8 +147,9 @@ class Area extends Component{
           ]; 
         
         const btnfunc = [{
-          btntype:"Barcode",
-          func:this.createBarcodeBtn
+            history:this.props.history,
+            btntype:"Barcode",
+            func:this.createBarcodeBtn
         }]
     
         return(
@@ -149,8 +167,8 @@ class Area extends Component{
           */}
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
             filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
-            btn={btnfunc}
-             table="ams_BaseMaster"/>
+            btn={btnfunc} uneditcolumn={this.uneditcolumn}
+             table="ams_BaseMaster" autocode="@@sql_gen_base_code"/>
           </div>
         )
       }

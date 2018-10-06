@@ -13,7 +13,7 @@ class ListProduct extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
+        'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
@@ -31,10 +31,11 @@ class ListProduct extends Component{
       sortstatus:0,
       selectiondata:[],
     };
+    this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this)
-    this.getAutocompletee = this.getAutocomplete.bind(this)
-    this.getSelectionData = this.getSelectionData.bind(this)
+    this.createQueryString = this.createQueryString.bind(this);
+    this.getAutocompletee = this.getAutocomplete.bind(this);
+    this.getSelectionData = this.getSelectionData.bind(this);
     this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
   }
 
@@ -49,6 +50,11 @@ class ListProduct extends Component{
 
   componentWillUnmount(){
     Axios.isCancel(true);
+  }
+
+  onHandleClickLoad(event){
+    Axios.post(window.apipath + "/api/mst/TransferFileServer/SKUMst",{})
+    this.forceUpdate();
   }
 
   createQueryString = (select) => {
@@ -94,7 +100,7 @@ class ListProduct extends Component{
       packList["field"] = "SKUMasterType_Code"
       packList["pair"] = "SKUMasterType_ID"
       packList["mode"] = "Dropdown"
-      console.log(packList)
+
       unitList["data"] = unitresult.data.datas
       unitList["field"] = "UnitType_Code"
       unitList["pair"] = "UnitType_ID"
@@ -110,34 +116,31 @@ class ListProduct extends Component{
   }
 
   createBarcodeBtn(data){
-    return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-      to={'/mst/sku/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+    return <Button type="button" color="info" 
+    onClick={() => this.history.push('/mst/sku/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
   }
 
   render(){
     const cols = [
-      {Header: '', Type:"selection", sortable:false, Filter:"select",},
-      {accessor: 'ID', Header: 'SKU',Filter:"text", editable:true, datatype:"int",},
-      {accessor: 'SKUMasterType_Code', Header: 'SKU Type',updateable:false, Filter:"text", Type:"autocomplete"},
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
-      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true, },
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",},
-      {accessor: 'WidthM', Header: 'WidthM', editable:true,Filter:"text", datatype:"int",},
-      {accessor: 'LengthM', Header: 'LengthM', editable:true,Filter:"text", datatype:"int",},
-      {accessor: 'HeightM', Header: 'HeightM', editable:true,Filter:"text", datatype:"int",},
-      {accessor: 'WeightKG', Header: 'Weight', editable:true,Filter:"text", datatype:"int",},
-      {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'Revision', Header: 'Revision', editable:false, datatype:"int",},
-      {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-      {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      {accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter:"text"},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
+      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
+      {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
+      {accessor: 'WidthM', Header: 'Width', editable:false,Filter:"text", datatype:"int",},
+      {accessor: 'LengthM', Header: 'Length', editable:false,Filter:"text", datatype:"int",},
+      {accessor: 'HeightM', Header: 'Height', editable:false,Filter:"text", datatype:"int",},
+      {accessor: 'WeightKG', Header: 'Weight', editable:false,Filter:"text", datatype:"int",},
+      {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", },
+      {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
+      {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      {accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
+      {accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
     
     const btnfunc = [{
+      history:this.props.history,
       btntype:"Barcode",
       func:this.createBarcodeBtn
     }]
@@ -155,10 +158,16 @@ class ListProduct extends Component{
         getselection = เก็บค่าที่เลือก
     
       */}
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
         btn={btnfunc} uneditcolumn={this.uneditcolumn}
          table="ams_SKUMaster"/>
+
+        <Card>
+          <CardBody style={{textAlign:'right'}}>
+            <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
+          </CardBody>
+        </Card>
       </div>
     )
   }

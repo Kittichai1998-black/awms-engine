@@ -12,7 +12,7 @@ class Customer extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
+        'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
@@ -45,22 +45,21 @@ class Customer extends Component{
   }
 
   onHandleClickLoad(event){
-    Axios.post(window.apipath + "/api/mst/TransferFileServer/DealerMst",{})
+    Axios.post(window.apipath + "/api/mst/TransferFileServer/CustomerMst",{})
     this.forceUpdate();
   }
 
   render(){
     const cols = [
-      {accessor: 'ID', Header: 'ID', Filter:"text", editable:false,}, 
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
-      {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text",},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
+      {accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
+      {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
       {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
       {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
     const btnfunc = [{
       btntype:"Barcode",
@@ -74,8 +73,8 @@ class Customer extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-      filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+      filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Customer"/>
       <Card>
         <CardBody style={{textAlign:'right'}}>

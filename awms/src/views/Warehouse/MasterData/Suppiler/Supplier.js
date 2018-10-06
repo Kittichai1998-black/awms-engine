@@ -12,7 +12,7 @@ class Supplier extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
+        'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
@@ -51,17 +51,16 @@ class Supplier extends Component{
 
   render(){
     const cols = [
-      {accessor: 'ID', Header: 'ID', editable:false,}, 
-      {accessor: 'Code', Header: 'Code', editable:true,},
-      {accessor: 'Name', Header: 'Name', editable:true},
-      {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text",},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-      {accessor: 'Revision', Header: 'Revision', editable:false},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text"},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text"},
+      {accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
+      {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
+      /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
       {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
       {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
 
     const btnfunc = [{
@@ -77,8 +76,8 @@ class Supplier extends Component{
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
      
-      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-      filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+      filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Supplier"/>
 
       <Card>
