@@ -32,10 +32,24 @@ namespace AWMSEngine.Controllers
             return res;
         }
 
+        [HttpGet("LoadStatic")]
+        public dynamic LoadStatic()
+        {
+            ADO.StaticValue.StaticValueManager.GetInstant().LoadAll();
+            return "SUCCESS";
+        }
+
         [HttpPost("TransferFileServer/SKUMst")]
         public dynamic TransferSF_SKUMst([FromBody]dynamic request)
         {
             PutSKUMasterFromFileServerAPI api = new PutSKUMasterFromFileServerAPI(this);
+            return api.Execute(request);
+        }
+
+        [HttpPost("TransferFileServer/SKUMstType")]
+        public dynamic TransferSF_SKUTypeMst([FromBody]dynamic request)
+        {
+            PutSKUMasterTypeFromFileServerAPI api = new PutSKUMasterTypeFromFileServerAPI(this);
             return api.Execute(request);
         }
         [HttpPost("TransferFileServer/CustomerMst")]
@@ -50,7 +64,7 @@ namespace AWMSEngine.Controllers
             PutSupplierFromFileServerAPI api = new PutSupplierFromFileServerAPI(this);
             return api.Execute(request);
         }
-        [HttpPost("TransferFileServer/SKUMst/Csv")]
+        /*[HttpPost("TransferFileServer/SKUMst/Csv")]
         public dynamic TransferSF_SKUMst_Csv([FromBody]dynamic request)
         {
             PutSKUMasterFromFileServerCsvAPI api = new PutSKUMasterFromFileServerCsvAPI(this);
@@ -67,7 +81,7 @@ namespace AWMSEngine.Controllers
         {
             PutSupplierFromFileServerCsvAPI api = new PutSupplierFromFileServerCsvAPI(this);
             return api.Execute(request);
-        }
+        }*/
 
 
     }

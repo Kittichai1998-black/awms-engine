@@ -105,7 +105,14 @@ class SetBarcode extends Component{
       unit: 'cm',
       format: format
     });
-    for(let i = 1; i < this.barcodeID; i++){
+
+    this.ppp(1,this.barcodeID,pdf,format);
+  }
+  
+  ppp(i,max,pdf,format){
+    console.log(i + ":" + max)
+    if(i < max){
+
       var bc = document.getElementById("barcode"+i)
       html2canvas(bc)
         .then((canvas) => {
@@ -113,10 +120,12 @@ class SetBarcode extends Component{
           pdf.addImage(imgData, 'PNG', 0,0, format[0], format[1]);
           if(this.barcodeID - i !== 1 )
             pdf.addPage();
+          this.ppp(++i,max,pdf,format);
         })
     }
-
-    setTimeout(() => pdf.save("barcode.pdf"), 4000)
+    else{
+      pdf.save("barcode.pdf")
+    }
   }
 
   createMultipleBarcode(event){

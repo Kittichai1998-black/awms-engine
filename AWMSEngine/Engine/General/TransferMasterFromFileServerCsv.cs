@@ -11,7 +11,7 @@ namespace AWMSEngine.Engine.General
     {
         public class TReq
         {
-            public string apiCode;
+            public string path;
             public string tableName;
             public string fieldWhere;
             /// <summary>
@@ -44,9 +44,8 @@ namespace AWMSEngine.Engine.General
         {
             TRes res = new TRes();
             res.apiResults = new List<TRes.APIResult>();
-            string rootPath = StaticValue.GetConfig(AWMSModel.Constant.EnumConst.ConfigCode.APIFS_TRANS_MST_ROOTFILE);
-            string apiRequestPath = string.Format("{0}{1}/request/", rootPath, reqVO.apiCode);
-            string apiResponsePath = string.Format("{0}{1}/response/", rootPath, reqVO.apiCode);
+            string apiRequestPath = string.Format("{0}/request/", reqVO.path);
+            string apiResponsePath = string.Format("{0}/response/", reqVO.path);
 
             if (!Directory.Exists(apiRequestPath)) Directory.CreateDirectory(apiRequestPath);
             if (!Directory.Exists(apiRequestPath + "log/")) Directory.CreateDirectory(apiRequestPath + "log/");

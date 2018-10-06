@@ -26,7 +26,7 @@ class IssuedDoc extends Component{
       acceptstatus : false,
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{ 'f': 'status', c:'=', 'v': 1}]",
       f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",

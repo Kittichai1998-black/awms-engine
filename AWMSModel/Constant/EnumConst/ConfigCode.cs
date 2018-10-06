@@ -6,7 +6,53 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum ConfigCode
     {
-        /// <summary>Root Server สำหรับ API Transfer Master From File Server.</summary>
-        APIFS_TRANS_MST_ROOTFILE,
+        /// <summary>API Code สำหรับ API File transfer SKUMasterType</summary>
+        AFT_PATH_IN_SKUMASTERTYPE,
+        /// <summary>API Code สำหรับ API File transfer SKUMasterType</summary>
+        AFT_PATH_OUT_SKUMASTERTYPE_OUT,
+
+        /// <summary>API Code สำหรับ API File transfer SKUMaster</summary>
+        AFT_PATH_IN_SKUMASTER,
+        /// <summary>API Code สำหรับ API File transfer SKUMaster</summary>
+        AFT_PATH_OUT_SKUMASTER,
+
+        /// <summary>API Code สำหรับ API File transfer Supplier</summary>
+        AFT_PATH_IN_SUPPLIER,
+        /// <summary>API Code สำหรับ API File transfer Supplier</summary>
+        AFT_PATH_OUT_SUPPLIER,
+
+        /// <summary>API Code สำหรับ API File transfer Customer</summary>
+        AFT_CUSTOMER_PATH_IN,
+        /// <summary>API Code สำหรับ API File transfer Customer</summary>
+        AFT_CUSTOMER_PATH_OUT,
+
+
+        /// <summary>File Pattern สำหรับ API File transfer SKUMasterType</summary>
+        AFT_FILEPATTERN_SKUMASTERTYPE,
+        /// <summary>File Pattern สำหรับ API File transfer SKUMaster</summary>
+        AFT_FILEPATTERN_SKUMASTER,
+        /// <summary>File Pattern สำหรับ API File transfer Supplier</summary>
+        AFT_FILEPATTERN_SUPPLIER,
+        /// <summary>File Pattern สำหรับ API File transfer Customer</summary>
+        AFT_CUSTOMER_FILEPATTERN,
+
+        /// <summary>Fields สำหรับ API File transfer Customer</summary>
+        AFT_SKUMASTERTYPE_FIELDS,
+        /// <summary>Fields สำหรับ API File transfer Customer</summary>
+        AFT_SKUMASTER_FIELDS,
+        /// <summary>Fields สำหรับ API File transfer Customer</summary>
+        AFT_SUPPLIER_FIELDS,
+        /// <summary>Fields สำหรับ API File transfer Customer</summary>
+        AFT_CUSTOMER_FIELDS,
+
+
+        /// <summary>Require Fields สำหรับ API File transfer Customer</summary>
+        AFT_SKUMasterType_RequireFields,
+        /// <summary>Require Fields สำหรับ API File transfer Customer</summary>
+        AFT_SKUMaster_RequireFields,
+        /// <summary>Require Fields สำหรับ API File transfer Customer</summary>
+        AFT_Supplier_RequireFields,
+        /// <summary>Require Fields สำหรับ API File transfer Customer</summary>
+        AFT_Customer_RequireFields
     }
 }

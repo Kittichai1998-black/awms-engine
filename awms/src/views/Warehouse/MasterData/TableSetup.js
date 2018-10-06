@@ -9,6 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import guid from 'guid';
 import hash from 'hash.js';
+import Select from 'react-select'
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
@@ -99,8 +100,8 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    //this.queryInitialData();
-    this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete})
+    this.queryInitialData();
+    this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
   }
 
   componentDidUpdate(){
@@ -194,9 +195,9 @@ class TableGen extends Component{
       select["q"] = JSON.stringify(filterlist)
       let queryString = createQueryString(select)
       Axios.get(queryString).then(
-          (res) => {
-            this.setState({data:res.data.datas, loading:false});
-          }
+        (res) => {
+          this.setState({data:res.data.datas, loading:false});
+        }
       )
     }
     else{
@@ -213,7 +214,7 @@ class TableGen extends Component{
 
   onHandleClickAdd(event){
     event.preventDefault();
-    let adddata = [...this.state.data];
+    let adddata = this.state.data
     let cretdata = {}
     const col = this.props.column
     const getcol = this.state.dataselect.f.split(",")
@@ -413,6 +414,17 @@ class TableGen extends Component{
             this.setState({datafilter:filter, loading:true})
         }}
       } />
+  }
+
+  createAutocompleteExtend(){
+    const options = [
+      { value: 'chocolate', label: 'Chocolate' },
+      { value: 'strawberry', label: 'Strawberry' },
+      { value: 'strawberry1', label: 'Strawberry1' },
+      { value: 'strawberry2', label: 'Strawberry2' },
+      { value: 'vanilla', label: 'Vanilla' }
+    ]
+    return <Select className="menu-outer-top" options={options} onChange={(e) => this.datax = e} value={this.datax}/>
   }
 
   createCustomButton(type,text,data){

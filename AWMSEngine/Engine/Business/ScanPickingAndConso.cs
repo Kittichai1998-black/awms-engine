@@ -54,7 +54,7 @@ namespace AWMSEngine.Engine.Business
                 lisRmSTO.RemoveAll(x => lisResSTO.Any(y => y.id == x.id));*/
                 var stoConsos = ListSTORemoved(reqVO.mapsto, resMapsto);
                 List<StorageObjectCriteria> packConsos = new List<StorageObjectCriteria>();
-                stoConsos.ForEach(x => { var y = x.ToList().FindAll(z => z.type == StorageObjectType.PACK); packConsos.AddRange(y); });
+                stoConsos.ForEach(x => { var y = x.ToTreeList().FindAll(z => z.type == StorageObjectType.PACK); packConsos.AddRange(y); });
 
                 var _exceptionPackCode = packConsos.FirstOrDefault(x => x.mstID != docItem.PackMaster_ID);
                 if (_exceptionPackCode != null)

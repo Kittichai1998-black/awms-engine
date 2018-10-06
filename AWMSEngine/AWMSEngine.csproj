@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="APIService\Mst\PutCustomerFromFileServerCsvAPI.cs" />
+    <Compile Remove="APIService\Mst\PutSKUMasterFromFileServerCsvAPI.cs" />
+    <Compile Remove="APIService\Mst\PutSupplierFromFileServerCsvAPI.cs" />
     <Compile Remove="Controllers\SqlDataController.cs" />
     <Compile Remove="Controllers\WM\MasterSTOController.cs" />
     <Compile Remove="Controllers\WM\VRMapSTOReceiveController.cs" />
@@ -19,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="APIService\Mst\tlo3u0z1.r1q~" />
     <None Remove="Engine\Business\bin.txt" />
   </ItemGroup>
 
