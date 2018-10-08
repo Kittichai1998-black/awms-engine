@@ -75,9 +75,9 @@ class DefaultLayout extends Component {
             <DefaultAside />
           </AppAside> */}
         </div>
-        <AppFooter>
+        {/* <AppFooter>
           <DefaultFooter />
-        </AppFooter>
+        </AppFooter> */}
       </div>
     );
   }

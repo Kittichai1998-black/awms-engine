@@ -122,7 +122,7 @@ class IssuedDoc extends Component{
         </div> */}
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc}
+        btn={btnfunc} defaultCondition={[{ "f": "DocumentType_ID", "c":"=", "v": 1001}]}
         accept={false}/>
         {/* <Card>
           <CardBody>
