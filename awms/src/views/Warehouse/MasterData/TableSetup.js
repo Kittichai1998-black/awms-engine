@@ -179,8 +179,10 @@ class TableGen extends Component{
   }
 
   onCheckFliter(filter,dataselect){
-    let filterlist
+    let filterlist = []
+    console.log(this.props.defaultCondition)
     if(this.props.defaultCondition){
+      console.log(this.props.defaultCondition)
       filterlist = this.props.defaultCondition
     }
     else{
