@@ -200,11 +200,11 @@ class TableGen extends Component{
                 filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
               break
             default:
-              if(data["id"] === "Status"){
-                filterlist.splice(0,1)
-                filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
-              }
-              else
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
               filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
           }
         }
