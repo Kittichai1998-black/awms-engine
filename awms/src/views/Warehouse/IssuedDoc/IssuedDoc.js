@@ -62,7 +62,9 @@ class IssuedDoc extends Component{
   }
 
   getSelectionData(data){
-    this.setState({selectiondata:data})
+    this.setState({selectiondata:data}, () => {
+      console.log(this.state.selectiondata)
+    })
   }
 
   workingData(data,status){
@@ -72,10 +74,10 @@ class IssuedDoc extends Component{
         postdata["docIDs"].push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {this.setState({resp:res.data._result.message, select:[]})})
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       }
       else{
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message, select:[]})})
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       }
     }
   }
@@ -126,7 +128,7 @@ class IssuedDoc extends Component{
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc} update={this.state.updatetable}
+        btn={btnfunc}
         accept={false}/>
         <Card>
           <CardBody>

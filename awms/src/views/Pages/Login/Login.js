@@ -48,24 +48,20 @@ class Login extends Component {
     };
     await Axios.post(window.apipath + '/api/token/register', data, config)
      .then((res) => {
-       this.setState({data : res.data});
-       this.savetoSession();
-       if(this.state.data._result !== undefined)
+       if(res.data._result !== undefined)
        {
-        if(this.state.data._result.status === 1){
-          this.setState({status : true});
-          this.GetMenu(this.state.data.Token);
+        if(res.data._result.status === 1){
+          this.savetoSession(res.data);
+          this.GetMenu(res.data.Token);
         }
-        else if(this.state._result.status === 0){
+        else if(res.data._result.status === 0){
           this.setState({status : false});
           alert("ไม่สามารถเข้าสู่ระบบได้")
         }
        }
        else{
-        if(this.state.data.status === 0){
-          this.setState({status : false});
-          alert("ไม่สามารถเข้าสู่ระบบได้")
-        }
+        this.setState({status : false});
+        alert("ไม่สามารถเข้าสู่ระบบได้")
        }
      }).catch((error) => {
        console.log(error)
@@ -76,13 +72,15 @@ class Login extends Component {
     await Axios.get(window.apipath + '/api/PageSetup/menucoreui?token=' + token)
      .then((res) => {
        sessionStorage.setItem('MenuItems',JSON.stringify(res.data.items));
+     }).then(() => {
+      this.setState({status : true});
      }).catch((error) => {
        console.log(error)
      });
   }
 
-  savetoSession(){
-    const session = this.state.data;
+  savetoSession(data){
+    const session = data;
     sessionStorage.setItem('tokendata', JSON.stringify(session));
   }
 

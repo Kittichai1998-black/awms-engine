@@ -102,6 +102,7 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
+    console.log("xxx")
     this.queryInitialData();
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
   }
@@ -113,6 +114,17 @@ class TableGen extends Component{
       this.props.rmvData(this.state.removedata)
     if(this.props.chkData)
       this.props.chkData(this.state.data)
+  }
+
+  componentWillUpdate(nextProps, nextState){
+    if(!_.isEqual(this.state.data, nextState.data)){
+      this.setState({rowselect:[]}, () => {
+        var arr = Array.from(document.getElementsByClassName('selection'));
+        arr.forEach(row => {
+          row.checked = false
+        })
+      })
+    }
   }
 
   queryInitialData(){
@@ -167,7 +179,15 @@ class TableGen extends Component{
   }
 
   onCheckFliter(filter,dataselect){
-    let filterlist = [{"f":"Status", "c":"!=", "v": 2}]
+    let filterlist = []
+    console.log(this.props.defaultCondition)
+    if(this.props.defaultCondition){
+      console.log(this.props.defaultCondition)
+      filterlist = this.props.defaultCondition
+    }
+    else{
+      filterlist = [{"f":"Status", "c":"!=", "v": 2}]
+    }
     
     if(filter.length > 0)
     {

@@ -347,7 +347,7 @@ class IssuedManage extends Component{
         <Card>
           <CardBody>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
-            <Button style={{color:"#FFF"}} type="button" color="info" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
+            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
           </CardBody>
         </Card>
 
