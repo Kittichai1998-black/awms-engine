@@ -180,9 +180,7 @@ class TableGen extends Component{
 
   onCheckFliter(filter,dataselect){
     let filterlist = []
-    console.log(this.props.defaultCondition)
     if(this.props.defaultCondition){
-      console.log(this.props.defaultCondition)
       filterlist = this.props.defaultCondition
     }
     else{
@@ -200,7 +198,6 @@ class TableGen extends Component{
             case "*":
               if(data["id"] !== "Status")
                 filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
-              
               break
             default:
               if(data["id"] === "Status"){
