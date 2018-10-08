@@ -261,7 +261,7 @@ class TableGen extends Component{
             }
             
             if(col.accessor === "Password"){
-              var guidstr = guid.raw().toUpperCase().replaceAll('-','').toUpperCase();
+              var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
               var hash256password = hash.sha256().update((hash.sha256().update(row[col.accessor]).digest('hex').toUpperCase())+guidstr).digest('hex').toUpperCase()
               row[col.accessor] = hash256password
               row["SoftPassword"] = guidstr
@@ -529,19 +529,46 @@ class TableGen extends Component{
     }
   }
 
-  autoGenLocationCode(rowdata){
-    /* console.log(this.props.autocode) */
-    var codestr=this.props.autocode+","+rowdata.original["AreaMaster_ID"]
-    /* console.log(codestr) */
+  autoGenLocationCode(rowdata,grouptype){
+    console.log("type : " + grouptype)
+    var codestr = this.props.autocode
+    if (grouptype === 1)
+    {
+      codestr = codestr + "," + rowdata.row["Gate"]
+      if(rowdata.row["Code"] === "" && rowdata.row["Gate"] > 0){
+        this.onEditorValueChange(rowdata, codestr, rowdata.column.id)
+      }else{
+        var rowLocCode = rowdata.row["Code"]
+        if(!rowLocCode.includes(this.props.autocode)){
+          return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
+        }
+      }
+    }
+    else if (grouptype === 2)
+    {
+      const codeLoc = ","+rowdata.row["Bank"] + "," + rowdata.row["Bay"] + "," + rowdata.row["Level"]
+      codestr = codestr + codeLoc
+      if(rowdata.row["Code"] === "" && rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 
+      && rowdata.row["Level"] > 0 && rowdata.row["AreaMaster_Code"] !== "" && rowdata.row["ObjectSize_Code"] !== ""){
+        this.onEditorValueChange(rowdata, codestr, rowdata.column.id)
+      }else{
+        var rowLocCode = rowdata.row["Code"]
+        if(!rowLocCode.includes(this.props.autocode)){
+          return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
+        }
+      }
+    }
+    
+    /* var codestr=this.props.autocode+","+rowdata.original["AreaMaster_ID"]
     if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
       const codeLoc = rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
       codestr = codestr+codeLoc
-      /* console.log(codestr) */
+      /* console.log(codestr) 
       return <Input type="text" value={codeLoc === null ? "" : codeLoc} editable="false"
           onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
     }else{
       return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
-    }
+    } */
   }
   autoGenBaseCode(rowdata){
     if(rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== ""){
@@ -550,8 +577,8 @@ class TableGen extends Component{
       this.onEditorValueChange(rowdata, codestr, rowdata.column.id)
 
     }else{
-      var test = rowdata.row["Code"]
-      if(!test.includes(this.props.autocode)){
+      var rowBaseCode = rowdata.row["Code"]
+      if(!rowBaseCode.includes(this.props.autocode)){
         return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
       }
     }
@@ -738,7 +765,7 @@ class TableGen extends Component{
               row.className="text-center"
           }
           else if(row.Type === "autolocationcode" && (row.body === undefined || !row.body)){
-              row.Cell = (e) => (this.autoGenLocationCode(e))
+              row.Cell = (e) => (this.autoGenLocationCode(e,this.props.areagrouptype))
               row.className="text-center"
           }
           else if(row.Type === "autobasecode" && (row.body === undefined || !row.body)){

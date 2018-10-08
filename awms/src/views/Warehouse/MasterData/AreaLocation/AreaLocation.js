@@ -27,7 +27,7 @@ class AreaLocation extends Component{
         data : [],
         autocomplete:[],
         cols2:[],
-        grouptype:1,
+        /* grouptype:0, */
         statuslist:[{
         'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
@@ -35,7 +35,7 @@ class AreaLocation extends Component{
         'mode' : 'check',
         }],
         acceptstatus : false,
-        select:{queryString:window.apipath + "/api/viw",
+       /*  select:{queryString:window.apipath + "/api/viw",
         t:"AreaLocationMaster",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
         f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -43,7 +43,7 @@ class AreaLocation extends Component{
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
         l:10,
-        all:"",},
+        all:"",}, */
         warehouse:{queryString:window.apipath + "/api/mst",
         t:"Warehouse",
         q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
@@ -137,7 +137,6 @@ class AreaLocation extends Component{
         if(field === "Warehouse"){
           const area = this.state.area
           let areawhere = JSON.parse(area.q)
-          console.log(areawhere)
           areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
           area.q = JSON.stringify(areawhere)
     
@@ -147,8 +146,9 @@ class AreaLocation extends Component{
               areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name, grouptype:row.GroupType })
             })
             this.setState({areadata})
-            console.log(areadata)
           })
+        }else{
+          this.setState({grouptype:resdata.grouptype})
         }
       })
     }
@@ -216,13 +216,13 @@ class AreaLocation extends Component{
     }
     
     setColumns(){
-      let open = [...this.state.areadata];
-      console.log(open)
+      /* console.log(open)
       let myKey = open.map((data,index) => {return data.grouptype})
       var groupTypeStr = JSON.stringify(myKey)
-      console.log(groupTypeStr)
+      console.log(groupTypeStr) */
+      console.log(this.state.grouptype)
       let cols1 =[]
-      if(groupTypeStr==="[1]"){
+      if(this.state.grouptype === 2){ 
         cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
@@ -241,7 +241,16 @@ class AreaLocation extends Component{
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
-     }else /* if(groupTypeStr==="[1]") */{
+      this.state.select = {queryString:window.apipath + "/api/viw",
+        t:"AreaLocationMaster",
+        q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'GroupType',c:'=','v':2}]",
+        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        l:10,
+        all:"",}
+     }else  if(this.state.grouptype === 1) {
       cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
@@ -258,9 +267,47 @@ class AreaLocation extends Component{
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
-      
+      this.state.select = {queryString:window.apipath + "/api/viw",
+        t:"AreaLocationMaster",
+        q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'GroupType',c:'=','v':1}]",
+        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        l:10,
+        all:"",}
+    }else{
+      cols1 = [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
+        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
+        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
+        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
+        {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
+
+      this.state.select = {queryString:window.apipath + "/api/viw",
+        t:"AreaLocationMaster",
+        q:"[{ 'f': '1', c:'=', 'v': 2}]",
+        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        l:10,
+        all:"",}
     }
-    return cols1
+    return cols1 
     }
 
     render(){
