@@ -157,10 +157,6 @@ class IssuedManage extends Component{
     this.initialData()
   }
 
-  componentDidUpdate(){
-    
-  }  
-
   onHandleClickCancel(event){
     this.forceUpdate();
     event.preventDefault();
