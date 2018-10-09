@@ -62,6 +62,7 @@ class IssuedManage extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
     this.initialData = this.initialData.bind(this)
+    this.genWarehouseData = this.genWarehouseData.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
 
@@ -76,7 +77,7 @@ class IssuedManage extends Component{
 
     this.warehouseselect = {queryString:window.apipath + "/api/mst",
       t:"Warehouse",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      q:"",
       f:"ID,Code, Name",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -127,12 +128,10 @@ class IssuedManage extends Component{
     this.setState({date:tomorrow})
 
     Axios.all([Axios.get(createQueryString(this.branchselect)),
-      Axios.get(createQueryString(this.warehouseselect)),
       Axios.get(createQueryString(this.customerselect))]).then(
-      (Axios.spread((branchresult, warehouseresult, customerresult) => 
+      (Axios.spread((branchresult, customerresult) => 
     {
       this.setState({auto_branch : branchresult.data.datas,
-        auto_warehouse:warehouseresult.data.datas,
         auto_customer:customerresult.data.datas,
         addstatus:false,
       }, () => {
@@ -140,19 +139,15 @@ class IssuedManage extends Component{
         this.state.auto_branch.forEach(row => {
           auto_branch.push({value:row.ID, label:row.Code + ' : ' + row.Name })
         })
-        const auto_warehouse = []
-        this.state.auto_warehouse.forEach(row => {
-          auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
-        })
         const auto_customer = []
         this.state.auto_customer.forEach(row => {
           auto_customer.push({value:row.ID, label:row.Code + ' : ' + row.Name })
         })
-        this.setState({auto_branch,auto_warehouse,auto_customer})
+        this.setState({auto_branch,auto_customer})
       })}
     )))
   }
-
+  //Axios.get(createQueryString(this.warehouseselect))
   componentDidMount(){
     this.initialData()
   }
@@ -183,10 +178,6 @@ class IssuedManage extends Component{
     })
   }
 
-  closePage(){
-    return 
-  }
-
   dateTimePicker(){
     return <DatePicker selected={this.state.date}
     onChange={(e) => {this.setState({date:e})}}
@@ -202,6 +193,22 @@ class IssuedManage extends Component{
     for(let name in EventStatus){
       if(EventStatus[name] === this.state.documentStatus)
         return name
+    }
+  }
+
+  genWarehouseData(data){
+    if(data){
+      const warehouse = this.warehouseselect
+      warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
+      Axios.get(createQueryString(warehouse)).then((res) => {
+        
+        console.log(res)
+        const auto_warehouse = []
+        res.data.datas.forEach(row => {
+          auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+        })
+        this.setState({auto_warehouse})
+      })
     }
   }
 
@@ -322,7 +329,7 @@ class IssuedManage extends Component{
           <Row>
             <div className="col-6">
               <div className=""><label style={style}>Branch : </label>{this.state.pageID ? this.createText(this.state.auto_branch, this.state.data.sou_Branch_ID) : 
-                <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label})}/></div>}</div>
+                <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label}, () => {this.genWarehouseData(this.state.branch)})}/></div>}</div>
               <div className=""><label style={style}>Customer : </label>{this.state.pageID ? this.createText(this.state.auto_customer, this.state.data.des_Customer_ID) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_customer} result={(e) => this.setState({"customer":e.value, "customerresult":e.label})}/></div>}</div>
             </div>
