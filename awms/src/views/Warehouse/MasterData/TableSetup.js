@@ -94,6 +94,7 @@ class TableGen extends Component{
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
+    this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -540,55 +541,25 @@ class TableGen extends Component{
     onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
   }
 
-  inputText(rowdata) {
-    if(rowdata.value !== null && rowdata.value !== ""){
-      return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} editable='false' />;
-    }else{
-      return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
-      onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
+  onEditValueAutoCode(rowdata,value,field){
+    console.log(rowdata+":"+value+":"+field)
+    if (field==="Bank"){
+      var codestr = (this.props.autocode)+","+value+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
+    }else if(field==="Bay"){
+      var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+value+","+rowdata.row["Level"]
+    }else if(field==="Level"){
+      var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+value
+    }else if(field==="Gate"){
+      var codestr = (this.props.autocode)+","+value
     }
+    this.onEditorValueChange(rowdata, this.props.areamaster,"AreaMaster_ID")
+    this.onEditorValueChange(rowdata, codestr, "Code")
+    this.onEditorValueChange(rowdata, value, rowdata.column.id)
   }
 
-  autoGenLocationCode(rowdata,grouptype){
-    console.log("type : " + grouptype)
-    var codestr = this.props.autocode
-    if (grouptype === 1)
-    {
-      codestr = codestr + "," + rowdata.row["Gate"]
-      if(rowdata.row["Code"] === "" && rowdata.row["Gate"] > 0){
-        this.onEditorValueChange(rowdata, codestr, rowdata.column.id)
-      }else{
-        var rowLocCode = rowdata.row["Code"]
-        if(!rowLocCode.includes(this.props.autocode)){
-          return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
-        }
-      }
-    }
-    else if (grouptype === 2)
-    {
-      const codeLoc = ","+rowdata.row["Bank"] + "," + rowdata.row["Bay"] + "," + rowdata.row["Level"]
-      codestr = codestr + codeLoc
-      if(rowdata.row["Code"] === "" && rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 
-      && rowdata.row["Level"] > 0 && rowdata.row["AreaMaster_Code"] !== "" && rowdata.row["ObjectSize_Code"] !== ""){
-        this.onEditorValueChange(rowdata, codestr, rowdata.column.id)
-      }else{
-        var rowLocCode = rowdata.row["Code"]
-        if(!rowLocCode.includes(this.props.autocode)){
-          return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
-        }
-      }
-    }
-    
-    /* var codestr=this.props.autocode+","+rowdata.original["AreaMaster_ID"]
-    if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
-      const codeLoc = rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
-      codestr = codestr+codeLoc
-      /* console.log(codestr) 
-      return <Input type="text" value={codeLoc === null ? "" : codeLoc} editable="false"
-          onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
-    }else{
-      return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
-    } */
+  autoGenLocationCode(rowdata){
+    return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
+    onChange={(e) => {this.onEditValueAutoCode(rowdata,e.target.value,rowdata.column.id)}} />
   }
   autoGenBaseCode(rowdata){
     if(rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== ""){
@@ -785,7 +756,7 @@ class TableGen extends Component{
               row.className="text-center"
           }
           else if(row.Type === "autolocationcode" && (row.body === undefined || !row.body)){
-              row.Cell = (e) => (this.autoGenLocationCode(e,this.props.areagrouptype))
+              row.Cell = (e) => (this.autoGenLocationCode(e))
               row.className="text-center"
           }
           else if(row.Type === "autobasecode" && (row.body === undefined || !row.body)){
