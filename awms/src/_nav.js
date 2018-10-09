@@ -1,5 +1,6 @@
 function getmenu(){
-  let json =  { items : JSON.parse(sessionStorage.getItem("MenuItems")) };
+  const jsonresult = JSON.parse(sessionStorage.getItem("MenuItems") === "undefined" ? null : sessionStorage.getItem("MenuItems"))
+  let json =  { items : jsonresult  };
   if (json === undefined || json.items === null){
     let result= {
       items: [{id: 1,name: 'Dashboard',url: '/Dashboard',icon: 'cui-chart',},

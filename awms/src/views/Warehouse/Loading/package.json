@@ -1,6 +1,6 @@
 {
-  "name": "Loading",
+  "name": "LoadingManagement",
   "version": "0.0.0",
   "private": true,
-  "main": "./Loading.js"
+  "main": "./LoadingManagement.js"
 }

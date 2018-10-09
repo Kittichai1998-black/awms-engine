@@ -97,6 +97,11 @@ const PickConso = Loadable({
   loading: Loading,
 });
 
+const LoadingM = Loadable({
+  loader: () => import('./views/Warehouse/Loading'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -120,6 +125,7 @@ const routes = [
   { path: '/wms/issueddoc/manage', exact: true, name: 'IssuedDoc', component: IssuedDoc },
   { path: '/wms/issueddoc/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
   { path: '/wms/picking/manage', exact: true, name: 'PickConso', component: PickConso },
+  { path: '/wms/loading/manage', exact: true, name: 'LoadingM', component: LoadingM },
 ];
 
 export default routes;

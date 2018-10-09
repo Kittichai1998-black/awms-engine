@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch,Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { Container } from 'reactstrap';
 import { Page404 } from '../../views/Pages';
 
@@ -39,10 +39,10 @@ class DefaultMenu extends Component{
 
 function checkstatus(){
   if(sessionStorage.getItem("tokendata") !== null){
-    return <Redirect from="/" to="/Dashboard" />
+    return <Route from="/" to="/Dashboard" />
   }
   else{
-    return <Redirect from="/" to="/login" />
+    return <Route from="/" to="/login" />
   }
 }
 
@@ -50,7 +50,7 @@ class DefaultLayout extends Component {
   render() {
     return (
       <div className="app">
-      {/* {checkstatus()} */}
+      {checkstatus()}
         <AppHeader fixed>
           <DefaultHeader />
         </AppHeader>
