@@ -101,6 +101,10 @@ const LoadingM = Loadable({
   loader: () => import('./views/Warehouse/Loading'),
   loading: Loading,
 });
+const Historyy = Loadable({
+  loader: () => import('./views/Warehouse/Storage/History'),
+  loading: Loading,
+});
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -126,6 +130,7 @@ const routes = [
   { path: '/wms/issueddoc/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
   { path: '/wms/picking/manage', exact: true, name: 'PickConso', component: PickConso },
   { path: '/wms/loading/manage', exact: true, name: 'LoadingM', component: LoadingM },
+  { path: '/wms/history', exact: true, name: 'History', component: Historyy },
 ];
 
 export default routes;

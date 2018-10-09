@@ -35,15 +35,6 @@ class AreaLocation extends Component{
         'mode' : 'check',
         }],
         acceptstatus : false,
-       /*  select:{queryString:window.apipath + "/api/viw",
-        t:"AreaLocationMaster",
-        q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
-        g:"",
-        s:"[{'f':'ID','od':'asc'}]",
-        sk:0,
-        l:10,
-        all:"",}, */
         warehouse:{queryString:window.apipath + "/api/mst",
         t:"Warehouse",
         q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
@@ -77,6 +68,8 @@ class AreaLocation extends Component{
         supplierdata:[],
         areadata:[]
       };
+      this.getdataselect = this.getdataselect.bind(this)
+      this.getSelectionData = this.getSelectionData.bind(this)
       this.setColumns = this.setColumns.bind(this)
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this)
       this.filterList = this.filterList.bind(this)
@@ -237,15 +230,7 @@ class AreaLocation extends Component{
     setColumns(){
       let cols1 =[]
       if(this.state.grouptype === 2){ 
-        this.state.select = {queryString:window.apipath + "/api/viw",
-        t:"AreaLocationMaster",
-        q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " +this.state.areamaster+"}]",
-        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
-        g:"",
-        s:"[{'f':'ID','od':'asc'}]",
-        sk:0,
-        l:10,
-        all:"",}
+        
         cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
@@ -265,15 +250,7 @@ class AreaLocation extends Component{
       ]; 
       
      }else  if(this.state.grouptype === 1) {
-      this.state.select = {queryString:window.apipath + "/api/viw",
-      t:"AreaLocationMaster",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':" +this.state.areamaster+"}]",
-      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:0,
-      l:10,
-      all:"",}
+      
       cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code', editable:false, Filter:"text"},
@@ -289,16 +266,8 @@ class AreaLocation extends Component{
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
-      this.state.select = {queryString:window.apipath + "/api/viw",
-        t:"AreaLocationMaster",
-        q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'GroupType',c:'=','v':1}]",
-        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
-        g:"",
-        s:"[{'f':'ID','od':'asc'}]",
-        sk:0,
-        l:10,
-        all:"",}
     }else{
+      
       cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
@@ -317,8 +286,33 @@ class AreaLocation extends Component{
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
+    }
+    return cols1 
+    }
+    getdataselect(){
+      if(this.state.grouptype === 2){ 
+        this.state.select = {queryString:window.apipath + "/api/viw",
+        t:"AreaLocationMaster",
+        q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " +this.state.areamaster+"}]",
+        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        l:10,
+        all:"",}
 
-      this.state.select = {queryString:window.apipath + "/api/viw",
+      }else  if(this.state.grouptype === 1) {
+        this.state.select = {queryString:window.apipath + "/api/viw",
+      t:"AreaLocationMaster",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':" +this.state.areamaster+"}]",
+      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      l:10,
+      all:"",}
+      }else{
+        this.state.select = {queryString:window.apipath + "/api/viw",
         t:"AreaLocationMaster",
         q:"[{ 'f': '1', c:'=', 'v': 2}]",
         f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -327,8 +321,8 @@ class AreaLocation extends Component{
         sk:0,
         l:10,
         all:"",}
-    }
-    return cols1 
+      }
+      return this.state.select
     }
 
     render(){
@@ -364,7 +358,7 @@ class AreaLocation extends Component{
             getselection = เก็บค่าที่เลือก
           */}
 
-            <TableGen column={this.setColumns()} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+            <TableGen column={this.setColumns()} data={this.getdataselect()} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} autocomplete={this.state.autocomplete} accept={true} areagrouptype={this.state.grouptype}
                       btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData}
                       table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster}/>

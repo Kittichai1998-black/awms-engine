@@ -103,7 +103,6 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    console.log("xxx")
     this.queryInitialData();
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
   }
