@@ -196,8 +196,18 @@ class TableGen extends Component{
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
               break
             case "*":
-              if(data["id"] !== "Status")
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
+              
+              if(data["id"] === "Status"){
+                filterlist.push({"f":data["id"], "c":"<", "v": 2})
+              }
+              else{
                 filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
+              }
               break
             default:
               filterlist.forEach((row, index) => {
