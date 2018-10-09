@@ -9,6 +9,44 @@ import TableGen from '../Warehouse/MasterData/TableSetup'
 import ExtendTable from '../Warehouse/MasterData/ExtendTable'
 import _ from 'lodash'
 
+class apicall{
+    get(url){
+        return Axios.get(url).then((res) => {
+            if(res.data._result.status === 0){
+                alert(res.data._result.message)
+            }
+            return res
+        });
+    }
+
+    post(url, data){
+        return Axios.post(url, data).then((res) => {
+            if(res.data._result.status === 0){
+                alert(res.data._result.message)
+            }
+            return res
+        });
+    }
+
+    put(url, data){
+        return Axios.put(url, data).then((res) => {
+            if(res.data._result.status === 0){
+                alert(res.data._result.message)
+            }
+            return res
+        });
+    }
+
+    delete(url, data){
+        return Axios.delete(url, data).then((res) => {
+            if(res.data._result.status === 0){
+                alert(res.data._result.message)
+            }
+            return res
+        });
+    }
+}
+
 class AutoSelect extends Component{
     constructor(){
         super()
@@ -120,4 +158,4 @@ const Clone = (obj) => {
     throw new Error("Unable to copy obj! Its type isn't supported.");
   }
 
-export {AutoSelect, Clone, TableGen, ExtendTable, NumberInput}
+export {AutoSelect, Clone, TableGen, ExtendTable, NumberInput, axios, zzzz}

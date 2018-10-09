@@ -4,6 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import Axios from 'axios';
 
+
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
   + (select.q === "" ? "" : "&q=" + select.q)
