@@ -94,6 +94,7 @@ class TableGen extends Component{
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
+    this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -102,7 +103,6 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    console.log("xxx")
     this.queryInitialData();
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
   }
@@ -288,7 +288,7 @@ class TableGen extends Component{
             }
             
             if(col.accessor === "Password"){
-              var guidstr = guid.raw().toUpperCase().replaceAll('-','').toUpperCase();
+              var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
               var hash256password = hash.sha256().update((hash.sha256().update(row[col.accessor]).digest('hex').toUpperCase())+guidstr).digest('hex').toUpperCase()
               row[col.accessor] = hash256password
               row["SoftPassword"] = guidstr
@@ -547,28 +547,25 @@ class TableGen extends Component{
     onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
   }
 
-  inputText(rowdata) {
-    if(rowdata.value !== null && rowdata.value !== ""){
-      return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} editable='false' />;
-    }else{
-      return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
-      onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
+  onEditValueAutoCode(rowdata,value,field){
+    console.log(rowdata+":"+value+":"+field)
+    if (field==="Bank"){
+      var codestr = (this.props.autocode)+","+value+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
+    }else if(field==="Bay"){
+      var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+value+","+rowdata.row["Level"]
+    }else if(field==="Level"){
+      var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+value
+    }else if(field==="Gate"){
+      var codestr = (this.props.autocode)+","+value
     }
+    this.onEditorValueChange(rowdata, this.props.areamaster,"AreaMaster_ID")
+    this.onEditorValueChange(rowdata, codestr, "Code")
+    this.onEditorValueChange(rowdata, value, rowdata.column.id)
   }
 
   autoGenLocationCode(rowdata){
-    /* console.log(this.props.autocode) */
-    var codestr=this.props.autocode+","+rowdata.original["AreaMaster_ID"]
-    /* console.log(codestr) */
-    if(rowdata.row["Bank"] > 0 && rowdata.row["Bay"] > 0 && rowdata.row["Level"] > 0 && (rowdata.row["AreaMaster_Code"] === null ? "" : rowdata.row["AreaMaster_Code"]) !== ""){
-      const codeLoc = rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
-      codestr = codestr+codeLoc
-      /* console.log(codestr) */
-      return <Input type="text" value={codeLoc === null ? "" : codeLoc} editable="false"
-          onChange={(e) => {this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)}} />;
-    }else{
-      return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
-    }
+    return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
+    onChange={(e) => {this.onEditValueAutoCode(rowdata,e.target.value,rowdata.column.id)}} />
   }
   autoGenBaseCode(rowdata){
     if(rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== ""){
@@ -577,8 +574,8 @@ class TableGen extends Component{
       this.onEditorValueChange(rowdata, codestr, rowdata.column.id)
 
     }else{
-      var test = rowdata.row["Code"]
-      if(!test.includes(this.props.autocode)){
+      var rowBaseCode = rowdata.row["Code"]
+      if(!rowBaseCode.includes(this.props.autocode)){
         return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
       }
     }

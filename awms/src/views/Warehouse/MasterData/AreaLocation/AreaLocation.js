@@ -27,7 +27,7 @@ class AreaLocation extends Component{
         data : [],
         autocomplete:[],
         cols2:[],
-        grouptype:1,
+        /* grouptype:0, */
         statuslist:[{
         'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
         'header' : 'Status',
@@ -35,15 +35,6 @@ class AreaLocation extends Component{
         'mode' : 'check',
         }],
         acceptstatus : false,
-        select:{queryString:window.apipath + "/api/viw",
-        t:"AreaLocationMaster",
-        q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
-        g:"",
-        s:"[{'f':'ID','od':'asc'}]",
-        sk:0,
-        l:10,
-        all:"",},
         warehouse:{queryString:window.apipath + "/api/mst",
         t:"Warehouse",
         q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
@@ -77,11 +68,14 @@ class AreaLocation extends Component{
         supplierdata:[],
         areadata:[]
       };
+      this.getdataselect = this.getdataselect.bind(this)
+      this.getSelectionData = this.getSelectionData.bind(this)
       this.setColumns = this.setColumns.bind(this)
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this)
       this.filterList = this.filterList.bind(this)
       this.dropdownAuto = this.dropdownAuto.bind(this)
       this.autoSelectData = this.autoSelectData.bind(this)
+      this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
       this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
 
     } 
@@ -137,7 +131,6 @@ class AreaLocation extends Component{
         if(field === "Warehouse"){
           const area = this.state.area
           let areawhere = JSON.parse(area.q)
-          console.log(areawhere)
           areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
           area.q = JSON.stringify(areawhere)
     
@@ -147,8 +140,10 @@ class AreaLocation extends Component{
               areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name, grouptype:row.GroupType })
             })
             this.setState({areadata})
-            console.log(areadata)
           })
+        }else{
+          this.setState({areamaster:resdata.value})
+          this.setState({grouptype:resdata.grouptype})
         }
       })
     }
@@ -208,47 +203,42 @@ class AreaLocation extends Component{
       })))
     }
 
-    createBarcodeBtn(){
-      let barcode=[{"barcode":"xxx","Name":"nameXXX"},{"barcode":"555","Name":"name555"}]
-      let barcodestr = JSON.stringify(barcode)
+    getSelectionData(data){
+        console.log(data)
+        let obj = []
+        data.forEach((datarow,index) => {
+            obj.push({"barcode":datarow.Code,"Name":datarow.Name});
+        })
+        const xx = JSON.stringify(obj)
+        this.setState({barcodeObj:xx}, () => console.log(this.state.barcodeObj))
+    }
+
+    createBarcodeBtn(rowdata){
       return <Button type="button" color="info"
-      onClick={() => this.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr)}>Print</Button>
+      onClick={() => {
+          let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
+          let barcodestr = JSON.stringify(barcode)
+          if(!this.state.barcodeObj){
+              this.setState({barcodeObj:barcodestr}, () =>
+              this.props.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj)) 
+          }else{
+              this.props.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj) 
+          }
+          }}>Print</Button>
     }
     
     setColumns(){
-      let open = [...this.state.areadata];
-      console.log(open)
-      let myKey = open.map((data,index) => {return data.grouptype})
-      var groupTypeStr = JSON.stringify(myKey)
-      console.log(groupTypeStr)
       let cols1 =[]
-      if(groupTypeStr==="[1]"){
+      if(this.state.grouptype === 2){ 
+        
         cols1 = [
         {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
+        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
         {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
-        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
-        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
-        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
-        {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
-      ]; 
-     }else /* if(groupTypeStr==="[1]") */{
-      cols1 = [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
-        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
-        {accessor: 'AreaMaster_Code', Header: 'Area Master',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
+        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
+        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
@@ -259,8 +249,80 @@ class AreaLocation extends Component{
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
       
+     }else  if(this.state.grouptype === 1) {
+      
+      cols1 = [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code', editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode",},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
+    }else{
+      
+      cols1 = [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
+        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
+        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
+        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
     }
-    return cols1
+    return cols1 
+    }
+    getdataselect(){
+      if(this.state.grouptype === 2){ 
+        this.state.select = {queryString:window.apipath + "/api/viw",
+        t:"AreaLocationMaster",
+        q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " +this.state.areamaster+"}]",
+        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        l:10,
+        all:"",}
+
+      }else  if(this.state.grouptype === 1) {
+        this.state.select = {queryString:window.apipath + "/api/viw",
+      t:"AreaLocationMaster",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':" +this.state.areamaster+"}]",
+      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      l:10,
+      all:"",}
+      }else{
+        this.state.select = {queryString:window.apipath + "/api/viw",
+        t:"AreaLocationMaster",
+        q:"[{ 'f': '1', c:'=', 'v': 2}]",
+        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        l:10,
+        all:"",}
+      }
+      return this.state.select
     }
 
     render(){
@@ -296,10 +358,10 @@ class AreaLocation extends Component{
             getselection = เก็บค่าที่เลือก
           */}
 
-            <TableGen column={this.setColumns()} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+            <TableGen column={this.setColumns()} data={this.getdataselect()} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} autocomplete={this.state.autocomplete} accept={true} areagrouptype={this.state.grouptype}
-                      btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={(res) => this.setState({test:res})}
-                      table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code"/>
+                      btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData}
+                      table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster}/>
           </div>  
         )   
     }
