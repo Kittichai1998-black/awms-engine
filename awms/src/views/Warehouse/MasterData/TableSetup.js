@@ -128,26 +128,34 @@ class TableGen extends Component{
   }
 
   queryInitialData(){
-    if(this.props.url === null || this.props.url === undefined){
-      const dataselect = this.props.data
-      this.setState({dataselect:dataselect})
-      let queryString = createQueryString(this.props.data)
-      Axios.get(queryString).then(
-      (res) => {
-        this.setState({data:res.data.datas,loading:false})
-      })        
-    }
-    else{
-      Axios.get(this.props.url).then(
+    if(this.props.data){
+      if(this.props.url === null || this.props.url === undefined){
+        const dataselect = this.props.data
+        this.setState({dataselect:dataselect})
+        let queryString = createQueryString(this.props.data)
+        Axios.get(queryString).then(
         (res) => {
-            this.setState({data:res.data.datas,loading:false})
-        })
+          this.setState({data:res.data.datas,loading:false})
+        })        
+      }
+      else{
+        Axios.get(this.props.url).then(
+          (res) => {
+              this.setState({data:res.data.datas,loading:false})
+          })
+      }
     }
   }
 
   componentDidMount(){
-    this.queryInitialData();
-    this.setState({originalselect:this.props.data.q})
+    
+    if(this.props.data){
+      this.queryInitialData();
+      this.setState({originalselect:this.props.data.q})
+    }
+    else{
+      this.setState({loading:false})
+    }
   }
   
   componentWillUnmount(){
