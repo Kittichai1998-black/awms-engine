@@ -79,7 +79,8 @@ namespace AWMSEngine.APIService
             long dbLogID = 0;
             try
             {
-                this.Logger = AMWLoggerManager.GetLogger(request._token ?? request._apikey ?? "notkey", this.GetType().Name);
+                var getKey = ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
+                this.Logger = AMWLoggerManager.GetLogger(getKey.token ?? getKey.apikey ?? "notkey", this.GetType().Name);
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 this.Logger.LogBegin();
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
@@ -95,11 +96,11 @@ namespace AWMSEngine.APIService
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
                 this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
 
-                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, request._token);
-                this.Logger.LogInfo("_token : " + request._token);
+                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, getKey.token);
+                this.Logger.LogInfo("token : " + getKey.token);
 
-                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, request._apikey);
-                this.Logger.LogInfo("_apikey : " + request._apikey);
+                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, getKey.apikey);
+                this.Logger.LogInfo("apikey : " + getKey.apikey);
 
                 this.Logger.LogInfo("[BeginExecuteEngineManual]");
                 var res = this.ExecuteEngineManual();

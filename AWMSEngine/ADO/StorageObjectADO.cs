@@ -192,16 +192,20 @@ namespace AWMSEngine.ADO
             return MatchDocLock(baseCode, null, docTypeID, desCustomerID, null, null, null, buVO);
         }
 
-        public List<SPOutSTORootIssued> ListFreeForPick(long? docItemID, VOCriteria buVO)
+        public List<SPOutSTORootCanUseCriteria> ListRootCanPicking(long? docItemID, VOCriteria buVO)
         {
 
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("docItemID", docItemID);
-            var res = this.Query<SPOutSTORootIssued>("SP_STOROOT_LISTFREE_FORPICK", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            var res = this.Query<SPOutSTORootCanUseCriteria>("SP_STOROOT_LISTFREE_FORPICK", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             return res.ToList();
             //SP_STOROOT_FIND_ISSUED_BYDOCITEM
         }
-        public List<StorageObjectCriteria> ListInDoc(long? docID, long? docItemID,DocumentTypeID? docTypeID, VOCriteria buVO)
+        public List<SPOutSTORootCanUseCriteria> ListRootInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, VOCriteria buVO)
+        {
+            return null;
+        }
+        public List<StorageObjectCriteria> ListInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, VOCriteria buVO)
         {
 
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -209,7 +213,7 @@ namespace AWMSEngine.ADO
             param.Add("docItemID", docItemID);
             param.Add("docTypeID", docTypeID); 
             List<StorageObjectCriteria> res = new List<StorageObjectCriteria>();
-            var stoids = this.Query<SPOutSTORootIssued>("SP_STOID_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STOID_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             foreach(var stoid in stoids)
             {
                 var sto = this.Get(stoid.rootID, stoid.objectType, false, true, buVO);

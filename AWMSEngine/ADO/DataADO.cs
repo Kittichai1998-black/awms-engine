@@ -50,7 +50,7 @@ namespace AWMSEngine.ADO
                     columns += ",";
                 columns += rowlist.Key;
 
-                string v = rowlist.Value.ToString();
+                string v = rowlist.Value == null ? null : rowlist.Value.ToString();
                 if (v != null && v.StartsWith("@@sql"))
                 {
                     if (!string.IsNullOrEmpty(parameter))
@@ -81,7 +81,7 @@ namespace AWMSEngine.ADO
 
                 foreach (var data in row.SkipWhile(pk => pk.Key == con))
                 {
-                    string v = data.Value.ToString();
+                    string v = data.Value == null ? null : data.Value.ToString();
                     if (v == null || !v.StartsWith("@@sql"))
                         param.Add("@" + data.Key.ToString(), data.Value);
                 }
@@ -403,6 +403,12 @@ namespace AWMSEngine.ADO
             this.Execute("SP_NEXTNUM_TEXT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
 
             string res = param.Get<string>("res");
+            return res;
+        }
+
+        public List<T> QueryString<T>(string sqlComm, Dapper.DynamicParameters parameters, VOCriteria buVO)
+        {
+            List<T> res = this.Query<T>(sqlComm, CommandType.Text, parameters, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
     }

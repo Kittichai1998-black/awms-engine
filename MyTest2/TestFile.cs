@@ -16,11 +16,10 @@ namespace MyTest2
         [Fact]
         public void TestGUID()
         {
+            AWMSEngine.ADO.DataADO data = new AWMSEngine.ADO.DataADO();
+            AWMSEngine.ADO.DataADO data2 = new AWMSEngine.ADO.DataADO();
+            AWMSEngine.ADO.DataADO data3 = new AWMSEngine.ADO.DataADO();
 
-            var guid = Guid.NewGuid();
-            this.sysout.WriteLine(guid.ToString());
-            this.sysout.WriteLine(guid.ToString("N"));
-            //this.sysout.WriteLine(Guid.NewGuid().ToString("2"));
         }
         [Fact]
         public void TestASCIIFile()

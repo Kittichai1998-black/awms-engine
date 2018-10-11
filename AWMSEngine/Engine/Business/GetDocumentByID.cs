@@ -16,6 +16,7 @@ namespace AWMSEngine.Engine.Business
         public class TReq
         {
             public int docID;
+            public bool getMapSto;
             public DocumentTypeID docTypeID;
         }
         public class TRes
@@ -25,6 +26,7 @@ namespace AWMSEngine.Engine.Business
             {
                 public List<amv_DocumentItem> documentItems;
             }
+            public List<StorageObjectCriteria> mapstos;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -47,6 +49,11 @@ namespace AWMSEngine.Engine.Business
                 this.BuVO);
             doc.documentItems = docItems;
             res.document = doc;
+
+            /*--------------------------*/
+            if (reqVO.getMapSto)
+                res.mapstos = ADO.StorageObjectADO.GetInstant().ListInDoc(doc.ID, null, DocumentTypeID.LOADING, this.BuVO);
+
 
             return res;
         }

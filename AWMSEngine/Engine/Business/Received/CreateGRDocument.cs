@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.Business.Received
 
                 Remark = reqVO.remark,
                 Options = null,
-                TransportNo = null,
+                Transport_ID = null,
 
                 DocumentItems = new List<amt_DocumentItem>(),
 

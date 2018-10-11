@@ -27,5 +27,12 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(data);
             return res;
         }
+        [HttpPost("doc/transfer")]
+        public dynamic Transfer([FromBody]dynamic data)
+        {
+            CreateGRDocAPI exec = new CreateGRDocAPI(this);
+            var res = exec.Execute(data);
+            return res;
+        }
     }
 }

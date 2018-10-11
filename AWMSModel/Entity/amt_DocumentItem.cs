@@ -8,10 +8,11 @@ namespace AWMSModel.Entity
     public class amt_DocumentItem : Entity.BaseEntityCreateModify
     {
         public long Document_ID;
+        public long LinkDocument_ID;
         public string Code;
-        public long SKUMaster_ID;
+        public long? SKUMaster_ID;
         public long? PackMaster_ID;
-        public int Quantity;
+        public int? Quantity;
         public string Options;
         public DateTime? ProductionDate;
         public DateTime? ExpireDate;

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AWMSModel.Criteria.SP.Response
 {
-    public class SPOutSTORootIssued
+    public class SPOutSTORootCanUseCriteria
     {
         public long id;
         public string code;
