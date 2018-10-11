@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
-import {TableGen} from '../MasterData/TableSetup';
+import {Card, CardBody, Button } from 'reactstrap';
+import {TableGen, axios} from '../MasterData/TableSetup';
 import Axios from 'axios';
 
 class IssuedDoc extends Component{
@@ -62,7 +61,9 @@ class IssuedDoc extends Component{
   }
 
   getSelectionData(data){
-    this.setState({selectiondata:data})
+    this.setState({selectiondata:data}, () => {
+      console.log(this.state.selectiondata)
+    })
   }
 
   workingData(data,status){
@@ -72,16 +73,15 @@ class IssuedDoc extends Component{
         postdata["docIDs"].push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => this.setState({resp:res.data._result.message}))
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       }
       else{
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then(() => {this.forceUpdate()})
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       }
     }
   }
 
   onClickToDesc(data){
-    console.log(this)
     return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID='+data.ID)}>Detail</Button>
   }
 
@@ -133,6 +133,7 @@ class IssuedDoc extends Component{
           <CardBody>
             <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
             <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
+            {this.state.resp}
           </CardBody>
         </Card>
       </div>

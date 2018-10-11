@@ -4,7 +4,7 @@ import {Input, Modal, ModalHeader, ModalBody, ModalFooter, Button, Card, CardBod
 import ReactTable from 'react-table'
 import {AutoSelect, Clone} from '../ComponentCore'
 import Axios from 'axios';
-import EventStatus from '../EventStatus'
+import {EventStatus} from '../Status'
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)

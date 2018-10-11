@@ -78,7 +78,7 @@ const InboundManagement = Loadable({
 });
 
 const InboundView = Loadable({
-  loader: () => import('./views/Warehouse/StorageManagement/InboundManagement'),
+  loader: () => import('./views/Warehouse/StorageManagement/InboundView'),
   loading: Loading,
 });
 
@@ -94,6 +94,15 @@ const IssuedManage = Loadable({
 
 const PickConso = Loadable({
   loader: () => import('./views/Warehouse/Picking/PickAndConso'),
+  loading: Loading,
+});
+
+const LoadingM = Loadable({
+  loader: () => import('./views/Warehouse/Loading'),
+  loading: Loading,
+});
+const Historyy = Loadable({
+  loader: () => import('./views/Warehouse/Storage/History'),
   loading: Loading,
 });
 
@@ -120,6 +129,8 @@ const routes = [
   { path: '/wms/issueddoc/manage', exact: true, name: 'IssuedDoc', component: IssuedDoc },
   { path: '/wms/issueddoc/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
   { path: '/wms/picking/manage', exact: true, name: 'PickConso', component: PickConso },
+  { path: '/wms/loading/manage', exact: true, name: 'LoadingM', component: LoadingM },
+  { path: '/wms/history', exact: true, name: 'History', component: Historyy },
 ];
 
 export default routes;

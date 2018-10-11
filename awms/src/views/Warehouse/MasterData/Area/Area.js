@@ -12,7 +12,7 @@ class Area extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-      'status' : [{'value':'1','label':'Active'},{'value':'0','label':'Inactive'},{'value':'*','label':'All'}],
+      'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
       'header' : 'Status',
       'field' : 'Status',
       'mode' : 'check',
@@ -25,7 +25,7 @@ class Area extends Component{
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
-      l:20,
+      l:10,
       all:"",},
       sortstatus:0,
       selectiondata:[]
@@ -69,7 +69,6 @@ class Area extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:20,
       all:"",}
 
     const areatypeselect = {queryString:window.apipath + "/api/mst",
@@ -79,7 +78,6 @@ class Area extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:20,
       all:"",}
 
     Axios.all([Axios.get(this.createQueryString(whselect)),Axios.get(this.createQueryString(areatypeselect))]).then(
@@ -105,7 +103,6 @@ class Area extends Component{
 
   render(){
     const cols = [
-      {accessor: 'ID', Header: 'ID', Filter:"text", editable:false,}, 
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
       {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},

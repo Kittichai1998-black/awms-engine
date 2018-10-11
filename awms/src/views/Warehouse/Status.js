@@ -16,4 +16,16 @@ const EventStatus = [
     {status:'CHANGE_BASE' , code:90,}
 ]
 
-export default EventStatus
+const DocumentStatus = [
+    {status:'Working' , code:1,},
+    {status:'Reject' , code:2,},
+    {status:'Complete' , code:3,},
+]
+
+const Status = [
+    {status:'Inactive' , code:0,},
+    {status:'Active' , code:1,},
+    {status:'Remove' , code:2,},
+]
+
+export {EventStatus, DocumentStatus, Status}

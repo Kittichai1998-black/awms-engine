@@ -158,9 +158,9 @@ class StorageManagement extends Component{
         let areawhere = JSON.parse(area.q)
         areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
         area.q = JSON.stringify(areawhere)
-  
+
         Axios.get(createQueryString(this.state.area)).then((res) => {
-        const areadata = []
+          const areadata = []
           res.data.datas.forEach(row => {
             areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
           })
@@ -170,11 +170,11 @@ class StorageManagement extends Component{
     })
   }
 
-  dropdownAuto(data, field, fieldres){    
+  dropdownAuto(data, field, fieldres, child){    
     return <div>
         <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
         <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
-          <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)}/>
+          <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)} child={child}/>
         </div>
       </div>
   }
@@ -243,10 +243,11 @@ class StorageManagement extends Component{
       }
     }
     else{
-      if(this.state.barcode === "" || this.state.qty === 0 || this.state.warehouseres || this.state.areares){
+      if(this.state.barcode === "" || this.state.qty === 0 || this.state.warehouseres === "" || this.state.areares === ""){
         status = false;
       }
     }
+
     if(status){
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
       "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
@@ -365,7 +366,6 @@ class StorageManagement extends Component{
             this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
             return null
           }else{
-            console.log(res.data._result.message)
             this.setState({response:<span class="text-center">{res.data._result.message}</span>})
           }
         })
@@ -396,17 +396,17 @@ class StorageManagement extends Component{
         </Row>
         <Row>
           <Col>
-              {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres")}
+              {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false)}
           </Col>
         </Row>
         <Row>
           <Col>
-              {this.dropdownAuto(this.state.areadata, "Area", "areares")}
+              {this.dropdownAuto(this.state.areadata, "Area", "areares", true)}
           </Col>
         </Row>
         <Row style={this.state.Mode===0?null:display}>
           <Col>
-              {this.dropdownAuto(this.state.supplierdata, "Supplier", "supplierres")}
+              {this.dropdownAuto(this.state.supplierdata, "Supplier", "supplierres", false)}
           </Col>
         </Row>
         <Row>
