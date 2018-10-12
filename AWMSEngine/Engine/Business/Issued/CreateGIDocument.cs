@@ -66,15 +66,25 @@ namespace AWMSEngine.Engine.Business.Issued
             var forCustomerModel = reqVO.forCustomerID.HasValue ?
                  this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.forCustomerID) :
                  this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.forCustomerCode);
-            var souWarehouseModel = reqVO.souWarehouseID.HasValue ?
-                this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == reqVO.souWarehouseID) :
-                this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.souWarehouseCode);
-            var souBranchModel = reqVO.souBranchID.HasValue?
-                this.StaticValue.Branchs.FirstOrDefault(x => x.ID == reqVO.souBranchID) : 
-                this.StaticValue.Branchs.FirstOrDefault(x => x.Code == reqVO.souBranchCode);
-            var souAreaMasterModel = reqVO.souAreaMasterID.HasValue?
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.souAreaMasterID):
+            var souAreaMasterModel = reqVO.souAreaMasterID.HasValue ?
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.souAreaMasterID) :
                 this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.souAreaMasterCode);
+            var souWarehouseModel =
+                reqVO.souWarehouseID.HasValue ?
+                    this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == reqVO.souWarehouseID) :
+                    !string.IsNullOrWhiteSpace(reqVO.souBranchCode) ?
+                        this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.souWarehouseCode) :
+                        souAreaMasterModel != null ?
+                            this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == souAreaMasterModel.Warehouses_ID) :
+                            null;
+            var souBranchModel =
+                reqVO.souBranchID.HasValue ?
+                this.StaticValue.Branchs.FirstOrDefault(x => x.ID == reqVO.souBranchID) :
+                !string.IsNullOrWhiteSpace(reqVO.souBranchCode) ?
+                    this.StaticValue.Branchs.FirstOrDefault(x => x.Code == reqVO.souBranchCode) :
+                    souWarehouseModel != null ?
+                        this.StaticValue.Branchs.FirstOrDefault(x => x.ID == souWarehouseModel.Branch_ID) :
+                        null;
             var desSupplierModel = reqVO.desSupplierID.HasValue?
                 this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.desSupplierID):
                 this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
@@ -101,6 +111,12 @@ namespace AWMSEngine.Engine.Business.Issued
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souAreaMasterCode ไม่ถูกต้อง");
             else if (souAreaMasterModel == null && reqVO.souAreaMasterID.HasValue)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souAreaMasterID ไม่ถูกต้อง");
+
+            if (souAreaMasterModel != null && souWarehouseModel != null && souAreaMasterModel.Warehouses_ID != souWarehouseModel.ID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souArea และ souWarehouse ไม่สัมพันธ์กัน");
+            if (souBranchModel != null && souWarehouseModel != null && souBranchModel.ID != souWarehouseModel.Branch_ID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souWarehouse และ souBranchModel ไม่สัมพันธ์กัน");
+
 
             if (desSupplierModel == null && !string.IsNullOrWhiteSpace(reqVO.desSupplierCode))
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desSupplierCode ไม่ถูกต้อง");

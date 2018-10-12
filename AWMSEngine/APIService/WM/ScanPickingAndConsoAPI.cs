@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.Engine.Business;
+using AWMSEngine.Engine.Business.Issued;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace AWMSEngine.APIService.WM
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            ScanPickingAndConso.TReq req = ObjectUtil.DynamicToModel<Engine.Business.ScanPickingAndConso.TReq>(this.RequestVO);
+            ScanIssuedToPickingAndConso.TReq req = ObjectUtil.DynamicToModel<ScanIssuedToPickingAndConso.TReq>(this.RequestVO);
             var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(req.docItemID, this.BuVO);
 
             if(req.action == VirtualMapSTOActionType.SELECT)
@@ -39,7 +40,7 @@ namespace AWMSEngine.APIService.WM
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "รอรับเฉพาะ Action Add & Remove");
             }
 
-            var res = new Engine.Business.ScanPickingAndConso().Execute(this.Logger, this.BuVO, req);
+            var res = new ScanIssuedToPickingAndConso().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

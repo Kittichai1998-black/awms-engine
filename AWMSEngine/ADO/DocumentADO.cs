@@ -60,8 +60,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@parentDocument_ID", doc.ParentDocument_ID);
             param.Add("@documentType_ID", doc.DocumentType_ID);
-
-
+            
             param.Add("@sou_customer_ID", doc.Sou_Customer_ID);
             param.Add("@sou_supplier_ID", doc.Sou_Supplier_ID);
             param.Add("@sou_branch_ID", doc.Sou_Branch_ID);
@@ -111,6 +110,7 @@ namespace AWMSEngine.ADO
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@document_ID", docItem.Document_ID);
+            param.Add("@linkDocumentID", docItem.LinkDocument_ID);
             param.Add("@packMaster_ID", docItem.PackMaster_ID);
             param.Add("@sku_ID", docItem.SKUMaster_ID);
             param.Add("@code", docItem.Code);

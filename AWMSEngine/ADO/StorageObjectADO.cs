@@ -203,7 +203,15 @@ namespace AWMSEngine.ADO
         }
         public List<SPOutSTORootCanUseCriteria> ListRootInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, VOCriteria buVO)
         {
-            return null;
+
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docID", docID);
+            param.Add("docItemID", docItemID);
+            param.Add("docTypeID", docTypeID);
+            var res = this.Query<SPOutSTORootCanUseCriteria>("SP_STOROOT_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+            
+
+            return res;
         }
         public List<StorageObjectCriteria> ListInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, VOCriteria buVO)
         {

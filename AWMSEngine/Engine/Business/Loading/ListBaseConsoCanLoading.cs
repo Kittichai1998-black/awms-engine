@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
@@ -14,51 +15,40 @@ namespace AWMSEngine.Engine.Business.Loading
     {
         public class TReq
         {
-            public long LDDocID;
+            public long docID;
         }
-        public class TRes : SPOutSTORootCanUseCriteria
+        public class TRes
         {
-            public bool isLoaded;
+            public List<DataItem> datas;
+            public class DataItem: SPOutSTORootCanUseCriteria
+            {
+                public long docItemID;
+                public long linkDocID;
+                public bool isLoaded;
+            }
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var loadingItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID", reqVO.LDDocID, this.BuVO);
-            var stoLoadings = ADO.StorageObjectADO.GetInstant().ListInDoc(reqVO.LDDocID, null, DocumentTypeID.LOADING, this.BuVO);
-            List<StorageObjectCriteria> stoIssueds = new List<StorageObjectCriteria>();
-            if (loadingItems.GroupBy(x => x.LinkDocument_ID).Any(x => x.Count() > 1))
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Loading ID : " + reqVO.LDDocID + " / LinkDocument_ID Dupplicate");
-            loadingItems.ForEach(x => {
-                var stoIssued = ADO.StorageObjectADO.GetInstant().ListInDoc(reqVO.LDDocID, null, DocumentTypeID.GOODS_ISSUED, this.BuVO);
-                stoIssueds.AddRange(stoIssued);
+            var docLoadItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID", reqVO.docID, this.BuVO);
+            if (docLoadItems.GroupBy(x => x.LinkDocument_ID).Any(x => x.Count() > 1))
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Loading ID : " + reqVO.docID + " / LinkDocument_ID Dupplicate");
+
+            var rootStoInLoad = ADO.StorageObjectADO.GetInstant().ListRootInDoc(reqVO.docID, null, DocumentTypeID.LOADING, this.BuVO);
+            List<TRes.DataItem> rootStoInIssueds = new List<TRes.DataItem>();
+            docLoadItems.ForEach(x => {
+                var rsi = ADO.StorageObjectADO.GetInstant().ListRootInDoc(x.LinkDocument_ID, null, DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                var rsiList = rsi.JsonCast<List<TRes.DataItem>>();
+                rsiList.ForEach(y => {
+                    y.docItemID = x.ID.Value;
+                    y.linkDocID = x.LinkDocument_ID;
+                    y.isLoaded = rootStoInLoad.Any(z => z.id == y.id);
+                });
+                rootStoInIssueds.AddRange(rsiList);
             });
-
-
-            /*TRes res = new TRes();
-            res.datas = stos
-                .GroupBy(x => new {
-                    areaID = x.areaID,
-                    areaCode = x.areaCode,
-                    areaLocationID = x.areaLocationID,
-                    areaLocationCode = x.areaLocationCode,
-                    branchID = x.branchID,
-                    branchCode = x.branchCode,
-                    warehouseID = x.warehouseID,
-                    warehouseCode = x.warehouseCode
-                })
-                .Select(x => new TRes.TData()
-                {
-                    areaID = x.Key.areaID,
-                    areaCode = x.Key.areaCode,
-                    areaLocationID = x.Key.areaLocationID,
-                    areaLocationCode = x.Key.areaLocationCode,
-                    branchID = x.Key.branchID,
-                    branchCode = x.Key.branchCode,
-                    warehouseID = x.Key.warehouseID,
-                    warehouseCode = x.Key.warehouseCode,
-                    packQty = x.Sum(y => y.packQty)
-                }).ToList();
-                */
-            return null;
+            
+            TRes res = new TRes() { datas = rootStoInIssueds };
+            
+            return res;
 
         }
     }
