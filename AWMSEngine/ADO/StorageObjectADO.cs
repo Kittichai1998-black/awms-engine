@@ -162,6 +162,27 @@ namespace AWMSEngine.ADO
             sto.id = param.Get<long>("resID");
             return sto.id.Value;
         }
+        public long PutV2(StorageObjectCriteria sto,VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("id", sto.id);
+            param.Add("type", sto.type);
+            param.Add("mstID", sto.mstID);
+            param.Add("areaID", sto.areaID);
+            param.Add("eventStatus", sto.eventStatus);
+            //param.Add("code", sto.code);
+            param.Add("parentID", sto.parentID);
+            param.Add("parentType", sto.parentType);
+            param.Add("options", ObjectUtil.ListKeyToQueryString(sto.options));
+            param.Add("batch", sto.batch);
+            param.Add("lot", sto.lot);
+            param.Add("actionBy", buVO.ActionBy);
+            param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
+            this.Execute("SP_STO_PUT_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            sto.id = param.Get<long>("resID");
+            return sto.id.Value;
+        }
+
         public List<StorageObjectFullCriteria> Search(SPInSTOSearchCriteria search, VOCriteria buVO)
         {
             var param = this.CreateDynamicParameters(search);
@@ -201,7 +222,7 @@ namespace AWMSEngine.ADO
             return res.ToList();
             //SP_STOROOT_FIND_ISSUED_BYDOCITEM
         }
-        public List<SPOutSTORootCanUseCriteria> ListRootInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, VOCriteria buVO)
+        public List<SPOutSTORootCanUseCriteria> ListBaseInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, VOCriteria buVO)
         {
 
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();

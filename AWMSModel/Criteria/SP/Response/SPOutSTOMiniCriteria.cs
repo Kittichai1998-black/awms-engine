@@ -18,6 +18,8 @@ namespace AWMSModel.Criteria.SP.Response
         public int areaID;
         public decimal? weiKG;
         public int? objectSizeID;
+        public string lot;
+        public string batch;
         public StorageObjectEventStatus eventStatus;
         //public int? sizeLevel;
         //public string innerSizeLevels;

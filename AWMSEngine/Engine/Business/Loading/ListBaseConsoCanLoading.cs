@@ -33,14 +33,14 @@ namespace AWMSEngine.Engine.Business.Loading
             if (docLoadItems.GroupBy(x => x.LinkDocument_ID).Any(x => x.Count() > 1))
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Loading ID : " + reqVO.docID + " / LinkDocument_ID Dupplicate");
 
-            var rootStoInLoad = ADO.StorageObjectADO.GetInstant().ListRootInDoc(reqVO.docID, null, DocumentTypeID.LOADING, this.BuVO);
+            var rootStoInLoad = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(reqVO.docID, null, DocumentTypeID.LOADING, this.BuVO);
             List<TRes.DataItem> rootStoInIssueds = new List<TRes.DataItem>();
             docLoadItems.ForEach(x => {
-                var rsi = ADO.StorageObjectADO.GetInstant().ListRootInDoc(x.LinkDocument_ID, null, DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                var rsi = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(x.LinkDocument_ID, null, DocumentTypeID.GOODS_ISSUED, this.BuVO);
                 var rsiList = rsi.JsonCast<List<TRes.DataItem>>();
                 rsiList.ForEach(y => {
                     y.docItemID = x.ID.Value;
-                    y.linkDocID = x.LinkDocument_ID;
+                    y.linkDocID = x.LinkDocument_ID.Value;
                     y.isLoaded = rootStoInLoad.Any(z => z.id == y.id);
                 });
                 rootStoInIssueds.AddRange(rsiList);
