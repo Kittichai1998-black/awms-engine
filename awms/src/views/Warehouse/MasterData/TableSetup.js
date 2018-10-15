@@ -629,6 +629,7 @@ class TableGen extends Component{
     })
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
+      initialInputValue = {rowdata.value}
       onChange={selection => {
       rowdata.value = selection.ID
       this.onEditorValueChange(rowdata, selection.Code, rowdata.column.id)
