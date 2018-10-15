@@ -9,7 +9,7 @@ import TableGen from '../Warehouse/MasterData/TableSetup'
 import ExtendTable from '../Warehouse/MasterData/ExtendTable'
 import _ from 'lodash'
 
-class apicall{
+ class apicall{
     get(url){
         return Axios.get(url).then((res) => {
             if(res.data._result.status === 0){
@@ -158,4 +158,4 @@ const Clone = (obj) => {
     throw new Error("Unable to copy obj! Its type isn't supported.");
   }
 
-export {AutoSelect, Clone, TableGen, ExtendTable, NumberInput, axios, zzzz}
+export {AutoSelect, Clone, TableGen, ExtendTable, NumberInput, apicall}

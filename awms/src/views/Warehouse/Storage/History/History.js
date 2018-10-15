@@ -5,6 +5,9 @@ import {TableGen} from '../../MasterData/TableSetup';
 import ExtendTable from '../../MasterData/ExtendTable';
 import queryString from 'query-string'
 import Axios from 'axios';
+import {apicall} from '../../ComponentCore'
+
+const api = new apicall()
 
 class History extends Component{
   constructor(props) {
@@ -19,15 +22,14 @@ class History extends Component{
         'field' : 'Status',
         'mode' : 'check',
       }],
-      select:{queryString:"https://localhost:44366/api/log",
-      t:"StorageObjectEvent",
-      q:[{ 'f': 'Sou_StorageObject_ID', c:'!=', 'v': ""}],
-      f:"*",
-      g:"",
-      s:"[{'f':'ID','od':'desc'}]",
+      select:{queryString:window.apipath + "/api/trx/sto/search",
+      t:"",
+      q:"",
+      fields:"stoID,objectType,holdStatus,eventStatus,status,productDate,expireDate,batch,lot,rootBaseCode,rootBaseTypeCode,rootBaseTypeName,sKUCode,sKUName,packCode,packName,branchCode,branchName,warehouseCode,warehouseName,areaCode,areaName,customerCode,customerName",
+      s_f:"{}",
+      s_od:"{ASC}",
       sk:"",
-      l:20,
-      all:"",},
+      l:20,},
       pivot:[],
       sortstatus:0,
       loaddata:false,
@@ -60,7 +62,7 @@ class History extends Component{
 
     const objselect = this.state.select
     const values = queryString.parse(this.props.location.search)
-    objselect.q[0].v = values.StorageObject_ID
+    //objselect.q[0].v = values.StorageObject_ID
     console.log(objselect)
 
     //const url = "https://localhost:44366/api/trx/sto/search/?stoID&objectType&holdStatus&eventStatus&status&productDate&expireDate&batch&lot&rootBaseCode&rootBaseTypeCode&rootBaseTypeName&sKUCode&sKUName&packCode&packName&branchCode&branchName&warehouseCode&warehouseName&areaCode&areaName&customerCode&customerName&s_f=ID&s_od=ASC&sk=0&l=222"

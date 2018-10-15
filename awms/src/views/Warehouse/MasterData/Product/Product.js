@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {apicall} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+
+const api = new apicall()
 
 class ListProduct extends Component{
   constructor(props) {
@@ -49,11 +52,11 @@ class ListProduct extends Component{
   }
 
   componentWillUnmount(){
-    Axios.isCancel(true);
+    
   }
 
   onHandleClickLoad(event){
-    Axios.post(window.apipath + "/api/mst/TransferFileServer/SKUMst",{})
+    api.post(window.apipath + "/api/mst/TransferFileServer/SKUMst",{})
     this.forceUpdate();
   }
 
