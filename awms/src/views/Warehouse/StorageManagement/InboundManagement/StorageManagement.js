@@ -3,9 +3,11 @@ import "react-table/react-table.css";
 import "../style.css";
 import {Input, Button, ButtonGroup , Row, Col,
   Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
-import Axios from 'axios';
+//import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {AutoSelect, NumberInput} from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall} from '../../ComponentCore'
+
+const Axios = new apicall()
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -113,24 +115,21 @@ class StorageManagement extends Component{
   }
   
   componentDidMount(){
-    Axios.all([Axios.get(createQueryString(this.state.supplier)),
-      Axios.get(createQueryString(this.state.warehouse))]).then(
-      (Axios.spread((supplierresult, warehouseresult) => 
-    {
-      this.setState({supplierdata : supplierresult.data.datas,
-        warehousedata:warehouseresult.data.datas,
-      }, () => {
-        const supplierdata = []
-        this.state.supplierdata.forEach(row => {
-          supplierdata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
-        })
-        const warehousedata = []
-        this.state.warehousedata.forEach(row => {
-          warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
-        })
-        this.setState({supplierdata,warehousedata})
-      })}
-    )))
+    Axios.get(createQueryString(this.state.supplier)).then(supplierresult => {
+      const supplierdata = []
+      supplierresult.data.datas.forEach(row => {
+        supplierdata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+      })
+      this.setState({supplierdata})
+    })
+
+    Axios.get(createQueryString(this.state.warehouse)).then(warehouseresult => {
+      const warehousedata = []
+      warehouseresult.data.datas.forEach(row => {
+        warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+      })
+      this.setState({warehousedata})
+    })
 
     const script3 = document.createElement("script");
     script3.src = "https://code.jquery.com/jquery-3.3.1.min.js";
