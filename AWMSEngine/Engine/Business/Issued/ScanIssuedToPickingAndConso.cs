@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.Business.Issued
 {
-    public class ScanPickingAndConso : BaseEngine<ScanPickingAndConso.TReq, ScanPickingAndConso.TRes>
+    public class ScanIssuedToPickingAndConso : BaseEngine<ScanIssuedToPickingAndConso.TReq, ScanIssuedToPickingAndConso.TRes>
     {
         public class TReq
         {
@@ -98,6 +98,7 @@ namespace AWMSEngine.Engine.Business
                     res.mapstoConsos = new List<StorageObjectCriteria>() { bstoConso };
                 }
 
+                //Base ไม่มีสินค้าอยู่ภายใน ให้ลบทิ้งจากระบบ
                 this.DoneBaseNotChilds(res.mapsto);
                 if (res.mapsto.eventStatus == StorageObjectEventStatus.REMOVED)
                     res.mapsto = null;

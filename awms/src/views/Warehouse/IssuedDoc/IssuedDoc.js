@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
-import {TableGen} from '../MasterData/TableSetup';
+import {TableGen, axios} from '../MasterData/TableSetup';
 import Axios from 'axios';
 
 class IssuedDoc extends Component{

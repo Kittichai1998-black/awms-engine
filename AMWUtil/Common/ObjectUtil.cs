@@ -47,6 +47,10 @@ namespace AMWUtil.Common
             return s.Select(x => x.GetTry<T>()).ToArray();
         }
 
+        public static TDes JsonCast<TDes>(this object data)
+        {
+            return data.Json().Json<TDes>();
+        }
         public static T Json<T>(this string s)
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(s);

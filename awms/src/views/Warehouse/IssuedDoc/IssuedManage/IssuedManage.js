@@ -3,13 +3,12 @@ import {Link,Redirect}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Card, CardBody, Button, Row} from 'reactstrap';
 import ReactTable from 'react-table'
-import Axios from 'axios';
 import ReactAutocomplete from 'react-autocomplete';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import {EventStatus} from '../../Status'
 import queryString from 'query-string'
-import {AutoSelect, NumberInput} from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall} from '../../ComponentCore'
 import 'react-datepicker/dist/react-datepicker.css';
 
 function isInt(value) {
@@ -29,6 +28,8 @@ const createQueryString = (select) => {
   + (select.all === "" ? "" : "&all=" + select.all)
   return queryS
 }
+
+const Axios = new apicall()
 
 class IssuedManage extends Component{
   constructor(props) {
@@ -62,6 +63,7 @@ class IssuedManage extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
     this.initialData = this.initialData.bind(this)
+    this.genWarehouseData = this.genWarehouseData.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
 
@@ -76,7 +78,7 @@ class IssuedManage extends Component{
 
     this.warehouseselect = {queryString:window.apipath + "/api/mst",
       t:"Warehouse",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      q:"",
       f:"ID,Code, Name",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -96,10 +98,9 @@ class IssuedManage extends Component{
   initialData(){
     const values = queryString.parse(this.props.location.search)
     if(values.ID){
-      
       this.setState({pageID:values.ID,
         addstatus:true,})
-      Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID).then((rowselect1) => {
+        Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID).then((rowselect1) => {
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }
@@ -126,33 +127,28 @@ class IssuedManage extends Component{
     var tomorrow = moment(today).add(1, 'days');
     this.setState({date:tomorrow})
 
-    Axios.all([Axios.get(createQueryString(this.branchselect)),
-      Axios.get(createQueryString(this.warehouseselect)),
-      Axios.get(createQueryString(this.customerselect))]).then(
-      (Axios.spread((branchresult, warehouseresult, customerresult) => 
-    {
-      this.setState({auto_branch : branchresult.data.datas,
-        auto_warehouse:warehouseresult.data.datas,
-        auto_customer:customerresult.data.datas,
-        addstatus:false,
-      }, () => {
+    Axios.get(createQueryString(this.branchselect)).then(branchresult => {
+      this.setState({auto_branch : branchresult.data.datas, addstatus:false }, () => {
         const auto_branch = []
         this.state.auto_branch.forEach(row => {
           auto_branch.push({value:row.ID, label:row.Code + ' : ' + row.Name })
         })
-        const auto_warehouse = []
-        this.state.auto_warehouse.forEach(row => {
-          auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
-        })
+        this.setState({auto_branch})
+      })
+    })
+    
+    Axios.get(createQueryString(this.customerselect)).then(customerresult => {
+      this.setState({auto_customer : customerresult.data.datas,addstatus:false}, () => {
         const auto_customer = []
         this.state.auto_customer.forEach(row => {
           auto_customer.push({value:row.ID, label:row.Code + ' : ' + row.Name })
         })
-        this.setState({auto_branch,auto_warehouse,auto_customer})
-      })}
-    )))
-  }
+        this.setState({auto_customer})
+      })
+    })
 
+  }
+  //Axios.get(createQueryString(this.warehouseselect))
   componentDidMount(){
     this.initialData()
   }
@@ -183,10 +179,6 @@ class IssuedManage extends Component{
     })
   }
 
-  closePage(){
-    return 
-  }
-
   dateTimePicker(){
     return <DatePicker selected={this.state.date}
     onChange={(e) => {this.setState({date:e})}}
@@ -202,6 +194,22 @@ class IssuedManage extends Component{
     for(let name in EventStatus){
       if(EventStatus[name] === this.state.documentStatus)
         return name
+    }
+  }
+
+  genWarehouseData(data){
+    if(data){
+      const warehouse = this.warehouseselect
+      warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
+      Axios.get(createQueryString(warehouse)).then((res) => {
+        
+        console.log(res)
+        const auto_warehouse = []
+        res.data.datas.forEach(row => {
+          auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+        })
+        this.setState({auto_warehouse})
+      })
     }
   }
 
@@ -237,7 +245,7 @@ class IssuedManage extends Component{
       data[rowdata.index]["UnitType"] = value.UnitType;
       data[rowdata.index]["PackID"] = value.ID;
     }
-    this.setState({ data }, () => console.log(this.state.data));
+    this.setState({ data });
   }
 
   createText(data,field){
@@ -322,7 +330,7 @@ class IssuedManage extends Component{
           <Row>
             <div className="col-6">
               <div className=""><label style={style}>Branch : </label>{this.state.pageID ? this.createText(this.state.auto_branch, this.state.data.sou_Branch_ID) : 
-                <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label})}/></div>}</div>
+                <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label}, () => {this.genWarehouseData(this.state.branch)})}/></div>}</div>
               <div className=""><label style={style}>Customer : </label>{this.state.pageID ? this.createText(this.state.auto_customer, this.state.data.des_Customer_ID) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_customer} result={(e) => this.setState({"customer":e.value, "customerresult":e.label})}/></div>}</div>
             </div>
@@ -344,6 +352,7 @@ class IssuedManage extends Component{
           <CardBody>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
             <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
+            {this.state.resultstatus}
           </CardBody>
         </Card>
 

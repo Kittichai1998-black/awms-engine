@@ -37,6 +37,8 @@ namespace AWMSEngine.ADO.StaticValue
         public List<ams_SKUMasterType> SKUMasterType { get => this._SKUMasterType; }
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
+        private List<ams_Transport> _Transport;
+        public List<ams_Transport> Transport { get => this._Transport; }
 
         private static StaticValueManager instant;
 
@@ -107,6 +109,10 @@ namespace AWMSEngine.ADO.StaticValue
         public void LoadSKUMasterType()
         {
             this._SKUMasterType = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, new VOCriteria()));
+        }
+        public void LoadTransport()
+        {
+            this._Transport = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, new VOCriteria()));
         }
 
         public bool IsFeature(FeatureCode code)

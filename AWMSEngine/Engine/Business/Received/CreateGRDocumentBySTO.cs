@@ -17,9 +17,6 @@ namespace AWMSEngine.Engine.Business.Received
     {
         public class TReq
         {
-            public int? Des_Branch_ID;
-            public int? Des_Warehouse_ID;
-            public int? Des_AreaMaster_ID;
             public StorageObjectCriteria stomap;
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
@@ -31,7 +28,7 @@ namespace AWMSEngine.Engine.Business.Received
 
             amt_Document doc = null;
 
-            long? sou_Branch_ID = null;
+            /*long? sou_Branch_ID = null;
             long? sou_Warehouse_ID = null;
             long? sou_AreaMaster_ID = null;
             if (reqVO.stomap.type == StorageObjectType.LOCATION)
@@ -43,7 +40,12 @@ namespace AWMSEngine.Engine.Business.Received
                 sou_AreaMaster_ID = areaMst != null ? areaMst.ID : null;
                 sou_Warehouse_ID = warehouseMst != null ? warehouseMst.ID : null;
                 sou_Branch_ID = branchMst != null ? branchMst.ID : null;
-            }
+            }*/
+
+            long? des_Branch_ID = null;
+            long? des_Warehouse_ID = reqVO.stomap.warehouseID;
+            long? des_AreaMaster_ID = reqVO.stomap.areaID;
+            this.StaticValue.Warehouses.FindAll(x => x.ID == des_Warehouse_ID).ForEach(x => des_Branch_ID = x.Branch_ID);
 
             doc = new amt_Document()
             {
@@ -51,15 +53,15 @@ namespace AWMSEngine.Engine.Business.Received
                 Code = null,
                 Sou_Customer_ID = null,
                 Sou_Supplier_ID = null,
-                Sou_Branch_ID = sou_Branch_ID,
-                Sou_Warehouse_ID = sou_Warehouse_ID,
-                Sou_AreaMaster_ID = sou_AreaMaster_ID,
+                Sou_Branch_ID = null,
+                Sou_Warehouse_ID = null,
+                Sou_AreaMaster_ID = null,
 
                 Des_Customer_ID = null,
                 Des_Supplier_ID = null,
-                Des_Branch_ID = reqVO.Des_Branch_ID,
-                Des_Warehouse_ID = reqVO.Des_Warehouse_ID,
-                Des_AreaMaster_ID = reqVO.Des_AreaMaster_ID,
+                Des_Branch_ID = des_Branch_ID,
+                Des_Warehouse_ID = des_Warehouse_ID,
+                Des_AreaMaster_ID = des_AreaMaster_ID,
                 Options = null,
                 DocumentDate = DateTime.Now,
                 DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,

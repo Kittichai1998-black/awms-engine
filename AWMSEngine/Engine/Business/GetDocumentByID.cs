@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace AWMSEngine.Engine.Business
         public class TReq
         {
             public int docID;
+            public bool getMapSto;
             public DocumentTypeID docTypeID;
         }
         public class TRes
@@ -25,6 +27,7 @@ namespace AWMSEngine.Engine.Business
             {
                 public List<amv_DocumentItem> documentItems;
             }
+            public List<SPOutSTORootCanUseCriteria> bstos;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -47,6 +50,11 @@ namespace AWMSEngine.Engine.Business
                 this.BuVO);
             doc.documentItems = docItems;
             res.document = doc;
+
+            /*--------------------------*/
+            if (reqVO.getMapSto)
+                res.bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
+
 
             return res;
         }

@@ -9,6 +9,20 @@ using Xunit.Abstractions;
 
 namespace MyTest2
 {
+    public class MyList
+    {
+        private List<List<int>> _List1_2;
+        public List<List<int>> List1_2 { get { return _List1_2; } }
+        public MyList(params List<int>[] l)
+        {
+            this._List1_2 = new List<List<int>>();
+            foreach(var x in l)
+            {
+                this.List1_2.Add(x);
+            }
+
+        }
+    }
     public interface IA { }
     public class A : IA { }
     public class B : A { }
@@ -21,6 +35,18 @@ namespace MyTest2
             this.sysout = sysout;
         }
         [Fact]
+        public void TestCondition2()
+        {
+            List<int> l1 = new List<int>() { 1, 2, 3, 4, 5 };
+            List<int> l2 = new List<int>() { 10, 20, 30, 40, 50 };
+            List<int> l3 = new List<int>() { 10, 20, 30, 40, 50 };
+            List<int> l4 = new List<int>() { 10, 20, 30, 40, 50 };
+            MyList ml = new MyList(l1, l2, l3, l4);
+
+            
+        }
+
+        [Fact]
         public void TestCondition()
         {
             sysout.WriteLine("typeof(A)==typeof(C) : " + (typeof(A).IsSubclassOf(typeof(C))));
@@ -28,6 +54,7 @@ namespace MyTest2
             sysout.WriteLine("new A() is C : " + (new A() is C));
             sysout.WriteLine("new C() is A : " + (new C() is C));
         }
+
         [Fact]
         public void TestDateTime()
         {
@@ -54,6 +81,7 @@ namespace MyTest2
             sysout.WriteLine("Date ToLocalTime : " + dy2.dt.ToLocalTime());
             sysout.WriteLine("Date Json : " + dy2.dt.Json());
         }
+
         [Fact]
         public void TestTreeChild()
         {

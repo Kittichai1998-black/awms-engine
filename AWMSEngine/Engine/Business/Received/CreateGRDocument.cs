@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.Business.Received
 
                 Remark = reqVO.remark,
                 Options = null,
-                TransportNo = null,
+                Transport_ID = null,
 
                 DocumentItems = new List<amt_DocumentItem>(),
 
@@ -129,17 +129,6 @@ namespace AWMSEngine.Engine.Business.Received
             
             return doc;
         }
-
-        private List<StorageObjectCriteria> GetPackForNewDoc(StorageObjectCriteria mapsto, List<StorageObjectCriteria> outMapstos = null)
-        {
-            if (outMapstos == null)
-                outMapstos = new List<StorageObjectCriteria>();
-            if (mapsto._onchange && mapsto.type == StorageObjectType.PACK)
-            {
-                outMapstos.Add(mapsto);
-            }
-            mapsto.mapstos.ForEach(x => GetPackForNewDoc(x, outMapstos));
-            return outMapstos;
-        }
+        
     }
 }
