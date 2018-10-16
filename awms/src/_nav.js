@@ -12,7 +12,7 @@ function getmenu(){
       {id: 7,name: 'Base',url: '/mst/base/manage',icon: 'cui-bug',},
       {id: 8,name: 'User',url: '/mst/user/manage',icon: 'cui-home',},
       {id: 9,name: 'Branch',url: '/mst/branch/manage',icon: 'cui-box',},
-      {id: 10,name: 'Warehouse',url: 'mst/warehouse/manage',icon: 'cui-box',},
+      {id: 10,name: 'Warehouse',url: '/mst/warehouse/manage',icon: 'cui-box',},
       {id: 11,name: 'Goods Receive Document',url: '/doc/gr/list',icon: 'cui-bug',},
       {id: 12,name: 'Goods Issue Document',url: '/doc/gi/list',icon: 'cui-home',},
       {id: 13,name: 'Goods Issue Manage',url: '/doc/gi/manage',icon: 'cui-box',},
