@@ -56,7 +56,7 @@ class IssuedManage extends Component{
       l:10,
       all:"",},
       inputstatus:true,
-      pageID:null,
+      pageID:0,
       addstatus:true,
       adddisplay:"none",
     };
@@ -97,7 +97,7 @@ class IssuedManage extends Component{
 
   initialData(){
     const values = queryString.parse(this.props.location.search)
-    if(values.ID){
+    if(values.ID !== undefined){
       this.setState({pageID:values.ID,
         addstatus:true,})
         Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID).then((rowselect1) => {
@@ -191,12 +191,11 @@ class IssuedManage extends Component{
   }
 
   renderDocumentStatus(){
-    for(let name in EventStatus){
-      if(EventStatus[name] === this.state.documentStatus)
-        return name
-    }
+    const res = EventStatus.filter(row => {
+      return row.code === this.state.documentStatus
+    })
+    return res.map(row => row.status)
   }
-
   genWarehouseData(data){
     if(data){
       const warehouse = this.warehouseselect

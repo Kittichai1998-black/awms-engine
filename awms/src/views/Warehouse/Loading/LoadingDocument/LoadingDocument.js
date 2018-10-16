@@ -83,8 +83,10 @@ class LoadingDocument extends Component{
           this.setState({data:[]})
         }
         else{
-          this.setState({data:rowselect1.data.document, remark:rowselect1.data.document.remark,
+          this.setState({data:rowselect1.data.document, loading:rowselect1.data.document.code,
           documentStatus:rowselect1.data.document.eventStatus,
+          warehouse:rowselect1.data.document.souWarehouse,
+          transportID:rowselect1.data.document.transport_ID,
           documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
           date:moment(rowselect1.data.document.actionTime),
           addstatus:true,
