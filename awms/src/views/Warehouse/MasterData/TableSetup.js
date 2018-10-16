@@ -304,8 +304,8 @@ class TableGen extends Component{
             }
             
             if(col.accessor === "Password"){
-              var i = 0, strLength = guid.length;
               var guidstr = guid.raw().toUpperCase()
+              var i = 0, strLength = guidstr.length;
               for(i; i < strLength; i++) {
               
                 guidstr = guidstr.replace('-','');
@@ -313,7 +313,7 @@ class TableGen extends Component{
               }
               console.log(guidstr)
               //var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
-              row[col.accessor] = "(dbo.FN_HASH256STR(concat((dbo.FN_HASH256STR('"+row[col.accessor]+"')),'"+guidstr+"')))"
+              row[col.accessor] = "@@sql_gen_password,"+row[col.accessor]+","+guidstr
               row["SoftPassword"] = guidstr
             }
           })
