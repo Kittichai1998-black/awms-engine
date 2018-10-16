@@ -3,9 +3,21 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
+using System.Linq;
 
 namespace MyTest2
 {
+    public class ClassA
+    {
+        public int valA;
+        public int valB;
+        public int valC;
+    }
+    public class ClassB
+    {
+        public int val;
+    }
+
     public class TestFile
     {
         public readonly ITestOutputHelper sysout;
@@ -13,6 +25,11 @@ namespace MyTest2
         {
             this.sysout = sysout;
         }
+        [Fact]
+        public void Test2()
+        {
+        }
+
         [Fact]
         public void TestGUID()
         {
