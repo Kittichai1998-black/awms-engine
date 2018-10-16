@@ -158,4 +158,4 @@ const Clone = (obj) => {
     throw new Error("Unable to copy obj! Its type isn't supported.");
   }
 
-export {AutoSelect, Clone, TableGen, ExtendTable, NumberInput, axios, zzzz}
+export {AutoSelect, Clone, TableGen, ExtendTable, NumberInput,apicall}

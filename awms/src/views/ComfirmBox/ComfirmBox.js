@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Input,Button,Alert } from 'reactstrap';
-import Axios from 'axios';
+//import Axios from 'axios';
 import ReactTable from 'react-table';
+import {apicall} from '../Warehouse/ComponentCore'
 
-
-
+const Axios = new apicall()
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)

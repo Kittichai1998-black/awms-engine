@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Input, Button,CardBody,Card, ButtonGroup , Row, Col,
     Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
-import Axios from 'axios';
+//import Axios from 'axios';
 import ReactTable from 'react-table';
-import {AutoSelect, NumberInput} from '../ComponentCore'
+import {AutoSelect,apicall} from '../ComponentCore'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { runInNewContext } from 'vm';
 
+const Axios = new apicall()
 const createQueryString = (select) => {
     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
     + (select.q === "" ? "" : "&q=" + select.q)
@@ -72,6 +73,7 @@ class StockCorrection extends Component{
             l:"",
             all:"",},
             qtyEdit:[],
+            remark:[],
             warehousedata:[],
             data:[],
             barcode:"",
@@ -127,6 +129,7 @@ class StockCorrection extends Component{
       }
       
       createListTable(){
+          console.log(this.state.remark)
         let status = true;
         if(this.state.warehouseres===undefined||this.state.barcode===""){
             status = false;
@@ -185,7 +188,7 @@ class StockCorrection extends Component{
              </span>
             <br/><span style={{color:'gray'}}> {disQtys}
             {child.mapstos.length > 0 ? null : <Input style={{height:"30px", width:"60px",background:"#FFFFE0"}} max="" type="number" 
-                onChange={(e)=>{this.ChangeData(e,child.id,e.target.value)}}/>}
+                onChange={(e)=>{this.ChangeData(e,child.id,child.name,e.target.value)}}/>}
              </span>
             
             {(child.mapstos.map(child2 => {
@@ -196,7 +199,7 @@ class StockCorrection extends Component{
         })
       }
       
-      ChangeData(e,dataID,dataValue){
+      ChangeData(e,dataID,dataName,dataValue){
           e.target.style.background="yellow"
 
           let data = this.state.qtyEdit
@@ -205,15 +208,15 @@ class StockCorrection extends Component{
                     data.splice(index,1)
                 }
             })
-          data.push({stoID:dataID,qty:dataValue})
+          data.push({baseStoID:dataID,packStoCode:dataName,packQty:dataValue})
         this.setState({qtyEdit:data})
-
+         console.log(dataName)
       }
 
       clickSubmit(){ 
-        const data = {rootID:this.state.palletcode,adjustItems:this.state.qtyEdit};
+        const data = {rootID:this.state.palletcode,remark:this.state.remark,adjustItems:this.state.qtyEdit};
     
-        Axios.post(window.apipath + "/api/wm/stkcorr/doc",data).then((res) => {
+        Axios.post(window.apipath + "api/wm/stkcorr/doc/closed",data).then((res) => {
          this.createListTable()
         })
       }
@@ -231,6 +234,12 @@ class StockCorrection extends Component{
                     {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false)}
                 </Col>
                 <Col sm="6">
+                <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Remark : </label>
+                    <Input id="remarktext" style={{width:'66.5%',display:'inline-block'}} type="text" 
+                    value={this.state.remark}  onChange={e => {this.setState({remark:e.target.value})}}
+                    placeholder="หมายเหตุ"></Input>
+                </Col>
+                <Col sm="6">
                     <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
                     <Input id="barcodetext" style={{width:'45%',display:'inline-block'}} type="text"
                     value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ด"
@@ -242,7 +251,6 @@ class StockCorrection extends Component{
                     }}/>{' '}
                     <Button onClick={this.createListTable} color="primary" >Scan</Button>
                 </Col>
-               
             </Row>
             <br></br>
             <Card style={{display:this.state.showCard}}>
