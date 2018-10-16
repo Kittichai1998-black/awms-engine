@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Input, Modal, ModalHeader, ModalBody, ModalFooter, Button, Card, CardBody, ButtonGroup, Alert, Row,Col } from 'reactstrap';
 import ReactTable from 'react-table'
-import {AutoSelect, Clone} from '../ComponentCore'
-import Axios from 'axios';
+import {AutoSelect, Clone, apicall} from '../ComponentCore'
+//import Axios from 'axios';
 import {EventStatus} from '../Status'
+
+const Axios = new apicall()
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -105,7 +107,7 @@ class PickAndConso extends Component{
   }
 
   toggle() {
-    this.setState({modalstatus:!this.state.modalstatus}, () =>  console.log(this.state.modalstatus));
+    this.setState({modalstatus:!this.state.modalstatus});
   }
   
   sumChild(data){
@@ -136,24 +138,6 @@ class PickAndConso extends Component{
     })
     return res.map(row => row.status)
   }
-  
-  createDocumentItemList(data){
-    return data.map((rowdata, index) => {
-      return <ul key={index}>
-        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
-        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} /</span>
-        {this.createDocumentItemList(rowdata.mapstos)}
-      </ul>
-    })
-  }
-
-  onClickDocumentItemDetail(data){
-    Axios.get(window.apipath + "/api/wm/issued/sto/indoc/?docItemID=" + data.ID).then((res) => {
-      const sumdata = this.sumChild(res.data.mapstos)
-      const popupElement = this.createDocumentItemList(sumdata)
-      this.setState({popupElement:popupElement}, () => {this.toggle()})
-    })
-  }
 
   createModal(){
       return <Modal isOpen={this.state.modalstatus}>
@@ -168,22 +152,40 @@ class PickAndConso extends Component{
               </ModalFooter>
             </Modal>
   }
-
-  createPickingList(data){
+  
+  createDocumentItemList(data){
+    const focus = {color:'red', marginLeft:"-20px", fontSize:"13px"}
+    const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return data.map((rowdata, index) => {
-      return <ul>
+      return <ul key={index} style={rowdata.isFocus===true?focus:focusf}>
         <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
-        <span>Object Name : {rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} /</span>
+        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG}</span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
   }
 
+  onClickDocumentItemDetail(data){
+    Axios.get(window.apipath + "/api/wm/issued/sto/indoc/?docItemID=" + data.ID).then((res) => {
+      const sumdata = this.sumChild(res.data.mapstos)
+      const popupElement = this.createDocumentItemList(sumdata)
+      console.log(popupElement)
+      this.setState({popupElement:popupElement}, () => {
+        if(this.state.popupElement.length !== 0)
+          this.toggle()
+        else
+          alert("No Found Data!!")
+      })
+    })
+  }
+
   async createPickingItemList(data){
+    const focus = {color:'red', marginLeft:"-20px", fontSize:"13px"}
+    const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return data.map((rowdata, index) => {
-      return <ul key={index}>
+      return <ul key={index} style={rowdata.isFocus===true?focus:focusf}>
         <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
-        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} /</span>
+        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} </span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
@@ -250,9 +252,9 @@ class PickAndConso extends Component{
         </div>
         <Card>
           <CardBody>
-            <ButtonGroup style={{margin:'0 0 10px 0'}}>
-              <Button color="primary" onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
-              <Button color="primary" onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 1 ? false : true}>Consolidate</Button>
+            <ButtonGroup style={{margin:'0 0 10px 0',}}>
+              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
+              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 1 ? false : true}>Consolidate</Button>
             </ButtonGroup>
             <div>
               <label>Picking : </label>

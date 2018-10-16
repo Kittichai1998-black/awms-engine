@@ -102,10 +102,21 @@ const PickConso = Loadable({
   loading: Loading,
 });
 
-const LoadingM = Loadable({
+const LoadingManage = Loadable({
   loader: () => import('./views/Warehouse/Loading'),
   loading: Loading,
 });
+
+const LoadingDocument = Loadable({
+  loader: () => import('./views/Warehouse/Loading/LoadingDocument'),
+  loading: Loading,
+});
+
+const LoadingChecklist = Loadable({
+  loader: () => import('./views/Warehouse/Loading/LoadingCheckList'),
+  loading: Loading,
+});
+
 const Historyy = Loadable({
   loader: () => import('./views/Warehouse/Storage/History'),
   loading: Loading,

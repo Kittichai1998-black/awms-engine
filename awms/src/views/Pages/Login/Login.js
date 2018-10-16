@@ -71,7 +71,6 @@ class Login extends Component {
   async GetMenu(token){
     await Axios.get(window.apipath + '/api/PageSetup/menu/token=' + token)
      .then((res) => {
-       console.log(res.data)
        sessionStorage.setItem('MenuItems',JSON.stringify(res.data.items));
      }).then(() => {
       this.setState({status : true});
@@ -86,9 +85,6 @@ class Login extends Component {
   }
 
   redirect(){
-    if(this.state.status){
-      setTimeout(function(){window.location.reload()}, 500)
-    }
     if(sessionStorage.getItem("tokendata") !== null){
      return <Redirect to="/"/>
     }
