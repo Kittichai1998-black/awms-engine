@@ -140,9 +140,9 @@ class IssuedDoc extends Component{
       */}
         <div className="clearfix">
 
-          <Button className="float-right" onClick={() => this.props.history.push('/wms/issueddoc/manage/issuedmanage')}>Create Document</Button>
+          <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
           
-          <Button className="float-right" onClick={() => {
+          <Button style={{background:"#00CED1",borderColor:"#00CED1"}} className="float-right" onClick={() => {
             let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format("YYYY-MM-DD")]}
             let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format("YYYY-MM-DD")]}
             axois.post(window.apipath + "/api/report/export/fileServer", data1)

@@ -112,7 +112,7 @@ class LoadingManage extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right" onClick={() => this.props.history.push('/wms/loading/manage/loadingdocument')}>Create Document</Button>
+          <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/ld/manage') }>Create Document</Button>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
