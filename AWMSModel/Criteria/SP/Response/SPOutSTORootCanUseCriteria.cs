@@ -9,9 +9,16 @@ namespace AWMSModel.Criteria.SP.Response
     {
         public long id;
         public string code;
+        public string name;
         public StorageObjectType objectType;
         public long rootID;
         public string rootCode;
+        public string rootName;
+
+        public long mstID;
+        public long packID;
+        public string packCode;
+        public string packName;
 
         public int areaID;
         public string areaCode;
