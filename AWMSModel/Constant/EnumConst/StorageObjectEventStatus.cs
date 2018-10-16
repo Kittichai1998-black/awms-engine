@@ -16,6 +16,8 @@ namespace AWMSModel.Constant.EnumConst
         REMOVED = 22,
         REJECTING = 23,
         REJECTED = 24,
+        ADJUSTING = 25,
+        ADJUSTED = 26,
 
         ISSUING = 31,
         ISSUED = 32,

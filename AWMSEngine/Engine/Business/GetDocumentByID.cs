@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace AWMSEngine.Engine.Business
             {
                 public List<amv_DocumentItem> documentItems;
             }
-            public List<StorageObjectCriteria> mapstos;
+            public List<SPOutSTORootCanUseCriteria> bstos;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -52,7 +53,7 @@ namespace AWMSEngine.Engine.Business
 
             /*--------------------------*/
             if (reqVO.getMapSto)
-                res.mapstos = ADO.StorageObjectADO.GetInstant().ListInDoc(doc.ID, null, DocumentTypeID.LOADING, this.BuVO);
+                res.bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
 
 
             return res;

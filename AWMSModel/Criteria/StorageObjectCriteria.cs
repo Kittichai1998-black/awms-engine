@@ -20,6 +20,8 @@ namespace AWMSModel.Criteria
         public StorageObjectType? parentType;
         public string code;
         public string name;
+        public string lot;
+        public string batch;
 
         public int? objectSizeID;
         public string objectSizeName;
@@ -32,7 +34,6 @@ namespace AWMSModel.Criteria
         public List<KeyValuePair<string, string>> options;
         public List<StorageObjectCriteria> mapstos;
         
-        public bool _onchange = false;
 
         public class ObjectSizeMap
         {
@@ -90,6 +91,8 @@ namespace AWMSModel.Criteria
                             objectSizeID = x.objectSizeID,
                             objectSizeName = sos2.Name,
                             eventStatus = x.eventStatus,
+                            lot = x.lot,
+                            batch = x.batch,
                             minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
                             maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
                         };

@@ -4,25 +4,32 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.APIService.Doc;
+using AWMSEngine.APIService.WM;
+using AWMSEngine.Engine.Business.Loading;
+using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Controllers.WM
 {
-    [Route("api/loading")]
+    [Route("api/wm/loading")]
     [ApiController]
     public class LoadingController : ControllerBase
     {
         [HttpGet("doc")]
         public dynamic GetDocument()
         {
-            dynamic req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            return null;
+            GetDocAPI exec = new GetDocAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.LOADING);
+            var res = exec.Execute(req);
+            return res;
         }
         [HttpPost("doc")]
         public dynamic CreateDocument([FromBody]dynamic req)
         {
-            return null;
+            AWMSEngine.APIService.Doc.CreateLDDocAPI exec = new CreateLDDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
         }
         [HttpPost("doc/working")]
         public dynamic WorkingDocument([FromBody]dynamic req)
@@ -41,13 +48,15 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("conso")]
         public dynamic PostConsolidate([FromBody]dynamic req)
         {
-            return null;
+            ScanConsoToLoadingAPI exec = new ScanConsoToLoadingAPI(this);
+            return exec.Execute(req);
         }
         [HttpGet("conso")]
-        public dynamic GetConsolidate()
+        public dynamic ListBaseConsoCanLoading()
         {
             dynamic req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            return null;
+            ListBaseConsoCanLoadingAPI exec = new ListBaseConsoCanLoadingAPI(this);
+            return exec.Execute(req);
         }
     }
 }

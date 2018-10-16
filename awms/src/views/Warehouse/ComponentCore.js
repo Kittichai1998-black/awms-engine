@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import "./componentstyle.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {Input } from 'reactstrap';
 import Select from 'react-select';
 import Axios from 'axios';
-import TableGen from '../Warehouse/MasterData/TableSetup'
-import ExtendTable from '../Warehouse/MasterData/ExtendTable'
 import _ from 'lodash'
 
 class apicall{
@@ -124,6 +122,18 @@ class NumberInput extends Component{
     }
 }
 
+const createQueryString = (select) => {
+    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
+    + (select.q === "" ? "" : "&q=" + select.q)
+    + (select.f === "" ? "" : "&f=" + select.f)
+    + (select.g === "" ? "" : "&g=" + select.g)
+    + (select.s === "" ? "" : "&s=" + select.s)
+    + (select.sk === "" ? "" : "&sk=" + select.sk)
+    + (select.l === 0 ? "" : "&l=" + select.l)
+    + (select.all === "" ? "" : "&all=" + select.all)
+    return queryS
+  }
+
 const Clone = (obj) => {
     let copy;
   
@@ -158,4 +168,4 @@ const Clone = (obj) => {
     throw new Error("Unable to copy obj! Its type isn't supported.");
   }
 
-export {AutoSelect, Clone, TableGen, ExtendTable, NumberInput, axios, zzzz}
+export {AutoSelect, Clone, NumberInput, apicall, createQueryString}

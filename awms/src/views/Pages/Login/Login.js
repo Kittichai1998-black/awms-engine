@@ -51,7 +51,10 @@ class Login extends Component {
        if(res.data._result !== undefined)
        {
         if(res.data._result.status === 1){
-          this.savetoSession(res.data);
+          this.savetoSession("Token",res.data.Token);
+          this.savetoSession("ClientSecret_SecretKey",res.data.ClientSecret_SecretKey);
+          this.savetoSession("ExtendKey",res.data.ExtendKey);
+          this.savetoSession("User_ID",res.data.User_ID);
           this.GetMenu(res.data.Token);
         }
         else if(res.data._result.status === 0){
@@ -71,7 +74,6 @@ class Login extends Component {
   async GetMenu(token){
     await Axios.get(window.apipath + '/api/PageSetup/menu/token=' + token)
      .then((res) => {
-       console.log(res.data)
        sessionStorage.setItem('MenuItems',JSON.stringify(res.data.items));
      }).then(() => {
       this.setState({status : true});
@@ -80,16 +82,13 @@ class Login extends Component {
      });
   }
 
-  savetoSession(data){
+  savetoSession(name,data){
     const session = data;
-    sessionStorage.setItem('tokendata', JSON.stringify(session));
+    sessionStorage.setItem(name, data);
   }
 
   redirect(){
-    if(this.state.status){
-      setTimeout(function(){window.location.reload()}, 500)
-    }
-    if(sessionStorage.getItem("tokendata") !== null){
+    if(sessionStorage.getItem("Token") !== null){
      return <Redirect to="/"/>
     }
   }
@@ -118,7 +117,11 @@ class Login extends Component {
                           <i className="icon-lock"></i>
                         </InputGroupText>
                       </InputGroupAddon>
-                      <Input type="password" placeholder="Password" onChange={this.handlePasswordChange} />
+                      <Input type="password" placeholder="Password" onChange={this.handlePasswordChange} onKeyPress={e =>{
+                        if(e.key === "Enter"){
+                          this.Authorize()
+                        }
+                      }}/>
                     </InputGroup>
                     <Row>
                       <Col xs="6">

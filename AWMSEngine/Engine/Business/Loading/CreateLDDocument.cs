@@ -16,8 +16,14 @@ namespace AWMSEngine.Engine.Business.Loading
         public class TDocReq
         {
             public string refID;
+            
+            public long? souBranchID;
+            public string souBranchCode;
 
-            public int? transportID;
+            public long? souWarehouseID;
+            public string souWarehouseCode;
+
+            public long? transportID;
             public string transportCode;
 
             public DateTime? actionTime;//วันเวลาที่ส่ง
@@ -49,18 +55,34 @@ namespace AWMSEngine.Engine.Business.Loading
                  this.StaticValue.Transport.FirstOrDefault(x => x.ID == reqVO.transportID) :
                  this.StaticValue.Transport.FirstOrDefault(x => x.Code == reqVO.transportCode);
             
-            if (transportModel == null && !string.IsNullOrWhiteSpace(reqVO.transportCode))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "transportCode ไม่ถูกต้อง");
-            else if (transportModel == null && reqVO.transportID.HasValue)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "transportID ไม่ถูกต้อง");
+            var souWarehouseModel =
+                reqVO.souWarehouseID.HasValue ?
+                    this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == reqVO.souWarehouseID) :
+                    !string.IsNullOrWhiteSpace(reqVO.souBranchCode) ?
+                        this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.souWarehouseCode) :
+                        null;
+            var souBranchModel =
+                reqVO.souBranchID.HasValue ?
+                this.StaticValue.Branchs.FirstOrDefault(x => x.ID == reqVO.souBranchID) :
+                !string.IsNullOrWhiteSpace(reqVO.souBranchCode) ?
+                    this.StaticValue.Branchs.FirstOrDefault(x => x.Code == reqVO.souBranchCode) :
+                    souWarehouseModel != null ?
+                        this.StaticValue.Branchs.FirstOrDefault(x => x.ID == souWarehouseModel.Branch_ID) :
+                        null;
+
+            if (souWarehouseModel == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souWarehouse ไม่ถูกต้อง");
 
             amt_Document newDoc = new amt_Document()
             {
                 RefID = reqVO.refID,
 
+                Sou_Warehouse_ID = souWarehouseModel.ID,
+                Sou_Branch_ID = souBranchModel.ID,
+
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,
-                DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
+                DocumentType_ID = DocumentTypeID.LOADING,
 
                 Remark = reqVO.remark,
 
@@ -80,10 +102,14 @@ namespace AWMSEngine.Engine.Business.Loading
                 var issuedDoc = ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                     new KeyValuePair<string, object>[]{
                         new KeyValuePair<string, object>("ID", docItem.issuedDocID),
-                        new KeyValuePair<string, object>("DocuemtnType_ID", DocumentTypeID.GOODS_ISSUED),
+                        new KeyValuePair<string, object>("DocumentType_ID", DocumentTypeID.GOODS_ISSUED),
                         new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE)
                     },
                     this.BuVO).FirstOrDefault();
+                if (newDoc != null && issuedDoc.Sou_Warehouse_ID != newDoc.Sou_Warehouse_ID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SouWarehouse Issued Document ไม่ตรงกับ Loading Document");
+                if (newDoc != null && issuedDoc.Sou_Branch_ID != newDoc.Sou_Branch_ID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SouBranch Issued Document ไม่ตรงกับ Loading Document");
                 if (issuedDoc == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบ Good Issued Document ID " + docItem.issuedDocID + " ในฐานข้อมูล");
                 var newDocItem = new amt_DocumentItem()
