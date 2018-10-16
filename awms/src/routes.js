@@ -97,10 +97,21 @@ const PickConso = Loadable({
   loading: Loading,
 });
 
-const LoadingM = Loadable({
+const LoadingManage = Loadable({
   loader: () => import('./views/Warehouse/Loading'),
   loading: Loading,
 });
+
+const LoadingDocument = Loadable({
+  loader: () => import('./views/Warehouse/Loading/LoadingDocument'),
+  loading: Loading,
+});
+
+const LoadingChecklist = Loadable({
+  loader: () => import('./views/Warehouse/Loading/LoadingCheckList'),
+  loading: Loading,
+});
+
 const Historyy = Loadable({
   loader: () => import('./views/Warehouse/Storage/History'),
   loading: Loading,
@@ -129,8 +140,11 @@ const routes = [
   { path: '/wms/issueddoc/manage', exact: true, name: 'IssuedDoc', component: IssuedDoc },
   { path: '/wms/issueddoc/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
   { path: '/wms/picking/manage', exact: true, name: 'PickConso', component: PickConso },
-  { path: '/wms/loading/manage', exact: true, name: 'LoadingM', component: LoadingM },
+  { path: '/wms/loading/manage', exact: true, name: 'Loading', component: LoadingManage },
+  { path: '/wms/loading/manage/loadingdocument', exact: true, name: 'Loading Document', component: LoadingDocument },
+  { path: '/wms/loading/manage/loadingchecklist', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/wms/history', exact: true, name: 'History', component: Historyy },
+  { path: '/wms/loading/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
 ];
 
 export default routes;

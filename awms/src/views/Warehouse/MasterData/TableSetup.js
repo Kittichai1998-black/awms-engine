@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import {Input, Card, Button, CardBody} from 'reactstrap';
 import ReactTable from 'react-table'
-import Axios from 'axios';
+//import Axios from 'axios';
 import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
@@ -11,7 +11,11 @@ import guid from 'guid';
 import hash from 'hash.js';
 import {EventStatus, DocumentStatus} from '../Status'
 import Select from 'react-select'
+import {apicall} from '../ComponentCore'
 import _ from 'lodash'
+import Downshift from 'downshift'
+
+const Axios = new apicall()
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
@@ -95,6 +99,7 @@ class TableGen extends Component{
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
     this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
+    this.createAutoCompleteDownshift = this.createAutoCompleteDownshift.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -159,7 +164,6 @@ class TableGen extends Component{
   }
   
   componentWillUnmount(){
-    Axios.isCancel(true);
   }
 
   onHandleClickCancel(event){
@@ -255,7 +259,6 @@ class TableGen extends Component{
     let cretdata = {}
     const col = this.props.column
     const getcol = this.state.dataselect.f.split(",")
-    console.log(getcol)
     getcol.forEach(row => {
       cretdata.ID = this.addkey
       if(row === 'Status'){
@@ -620,6 +623,62 @@ class TableGen extends Component{
     this.setState({dataedit});
   }
 
+  createAutoCompleteDownshift(rowdata){
+    const getdata = this.state.autocomplete.filter(row=>{
+      return row.field  === rowdata.column.id
+    })
+    return <div style={{display: 'flex',flexDirection: 'column',}}>
+    <Downshift
+      initialInputValue = {rowdata.value}
+      onChange={selection => {
+      rowdata.value = selection.ID
+      this.onEditorValueChange(rowdata, selection.Code, rowdata.column.id)
+      this.onEditorValueChange(rowdata, selection.ID, getdata[0].pair)
+    }
+    }
+    itemToString={item => (item ? item.Code : rowdata.value)}
+  >
+    {({
+      getInputProps,
+      getItemProps,
+      getMenuProps,
+      isOpen,
+      openMenu,
+      inputValue,
+    }) => (
+      <div style={{width: '150px'}}>
+        <div style={{position: 'relative'}}>
+                <Input
+                  {...getInputProps({
+                    isOpen,
+                    onFocus:()=>openMenu(),
+                  })}
+                />
+              </div>
+              <div style={{position: 'absolute', zIndex:'1000'}}>
+                <div {...getMenuProps({isOpen})} style={{position: 'relative'}}>
+                  {isOpen
+                    ? getdata[0].data
+                      .filter(item => !inputValue || item.Code.includes(inputValue))
+                      .map((item, index) => (
+                        <div style={{background:'white', width:'150px'}}
+                          key={item.ID}
+                          {...getItemProps({
+                            item,
+                            index,
+                          })}
+                        >
+                          {item ? item.Code : ''}
+                        </div>
+                      ))
+                    : null}
+                </div>
+              </div>
+      </div>
+    )}
+  </Downshift></div>
+  }
+
   createAutocomplete(rowdata){
     const style = {borderRadius: '3px',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
@@ -794,7 +853,7 @@ class TableGen extends Component{
             })
           }
           else if(row.Type === "autocomplete"){
-            row.Cell = (e) => this.createAutocomplete(e)
+            row.Cell = (e) => this.createAutoCompleteDownshift(e)
           }
           else if(row.Type === "selection"){
             row.Cell = (e) => this.createSelection(e,"checkbox")

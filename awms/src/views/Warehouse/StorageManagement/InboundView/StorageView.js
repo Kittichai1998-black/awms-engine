@@ -3,7 +3,12 @@ import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../../MasterData/TableSetup';
-import Axios from 'axios';
+//import Axios from 'axios';
+import {apicall} from '../../ComponentCore'
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+
+const Axios = new apicall()
 
 class IssuedDoc extends Component{
   constructor(props) {
@@ -34,6 +39,7 @@ class IssuedDoc extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.createQueryString = this.createQueryString.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
+    this.dateTimePicker = this.dateTimePicker.bind(this)
   }
 
   onHandleClickCancel(event){
@@ -41,7 +47,15 @@ class IssuedDoc extends Component{
     event.preventDefault();
   }
 
-  componentDidMount(){
+  dateTimePicker(){
+    return <DatePicker selected={this.state.date}
+    onChange={(e) => {this.setState({date:e})}}
+    onChangeRaw={(e) => {
+      if (moment(e.target.value).isValid()){
+        this.setState({date:e.target.value})
+      }
+   }}
+   dateFormat="DD/MM/YYYY HH:mm:ss"/>
   }
 
   createQueryString = (select) => {
@@ -60,23 +74,17 @@ class IssuedDoc extends Component{
     this.setState({selectiondata:data})
   }
 
-  workingData(data,status){
-    let postdata = {docIDs:[]}
-    if(data.length > 0){
-      data.forEach(rowdata => {
-        postdata["docIDs"].push(rowdata.ID)
-      })
-      if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => this.setState({resp:res.data._result.message}))
-      }
-      else{
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => this.setState({resp:res.data._result.message}))
-      }
+  workingData(){
+    if(this.state.date){
+      let postdata = {
+        "exportName":"DocumentReceivedToCD",
+        "whereValues":[this.state.date]
+       }
+      Axios.post(window.apipath + "/api/report/export/fileServer", postdata)
     }
   }
 
   onClickToDesc(data){
-    console.log(this)
     return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID='+data.ID)}>Detail</Button>
   }
 
@@ -117,19 +125,16 @@ class IssuedDoc extends Component{
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        {/* <div className="clearfix">
-          <Button className="float-right">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} to={'/wms/issueddoc/manage/issuedmanage'}>Create Document</Link>}</Button>
-        </div> */}
+        <div className="clearfix">
+          <Button className="float-right" onClick={() => {this.workingData()}}>Export Data</Button>
+
+          <div className="float-right">{this.dateTimePicker()}</div>
+        </div>
+
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc} defaultCondition={[{'f':'Status','c':'!=','v':2},{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
         accept={false}/>
-        {/* <Card>
-          <CardBody>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
-          </CardBody>
-        </Card> */}
       </div>
     )
   }
