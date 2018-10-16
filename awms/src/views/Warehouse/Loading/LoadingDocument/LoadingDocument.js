@@ -70,27 +70,30 @@ class LoadingDocument extends Component{
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
       all:"",}
-
   }
  
   componentDidMount(){
     const values = queryString.parse(this.props.location.search)
     if(values.ID){
-      this.setState({pageID:values.ID,
+      this.setState({pageID:values.ID, readonly:true,
         addstatus:true,})
         Axios.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }
         else{
-          this.setState({data:rowselect1.data.document, loading:rowselect1.data.document.code,
-          documentStatus:rowselect1.data.document.eventStatus,
-          warehouse:rowselect1.data.document.souWarehouse,
-          transportID:rowselect1.data.document.transport_ID,
-          documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
-          date:moment(rowselect1.data.document.actionTime),
-          addstatus:true,
-          issuedNo:rowselect1.data.document.code})
+          this.setState({
+            data:rowselect1.data.document.documentItems, 
+            loading:rowselect1.data.document.code,
+            documentStatus:rowselect1.data.document.eventStatus,
+            warehouse:rowselect1.data.document.souWarehouse,
+            transportID:rowselect1.data.document.transport_ID,
+            documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
+            date:moment(rowselect1.data.document.actionTime),
+            addstatus:true,
+            bstos:rowselect1.data.bstos,
+            issuedNo:rowselect1.data.document.code
+          })
         }
       })
     }
@@ -115,7 +118,6 @@ class LoadingDocument extends Component{
         })
       })
       
-  
       this.setState({documentDate:this.DateNow.format('DD-MMMM-YYYY')})
       API.get(createQueryString(this.autocomplete)).then((res) => {
           this.setState({autocomplete:res.data.datas,
@@ -312,14 +314,35 @@ class LoadingDocument extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Issued No.',editable:true, Cell: (e) => this.createAutoComplete(e)},
-      {accessor: 'Branch', Header: 'Branch',editable:false},
+      {accessor: 'Code', Header: 'Issued No.',editable:true, Cell: (e) => {
+        if(this.state.readonly){
+          console.log(e.original.code)
+          return <span>{e.original.code}</span>
+        }
+        else{
+          return this.createAutoComplete(e)
+        }
+      }},
+      {accessor: 'Branch', Header: 'Branch',editable:false, Cell:e => {
+        if(this.state.readonly){
+          return <span>{this.state.Branch}</span>
+        }
+        else{
+          return this.createAutoComplete(e)
+        }
+      }},
       {accessor: 'Customer', Header: 'Customer',editable:false,},
       {accessor: 'ActionDate', Header: 'Action Date',editable:false,},
       {editable:false, Cell:(e) => {
         return <Button onClick={() => {
-          if(e.original.IssuedID !== "")
-            window.open('/wms/issueddoc/manage/issuedmanage?ID='+ e.original.IssuedID)
+          if(e.original.IssuedID !== ""){
+            if(this.state.readonly){
+              window.open('/wms/issueddoc/manage/issuedmanage?ID='+ e.original.id)
+            }
+            else{
+              window.open('/wms/issueddoc/manage/issuedmanage?ID='+ e.original.IssuedID)
+            }
+          }
         }
       }>Detail</Button>}},
     ];
@@ -339,12 +362,15 @@ class LoadingDocument extends Component{
           <Col sm="6" xs="6"><label>Document Date : </label><span>{this.state.documentDate}</span></Col>
         </Row>
         <Row>
-          <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Action Time : </label><div style={{display:"inline-block"}}>{this.dateTimePicker()}</div></Col>
+          <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Action Time : </label>
+          <div style={{display:"inline-block"}}>{this.state.readonly ? this.state.date === undefined ? "" : this.state.date.format("DD-MM-YYYY hh:mm") : this.dateTimePicker()}</div></Col>
           <Col sm="6" xs="6"><label>Event Status : </label></Col>
         </Row>
         <Row>
-          <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Transport : </label><div style={{width:"250px", display:"inline-block"}}><AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label})}/></div></Col>
-          <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Warehouse : </label><div style={{width:"250px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehousevalue":e.value, "warehousetext":e.label})}/></div></Col>
+          <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Transport : </label>
+          <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.transportID : <AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label})}/>}</div></Col>
+          <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Warehouse : </label>
+    <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.warehouse : <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehousevalue":e.value, "warehousetext":e.label})}/>}</div></Col>
         </Row>
         <Button onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}

@@ -114,7 +114,11 @@ class Login extends Component {
                           <i className="icon-lock"></i>
                         </InputGroupText>
                       </InputGroupAddon>
-                      <Input type="password" placeholder="Password" onChange={this.handlePasswordChange} />
+                      <Input type="password" placeholder="Password" onChange={this.handlePasswordChange} onKeyPress={e =>{
+                        if(e.key === "Enter"){
+                          this.Authorize()
+                        }
+                      }}/>
                     </InputGroup>
                     <Row>
                       <Col xs="6">

@@ -80,7 +80,7 @@ class IssuedDoc extends Component{
         "exportName":"DocumentReceivedToCD",
         "whereValues":[this.state.date]
        }
-      Axios.post(window.apipath + "/api/report/export/fileServer", postdata).then((res) => this.forceUpdate())
+      Axios.post(window.apipath + "/api/report/export/fileServer", postdata)
     }
   }
 
@@ -126,10 +126,7 @@ class IssuedDoc extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right" onClick={() => {
-            let data1 = {"exportName":"DocumentReceivedToCD","whereValues":[this.state.date.format("YYYY-MM-DD")]}
-            Axios.post(window.apipath + "/api/report/export/fileServer", data1)
-          }}>Export Data</Button>
+          <Button className="float-right" onClick={() => {this.workingData()}}>Export Data</Button>
 
           <div className="float-right">{this.dateTimePicker()}</div>
         </div>
@@ -138,22 +135,6 @@ class IssuedDoc extends Component{
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc} defaultCondition={[{'f':'Status','c':'!=','v':2},{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
         accept={false}/>
-        <Card>
-          <CardBody>
-            <Button style={{display:"inline-block"}} onClick={() => this.workingData()} color="primary"className="mr-sm-1 float-right">Working</Button>
-            
-            <div className="float-right" style={{display:"inline-block", paddingRight:"10px"}}>
-              <DatePicker selected={this.state.date}
-                onChange={(e) => {this.setState({date:e})}}
-                onChangeRaw={(e) => {
-                  if (moment(e.target.value).isValid()){
-                    this.setState({date:e.target.value})
-                  }
-              }}
-              dateFormat="DD/MM/YYYY"/>
-            </div>
-          </CardBody>
-        </Card>
       </div>
     )
   }

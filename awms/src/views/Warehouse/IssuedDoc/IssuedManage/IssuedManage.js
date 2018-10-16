@@ -176,6 +176,7 @@ class IssuedManage extends Component{
     }
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
       this.props.history.push('/wms/issueddoc/manage/issuedmanage?ID='+ res.data.ID)
+      window.reload()
     })
   }
 
@@ -201,8 +202,6 @@ class IssuedManage extends Component{
       const warehouse = this.warehouseselect
       warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
       Axios.get(createQueryString(warehouse)).then((res) => {
-        
-        console.log(res)
         const auto_warehouse = []
         res.data.datas.forEach(row => {
           auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
