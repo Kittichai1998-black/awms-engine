@@ -5,6 +5,8 @@ import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {apicall} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
 
 const api = new apicall()
 
@@ -159,6 +161,12 @@ class ListProduct extends Component{
         getselection = เก็บค่าที่เลือก
     
       */}
+        <div className="clearfix">
+          <Button className="float-right" onClick={() => {
+            let data1 = {"exportName":"ProductToShop","whereValues":[]}
+            api.post(window.apipath + "/api/report/export/fileServer", data1)
+          }}>Export Data</Button>
+        </div>
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
         filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
         btn={btnfunc} uneditcolumn={this.uneditcolumn}

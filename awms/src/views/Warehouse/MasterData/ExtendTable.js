@@ -33,8 +33,8 @@ const createQueryString = (select,wherequery) => {
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
     + (select.all === "" ? "" : "&all=" + select.all) */
-    +(select.s_f === "" ? "" : "s_f=" + select.s_f)
-    +(select.s_od === "" ? "" : "s_od" + select.s_od)
+    +(select.s_f === "" ? "" : "&s_f=" + select.s_f)
+    +(select.s_od === "" ? "" : "&s_od" + select.s_od)
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
     return queryS
