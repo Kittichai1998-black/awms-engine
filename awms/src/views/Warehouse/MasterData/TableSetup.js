@@ -205,6 +205,11 @@ class TableGen extends Component{
         if(data[1] !== ""){
           switch(data["value"].toString().charAt(0)){
             case "%":
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
               break
             case "*":
@@ -218,7 +223,7 @@ class TableGen extends Component{
                 filterlist.push({"f":data["id"], "c":"<", "v": 2})
               }
               else{
-                filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
+                filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
               }
               break
             default:
@@ -318,7 +323,7 @@ class TableGen extends Component{
           }
         })
         let updjson = {
-          "_token": null,
+          "_token": sessionStorage.getItem("Token"),
           "_apikey": null,
           "t": this.props.table,
           "pk": "ID",

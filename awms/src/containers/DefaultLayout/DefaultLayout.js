@@ -38,7 +38,7 @@ class DefaultMenu extends Component{
 }
 
 function checkstatus(){
-  if(sessionStorage.getItem("tokendata") === null || sessionStorage.getItem("tokendata") === undefined){
+  if(sessionStorage.getItem("Token") === null || sessionStorage.getItem("Token") === undefined){
     return <Redirect from="/" to="/login" />
   }
 }

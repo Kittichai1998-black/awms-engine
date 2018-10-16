@@ -17,6 +17,8 @@ namespace AWMSModel.Entity
         public string SouSupplier;
         public long? Sou_Branch_ID;
         public string SouBranch;
+        public long? Transport_ID;
+        public string Transport;
         public long? Sou_Warehouse_ID;
         public string SouWarehouse;
         public long? Sou_AreaMaster_ID;
