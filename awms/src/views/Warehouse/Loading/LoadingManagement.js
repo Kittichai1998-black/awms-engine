@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
-import Axios from 'axios';
+//import Axios from 'axios';
+import {apicall} from '../ComponentCore'
+import {EventStatus} from '../Status'
+
+const Axios =  new apicall()
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -16,7 +20,7 @@ const createQueryString = (select) => {
   return queryS
 }
 
-class Loading extends Component{
+class LoadingManage extends Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -37,7 +41,7 @@ class Loading extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"Loading",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1012},{ 'f': 'status', c:'in', 'v': 1}]",
-      f:"",
+      f:"ID,Code,DocumentType_ID,Transport_ID,ActionTime,DocumentDate,EventStatus,Status,CreateTime,ModifyTime,Remark,IssuedCode,LinkDocument_ID",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -61,10 +65,10 @@ class Loading extends Component{
   }
 
   workingData(data,status){
-    let postdata = {docIDs:[]}
+    let postdata = []
     if(data.length > 0){
       data.forEach(rowdata => {
-        postdata["docIDs"].push(rowdata.ID)
+        postdata.push({docID:rowdata.ID})
       })
       if(status==="accept"){
         Axios.post(window.apipath + "/api/wm/loading/doc/workpicking", postdata).then((res) => {this.setState({resp:res.data._result.message})})
@@ -81,28 +85,20 @@ class Loading extends Component{
   }
 
   getSelectionData(data){
-    this.setState({selectiondata:data}, () => {
-      console.log(this.state.selectiondata)
-    })
+    this.setState({selectiondata:data})
   }
 
   render(){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-      {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'SouBranch', Header: 'Branch',editable:false, Filter:"text"},
-      {accessor: 'SouWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
-      {accessor: 'SouArea', Header: 'Area', editable:false, Filter:"text",},
-      {accessor: 'DesCustomer', Header: 'Customer', editable:false, Filter:"text",},
-      {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
-      {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
-      {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
+      {accessor: 'Code', Header: 'Loading Code',editable:false, Filter:"text"},
+      {accessor: 'IssuedCode', Header: 'Issued Code',editable:false, Filter:"text"},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text",},
-      {accessor: 'RefID', Header: 'RefID', editable:false,},
-      {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
-      {accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"EventStatus"},
+      {accessor: 'CreateTime', Header: 'CreateBy', editable:false,Type:"datetime", filterable:false},
+      {accessor: 'ModifyTime', Header: 'ModifyBy', editable:false,Type:"datetime", filterable:false},
+      {accessor: 'Remark', Header: 'Remark', editable:false,},
     ];
 
     return(
@@ -116,11 +112,11 @@ class Loading extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right" onClick={() => this.props.history.push('/wms/Loading/manage/LoadingDocument')}>Create Document</Button>
+          <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/ld/manage') }>Create Document</Button>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        accept={false}/>
+        accept={false} defalutCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]}/>
         <Card>
           <CardBody>
             <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
@@ -133,4 +129,4 @@ class Loading extends Component{
   }
 }
 
-export default Loading;
+export default LoadingManage;

@@ -38,11 +38,8 @@ class DefaultMenu extends Component{
 }
 
 function checkstatus(){
-  if(sessionStorage.getItem("tokendata") !== null){
-    return <Route from="/" to="/Dashboard" />
-  }
-  else{
-    return <Route from="/" to="/login" />
+  if(sessionStorage.getItem("tokendata") === null || sessionStorage.getItem("tokendata") === undefined){
+    return <Redirect from="/" to="/login" />
   }
 }
 
