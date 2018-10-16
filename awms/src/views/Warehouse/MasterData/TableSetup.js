@@ -299,9 +299,16 @@ class TableGen extends Component{
             }
             
             if(col.accessor === "Password"){
-              var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
-              var hash256password = hash.sha256().update((hash.sha256().update(row[col.accessor]).digest('hex').toUpperCase())+guidstr).digest('hex').toUpperCase()
-              row[col.accessor] = hash256password
+              var i = 0, strLength = guid.length;
+              var guidstr = guid.raw().toUpperCase()
+              for(i; i < strLength; i++) {
+              
+                guidstr = guidstr.replace('-','');
+              
+              }
+              console.log(guidstr)
+              //var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
+              row[col.accessor] = "(dbo.FN_HASH256STR(concat((dbo.FN_HASH256STR('"+row[col.accessor]+"')),'"+guidstr+"')))"
               row["SoftPassword"] = guidstr
             }
           })

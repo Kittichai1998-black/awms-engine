@@ -153,7 +153,7 @@ const routes = [
   { path: '/doc/gi/list', exact: true, name: 'IssuedDoc', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'IssuedManage', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
-  { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingM },
+  { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/wms/history', exact: true, name: 'History', component: Historyy },
   { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
   { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },

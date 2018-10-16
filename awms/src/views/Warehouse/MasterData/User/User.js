@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import hash from 'hash.js'
 
 class User extends Component{
     constructor(props) {
@@ -42,6 +43,11 @@ class User extends Component{
     componentWillUnmount(){
     Axios.isCancel(true);
     }
+
+    componentDidMount(){
+
+    }
+
 
     createQueryString = (select) => {
         let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
