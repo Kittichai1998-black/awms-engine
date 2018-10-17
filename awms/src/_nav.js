@@ -36,7 +36,10 @@ function getmenu(){
       },
            {id: 10,name: 'Goods Receive',url: '/doc/gr/list',icon: 'cui-bug',},
            {id: 11,name: 'Goods Issue',url: '/doc/gi/list',icon: 'cui-home',},
-           {id: 13,name: 'Loading',url: '/doc/ld/list',icon: 'cui-box',}, 
+           {id: 13,name: 'Loading',url: '/doc/ld/list',icon: 'cui-box',},
+           {id: 14,name: 'Picking',url: '/wm/sto/picking',icon: 'cui-bug',},
+           {id: 15,name: 'Receive Mapping',url: '/wm/sto/revmap',icon: 'cui-home',},
+           {id: 16,name: 'Transfer',url: '/wm/sto/transfer',icon: 'cui-box',}, 
     ]};
     
     return result;

@@ -73,7 +73,7 @@ class StockCorrection extends Component{
             l:"",
             all:"",},
             qtyEdit:[],
-            remark:[],
+            remark:"",
             warehousedata:[],
             data:[],
             barcode:"",
@@ -129,12 +129,11 @@ class StockCorrection extends Component{
       }
       
       createListTable(){
-          console.log(this.state.remark)
         let status = true;
         if(this.state.warehouseres===undefined||this.state.barcode===""){
             status = false;
-        }
-            if(status){
+        } 
+            if(status){ 
                 let data = {"scanCode":this.state.barcode,"amount":0,"action":0,
                 "mode":0,"options":null,"warehouseID":this.state.warehouseres,"mapsto":null};
                 Axios.post(window.apipath + "/api/wm/VRMapSTO",data).then((response) => {
@@ -142,6 +141,7 @@ class StockCorrection extends Component{
                 let header = []
                 this.setState({response:""})
                     if(response.data._result.status !== 0){
+
                         this.setState({showCard:"block"})
                         this.setState({control:"block"})
                         this.setState({mapSTO:response.data, mapSTOView:response.data}, () => {
@@ -163,12 +163,17 @@ class StockCorrection extends Component{
             }
     }
         
-      addtolist = (data) => {
+      addtolist = (data,parent) => {
+          
         const condata = [...data]
         const focus = {color:'red', marginLeft:"-20px", fontSize:"13px"}
-        const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
+        const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"} 
         return condata.map((child,i) => {
           let disQtys;
+          if(child.parentID === null){
+            this.rootID=child.id
+
+          }
           if(child.objectSizeMaps.length > 0){
             disQtys = child.objectSizeMaps.map((v)=>{
               return <div><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
@@ -180,7 +185,7 @@ class StockCorrection extends Component{
           
           return <ul key={i} style={child.isFocus===true?focus:focusf}>
             <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
-            <span>{child.code} : {child.name} | </span>
+            <span>{child.code} : {child.name}  | </span> 
             <span>{child.objectSizeName} | </span>
             <span>{child.minWeiKG?child.minWeiKG+ '/':''}
              {child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} 
@@ -188,40 +193,48 @@ class StockCorrection extends Component{
              </span>
             <br/><span style={{color:'gray'}}> {disQtys}
             {child.mapstos.length > 0 ? null : <Input style={{height:"30px", width:"60px",background:"#FFFFE0"}} max="" type="number" 
-                onChange={(e)=>{this.ChangeData(e,child.id,child.name,e.target.value)}}/>}
+              onChange={(e)=>{this.ChangeData(e,child.id,child.code,e.target.value,parent)}}/>}
+                
              </span>
-            
+             
             {(child.mapstos.map(child2 => {
-              let z = this.addtolist([child2])
+              let z = this.addtolist([child2],child.id)
               return z}))
             }
-            </ul>
-        })
+            </ul> 
+        }) 
       }
       
-      ChangeData(e,dataID,dataName,dataValue){
+      ChangeData(e,dataID,dataCode,dataValue,dataParent){
           e.target.style.background="yellow"
-
+            let rootdata
           let data = this.state.qtyEdit
             data.forEach((row,index)=>{
                 if(row.stoID === dataID){
                     data.splice(index,1)
                 }
             })
-          data.push({baseStoID:dataID,packStoCode:dataName,packQty:dataValue})
-        this.setState({qtyEdit:data})
-         console.log(dataName)
+            data.push({baseStoID:dataParent,packStoCode:dataCode,packQty:dataValue})
+
+            this.setState({qtyEdit:data})
+            rootdata = { "rootStoID":this.rootID,
+            "remark":this.state.remark,
+            "adjustItems":data}
+
+            this.setState({updateQty:rootdata},()=> console.log(this.state.updateQty))
+        
       }
 
       clickSubmit(){ 
         const data = {rootID:this.state.palletcode,remark:this.state.remark,adjustItems:this.state.qtyEdit};
     
-        Axios.post(window.apipath + "api/wm/stkcorr/doc/closed",data).then((res) => {
+        Axios.post(window.apipath + "/api/wm/stkcorr/doc/closed",this.state.updateQty).then((res) => {
          this.createListTable()
         })
       }
 
       clearTable(){
+        this.setState({showCard:"none"})
         this.setState({result:null,mapSTOView:null, mapSTO:null, control:"none", response:""})
       }
 
@@ -257,6 +270,7 @@ class StockCorrection extends Component{
                 <CardBody>
                     <Row>
                         {this.state.response}
+
                     </Row>
                     <Row>
                         {this.state.result}
