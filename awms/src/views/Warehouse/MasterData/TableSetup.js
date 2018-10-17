@@ -907,6 +907,7 @@ class TableGen extends Component{
           multiSort={false}
           showPagination={true}
           minRows={5}
+          defaultPageSize={100}
           SubComponent={this.subTable}
           getTrProps={(state, rowInfo) => {
             let result = false

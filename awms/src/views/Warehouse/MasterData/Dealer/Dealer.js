@@ -24,7 +24,7 @@ class Dealer extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:"",
-      l:20,
+      l:100,
       all:"",},
       sortstatus:0,
       loaddata:false,

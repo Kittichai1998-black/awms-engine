@@ -326,7 +326,7 @@ class AreaLocation extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:10,
+      l:100,
       all:"",}
 
     }else{

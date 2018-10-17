@@ -24,7 +24,7 @@ class User extends Component{
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
-            l:20,
+            l:100,
             all:"",},
             sortstatus:0,
             selectiondata:[],
