@@ -2,29 +2,15 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Input, Button, Row, Col } from 'reactstrap';
 import ReactTable from 'react-table';
-import Axios from 'axios';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
-import {AutoSelect, apicall, Clone} from '../../ComponentCore';
+import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
 import {EventStatus} from '../../Status'
 import 'react-datepicker/dist/react-datepicker.css';
-import ReactAutocomplete from 'react-autocomplete';
 import Downshift from 'downshift'
 import queryString from 'query-string'
 
 const API = new apicall();
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 
 class LoadingDocument extends Component{
   constructor(props) {
@@ -77,7 +63,7 @@ class LoadingDocument extends Component{
     if(values.ID){
       this.setState({pageID:values.ID, readonly:true,
         addstatus:true,})
-        Axios.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
+        API.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }
@@ -144,6 +130,8 @@ class LoadingDocument extends Component{
         isOpen,
         openMenu,
         inputValue,
+        highlightedIndex,
+        selectedItem,
       }) => (
         <div style={{width: '150px'}}>
           <div style={{position: 'relative'}}>
@@ -164,7 +152,12 @@ class LoadingDocument extends Component{
                             key={item.ID}
                             {...getItemProps({
                               item,
-                              index
+                              index,
+                              style: {
+                                backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
+                                fontWeight: selectedItem === item ? 'bold' : 'normal',
+                                width:'150px'
+                              }
                             })}
                           >
                             {item ? item.Code : ''}
@@ -280,7 +273,6 @@ class LoadingDocument extends Component{
   } */
   
   createDocument(){
-    console.log(this.state.date)
     let issuedList = []
     this.state.data.forEach(item => {
       issuedList.push({issuedDocID:item.IssuedID})
@@ -316,7 +308,6 @@ class LoadingDocument extends Component{
     const cols = [
       {accessor: 'Code', Header: 'Issued No.',editable:true, Cell: (e) => {
         if(this.state.readonly){
-          console.log(e.original.code)
           return <span>{e.original.code}</span>
         }
         else{
