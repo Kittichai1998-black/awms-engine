@@ -81,7 +81,7 @@ class History extends Component{
     return(
       <div>
         <ExtendTable data={objselect} column={cols} subcolumn={subcols} dropdownfilter={ddlfilter} pivotBy={this.state.pivot} subtablewidth={700}
-        url={null} filterable={false} subtype={1}/>
+        url={null} filterable={true} subtype={1}/>
       </div>
     )
   }

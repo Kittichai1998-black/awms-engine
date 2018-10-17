@@ -5,22 +5,10 @@ import {Input, Button, ButtonGroup , Row, Col,
   Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 //import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {AutoSelect, NumberInput, apicall} from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall, createQueryString} from '../../ComponentCore'
 
 const Axios = new apicall()
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
-
+ 
 function clone(obj) {
   var copy;
 
@@ -192,8 +180,10 @@ class StorageManagement extends Component{
       let disQtys;
       if(child.objectSizeMaps.length > 0){
         disQtys = child.objectSizeMaps.map((v)=>{
-          return <div><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
-        });
+          if(v.maxQuantity > 0){
+            return <div><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
+          }
+          });
       }
       else{
         disQtys = <div><FontAwesomeIcon icon="puzzle-piece"/>{child.allqty}</div>
@@ -203,7 +193,7 @@ class StorageManagement extends Component{
         <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
         <span><FontAwesomeIcon icon="pallet"/>{child.code} : {child.name} | </span>
         <span><FontAwesomeIcon icon="layer-group"/>{child.objectSizeName} | </span>
-        <span><FontAwesomeIcon icon="weight-hanging"/>{child.minWeiKG?child.minWeiKG+ '/':''} {child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} {child.allqty !== undefined ? child.allqty : null}</span>
+        <span>{child.minWeiKG?child.minWeiKG+ '/':''} {child.weiKG === 0 ? '' : child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} Qty : {child.allqty !== undefined ? child.allqty : null}</span>
         <br/><span style={{color:'gray'}}> {disQtys}</span>
 
         {(child.mapstos.map(child2 => {
@@ -410,7 +400,12 @@ class StorageManagement extends Component{
         </Row>
         <Row>
           <Col sm="6">
-          <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
+            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Quantity : </label>
+            <NumberInput value={this.state.qty} onChange={value => this.setState({qty:value})} style={{width:'40%',display:'inline-block'}}/>{' '}
+            <Button id="start" onClick={() => {this.setState({barcodemodal:true})}} color="danger" style={{display:'none'}}>Scan</Button>{' '}
+          </Col>
+          <Col sm="6">
+            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
               <Input id="barcodetext" style={{width:'40%',display:'inline-block'}} type="text"
                 value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ด"
                 onChange={e => {this.setState({barcode:e.target.value})}}
@@ -419,12 +414,7 @@ class StorageManagement extends Component{
                   this.createListTable()
                 }
               }}/>
-          </Col>
-          <Col sm="6">
-            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Quantity : </label>
-            <NumberInput value={this.state.qty} onChange={value => this.setState({qty:value})} style={{width:'40%',display:'inline-block'}}/>{' '}
-            <Button id="start" onClick={() => {this.setState({barcodemodal:true})}} color="danger" style={{display:'none'}}>Scan</Button>{' '}
-            <Button onClick={this.createListTable} color="danger" style={{display:'inline-block'}} disabled={this.state.poststatus}>Post</Button>
+              <Button onClick={this.createListTable} color="danger" style={{display:'inline-block'}} disabled={this.state.poststatus}>Post</Button>
           </Col>
         </Row>
         <Row>

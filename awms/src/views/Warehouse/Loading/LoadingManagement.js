@@ -4,21 +4,8 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall} from '../ComponentCore'
-import {EventStatus} from '../Status'
 
 const Axios =  new apicall()
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 
 class LoadingManage extends Component{
   constructor(props) {

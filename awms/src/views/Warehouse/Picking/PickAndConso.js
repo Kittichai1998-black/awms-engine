@@ -2,23 +2,11 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Input, Modal, ModalHeader, ModalBody, ModalFooter, Button, Card, CardBody, ButtonGroup, Alert, Row,Col } from 'reactstrap';
 import ReactTable from 'react-table'
-import {AutoSelect, Clone, apicall} from '../ComponentCore'
+import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore'
 //import Axios from 'axios';
 import {EventStatus} from '../Status'
 
 const Axios = new apicall()
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 
 class PickAndConso extends Component{
   constructor(props) {

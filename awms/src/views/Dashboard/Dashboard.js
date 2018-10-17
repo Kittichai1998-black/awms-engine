@@ -6,7 +6,7 @@ class Dashboard extends Component{
       
 <div>
   <div class="Home-content">
-    <div align="center"  class="Home-profile" style={{marginTop:"100px"}}>
+    <div align="center"  className="Home-profile" style={{marginTop:"100px"}}>
     
         <img  src={img} height="400px"></img>
     </div>

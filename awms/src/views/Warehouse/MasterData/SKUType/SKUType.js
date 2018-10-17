@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
-import {apicall} from '../../ComponentCore'
+import {Card, CardBody, Button } from 'reactstrap';
+import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
-import DatePicker from 'react-datepicker';
-import moment from 'moment';
 
 const api = new apicall()
 
@@ -31,14 +28,13 @@ class SKUMasterType extends Component{
           g:"",
           s:"[{'f':'ID','od':'asc'}]",
           sk:0,
-          l:10,
+          l:100,
           all:"",},
           sortstatus:0,
           selectiondata:[],
         };
         this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.createQueryString = this.createQueryString.bind(this);
         this.getAutocompletee = this.getAutocomplete.bind(this);
         this.getSelectionData = this.getSelectionData.bind(this);
         this.uneditcolumn = ["ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
@@ -61,17 +57,6 @@ class SKUMasterType extends Component{
         this.forceUpdate();
       }
 
-      createQueryString = (select) => {
-        let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-        + (select.q === "" ? "" : "&q=" + select.q)
-        + (select.f === "" ? "" : "&f=" + select.f)
-        + (select.g === "" ? "" : "&g=" + select.g)
-        + (select.s === "" ? "" : "&s=" + select.s)
-        + (select.sk === "" ? "" : "&sk=" + select.sk)
-        + (select.l === 0 ? "" : "&l=" + select.l)
-        + (select.all === "" ? "" : "&all=" + select.all)
-        return queryS
-      }
       getAutocomplete(){
         const objectsizeselect = {queryString:window.apipath + "/api/mst",
           t:"ObjectSize",
@@ -91,7 +76,7 @@ class SKUMasterType extends Component{
           sk:0,
           all:"",}
     
-        Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(objectsizeselect))]).then(
+        Axios.all([Axios.get(createQueryString(packselect)),Axios.get(createQueryString(objectsizeselect))]).then(
           (Axios.spread((packresult, objectsizeresult) => 
         {
           let ddl = this.state.autocomplete
