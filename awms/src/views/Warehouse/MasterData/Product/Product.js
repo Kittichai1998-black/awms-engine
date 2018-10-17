@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
-import {apicall} from '../../ComponentCore'
+import {Card, CardBody, Button } from 'reactstrap';
+import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
-import DatePicker from 'react-datepicker';
-import moment from 'moment';
 
 const api = new apicall()
 
@@ -38,7 +35,6 @@ class ListProduct extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this);
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
     this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
@@ -62,18 +58,6 @@ class ListProduct extends Component{
     this.forceUpdate();
   }
 
-  createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    return queryS
-  }
-
   getAutocomplete(){
     const unitselect = {queryString:window.apipath + "/api/mst",
       t:"UnitType",
@@ -93,7 +77,7 @@ class ListProduct extends Component{
       sk:0,
       all:"",}
 
-    Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(unitselect))]).then(
+    Axios.all([Axios.get(createQueryString(packselect)),Axios.get(createQueryString(unitselect))]).then(
       (Axios.spread((packresult, unitresult) => 
     {
       let ddl = this.state.autocomplete

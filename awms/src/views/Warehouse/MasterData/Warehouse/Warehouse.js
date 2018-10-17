@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import {createQueryString} from '../../ComponentCore'
 
 class Warehouse extends Component{
     constructor(props) {
@@ -31,7 +31,6 @@ class Warehouse extends Component{
         selectiondata:[],
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-      this.createQueryString = this.createQueryString.bind(this)
       this.filterList = this.filterList.bind(this)
       this.uneditcolumn = ["Branch_Code","Branch_Name","CreateBy","CreateTime","ModifyBy","ModifyTime"]  
     }
@@ -48,18 +47,6 @@ class Warehouse extends Component{
     componentWillUnmount(){
         Axios.isCancel(true);
     }
-
-    createQueryString = (select) => {
-        let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-        + (select.q === "" ? "" : "&q=" + select.q)
-        + (select.f === "" ? "" : "&f=" + select.f)
-        + (select.g === "" ? "" : "&g=" + select.g)
-        + (select.s === "" ? "" : "&s=" + select.s)
-        + (select.sk === "" ? "" : "&sk=" + select.sk)
-        + (select.l === 0 ? "" : "&l=" + select.l)
-        + (select.all === "" ? "" : "&all=" + select.all)
-        return queryS
-      }
 
       filterList(){
         const whselect = {queryString:window.apipath + "/api/mst",
@@ -81,7 +68,7 @@ class Warehouse extends Component{
           l:20,
           all:"",} */
     
-        Axios.all([Axios.get(this.createQueryString(whselect))]).then(
+        Axios.all([Axios.get(createQueryString(whselect))]).then(
           (Axios.spread((whresult) => 
         {
           let ddl = [...this.state.autocomplete]

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
-import Axios from 'axios';
 
 class Branch extends Component{
     constructor(props) {
@@ -39,7 +38,6 @@ class Branch extends Component{
     }
 
     componentWillUnmount(){
-        Axios.isCancel(true);
     }
 
     render(){

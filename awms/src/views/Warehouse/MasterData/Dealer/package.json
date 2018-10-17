@@ -1,6 +1,0 @@
-{
-  "name": "Dealer",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./Dealer.js"
-}
