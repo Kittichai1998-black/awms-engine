@@ -86,6 +86,11 @@ class LoadingManage extends Component{
       {accessor: 'CreateTime', Header: 'CreateBy', editable:false,Type:"datetime", filterable:false},
       {accessor: 'ModifyTime', Header: 'ModifyBy', editable:false,Type:"datetime", filterable:false},
       {accessor: 'Remark', Header: 'Remark', editable:false,},
+      {editable:false, Cell:(e) => {
+        return <Button color="primary" onClick={() => {
+          window.open('/doc/ld/manage?ID='+ e.original.ID)
+        }
+      }>Detail</Button>}},
     ];
 
     return(

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Button, Row, Col } from 'reactstrap';
+import {Input, Button, Row, Col, CardBody, Card } from 'reactstrap';
 import ReactTable from 'react-table';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -28,6 +28,7 @@ class LoadingDocument extends Component{
     }
     this.addData = this.addData.bind(this)
     this.createDocument = this.createDocument.bind(this)
+    this.createList = this.createList.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
     this.transportselect = {queryString:window.apipath + "/api/mst",
@@ -79,7 +80,7 @@ class LoadingDocument extends Component{
             addstatus:true,
             bstos:rowselect1.data.bstos,
             issuedNo:rowselect1.data.document.code
-          })
+          }, () => {this.createList()})
         }
       })
     }
@@ -110,6 +111,17 @@ class LoadingDocument extends Component{
             adddisplay:"inline-block"})
       })
     }    
+  }
+
+  createList(){
+    const bstos = this.state.bstos
+    console.log(this.state.bstos)
+    const res = bstos.map((row, index) => {
+      return <div>
+          <span>Code : {row.code}</span>|<span>Qty : {row.packQty}</span>|<span>Warehouse : {row.warehouseCode}</span>
+      </div>
+    })
+    this.setState({bstostree:res}, () => console.log(this.state.bstostree))
   }
 
   createAutoComplete(rowdata){
@@ -314,24 +326,28 @@ class LoadingDocument extends Component{
           return this.createAutoComplete(e)
         }
       }},
-      {accessor: 'Branch', Header: 'Branch',editable:false, Cell:e => {
-        if(this.state.readonly){
-          return <span>{this.state.Branch}</span>
-        }
-        else{
-          return this.createAutoComplete(e)
-        }
-      }},
+      {accessor: 'Branch', Header: 'Branch',editable:false},
       {accessor: 'Customer', Header: 'Customer',editable:false,},
       {accessor: 'ActionDate', Header: 'Action Date',editable:false,},
-      {editable:false, Cell:(e) => {
-        return <Button onClick={() => {
+      {show: this.state.readonly?false:true, editable:false, Cell:(e) => {
+        return <Button color="danger" onClick={() => {
+          const data = this.state.data
+          data.forEach((datarow,index) => {
+            if(datarow.code === e.original.code){
+              data.splice(index,1);
+            }
+          })
+          this.setState({data})
+        }
+      }>Delete</Button>}},
+      {show: this.state.readonly?false:true, editable:false, Cell:(e) => {
+        return <Button color="primary" onClick={() => {
           if(e.original.IssuedID !== ""){
             if(this.state.readonly){
-              window.open('/wms/issueddoc/manage/issuedmanage?ID='+ e.original.id)
+              window.open('/doc/gi/manage?ID='+ e.original.id)
             }
             else{
-              window.open('/wms/issueddoc/manage/issuedmanage?ID='+ e.original.IssuedID)
+              window.open('/doc/gi/manage?ID='+ e.original.IssuedID)
             }
           }
         }
@@ -366,10 +382,13 @@ class LoadingDocument extends Component{
         <Button onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/>
-            <div>
-              <Button color="primary" style={{display:"inline"}} onClick={this.createDocument}>Create</Button>
-              <Button color="danger" onClick={() => this.props.history.push('/wms/loading/manage')}>Close</Button>
-            </div>
+          {this.state.readonly ? this.state.bstostree : null}
+          <Card>
+          <CardBody>
+            <Button color="primary" style={{display:"inline"}} onClick={this.createDocument}>Create</Button>
+            <Button color="danger" onClick={() => this.props.history.push('/doc/ld/list')}>Close</Button>
+          </CardBody>
+        </Card>
       </div>
     )
   }
