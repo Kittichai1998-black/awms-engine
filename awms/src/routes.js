@@ -117,6 +117,16 @@ const Historyy = Loadable({
   loading: Loading,
 });
 
+const Stock = Loadable({
+  loader: () => import('./views/Warehouse/Stock'),
+  loading: Loading,
+});
+
+const Stockview = Loadable({
+  loader: () => import('./views/Warehouse/Stockview'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -145,6 +155,8 @@ const routes = [
   { path: '/wms/loading/manage/loadingchecklist', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/wms/history', exact: true, name: 'History', component: Historyy },
   { path: '/wms/loading/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
+  { path: '/mst/warehouse/Stock/manage', exact: true, name: 'Stock', component: Stock },
+  { path: '/mst/warehouse/Stockview/manage', exact: true, name: 'Stockview', component: Stockview },
 ];
 
 export default routes;

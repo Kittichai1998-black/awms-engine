@@ -52,37 +52,22 @@ class Stock extends Component{
     API.get(createQueryString(this.stockItem)).then(stocks => {})
   }
 
-  workingData() {
-    let data = [{
-      exportName: "DocumentAuditToCD", whereValue: [this.state.date]
-    }]
-   API.post(window.apipath + "/api/report/export/fileServer", data).then((res) => this.forceUpdate())
-
+workingData(){
+    if(this.state.date){
+      let postdata = {
+        "exportName":"DocumentAuditToCD",
+        "whereValues":[this.state.date]
+      }
+      API.post(window.apipath + "/api/report/export/fileServer", postdata)
+    }
   }
 
   createDetial(rowdata) {
     return <Button type="button" color="info"
-      onClick={() => this.history.push('/wms/Stockview?docID=' +rowdata.ID + '&getMapSto=true')
-      }>Link</Button>
+      onClick={() => this.history.push('/mst/warehouse/Stockview/manage?docID=' + rowdata.ID)
+      }>Detail</Button>
   }
 
-
-
-
-
-  createLink(rowdata) {
-    return <Button type="button" color="info"
-      onClick={() => {
-        let docID = [{ "docID": rowdata["ID"], "getMapSto": rowdata["True"] }]
-        let docstr = JSON.stringify(docID )
-        if (!this.state.docObj) {
-          this.setState({ docObj: docstr }, () =>
-            this.props.history.push('/wms/Stockview?ID=&getMapSto=' + this.state.docObj))
-        } else {
-          this.props.history.push('/wms/Stockview?ID=&getMapSto=' + this.state.docObj)
-        }
-      }}>LINK</Button>
-  }
 
 
 
