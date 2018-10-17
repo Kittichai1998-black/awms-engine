@@ -7,7 +7,7 @@ import Select from 'react-select';
 import Axios from 'axios';
 import _ from 'lodash'
 
-class apicall{
+ class apicall{
     get(url){
         return Axios.get(url).then((res) => {
             if(res.data._result.status === 0){

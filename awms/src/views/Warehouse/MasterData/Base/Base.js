@@ -26,7 +26,7 @@ class Area extends Component{
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
-            l:10,
+            l:100,
             all:"",},
             sortstatus:0,
             selectiondata:[]
@@ -109,8 +109,8 @@ class Area extends Component{
         data.forEach((datarow,index) => {
             obj.push({"barcode":datarow.Code,"Name":datarow.Name});
         })
-        const xx = JSON.stringify(obj)
-        this.setState({barcodeObj:xx}, () => console.log(this.state.barcodeObj))
+        const ObjStr = JSON.stringify(obj)
+        this.setState({barcodeObj:ObjStr}, () => console.log(this.state.barcodeObj))
     }
 
     createBarcodeBtn(rowdata){

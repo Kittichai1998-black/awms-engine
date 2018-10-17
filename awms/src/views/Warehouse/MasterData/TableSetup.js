@@ -292,9 +292,16 @@ class TableGen extends Component{
             }
             
             if(col.accessor === "Password"){
-              var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
-              var hash256password = hash.sha256().update((hash.sha256().update(row[col.accessor]).digest('hex').toUpperCase())+guidstr).digest('hex').toUpperCase()
-              row[col.accessor] = hash256password
+              var guidstr = guid.raw().toUpperCase()
+              var i = 0, strLength = guidstr.length;
+              for(i; i < strLength; i++) {
+              
+                guidstr = guidstr.replace('-','');
+              
+              }
+              console.log(guidstr)
+              //var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
+              row[col.accessor] = "@@sql_gen_password,"+row[col.accessor]+","+guidstr
               row["SoftPassword"] = guidstr
             }
           })
@@ -894,6 +901,7 @@ class TableGen extends Component{
           multiSort={false}
           showPagination={true}
           minRows={5}
+          defaultPageSize={100}
           SubComponent={this.subTable}
           getTrProps={(state, rowInfo) => {
             let result = false

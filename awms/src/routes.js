@@ -62,6 +62,11 @@ const Warehouse = Loadable({
   loading: Loading,
 });
 
+const SKUType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/SKUType'),
+  loading: Loading,
+});
+
 const Storage = Loadable({
   loader: () => import('./views/Warehouse/Storage'),
   loading: Loading,
@@ -140,6 +145,7 @@ const routes = [
   { path: '/mst/branch/manage', exact: true, name: 'Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
+  { path: '/mst/skutype/manage', exact: true, name: 'skutype', component: SKUType },
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },

@@ -25,7 +25,7 @@ class Area extends Component{
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
-      l:10,
+      l:100,
       all:"",},
       sortstatus:0,
       selectiondata:[]
