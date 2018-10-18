@@ -32,7 +32,10 @@ namespace AWMSEngine.Engine.General
             
             if (!Directory.Exists(pathOut))
                 Directory.CreateDirectory(pathOut);
-            string filePathOut = pathOut + string.Format(fileOut, DateTime.Now);
+            List<object> args = new List<object>();
+            args.Add(DateTime.Now);
+            args.AddRange(reqVO.whereValues);
+            string filePathOut = pathOut + string.Format(fileOut, args.ToArray());
             if (File.Exists(filePathOut))
                 File.Delete(filePathOut);
             using (StreamWriter sw = new StreamWriter(filePathOut, false, System.Text.Encoding.UTF8))
