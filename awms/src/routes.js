@@ -122,7 +122,7 @@ const Historyy = Loadable({
   loading: Loading,
 });
 const ComfrimBox = Loadable({
-  loader: () => import('./views/ComfirmBox'),
+  loader: () => import('./views/Warehouse/ComfirmBox'),
   loading: Loading,
 });
 const StockCorrection = Loadable({
