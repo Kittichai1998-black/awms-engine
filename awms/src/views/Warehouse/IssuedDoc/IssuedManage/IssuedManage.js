@@ -164,8 +164,10 @@ class IssuedManage extends Component{
       remark:this.state.remark,issueItems:acceptdata
     }
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
-      this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
-      window.location.reload()
+      if(res.data._result.status === 1){
+        this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
+        window.location.reload()
+      }
     })
   }
 
