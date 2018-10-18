@@ -20,6 +20,8 @@ class PickAndConso extends Component{
       modalstatus:false,
       rSelect:0,
       consoStatus:2,
+      pickingAmount:1,
+      pickingBarcode:"",
       documentItem:{queryString:window.apipath + "/api/viw",
       t:"DocumentItem",
       q:'',
@@ -102,9 +104,10 @@ class PickAndConso extends Component{
   
   createGuideLocation(){
     Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemID=' + this.state.rowselect.ID).then(res => {
-      const reselement = <div>
-        <span>{res.AreaCode}</span>
-      </div>
+      const reselement = res.data.datas.map((row,i) => {
+        return <span key={i}>Guide for Picking : {row.areaCode} | {row.areaLocationCode}</span>
+      })
+      this.setState({guideLoc:reselement})
     })
   }
 
@@ -240,6 +243,7 @@ class PickAndConso extends Component{
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
+          <div style={{fontSize:"18px", color:"red"}}>{this.state.guideLoc}</div>
           <label>Barcode : </label><Input type="text" onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
           <Button color="primary" onClick={() => this.onHandleClickCheckConso(this.state.rowselect, this.state.consoBarcode)} style={{display:"inline"}}>Scan</Button>
           <Button color="danger" onClick={() => this.setState({consoStatus:2})} style={{display:"inline-block"}}>Clear Result</Button>
@@ -255,10 +259,14 @@ class PickAndConso extends Component{
             </ButtonGroup>
             <div>
               <label>Picking : </label>
-              <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} style={{display:"inline-block", width:"180px"}}/>
+              <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                if(e.key === "Enter"){
+                  this.onHandleClickPickingScan()
+                }
+              }} style={{display:"inline-block", width:"180px"}}/>
               <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
               <Button color="primary" style={{display:"inline"}} onClick={() => this.onHandleClickPickingScan()}>Scan</Button>
-              <Button color="danger" style={{display:"inline-block"}} onClick={() => this.setState({pickingList:null, pickingAmount:1, pickingBarcode:""})}>Clear Result</Button>
+              <Button color="danger" style={{display:"inline-block"}} onClick={() => this.setState({pickingList:null, pickingAmount:1, pickingBarcode:"", guideLoc:null})}>Clear Result</Button>
             </div>
             <div>
               {this.state.pickingList}
