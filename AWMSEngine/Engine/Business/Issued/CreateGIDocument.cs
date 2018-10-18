@@ -51,7 +51,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
         protected override amt_Document ExecuteEngine(TDocReq reqVO)
         {
-            if (reqVO.issueItems.GroupBy(x => new { a = x.skuCode, b = x.packTypeCode, c = x.packQty }).Any(x => x.Count() > 1))
+            if (reqVO.issueItems.GroupBy(x => new { a = x.packID, b = x.skuCode }).Any(x => x.Count() > 1))
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "SKU Duplicate in List ");
 
             var newDoc = this.NewDocument(reqVO);
