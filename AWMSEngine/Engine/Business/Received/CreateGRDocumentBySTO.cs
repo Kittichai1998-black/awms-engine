@@ -78,6 +78,8 @@ namespace AWMSEngine.Engine.Business.Received
             var packs = stopacks
                 .GroupBy(x => new { code = x.code, mstID = x.mstID, options = ObjectUtil.ListKeyToQueryString(x.options) })
                 .Select(x => new { key = x.Key, count = x.Count(), stoIDs = x.Select(y => y.id.Value).ToList() });
+            //if (packs.Count() == 0)
+            //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบสินค้ารอรับเข้า");
             foreach (var p in packs)
             {
                 var packmst = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(p.key.mstID, this.BuVO);
@@ -99,8 +101,8 @@ namespace AWMSEngine.Engine.Business.Received
                 });
             }
 
-
-            doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
+            if (packs.Count() > 0)
+                doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
 
             /*foreach (var docItem in doc.DocumentItems)
             {
