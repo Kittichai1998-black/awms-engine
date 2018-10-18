@@ -156,8 +156,8 @@ class PickAndConso extends Component{
     const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return data.map((rowdata, index) => {
       return <ul key={index} style={rowdata.isFocus===true?focus:focusf}>
-        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
-        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG}</span>
+        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span><FontAwesomeIcon icon="pallet"/>{rowdata.code} : {rowdata.name}/</span>
+        <span><FontAwesomeIcon icon="layer-group"/> {rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG}</span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
@@ -181,8 +181,8 @@ class PickAndConso extends Component{
     const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return data.map((rowdata, index) => {
       return <ul key={index} style={rowdata.isFocus===true?focus:focusf}>
-        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
-        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} </span>
+        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span><FontAwesomeIcon icon="pallet"/>{rowdata.code} : {rowdata.name}/</span>
+        <span><FontAwesomeIcon icon="layer-group"/> {rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} </span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
