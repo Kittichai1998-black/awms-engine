@@ -41,6 +41,10 @@ class Login extends Component {
     }
   }
 
+  componentWillMount(){
+    console.log(sessionStorage)
+  }
+
   async Authorize(){
     let data = {"username":this.state.username, "password":this.state.password, "secretKey":"ABC@123"};
     let config = {
@@ -55,6 +59,7 @@ class Login extends Component {
           this.savetoSession("ClientSecret_SecretKey",res.data.ClientSecret_SecretKey);
           this.savetoSession("ExtendKey",res.data.ExtendKey);
           this.savetoSession("User_ID",res.data.User_ID);
+          this.savetoSession("ExpireTime",res.data.ExpireTime);
           this.GetMenu(res.data.Token);
         }
         else if(res.data._result.status === 0){
@@ -74,7 +79,8 @@ class Login extends Component {
   async GetMenu(token){
     await Axios.get(window.apipath + '/api/PageSetup/menu/token=' + token)
      .then((res) => {
-       sessionStorage.setItem('MenuItems',JSON.stringify(res.data.items));
+       localStorage.setItem('MenuItems',JSON.stringify(res.data.items));
+       sessionStorage.setItem('MenuItems',localStorage.MenuItems);
      }).then(() => {
       this.setState({status : true});
      }).catch((error) => {
@@ -83,8 +89,8 @@ class Login extends Component {
   }
 
   savetoSession(name,data){
-    const session = data;
-    sessionStorage.setItem(name, data);
+    localStorage.setItem(name, data);
+    sessionStorage.setItem(name, localStorage.getItem([name]));
   }
 
   redirect(){

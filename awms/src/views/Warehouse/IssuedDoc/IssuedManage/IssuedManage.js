@@ -42,7 +42,7 @@ class IssuedManage extends Component{
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
-      l:10,
+      l:0,
       all:"",},
       inputstatus:true,
       pageID:0,
@@ -164,8 +164,10 @@ class IssuedManage extends Component{
       remark:this.state.remark,issueItems:acceptdata
     }
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
-      this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
-      window.location.reload()
+      if(res.data._result.status === 1){
+        this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
+        window.location.reload()
+      }
     })
   }
 

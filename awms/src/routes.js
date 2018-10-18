@@ -122,13 +122,14 @@ const Historyy = Loadable({
   loading: Loading,
 });
 const ComfrimBox = Loadable({
-  loader: () => import('./views/ComfirmBox'),
+  loader: () => import('./views/Warehouse/ComfirmBox'),
   loading: Loading,
 });
 const StockCorrection = Loadable({
   loader: () => import('./views/Warehouse/StockCorrection'),
   loading: Loading,
 });
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -158,6 +159,7 @@ const routes = [
   { path: '/wms/history', exact: true, name: 'History', component: Historyy },
   { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
   { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
+  { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   //{ path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: StockCorrectionDocument },
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
