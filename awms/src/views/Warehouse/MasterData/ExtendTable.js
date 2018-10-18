@@ -4,6 +4,9 @@ import {Link}from 'react-router-dom';
 import ReactTable from 'react-table'
 import Axois from 'axios';
 import moment from 'moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {EventStatus}  from '../Status'
+import {Clone} from '../ComponentCore'
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 400
@@ -37,6 +40,7 @@ const createQueryString = (select,wherequery) => {
     +(select.s_od === "" ? "" : "&s_od" + select.s_od)
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
+    + ("&token=" + sessionStorage.Token)
     return queryS
 }
 
@@ -73,7 +77,9 @@ class ExtendTable extends Component{
             datafilter:[],
             filter:true,
             dropdownfilter:[],
+            currentPage: 1,
             ...makeDefaultState()
+            
         }
         this.onCheckFliter = this.onCheckFliter.bind(this)
         this.datetimeBody = this.datetimeBody.bind(this)
@@ -82,6 +88,8 @@ class ExtendTable extends Component{
         this.paginationButton = this.paginationButton.bind(this)
         this.subTable = this.subTable.bind(this)
         this.onCheckFilterExpand = this.onCheckFilterExpand.bind(this)
+        this.addtolist = this.addtolist.bind(this)
+        this.sumChild = this.sumChild.bind(this)
     }
 
     componentDidMount(){
@@ -323,17 +331,18 @@ class ExtendTable extends Component{
     }
 
     paginationButton(){
-        return(
-          <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'132px'}}>
-            <nav>
-              <ul className="pagination">
-                <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
-                <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
-              </ul>
-            </nav>
-          </div>
-        )
-      }
+      return(
+        <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'300px'}}>
+          <nav>
+            <p className="float-right" style={{width:"100px"}}>Page : {this.state.currentPage}</p>
+            <ul className="pagination">
+              <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
+              <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
+            </ul>
+          </nav>
+        </div>
+      )
+    }
     
     createCustomButton(url){
       return <Button type="button" color="info" onClick={() => this.props.history.push(url)}>History
@@ -344,8 +353,61 @@ class ExtendTable extends Component{
       return <input type="checkbox"/>
     }
 
+    sumChild(data){
+      
+      let getdata = []
+      data.forEach(row1 => {
+        let xx = getdata.filter(row => row.code == row1.code)
+        if(xx.length > 0){
+          let qty = xx[0].allqty
+          xx[0].allqty = xx[0].allqty + 1
+          if(row1.storageObjectChilds.length > 0)
+            this.sumChild(row1.storageObjectChilds)
+        }
+        else{
+          row1.allqty = 1
+          getdata.push(row1)
+          row1.storageObjectChilds = this.sumChild(row1.storageObjectChilds)
+        }
+      })
+      console.log(getdata)
+      return getdata
+    }
+
+    addtolist = (data) => 
+    {
+      //const condata = [...data]
+      const focus = {color:'red', marginLeft:"-20px", fontSize:"13px"}
+      const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
+      return data.map((child,i) => {
+        let disQtys;
+        if(child.storageObjectChilds.length > 0){
+          disQtys = child.storageObjectChilds.map((v)=>{
+            return <div>{v.weigthKG + ' ' + v.weigthKG + (v.weigthKG?' : Min ' + v.weigthKG:'') + (v.weigthKG?" : Max "+v.weigthKG:'')}</div>
+          });
+        }
+        else{
+          disQtys = <div>{child.weigthKG}</div>
+        }
+        
+         return <ul key={i} style={child.isFocus===true?focus:focusf}>
+          <span>{child.baseMaster_Code===null? child.packMaster_Code : child.baseMaster_Code} : {child.baseMaster_Name===null? child.packMaster_Name : child.baseMaster_Name} </span>
+          <span>{child.allqty===null?'':'[qty: ' + child.allqty + ']'} </span>
+          <span>{child.weigthKG===null?'':'[wei:' + child.weigthKG + 'Kg.]'} </span> 
+          {/* <br/><span style={{color:'gray'}}> {disQtys}</span> */}
+  
+          { (child.storageObjectChilds.map(child2 => {
+            let z = this.addtolist([child2])
+            return z})) 
+          }
+           </ul> 
+      })
+    }
+
     subTable(e){
-      if(this.props.subtype === 1){
+      const test = this.sumChild(Clone([e.original]))
+      return this.addtolist(test)
+      /* if(this.props.subtype === 1){
         let data = []
         e.original.storageObjectChilds.forEach(row => {
           data.push({"id":row.code,
@@ -410,9 +472,25 @@ class ExtendTable extends Component{
       }
       else{
 
-      }
+      } */
     }
     
+    setStatusText(rowdata){
+      if (rowdata.column.id==="status"){
+        if(rowdata.row["status"] === 0){
+          return "Inactive"
+        }else if(rowdata.row["status"] === 1){
+          return "Active" 
+        }
+      }else if (rowdata.column.id==="holeStatus"){
+        if(rowdata.row["holeStatus"] === 0){
+          return "No"
+        }else if(rowdata.row["holeStatus"] === 1){
+          return "Yes" 
+        }
+      }
+    }
+
     render(){
         const col = this.props.column
         col.forEach((row) => {
@@ -424,6 +502,9 @@ class ExtendTable extends Component{
             }
             else if(row.Filter === "dropdown"){
               row.Filter = () => this.createDropdownFilter(row.accessor,this.onCheckFilterExpand,this.state.dataselect)
+            }
+            if(row.Status === "text"){
+              row.Cell = (e) => (this.setStatusText(e))
             }
 
             if(row.Cell === "datetime"){

@@ -29,40 +29,47 @@ class History extends Component{
       s_f:"{}",
       s_od:"{ASC}",
       sk:"",
-      l:20,},
+      l:2,},
       pivot:[],
       sortstatus:0,
       loaddata:false,
       updateflag:false,
     };
+
+    
   }
+  
 
   render(){
-    const cols = [{accessor: 'code', Header: 'ฺBase Code', id: "ID", Filter:"text"},
-    {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
-    {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text"},
-    {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text"},
-    {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text"},
-    {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', Filter:"text"},
-    {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
-    {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
-    {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', Filter:"text"},
-    {accessor: 'branch_Code', Header: 'Branch Code', Filter:"text"},
-    {accessor: 'branch_Name', Header: 'Branch Name', Filter:"text"},
-    {accessor: 'warehouse_Code', Header: 'Warehouse Code', Filter:"text"},
-    {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
-    {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
-    {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
-    {accessor: 'areaLocationMaster_Bank', Header: 'Location', Filter:"text"},
-    {accessor: 'holeStatus', Header: 'Hole', Filter:"text"},
-    {accessor: 'status', Header: 'Status', Filter:"text"},
-    {accessor: 'productDate', Header: 'Product Date', Filter:"text"},
-    {accessor: 'expiryDate', Header: 'Expire Date', Filter:"text"},
-    {accessor: 'createBy', Header: 'Create', Filter:"text"},
-    {accessor: 'modifyBy', Header: 'Modify', Filter:"text"},];
+    const cols = [
+      {accessor: 'code', Header: 'ฺBase Code', id: "ID", Filter:"text"},
+      {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
+      {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text"},
+      {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text"},
+      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text"},
+      {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', Filter:"text"},
+      {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
+      {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
+      {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', Filter:"text"},
+      {accessor: 'branch_Code', Header: 'Branch Code', Filter:"text"},
+      {accessor: 'branch_Name', Header: 'Branch Name', Filter:"text"},
+      {accessor: 'warehouse_Code', Header: 'Warehouse Code', Filter:"text"},
+      {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
+      {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
+      {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
+      {accessor: 'areaLocationMaster_Bank', Header: 'Location', Filter:"text"},
+      {accessor: 'holeStatus', Header: 'Hole', Filter:"text", Status:"text"},
+      {accessor: 'status', Header: 'Status', Filter:"text", Status:"text"},
+      {accessor: 'productDate', Header: 'Product Date', Filter:"text"},
+      {accessor: 'expiryDate', Header: 'Expire Date', Filter:"text"},
+      {accessor: 'createBy', Header: 'Create', Filter:"text"},
+      {accessor: 'modifyBy', Header: 'Modify', Filter:"text"},
+    ];
 
     const subcols = [
       {accessor: 'ID', Header: 'Log ID', id: "ID", Filter:"text"}, 
+      {accessor: 'Code', Header: 'Code', id: "Code", Filter:"text"},
+      {accessor: 'sumsku', Header: 'sumsku', id: "sumsku", Filter:"text"},
     ];
 
     const ddlfilter = [
@@ -81,7 +88,7 @@ class History extends Component{
     return(
       <div>
         <ExtendTable data={objselect} column={cols} subcolumn={subcols} dropdownfilter={ddlfilter} pivotBy={this.state.pivot} subtablewidth={700}
-        url={null} filterable={true} subtype={1}/>
+        url={null} filterable={false} subtype={1}/>
       </div>
     )
   }
