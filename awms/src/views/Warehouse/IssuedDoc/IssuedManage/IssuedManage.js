@@ -8,25 +8,14 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import {EventStatus} from '../../Status'
 import queryString from 'query-string'
-import {AutoSelect, NumberInput, apicall} from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall, createQueryString } from '../../ComponentCore'
 import 'react-datepicker/dist/react-datepicker.css';
+import Downshift from 'downshift'
 
 function isInt(value) {
   return !isNaN(value) && 
          parseInt(Number(value)) == value && 
          !isNaN(parseInt(value, 10));
-}
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
 }
 
 const Axios = new apicall()
@@ -175,8 +164,8 @@ class IssuedManage extends Component{
       remark:this.state.remark,issueItems:acceptdata
     }
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
-      this.props.history.push('/wms/issueddoc/manage/issuedmanage?ID='+ res.data.ID)
-      window.reload()
+      this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
+      window.location.reload()
     })
   }
 
@@ -252,6 +241,69 @@ class IssuedManage extends Component{
     return result
   }
   
+  createAutoComplete(rowdata){
+    if(!this.state.readonly){
+
+      return <div style={{display: 'flex',flexDirection: 'column',}}>
+      <Downshift
+      onChange={selection => {
+        rowdata.value = selection.ID
+        this.editData(rowdata, selection, rowdata.column.id)}
+      }
+      itemToString={item => (item ? item.Code : rowdata.value)}
+    >
+      {({
+        getInputProps,
+        getItemProps,
+        getMenuProps,
+        isOpen,
+        openMenu,
+        inputValue,
+        highlightedIndex,
+        selectedItem,
+      }) => (
+        <div style={{width: '150px'}}>
+          <div style={{position: 'relative'}}>
+                  <Input
+                    {...getInputProps({
+                      isOpen,
+                      onFocus:()=>openMenu(),
+                    })}
+                  />
+                </div>
+                <div style={{position: 'absolute', zIndex:'1000', height:"100px", overflow:'auto'}}>
+                  <div {...getMenuProps({isOpen})} style={{position: 'relative'}}>
+                    {isOpen
+                      ? this.state.autocomplete
+                        .filter(item => !inputValue || item.Code.includes(inputValue))
+                        .map((item, index) => (
+                          <div style={{background:'white', width:'150px'}}
+                            key={item.ID}
+                            {...getItemProps({
+                              item,
+                              index,
+                              style: {
+                                backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
+                                fontWeight: selectedItem === item ? 'bold' : 'normal',
+                                width:'150px'
+                              }
+                            })}
+                          >
+                            {item ? item.Code : ''}
+                          </div>
+                        ))
+                      : null}
+                  </div>
+                </div>
+        </div>
+      )}
+    </Downshift></div>
+    }
+    else{
+      return <span>{rowdata.value}</span>
+    }
+  }
+
   createAutoCompleteCell(rowdata){
     const style = {borderRadius: '3px',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
@@ -298,7 +350,7 @@ class IssuedManage extends Component{
     }
     else{
       cols = [
-        {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoCompleteCell(e),},
+        {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e),},
         {accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},

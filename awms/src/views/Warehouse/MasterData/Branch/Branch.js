@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
-import Axios from 'axios';
 
 class Branch extends Component{
     constructor(props) {
@@ -24,7 +23,7 @@ class Branch extends Component{
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
-        l:10,
+        l:100,
         all:"",},
         sortstatus:0,
         selectiondata:[],
@@ -39,7 +38,6 @@ class Branch extends Component{
     }
 
     componentWillUnmount(){
-        Axios.isCancel(true);
     }
 
     render(){

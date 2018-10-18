@@ -19,16 +19,24 @@ const getColumnWidth = (rows, accessor, headerText) => {
 
 const createQueryString = (select,wherequery) => {
     let where = select.q[0]
-    where.v = wherequery === undefined || null ? where.v : wherequery
-    let myJSON = JSON.stringify([where])
+    let myJSON
+    if (where !== undefined){
+      where.v = wherequery === undefined || null ? where.v : wherequery
+      myJSON = JSON.stringify([where])
+    }
     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + myJSON)
+    + (select.fields === "" ? "" : "" + select.fields)
+   /*  + (select.q === "" ? "" : "&q=" + myJSON)
     + (select.f === "" ? "" : "&f=" + select.f)
     + (select.g === "" ? "" : "&g=" + select.g)
     + (select.s === "" ? "" : "&s=" + select.s)
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
+    + (select.all === "" ? "" : "&all=" + select.all) */
+    +(select.s_f === "" ? "" : "&s_f=" + select.s_f)
+    +(select.s_od === "" ? "" : "&s_od" + select.s_od)
+    + (select.sk === "" ? "" : "&sk=" + select.sk)
+    + (select.l === 0 ? "" : "&l=" + select.l)
     return queryS
 }
 

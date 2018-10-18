@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {Card, CardBody, Button } from 'reactstrap';
+import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+
+const api = new apicall()
 
 class ListProduct extends Component{
   constructor(props) {
@@ -26,14 +28,13 @@ class ListProduct extends Component{
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
-      l:10,
+      l:100,
       all:"",},
       sortstatus:0,
       selectiondata:[],
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this);
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
     this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
@@ -49,24 +50,12 @@ class ListProduct extends Component{
   }
 
   componentWillUnmount(){
-    Axios.isCancel(true);
+    
   }
 
   onHandleClickLoad(event){
-    Axios.post(window.apipath + "/api/mst/TransferFileServer/SKUMst",{})
+    api.post(window.apipath + "/api/mst/TransferFileServer/SKUMst",{})
     this.forceUpdate();
-  }
-
-  createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    return queryS
   }
 
   getAutocomplete(){
@@ -88,7 +77,7 @@ class ListProduct extends Component{
       sk:0,
       all:"",}
 
-    Axios.all([Axios.get(this.createQueryString(packselect)),Axios.get(this.createQueryString(unitselect))]).then(
+    Axios.all([Axios.get(createQueryString(packselect)),Axios.get(createQueryString(unitselect))]).then(
       (Axios.spread((packresult, unitresult) => 
     {
       let ddl = this.state.autocomplete
@@ -156,6 +145,12 @@ class ListProduct extends Component{
         getselection = เก็บค่าที่เลือก
     
       */}
+        <div className="clearfix">
+          <Button className="float-right" onClick={() => {
+            let data1 = {"exportName":"ProductToShop","whereValues":[]}
+            api.post(window.apipath + "/api/report/export/fileServer", data1)
+          }}>Export Data</Button>
+        </div>
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
         filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
         btn={btnfunc} uneditcolumn={this.uneditcolumn}

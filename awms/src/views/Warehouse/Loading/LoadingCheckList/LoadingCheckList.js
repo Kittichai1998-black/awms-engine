@@ -5,26 +5,10 @@ import ReactTable from 'react-table';
 import Axios from 'axios';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
-import {AutoSelect, apicall, Clone} from '../../ComponentCore';
-import {EventStatus} from '../../Status'
+import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
 import 'react-datepicker/dist/react-datepicker.css';
-import ReactAutocomplete from 'react-autocomplete';
-import Downshift from 'downshift'
-import queryString from 'query-string'
 
 const API = new apicall();
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 
 class LoadingDocument extends Component{
   constructor(props) {

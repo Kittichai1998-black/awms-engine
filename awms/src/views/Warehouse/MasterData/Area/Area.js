@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import {createQueryString} from '../../ComponentCore'
 
 class Area extends Component{
   constructor(props) {
@@ -25,13 +25,12 @@ class Area extends Component{
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
-      l:10,
+      l:100,
       all:"",},
       sortstatus:0,
       selectiondata:[]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this)
     this.filterList = this.filterList.bind(this)
     this.uneditcolumn = ["Warehouse_Code","Warehouse_Name","Warehouse_Description","AreaMasterType_Code","AreaMasterType_Name","AreaMasterType_Description","CreateBy","CreateTime","ModifyBy","ModifyTime"]
   }
@@ -47,18 +46,6 @@ class Area extends Component{
 
   componentWillUnmount(){
     Axios.isCancel(true);
-  }
-
-  createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    return queryS
   }
 
   filterList(){
@@ -80,7 +67,7 @@ class Area extends Component{
       sk:0,
       all:"",}
 
-    Axios.all([Axios.get(this.createQueryString(whselect)),Axios.get(this.createQueryString(areatypeselect))]).then(
+    Axios.all([Axios.get(createQueryString(whselect)),Axios.get(createQueryString(areatypeselect))]).then(
       (Axios.spread((whresult, areatyperesult) => 
     {
       let ddl = [...this.state.autocomplete]
