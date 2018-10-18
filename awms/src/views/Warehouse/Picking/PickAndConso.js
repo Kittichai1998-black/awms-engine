@@ -251,7 +251,7 @@ class PickAndConso extends Component{
           <CardBody>
             <ButtonGroup style={{margin:'0 0 10px 0',}}>
               <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
-              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 0 ? true : false}>Consolidate</Button>
+              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 0 ? true : false}>Pick</Button>
             </ButtonGroup>
             <div>
               <label>Picking : </label>
