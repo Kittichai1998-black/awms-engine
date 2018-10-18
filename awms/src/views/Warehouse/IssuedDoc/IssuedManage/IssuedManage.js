@@ -42,7 +42,7 @@ class IssuedManage extends Component{
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
-      l:10,
+      l:0,
       all:"",},
       inputstatus:true,
       pageID:0,
