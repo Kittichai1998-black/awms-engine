@@ -83,7 +83,7 @@ class IssuedDoc extends Component{
   }
 
   onClickToDesc(data){
-    return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID='+data.ID)}>Detail</Button>
+    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gi/manage?ID='+data.ID)}>Detail</Button>
   }
 
   render(){
