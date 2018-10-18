@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
-import Axios from 'axios';
 
 class User extends Component{
     constructor(props) {
@@ -23,14 +22,13 @@ class User extends Component{
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
-            l:20,
+            l:100,
             all:"",},
             sortstatus:0,
             selectiondata:[],
         };
 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.createQueryString = this.createQueryString.bind(this)
         this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
     }
 
@@ -40,19 +38,6 @@ class User extends Component{
     }
     
     componentWillUnmount(){
-    Axios.isCancel(true);
-    }
-
-    createQueryString = (select) => {
-        let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-        + (select.q === "" ? "" : "&q=" + select.q)
-        + (select.f === "" ? "" : "&f=" + select.f)
-        + (select.g === "" ? "" : "&g=" + select.g)
-        + (select.s === "" ? "" : "&s=" + select.s)
-        + (select.sk === "" ? "" : "&sk=" + select.sk)
-        + (select.l === 0 ? "" : "&l=" + select.l)
-        + (select.all === "" ? "" : "&all=" + select.all)
-        return queryS
     }
 
     render(){

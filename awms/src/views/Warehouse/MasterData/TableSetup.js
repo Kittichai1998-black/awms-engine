@@ -11,13 +11,13 @@ import guid from 'guid';
 import hash from 'hash.js';
 import {EventStatus, DocumentStatus} from '../Status'
 import Select from 'react-select'
-import {apicall} from '../ComponentCore'
+import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
 import Downshift from 'downshift'
 
 const Axios = new apicall()
 
-const getColumnWidth = (rows, accessor, headerText) => {
+/* const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
   const magicSpacing = 10
   let cellLength = 10
@@ -27,24 +27,12 @@ const getColumnWidth = (rows, accessor, headerText) => {
       headerText.length,)
   }
   return Math.min(maxWidth, cellLength * magicSpacing)
-}
+} */
 
 function isInt(value) {
   return !isNaN(value) && 
          parseInt(Number(value)) == value && 
          !isNaN(parseInt(value, 10));
-}
-
-const createQueryString = (select,wherequery) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
 }
 
 const createQueryStringStorage = (url,field,order) => {
@@ -205,6 +193,11 @@ class TableGen extends Component{
         if(data[1] !== ""){
           switch(data["value"].toString().charAt(0)){
             case "%":
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
               break
             case "*":
@@ -218,7 +211,7 @@ class TableGen extends Component{
                 filterlist.push({"f":data["id"], "c":"<", "v": 2})
               }
               else{
-                filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
+                filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
               }
               break
             default:
@@ -299,9 +292,16 @@ class TableGen extends Component{
             }
             
             if(col.accessor === "Password"){
-              var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
-              var hash256password = hash.sha256().update((hash.sha256().update(row[col.accessor]).digest('hex').toUpperCase())+guidstr).digest('hex').toUpperCase()
-              row[col.accessor] = hash256password
+              var guidstr = guid.raw().toUpperCase()
+              var i = 0, strLength = guidstr.length;
+              for(i; i < strLength; i++) {
+              
+                guidstr = guidstr.replace('-','');
+              
+              }
+              console.log(guidstr)
+              //var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
+              row[col.accessor] = "@@sql_gen_password,"+row[col.accessor]+","+guidstr
               row["SoftPassword"] = guidstr
             }
           })
@@ -311,7 +311,7 @@ class TableGen extends Component{
           }
         })
         let updjson = {
-          "_token": null,
+          "_token": sessionStorage.getItem("Token"),
           "_apikey": null,
           "t": this.props.table,
           "pk": "ID",
@@ -645,6 +645,8 @@ class TableGen extends Component{
       isOpen,
       openMenu,
       inputValue,
+      highlightedIndex,
+      selectedItem,
     }) => (
       <div style={{width: '150px'}}>
         <div style={{position: 'relative'}}>
@@ -666,6 +668,11 @@ class TableGen extends Component{
                           {...getItemProps({
                             item,
                             index,
+                            style: {
+                              backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
+                              fontWeight: selectedItem === item ? 'bold' : 'normal',
+                              width:'150px'
+                            }
                           })}
                         >
                           {item ? item.Code : ''}
@@ -806,7 +813,6 @@ class TableGen extends Component{
 
           if(row.editable && row.insertable){
             row.Cell = (e) => {
-              console.log(e)
               if(e.original.ID<1)
                 return this.inputTextEditor(e)
               else
@@ -895,6 +901,7 @@ class TableGen extends Component{
           multiSort={false}
           showPagination={true}
           minRows={5}
+          defaultPageSize={100}
           SubComponent={this.subTable}
           getTrProps={(state, rowInfo) => {
             let result = false

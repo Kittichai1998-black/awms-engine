@@ -5,6 +5,9 @@ import {TableGen} from '../../MasterData/TableSetup';
 import ExtendTable from '../../MasterData/ExtendTable';
 import queryString from 'query-string'
 import Axios from 'axios';
+import {apicall} from '../../ComponentCore'
+
+const api = new apicall()
 
 class History extends Component{
   constructor(props) {
@@ -19,15 +22,14 @@ class History extends Component{
         'field' : 'Status',
         'mode' : 'check',
       }],
-      select:{queryString:"https://localhost:44366/api/log",
-      t:"StorageObjectEvent",
-      q:[{ 'f': 'Sou_StorageObject_ID', c:'!=', 'v': ""}],
-      f:"*",
-      g:"",
-      s:"[{'f':'ID','od':'desc'}]",
+      select:{queryString:window.apipath + "/api/trx/sto/search",
+      t:"",
+      q:"",
+      fields:"stoID,objectType,holdStatus,eventStatus,status,productDate,expireDate,batch,lot,rootBaseCode,rootBaseTypeCode,rootBaseTypeName,sKUCode,sKUName,packCode,packName,branchCode,branchName,warehouseCode,warehouseName,areaCode,areaName,customerCode,customerName",
+      s_f:"{}",
+      s_od:"{ASC}",
       sk:"",
-      l:20,
-      all:"",},
+      l:20,},
       pivot:[],
       sortstatus:0,
       loaddata:false,
@@ -36,16 +38,28 @@ class History extends Component{
   }
 
   render(){
-    const cols = [{accessor: 'ID', Header: 'Log ID', id: "ID", Filter:"text"},
-    {accessor: 'ID', Header: 'Work', Filter:"text"},
-    {accessor: 'ID', Header: 'Sort', Filter:"text"},
-    {accessor: 'ID', Header: 'Command', Filter:"text"},
-    {accessor: 'ID', Header: 'Destination', Filter:"text"},
-    {accessor: 'ID', Header: 'Result', Filter:"text"},
-    {accessor: 'ID', Header: 'Action By', Filter:"text"},
-    {accessor: 'ID', Header: 'Start', Filter:"text"},
-    {accessor: 'ID', Header: 'End', Filter:"text"},
-    {accessor: 'ID', Header: 'Document', Filter:"text"},];
+    const cols = [{accessor: 'code', Header: 'ฺBase Code', id: "ID", Filter:"text"},
+    {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
+    {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text"},
+    {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text"},
+    {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text"},
+    {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', Filter:"text"},
+    {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
+    {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
+    {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', Filter:"text"},
+    {accessor: 'branch_Code', Header: 'Branch Code', Filter:"text"},
+    {accessor: 'branch_Name', Header: 'Branch Name', Filter:"text"},
+    {accessor: 'warehouse_Code', Header: 'Warehouse Code', Filter:"text"},
+    {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
+    {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
+    {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
+    {accessor: 'areaLocationMaster_Bank', Header: 'Location', Filter:"text"},
+    {accessor: 'holeStatus', Header: 'Hole', Filter:"text"},
+    {accessor: 'status', Header: 'Status', Filter:"text"},
+    {accessor: 'productDate', Header: 'Product Date', Filter:"text"},
+    {accessor: 'expiryDate', Header: 'Expire Date', Filter:"text"},
+    {accessor: 'createBy', Header: 'Create', Filter:"text"},
+    {accessor: 'modifyBy', Header: 'Modify', Filter:"text"},];
 
     const subcols = [
       {accessor: 'ID', Header: 'Log ID', id: "ID", Filter:"text"}, 
@@ -60,14 +74,14 @@ class History extends Component{
 
     const objselect = this.state.select
     const values = queryString.parse(this.props.location.search)
-    objselect.q[0].v = values.StorageObject_ID
+    //objselect.q[0].v = values.StorageObject_ID
     console.log(objselect)
 
     //const url = "https://localhost:44366/api/trx/sto/search/?stoID&objectType&holdStatus&eventStatus&status&productDate&expireDate&batch&lot&rootBaseCode&rootBaseTypeCode&rootBaseTypeName&sKUCode&sKUName&packCode&packName&branchCode&branchName&warehouseCode&warehouseName&areaCode&areaName&customerCode&customerName&s_f=ID&s_od=ASC&sk=0&l=222"
     return(
       <div>
         <ExtendTable data={objselect} column={cols} subcolumn={subcols} dropdownfilter={ddlfilter} pivotBy={this.state.pivot} subtablewidth={700}
-        url={null} filterable={false} subtype={2}/>
+        url={null} filterable={true} subtype={1}/>
       </div>
     )
   }

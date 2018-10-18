@@ -62,6 +62,11 @@ const Warehouse = Loadable({
   loading: Loading,
 });
 
+const SKUType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/SKUType'),
+  loading: Loading,
+});
+
 const Storage = Loadable({
   loader: () => import('./views/Warehouse/Storage'),
   loading: Loading,
@@ -116,7 +121,14 @@ const Historyy = Loadable({
   loader: () => import('./views/Warehouse/Storage/History'),
   loading: Loading,
 });
-
+const ComfrimBox = Loadable({
+  loader: () => import('./views/ComfirmBox'),
+  loading: Loading,
+});
+const StockCorrection = Loadable({
+  loader: () => import('./views/Warehouse/StockCorrection'),
+  loading: Loading,
+});
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -133,18 +145,22 @@ const routes = [
   { path: '/mst/branch/manage', exact: true, name: 'Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
+  { path: '/mst/skutype/manage', exact: true, name: 'skutype', component: SKUType },
   { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
-  { path: '/wms/storageObject/register', exact: true, name: 'InboundManagement', component: InboundManagement },
-  { path: '/wms/storageObject/transfer', exact: true, name: 'InboundManagement', component: InboundManagement },
-  { path: '/wms/storageObject/manage', exact: true, name: 'InboundView', component: InboundView },
-  { path: '/wms/issueddoc/manage', exact: true, name: 'IssuedDoc', component: IssuedDoc },
-  { path: '/wms/issueddoc/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
-  { path: '/wms/picking/manage', exact: true, name: 'PickConso', component: PickConso },
-  { path: '/wms/loading/manage', exact: true, name: 'Loading', component: LoadingManage },
-  { path: '/wms/loading/manage/loadingdocument', exact: true, name: 'Loading Document', component: LoadingDocument },
-  { path: '/wms/loading/manage/loadingchecklist', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
+  { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
+  { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
+  { path: '/doc/gr/list', exact: true, name: 'Goods Receive Document', component: InboundView },
+  { path: '/doc/gi/list', exact: true, name: 'Goods Issue Document', component: IssuedDoc },
+  { path: '/doc/gi/manage', exact: true, name: 'Goods Issue Manage', component: IssuedManage },
+  { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
+  { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
+  { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/wms/history', exact: true, name: 'History', component: Historyy },
-  { path: '/wms/loading/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
+  { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
+  { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
+  //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
+  //{ path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: StockCorrectionDocument },
+  //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
 
 export default routes;

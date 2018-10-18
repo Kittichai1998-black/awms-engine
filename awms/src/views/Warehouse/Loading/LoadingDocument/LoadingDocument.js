@@ -1,30 +1,16 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Button, Row, Col } from 'reactstrap';
+import {Input, Button, Row, Col, CardBody, Card } from 'reactstrap';
 import ReactTable from 'react-table';
-import Axios from 'axios';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
-import {AutoSelect, apicall, Clone} from '../../ComponentCore';
+import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
 import {EventStatus} from '../../Status'
 import 'react-datepicker/dist/react-datepicker.css';
-import ReactAutocomplete from 'react-autocomplete';
 import Downshift from 'downshift'
 import queryString from 'query-string'
 
 const API = new apicall();
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 
 class LoadingDocument extends Component{
   constructor(props) {
@@ -42,6 +28,7 @@ class LoadingDocument extends Component{
     }
     this.addData = this.addData.bind(this)
     this.createDocument = this.createDocument.bind(this)
+    this.createList = this.createList.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
     this.transportselect = {queryString:window.apipath + "/api/mst",
@@ -77,7 +64,7 @@ class LoadingDocument extends Component{
     if(values.ID){
       this.setState({pageID:values.ID, readonly:true,
         addstatus:true,})
-        Axios.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
+        API.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }
@@ -93,7 +80,7 @@ class LoadingDocument extends Component{
             addstatus:true,
             bstos:rowselect1.data.bstos,
             issuedNo:rowselect1.data.document.code
-          })
+          }, () => {this.createList()})
         }
       })
     }
@@ -126,6 +113,17 @@ class LoadingDocument extends Component{
     }    
   }
 
+  createList(){
+    const bstos = this.state.bstos
+    console.log(this.state.bstos)
+    const res = bstos.map((row, index) => {
+      return <div>
+          <span>Code : {row.code}</span>|<span>Qty : {row.packQty}</span>|<span>Warehouse : {row.warehouseCode}</span>
+      </div>
+    })
+    this.setState({bstostree:res}, () => console.log(this.state.bstostree))
+  }
+
   createAutoComplete(rowdata){
     if(!this.state.readonly){
 
@@ -144,6 +142,8 @@ class LoadingDocument extends Component{
         isOpen,
         openMenu,
         inputValue,
+        highlightedIndex,
+        selectedItem,
       }) => (
         <div style={{width: '150px'}}>
           <div style={{position: 'relative'}}>
@@ -164,7 +164,12 @@ class LoadingDocument extends Component{
                             key={item.ID}
                             {...getItemProps({
                               item,
-                              index
+                              index,
+                              style: {
+                                backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
+                                fontWeight: selectedItem === item ? 'bold' : 'normal',
+                                width:'150px'
+                              }
                             })}
                           >
                             {item ? item.Code : ''}
@@ -280,7 +285,6 @@ class LoadingDocument extends Component{
   } */
   
   createDocument(){
-    console.log(this.state.date)
     let issuedList = []
     this.state.data.forEach(item => {
       issuedList.push({issuedDocID:item.IssuedID})
@@ -316,31 +320,34 @@ class LoadingDocument extends Component{
     const cols = [
       {accessor: 'Code', Header: 'Issued No.',editable:true, Cell: (e) => {
         if(this.state.readonly){
-          console.log(e.original.code)
           return <span>{e.original.code}</span>
         }
         else{
           return this.createAutoComplete(e)
         }
       }},
-      {accessor: 'Branch', Header: 'Branch',editable:false, Cell:e => {
-        if(this.state.readonly){
-          return <span>{this.state.Branch}</span>
-        }
-        else{
-          return this.createAutoComplete(e)
-        }
-      }},
+      {accessor: 'Branch', Header: 'Branch',editable:false},
       {accessor: 'Customer', Header: 'Customer',editable:false,},
       {accessor: 'ActionDate', Header: 'Action Date',editable:false,},
-      {editable:false, Cell:(e) => {
-        return <Button onClick={() => {
+      {show: this.state.readonly?false:true, editable:false, Cell:(e) => {
+        return <Button color="danger" onClick={() => {
+          const data = this.state.data
+          data.forEach((datarow,index) => {
+            if(datarow.code === e.original.code){
+              data.splice(index,1);
+            }
+          })
+          this.setState({data})
+        }
+      }>Delete</Button>}},
+      {show: this.state.readonly?false:true, editable:false, Cell:(e) => {
+        return <Button color="primary" onClick={() => {
           if(e.original.IssuedID !== ""){
             if(this.state.readonly){
-              window.open('/wms/issueddoc/manage/issuedmanage?ID='+ e.original.id)
+              window.open('/doc/gi/manage?ID='+ e.original.id)
             }
             else{
-              window.open('/wms/issueddoc/manage/issuedmanage?ID='+ e.original.IssuedID)
+              window.open('/doc/gi/manage?ID='+ e.original.IssuedID)
             }
           }
         }
@@ -375,10 +382,13 @@ class LoadingDocument extends Component{
         <Button onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/>
-            <div>
-              <Button color="primary" style={{display:"inline"}} onClick={this.createDocument}>Create</Button>
-              <Button color="danger" onClick={() => this.props.history.push('/wms/loading/manage')}>Close</Button>
-            </div>
+          {this.state.readonly ? this.state.bstostree : null}
+          <Card>
+          <CardBody>
+            <Button color="primary" style={{display:"inline"}} onClick={this.createDocument}>Create</Button>
+            <Button color="danger" onClick={() => this.props.history.push('/doc/ld/list')}>Close</Button>
+          </CardBody>
+        </Card>
       </div>
     )
   }

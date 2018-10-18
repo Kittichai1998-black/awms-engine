@@ -3,8 +3,8 @@ import {Redirect, Link} from 'react-router-dom';
 import Axios from 'axios';
 
 async function logout(){
-    let tokendata = sessionStorage.getItem("tokendata");
-    let data = {"token":tokendata.token, "secretKey":tokendata.secretKey};
+    let data = {"token":sessionStorage.getItem("Token"),
+     "secretKey":sessionStorage.getItem("ClientSecret_SecretKey")};
     let config = {
         headers: { 'Access-Control-Allow-Origin':'*','Content-Type': 'application/json; charset=utf-8' ,'accept': 'application/json'}
       };
