@@ -128,8 +128,8 @@ class IssuedDoc extends Component{
           <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
           
           <Button style={{background:"#00CED1",borderColor:"#00CED1"}} className="float-right" onClick={() => {
-            let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format('YYYY-MM-DDT00:00:00')]}
-            let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format('YYYY-MM-DDT00:00:00')]}
+            let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format('YYYY-MM-DDT00:00:00Z')]}
+            let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format('YYYY-MM-DDT00:00:00Z')]}
             axois.post(window.apipath + "/api/report/export/fileServer", data1)
             axois.post(window.apipath + "/api/report/export/fileServer", data2)
           }}>Export Data</Button>

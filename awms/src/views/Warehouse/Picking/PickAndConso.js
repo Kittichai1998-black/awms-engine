@@ -5,6 +5,7 @@ import ReactTable from 'react-table'
 import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore'
 //import Axios from 'axios';
 import {EventStatus} from '../Status'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Axios = new apicall()
 
@@ -43,6 +44,7 @@ class PickAndConso extends Component{
     this.selectMode = this.selectMode.bind(this)
     this.onHandleClickPickingScan = this.onHandleClickPickingScan.bind(this)
     this.onClickDocumentItemDetail = this.onClickDocumentItemDetail.bind(this)
+    this.createGuideLocation = this.createGuideLocation.bind(this)
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
@@ -89,7 +91,7 @@ class PickAndConso extends Component{
             }
           })
         })
-        this.setState({data:initdata})
+        this.setState({data:initdata}, () => console.log(this.state.data))
       })
     })
   }
@@ -98,6 +100,14 @@ class PickAndConso extends Component{
     this.setState({modalstatus:!this.state.modalstatus});
   }
   
+  createGuideLocation(){
+    Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemID=' + this.state.rowselect.ID).then(res => {
+      const reselement = <div>
+        <span>{res.AreaCode}</span>
+      </div>
+    })
+  }
+
   sumChild(data){
     let getdata = []
     data.forEach(row1 => {
@@ -157,7 +167,6 @@ class PickAndConso extends Component{
     Axios.get(window.apipath + "/api/wm/issued/sto/indoc/?docItemID=" + data.ID).then((res) => {
       const sumdata = this.sumChild(res.data.mapstos)
       const popupElement = this.createDocumentItemList(sumdata)
-      console.log(popupElement)
       this.setState({popupElement:popupElement}, () => {
         if(this.state.popupElement.length !== 0)
           this.toggle()
@@ -212,7 +221,7 @@ class PickAndConso extends Component{
 
   render(){
     const cols = [
-      {Header: '', Cell:e => <input name="selection" type="radio" onChange={() => {this.setState({rowselect:e.original})}}/>
+      {Header: '', Cell:e => <input name="selection" type="radio" onChange={() => {this.setState({rowselect:e.original}, () => {this.createGuideLocation()})}}/>
       , sortable:false, filterable:false, className:"text-center"},
       {accessor:"Pack",Header:"Pack Item"},
       {accessor:"SKU",Header:"SKU"},
@@ -242,7 +251,7 @@ class PickAndConso extends Component{
           <CardBody>
             <ButtonGroup style={{margin:'0 0 10px 0',}}>
               <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
-              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 1 ? false : true}>Consolidate</Button>
+              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 0 ? true : false}>Consolidate</Button>
             </ButtonGroup>
             <div>
               <label>Picking : </label>
