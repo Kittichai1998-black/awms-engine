@@ -41,7 +41,7 @@ class Stock extends Component{
       g: "",
       s: "[{'f':'Code','od':'asc'}]",
       sk: 0,
-      l: 0,
+      l: 20,
       all: "",}
 
     
@@ -77,8 +77,8 @@ workingData(){
       { accessor: 'DocumentDate', Header: 'Document Date', editable: false, filterable: false },
       { accessor: 'EventStatus', Header: 'Event Status', sortable: false, editable: false, filterable: false  },
       { accessor: 'Status', Header: 'Status', editable: false, filterable: false  },
-      { accessor: 'Create', Header: 'Create', editable: false, filterable: false },
-      { accessor: 'Modify', Header: 'Modify', editable: false, Type: "datetime", dateformat: "datetime", filterable: false },
+      { accessor: 'CreateTime', Header: 'Create', editable: false, filterable: false, Type: "datetime", dateformat: "datetime" },
+      { accessor: 'ModifyTime', Header: 'Modify', editable: false, Type: "datetime", dateformat: "datetime", filterable: false },
       { accessor: 'Remark', Header: 'Remark', editable: false, filterable: false },
       { Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Detail", btntext: "Detail" },
    
