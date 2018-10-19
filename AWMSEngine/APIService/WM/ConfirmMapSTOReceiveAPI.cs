@@ -43,6 +43,7 @@ namespace AWMSEngine.APIService.WM
                     //Create Doc AUTO
                     var doc = new CreateGRDocumentBySTO().Execute(this.Logger, this.BuVO,
                         new CreateGRDocumentBySTO.TReq() { stomap = res });
+                    if (doc == null || doc.ID == null) return res;
                     docIDs.Add(doc.ID.Value);
                 }
                 else if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))

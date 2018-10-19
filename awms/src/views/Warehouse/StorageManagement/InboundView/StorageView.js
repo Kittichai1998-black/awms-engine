@@ -64,7 +64,7 @@ class IssuedDoc extends Component{
     if(this.state.date){
       let postdata = {
         "exportName":"DocumentAuditToCD",
-        "whereValues":[this.state.date.format('YYYY-MM-DDT00:00:00')]
+        "whereValues":[this.state.date.format('YYYY-MM-DD')]
        }
       Axios.post(window.apipath + "/api/report/export/fileServer", postdata)
     }

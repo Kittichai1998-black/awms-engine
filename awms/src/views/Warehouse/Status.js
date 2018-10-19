@@ -16,6 +16,18 @@ const EventStatus = [
     {status:'CHANGE_BASE' , code:90,}
 ]
 
+const DocumentEventStatus = [
+    {status:'IDEL' , code:10,},
+    {status:'WORKING' , code:11,},
+    {status:'WORKED' , code:12,},
+    {status:'REMOVING' , code:21,},
+    {status:'REMOVED' , code:22,},
+    {status:'REJECTING' , code:23,},
+    {status:'REJECTED' , code:24,},
+    {status:'CLOSING' , code:31,},
+    {status:'CLOSED' , code:32,}
+]
+
 const DocumentStatus = [
     {status:'Working' , code:1,},
     {status:'Reject' , code:2,},
@@ -28,4 +40,4 @@ const Status = [
     {status:'Remove' , code:2,},
 ]
 
-export {EventStatus, DocumentStatus, Status}
+export {EventStatus, DocumentStatus, Status, DocumentEventStatus}

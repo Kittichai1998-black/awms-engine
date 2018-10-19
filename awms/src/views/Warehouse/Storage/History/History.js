@@ -26,43 +26,98 @@ class History extends Component{
       t:"",
       q:"",
       fields:"stoID,objectType,holdStatus,eventStatus,status,productDate,expireDate,batch,lot,rootBaseCode,rootBaseTypeCode,rootBaseTypeName,sKUCode,sKUName,packCode,packName,branchCode,branchName,warehouseCode,warehouseName,areaCode,areaName,customerCode,customerName",
-      s_f:"{}",
+      s_f:"{rootBaseCode}",
       s_od:"{ASC}",
       sk:"",
-      l:20,},
+      l:100,},
       pivot:[],
       sortstatus:0,
       loaddata:false,
       updateflag:false,
     };
+    this.updateHold = this.updateHold.bind(this)
+    this.getSelectionData = this.getSelectionData.bind(this)
+  }
+  
+  getSelectionData(data){
+    console.log(data)
+    let obj = []
+    data.forEach((datarow,index) => {
+        obj.push({"barcode":datarow.Code,"Name":datarow.Name});
+    })
+    const ObjStr = JSON.stringify(obj)
+    this.setState({barcodeObj:ObjStr}, () => console.log(this.state.barcodeObj))
   }
 
+  updateHold(){
+    const dataedit = this.state.dataedit
+    if(dataedit.length > 0){
+      dataedit.forEach((row) => {
+        row["ID"] = row["ID"] <= 0 ? null : row["ID"]
+        this.props.column.forEach(col => {
+          if(col.datatype === "int" && row[col.accessor] === ""){
+            if(col.accessor === "Revision"){
+              if(row[col.accessor] === ""){
+                row[col.accessor] = 1
+              }
+            }
+            else{
+              row[col.accessor] = null
+            }
+          }
+        })
+
+        for(let col of this.props.uneditcolumn){
+          delete row[col]
+        }
+      })
+      let updjson = {
+        "_token": sessionStorage.getItem("Token"),
+        "_apikey": null,
+        "t": this.props.table,
+        "pk": "ID",
+        "datas": dataedit,
+        "nr": false
+      }
+      Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
+        this.queryInitialData();
+      })
+
+      this.setState({dataedit:[]})
+    }
+}
+
   render(){
-    const cols = [{accessor: 'code', Header: 'ฺBase Code', id: "ID", Filter:"text"},
-    {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
-    {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text"},
-    {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text"},
-    {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text"},
-    {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', Filter:"text"},
-    {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
-    {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
-    {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', Filter:"text"},
-    {accessor: 'branch_Code', Header: 'Branch Code', Filter:"text"},
-    {accessor: 'branch_Name', Header: 'Branch Name', Filter:"text"},
-    {accessor: 'warehouse_Code', Header: 'Warehouse Code', Filter:"text"},
-    {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
-    {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
-    {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
-    {accessor: 'areaLocationMaster_Bank', Header: 'Location', Filter:"text"},
-    {accessor: 'holeStatus', Header: 'Hole', Filter:"text"},
-    {accessor: 'status', Header: 'Status', Filter:"text"},
-    {accessor: 'productDate', Header: 'Product Date', Filter:"text"},
-    {accessor: 'expiryDate', Header: 'Expire Date', Filter:"text"},
-    {accessor: 'createBy', Header: 'Create', Filter:"text"},
-    {accessor: 'modifyBy', Header: 'Modify', Filter:"text"},];
+    const cols = [
+      /* {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"}, */
+      {accessor: 'code', Header: 'ฺBase Code', id: "ID", },
+      {accessor: 'baseMaster_Code', Header: 'Base Type Code', },
+      {accessor: 'baseMaster_Name', Header: 'Base Type Name', },
+      {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', },
+      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', },
+      {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', },
+      {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', },
+      {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', },
+      {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', },
+      {accessor: 'branch_Code', Header: 'Branch Code', },
+      {accessor: 'branch_Name', Header: 'Branch Name', },
+      {accessor: 'warehouse_Code', Header: 'Warehouse Code', },
+      {accessor: 'warehouse_Name', Header: 'Warehouse Name', },
+      {accessor: 'areaMaster_Code', Header: 'Area Code', },
+      {accessor: 'areaMaster_Name', Header: 'Area Name', },
+      {accessor: 'areaLocationMaster_Bank', Header: 'Location', },
+      {accessor: 'holeStatus', Header: 'Hole',  Status:"text"},
+      {accessor: 'status', Header: 'Status',  Status:"text"},
+      {accessor: 'productDate', Header: 'Product Date',},
+      {accessor: 'expiryDate', Header: 'Expire Date', },
+      {accessor: 'createBy', Header: 'Create', },
+      {accessor: 'modifyBy', Header: 'Modify', },
+    ];
 
     const subcols = [
-      {accessor: 'ID', Header: 'Log ID', id: "ID", Filter:"text"}, 
+      {accessor: 'ID', Header: 'Log ID', id: "ID", }, 
+      {accessor: 'Code', Header: 'Code', id: "Code", },
+      {accessor: 'sumsku', Header: 'sumsku', id: "sumsku", },
     ];
 
     const ddlfilter = [
@@ -80,8 +135,15 @@ class History extends Component{
     //const url = "https://localhost:44366/api/trx/sto/search/?stoID&objectType&holdStatus&eventStatus&status&productDate&expireDate&batch&lot&rootBaseCode&rootBaseTypeCode&rootBaseTypeName&sKUCode&sKUName&packCode&packName&branchCode&branchName&warehouseCode&warehouseName&areaCode&areaName&customerCode&customerName&s_f=ID&s_od=ASC&sk=0&l=222"
     return(
       <div>
-        <ExtendTable data={objselect} column={cols} subcolumn={subcols} dropdownfilter={ddlfilter} pivotBy={this.state.pivot} subtablewidth={700}
-        url={null} filterable={true} subtype={1}/>
+        <ExtendTable data={objselect} column={cols} subcolumn={subcols} dropdownfilter={ddlfilter} 
+        pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData}
+        url={null} filterable={false} subtype={1}/>
+        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
+          <CardBody>
+            <Button onClick={() => this.updateHold("hold")} color="primary"className="mr-sm-1">Hold</Button>
+            <Button onClick={() => this.updateHold("unhold")} color="primary"className="mr-sm-1">Unhold</Button>
+          </CardBody>
+        </Card>
       </div>
     )
   }

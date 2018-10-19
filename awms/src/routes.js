@@ -122,7 +122,7 @@ const Historyy = Loadable({
   loading: Loading,
 });
 const ComfrimBox = Loadable({
-  loader: () => import('./views/ComfirmBox'),
+  loader: () => import('./views/Warehouse/ComfirmBox'),
   loading: Loading,
 });
 const StockCorrection = Loadable({
@@ -166,12 +166,14 @@ const routes = [
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
+  { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
   { path: '/wms/history', exact: true, name: 'History', component: Historyy },
   { path: '/wms/loading/manage/issuedmanage', exact: true, name: 'IssuedManage', component: IssuedManage },
   { path: '/mst/warehouse/Stock/manage', exact: true, name: 'Stock', component: Stock },
   { path: '/mst/warehouse/Stockview/manage', exact: true, name: 'Stockview', component: Stockview },
   { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
   { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
+  { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   //{ path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: StockCorrectionDocument },
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },

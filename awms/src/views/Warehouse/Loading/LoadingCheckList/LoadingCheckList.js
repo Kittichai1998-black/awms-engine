@@ -49,7 +49,6 @@ class LoadingDocument extends Component{
   getTableData(){
     if(this.state.transportvalue !== undefined){
       API.get(window.apipath + "/api/wm/loading/conso?docID=" + this.state.transportvalue).then(res => {
-        console.log(res)
         this.setState({data:res.data.datas})
       })
     }

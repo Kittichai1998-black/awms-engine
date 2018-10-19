@@ -80,7 +80,39 @@ namespace AWMSEngine.APIService
             try
             {
                 var getKey = ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
-                this.Logger = AMWLoggerManager.GetLogger(getKey.token ?? getKey.apikey ?? "notkey", this.GetType().Name);
+                string token = null;
+                string apiKey = null;
+                try
+                {
+                    if (getKey._apiKey != null)
+                        apiKey = getKey._apiKey;
+                    if (RequestVO._apiKey != null)
+                        apiKey = RequestVO._apiKey;
+                    if (!string.IsNullOrWhiteSpace(apiKey))
+                    {
+                        this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
+                    }
+                    else
+                    {
+                        apiKey = null;
+                    }
+                    if (getKey._token != null)
+                        token = getKey._token;
+                    if (RequestVO._token != null)
+                        token = RequestVO._token;
+                    if (!string.IsNullOrWhiteSpace(token))
+                    {
+                        this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
+                    }
+                    else
+                    {
+                        token = null;
+                    }
+                }
+                catch {
+                    this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
+                }
+                
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 this.Logger.LogBegin();
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
@@ -96,11 +128,11 @@ namespace AWMSEngine.APIService
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
                 this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
 
-                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, getKey.token);
-                this.Logger.LogInfo("token : " + getKey.token);
+                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
+                this.Logger.LogInfo("token : " + token);
 
-                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, getKey.apikey);
-                this.Logger.LogInfo("apikey : " + getKey.apikey);
+                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
+                this.Logger.LogInfo("apikey : " + apiKey);
 
                 this.Logger.LogInfo("[BeginExecuteEngineManual]");
                 var res = this.ExecuteEngineManual();

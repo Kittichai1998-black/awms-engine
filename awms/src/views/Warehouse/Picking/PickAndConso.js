@@ -5,6 +5,7 @@ import ReactTable from 'react-table'
 import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore'
 //import Axios from 'axios';
 import {EventStatus} from '../Status'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Axios = new apicall()
 
@@ -19,6 +20,8 @@ class PickAndConso extends Component{
       modalstatus:false,
       rSelect:0,
       consoStatus:2,
+      pickingAmount:1,
+      pickingBarcode:"",
       documentItem:{queryString:window.apipath + "/api/viw",
       t:"DocumentItem",
       q:'',
@@ -43,6 +46,7 @@ class PickAndConso extends Component{
     this.selectMode = this.selectMode.bind(this)
     this.onHandleClickPickingScan = this.onHandleClickPickingScan.bind(this)
     this.onClickDocumentItemDetail = this.onClickDocumentItemDetail.bind(this)
+    this.createGuideLocation = this.createGuideLocation.bind(this)
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
@@ -89,7 +93,7 @@ class PickAndConso extends Component{
             }
           })
         })
-        this.setState({data:initdata})
+        this.setState({data:initdata}, () => console.log(this.state.data))
       })
     })
   }
@@ -98,6 +102,15 @@ class PickAndConso extends Component{
     this.setState({modalstatus:!this.state.modalstatus});
   }
   
+  createGuideLocation(){
+    Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemID=' + this.state.rowselect.ID).then(res => {
+      const reselement = res.data.datas.map((row,i) => {
+        return <span key={i}>Guide for Picking : {row.areaCode} | {row.areaLocationCode}</span>
+      })
+      this.setState({guideLoc:reselement})
+    })
+  }
+
   sumChild(data){
     let getdata = []
     data.forEach(row1 => {
@@ -146,8 +159,8 @@ class PickAndConso extends Component{
     const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return data.map((rowdata, index) => {
       return <ul key={index} style={rowdata.isFocus===true?focus:focusf}>
-        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
-        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG}</span>
+        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span><FontAwesomeIcon icon="pallet"/>{rowdata.code} : {rowdata.name}/</span>
+        <span><FontAwesomeIcon icon="layer-group"/> {rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG}</span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
@@ -157,7 +170,6 @@ class PickAndConso extends Component{
     Axios.get(window.apipath + "/api/wm/issued/sto/indoc/?docItemID=" + data.ID).then((res) => {
       const sumdata = this.sumChild(res.data.mapstos)
       const popupElement = this.createDocumentItemList(sumdata)
-      console.log(popupElement)
       this.setState({popupElement:popupElement}, () => {
         if(this.state.popupElement.length !== 0)
           this.toggle()
@@ -172,8 +184,8 @@ class PickAndConso extends Component{
     const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
     return data.map((rowdata, index) => {
       return <ul key={index} style={rowdata.isFocus===true?focus:focusf}>
-        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span>{rowdata.code} : {rowdata.name}/</span>
-        <span>Object Name{rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} </span>
+        <span>{this.getStatusName(rowdata.eventStatus)} /</span><span><FontAwesomeIcon icon="pallet"/>{rowdata.code} : {rowdata.name}/</span>
+        <span><FontAwesomeIcon icon="layer-group"/> {rowdata.objectSizeName} /</span><span>Qty : {rowdata.allqty} /</span><span>Weight : {rowdata.weiKG} </span>
         {this.createDocumentItemList(rowdata.mapstos)}
       </ul>
     })
@@ -212,7 +224,7 @@ class PickAndConso extends Component{
 
   render(){
     const cols = [
-      {Header: '', Cell:e => <input name="selection" type="radio" onChange={() => {this.setState({rowselect:e.original})}}/>
+      {Header: '', Cell:e => <input name="selection" type="radio" onChange={() => {this.setState({rowselect:e.original}, () => {this.createGuideLocation()})}}/>
       , sortable:false, filterable:false, className:"text-center"},
       {accessor:"Pack",Header:"Pack Item"},
       {accessor:"SKU",Header:"SKU"},
@@ -231,6 +243,7 @@ class PickAndConso extends Component{
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
+          <div style={{fontSize:"18px", color:"red"}}>{this.state.guideLoc}</div>
           <label>Barcode : </label><Input type="text" onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
           <Button color="primary" onClick={() => this.onHandleClickCheckConso(this.state.rowselect, this.state.consoBarcode)} style={{display:"inline"}}>Scan</Button>
           <Button color="danger" onClick={() => this.setState({consoStatus:2})} style={{display:"inline-block"}}>Clear Result</Button>
@@ -242,14 +255,18 @@ class PickAndConso extends Component{
           <CardBody>
             <ButtonGroup style={{margin:'0 0 10px 0',}}>
               <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
-              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 1 ? false : true}>Consolidate</Button>
+              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 0 ? true : false}>Pick</Button>
             </ButtonGroup>
             <div>
               <label>Picking : </label>
-              <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} style={{display:"inline-block", width:"180px"}}/>
+              <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                if(e.key === "Enter"){
+                  this.onHandleClickPickingScan()
+                }
+              }} style={{display:"inline-block", width:"180px"}}/>
               <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
               <Button color="primary" style={{display:"inline"}} onClick={() => this.onHandleClickPickingScan()}>Scan</Button>
-              <Button color="danger" style={{display:"inline-block"}} onClick={() => this.setState({pickingList:null, pickingAmount:1, pickingBarcode:""})}>Clear Result</Button>
+              <Button color="danger" style={{display:"inline-block"}} onClick={() => this.setState({pickingList:null, pickingAmount:1, pickingBarcode:"", guideLoc:null})}>Clear Result</Button>
             </div>
             <div>
               {this.state.pickingList}
