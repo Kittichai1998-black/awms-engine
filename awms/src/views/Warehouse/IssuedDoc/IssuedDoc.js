@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
-import {apicall,} from '../ComponentCore'
+import {apicall, DocumentEventStatus} from '../ComponentCore'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 
