@@ -130,6 +130,16 @@ const StockCorrection = Loadable({
   loading: Loading,
 });
 
+const Stock = Loadable({
+  loader: () => import('./views/Warehouse/Stock'),
+  loading: Loading,
+});
+
+const Stockview = Loadable({
+  loader: () => import('./views/Warehouse/Stockview'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
