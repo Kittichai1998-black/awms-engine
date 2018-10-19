@@ -5,7 +5,7 @@ import ReactTable from 'react-table';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
-import {EventStatus} from '../../Status'
+import {DocumentEventStatus} from '../../Status'
 import 'react-datepicker/dist/react-datepicker.css';
 import Downshift from 'downshift'
 import queryString from 'query-string'
@@ -207,7 +207,7 @@ class LoadingDocument extends Component{
   }
   
   getStatusName(status){
-    const res = EventStatus.filter(row => {
+    const res = DocumentEventStatus.filter(row => {
       return row.code === status
     })
     return res.map(row => row.status)
