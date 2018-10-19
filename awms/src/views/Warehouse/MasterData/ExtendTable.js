@@ -148,6 +148,7 @@ class ExtendTable extends Component{
 
     onCheckFliter(filter,dataselect){
         let filterlist = []
+        var test;
         
         if(filter.length > 0)
         {
@@ -176,11 +177,12 @@ class ExtendTable extends Component{
                   filterlist.push([{"f":data["id"], "c":"!=", "v":2}])
                   break
                 default:
-                  filterlist.push([{"f":data["id"], "c":"=", "v": data["value"]}])
+                  /* filterlist.push([{"f":data["id"], "c":"=", "v": data["value"]}]) */
+                  filterlist.push(data["id"] + "="+ data["value"])
               }
               const select = dataselect
-              console.log(JSON.stringify(...filterlist))
-              select["q"] = JSON.stringify(...filterlist)
+              console.log(filterlist)
+              select["fields"] = JSON.stringify(...filterlist)
               let queryString = createQueryString(select)
               Axois.get(queryString).then(
                   (res) => {
@@ -204,24 +206,23 @@ class ExtendTable extends Component{
         }
     }
 
-    createCustomFilter(name,func,data){
-        let filter = [...this.state.datafilter]
-        return <Input type="text" id={name}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter'){
-
-                filter.forEach((datarow,index) => {
-                    if(datarow.id === name){
-                        filter.splice(index,1);
-                    }
-                })
-                if(e.target.value !== ""){
-                    filter.push({id: name, value:e.target.value})
-                }
-                func(filter,data)
-                this.setState({datafilter:filter, loading:true})
-            }}
-          } />
+    createCustomFilter(name){
+      let filter = [...this.state.datafilter]
+      return <Input type="text" id={name}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter'){
+              filter.forEach((datarow,index) => {
+                  if(datarow.id === name){
+                      filter.splice(index,1);
+                  }
+              })
+              if(e.target.value !== ""){
+                  filter.push({id: name, value:e.target.value})
+              }
+              this.onCheckFliter(filter,this.state.dataselect)
+              this.setState({datafilter:filter, loading:true})
+          }}
+        } />
     }
 
     createDropdownFilter(name,func,data){
@@ -605,10 +606,10 @@ class ExtendTable extends Component{
             minRows={5}
             SubComponent={this.subTable}
             PaginationComponent={this.paginationButton}
-            onSortedChange={(sorted) => {
+            /* onSortedChange={(sorted) => {
                 this.setState({data:[], loading:true });
                 this.customSorting(sorted)}
-            }/>
+            } *//>
         )
     }
 }

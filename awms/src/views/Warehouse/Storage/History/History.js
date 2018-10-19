@@ -25,11 +25,11 @@ class History extends Component{
       select:{queryString:window.apipath + "/api/trx/sto/search",
       t:"",
       q:"",
-      fields:"stoID,objectType,holdStatus,eventStatus,status,productDate,expireDate,batch,lot,rootBaseCode,rootBaseTypeCode,rootBaseTypeName,sKUCode,sKUName,packCode,packName,branchCode,branchName,warehouseCode,warehouseName,areaCode,areaName,customerCode,customerName",
+      fields:"",
       s_f:"{rootBaseCode}",
       s_od:"{ASC}",
       sk:"",
-      l:100,},
+      l:20,},
       pivot:[],
       sortstatus:0,
       loaddata:false,
@@ -90,8 +90,8 @@ class History extends Component{
   render(){
     const cols = [
       /* {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"}, */
-      {accessor: 'code', Header: 'ฺBase Code', id: "ID", },
-      {accessor: 'baseMaster_Code', Header: 'Base Type Code', },
+      {accessor: 'code', Header: 'ฺBase Code', id: "ID", filterable:false},
+      {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
       {accessor: 'baseMaster_Name', Header: 'Base Type Name', },
       {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', },
       {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', },
@@ -105,7 +105,7 @@ class History extends Component{
       {accessor: 'warehouse_Name', Header: 'Warehouse Name', },
       {accessor: 'areaMaster_Code', Header: 'Area Code', },
       {accessor: 'areaMaster_Name', Header: 'Area Name', },
-      {accessor: 'areaLocationMaster_Bank', Header: 'Location', },
+      {accessor: 'areaLocationMaster_Code', Header: 'Location', },
       {accessor: 'holeStatus', Header: 'Hole',  Status:"text"},
       {accessor: 'status', Header: 'Status',  Status:"text"},
       {accessor: 'productDate', Header: 'Product Date',},
@@ -137,13 +137,13 @@ class History extends Component{
       <div>
         <ExtendTable data={objselect} column={cols} subcolumn={subcols} dropdownfilter={ddlfilter} 
         pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData}
-        url={null} filterable={false} subtype={1}/>
-        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
+        url={null} filterable={true} subtype={1}/>
+        {/* <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
           <CardBody>
             <Button onClick={() => this.updateHold("hold")} color="primary"className="mr-sm-1">Hold</Button>
             <Button onClick={() => this.updateHold("unhold")} color="primary"className="mr-sm-1">Unhold</Button>
           </CardBody>
-        </Card>
+        </Card> */}
       </div>
     )
   }
