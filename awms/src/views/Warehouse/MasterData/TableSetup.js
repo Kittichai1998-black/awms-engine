@@ -96,7 +96,13 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    this.queryInitialData();
+    if(this.props.areamaster){
+      if(!_.isEqual(nextProps.data, this.state.dataselect))
+      this.queryInitialData(nextProps.data);
+    }
+    else{
+      this.queryInitialData(nextProps.data);
+    }
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
   }
 
@@ -120,12 +126,12 @@ class TableGen extends Component{
     }
   }
 
-  queryInitialData(){
-    if(this.props.data){
+  queryInitialData(data){
+    if(data){
       if(this.props.url === null || this.props.url === undefined){
-        const dataselect = this.props.data
+        const dataselect = data
         this.setState({dataselect:dataselect})
-        let queryString = createQueryString(this.props.data)
+        let queryString = createQueryString(data)
         Axios.get(queryString).then(
         (res) => {
           this.setState({data:res.data.datas,loading:false})
@@ -143,7 +149,7 @@ class TableGen extends Component{
   componentDidMount(){
     
     if(this.props.data){
-      this.queryInitialData();
+      this.queryInitialData(this.props.data);
       this.setState({originalselect:this.props.data.q})
     }
     else{
@@ -156,7 +162,7 @@ class TableGen extends Component{
 
   onHandleClickCancel(event){
     this.setState({dataedit:[]})
-    this.queryInitialData();
+    this.queryInitialData(this.state.dataselect);
   }
   
   removedata(rowdata){
@@ -321,7 +327,7 @@ class TableGen extends Component{
           "nr": false
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
-          this.queryInitialData();
+          this.queryInitialData(this.state.dataselect);
         })
   
         this.setState({dataedit:[]})

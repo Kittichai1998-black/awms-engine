@@ -72,7 +72,6 @@ class AreaLocation extends Component{
     };
     this.getdataselect = this.getdataselect.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
-    this.setColumns = this.setColumns.bind(this)
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this)
     this.filterList = this.filterList.bind(this)
     this.dropdownAuto = this.dropdownAuto.bind(this)
@@ -115,17 +114,17 @@ class AreaLocation extends Component{
     )))
   }
 
-  componentDidUpdate(){
+  /* componentDidUpdate(){
     if(this.state.areamaster !== "" && this.state.areamaster !== undefined){
       if(this.state.data === null){
         this.setState({data:this.getdataselect()})
       }
     }
-  }
+  } */
 
   componentWillUpdate(nextProps,nextState){
-  console.log(nextProps)
-  console.log(nextState)
+  /* console.log(nextProps)
+  console.log(nextState) */
   }
 
   autoSelectData(field, resdata, resfield){
@@ -144,7 +143,7 @@ class AreaLocation extends Component{
           this.setState({areadata})
         })
       }else{
-        this.setState({areamaster:resdata.value}, () => console.log(this.state.areamaster))
+        this.setState({areamaster:resdata.value}, () => {this.setState({data:this.getdataselect()})})
         this.setState({grouptype:resdata.grouptype})
       }
     })
@@ -229,70 +228,10 @@ class AreaLocation extends Component{
         }}>Print</Button>
   }
   
-  setColumns(){
-    let cols1 =[]
-    if(this.state.grouptype === 2){ 
-      cols1 = [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
-        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
-      ]; 
-    
-    }else  if(this.state.grouptype === 1) {
-      cols1 = [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
-        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
-      ]; 
-    }else{
-      cols1 = [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
-        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
-        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
-        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
-        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
-      ]; 
-    }
-    return cols1 
-  }
 
   getdataselect(){
-    let select
     if(this.state.areamaster !== "" && this.state.areamaster !== undefined){
-      select = {queryString:window.apipath + "/api/viw",
+      return {queryString:window.apipath + "/api/viw",
       t:"AreaLocationMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " +this.state.areamaster+"}]",
       f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
@@ -303,9 +242,8 @@ class AreaLocation extends Component{
       all:"",}
 
     }else{
-      select = null
+      return null
     }
-    return select
   }
 
   render(){
@@ -339,7 +277,6 @@ class AreaLocation extends Component{
         filterable = เปิดปิดโหมด filter
         getselection = เก็บค่าที่เลือก
       */}
-      {console.log(this.state.data)}
         <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={true}
                   filterable={true} autocomplete={this.state.autocomplete} accept={true} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}

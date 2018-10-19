@@ -55,13 +55,13 @@ class LoadingManage extends Component{
     let postdata = []
     if(data.length > 0){
       data.forEach(rowdata => {
-        postdata.push({docID:rowdata.ID})
+        postdata.push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/loading/doc/workpicking", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+        Axios.post(window.apipath + "/api/wm/loading/doc/working", {docIDs:postdata}).then((res) => {this.setState({resp:res.data._result.message})})
       }
       else{
-        Axios.post(window.apipath + "/api/wm/loading/doc/reject", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+        Axios.post(window.apipath + "/api/wm/loading/doc/reject", {docIDs:postdata}).then((res) => {this.setState({resp:res.data._result.message})})
       }
     }
   }
