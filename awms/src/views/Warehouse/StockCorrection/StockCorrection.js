@@ -175,12 +175,12 @@ class StockCorrection extends Component{
 
           }
           if(child.objectSizeMaps.length > 0){
-            disQtys = child.objectSizeMaps.map((v)=>{
-              return <div><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
+            disQtys = child.objectSizeMaps.map((v,ind)=>{
+              return <div key={ind}><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
             });
           }
           else{
-            disQtys = <div><FontAwesomeIcon icon="puzzle-piece"/>{child.allqty}</div>
+            disQtys = <div ><FontAwesomeIcon icon="puzzle-piece"/>{child.allqty}</div>
           }
           
           return <ul key={i} style={child.isFocus===true?focus:focusf}>
@@ -188,8 +188,8 @@ class StockCorrection extends Component{
             <span>{child.code} : {child.name}  | </span> 
             <span>{child.objectSizeName} | </span>
             <span>{child.minWeiKG?child.minWeiKG+ '/':''}
-             {child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} 
-             {child.allqty !== undefined ? child.allqty : null}
+             {child.weiKG===0?"":child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} 
+             {child.allqty !== undefined ? "Qty:"+child.allqty : null}
              </span>
             <br/><span style={{color:'gray'}}> {disQtys}
             {child.mapstos.length > 0 ? null : <Input style={{height:"30px", width:"60px",background:"#FFFFE0"}} max="" type="number" 
@@ -210,7 +210,7 @@ class StockCorrection extends Component{
             let rootdata
           let data = this.state.qtyEdit
             data.forEach((row,index)=>{
-                if(row.stoID === dataID){
+                if(row.baseStoID === dataParent){
                     data.splice(index,1)
                 }
             })
@@ -221,7 +221,7 @@ class StockCorrection extends Component{
             "remark":this.state.remark,
             "adjustItems":data}
 
-            this.setState({updateQty:rootdata},()=> console.log(this.state.updateQty))
+            this.setState({updateQty:rootdata})
         
       }
 
@@ -229,7 +229,7 @@ class StockCorrection extends Component{
         const data = {rootID:this.state.palletcode,remark:this.state.remark,adjustItems:this.state.qtyEdit};
     
         Axios.post(window.apipath + "/api/wm/stkcorr/doc/closed",this.state.updateQty).then((res) => {
-         this.createListTable()
+            this.createListTable()
         })
       }
 

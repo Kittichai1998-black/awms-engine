@@ -29,7 +29,7 @@ class History extends Component{
       s_f:"{rootBaseCode}",
       s_od:"{ASC}",
       sk:"",
-      l:100,},
+      l:20,},
       pivot:[],
       sortstatus:0,
       loaddata:false,

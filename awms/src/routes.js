@@ -156,7 +156,7 @@ const routes = [
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
-  { path: '/wms/history', exact: true, name: 'History', component: Historyy },
+  { path: '/sys/storage', exact: true, name: 'Storage', component: Historyy },
   { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
   { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
