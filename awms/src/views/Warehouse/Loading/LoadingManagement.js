@@ -82,13 +82,13 @@ class LoadingManage extends Component{
       {accessor: 'IssuedCode', Header: 'Issued Code',editable:false, Filter:"text"},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"EventStatus"},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"DocumentEvent"},
       {accessor: 'CreateTime', Header: 'CreateBy', editable:false,Type:"datetime", filterable:false},
       {accessor: 'ModifyTime', Header: 'ModifyBy', editable:false,Type:"datetime", filterable:false},
       {accessor: 'Remark', Header: 'Remark', editable:false,},
       {editable:false, Cell:(e) => {
         return <Button color="primary" onClick={() => {
-          window.open('/doc/ld/manage?ID='+ e.original.ID)
+          this.props.history.push('/doc/ld/manage?ID='+ e.original.ID)
         }
       }>Detail</Button>}},
     ];
