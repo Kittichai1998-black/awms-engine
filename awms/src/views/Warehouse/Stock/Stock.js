@@ -64,7 +64,7 @@ workingData(){
 
   createDetial(rowdata) {
     return <Button type="button" color="info"
-      onClick={() => this.history.push('/mst/warehouse/Stockview/manage?docID=' + rowdata.ID)
+      onClick={() => this.history.push('/doc/stc/list?docID=' + rowdata.ID)
       }>Detail</Button>
   }
 
