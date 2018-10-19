@@ -90,6 +90,9 @@ class ExtendTable extends Component{
         this.onCheckFilterExpand = this.onCheckFilterExpand.bind(this)
         this.addtolist = this.addtolist.bind(this)
         this.sumChild = this.sumChild.bind(this)
+        this.onHandleSelection = this.onHandleSelection.bind(this)
+        this.createSelectAll = this.createSelectAll.bind(this)
+        this.createSelection = this.createSelection.bind(this)
     }
 
     componentDidMount(){
@@ -297,7 +300,17 @@ class ExtendTable extends Component{
         Axois.get(queryString).then(
           (res) => {
             if(res.data.datas.length > 0){
+              if(position === 'next'){
+                ++this.state.currentPage
+              }
+              else{
+                if(this.state.currentPage !== 1)
+                  --this.state.currentPage
+              }
               this.setState({data:res.data.datas})
+            }
+            else{
+              select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
             }
             this.setState({loading:false})
           }
@@ -351,6 +364,56 @@ class ExtendTable extends Component{
 
      createSelectButton(event){
       return <input type="checkbox"/>
+    }
+
+    onHandleSelection(rowdata, value, type){
+      if(type === "checkbox"){
+        let rowselect = this.state.rowselect;
+        if(value){
+          rowselect.push(rowdata.original)
+        }
+        else{
+          rowselect.forEach((row,index) => {
+            if(row.ID === rowdata.original.ID){
+              rowselect.splice(index,1)
+            }
+          })
+        }
+        this.setState({rowselect}, () => {this.props.getselection(this.state.rowselect)})
+      }
+      else{
+        let rowselect = [];
+        if(value){
+          rowselect.push(rowdata.original)
+        }
+        this.setState({rowselect:rowselect}, () => {this.props.getselection(this.state.rowselect)})
+      }
+    }
+
+    createSelectAll(){
+      return <input
+      type="checkbox"
+      onChange={(e)=> {
+        this.props.getselection(this.state.data);
+        var arr = Array.from(document.getElementsByClassName('selection'));
+        if(e.target.checked){
+          arr.forEach(row => {
+            row.checked = true
+          })
+        }
+        else{
+          arr.forEach(row => {
+            row.checked = false
+          })
+        }
+      }}/>
+    }
+    createSelection(rowdata,type){
+      return <input
+      className="selection"
+      type={type}
+      name="selection"
+      onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>//
     }
 
     sumChild(data){

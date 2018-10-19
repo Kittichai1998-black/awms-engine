@@ -32,7 +32,7 @@ class Area extends Component{
             selectiondata:[]
         };
         this.getSelectionData = this.getSelectionData.bind(this)
-        this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
+        this.onHandleClickCancel = this.onHandleClickCancel.bind(this)
         this.createQueryString = this.createQueryString.bind(this)
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
