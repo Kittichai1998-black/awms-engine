@@ -122,13 +122,14 @@ const Historyy = Loadable({
   loading: Loading,
 });
 const ComfrimBox = Loadable({
-  loader: () => import('./views/ComfirmBox'),
+  loader: () => import('./views/Warehouse/ComfirmBox'),
   loading: Loading,
 });
 const StockCorrection = Loadable({
   loader: () => import('./views/Warehouse/StockCorrection'),
   loading: Loading,
 });
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },

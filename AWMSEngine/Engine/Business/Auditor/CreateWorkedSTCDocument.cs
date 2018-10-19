@@ -101,7 +101,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     if (packInSto.Count() < Math.Abs(adjQty))
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนสินค้าไม่สามารถติดลบได้");
 
-                    packInSto.RemoveRange(packInSto.Count() - Math.Abs(adjQty), Math.Abs(adjQty));
+                    packInSto.RemoveRange(Math.Abs(adjQty), packInSto.Count()- Math.Abs(adjQty));
                     packInSto.ForEach(x => {
                         x.eventStatus = StorageObjectEventStatus.ADJUSTED;
                         ADO.StorageObjectADO.GetInstant().PutV2(x, this.BuVO);

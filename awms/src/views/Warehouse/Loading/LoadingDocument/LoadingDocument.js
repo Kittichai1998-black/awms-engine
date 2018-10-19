@@ -69,6 +69,7 @@ class LoadingDocument extends Component{
           this.setState({data:[]})
         }
         else{
+          console.log(rowselect1.data.document.transport_ID)
           this.setState({
             data:rowselect1.data.document.documentItems, 
             loading:rowselect1.data.document.code,
@@ -379,13 +380,13 @@ class LoadingDocument extends Component{
           <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Warehouse : </label>
     <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.warehouse : <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehousevalue":e.value, "warehousetext":e.label})}/>}</div></Col>
         </Row>
-        <Button onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
+        <Button onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.readonly===true?"none":this.state.adddisplay}}>Add</Button>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/>
           {this.state.readonly ? this.state.bstostree : null}
           <Card>
           <CardBody>
-            <Button color="primary" style={{display:"inline"}} onClick={this.createDocument}>Create</Button>
+            <Button color="primary" style={{display:this.state.readonly===true?"none":"inline"}} onClick={this.createDocument}>Create</Button>
             <Button color="danger" onClick={() => this.props.history.push('/doc/ld/list')}>Close</Button>
           </CardBody>
         </Card>

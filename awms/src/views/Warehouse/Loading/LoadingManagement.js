@@ -88,7 +88,7 @@ class LoadingManage extends Component{
       {accessor: 'Remark', Header: 'Remark', editable:false,},
       {editable:false, Cell:(e) => {
         return <Button color="primary" onClick={() => {
-          window.open('/doc/ld/manage?ID='+ e.original.ID)
+          this.props.history.push('/doc/ld/manage?ID='+ e.original.ID)
         }
       }>Detail</Button>}},
     ];
