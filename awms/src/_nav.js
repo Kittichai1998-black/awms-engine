@@ -36,13 +36,14 @@ function getmenu(){
       },
            {id: 10,name: 'Goods Receive',url: '/doc/gr/list',icon: 'cui-bug',},
            {id: 11,name: 'Goods Issue',url: '/doc/gi/list',icon: 'cui-home',},
-           {id: 13,name: 'Loading',url: '/doc/ld/list',icon: 'cui-box',},
-           {id: 14,name: 'Picking',url: '/wm/sto/picking',icon: 'cui-bug',},
-           {id: 15,name: 'Receive Mapping',url: '/wm/sto/revmap',icon: 'cui-home',},
-           {id: 16,name: 'Transfer',url: '/wm/sto/transfer',icon: 'cui-box',}, 
-           {id: 17,name: 'Loading Checklist',url: '/wm/sto/loading',icon: 'cui-home',}, 
-           {id: 18,name: 'Storage',url: '/sys/storage',icon: 'cui-layers',},
-           {id: 19,name: 'Stock Correction',url: '/wm/sto/correction',icon: 'cui-bug',},
+           {id: 13, name: 'Loading', url: '/doc/ld/list', icon: 'cui-box', },
+           {id: 14, name: 'Stock ', url: '/doc/stc/manage', icon: 'cui-box', },
+           {id: 15,name: 'Picking',url: '/wm/sto/picking',icon: 'cui-bug',},
+           {id: 16,name: 'Receive Mapping',url: '/wm/sto/revmap',icon: 'cui-home',},
+           {id: 17,name: 'Transfer',url: '/wm/sto/transfer',icon: 'cui-box',}, 
+           {id: 18,name: 'Loading Checklist',url: '/wm/sto/loading',icon: 'cui-home',}, 
+           {id: 19,name: 'Storage',url: '/sys/storage',icon: 'cui-layers',},
+           {id: 20,name: 'Stock Correction',url: '/wm/sto/correction',icon: 'cui-bug',},
     ]};
     
     return result;

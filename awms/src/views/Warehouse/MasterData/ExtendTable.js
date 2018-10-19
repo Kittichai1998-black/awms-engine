@@ -605,10 +605,10 @@ class ExtendTable extends Component{
             minRows={5}
             SubComponent={this.subTable}
             PaginationComponent={this.paginationButton}
-            onSortedChange={(sorted) => {
+            /*onSortedChange={(sorted) => {
                 this.setState({data:[], loading:true });
                 this.customSorting(sorted)}
-            }/>
+            }*//>
         )
     }
 }
