@@ -38,12 +38,32 @@ class DefaultMenu extends Component{
 }
 
 function checkstatus(){
+  const d1 = new Date(localStorage.ExpireTime);
+  const d2 = new Date();
+
+  if(d1 > d2){
+    sessionStorage.setItem("Token", localStorage.getItem("Token"));
+    sessionStorage.setItem("ClientSecret_SecretKey", localStorage.getItem("ClientSecret_SecretKey"));
+    sessionStorage.setItem("ExtendKey", localStorage.getItem("ExtendKey"));
+    sessionStorage.setItem("User_ID", localStorage.getItem("User_ID"));
+    sessionStorage.setItem("ExpireTime", localStorage.getItem("ExpireTime"));
+  }
+  else{
+    localStorage.clear();
+    sessionStorage.clear();
+  }
+
   if(sessionStorage.getItem("Token") === null || sessionStorage.getItem("Token") === undefined){
     return <Redirect from="/" to="/login" />
   }
 }
 
 class DefaultLayout extends Component {
+  componentWillUnmount(){
+    localStorage.clear();
+    sessionStorage.clear();
+  }
+
   render() {
     return (
       <div className="app">

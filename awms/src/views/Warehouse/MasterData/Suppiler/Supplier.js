@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
-import Axios from 'axios';
+//import Axios from 'axios';
+import {apicall} from '../../ComponentCore'
+
+const Axios = new apicall()
 
 class Supplier extends Component{
   constructor(props) {
@@ -41,7 +44,6 @@ class Supplier extends Component{
   }
 
   componentWillUnmount(){
-    Axios.isCancel(true);
   }
 
   onHandleClickLoad(event){

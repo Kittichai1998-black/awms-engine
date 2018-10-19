@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import {createQueryString} from '../../ComponentCore'
 
 class Area extends Component{
     constructor(props) {
@@ -32,8 +32,7 @@ class Area extends Component{
             selectiondata:[]
         };
         this.getSelectionData = this.getSelectionData.bind(this)
-        this.onHandleClickCancel = this.onHandleClickCancel.bind(this)
-        this.createQueryString = this.createQueryString.bind(this)
+        this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
         this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","CreateBy","CreateTime","ModifyBy","ModifyTime"]
@@ -50,18 +49,6 @@ class Area extends Component{
 
     componentWillUnmount(){
     Axios.isCancel(true);
-    }
-
-    createQueryString = (select) => {
-        let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-        + (select.q === "" ? "" : "&q=" + select.q)
-        + (select.f === "" ? "" : "&f=" + select.f)
-        + (select.g === "" ? "" : "&g=" + select.g)
-        + (select.s === "" ? "" : "&s=" + select.s)
-        + (select.sk === "" ? "" : "&sk=" + select.sk)
-        + (select.l === 0 ? "" : "&l=" + select.l)
-        + (select.all === "" ? "" : "&all=" + select.all)
-        return queryS
     }
 
     filterList(){
@@ -83,7 +70,7 @@ class Area extends Component{
             sk:0,
             all:"",}
 
-    Axios.all([Axios.get(this.createQueryString(objselect)),Axios.get(this.createQueryString(basetypeselect))]).then(
+    Axios.all([Axios.get(createQueryString(objselect)),Axios.get(createQueryString(basetypeselect))]).then(
         (Axios.spread((objresult, basetyperesult) => 
         {
             let ddl = [...this.state.autocomplete]

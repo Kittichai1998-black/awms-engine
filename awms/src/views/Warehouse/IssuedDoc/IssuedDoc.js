@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
-import {apicall} from '../ComponentCore'
+import {apicall,} from '../ComponentCore'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
-import Axios from 'axios';
-//import Axios from 'axios';
 
 const axois = new apicall()
 
@@ -42,7 +40,6 @@ class IssuedDoc extends Component{
       selectiondata:[]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
     this.dateTimePicker = this.dateTimePicker.bind(this)
   }
@@ -66,18 +63,6 @@ class IssuedDoc extends Component{
    dateFormat="DD/MM/YYYY"/>
   }
 
-  createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    return queryS
-  }
-
   getSelectionData(data){
     this.setState({selectiondata:data})
   }
@@ -98,7 +83,7 @@ class IssuedDoc extends Component{
   }
 
   onClickToDesc(data){
-    return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID='+data.ID)}>Detail</Button>
+    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gi/manage?ID='+data.ID)}>Detail</Button>
   }
 
   render(){
@@ -143,8 +128,8 @@ class IssuedDoc extends Component{
           <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
           
           <Button style={{background:"#00CED1",borderColor:"#00CED1"}} className="float-right" onClick={() => {
-            let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format("YYYY-MM-DD")]}
-            let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format("YYYY-MM-DD")]}
+            let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format('YYYY-MM-DD')]}
+            let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format('YYYY-MM-DD')]}
             axois.post(window.apipath + "/api/report/export/fileServer", data1)
             axois.post(window.apipath + "/api/report/export/fileServer", data2)
           }}>Export Data</Button>

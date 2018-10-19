@@ -11,13 +11,13 @@ import guid from 'guid';
 import hash from 'hash.js';
 import {EventStatus, DocumentStatus} from '../Status'
 import Select from 'react-select'
-import {apicall} from '../ComponentCore'
+import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
 import Downshift from 'downshift'
 
 const Axios = new apicall()
 
-const getColumnWidth = (rows, accessor, headerText) => {
+/* const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
   const magicSpacing = 10
   let cellLength = 10
@@ -27,24 +27,12 @@ const getColumnWidth = (rows, accessor, headerText) => {
       headerText.length,)
   }
   return Math.min(maxWidth, cellLength * magicSpacing)
-}
+} */
 
 function isInt(value) {
   return !isNaN(value) && 
          parseInt(Number(value)) == value && 
          !isNaN(parseInt(value, 10));
-}
-
-const createQueryString = (select,wherequery) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-  + (select.q === "" ? "" : "&q=" + select.q)
-  + (select.f === "" ? "" : "&f=" + select.f)
-  + (select.g === "" ? "" : "&g=" + select.g)
-  + (select.s === "" ? "" : "&s=" + select.s)
-  + (select.sk === "" ? "" : "&sk=" + select.sk)
-  + (select.l === 0 ? "" : "&l=" + select.l)
-  + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
 }
 
 const createQueryStringStorage = (url,field,order) => {
@@ -657,6 +645,8 @@ class TableGen extends Component{
       isOpen,
       openMenu,
       inputValue,
+      highlightedIndex,
+      selectedItem,
     }) => (
       <div style={{width: '150px'}}>
         <div style={{position: 'relative'}}>
@@ -678,6 +668,11 @@ class TableGen extends Component{
                           {...getItemProps({
                             item,
                             index,
+                            style: {
+                              backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
+                              fontWeight: selectedItem === item ? 'bold' : 'normal',
+                              width:'150px'
+                            }
                           })}
                         >
                           {item ? item.Code : ''}
@@ -818,7 +813,6 @@ class TableGen extends Component{
 
           if(row.editable && row.insertable){
             row.Cell = (e) => {
-              console.log(e)
               if(e.original.ID<1)
                 return this.inputTextEditor(e)
               else

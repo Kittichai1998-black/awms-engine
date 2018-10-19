@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
-import Axios from 'axios';
+import {apicall} from '../../ComponentCore'
+
+const Axios = new apicall()
 
 class Customer extends Component{
   constructor(props) {
@@ -39,11 +41,7 @@ class Customer extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
-  componentWillUnmount(){
-    Axios.isCancel(true);
-  }
-
+  
   onHandleClickLoad(event){
     Axios.post(window.apipath + "/api/mst/TransferFileServer/CustomerMst",{})
     this.forceUpdate();

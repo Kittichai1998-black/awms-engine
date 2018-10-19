@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import {Link}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Card, CardBody, Button } from 'reactstrap';
+import {Button } from 'reactstrap';
 import {TableGen} from '../../MasterData/TableSetup';
 //import Axios from 'axios';
-import {apicall} from '../../ComponentCore'
+import {apicall, createQueryString} from '../../ComponentCore'
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 
@@ -37,7 +36,6 @@ class IssuedDoc extends Component{
       selectiondata:[]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.createQueryString = this.createQueryString.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
     this.dateTimePicker = this.dateTimePicker.bind(this)
   }
@@ -55,19 +53,7 @@ class IssuedDoc extends Component{
         this.setState({date:e.target.value})
       }
    }}
-   dateFormat="DD/MM/YYYY HH:mm:ss"/>
-  }
-
-  createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    return queryS
+   dateFormat="DD/MM/YYYY"/>
   }
 
   getSelectionData(data){
@@ -77,8 +63,8 @@ class IssuedDoc extends Component{
   workingData(){
     if(this.state.date){
       let postdata = {
-        "exportName":"DocumentReceivedToCD",
-        "whereValues":[this.state.date]
+        "exportName":"DocumentAuditToCD",
+        "whereValues":[this.state.date.format('YYYY-MM-DD')]
        }
       Axios.post(window.apipath + "/api/report/export/fileServer", postdata)
     }
