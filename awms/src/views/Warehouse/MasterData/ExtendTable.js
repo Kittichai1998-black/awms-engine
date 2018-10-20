@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Input, Button} from 'reactstrap';
+import {Card, CardBody, Input, Button} from 'reactstrap';
 import {Link}from 'react-router-dom';
 import ReactTable from 'react-table'
 import Axois from 'axios';
@@ -7,6 +7,8 @@ import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {EventStatus}  from '../Status'
 import {Clone} from '../ComponentCore'
+import _ from 'lodash'
+
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 400
@@ -125,6 +127,17 @@ class ExtendTable extends Component{
               this.setState({data:res.data.datas})
               this.setState({loading:false})
           })
+      }
+    }
+
+    componentWillUpdate(nextProps, nextState){
+      if(!_.isEqual(this.state.data, nextState.data)){
+        this.setState({rowselect:[]}, () => {
+          var arr = Array.from(document.getElementsByClassName('selection'));
+          arr.forEach(row => {
+            row.checked = false
+          })
+        })
       }
     }
 
@@ -600,8 +613,17 @@ class ExtendTable extends Component{
             else if(row.Filter === "dropdown"){
               row.Filter = () => this.createDropdownFilter(row.accessor,this.state.dataselect)
             }
+            else if(row.Filter === "select"){
+              row.Filter = (e) => this.createSelectAll()
+            }
+
             if(row.Status === "text"){
               row.Cell = (e) => (this.setStatusText(e))
+            }
+
+            if(row.Type === "selection"){
+              row.Cell = (e) => this.createSelection(e,"checkbox")
+              row.className="text-center"
             }
 
             if(row.Cell === "datetime"){
@@ -628,6 +650,7 @@ class ExtendTable extends Component{
         })
 
         return(
+          <div>
             <ReactTable data={this.state.data}
             style={{backgroundColor:'white'}}
             loading={this.state.loading}
@@ -643,6 +666,8 @@ class ExtendTable extends Component{
                 this.setState({data:[], loading:true });
                 this.customSorting(sorted)}
             } *//>
+            
+            </div>
         )
     }
 }

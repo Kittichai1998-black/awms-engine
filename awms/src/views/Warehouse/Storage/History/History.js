@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
+import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../../MasterData/TableSetup';
 import ExtendTable from '../../MasterData/ExtendTable';
 import queryString from 'query-string'
@@ -29,7 +29,7 @@ class History extends Component{
         {datafield:"warehouse_Name",searchfield:"warehouseName"},
         {datafield:"areaMaster_Code",searchfield:"areaCode"},
         {datafield:"areaMaster_Name",searchfield:"areaName"},
-        {datafield:"holeStatus",searchfield:"holeStatus", Filter:"dropdown"},
+        {datafield:"holeStatus",searchfield:"holdStatus", Filter:"dropdown"},
         {datafield:"status",searchfield:"status", Filter:"dropdown"},
         {datafield:"productDate",searchfield:"productDate"},
         {datafield:"expiryDate",searchfield:"expiryDate"},
@@ -56,16 +56,20 @@ class History extends Component{
     console.log(data)
     let obj = []
     data.forEach((datarow,index) => {
-        obj.push({"barcode":datarow.Code,"Name":datarow.Name});
+        obj.push({"ID":datarow.id});
     })
     const ObjStr = JSON.stringify(obj)
-    this.setState({barcodeObj:ObjStr}, () => console.log(this.state.barcodeObj))
+    console.log(ObjStr)
+    this.setState({idObj:ObjStr}, () => console.log(this.state.idObj))
   }
 
-  updateHold(){
+  updateHold(status){
     const dataedit = this.state.dataedit
+    if (status === 'hold'){
+
+    }else if(status === 'hold')
     if(dataedit.length > 0){
-      dataedit.forEach((row) => {
+      /* dataedit.forEach((row) => {
         row["ID"] = row["ID"] <= 0 ? null : row["ID"]
         this.props.column.forEach(col => {
           if(col.datatype === "int" && row[col.accessor] === ""){
@@ -83,7 +87,7 @@ class History extends Component{
         for(let col of this.props.uneditcolumn){
           delete row[col]
         }
-      })
+      }) */
       let updjson = {
         "_token": sessionStorage.getItem("Token"),
         "_apikey": null,
@@ -102,7 +106,7 @@ class History extends Component{
 
   render(){
     const cols = [
-      /* {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"}, */
+      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
       {accessor: 'code', Header: 'ฺBase Code', id: "ID", Filter:"text"},
       {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
       {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text"},
@@ -121,8 +125,8 @@ class History extends Component{
       {accessor: 'areaLocationMaster_Code', Header: 'Location', filterable:false},
       {accessor: 'holeStatus', Header: 'Hole',  Status:"text", Filter:"dropdown"},
       {accessor: 'status', Header: 'Status',  Status:"text", Filter:"dropdown"},
-      {accessor: 'productDate', Header: 'Product Date', Filter:"text"},
-      {accessor: 'expiryDate', Header: 'Expire Date', Filter:"text"},
+      {accessor: 'productDate', Header: 'Product Date', },
+      {accessor: 'expiryDate', Header: 'Expire Date', },
       {accessor: 'createBy', Header: 'Create', filterable:false},
       {accessor: 'modifyBy', Header: 'Modify', filterable:false},
     ];
@@ -133,21 +137,17 @@ class History extends Component{
       {accessor: 'sumsku', Header: 'sumsku', id: "sumsku", },
     ];
 
-    const objselect = this.state.select
-    /* const values = queryString.parse(this.props.location.search) */
-    console.log(objselect)
-
     return(
       <div>
-        <ExtendTable data={objselect} column={cols} subcolumn={subcols} /* dropdownfilter={this.state.statuslist} */ 
+        <ExtendTable data={this.state.select} column={cols} subcolumn={subcols} 
         pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData}
         url={null} filterable={true} subtype={1} filterFields={this.state.dataMap}/>
-        {/* <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
+        <Card style={{display:'inlne-block'}}>
           <CardBody>
             <Button onClick={() => this.updateHold("hold")} color="primary"className="mr-sm-1">Hold</Button>
             <Button onClick={() => this.updateHold("unhold")} color="primary"className="mr-sm-1">Unhold</Button>
           </CardBody>
-        </Card> */}
+        </Card>
       </div>
     )
   }
