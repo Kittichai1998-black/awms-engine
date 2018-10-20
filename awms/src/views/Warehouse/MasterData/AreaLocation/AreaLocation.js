@@ -73,6 +73,7 @@ class AreaLocation extends Component{
     this.getdataselect = this.getdataselect.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this)
+    this.setColumns = this.setColumns.bind(this)
     this.filterList = this.filterList.bind(this)
     this.dropdownAuto = this.dropdownAuto.bind(this)
     this.autoSelectData = this.autoSelectData.bind(this)
@@ -143,7 +144,11 @@ class AreaLocation extends Component{
           this.setState({areadata})
         })
       }else{
-        this.setState({areamaster:resdata.value}, () => {this.setState({data:this.getdataselect()})})
+        this.setState({areamaster:resdata.value}, () => {
+          
+          this.setState({cols1:this.setColumns()},() => 
+          this.setState({data:this.getdataselect()}) )
+        })
         this.setState({grouptype:resdata.grouptype})
       }
     })
@@ -211,7 +216,7 @@ class AreaLocation extends Component{
           obj.push({"barcode":datarow.Code,"Name":datarow.Name});
       })
       const xx = JSON.stringify(obj)
-      this.setState({barcodeObj:xx}, () => console.log(this.state.barcodeObj))
+      this.setState({barcodeObj:xx})
   }
 
   createBarcodeBtn(rowdata){
@@ -227,7 +232,64 @@ class AreaLocation extends Component{
         }
         }}>Print</Button>
   }
-  
+
+  setColumns(){
+    if(this.state.grouptype === 2){ 
+      return [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
+        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
+        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
+    
+    }else  if(this.state.grouptype === 1) {
+      return [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code', editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode",},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
+    }else{
+      return [
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
+        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
+        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
+        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
+        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
+        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      ]; 
+    }
+  }
 
   getdataselect(){
     if(this.state.areamaster !== "" && this.state.areamaster !== undefined){
