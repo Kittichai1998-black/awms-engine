@@ -115,8 +115,8 @@ class SKUMasterType extends Component{
           {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
           {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
           {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
-          {accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+          //{accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
+          //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
         ];
         

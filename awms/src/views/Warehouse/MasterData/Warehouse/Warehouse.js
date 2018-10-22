@@ -93,13 +93,13 @@ class Warehouse extends Component{
         const cols = [
             {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
-            {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
+            //{accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
             {accessor: 'Branch_Code', Header: 'Branch',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
             {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
             {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-            {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+            //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+            //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];
 

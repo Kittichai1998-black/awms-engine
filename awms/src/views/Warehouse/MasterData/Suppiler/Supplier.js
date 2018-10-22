@@ -55,13 +55,13 @@ class Supplier extends Component{
     const cols = [
       {accessor: 'Code', Header: 'Code', editable:false,Filter:"text"},
       {accessor: 'Name', Header: 'Name', editable:false,Filter:"text"},
-      {accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
+      //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
       /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
-      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
-      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
+      //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
+      //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
 

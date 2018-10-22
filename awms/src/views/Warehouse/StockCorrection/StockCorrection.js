@@ -250,12 +250,12 @@ class StockCorrection extends Component{
                 <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Remark : </label>
                     <Input id="remarktext" style={{width:'66.5%',display:'inline-block'}} type="text" 
                     value={this.state.remark}  onChange={e => {this.setState({remark:e.target.value})}}
-                    placeholder="หมายเหตุ"></Input>
+                    placeholder="remark"></Input>
                 </Col>
                 <Col sm="6">
                     <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
                     <Input id="barcodetext" style={{width:'45%',display:'inline-block'}} type="text"
-                    value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ด"
+                    value={this.state.barcode} placeholder="barcode"
                     onChange={e => {this.setState({barcode:e.target.value})}}
                     onKeyPress={(e) => {
                         if(e.key === 'Enter' && this.state.barcode !== ""){
