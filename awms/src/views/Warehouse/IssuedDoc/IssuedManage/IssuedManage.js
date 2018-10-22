@@ -353,7 +353,7 @@ class IssuedManage extends Component{
     else{
       cols = [
         {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e),},
-        {accessor:"SKU",Header:"SKU",},
+        //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
         {Cell:(e) => <Button onClick={()=>{
