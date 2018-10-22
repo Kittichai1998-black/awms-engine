@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Input, Button} from 'reactstrap';
+import {Card, CardBody, Input, Button} from 'reactstrap';
 import {Link}from 'react-router-dom';
 import ReactTable from 'react-table'
 import Axois from 'axios';
@@ -7,6 +7,8 @@ import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {EventStatus}  from '../Status'
 import {Clone} from '../ComponentCore'
+import _ from 'lodash'
+
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 400
@@ -28,7 +30,7 @@ const createQueryString = (select,wherequery) => {
       myJSON = JSON.stringify([where])
     }
     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.fields === "" ? "" : "" + select.fields)
+    + (select.fields === "" || select.fields === undefined? "" : "" + select.fields)
    /*  + (select.q === "" ? "" : "&q=" + myJSON)
     + (select.f === "" ? "" : "&f=" + select.f)
     + (select.g === "" ? "" : "&g=" + select.g)
@@ -76,8 +78,21 @@ class ExtendTable extends Component{
             loading:true,
             datafilter:[],
             filter:true,
+            dropdownvalue:[],
             dropdownfilter:[],
             currentPage: 1,
+            statuslist:[{
+              'status' : [{'value':'','label':'All'},{'value':'0','label':'Inactive'},{'value':'1','label':'Active'}],
+              'header' : 'Status',
+              'field' : 'status',
+              'mode' : 'check',
+            }],
+            holdlist:[{
+              'status' : [{'value':'','label':'All'},{'value':'0','label':'No'},{'value':'1','label':'Yes'}],
+              'header' : 'Status',
+              'field' : 'holeStatus',
+              'mode' : 'check',
+            }],
             ...makeDefaultState()
             
         }
@@ -115,6 +130,17 @@ class ExtendTable extends Component{
       }
     }
 
+    componentWillUpdate(nextProps, nextState){
+      if(!_.isEqual(this.state.data, nextState.data)){
+        this.setState({rowselect:[]}, () => {
+          var arr = Array.from(document.getElementsByClassName('selection'));
+          arr.forEach(row => {
+            row.checked = false
+          })
+        })
+      }
+    }
+
     onCheckFilterExpand(filter){
       let filterlist = []
       let urledit = this.props.url
@@ -147,88 +173,109 @@ class ExtendTable extends Component{
     }
 
     onCheckFliter(filter,dataselect){
-        let filterlist = []
-        
-        if(filter.length > 0)
-        {
-          filter.map((data, id) => {
-            if(data[1] !== ""){
-              switch(data["value"].toString().charAt(0)){
-                case "=":
-                  filterlist.push([{"f":data["id"], "c":"=", "v": data["value"].replace("=","")}])
-                  break
-                case ">":
-                  filterlist.push([{"f":data["id"], "c":">", "v": data["value"].replace(">","")}])
-                  break
-                case "<":
-                  filterlist.push([{"f":data["id"], "c":"<", "v": data["value"].replace("<","")}])
-                  break
-                case ">=":
-                  filterlist.push([{"f":data["id"], "c":">=", "v": data["value"].replace(">=","")}])
-                  break
-                case "<=":
-                  filterlist.push([{"f":data["id"], "c":"<=", "v": data["value"].replace("<=","")}])
-                  break
-                case "%":
-                  filterlist.push([{"f":data["id"], "c":"like", "v": data["value"]}])
-                  break
-                case "*":
-                  filterlist.push([{"f":data["id"], "c":"!=", "v":2}])
-                  break
-                default:
-                  filterlist.push([{"f":data["id"], "c":"=", "v": data["value"]}])
-              }
-              const select = dataselect
-              console.log(JSON.stringify(...filterlist))
-              select["q"] = JSON.stringify(...filterlist)
-              let queryString = createQueryString(select)
-              Axois.get(queryString).then(
-                  (res) => {
-                    console.log(queryString)
-                    this.setState({data:res.data.datas, loading:false});
-                    console.log(this.state.data)
-                  }
-              )
-            }
-          })
-        }
-        else{
-          const select = dataselect
-          select["q"] = ""
-          let queryString = createQueryString(select)
-          Axois.get(queryString).then(
-              (res) => {
-                this.setState({data:res.data.datas, loading:false});
-              }
-          )
-        }
-    }
+      
 
-    createCustomFilter(name,func,data){
-        let filter = [...this.state.datafilter]
-        return <Input type="text" id={name}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter'){
-
-                filter.forEach((datarow,index) => {
-                    if(datarow.id === name){
-                        filter.splice(index,1);
-                    }
-                })
-                if(e.target.value !== ""){
-                    filter.push({id: name, value:e.target.value})
+      let filterlist = []
+      
+      if(filter.length > 0)
+      {
+        filter.forEach((data, id) => {
+          let filterField  = this.props.filterFields.find(o => o.datafield === data["id"])
+          if(data[1] !== ""){
+            const firstletter =  data["value"].toString().charAt(0)
+            const lastletter =  data["value"].toString().slice(-1)
+  
+            if(firstletter === "*" || lastletter === "*"){
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
                 }
-                func(filter,data)
-                this.setState({datafilter:filter, loading:true})
-            }}
-          } />
+              })
+              
+              if(data["id"] === "Status"){
+                filterlist.push({"f":data["id"], "c":"<", "v": 2})
+              }
+              else{
+                /* filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])}) */
+                filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + "=" +encodeURIComponent(data["value"]))
+              }
+            }
+            else if(firstletter === "%"){
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
+              /* filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])}) */
+              filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + "=" +encodeURIComponent(data["value"]))
+            }
+            else{
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
+              /* filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])}) */
+              filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + "=" +encodeURIComponent(data["value"]))
+            }
+          }
+        })
+        
+        let select = dataselect
+        select["fields"] = filterlist.join()
+        select["sk"] = "0"
+        let queryString = createQueryString(select)
+        Axois.get(queryString).then(
+          (res) => {
+            this.setState({data:res.data.datas, loading:false});
+          }
+        )
+      }
+      else{
+        const select = dataselect
+        select["fields"] = this.state.originalselect
+        select["sk"] = "0"
+        let queryString = createQueryString(select)
+        Axois.get(queryString).then(
+            (res) => {
+              this.setState({data:res.data.datas, loading:false});
+            }
+        )
+      }
     }
 
-    createDropdownFilter(name,func,data){
+    createCustomFilter(name){
+      let filter = [...this.state.datafilter]
+      return <Input type="text" id={name}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter'){
+              filter.forEach((datarow,index) => {
+                  if(datarow.id === name){
+                      filter.splice(index,1);
+                  }
+              })
+              if(e.target.value !== ""){
+                  filter.push({id: name, value:e.target.value})
+              }
+              this.onCheckFliter(filter,this.state.dataselect)
+              this.setState({datafilter:filter, loading:true})
+          }}
+        } />
+    }
+
+    createDropdownFilter(name,func,selectdata){
       let filter = [...this.state.datafilter]
       let item = null
       let list = null
-      this.props.dropdownfilter.forEach(row => {
+      let dropdownfilter
+
+      if(name === "status"){
+        dropdownfilter=this.state.statuslist
+      }else if(name === "holeStatus"){
+        dropdownfilter=this.state.holdlist
+      }
+
+      dropdownfilter.forEach(row => {
         if(row.field === name){
           item = row.status.map((data, index) => {
             return <option key={index} value={data.value}>{data.label}</option>
@@ -242,7 +289,7 @@ class ExtendTable extends Component{
             if(e.target.value !== ""){
                 filter.push({id: name, value:e.target.value})
             }
-            func(filter,data)
+            this.onCheckFliter(filter,this.state.dataselect)
             this.setState({datafilter:filter, loading:true})
           }}>{item}</select>
         }
@@ -286,7 +333,7 @@ class ExtendTable extends Component{
         let queryString = "";
         this.setState({loading:true})
         const select = this.state.dataselect
-        console.log(select)
+
         if(position === 'next'){
           select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
           queryString = createQueryString(select)
@@ -564,10 +611,19 @@ class ExtendTable extends Component{
               row.Filter = () => this.createCustomFilter(row.accessor,this.onCheckFilterExpand,this.state.dataselect)
             }
             else if(row.Filter === "dropdown"){
-              row.Filter = () => this.createDropdownFilter(row.accessor,this.onCheckFilterExpand,this.state.dataselect)
+              row.Filter = () => this.createDropdownFilter(row.accessor,this.state.dataselect)
             }
+            else if(row.Filter === "select"){
+              row.Filter = (e) => this.createSelectAll()
+            }
+
             if(row.Status === "text"){
               row.Cell = (e) => (this.setStatusText(e))
+            }
+
+            if(row.Type === "selection"){
+              row.Cell = (e) => this.createSelection(e,"checkbox")
+              row.className="text-center"
             }
 
             if(row.Cell === "datetime"){
@@ -594,6 +650,7 @@ class ExtendTable extends Component{
         })
 
         return(
+          <div>
             <ReactTable data={this.state.data}
             style={{backgroundColor:'white'}}
             loading={this.state.loading}
@@ -605,10 +662,12 @@ class ExtendTable extends Component{
             minRows={5}
             SubComponent={this.subTable}
             PaginationComponent={this.paginationButton}
-            /*onSortedChange={(sorted) => {
+            /* onSortedChange={(sorted) => {
                 this.setState({data:[], loading:true });
                 this.customSorting(sorted)}
-            }*//>
+            } *//>
+            
+            </div>
         )
     }
 }

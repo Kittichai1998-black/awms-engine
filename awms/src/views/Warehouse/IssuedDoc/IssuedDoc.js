@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
-import {apicall, DocumentEventStatus} from '../ComponentCore'
+import {apicall} from '../ComponentCore'
 import moment from 'moment'
 import DatePicker from 'react-datepicker'
 
@@ -99,7 +99,7 @@ class IssuedDoc extends Component{
       {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text",},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"DocumentEvent"},
       {accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
       {accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
