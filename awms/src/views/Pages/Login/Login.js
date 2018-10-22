@@ -41,10 +41,6 @@ class Login extends Component {
     }
   }
 
-  componentWillMount(){
-    console.log(sessionStorage)
-  }
-
   async Authorize(){
     let data = {"username":this.state.username, "password":this.state.password, "secretKey":"ABC@123"};
     let config = {

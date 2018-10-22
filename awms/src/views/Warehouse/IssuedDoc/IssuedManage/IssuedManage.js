@@ -6,7 +6,7 @@ import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
-import {EventStatus} from '../../Status'
+import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
 import {AutoSelect, NumberInput, apicall, createQueryString } from '../../ComponentCore'
 import 'react-datepicker/dist/react-datepicker.css';
@@ -183,7 +183,7 @@ class IssuedManage extends Component{
   }
 
   renderDocumentStatus(){
-    const res = EventStatus.filter(row => {
+    const res = DocumentEventStatus.filter(row => {
       return row.code === this.state.documentStatus
     })
     return res.map(row => row.status)
