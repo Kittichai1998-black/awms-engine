@@ -40,7 +40,6 @@ class DefaultMenu extends Component{
 function checkstatus(){
   const d1 = new Date(localStorage.ExpireTime);
   const d2 = new Date();
-
   if(d1 > d2){
     sessionStorage.setItem("Token", localStorage.getItem("Token"));
     sessionStorage.setItem("ClientSecret_SecretKey", localStorage.getItem("ClientSecret_SecretKey"));
@@ -59,10 +58,10 @@ function checkstatus(){
 }
 
 class DefaultLayout extends Component {
-  componentWillUnmount(){
+  /* componentWillUnmount(){
     localStorage.clear();
     sessionStorage.clear();
-  }
+  } */
 
   render() {
     return (

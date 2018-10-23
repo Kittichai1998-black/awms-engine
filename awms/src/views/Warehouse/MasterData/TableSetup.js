@@ -9,7 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import guid from 'guid';
 import hash from 'hash.js';
-import {EventStatus, DocumentStatus} from '../Status'
+import {EventStatus, DocumentStatus, DocumentEventStatus} from '../Status'
 import Select from 'react-select'
 import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
@@ -96,7 +96,13 @@ class TableGen extends Component{
   }
 
   componentWillReceiveProps(nextProps){
-    this.queryInitialData();
+    if(this.props.areamaster){
+      if(!_.isEqual(nextProps.data, this.state.dataselect))
+      this.queryInitialData(nextProps.data);
+    }
+    else{
+      this.queryInitialData(nextProps.data);
+    }
     this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
   }
 
@@ -120,12 +126,12 @@ class TableGen extends Component{
     }
   }
 
-  queryInitialData(){
-    if(this.props.data){
+  queryInitialData(data){
+    if(data){
       if(this.props.url === null || this.props.url === undefined){
-        const dataselect = this.props.data
+        const dataselect = data
         this.setState({dataselect:dataselect})
-        let queryString = createQueryString(this.props.data)
+        let queryString = createQueryString(data)
         Axios.get(queryString).then(
         (res) => {
           this.setState({data:res.data.datas,loading:false})
@@ -143,7 +149,7 @@ class TableGen extends Component{
   componentDidMount(){
     
     if(this.props.data){
-      this.queryInitialData();
+      this.queryInitialData(this.props.data);
       this.setState({originalselect:this.props.data.q})
     }
     else{
@@ -156,7 +162,7 @@ class TableGen extends Component{
 
   onHandleClickCancel(event){
     this.setState({dataedit:[]})
-    this.queryInitialData();
+    this.queryInitialData(this.state.dataselect);
   }
   
   removedata(rowdata){
@@ -191,36 +197,38 @@ class TableGen extends Component{
     {
       filter.forEach((data, id) => {
         if(data[1] !== ""){
-          switch(data["value"].toString().charAt(0)){
-            case "%":
-              filterlist.forEach((row, index) => {
-                if(row.f === data["id"]){
-                  filterlist.splice(index,1)
-                }
-              })
+          const firstletter =  data["value"].toString().charAt(0)
+          const lastletter =  data["value"].toString().slice(-1)
+
+          if(firstletter === "*" || lastletter === "*"){
+            filterlist.forEach((row, index) => {
+              if(row.f === data["id"]){
+                filterlist.splice(index,1)
+              }
+            })
+            
+            if(data["id"] === "Status"){
+              filterlist.push({"f":data["id"], "c":"<", "v": 2})
+            }
+            else{
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
-              break
-            case "*":
-              filterlist.forEach((row, index) => {
-                if(row.f === data["id"]){
-                  filterlist.splice(index,1)
-                }
-              })
-              
-              if(data["id"] === "Status"){
-                filterlist.push({"f":data["id"], "c":"<", "v": 2})
+            }
+          }
+          else if(firstletter === "%"){
+            filterlist.forEach((row, index) => {
+              if(row.f === data["id"]){
+                filterlist.splice(index,1)
               }
-              else{
-                filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
+            })
+            filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
+          }
+          else{
+            filterlist.forEach((row, index) => {
+              if(row.f === data["id"]){
+                filterlist.splice(index,1)
               }
-              break
-            default:
-              filterlist.forEach((row, index) => {
-                if(row.f === data["id"]){
-                  filterlist.splice(index,1)
-                }
-              })
-              filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
+            })
+            filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])})
           }
         }
       })
@@ -319,7 +327,7 @@ class TableGen extends Component{
           "nr": false
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
-          this.queryInitialData();
+          this.queryInitialData(this.state.dataselect);
         })
   
         this.setState({dataedit:[]})
@@ -749,7 +757,7 @@ class TableGen extends Component{
   }
 
   createStatusField(data, type){
-    if(type === "Event"){
+    if(type === "EventStatus"){
       return <span>
         {
           EventStatus.filter(row => {
@@ -758,10 +766,19 @@ class TableGen extends Component{
         }
       </span>
     }
-    else if(type = "Document"){
+    else if(type === "DocumentStatus"){
       return <span>
       {
         DocumentStatus.filter(row => {
+          return row.code === data
+        })[0].status
+      }
+      </span>
+    }
+    else if(type === "DocumentEvent"){
+      return <span>
+      {
+        DocumentEventStatus.filter(row => {
           return row.code === data
         })[0].status
       }
@@ -870,10 +887,13 @@ class TableGen extends Component{
             row.className="text-center"
           }
           else if(row.Type === "DocumentStatus"){
-            row.Cell = (e) => this.createStatusField(e.value, "Document")
+            row.Cell = (e) => this.createStatusField(e.value, row.Type)
           }
           else if(row.Type === "EventStatus"){
-            row.Cell = (e) => this.createStatusField(e.value, "Event")
+            row.Cell = (e) => this.createStatusField(e.value, row.Type)
+          }
+          else if(row.Type === "DocumentEvent"){
+            row.Cell = (e) => this.createStatusField(e.value, row.Type)
           }
 
           if(row.Aggregated === "blank"){

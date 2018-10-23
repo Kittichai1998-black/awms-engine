@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
-import {Input, Button} from 'reactstrap';
+import {Card, CardBody, Input, Button} from 'reactstrap';
 import {Link}from 'react-router-dom';
 import ReactTable from 'react-table'
 import Axois from 'axios';
 import moment from 'moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {EventStatus}  from '../Status'
+import {Clone} from '../ComponentCore'
+import _ from 'lodash'
+
 
 const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 400
@@ -25,7 +30,7 @@ const createQueryString = (select,wherequery) => {
       myJSON = JSON.stringify([where])
     }
     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.fields === "" ? "" : "" + select.fields)
+    + (select.fields === "" || select.fields === undefined? "" : "" + select.fields)
    /*  + (select.q === "" ? "" : "&q=" + myJSON)
     + (select.f === "" ? "" : "&f=" + select.f)
     + (select.g === "" ? "" : "&g=" + select.g)
@@ -37,6 +42,7 @@ const createQueryString = (select,wherequery) => {
     +(select.s_od === "" ? "" : "&s_od" + select.s_od)
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
+    + ("&token=" + sessionStorage.Token)
     return queryS
 }
 
@@ -72,8 +78,23 @@ class ExtendTable extends Component{
             loading:true,
             datafilter:[],
             filter:true,
+            dropdownvalue:[],
             dropdownfilter:[],
+            currentPage: 1,
+            statuslist:[{
+              'status' : [{'value':'','label':'All'},{'value':'0','label':'Inactive'},{'value':'1','label':'Active'}],
+              'header' : 'Status',
+              'field' : 'status',
+              'mode' : 'check',
+            }],
+            holdlist:[{
+              'status' : [{'value':'','label':'All'},{'value':'0','label':'No'},{'value':'1','label':'Yes'}],
+              'header' : 'Status',
+              'field' : 'holeStatus',
+              'mode' : 'check',
+            }],
             ...makeDefaultState()
+            
         }
         this.onCheckFliter = this.onCheckFliter.bind(this)
         this.datetimeBody = this.datetimeBody.bind(this)
@@ -82,6 +103,11 @@ class ExtendTable extends Component{
         this.paginationButton = this.paginationButton.bind(this)
         this.subTable = this.subTable.bind(this)
         this.onCheckFilterExpand = this.onCheckFilterExpand.bind(this)
+        this.addtolist = this.addtolist.bind(this)
+        this.sumChild = this.sumChild.bind(this)
+        this.onHandleSelection = this.onHandleSelection.bind(this)
+        this.createSelectAll = this.createSelectAll.bind(this)
+        this.createSelection = this.createSelection.bind(this)
     }
 
     componentDidMount(){
@@ -101,6 +127,17 @@ class ExtendTable extends Component{
               this.setState({data:res.data.datas})
               this.setState({loading:false})
           })
+      }
+    }
+
+    componentWillUpdate(nextProps, nextState){
+      if(!_.isEqual(this.state.data, nextState.data)){
+        this.setState({rowselect:[]}, () => {
+          var arr = Array.from(document.getElementsByClassName('selection'));
+          arr.forEach(row => {
+            row.checked = false
+          })
+        })
       }
     }
 
@@ -136,88 +173,109 @@ class ExtendTable extends Component{
     }
 
     onCheckFliter(filter,dataselect){
-        let filterlist = []
-        
-        if(filter.length > 0)
-        {
-          filter.map((data, id) => {
-            if(data[1] !== ""){
-              switch(data["value"].toString().charAt(0)){
-                case "=":
-                  filterlist.push([{"f":data["id"], "c":"=", "v": data["value"].replace("=","")}])
-                  break
-                case ">":
-                  filterlist.push([{"f":data["id"], "c":">", "v": data["value"].replace(">","")}])
-                  break
-                case "<":
-                  filterlist.push([{"f":data["id"], "c":"<", "v": data["value"].replace("<","")}])
-                  break
-                case ">=":
-                  filterlist.push([{"f":data["id"], "c":">=", "v": data["value"].replace(">=","")}])
-                  break
-                case "<=":
-                  filterlist.push([{"f":data["id"], "c":"<=", "v": data["value"].replace("<=","")}])
-                  break
-                case "%":
-                  filterlist.push([{"f":data["id"], "c":"like", "v": data["value"]}])
-                  break
-                case "*":
-                  filterlist.push([{"f":data["id"], "c":"!=", "v":2}])
-                  break
-                default:
-                  filterlist.push([{"f":data["id"], "c":"=", "v": data["value"]}])
-              }
-              const select = dataselect
-              console.log(JSON.stringify(...filterlist))
-              select["q"] = JSON.stringify(...filterlist)
-              let queryString = createQueryString(select)
-              Axois.get(queryString).then(
-                  (res) => {
-                    console.log(queryString)
-                    this.setState({data:res.data.datas, loading:false});
-                    console.log(this.state.data)
-                  }
-              )
-            }
-          })
-        }
-        else{
-          const select = dataselect
-          select["q"] = ""
-          let queryString = createQueryString(select)
-          Axois.get(queryString).then(
-              (res) => {
-                this.setState({data:res.data.datas, loading:false});
-              }
-          )
-        }
-    }
+      
 
-    createCustomFilter(name,func,data){
-        let filter = [...this.state.datafilter]
-        return <Input type="text" id={name}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter'){
-
-                filter.forEach((datarow,index) => {
-                    if(datarow.id === name){
-                        filter.splice(index,1);
-                    }
-                })
-                if(e.target.value !== ""){
-                    filter.push({id: name, value:e.target.value})
+      let filterlist = []
+      
+      if(filter.length > 0)
+      {
+        filter.forEach((data, id) => {
+          let filterField  = this.props.filterFields.find(o => o.datafield === data["id"])
+          if(data[1] !== ""){
+            const firstletter =  data["value"].toString().charAt(0)
+            const lastletter =  data["value"].toString().slice(-1)
+  
+            if(firstletter === "*" || lastletter === "*"){
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
                 }
-                func(filter,data)
-                this.setState({datafilter:filter, loading:true})
-            }}
-          } />
+              })
+              
+              if(data["id"] === "Status"){
+                filterlist.push({"f":data["id"], "c":"<", "v": 2})
+              }
+              else{
+                /* filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])}) */
+                filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + "=" +encodeURIComponent(data["value"]))
+              }
+            }
+            else if(firstletter === "%"){
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
+              /* filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])}) */
+              filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + "=" +encodeURIComponent(data["value"]))
+            }
+            else{
+              filterlist.forEach((row, index) => {
+                if(row.f === data["id"]){
+                  filterlist.splice(index,1)
+                }
+              })
+              /* filterlist.push({"f":data["id"], "c":"=", "v": encodeURIComponent(data["value"])}) */
+              filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + "=" +encodeURIComponent(data["value"]))
+            }
+          }
+        })
+        
+        let select = dataselect
+        select["fields"] = filterlist.join()
+        select["sk"] = "0"
+        let queryString = createQueryString(select)
+        Axois.get(queryString).then(
+          (res) => {
+            this.setState({data:res.data.datas, loading:false});
+          }
+        )
+      }
+      else{
+        const select = dataselect
+        select["fields"] = this.state.originalselect
+        select["sk"] = "0"
+        let queryString = createQueryString(select)
+        Axois.get(queryString).then(
+            (res) => {
+              this.setState({data:res.data.datas, loading:false});
+            }
+        )
+      }
     }
 
-    createDropdownFilter(name,func,data){
+    createCustomFilter(name){
+      let filter = [...this.state.datafilter]
+      return <Input type="text" id={name}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter'){
+              filter.forEach((datarow,index) => {
+                  if(datarow.id === name){
+                      filter.splice(index,1);
+                  }
+              })
+              if(e.target.value !== ""){
+                  filter.push({id: name, value:e.target.value})
+              }
+              this.onCheckFliter(filter,this.state.dataselect)
+              this.setState({datafilter:filter, loading:true})
+          }}
+        } />
+    }
+
+    createDropdownFilter(name,func,selectdata){
       let filter = [...this.state.datafilter]
       let item = null
       let list = null
-      this.props.dropdownfilter.forEach(row => {
+      let dropdownfilter
+
+      if(name === "status"){
+        dropdownfilter=this.state.statuslist
+      }else if(name === "holeStatus"){
+        dropdownfilter=this.state.holdlist
+      }
+
+      dropdownfilter.forEach(row => {
         if(row.field === name){
           item = row.status.map((data, index) => {
             return <option key={index} value={data.value}>{data.label}</option>
@@ -231,7 +289,7 @@ class ExtendTable extends Component{
             if(e.target.value !== ""){
                 filter.push({id: name, value:e.target.value})
             }
-            func(filter,data)
+            this.onCheckFliter(filter,this.state.dataselect)
             this.setState({datafilter:filter, loading:true})
           }}>{item}</select>
         }
@@ -275,7 +333,7 @@ class ExtendTable extends Component{
         let queryString = "";
         this.setState({loading:true})
         const select = this.state.dataselect
-        console.log(select)
+
         if(position === 'next'){
           select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
           queryString = createQueryString(select)
@@ -289,7 +347,17 @@ class ExtendTable extends Component{
         Axois.get(queryString).then(
           (res) => {
             if(res.data.datas.length > 0){
+              if(position === 'next'){
+                ++this.state.currentPage
+              }
+              else{
+                if(this.state.currentPage !== 1)
+                  --this.state.currentPage
+              }
               this.setState({data:res.data.datas})
+            }
+            else{
+              select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
             }
             this.setState({loading:false})
           }
@@ -323,17 +391,18 @@ class ExtendTable extends Component{
     }
 
     paginationButton(){
-        return(
-          <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'132px'}}>
-            <nav>
-              <ul className="pagination">
-                <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
-                <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
-              </ul>
-            </nav>
-          </div>
-        )
-      }
+      return(
+        <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'300px'}}>
+          <nav>
+            <p className="float-right" style={{width:"100px"}}>Page : {this.state.currentPage}</p>
+            <ul className="pagination">
+              <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
+              <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
+            </ul>
+          </nav>
+        </div>
+      )
+    }
     
     createCustomButton(url){
       return <Button type="button" color="info" onClick={() => this.props.history.push(url)}>History
@@ -344,8 +413,111 @@ class ExtendTable extends Component{
       return <input type="checkbox"/>
     }
 
+    onHandleSelection(rowdata, value, type){
+      if(type === "checkbox"){
+        let rowselect = this.state.rowselect;
+        if(value){
+          rowselect.push(rowdata.original)
+        }
+        else{
+          rowselect.forEach((row,index) => {
+            if(row.ID === rowdata.original.ID){
+              rowselect.splice(index,1)
+            }
+          })
+        }
+        this.setState({rowselect}, () => {this.props.getselection(this.state.rowselect)})
+      }
+      else{
+        let rowselect = [];
+        if(value){
+          rowselect.push(rowdata.original)
+        }
+        this.setState({rowselect:rowselect}, () => {this.props.getselection(this.state.rowselect)})
+      }
+    }
+
+    createSelectAll(){
+      return <input
+      type="checkbox"
+      onChange={(e)=> {
+        this.props.getselection(this.state.data);
+        var arr = Array.from(document.getElementsByClassName('selection'));
+        if(e.target.checked){
+          arr.forEach(row => {
+            row.checked = true
+          })
+        }
+        else{
+          arr.forEach(row => {
+            row.checked = false
+          })
+        }
+      }}/>
+    }
+    createSelection(rowdata,type){
+      return <input
+      className="selection"
+      type={type}
+      name="selection"
+      onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>//
+    }
+
+    sumChild(data){
+      
+      let getdata = []
+      data.forEach(row1 => {
+        let xx = getdata.filter(row => row.code == row1.code)
+        if(xx.length > 0){
+          let qty = xx[0].allqty
+          xx[0].allqty = xx[0].allqty + 1
+          if(row1.storageObjectChilds.length > 0)
+            this.sumChild(row1.storageObjectChilds)
+        }
+        else{
+          row1.allqty = 1
+          getdata.push(row1)
+          row1.storageObjectChilds = this.sumChild(row1.storageObjectChilds)
+        }
+      })
+      console.log(getdata)
+      return getdata
+    }
+
+    addtolist = (data) => 
+    {
+      //const condata = [...data]
+      const focus = {color:'red', marginLeft:"-20px", fontSize:"13px"}
+      const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
+      return data.map((child,i) => {
+        let disQtys;
+        if(child.storageObjectChilds.length > 0){
+          disQtys = child.storageObjectChilds.map((v)=>{
+            return <div>{v.weigthKG + ' ' + v.weigthKG + (v.weigthKG?' : Min ' + v.weigthKG:'') + (v.weigthKG?" : Max "+v.weigthKG:'')}</div>
+          });
+        }
+        else{
+          disQtys = <div>{child.weigthKG}</div>
+        }
+        
+         return <ul key={i} style={child.isFocus===true?focus:focusf}>
+          <span>{child.baseMaster_Code===null? child.packMaster_Code : child.baseMaster_Code} : {child.baseMaster_Name===null? child.packMaster_Name : child.baseMaster_Name} </span>
+          <span>{child.allqty===null?'':'[qty: ' + child.allqty + ']'} </span>
+          <span>{child.weigthKG===null?'':'[wei:' + child.weigthKG + 'Kg.]'} </span> 
+          {/* <br/><span style={{color:'gray'}}> {disQtys}</span> */}
+  
+          { (child.storageObjectChilds.map(child2 => {
+            let z = this.addtolist([child2])
+            return z})) 
+          }
+           </ul> 
+      })
+    }
+
     subTable(e){
-      if(this.props.subtype === 1){
+      const test = this.sumChild(Clone([e.original]))
+      return this.addtolist(test)
+      /* if(this.props.subtype === 1){
         let data = []
         e.original.storageObjectChilds.forEach(row => {
           data.push({"id":row.code,
@@ -410,9 +582,25 @@ class ExtendTable extends Component{
       }
       else{
 
-      }
+      } */
     }
     
+    setStatusText(rowdata){
+      if (rowdata.column.id==="status"){
+        if(rowdata.row["status"] === 0){
+          return "Inactive"
+        }else if(rowdata.row["status"] === 1){
+          return "Active" 
+        }
+      }else if (rowdata.column.id==="holeStatus"){
+        if(rowdata.row["holeStatus"] === 0){
+          return "No"
+        }else if(rowdata.row["holeStatus"] === 1){
+          return "Yes" 
+        }
+      }
+    }
+
     render(){
         const col = this.props.column
         col.forEach((row) => {
@@ -423,7 +611,19 @@ class ExtendTable extends Component{
               row.Filter = () => this.createCustomFilter(row.accessor,this.onCheckFilterExpand,this.state.dataselect)
             }
             else if(row.Filter === "dropdown"){
-              row.Filter = () => this.createDropdownFilter(row.accessor,this.onCheckFilterExpand,this.state.dataselect)
+              row.Filter = () => this.createDropdownFilter(row.accessor,this.state.dataselect)
+            }
+            else if(row.Filter === "select"){
+              row.Filter = (e) => this.createSelectAll()
+            }
+
+            if(row.Status === "text"){
+              row.Cell = (e) => (this.setStatusText(e))
+            }
+
+            if(row.Type === "selection"){
+              row.Cell = (e) => this.createSelection(e,"checkbox")
+              row.className="text-center"
             }
 
             if(row.Cell === "datetime"){
@@ -450,6 +650,7 @@ class ExtendTable extends Component{
         })
 
         return(
+          <div>
             <ReactTable data={this.state.data}
             style={{backgroundColor:'white'}}
             loading={this.state.loading}
@@ -461,10 +662,12 @@ class ExtendTable extends Component{
             minRows={5}
             SubComponent={this.subTable}
             PaginationComponent={this.paginationButton}
-            onSortedChange={(sorted) => {
+            /* onSortedChange={(sorted) => {
                 this.setState({data:[], loading:true });
                 this.customSorting(sorted)}
-            }/>
+            } *//>
+            
+            </div>
         )
     }
 }

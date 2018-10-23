@@ -81,7 +81,6 @@ class Supplier extends Component{
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
       filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Supplier"/>
-      {/* console.log(sessionStorage.User_ID) */}
       <Card>
         <CardBody style={{textAlign:'right'}}>
           <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Supplier</Button>
