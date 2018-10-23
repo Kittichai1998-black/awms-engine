@@ -146,21 +146,23 @@ class ListProduct extends Component{
     
       */}
         <div className="clearfix">
+        <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
           <Button className="float-right" onClick={() => {
             let data1 = {"exportName":"ProductToShop","whereValues":[]}
             api.post(window.apipath + "/api/report/export/fileServer", data1)
           }}>Export Data</Button>
+ 
         </div>
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
         filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
         btn={btnfunc} uneditcolumn={this.uneditcolumn}
          table="ams_SKUMaster"/>
 
-        <Card>
+        {/* <Card>
           <CardBody style={{textAlign:'right'}}>
             <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
           </CardBody>
-        </Card>
+        </Card> */}
       </div>
     )
   }

@@ -148,7 +148,7 @@ class SKUMasterType extends Component{
               <CardBody style={{textAlign:'right'}}>
                 <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
               </CardBody>
-            </Card>
+            </Card> 
           </div>
         )
       }

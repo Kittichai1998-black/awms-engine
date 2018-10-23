@@ -909,7 +909,9 @@ class TableGen extends Component{
 
     return(
       <div style={{overflowX:'auto'}}>
-        <Button onClick={this.onHandleClickAdd}  style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
+      <div className="clearfix">
+        <Button className="float-right" onClick={this.onHandleClickAdd}  style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success" >Add</Button>
+      </div> 
         <ReactTable 
           data={this.state.data} 
           ref={ref => this.tableComponent = ref}
@@ -941,7 +943,7 @@ class TableGen extends Component{
               this.setState({data:[],dataedit:[], loading:true });
               this.customSorting(sorted)}
           }/>
-        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
+        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none',textAlign:'right'}}>
           <CardBody>
             <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>
             <Button onClick={() => this.onHandleClickCancel()} color="danger"className="mr-sm-1">Cancel</Button>

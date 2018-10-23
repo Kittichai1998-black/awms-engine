@@ -77,15 +77,13 @@ class Supplier extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-     
+     <div className="clearfix">
+          <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
+      </div>
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
       filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Supplier"/>
-      <Card>
-        <CardBody style={{textAlign:'right'}}>
-          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Supplier</Button>
-        </CardBody>
-      </Card>
+      
       </div>
     )
   }
