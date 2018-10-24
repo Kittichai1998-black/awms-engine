@@ -3,8 +3,7 @@ import "react-table/react-table.css";
 import {Button } from 'reactstrap';
 import {TableGen} from '../../MasterData/TableSetup';
 //import Axios from 'axios';
-import {apicall, createQueryString} from '../../ComponentCore'
-import DatePicker from 'react-datepicker';
+import {apicall, DatePicker} from '../../ComponentCore'
 import moment from 'moment';
 
 const Axios = new apicall()
@@ -26,7 +25,7 @@ class IssuedDoc extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-      f:"ID,Code,SouBranch,Status,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+      f:"ID,Code,SouBranch,Status,DesWarehouse,DesArea,SouCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -46,14 +45,7 @@ class IssuedDoc extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker selected={this.state.date}
-    onChange={(e) => {this.setState({date:e})}}
-    onChangeRaw={(e) => {
-      if (moment(e.target.value).isValid()){
-        this.setState({date:e.target.value})
-      }
-   }}
-   dateFormat="DD/MM/YYYY"/>
+    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY"/>
   }
 
   getSelectionData(data){
@@ -66,7 +58,11 @@ class IssuedDoc extends Component{
         "exportName":"DocumentAuditToCD",
         "whereValues":[this.state.date.format('YYYY-MM-DD')]
        }
-      Axios.post(window.apipath + "/api/report/export/fileServer", postdata)
+      Axios.post(window.apipath + "/api/report/export/fileServer", postdata).then(res => {
+        if(res.data._result.status === 1){
+          window.success(res.data.fileExport)
+        }
+      })
     }
   }
 
@@ -77,10 +73,10 @@ class IssuedDoc extends Component{
   render(){
     const cols = [
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'SouBranch', Header: 'Branch',editable:false, Filter:"text"},
-      {accessor: 'SouWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
-      {accessor: 'SouArea', Header: 'Area', editable:false, Filter:"text",},
-      {accessor: 'DesCustomer', Header: 'Customer', editable:false, Filter:"text",},
+      {accessor: 'DesBranch', Header: 'Branch',editable:false, Filter:"text"},
+      {accessor: 'DesWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
+      {accessor: 'DesArea', Header: 'Area', editable:false, Filter:"text",},
+      {accessor: 'SouCustomer', Header: 'Customer', editable:false, Filter:"text",},
       {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
       {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
@@ -100,7 +96,6 @@ class IssuedDoc extends Component{
       func:this.onClickToDesc
     }]
     
-
     return(
       <div>
       {/*
@@ -112,7 +107,7 @@ class IssuedDoc extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right" onClick={() => {this.workingData()}}>Export Data</Button>
+          <Button className="float-right" onClick={() => {this.workingData()}} color="info">Export Data</Button>
 
           <div className="float-right">{this.dateTimePicker()}</div>
         </div>

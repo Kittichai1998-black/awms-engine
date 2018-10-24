@@ -28,3 +28,7 @@
 .tbody{
     display:table-row-group;
 }
+
+.-filters, .-header{
+    background-color: dimgrey;
+}

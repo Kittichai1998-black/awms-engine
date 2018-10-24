@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
-import {apicall} from '../ComponentCore'
+import {apicall, DatePicker} from '../ComponentCore'
 import moment from 'moment'
-import DatePicker from 'react-datepicker'
 
 const axois = new apicall()
 
@@ -53,18 +52,15 @@ class IssuedDoc extends Component{
   }
   
   dateTimePicker(){
-    return <DatePicker selected={this.state.date}
-    onChange={(e) => {this.setState({date:e})}}
-    onChangeRaw={(e) => {
-      if (moment(e.target.value).isValid()){
-        this.setState({date:e.target.value})
-      }
-   }}
-   dateFormat="DD/MM/YYYY"/>
+    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY"/>
   }
 
   getSelectionData(data){
     this.setState({selectiondata:data})
+  }
+
+  componentWillUnmount(){
+    this.state = {}
   }
 
   workingData(data,status){
@@ -124,14 +120,20 @@ class IssuedDoc extends Component{
     
       */}
         <div className="clearfix">
-
           <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
           
           <Button style={{background:"#00CED1",borderColor:"#00CED1"}} className="float-right" onClick={() => {
             let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format('YYYY-MM-DD')]}
             let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format('YYYY-MM-DD')]}
-            axois.post(window.apipath + "/api/report/export/fileServer", data1)
-            axois.post(window.apipath + "/api/report/export/fileServer", data2)
+            axois.post(window.apipath + "/api/report/export/fileServer", data1).then(res => {
+              if(res.data._result.status === 1){
+                let resultPath = res.data.fileExport
+                axois.post(window.apipath + "/api/report/export/fileServer", data2).then(res2 => {
+                  window.success(resultPath + "<br/>" + res2.data.fileExport)
+                  console.log([...window])
+                })
+              }
+            })
           }}>Export Data</Button>
 
           <div className="float-right">{this.dateTimePicker()}</div>
@@ -142,8 +144,8 @@ class IssuedDoc extends Component{
         accept={false}/>
         <Card>
           <CardBody>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
+            <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary" className="mr-sm-1">Working</Button>
+            <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger" className="mr-sm-1">Reject</Button>
             {this.state.resp}
           </CardBody>
         </Card>

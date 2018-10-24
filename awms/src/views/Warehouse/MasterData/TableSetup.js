@@ -14,6 +14,7 @@ import Select from 'react-select'
 import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
 import Downshift from 'downshift'
+import '../componentstyle.css'
 
 const Axios = new apicall()
 
@@ -166,7 +167,7 @@ class TableGen extends Component{
   }
   
   removedata(rowdata){
-    const data = [...this.state.data];
+    /* const data = [...this.state.data]; */
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
@@ -175,12 +176,12 @@ class TableGen extends Component{
     })
     rowdata.Status = 2
     dataedit.push(rowdata);
-    data.forEach((datarow,index) => {
+    /* data.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
         data.splice(index,1);
       }
     })
-    this.setState({ data });
+    this.setState({ data }); */
     this.setState({dataedit});
   }
 
@@ -190,17 +191,15 @@ class TableGen extends Component{
       filterlist = this.props.defaultCondition
     }
     else{
-      filterlist = [{"f":"Status", "c":"!=", "v": 2}]
+      filterlist = [{"f":"Status", "c":"<", "v": 2}]
     }
     
     if(filter.length > 0)
     {
       filter.forEach((data, id) => {
         if(data[1] !== ""){
-          const firstletter =  data["value"].toString().charAt(0)
-          const lastletter =  data["value"].toString().slice(-1)
 
-          if(firstletter === "*" || lastletter === "*"){
+          if(data["value"].includes("*")){
             filterlist.forEach((row, index) => {
               if(row.f === data["id"]){
                 filterlist.splice(index,1)
@@ -214,13 +213,19 @@ class TableGen extends Component{
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
             }
           }
-          else if(firstletter === "%"){
+          else if(data["value"].includes("%")){
             filterlist.forEach((row, index) => {
               if(row.f === data["id"]){
                 filterlist.splice(index,1)
               }
             })
-            filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
+
+            if(data["id"] === "Status"){
+              filterlist.push({"f":data["id"], "c":"<", "v": 2})
+            }
+            else{
+              filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
+            }
           }
           else{
             filterlist.forEach((row, index) => {
@@ -505,7 +510,7 @@ class TableGen extends Component{
   datetimeBody(value){
     if(value !== null){
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
     }
   }
   
@@ -530,7 +535,8 @@ class TableGen extends Component{
     const date = moment(value);
     if(format === 'date')
     {
-      return <DatePicker selected={date} style={{width:'1000px'}}
+      return <DatePicker selected={date}
+        customInput={<Input/>}
         onChange={(e) => {this.onEditDateChange(e, rowdata)}}
         onChangeRaw={(e) => {
           if (moment(value).isValid())
@@ -539,17 +545,19 @@ class TableGen extends Component{
     }
     else if(format === 'datetime'){
       return <DatePicker selected={date}
+        customInput={<Input/>}
         onChange={(e) => {this.onEditDateChange(e, rowdata)}}
         onChangeRaw={(e) => {
           if (moment(e.target.value).isValid())
                this.onEditDateChange(e, rowdata);
        }}
-        dateFormat="DD/MM/YYYY HH:mm:ss"
+        dateFormat="DD/MM/YYYY HH:mm"
         />
     }
     else{
       return <DatePicker selected={date}
         onChange={(e) => {return this.onEditDateChange(e, rowdata)}}
+        customInput={<Input/>}
         showTimeSelectOnly
         dateFormat="LT"
         timeCaption="Time"/>
@@ -557,7 +565,7 @@ class TableGen extends Component{
   }
   
   onEditDateChange(value, rowdata){
-    const dateformat = moment(value).format('YYYY-MM-DDTHH:mm:ss')
+    const dateformat = moment(value).format('YYYY-MM-DDTHH:mm')
     this.onEditorValueChange(rowdata ,dateformat, rowdata.column.id)
   }
 
@@ -925,14 +933,21 @@ class TableGen extends Component{
           SubComponent={this.subTable}
           getTrProps={(state, rowInfo) => {
             let result = false
+            let rmv = false
             this.state.dataedit.forEach(row => {
               if(rowInfo && rowInfo.row){
-                if(row.ID === rowInfo.original.ID)
+                if(row.ID === rowInfo.original.ID){
                   result = true
+                  if(row.Status === 2){
+                    rmv = true
+                  }
+                }
               }
             })
-            if(result === true)
+            if(result && !rmv )
               return {style:{background:"gray"}}
+            else if (rmv)
+              return {style:{background:"red"}}
             else
               return {}              
           }}
