@@ -121,7 +121,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     Code = packAdjInfo.code,
                     PackMaster_ID = packAdjInfo.mstID,
                     SKUMaster_ID = packMst.SKUMaster_ID,
-                    Quantity = adj.packQty,
+                    Quantity = adjQty,
                     StorageObjectIDs = packAdjs.Select(x => x.id.Value).ToList(),
                     EventStatus = DocumentEventStatus.CLOSED
                 };

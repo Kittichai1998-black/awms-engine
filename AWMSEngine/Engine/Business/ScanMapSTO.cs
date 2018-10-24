@@ -49,7 +49,14 @@ namespace AWMSEngine.Engine.Business
         {
             StorageObjectCriteria mapsto = null;
             Logger.LogDebug("//สแกนครั้งแรก");
-            if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
+            if (reqVO.mode == VirtualMapSTOModeType.TRANSFER)
+            {
+                Logger.LogDebug("Transfer Mode.");
+                mapsto = ADOSto.Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, true, true, this.BuVO);
+                //if (mapsto == null)
+                //    throw new AMWException(this.Logger, AMWExceptionCode.V2001, reqVO.scanCode);
+            }
+            if (reqVO.mode == VirtualMapSTOModeType.REGISTER || (reqVO.mode == VirtualMapSTOModeType.TRANSFER && mapsto == null))
             {
                 Logger.LogDebug("Register Mode.");
                 Logger.LogDebug("//หา sto ในคลัง ทั้งแบบ Free และ No Free");
@@ -90,13 +97,7 @@ namespace AWMSEngine.Engine.Business
                     throw new AMWException(this.Logger, AMWExceptionCode.V2001, reqVO.scanCode);
                 }*/
             }
-            else if(reqVO.mode == VirtualMapSTOModeType.TRANSFER)
-            {
-                Logger.LogDebug("Transfer Mode.");
-                mapsto = ADOSto.Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, true, true, this.BuVO);
-                if (mapsto == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, reqVO.scanCode);
-            }
+            
 
             mapsto.isFocus = true;
             return mapsto;
@@ -185,9 +186,15 @@ namespace AWMSEngine.Engine.Business
             List<StorageObjectCriteria> newMSs = new List<StorageObjectCriteria>();
 
             if (!isInStorage)
+            {
                 Logger.LogInfo("Mapping Object New to Storage");
-            else
+            }
+            else if (msf.eventStatus != StorageObjectEventStatus.RECEIVED)
+            {
+                msf.eventStatus = StorageObjectEventStatus.RECEIVED;
+                this.ADOSto.Update(msf, this.BuVO);
                 Logger.LogInfo("Mapping Object Storage to Storage");
+            }
 
             int freeCount = ADOSto.GetFreeCount(scanCode, warehouseID, areaID, isInStorage, batch, lot, this.BuVO);
             if (freeCount < amount && (isInStorage || (!isInStorage && this.StaticValue.IsFeature(FeatureCode.IB0100))))
