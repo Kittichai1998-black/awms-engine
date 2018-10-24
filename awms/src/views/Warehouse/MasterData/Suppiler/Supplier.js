@@ -83,7 +83,7 @@ class Supplier extends Component{
       table="ams_Supplier"/>
       <Card>
         <CardBody style={{textAlign:'right'}}>
-          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Supplier</Button>
+            <Button style ={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Supplier</Button>
         </CardBody>
       </Card>
       </div>

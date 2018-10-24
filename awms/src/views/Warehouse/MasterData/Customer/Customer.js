@@ -75,8 +75,9 @@ class Customer extends Component{
       filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Customer"/>
       <Card>
-        <CardBody style={{textAlign:'right'}}>
-          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Customer</Button>
+          <CardBody style={{ textAlign: 'right' }}>
+            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }}
+              onClick={this.onHandleClickLoad} color="danger" className="mr-sm-1">Load ข้อมูล Customer</Button>
         </CardBody>
       </Card>
       </div>

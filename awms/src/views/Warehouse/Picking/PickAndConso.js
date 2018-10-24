@@ -245,8 +245,9 @@ class PickAndConso extends Component{
         <div>
           <div style={{fontSize:"18px", color:"red"}}>{this.state.guideLoc}</div>
           <label>Barcode : </label><Input type="text" onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
-          <Button color="primary" onClick={() => this.onHandleClickCheckConso(this.state.rowselect, this.state.consoBarcode)} style={{display:"inline"}}>Scan</Button>
-          <Button color="danger" onClick={() => this.setState({consoStatus:2})} style={{display:"inline-block"}}>Clear Result</Button>
+          <Button color="primary" onClick={() => this.onHandleClickCheckConso(this.state.rowselect, this.state.consoBarcode)}
+            style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px' }}>Scan</Button>
+          <Button color="danger" onClick={() => this.setState({ consoStatus: 2 })} style={{ display: "inline-block", background: "#ef5350", borderColor: "#ef5350", width: '100px'}}>Clear Result</Button>
           <Alert color={this.state.consoStatus === 0 ? "danger" : this.state.consoStatus === 1 ? "success" : "primary"} style={{display:"inline-block"}}>
             {this.state.consoStatus === 0 ? "Can't Use" : this.state.consoStatus === 1 ? "Ready" : "Unset"}
           </Alert>
@@ -254,8 +255,10 @@ class PickAndConso extends Component{
         <Card>
           <CardBody>
             <ButtonGroup style={{margin:'0 0 10px 0',}}>
-              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
-              <Button color="primary" style={{zIndex:0}} onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 0 ? true : false}>Pick</Button>
+              <Button color="primary" style={{ zIndex: 0, background: "#0095a8", borderColor: "#0095a8", width: '80px' }}
+                onClick={() => this.selectMode(0)} active={this.state.rSelect === 0}>Focus</Button>
+              <Button color="primary" style={{ zIndex: 0, background: "#26c6da ", borderColor: "#26c6da", width: '80px' }}
+                onClick={() => this.selectMode(2)} active={this.state.rSelect === 2} disabled={this.state.consoStatus === 0 ? true : false}>Pick</Button>
             </ButtonGroup>
             <div>
               <label>Picking : </label>
@@ -265,8 +268,10 @@ class PickAndConso extends Component{
                 }
               }} style={{display:"inline-block", width:"180px"}}/>
               <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
-              <Button color="primary" style={{display:"inline"}} onClick={() => this.onHandleClickPickingScan()}>Scan</Button>
-              <Button color="danger" style={{display:"inline-block"}} onClick={() => this.setState({pickingList:null, pickingAmount:1, pickingBarcode:"", guideLoc:null})}>Clear Result</Button>
+              <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
+                onClick={() => this.onHandleClickPickingScan()}>Scan</Button>
+              <Button color="danger" style={{ display: "inline-block", background: "#ef5350", borderColor: "#ef5350", width: '100px' }}
+                onClick={() => this.setState({ pickingList: null, pickingAmount: 1, pickingBarcode: "", guideLoc: null })}>Clear Result</Button>
             </div>
             <div>
               {this.state.pickingList}
