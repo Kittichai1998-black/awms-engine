@@ -5,11 +5,9 @@ import {Input, Card, CardBody, Button, Row} from 'reactstrap';
 import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
 import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
-import {AutoSelect, NumberInput, apicall, createQueryString } from '../../ComponentCore'
-import 'react-datepicker/dist/react-datepicker.css';
+import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker } from '../../ComponentCore'
 import Downshift from 'downshift'
 
 function isInt(value) {
@@ -172,14 +170,7 @@ class IssuedManage extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker selected={this.state.date}
-    onChange={(e) => {this.setState({date:e})}}
-    onChangeRaw={(e) => {
-      if (moment(e.target.value).isValid()){
-        this.setState({date:e.target.value})
-      }
-   }}
-   dateFormat="DD/MM/YYYY HH:mm:ss"/>
+    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY HH:mm:ss"/>
   }
 
   renderDocumentStatus(){

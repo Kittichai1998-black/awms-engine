@@ -68,7 +68,7 @@ class LoadingDocument extends Component{
 
   onHandleScanConso(){
     let data = [{loadingDocID:this.state.transportvalue, scanCode:this.state.consoCode}]
-    API.post(window.apipath + "/api/wm/loading/conso").then(res => {
+    API.post(window.apipath + "/api/wm/loading/conso" ,data).then(res => {
     })
   }
 
@@ -98,8 +98,17 @@ class LoadingDocument extends Component{
           <Col><label style={{paddingRight:"10px"}}>Transport : </label><span>{this.state.TransportID}</span></Col>
         </Row>
         <Row>
-          <Col><Input style={{ width: '200px', display: "inline-block" }} type="text" value={this.state.consoCode} onChange={(e) => { this.setState({ consoCode: e.target.value }) }} />
-            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '80px' }} color="primary">Scan</Button></Col>
+          <Col>
+            <Input style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
+              onChange={(e) => {
+                this.setState({consoCode:e.target.value})
+              }} 
+              onKeyPress={e => {
+                if(e.key === "Enter"){
+                  this.onHandleScanConso()
+                }
+              }}/>
+          <Button onClick={this.onHandleScanConso}>Scan</Button></Col>
         </Row>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/>

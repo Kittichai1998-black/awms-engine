@@ -3,10 +3,8 @@ import "react-table/react-table.css";
 import {Input, Button, Row, Col, CardBody, Card } from 'reactstrap';
 import ReactTable from 'react-table';
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
-import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
+import {AutoSelect, apicall, createQueryString, DatePicker} from '../../ComponentCore';
 import {DocumentEventStatus} from '../../Status'
-import 'react-datepicker/dist/react-datepicker.css';
 import Downshift from 'downshift'
 import queryString from 'query-string'
 
@@ -224,14 +222,7 @@ class LoadingDocument extends Component{
   }
   
   dateTimePicker(){
-    return <DatePicker selected={this.state.date}
-    onChange={(e) => {this.setState({date:e})}}
-    onChangeRaw={(e) => {
-      if (moment(e.target.value).isValid()){
-        this.setState({date:e.target.value})
-      }
-   }}
-   dateFormat="DD/MM/YYYY HH:mm"/>
+    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY HH:mm"/>
   }
 
   addData(){
