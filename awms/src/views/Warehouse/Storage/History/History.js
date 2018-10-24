@@ -144,8 +144,10 @@ class History extends Component{
         url={null} filterable={true} subtype={1} filterFields={this.state.dataMap}/>
         <Card style={{display:'inlne-block',textAlign:'right'}}>
           <CardBody>
-            <Button onClick={() => this.updateHold("hold")} color="primary"className="mr-sm-1">Hold</Button>
-            <Button onClick={() => this.updateHold("unhold")} color="primary"className="mr-sm-1">Unhold</Button>
+            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
+              onClick={() => this.updateHold("hold")} color="primary" className="float-right">Hold</Button>
+            <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
+              onClick={() => this.updateHold("unhold")} color="primary" className="float-right">Unhold</Button>
           </CardBody>
         </Card>
       </div>

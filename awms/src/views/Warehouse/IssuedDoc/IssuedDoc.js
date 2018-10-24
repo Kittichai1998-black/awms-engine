@@ -83,7 +83,8 @@ class IssuedDoc extends Component{
   }
 
   onClickToDesc(data){
-    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gi/manage?ID='+data.ID)}>Detail</Button>
+    return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da" }}
+      onClick={() => this.history.push('/doc/gi/manage?ID=' + data.ID)}>Detail</Button>
   }
 
   render(){
@@ -125,15 +126,14 @@ class IssuedDoc extends Component{
       */}
         <div className="clearfix">
 
-          <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+          <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px'  }}color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
           
-          <Button style={{background:"#00CED1",borderColor:"#00CED1"}} className="float-right" onClick={() => {
+          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right" onClick={() => {
             let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format('YYYY-MM-DD')]}
             let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format('YYYY-MM-DD')]}
             axois.post(window.apipath + "/api/report/export/fileServer", data1)
             axois.post(window.apipath + "/api/report/export/fileServer", data2)
           }}>Export Data</Button>
-
           <div className="float-right">{this.dateTimePicker()}</div>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
@@ -142,8 +142,8 @@ class IssuedDoc extends Component{
         accept={false}/>
         <Card>
           <CardBody>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
+            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
             {this.state.resp}
           </CardBody>
         </Card>

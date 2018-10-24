@@ -160,7 +160,7 @@ class ListProduct extends Component{
 
         {/* <Card>
           <CardBody style={{textAlign:'right'}}>
-            <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
+            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
           </CardBody>
         </Card> */}
       </div>

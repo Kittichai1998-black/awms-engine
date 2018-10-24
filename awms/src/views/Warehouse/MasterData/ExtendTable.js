@@ -394,11 +394,13 @@ class ExtendTable extends Component{
       return(
         <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'300px'}}>
           <nav>
-            <p className="float-right" style={{width:"100px"}}>Page : {this.state.currentPage}</p>
             <ul className="pagination">
-              <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
-              <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
+              <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+                onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
+              <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+                onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
             </ul>
+            <p className="float-central" style={{ width: "200px" }}>Page : {this.state.currentPage}</p>
           </nav>
         </div>
       )
