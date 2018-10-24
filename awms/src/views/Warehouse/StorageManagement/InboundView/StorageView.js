@@ -107,9 +107,10 @@ class IssuedDoc extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right" onClick={() => {this.workingData()}} color="info">Export Data</Button>
+          <Button className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary"
+            onClick={() => { this.workingData() }}>Export Data</Button>
 
-          <div className="float-right">{this.dateTimePicker()}</div>
+          <div   className="float-right">{this.dateTimePicker()}</div>
         </div>
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}

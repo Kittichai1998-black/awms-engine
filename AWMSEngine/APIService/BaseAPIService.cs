@@ -117,6 +117,7 @@ namespace AWMSEngine.APIService
                 this.Logger.LogBegin();
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
                     this.APIServiceID(),
+                    this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
                     this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
                     this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
                     System.Environment.MachineName,

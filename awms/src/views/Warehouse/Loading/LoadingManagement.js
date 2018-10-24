@@ -87,8 +87,8 @@ class LoadingManage extends Component{
       {accessor: 'ModifyTime', Header: 'ModifyBy', editable:false,Type:"datetime", filterable:false},
       {accessor: 'Remark', Header: 'Remark', editable:false,},
       {editable:false, Cell:(e) => {
-        return <Button color="primary" onClick={() => {
-          this.props.history.push('/doc/ld/manage?ID='+ e.original.ID)
+        return <Button color="primary" style={{ background: "#26c6da", borderColor: "#26c6da" }}
+          onClick={() => { this.props.history.push('/doc/ld/manage?ID='+ e.original.ID)
         }
       }>Detail</Button>}},
     ];
@@ -104,15 +104,17 @@ class LoadingManage extends Component{
     
       */}
         <div className="clearfix">
-          <Button style={{background:"#66FF99",borderColor:"#66FF99"}} className="float-right" onClick={() => this.props.history.push('/doc/ld/manage') }>Create Document</Button>
+          <Button style={{ background: "#66bb6a", borderColor: "#66bb6a" }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/ld/manage')}>Create Document</Button>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         accept={false} defalutCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]}/>
         <Card>
           <CardBody>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"accept")} color="primary"className="mr-sm-1">Working</Button>
-            <Button onClick={() => this.workingData(this.state.selectiondata,"reject")} color="danger"className="mr-sm-1">Reject</Button>
+            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px'}}
+              onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
+            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}
+              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
             {this.state.resp}
           </CardBody>
         </Card>

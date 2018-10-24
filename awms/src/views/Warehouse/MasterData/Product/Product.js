@@ -146,7 +146,8 @@ class ListProduct extends Component{
     
       */}
         <div className="clearfix">
-          <Button className="float-right" onClick={() => {
+          <Button className="float-right" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
+            onClick={() => {
             let data1 = {"exportName":"ProductToShop","whereValues":[]}
             api.post(window.apipath + "/api/report/export/fileServer", data1)
           }}>Export Data</Button>
@@ -158,7 +159,7 @@ class ListProduct extends Component{
 
         <Card>
           <CardBody style={{textAlign:'right'}}>
-            <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
+            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
           </CardBody>
         </Card>
       </div>

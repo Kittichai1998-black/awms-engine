@@ -419,13 +419,18 @@ class TableGen extends Component{
 
   paginationButton(){
     return(
-      <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'300px'}}>
+      <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
         <nav>
-          <p className="float-right" style={{width:"100px"}}>Page : {this.state.currentPage}</p>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
-            <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
+            <div></div>
+            <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("prev")}>
+            Previous</a></li>
+            <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
           </ul>
+          <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
         </nav>
       </div>
     )
@@ -444,7 +449,7 @@ class TableGen extends Component{
         item = row.status.map((data, index) => {
           return <option key={index} value={data.value}>{data.label}</option>
         })
-        list = <select onChange={(e) => {
+        list = <select style={{ background:"#FAFAFA" }} onChange={(e) => {
           filter.forEach((datarow,index) => {
             if(datarow.id === name){
                 filter.splice(index,1);
@@ -463,7 +468,7 @@ class TableGen extends Component{
 
   createCustomFilter(name){
     let filter = [...this.state.datafilter]
-    return <Input type="text" id={name}
+    return <Input type="text" id={name} style={{ background: "#FAFAFA" }} placeholder="filter..."
       onKeyPress={(e) => {
         if (e.key === 'Enter'){
             filter.forEach((datarow,index) => {
@@ -493,7 +498,8 @@ class TableGen extends Component{
 
   createCustomButton(type,text,data){
     if(type === "Remove"){
-      return <Button type="button" color="danger" onClick={() => this.removedata(data)}>Remove</Button>
+      return <Button type="button" color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '80px' }}
+        onClick={() => this.removedata(data)}>Remove</Button>
     }
     else if(type === "Link"){
       return <Button type="button" color="info">{
@@ -873,8 +879,8 @@ class TableGen extends Component{
           }
           else if(row.Type === "button"){
             this.props.btn.find(btnrow => {
-              if(row.btntype === "Remove" && btnrow.btntype){
-                row.Cell = (e) => <Button type="button" color="danger" onClick={() => this.removedata(e.original)}>Remove</Button>
+              if (row.btntype === "Remove" && btnrow.btntype) {
+                row.Cell = (e) => <Button type="button" style={{ background: "#ef5350", borderColor: "#ef5350"}} color="success"  onClick={() => this.removedata(e.original)}>Remove</Button>
               }
               else{
                 if(row.btntype === btnrow.btntype){
@@ -916,8 +922,9 @@ class TableGen extends Component{
         })
 
     return(
-      <div style={{overflowX:'auto'}}>
-        <Button onClick={this.onHandleClickAdd}  style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
+      <div style={{ overflowX: 'auto' }}>
+        <Button onClick={this.onHandleClickAdd} style={{ width: 200, display: this.state.addbtn === true ? 'inline' : 'none', background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
+        <div className="clearfix"></div>
         <ReactTable 
           data={this.state.data} 
           ref={ref => this.tableComponent = ref}
@@ -958,8 +965,8 @@ class TableGen extends Component{
           }/>
         <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
           <CardBody>
-            <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>
-            <Button onClick={() => this.onHandleClickCancel()} color="danger"className="mr-sm-1">Cancel</Button>
+            <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}  className="float-right">Cancel</Button>
           </CardBody>
         </Card>
       </div>
