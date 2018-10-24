@@ -42,9 +42,8 @@ class Branch extends Component{
 
     render(){
         const cols = [ 
-          {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
-          {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
-          {accessor: 'Description', Header: 'Description', editable:true,Filter:"text",},
+          {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
+          {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
           {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
           {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
           {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},

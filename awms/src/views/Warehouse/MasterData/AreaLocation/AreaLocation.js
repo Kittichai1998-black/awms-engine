@@ -13,9 +13,9 @@ class AreaLocation extends Component{
       data : null,
       autocomplete:[],
       cols1:[
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left",},
+        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text",fixed: "left",},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text",fixed: "left",},
         {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
@@ -236,10 +236,9 @@ class AreaLocation extends Component{
   setColumns(){
     if(this.state.grouptype === 2){ 
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text", fixed: "left"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
@@ -255,10 +254,9 @@ class AreaLocation extends Component{
     
     }else  if(this.state.grouptype === 1) {
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        {accessor: 'Code', Header: 'Code', editable:false, Filter:"text", fixed: "left"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
@@ -271,10 +269,9 @@ class AreaLocation extends Component{
       ]; 
     }else{
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text", fixed: "left"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
         {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},

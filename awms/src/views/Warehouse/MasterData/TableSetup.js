@@ -15,7 +15,9 @@ import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
 import Downshift from 'downshift'
 import '../componentstyle.css'
+import withFixedColumns from "react-table-hoc-fixed-columns";
 
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
 
 /* const getColumnWidth = (rows, accessor, headerText) => {
@@ -922,13 +924,14 @@ class TableGen extends Component{
         })
 
     return(
-      <div style={{ overflowX: 'auto' }}>
+      <div style={{ overflowX: 'auto'}}>
         <Button onClick={this.onHandleClickAdd} style={{ width: 200, display: this.state.addbtn === true ? 'inline' : 'none', background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
         <div className="clearfix"></div>
-        <ReactTable 
+        <ReactTableFixedColumns
+          className="-striped" 
           data={this.state.data} 
           ref={ref => this.tableComponent = ref}
-          style={{backgroundColor:'white'}}
+          style={{backgroundColor:'white', zIndex:0}}
           loading={this.state.loading}
           filterable={this.props.filterable}
           columns={col}

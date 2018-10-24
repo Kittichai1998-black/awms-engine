@@ -109,15 +109,10 @@ class ListProduct extends Component{
 
   render(){
     const cols = [
-      {accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter:"text"},
-      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
-      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
-      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
+      {accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter:"text", fixed: "left"},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
-      {accessor: 'WidthM', Header: 'Width', editable:false,Filter:"text", datatype:"int",},
-      {accessor: 'LengthM', Header: 'Length', editable:false,Filter:"text", datatype:"int",},
-      {accessor: 'HeightM', Header: 'Height', editable:false,Filter:"text", datatype:"int",},
-      {accessor: 'WeightKG', Header: 'Weight', editable:false,Filter:"text", datatype:"int",},
       {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", },
       {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
       {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},

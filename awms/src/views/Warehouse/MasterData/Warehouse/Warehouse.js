@@ -91,9 +91,8 @@ class Warehouse extends Component{
 
     render(){
         const cols = [
-            {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
-            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
-            {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
+            {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
+            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
             {accessor: 'Branch_Code', Header: 'Branch',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
             {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},

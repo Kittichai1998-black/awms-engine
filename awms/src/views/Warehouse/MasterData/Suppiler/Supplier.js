@@ -53,9 +53,8 @@ class Supplier extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text"},
-      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text"},
-      {accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
       /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false},

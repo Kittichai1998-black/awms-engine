@@ -42,7 +42,7 @@ class User extends Component{
 
     render(){
         const cols = [
-            {accessor: 'Code', Header: 'Username', editable:true, filterable:true, Filter:"text", insertable:true},
+            {accessor: 'Code', Header: 'Username', editable:true, filterable:true, Filter:"text", insertable:true, fixed: "left"},
             {accessor: 'Password', Header: 'Password', editable:true, filterable:false, Type:"password" },
             {accessor: 'Name', Header: 'Name', editable:true},
             {accessor: 'EmailAddress', Header: 'Email Address', editable:true},

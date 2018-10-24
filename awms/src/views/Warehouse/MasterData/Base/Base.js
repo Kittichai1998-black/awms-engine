@@ -116,10 +116,9 @@ class Area extends Component{
 
     render(){
         const cols = [
-            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text"},
-            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text"},
-            {accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
+            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text", fixed: "left"},
+            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
