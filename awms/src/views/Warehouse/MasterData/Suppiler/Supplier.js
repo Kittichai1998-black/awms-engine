@@ -53,14 +53,15 @@ class Supplier extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
-      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text"},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text"},
+      //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
       /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
       {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
-      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
-      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
+      //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
+      //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
 
@@ -76,15 +77,13 @@ class Supplier extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-     
+     <div className="clearfix">
+          <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
+      </div>
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
       filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
       table="ams_Supplier"/>
-      <Card>
-        <CardBody style={{textAlign:'right'}}>
-            <Button style ={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Supplier</Button>
-        </CardBody>
-      </Card>
+      
       </div>
     )
   }

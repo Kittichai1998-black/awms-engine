@@ -114,8 +114,8 @@ class SKUMasterType extends Component{
           {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
           {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
           {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
-          {accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+          //{accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
+          //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
         ];
         
@@ -147,7 +147,7 @@ class SKUMasterType extends Component{
               <CardBody style={{textAlign:'right'}}>
                 <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
               </CardBody>
-            </Card>
+            </Card> 
           </div>
         )
       }

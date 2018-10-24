@@ -142,7 +142,7 @@ class History extends Component{
         <ExtendTable data={this.state.select} column={cols} subcolumn={subcols} 
         pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData}
         url={null} filterable={true} subtype={1} filterFields={this.state.dataMap}/>
-        <Card style={{display:'inlne-block'}}>
+        <Card style={{display:'inlne-block',textAlign:'right'}}>
           <CardBody>
             <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
               onClick={() => this.updateHold("hold")} color="primary" className="float-right">Hold</Button>

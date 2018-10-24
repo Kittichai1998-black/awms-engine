@@ -53,8 +53,8 @@ class User extends Component{
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
             {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-            {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+            //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+            //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 

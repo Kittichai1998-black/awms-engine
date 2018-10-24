@@ -170,8 +170,10 @@ const routes = [
   { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
   { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
+  { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
+  { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
-  //{ path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: StockCorrectionDocument },
+  
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
 

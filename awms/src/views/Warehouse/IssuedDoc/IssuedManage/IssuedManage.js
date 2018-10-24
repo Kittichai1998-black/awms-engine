@@ -344,7 +344,7 @@ class IssuedManage extends Component{
     else{
       cols = [
         {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e),},
-        {accessor:"SKU",Header:"SKU",},
+        //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
         {Cell:(e) => <Button onClick={()=>{
@@ -388,14 +388,15 @@ class IssuedManage extends Component{
             </div>
           </Row>
         </div>
-        <Button onClick={() => this.addData()} color="primary" className="mr-sm-1" disabled={this.state.addstatus} style={{ display: this.state.adddisplay, background: "#66bb6a", borderColor: "#66bb6a", width: '130px'}}>Add</Button>
+        <div className="clearfix">
+          <Button className="float-right" onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
+        </div>
         <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
         <Card>
-          <CardBody>
-            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay, background: "#26c6da", borderColor: "#26c6da", width: '130px'}} color="primary"className="float-right">Create</Button>
-            <Button style={{ background: " #ef5350", borderColor: " #ef5350", width: '130px' }} type="button" color="danger" className="float-right"
-              onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
+          <CardBody style={{textAlign:'right'}}>
+            <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
+            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>

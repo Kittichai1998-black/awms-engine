@@ -966,7 +966,7 @@ class TableGen extends Component{
               this.setState({data:[],dataedit:[], loading:true });
               this.customSorting(sorted)}
           }/>
-        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
+        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none',textAlign:'right'}}>
           <CardBody>
             <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
             <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}  className="float-right">Cancel</Button>

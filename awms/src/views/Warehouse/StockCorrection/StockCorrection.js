@@ -8,6 +8,7 @@ import {AutoSelect,apicall} from '../ComponentCore'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { runInNewContext } from 'vm';
 
+
 const Axios = new apicall()
 const createQueryString = (select) => {
     let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -74,6 +75,7 @@ class StockCorrection extends Component{
             all:"",},
             qtyEdit:[],
             remark:"",
+            detailPopup:false,
             warehousedata:[],
             data:[],
             barcode:"",
@@ -85,6 +87,8 @@ class StockCorrection extends Component{
         this.clickSubmit =this.clickSubmit.bind(this)
         this.clearTable = this.clearTable.bind(this)
         this.Highlight = {background:"green"}
+        this.togglePopup = this.togglePopup.bind(this)
+        this.detailBaseData = this.detailBaseData.bind(this)
       
       }
       componentDidMount(){
@@ -154,6 +158,7 @@ class StockCorrection extends Component{
                         this.setState({control:"none"})
                         this.setState({showCard:"block"})
                         this.setState({response:<span class="text-center" >{response.data._result.message}</span>})
+                        this.state.barcode = ""
                         return null
                     }
 
@@ -184,27 +189,51 @@ class StockCorrection extends Component{
           }
           
           return <ul key={i} style={child.isFocus===true?focus:focusf}>
+          <div style={{ display:'inline-block'}} onClick={(e) => {
+          let getElement = document.getElementById(child.id).innerHTML
+          if(getElement !== "")
+            this.setState({DataPopup:getElement,HeaderPopup:child.code}, () => {this.togglePopup()})
+        }}>
             <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
             <span>{child.code} : {child.name}  | </span> 
             <span>{child.objectSizeName} | </span>
             <span>{child.minWeiKG?child.minWeiKG+ '/':''}
              {child.weiKG===0?"":child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} 
-             {child.allqty !== undefined ? "Qty:"+child.allqty : null}
-             </span>
-            <br/><span style={{color:'gray'}}> {disQtys}
-            {child.mapstos.length > 0 ? null : <Input style={{height:"30px", width:"60px",background:"#FFFFE0"}} max="" type="number" 
-              onChange={(e)=>{this.ChangeData(e,child.id,child.code,e.target.value,parent)}}/>}
-                
-             </span>
+              {child.allqty !== undefined ? (child.mapstos.length > 0? null:"Qty:") : null}
              
-            {(child.mapstos.map(child2 => {
+             </span>
+             <span style={{color:'gray',display:'none'}} id={child.id}> {disQtys}      
+             </span>
+             </div>
+                {child.mapstos.length > 0 ? null : <Input style={{height:"30px", width:"60px",background:"#FFFFE0",display:"inline-block"}} max="" type="number" 
+                onChange={(e)=>{this.ChangeData(e,child.id,child.code,e.target.value,parent)}}/>}
+              
+
+             {(child.mapstos.map(child2 => {
               let z = this.addtolist([child2],child.id)
               return z}))
             }
             </ul> 
         }) 
       }
-      
+      togglePopup() { 
+        this.setState({
+          detailPopup: !this.state.detailPopup
+        });
+      }
+
+      detailBaseData(){
+        return  <Modal isOpen={this.state.detailPopup}>
+                  <ModalHeader toggle={this.togglePopup}>{this.state.HeaderPopup}</ModalHeader>
+                  <ModalBody>
+                    <div dangerouslySetInnerHTML={{__html:this.state.DataPopup}}/>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color="secondary" id="off" onClick={this.togglePopup}>Cancel</Button>
+                  </ModalFooter>
+                </Modal>
+      }
+
       ChangeData(e,dataID,dataCode,dataValue,dataParent){
           e.target.style.background="yellow"
             let rootdata
@@ -242,6 +271,7 @@ class StockCorrection extends Component{
         const display={display:'none'}
       return(
         <div> 
+            {this.detailBaseData()}
             <Row>
                 <Col sm="6">
                     {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false)}
@@ -250,12 +280,12 @@ class StockCorrection extends Component{
                 <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Remark : </label>
                     <Input id="remarktext" style={{width:'66.5%',display:'inline-block'}} type="text" 
                     value={this.state.remark}  onChange={e => {this.setState({remark:e.target.value})}}
-                    placeholder="หมายเหตุ"></Input>
+                    placeholder="Remark"></Input>
                 </Col>
                 <Col sm="6">
                     <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
                     <Input id="barcodetext" style={{width:'45%',display:'inline-block'}} type="text"
-                    value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ด"
+                    value={this.state.barcode} placeholder="Barcode"
                     onChange={e => {this.setState({barcode:e.target.value})}}
                     onKeyPress={(e) => {
                         if(e.key === 'Enter' && this.state.barcode !== ""){
@@ -279,8 +309,8 @@ class StockCorrection extends Component{
             </Card>
 
             <Row className="text-center" style={{display:this.state.control}}>
-                <Button onClick={this.clickSubmit} color="primary">confrim</Button>
-                <Button onClick={this.clearTable} color="danger" >Cancle</Button>
+                <Button onClick={this.clickSubmit} color="primary">Confirm</Button>
+                <Button onClick={this.clearTable} color="danger" >Cancel</Button>
             </Row>
         </div>
       
