@@ -24,7 +24,7 @@ class ListProduct extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"SKUMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,SKUMasterType_ID,concat(SKUMasterType_Code,' : ',SKUMasterType_Name) as SKUMasterType_Code,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+      f:"ID,SKUMasterType_ID,concat(SKUMasterType_Code,' : ',SKUMasterType_Name) as SKUMasterType_Code,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -37,7 +37,7 @@ class ListProduct extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
-    this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
+    this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","Modified","Created"]
   }
 
   onHandleClickCancel(event){
@@ -115,9 +115,9 @@ class ListProduct extends Component{
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
       {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", },
-      {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
-      {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      //{accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
+      {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+      /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
       //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
