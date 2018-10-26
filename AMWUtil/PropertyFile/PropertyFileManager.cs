@@ -30,19 +30,21 @@ namespace AMWUtil.PropertyFile
         {
             foreach(var p in paths)
             {
-                var sr = new StreamReader(p.Value);
-                var property = new Dictionary<string, string>();
-                this.PropertyFiles.Add(p.Key, property);
-                while (!sr.EndOfStream)
+                using (var sr = new StreamReader(p.Value))
                 {
-                    string line = sr.ReadLine().Trim();
-                    if (!line.StartsWith("#") &&        //First Character # is Line Comment
-                        !string.IsNullOrEmpty(line))
+                    var property = new Dictionary<string, string>();
+                    this.PropertyFiles.Add(p.Key, property);
+                    while (!sr.EndOfStream)
                     {
-                        string[] kv = line.Split('=', 2);
-                        property.Add(
-                            kv.Length > 0 ? kv[0].Trim() : string.Empty,    //KEY
-                            kv.Length > 1 ? kv[1].Trim() : string.Empty);   //VALUE
+                        string line = sr.ReadLine().Trim();
+                        if (!line.StartsWith("#") &&        //First Character # is Line Comment
+                            !string.IsNullOrEmpty(line))
+                        {
+                            string[] kv = line.Split('=', 2);
+                            property.Add(
+                                kv.Length > 0 ? kv[0].Trim() : string.Empty,    //KEY
+                                kv.Length > 1 ? kv[1].Trim() : string.Empty);   //VALUE
+                        }
                     }
                 }
             }

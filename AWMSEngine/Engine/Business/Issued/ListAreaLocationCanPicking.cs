@@ -10,7 +10,7 @@ namespace AWMSEngine.Engine.Business.Issued
     {
         public class TReq
         {
-            public long docItemID;
+            public List<long> docItemIDs;
         }
         public class TRes
         {
@@ -31,31 +31,37 @@ namespace AWMSEngine.Engine.Business.Issued
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            List<SPOutSTORootCanUseCriteria> stos = ADO.StorageObjectADO.GetInstant().ListRootCanPicking(reqVO.docItemID, this.BuVO);
             TRes res = new TRes();
-            res.datas = stos
-                .GroupBy(x => new {
-                    areaID = x.areaID,
-                    areaCode = x.areaCode,
-                    areaLocationID = x.areaLocationID,
-                    areaLocationCode = x.areaLocationCode,
-                    branchID = x.branchID,
-                    branchCode = x.branchCode,
-                    warehouseID = x.warehouseID,
-                    warehouseCode = x.warehouseCode
-                })
-                .Select(x => new TRes.TData()
-                {
-                    areaID = x.Key.areaID,
-                    areaCode = x.Key.areaCode,
-                    areaLocationID = x.Key.areaLocationID,
-                    areaLocationCode = x.Key.areaLocationCode,
-                    branchID = x.Key.branchID,
-                    branchCode = x.Key.branchCode,
-                    warehouseID = x.Key.warehouseID,
-                    warehouseCode = x.Key.warehouseCode,
-                    packQty = x.Sum(y => y.packQty)
-                }).ToList();
+            res.datas = new List<TRes.TData>();
+            foreach (long id in reqVO.docItemIDs)
+            {
+                List<SPOutSTORootCanUseCriteria> stos = ADO.StorageObjectADO.GetInstant().ListRootCanPicking(id, this.BuVO);
+                var datas = stos
+                    .GroupBy(x => new {
+                        areaID = x.areaID,
+                        areaCode = x.areaCode,
+                        areaLocationID = x.areaLocationID,
+                        areaLocationCode = x.areaLocationCode,
+                        branchID = x.branchID,
+                        branchCode = x.branchCode,
+                        warehouseID = x.warehouseID,
+                        warehouseCode = x.warehouseCode
+                    })
+                    .Select(x => new TRes.TData()
+                    {
+                        areaID = x.Key.areaID,
+                        areaCode = x.Key.areaCode,
+                        areaLocationID = x.Key.areaLocationID,
+                        areaLocationCode = x.Key.areaLocationCode,
+                        branchID = x.Key.branchID,
+                        branchCode = x.Key.branchCode,
+                        warehouseID = x.Key.warehouseID,
+                        warehouseCode = x.Key.warehouseCode,
+                        packQty = x.Sum(y => y.packQty)
+                    }).ToList();
+                res.datas.AddRange(datas);
+            }
+            
 
             return res;
 

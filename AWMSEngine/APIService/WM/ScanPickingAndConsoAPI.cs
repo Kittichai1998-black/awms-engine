@@ -21,26 +21,26 @@ namespace AWMSEngine.APIService.WM
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            ScanIssuedToPickingAndConso.TReq req = ObjectUtil.DynamicToModel<ScanIssuedToPickingAndConso.TReq>(this.RequestVO);
-            var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(req.docItemID, this.BuVO);
+            ScanIssuedToPicking.TReq req = ObjectUtil.DynamicToModel<ScanIssuedToPicking.TReq>(this.RequestVO);
+            //var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(req.docItemID, this.BuVO);
 
-            if(req.action == VirtualMapSTOActionType.SELECT)
-            {
-                if (!String.IsNullOrWhiteSpace(req.baseCode))
-                {
-                    var doc = new Engine.Business.Consolidate.CheckBSTOCanUseInDocument().Execute(this.Logger, this.BuVO, new Engine.Business.Consolidate.CheckBSTOCanUseInDocument.TReq()
-                    {
-                        baseCode = req.baseCode,
-                        docID = docItem.Document_ID
-                    });
-                }
-            }
-            else if(req.action != VirtualMapSTOActionType.REMOVE)
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "รอรับเฉพาะ Action Add & Remove");
-            }
+            //if(req.action == VirtualMapSTOActionType.SELECT)
+            //{
+            //    if (!String.IsNullOrWhiteSpace(req.baseCode))
+            //    {
+            //        var doc = new Engine.Business.CheckBSTOCanUseInDocument().Execute(this.Logger, this.BuVO, new Engine.Business.CheckBSTOCanUseInDocument.TReq()
+            //        {
+            //            baseCode = req.baseCode,
+            //            docID = docItem.Document_ID
+            //        });
+            //    }
+            //}
+            //else if(req.action != VirtualMapSTOActionType.REMOVE)
+            //{
+            //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "รอรับเฉพาะ Action Add & Remove");
+            //}
 
-            var res = new ScanIssuedToPickingAndConso().Execute(this.Logger, this.BuVO, req);
+            var res = new ScanIssuedToPicking().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }
