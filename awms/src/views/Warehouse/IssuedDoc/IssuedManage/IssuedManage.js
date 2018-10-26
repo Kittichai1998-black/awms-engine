@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Link,Redirect}from 'react-router-dom';
 import "react-table/react-table.css";
-import {Input, Card, CardBody, Button, Row} from 'reactstrap';
+import {Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import moment from 'moment';
@@ -9,6 +9,8 @@ import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
 import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker } from '../../ComponentCore'
 import Downshift from 'downshift'
+import ToListTree from '../../../ComponentCore/ToListTree';
+import { type } from 'os';
 
 function isInt(value) {
   return !isNaN(value) && 
@@ -42,10 +44,22 @@ class IssuedManage extends Component{
       sk:0,
       l:0,
       all:"",},
+      StorageObject:{queryString:window.apipath + "/api/trx",
+      t:"StorageObject",
+      q:"[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'ObjectType', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'in', 'v': '11,12'}]",
+      f:"Code",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:"",
+      l:"",
+      all:"",},   
       inputstatus:true,
       pageID:0,
       addstatus:true,
       adddisplay:"none",
+      modalstatus:false,
+      storageObjectdata:[]
+  
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
@@ -53,6 +67,8 @@ class IssuedManage extends Component{
     this.genWarehouseData = this.genWarehouseData.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
+    //this.autoSelectData = this.autoSelectData.bind(this)
+    this.toggle = this.toggle.bind(this)
 
     this.branchselect = {queryString:window.apipath + "/api/mst",
       t:"Branch",
@@ -137,8 +153,17 @@ class IssuedManage extends Component{
   }
   //Axios.get(createQueryString(this.warehouseselect))
   componentDidMount(){
-    this.initialData()
-  }
+   this.initialData()
+      Axios.get(createQueryString(this.state.StorageObject)).then((response) => {
+        //console.log(response.data.datas)
+        const storageObjectdata = []
+        response.data.datas.forEach(row => {
+          storageObjectdata.push({label:row.Code})
+        })
+          this.setState({storageObjectdata})
+        })
+      }
+  
 
   onHandleClickCancel(event){
     this.forceUpdate();
@@ -148,6 +173,7 @@ class IssuedManage extends Component{
   getSelectionData(data){
     this.setState({selectiondata:data})
   }
+
 
   createDocument(){
     let acceptdata = []
@@ -329,8 +355,64 @@ class IssuedManage extends Component{
       />
     }
   }
+ 
+  toggle() {
+    this.setState({modalstatus:!this.state.modalstatus});
+  }
+
+  createModal(){
+    return <Modal isOpen={this.state.modalstatus}>
+             <ModalHeader toggle={this.toggle}> <span>Name : Pallet, Box</span></ModalHeader>
+             <ModalBody>
+               <div>   
+                 <AutoSelect data={this.state.storageObjectdata} result={e=>this.setState({codebase:e.label},()=>console.log(this.state.codebase))}/>
+                
+               </div>
+             </ModalBody>
+             <ModalFooter>
+               <Button color="secondary" id="off" onClick={() => this.onClickSelect(this.state.codebase)}>OK</Button>
+            </ModalFooter>
+          </Modal>
+}
+
+  onClickSelect(code){
+     Axios.get(window.apipath + "/api/trx/mapsto?type=1&code="+code+"&isToChild=true").then((res) => {
+     //console.log(res.data.mapsto.mapstos)
+     var resultToListTree = ToListTree(res.data.mapsto,"mapstos")
+       this.onClickGroup(resultToListTree)
+     //console.log(resultToListTree)
+    })
+  }
+ onClickGroup(data){
+  var arrType = data.filter((res)=>{
+    return res.type === 2  
+  })
+  var groupArray = require('group-array');
+   const groupItem = groupArray(arrType, 'code');
+  var arrdata =[]
+  
+
+  for(var datarow in groupItem){
+    groupItem[datarow].forEach(row => {
+      row.PackItem = row.code
+      row.PackQty = groupItem[datarow].length
+      arrdata.forEach((row2,index) => {
+        if(row2.code === row.code){
+        arrdata.splice(index,1)
+        } 
+      });
+      arrdata.push(row)
+      
+   });
+  }console.log( groupItem)
+   console.log(arrdata)
+   this.setState({data:arrdata})
+   
+ }
+
 
   render(){
+    
     const style={width:"100px", textAlign:"right", paddingRight:"10px"}
     let cols
     if(this.state.pageID){
@@ -359,8 +441,11 @@ class IssuedManage extends Component{
       ]
     }
     
+    
     return(
       <div>
+       {this.createModal()}
+
         <div className="clearfix">
           <div className="float-right">
             <div>Document Date : <span>{this.state.documentDate}</span></div>
@@ -389,7 +474,9 @@ class IssuedManage extends Component{
           </Row>
         </div>
         <div className="clearfix">
-          <Button className="float-right" onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
+        <Button className="float-right" color="danger" onClick={() => this.toggle()}>select base</Button>
+          <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
+          
         </div>
         <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>

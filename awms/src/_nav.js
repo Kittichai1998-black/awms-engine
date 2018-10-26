@@ -44,16 +44,17 @@ function getmenu(){
           {id: 13,name: 'Goods Issue',url: '/doc/gi/list',icon: 'cui-home',},        
           {id: 14,name: 'Picking',url: '/wm/sto/picking',icon: 'cui-bug',},
           {id: 15, name: 'Loading', url: '/doc/ld/list', icon: 'cui-box', },
-          {id: 16,name: 'Loading Checklist',url: '/wm/sto/loading',icon: 'cui-home',},          
+          {id: 16,name: 'Loading Checklist',url: '/wm/sto/loading',icon: 'cui-home',},
+          {id: 17,name: 'Return Box',url: '/mst/base/rebox',icon: 'cui-home',},             
         ],
       }, 
       {
         name: 'Warehoue',
         icon: 'cui-home',
         children: [
-          {id: 17,name: 'Storage',url: '/sys/storage',icon: 'cui-layers',},
-          {id: 18, name: 'Stock ', url: '/doc/stc/manage', icon: 'cui-box', },
-          {id: 19,name: 'Stock Correction',url: '/wm/sto/correction',icon: 'cui-bug',},
+          {id: 18,name: 'Storage',url: '/sys/storage',icon: 'cui-layers',},
+          {id: 19, name: 'Stock ', url: '/doc/stc/manage', icon: 'cui-box', },
+          {id: 20,name: 'Stock Correction',url: '/wm/sto/correction',icon: 'cui-bug',},
         ],
       }, 
 

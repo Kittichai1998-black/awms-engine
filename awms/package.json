@@ -29,6 +29,7 @@
     "enzyme-adapter-react-16": "^1.1.1",
     "flag-icon-css": "^3.0.0",
     "font-awesome": "^4.7.0",
+    "group-array": "^0.3.3",
     "guid": "0.0.12",
     "html2canvas": "^1.0.0-alpha.12",
     "jquery": "^1.12.4",

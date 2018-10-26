@@ -99,7 +99,7 @@ class IssuedDoc extends Component{
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"DocumentEvent"},
       {accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
-      {accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
+      //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];
 
