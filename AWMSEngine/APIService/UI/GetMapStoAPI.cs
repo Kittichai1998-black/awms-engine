@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService.UI
 {
-    public class SearchSTOFullAPI : BaseAPIService
+    public class GetMapStoAPI : BaseAPIService
     {
-        public SearchSTOFullAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GetMapStoAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = ObjectUtil.DynamicToModel<SPInSTOSearchCriteria>(this.RequestVO);
-            var res = new STOFullSearch().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<GetMapSto.TReq>(this.RequestVO);
+            var res = new GetMapSto().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

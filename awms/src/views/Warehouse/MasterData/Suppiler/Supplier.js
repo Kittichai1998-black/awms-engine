@@ -21,10 +21,10 @@ class Supplier extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:window.apipath + "/api/mst",
-      t:"Supplier",
+      select:{queryString:window.apipath + "/api/viw",
+      t:"SupplierMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+      f:"ID,Code,Name,Description,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:"",
@@ -35,7 +35,7 @@ class Supplier extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this); 
-    this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
+    this.uneditcolumn = ["Created","Modified"]
   }
 
   onHandleClickCancel(event){
@@ -53,14 +53,14 @@ class Supplier extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text"},
-      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text"},
+      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed:"left"},
+      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed:"left"},
       //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
       /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
-      {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
-      {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
-      //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
+      {accessor: 'Created', Header: 'Create', editable:false},
+      /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false}, */
+      {accessor: 'Modified', Header: 'Modify', editable:false},
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];

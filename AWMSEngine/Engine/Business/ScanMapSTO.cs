@@ -77,6 +77,8 @@ namespace AWMSEngine.Engine.Business
                     if (mapsto != null)
                     {
                         Logger.LogDebug("//พบ sto ว่างประเภท " + mapsto.type);
+                        if (!reqVO.areaID.HasValue)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาเลือก Area");
                         if (!mapsto.id.HasValue)
                             ADOSto.Create(mapsto, reqVO.areaID.Value, reqVO.batch, reqVO.lot, this.BuVO);
                         else
