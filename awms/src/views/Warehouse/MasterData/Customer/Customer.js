@@ -20,10 +20,10 @@ class Customer extends Component{
         'mode' : 'check',
       }],
       acceptstatus : false,
-      select:{queryString:window.apipath + "/api/mst",
-      t:"Customer",
+      select:{queryString:window.apipath + "/api/viw",
+      t:"CustomerMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+      f:"ID,Code,Name,Description,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:"",
@@ -34,7 +34,7 @@ class Customer extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
+    this.uneditcolumn = ["Created","Modified"]
   }
 
   onHandleClickCancel(event){
@@ -51,12 +51,12 @@ class Customer extends Component{
     const cols = [
       {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
-      {accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
+      //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
-      {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-      {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
-      {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-      {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
+      {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+      /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false}, */
+      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+      //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
     const btnfunc = [{
@@ -71,14 +71,12 @@ class Customer extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
+      <div className="clearfix">
+        <Button onClick={this.onHandleClickLoad} color="danger" className="float-right">Load ข้อมูล Customer</Button>
+      </div>
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
-      filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
-      table="ams_Customer"/>
-      <Card>
-        <CardBody style={{textAlign:'right'}}>
-          <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูล Customer</Button>
-        </CardBody>
-      </Card>
+        filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
+        table="ams_Customer"/> 
       </div>
     )
   }

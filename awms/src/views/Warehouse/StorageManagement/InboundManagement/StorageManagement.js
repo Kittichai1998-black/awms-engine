@@ -5,43 +5,9 @@ import {Input, Button, ButtonGroup , Row, Col,
   Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 //import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {AutoSelect, NumberInput, apicall, createQueryString} from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall, createQueryString, Clone} from '../../ComponentCore'
 
 const Axios = new apicall()
- 
-function clone(obj) {
-  var copy;
-
-  // Handle the 3 simple types, and null or undefined
-  if (null == obj || "object" != typeof obj) return obj;
-
-  // Handle Date
-  if (obj instanceof Date) {
-      copy = new Date();
-      copy.setTime(obj.getTime());
-      return copy;
-  }
-
-  // Handle Array
-  if (obj instanceof Array) {
-      copy = [];
-      for (var i = 0, len = obj.length; i < len; i++) {
-          copy[i] = clone(obj[i]);
-      }
-      return copy;
-  }
-
-  // Handle Object
-  if (obj instanceof Object) {
-      copy = {};
-      for (var attr in obj) {
-          if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-      }
-      return copy;
-  }
-
-  throw new Error("Unable to copy obj! Its type isn't supported.");
-}
 
 class StorageManagement extends Component{
   constructor(props) {
@@ -90,6 +56,7 @@ class StorageManagement extends Component{
       showtable:false,
       autocomplete:'',
       poststatus:false,
+      detailPopup:false,
     };
 
     this.createListTable = this.createListTable.bind(this)
@@ -100,6 +67,9 @@ class StorageManagement extends Component{
     this.approvemapsto = this.approvemapsto.bind(this)
     this.clearTable = this.clearTable.bind(this)
     this.autoSelectData = this.autoSelectData.bind(this)
+    this.togglePopup = this.togglePopup.bind(this)
+    this.detailBaseData = this.detailBaseData.bind(this)
+    this.createMarkup = this.createMarkup.bind(this)
   }
   
   componentDidMount(){
@@ -180,26 +150,29 @@ class StorageManagement extends Component{
       let disQtys;
       if(child.objectSizeMaps.length > 0){
         disQtys = child.objectSizeMaps.map((v)=>{
-          if(v.maxQuantity > 0){
-            return <div><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
-          }
+          return <div><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
           });
       }
       else{
         disQtys = <div><FontAwesomeIcon icon="puzzle-piece"/>{child.allqty}</div>
       }
-      
-      return <ul key={i} style={child.isFocus===true?focus:focusf}>
-        <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
-        <span><FontAwesomeIcon icon="pallet"/>{child.code} : {child.name} | </span>
-        <span><FontAwesomeIcon icon="layer-group"/>{child.objectSizeName} | </span>
-        <span>{child.minWeiKG?child.minWeiKG+ '/':''} {child.weiKG === 0 ? '' : child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} Qty : {child.allqty !== undefined ? child.allqty : null}</span>
-        <br/><span style={{color:'gray'}}> {disQtys}</span>
 
-        {(child.mapstos.map(child2 => {
-          let z = this.addtolist([child2])
-          return z}))
-        }
+      return <ul key={i} style={child.isFocus===true?focus:focusf} >
+        <div onClick={(e) => {
+          let getElement = document.getElementById(child.id).innerHTML
+          if(getElement !== "")
+            this.setState({DataPopup:getElement, HeaderPopup:child.code}, () => {this.togglePopup()})
+        }}>
+            <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
+            <span><FontAwesomeIcon icon="pallet"/>{child.code} : {child.name} | </span>
+            <span><FontAwesomeIcon icon="layer-group"/>{child.objectSizeName} | </span>
+            <span>{child.minWeiKG?child.minWeiKG+ '/':''} {child.weiKG === 0 ? '' : child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} Qty : {child.allqty !== undefined ? child.allqty : null}</span>
+          </div>
+          <span id={child.id} style={{display:'none'}}>{disQtys}</span>
+          {(child.mapstos.map(child2 => {
+            let z = this.addtolist([child2])
+            return z}))
+          }
         </ul>
     })
   }
@@ -247,7 +220,7 @@ class StorageManagement extends Component{
         {
           this.setState({poststatus:true,control:"block",rSelect:'1',barcode:"", qty:1, response:"",})
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
-            const clonemapsto = clone(this.state.mapSTOView)
+            const clonemapsto = Clone(this.state.mapSTOView)
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
           })
@@ -257,7 +230,7 @@ class StorageManagement extends Component{
           this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>})
           if([this.state.mapSTOView].length > 0)
           {
-            const clonemapsto = clone(this.state.mapSTOView)
+            const clonemapsto = Clone(this.state.mapSTOView)
             if([clonemapsto].length > 0 && clonemapsto !== null){
               header = clonemapsto
               header.mapstos = this.sumChild(clonemapsto.mapstos)
@@ -287,6 +260,12 @@ class StorageManagement extends Component{
     this.setState({barcode:window.barcoderesult})
   }
 
+  togglePopup() {
+    this.setState({
+      detailPopup: !this.state.detailPopup
+    });
+  }
+
   selectMode(mode){
     this.setState({rSelect:mode})
   }
@@ -312,7 +291,7 @@ class StorageManagement extends Component{
 
   barcodeReaderPopup(){
     return  <Modal isOpen={this.state.barcodemodal}  className={this.props.className}>
-              <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
+              <ModalHeader toggle={this.toggle}></ModalHeader>
               <ModalBody>
                 <div>Barcode result: <label id="dbr"/></div>
                 <div className="select" style={{display:'none'}}>
@@ -325,6 +304,22 @@ class StorageManagement extends Component{
               <ModalFooter>
                 <Button color="primary" id="go">Read Barcode</Button>{' '}
                 <Button color="secondary" id="off" onClick={this.toggle}>Cancel</Button>
+              </ModalFooter>
+            </Modal>
+  }
+
+  createMarkup() {
+    return {__html: this.state.DataPopup};
+  }
+
+  detailBaseData(){
+    return  <Modal isOpen={this.state.detailPopup}>
+              <ModalHeader toggle={this.togglePopup}>{this.state.HeaderPopup}</ModalHeader>
+              <ModalBody>
+                <div dangerouslySetInnerHTML={this.createMarkup()}/>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" id="off" onClick={this.togglePopup}>Cancel</Button>
               </ModalFooter>
             </Modal>
   }
@@ -370,6 +365,7 @@ class StorageManagement extends Component{
     const display={display:'none'}
     return(
       <div>
+        {this.detailBaseData()}
         {this.barcodeReaderPopup()}
         <Row>
           <Col sm="6">

@@ -67,12 +67,12 @@ class DefaultLayout extends Component {
     return (
       <div className="app">
       {checkstatus()}
-        <AppHeader fixed>
+        <AppHeader fixed style={{ background: "#eceff1" }}>      
           <DefaultHeader />
         </AppHeader>
         <div className="app-body">
           <main className="main">
-            <AppBreadcrumb appRoutes={routes}/>
+            <AppBreadcrumb appRoutes={routes} />
             <Container fluid>
               <Switch>
                 {routes.map((route, idx) => {

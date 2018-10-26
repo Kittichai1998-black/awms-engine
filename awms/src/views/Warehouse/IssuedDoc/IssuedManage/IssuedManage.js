@@ -5,11 +5,9 @@ import {Input, Card, CardBody, Button, Row} from 'reactstrap';
 import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
 import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
-import {AutoSelect, NumberInput, apicall, createQueryString } from '../../ComponentCore'
-import 'react-datepicker/dist/react-datepicker.css';
+import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker } from '../../ComponentCore'
 import Downshift from 'downshift'
 
 function isInt(value) {
@@ -172,14 +170,7 @@ class IssuedManage extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker selected={this.state.date}
-    onChange={(e) => {this.setState({date:e})}}
-    onChangeRaw={(e) => {
-      if (moment(e.target.value).isValid()){
-        this.setState({date:e.target.value})
-      }
-   }}
-   dateFormat="DD/MM/YYYY HH:mm:ss"/>
+    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY HH:mm:ss"/>
   }
 
   renderDocumentStatus(){
@@ -353,7 +344,7 @@ class IssuedManage extends Component{
     else{
       cols = [
         {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e),},
-        {accessor:"SKU",Header:"SKU",},
+        //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
         {Cell:(e) => <Button onClick={()=>{
@@ -397,11 +388,13 @@ class IssuedManage extends Component{
             </div>
           </Row>
         </div>
-        <Button onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
+        <div className="clearfix">
+          <Button className="float-right" onClick={() => this.addData()} color="primary"className="mr-sm-1" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
+        </div>
         <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
         <Card>
-          <CardBody>
+          <CardBody style={{textAlign:'right'}}>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
             <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
             {this.state.resultstatus}

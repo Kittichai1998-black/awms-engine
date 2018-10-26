@@ -24,7 +24,7 @@ class ListProduct extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"SKUMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,SKUMasterType_ID,SKUMasterType_Code,SKUMasterType_Name,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+      f:"ID,SKUMasterType_ID,concat(SKUMasterType_Code,' : ',SKUMasterType_Name) as SKUMasterType_Code,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -37,7 +37,7 @@ class ListProduct extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
-    this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
+    this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","Modified","Created"]
   }
 
   onHandleClickCancel(event){
@@ -112,17 +112,13 @@ class ListProduct extends Component{
       {accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter:"text"},
       {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
-      {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
+      //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
-      {accessor: 'WidthM', Header: 'Width', editable:false,Filter:"text", datatype:"int",},
-      {accessor: 'LengthM', Header: 'Length', editable:false,Filter:"text", datatype:"int",},
-      {accessor: 'HeightM', Header: 'Height', editable:false,Filter:"text", datatype:"int",},
-      {accessor: 'WeightKG', Header: 'Weight', editable:false,Filter:"text", datatype:"int",},
       {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", },
-      {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
-      {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
-      {accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+      /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+      //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
     ];
     
@@ -146,21 +142,23 @@ class ListProduct extends Component{
     
       */}
         <div className="clearfix">
+        <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
           <Button className="float-right" onClick={() => {
             let data1 = {"exportName":"ProductToShop","whereValues":[]}
             api.post(window.apipath + "/api/report/export/fileServer", data1)
           }}>Export Data</Button>
+ 
         </div>
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
         filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
         btn={btnfunc} uneditcolumn={this.uneditcolumn}
          table="ams_SKUMaster"/>
 
-        <Card>
+        {/* <Card>
           <CardBody style={{textAlign:'right'}}>
-            <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
+            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
           </CardBody>
-        </Card>
+        </Card> */}
       </div>
     )
   }

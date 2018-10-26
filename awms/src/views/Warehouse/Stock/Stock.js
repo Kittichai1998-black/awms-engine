@@ -74,9 +74,9 @@ workingData(){
   render() {
     const cols = [
       { accessor: 'Code', Header: 'Code', editable: false, filterable: false  },
-      { accessor: 'DocumentDate', Header: 'Document Date', editable: false, filterable: false },
-      { accessor: 'EventStatus', Header: 'Event Status', sortable: false, editable: false, filterable: false  },
-      { accessor: 'Status', Header: 'Status', editable: false, filterable: false  },
+      { accessor: 'DocumentDate', Header: 'Document Date', editable: false, filterable: false, Type: "datetime", dateformat: "datetime" },
+      { accessor: 'EventStatus', Header: 'Event Status', sortable: false, editable: false, filterable: false, Type: "EventStatus"  },
+      { accessor: 'Status', Header: 'Status', editable: false, filterable: false, Type: "DocumentStatus"  },
       { accessor: 'CreateTime', Header: 'Create', editable: false, filterable: false, Type: "datetime", dateformat: "datetime" },
       { accessor: 'ModifyTime', Header: 'Modify', editable: false, Type: "datetime", dateformat: "datetime", filterable: false },
       { accessor: 'Remark', Header: 'Remark', editable: false, filterable: false },
@@ -96,22 +96,9 @@ workingData(){
       
       <div>
         <Card>
-          <CardBody>
-            <Button style={{ display: "inline-block" }} onClick={() => this.workingData()} color="primary" className="mr-sm-1 float-right">Export Server</Button>
-            <div className="float-right" style={{ display: "inline-block", paddingRight: "10px" }}>
-              <DatePicker selected={this.state.date}
-                onChange={(e) => { this.setState({ date: e }) }}
-                onChangeRaw={(e) => {
-                  if (moment(e.target.value).isValid()) {
-                    this.setState({ date: e.target.value })
-                  }
-                }}
-                dateFormat="DD/MM/YYYY" />
-            </div>
-          </CardBody>
         </Card>   
         <TableGen column={cols} 
-          data={this.stockItem} 
+          data={this.stockItem}  
           filterable={true} uneditcolumn={this.uneditcolumn}
           btn={btnfunc} 
           table="storck" />

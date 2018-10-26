@@ -211,7 +211,7 @@ class Stockview extends Component{
           showPagination={false}   />
           <Card>
           <CardBody style={{ textAlign: 'right' }}>
-            <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/mst/warehouse/Stock/manage')}>Close</Button>
+            <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/stc/manage')}>Close</Button>
             </CardBody>
         </Card>
 

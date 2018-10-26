@@ -22,7 +22,7 @@ class Area extends Component{
             select:{queryString:window.apipath + "/api/viw",
             t:"BaseMaster",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,BaseMasterType_Name,BaseMasterType_Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+            f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,BaseMasterType_Name,BaseMasterType_Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
@@ -35,7 +35,7 @@ class Area extends Component{
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","CreateBy","CreateTime","ModifyBy","ModifyTime"]
+        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","Created","Modified"]
     }
 
     onHandleClickCancel(event){
@@ -101,7 +101,7 @@ class Area extends Component{
     }
 
     createBarcodeBtn(rowdata){
-        return <Button type="button" color="info"
+      return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
         onClick={() => {
             let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
             let barcodestr = JSON.stringify(barcode)
@@ -119,14 +119,14 @@ class Area extends Component{
             {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
             {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text"},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text"},
-            {accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
+            //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-            {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-            {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-            {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+            {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+            /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+            //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 

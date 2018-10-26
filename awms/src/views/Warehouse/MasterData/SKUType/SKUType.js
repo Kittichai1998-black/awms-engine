@@ -108,15 +108,14 @@ class SKUMasterType extends Component{
     
       render(){
         const cols = [
-          {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
-          {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
-          {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
+          {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+          {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
           {accessor: 'ObjectSize_Code', Header: 'ObjectSize Code',updateable:false,Filter:"text", },
           {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
           {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
           {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
-          {accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+          //{accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
+          //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
         ];
         
@@ -148,7 +147,7 @@ class SKUMasterType extends Component{
               <CardBody style={{textAlign:'right'}}>
                 <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
               </CardBody>
-            </Card>
+            </Card> 
           </div>
         )
       }

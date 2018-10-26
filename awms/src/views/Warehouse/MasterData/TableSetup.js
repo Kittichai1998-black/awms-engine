@@ -14,7 +14,10 @@ import Select from 'react-select'
 import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
 import Downshift from 'downshift'
+import '../componentstyle.css'
+import withFixedColumns from "react-table-hoc-fixed-columns";
 
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
 
 /* const getColumnWidth = (rows, accessor, headerText) => {
@@ -166,7 +169,7 @@ class TableGen extends Component{
   }
   
   removedata(rowdata){
-    const data = [...this.state.data];
+    /* const data = [...this.state.data]; */
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
@@ -175,12 +178,12 @@ class TableGen extends Component{
     })
     rowdata.Status = 2
     dataedit.push(rowdata);
-    data.forEach((datarow,index) => {
+    /* data.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
         data.splice(index,1);
       }
     })
-    this.setState({ data });
+    this.setState({ data }); */
     this.setState({dataedit});
   }
 
@@ -190,17 +193,15 @@ class TableGen extends Component{
       filterlist = this.props.defaultCondition
     }
     else{
-      filterlist = [{"f":"Status", "c":"!=", "v": 2}]
+      filterlist = [{"f":"Status", "c":"<", "v": 2}]
     }
     
     if(filter.length > 0)
     {
       filter.forEach((data, id) => {
         if(data[1] !== ""){
-          const firstletter =  data["value"].toString().charAt(0)
-          const lastletter =  data["value"].toString().slice(-1)
 
-          if(firstletter === "*" || lastletter === "*"){
+          if(data["value"].includes("*")){
             filterlist.forEach((row, index) => {
               if(row.f === data["id"]){
                 filterlist.splice(index,1)
@@ -214,13 +215,19 @@ class TableGen extends Component{
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
             }
           }
-          else if(firstletter === "%"){
+          else if(data["value"].includes("%")){
             filterlist.forEach((row, index) => {
               if(row.f === data["id"]){
                 filterlist.splice(index,1)
               }
             })
-            filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
+
+            if(data["id"] === "Status"){
+              filterlist.push({"f":data["id"], "c":"<", "v": 2})
+            }
+            else{
+              filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
+            }
           }
           else{
             filterlist.forEach((row, index) => {
@@ -414,13 +421,18 @@ class TableGen extends Component{
 
   paginationButton(){
     return(
-      <div style={{marginBottom:'3px',textAlign:'center',margin:'auto',width:'300px'}}>
+      <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
         <nav>
-          <p className="float-right" style={{width:"100px"}}>Page : {this.state.currentPage}</p>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("prev")}>Previous</a></li>
-            <li className="page-item"><a className="page-link" onClick={() => this.pageOnHandleClick("next")}>Next</a></li>
+            <div></div>
+            <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("prev")}>
+            Previous</a></li>
+            <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
           </ul>
+          <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
         </nav>
       </div>
     )
@@ -439,7 +451,7 @@ class TableGen extends Component{
         item = row.status.map((data, index) => {
           return <option key={index} value={data.value}>{data.label}</option>
         })
-        list = <select onChange={(e) => {
+        list = <select style={{ background:"#FAFAFA" }} onChange={(e) => {
           filter.forEach((datarow,index) => {
             if(datarow.id === name){
                 filter.splice(index,1);
@@ -458,7 +470,7 @@ class TableGen extends Component{
 
   createCustomFilter(name){
     let filter = [...this.state.datafilter]
-    return <Input type="text" id={name}
+    return <Input type="text" id={name} style={{ background: "#FAFAFA" }} placeholder="filter..."
       onKeyPress={(e) => {
         if (e.key === 'Enter'){
             filter.forEach((datarow,index) => {
@@ -488,7 +500,8 @@ class TableGen extends Component{
 
   createCustomButton(type,text,data){
     if(type === "Remove"){
-      return <Button type="button" color="danger" onClick={() => this.removedata(data)}>Remove</Button>
+      return <Button type="button" color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '80px' }}
+        onClick={() => this.removedata(data)}>Remove</Button>
     }
     else if(type === "Link"){
       return <Button type="button" color="info">{
@@ -505,7 +518,7 @@ class TableGen extends Component{
   datetimeBody(value){
     if(value !== null){
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
     }
   }
   
@@ -530,7 +543,8 @@ class TableGen extends Component{
     const date = moment(value);
     if(format === 'date')
     {
-      return <DatePicker selected={date} style={{width:'1000px'}}
+      return <DatePicker selected={date}
+        customInput={<Input/>}
         onChange={(e) => {this.onEditDateChange(e, rowdata)}}
         onChangeRaw={(e) => {
           if (moment(value).isValid())
@@ -539,17 +553,19 @@ class TableGen extends Component{
     }
     else if(format === 'datetime'){
       return <DatePicker selected={date}
+        customInput={<Input/>}
         onChange={(e) => {this.onEditDateChange(e, rowdata)}}
         onChangeRaw={(e) => {
           if (moment(e.target.value).isValid())
                this.onEditDateChange(e, rowdata);
        }}
-        dateFormat="DD/MM/YYYY HH:mm:ss"
+        dateFormat="DD/MM/YYYY HH:mm"
         />
     }
     else{
       return <DatePicker selected={date}
         onChange={(e) => {return this.onEditDateChange(e, rowdata)}}
+        customInput={<Input/>}
         showTimeSelectOnly
         dateFormat="LT"
         timeCaption="Time"/>
@@ -557,7 +573,7 @@ class TableGen extends Component{
   }
   
   onEditDateChange(value, rowdata){
-    const dateformat = moment(value).format('YYYY-MM-DDTHH:mm:ss')
+    const dateformat = moment(value).format('YYYY-MM-DDTHH:mm')
     this.onEditorValueChange(rowdata ,dateformat, rowdata.column.id)
   }
 
@@ -865,8 +881,8 @@ class TableGen extends Component{
           }
           else if(row.Type === "button"){
             this.props.btn.find(btnrow => {
-              if(row.btntype === "Remove" && btnrow.btntype){
-                row.Cell = (e) => <Button type="button" color="danger" onClick={() => this.removedata(e.original)}>Remove</Button>
+              if (row.btntype === "Remove" && btnrow.btntype) {
+                row.Cell = (e) => <Button type="button" style={{ background: "#ef5350", borderColor: "#ef5350"}} color="success"  onClick={() => this.removedata(e.original)}>Remove</Button>
               }
               else{
                 if(row.btntype === btnrow.btntype){
@@ -908,12 +924,14 @@ class TableGen extends Component{
         })
 
     return(
-      <div style={{overflowX:'auto'}}>
-        <Button onClick={this.onHandleClickAdd}  style={{width:200, display:this.state.addbtn === true ? 'inline' : 'none'}} type="button" color="success"className="mr-sm-1">Add</Button>
-        <ReactTable 
+      <div style={{ overflowX: 'auto'}}>
+        <Button onClick={this.onHandleClickAdd} style={{ width: 200, display: this.state.addbtn === true ? 'inline' : 'none', background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
+        <div className="clearfix"></div>
+        <ReactTableFixedColumns
+          className="-striped" 
           data={this.state.data} 
           ref={ref => this.tableComponent = ref}
-          style={{backgroundColor:'white'}}
+          style={{backgroundColor:'white', zIndex:0}}
           loading={this.state.loading}
           filterable={this.props.filterable}
           columns={col}
@@ -925,14 +943,21 @@ class TableGen extends Component{
           SubComponent={this.subTable}
           getTrProps={(state, rowInfo) => {
             let result = false
+            let rmv = false
             this.state.dataedit.forEach(row => {
               if(rowInfo && rowInfo.row){
-                if(row.ID === rowInfo.original.ID)
+                if(row.ID === rowInfo.original.ID){
                   result = true
+                  if(row.Status === 2){
+                    rmv = true
+                  }
+                }
               }
             })
-            if(result === true)
+            if(result && !rmv )
               return {style:{background:"gray"}}
+            else if (rmv)
+              return {style:{background:"red"}}
             else
               return {}              
           }}
@@ -941,10 +966,10 @@ class TableGen extends Component{
               this.setState({data:[],dataedit:[], loading:true });
               this.customSorting(sorted)}
           }/>
-        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none'}}>
+        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none',textAlign:'right'}}>
           <CardBody>
-            <Button onClick={() => this.updateData()} color="primary"className="mr-sm-1">Accept</Button>
-            <Button onClick={() => this.onHandleClickCancel()} color="danger"className="mr-sm-1">Cancel</Button>
+            <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}  className="float-right">Cancel</Button>
           </CardBody>
         </Card>
       </div>

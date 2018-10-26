@@ -28,3 +28,16 @@
 .tbody{
     display:table-row-group;
 }
+
+.-filters {
+  background-color: #BDBDBD;
+  color: aliceblue;
+}
+.-header {
+  background-color: #2f353a;
+  color: aliceblue;
+  height:  45px;
+  vertical-align:bottom
+}
+
+
