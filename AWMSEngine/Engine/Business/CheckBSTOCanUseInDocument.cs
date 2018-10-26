@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business.Consolidate
+namespace AWMSEngine.Engine.Business
 {
     public class CheckBSTOCanUseInDocument : BaseEngine<CheckBSTOCanUseInDocument.TReq, ams_BaseMaster>
     {

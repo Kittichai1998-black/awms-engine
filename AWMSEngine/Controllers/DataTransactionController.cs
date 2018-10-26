@@ -29,7 +29,14 @@ namespace AWMSEngine.Controllers
         public dynamic SearchSTO()
         {
             var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var res = new SearchSTOFullAPI(this).Execute(req);
+            var res = new SearchStorageObjectAPI(this).Execute(req);
+            return res;
+        }
+        [HttpGet("mapsto")]
+        public dynamic GetMapSto()
+        {
+            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var res = new GetMapStoAPI(this).Execute(req);
             return res;
         }
     }

@@ -15,10 +15,10 @@ class User extends Component{
                 'mode' : 'check',
             }],
             acceptstatus : false,
-            select:{queryString:window.apipath + "/api/mst",
+            select:{queryString:window.apipath + "/api/viw",
             t:"User",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+            f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified",
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
@@ -29,7 +29,7 @@ class User extends Component{
         };
 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
+        this.uneditcolumn = ["Created","Modified"]
     }
 
     onHandleClickCancel(event){
@@ -42,7 +42,7 @@ class User extends Component{
 
     render(){
         const cols = [
-            {accessor: 'Code', Header: 'Username', editable:true, filterable:true, Filter:"text", insertable:true},
+            {accessor: 'Code', Header: 'Username', editable:true, filterable:true, Filter:"text", insertable:true, fixed: "left"},
             {accessor: 'Password', Header: 'Password', editable:true, filterable:false, Type:"password" },
             {accessor: 'Name', Header: 'Name', editable:true},
             {accessor: 'EmailAddress', Header: 'Email Address', editable:true},
@@ -51,9 +51,9 @@ class User extends Component{
             {accessor: 'TelOffice', Header: 'Office Tel.', editable:true},
             {accessor: 'TelMobile', Header: 'Mobile', editable:true},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-            {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+            {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+            /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 

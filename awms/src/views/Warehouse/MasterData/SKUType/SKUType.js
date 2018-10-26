@@ -108,9 +108,8 @@ class SKUMasterType extends Component{
     
       render(){
         const cols = [
-          {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
-          {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
-          {accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
+          {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+          {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
           {accessor: 'ObjectSize_Code', Header: 'ObjectSize Code',updateable:false,Filter:"text", },
           {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
           {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},

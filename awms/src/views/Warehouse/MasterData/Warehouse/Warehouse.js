@@ -21,7 +21,7 @@ class Warehouse extends Component{
         select:{queryString:window.apipath + "/api/viw",
         t:"WarehouseMaster",
         q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
-        f:"ID,Code,Name,Description,Branch_ID,Branch_Code,Branch_Name,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        f:"ID,Code,Name,Description,Branch_ID,Branch_Code,Branch_Name,Status,Created,Modified",
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:"",
@@ -32,7 +32,7 @@ class Warehouse extends Component{
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
       this.filterList = this.filterList.bind(this)
-      this.uneditcolumn = ["Branch_Code","Branch_Name","CreateBy","CreateTime","ModifyBy","ModifyTime"]  
+      this.uneditcolumn = ["Branch_Code","Branch_Name","Created","Modified"]  
     }
 
     onHandleClickCancel(event){
@@ -96,9 +96,9 @@ class Warehouse extends Component{
             //{accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
             {accessor: 'Branch_Code', Header: 'Branch',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
-            {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-            {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+            {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+            /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];

@@ -11,7 +11,11 @@ namespace AWMSModel.Constant.EnumConst
         RECEIVED = 12,
         MOVING = 13,
         MOVED = 14,
-        
+        PICKING = 15,
+        PICKED = 16,
+        CONSOLIDATING = 17,
+        CONSOLIDATED = 18,
+
         REMOVING = 21,
         REMOVED = 22,
         REJECTING = 23,
@@ -22,8 +26,6 @@ namespace AWMSModel.Constant.EnumConst
         ISSUING = 31,
         ISSUED = 32,
         SHIPPING = 33,
-        SHIPPED = 34,
-
-        CHANGE_BASE = 90
+        SHIPPED = 34
     }
 }

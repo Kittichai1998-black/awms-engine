@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.General
 {
-    public class STOFullSearch :BaseEngine<SPInSTOSearchCriteria, STOFullSearch.TRes>
+    public class SearchStorageObject :BaseEngine<SPInSTOSearchCriteria, SearchStorageObject.TRes>
     {
         public class TRes
         {

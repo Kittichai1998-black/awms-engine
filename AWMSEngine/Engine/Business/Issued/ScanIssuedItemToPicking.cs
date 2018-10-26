@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Issued
 {
-    public class ScanIssuedToPickingAndConso : BaseEngine<ScanIssuedToPickingAndConso.TReq, ScanIssuedToPickingAndConso.TRes>
+    public class ScanIssuedItemToPicking : BaseEngine<ScanIssuedItemToPicking.TReq, ScanIssuedItemToPicking.TRes>
     {
         public class TReq
         {
