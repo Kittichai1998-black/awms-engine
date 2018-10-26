@@ -653,14 +653,24 @@ class TableGen extends Component{
     })
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
-      initialInputValue = {rowdata.value}
-      onChange={selection => {
-      rowdata.value = selection.ID
-      this.onEditorValueChange(rowdata, selection.Code, rowdata.column.id)
-      this.onEditorValueChange(rowdata, selection.ID, getdata[0].pair)
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
+      onChange={(selection) => {
+        if(selection){
+          rowdata.value = selection.ID
+          this.onEditorValueChange(rowdata, selection.Code, rowdata.column.id)
+          this.onEditorValueChange(rowdata, selection.ID, getdata[0].pair)
+        }
+        else{
+          rowdata.value = ""
+          this.onEditorValueChange(rowdata, "", rowdata.column.id)
+          this.onEditorValueChange(rowdata, "", getdata[0].pair)
+        }
+      }
     }
-    }
-    itemToString={item => (item ? item.Code : rowdata.value)}
+    itemToString={(item) => { 
+      let getinit = getdata[0].data.filter(item => item.Code === rowdata.value)
+      return item !== null ? item.Code : getinit === null ? null : getinit.Code ;
+    }}
   >
     {({
       getInputProps,
@@ -671,18 +681,24 @@ class TableGen extends Component{
       inputValue,
       highlightedIndex,
       selectedItem,
+      clearSelection,
     }) => (
       <div style={{width: '150px'}}>
         <div style={{position: 'relative'}}>
-                <Input
+                <Input style={{paddingLeft:"20px"}}
                   {...getInputProps({
-                    isOpen,
+                    onChange: e => {
+                      if (e.target.value === '') {
+                        clearSelection()
+                      }
+                    },
+                    isOpen:true,
                     onFocus:()=>openMenu(),
                   })}
                 />
               </div>
               <div style={{position: 'absolute', zIndex:'1000'}}>
-                <div {...getMenuProps({isOpen})} style={{position: 'relative'}}>
+                <div {...getMenuProps({isOpen})} style={{position: 'absolute'}}>
                   {isOpen
                     ? getdata[0].data
                       .filter(item => !inputValue || item.Code.includes(inputValue))
@@ -695,7 +711,8 @@ class TableGen extends Component{
                             style: {
                               backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                               fontWeight: selectedItem === item ? 'bold' : 'normal',
-                              width:'150px'
+                              width:'150px',
+                              border:"1px solid black "
                             }
                           })}
                         >

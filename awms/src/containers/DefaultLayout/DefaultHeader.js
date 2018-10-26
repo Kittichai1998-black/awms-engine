@@ -28,8 +28,8 @@ class DefaultHeader extends Component {
       <React.Fragment> 
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
         <AppNavbarBrand          
-          full={{ src: logo, width: 89, height: 25, alt: 'CoreUI Logo' }}
-          minimized={{ src: sygnet, width: 30, height: 30, alt: 'CoreUI Logo' }}
+          full={{ src: logo, width: 89, height: 50 }}
+          minimized={{ src: sygnet, width: 30, height: 30 }}
          
         />
         <AppSidebarToggler className="d-md-down-none" display="lg"/>
@@ -56,7 +56,7 @@ class DefaultHeader extends Component {
             <NavLink href="#"><i className="icon-location-pin"></i></NavLink>
           </NavItem>*/}
           <AppHeaderDropdown direction="down" >
-            <span style={{ paddingRight: '40px' }}><NavLink href="/Login" onClick={this.Logout.bind(this)}><img src={img} height="20px"></img>
+            <span style={{ paddingRight: '100px' }}><NavLink href="/Login" onClick={this.Logout.bind(this)}><img src={img} height="20px"></img>
               <span> LOGOUT  </span>
               </NavLink></span>
 

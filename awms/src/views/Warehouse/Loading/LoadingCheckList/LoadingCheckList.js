@@ -43,7 +43,7 @@ class LoadingDocument extends Component{
   }
 
   componentDidUpdate(){
-    this.getTableData()
+    //this.getTableData()
   }
 
   getTableData(){
@@ -64,6 +64,7 @@ class LoadingDocument extends Component{
         this.setState({auto_transport})
       })
     })
+    this.getTableData()
   }
 
   onHandleScanConso(){
