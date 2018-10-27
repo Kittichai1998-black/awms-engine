@@ -110,6 +110,7 @@ class TableGen extends Component{
   }
 
   componentDidUpdate(){
+    console.log(this.state.data)
     if(this.props.updData)
       this.props.updData(this.state.updateData)
     if(this.props.rmvData)
