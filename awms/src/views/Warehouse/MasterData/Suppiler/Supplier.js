@@ -59,7 +59,7 @@ class Supplier extends Component{
       {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
       /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
       {accessor: 'CreateBy', Header: 'CreateBy', editable:false},
-      {accessor: 'CreateTime', Header: 'CreateTime', editable:false},
+      { accessor: 'CreateTime', Header: 'CreateTime', editable: false, Type: "datetime", dateformat: "datetime" },
       //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false},
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
@@ -78,7 +78,8 @@ class Supplier extends Component{
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
      <div className="clearfix">
-          <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
+          <Button className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350" }}
+            onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
       </div>
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
       filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}

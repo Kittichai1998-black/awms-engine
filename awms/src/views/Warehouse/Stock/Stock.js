@@ -63,7 +63,7 @@ workingData(){
   }
 
   createDetial(rowdata) {
-    return <Button type="button" color="info"
+    return <Button type="button" color="primary" style={{ background: "##26c6da", borderColor: "#26c6da" }}
       onClick={() => this.history.push('/doc/stc/list?docID=' + rowdata.ID)
       }>Detail</Button>
   }

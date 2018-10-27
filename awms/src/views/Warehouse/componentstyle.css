@@ -26,7 +26,7 @@
     font-weight: bolder;
 }
 .tbody{
-    display:table-row-group;
+    display:table-row-group !important;
 }
 
 .-filters {
@@ -36,8 +36,18 @@
 .-header {
   background-color: #2f353a;
   color: aliceblue;
-  height:  45px;
+  height:  35px;
   vertical-align:bottom
+}
+
+body {
+  font-family: 'Martel', serif;
+  font-size:medium;
+}
+
+.heading {
+  font-weight: 500;
+ 
 }
 
 

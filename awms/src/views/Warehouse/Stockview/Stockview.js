@@ -89,10 +89,8 @@ class Stockview extends Component{
        
       })
     }
-    this.renderDocumentStatus();
-    var today = moment();
-    var tomorrow = moment(today).add(1, 'days');
-    this.setState({ date: tomorrow })
+   
+   
  
 
 
@@ -120,7 +118,9 @@ class Stockview extends Component{
     const res = EventStatus.filter(row => {
       return row.code === this.state.documentStatus
     })
-    return res.map(row => row.status)
+    return res.map(row => {
+      return <span><img src={row.pathImg} width={row.width} style={{ marginRight: "10px"}} />{row.status}</span>
+    })
   }
 
   dateTimePicker() {
@@ -192,22 +192,25 @@ class Stockview extends Component{
 
       <div>
 
-     
-          <div className="clearfix">
+        
+        <div className="clearfix">
+          <div className="heading">
             <div className="float-right">
-            <div>Document Date : <span>{this.state.documentDate}</span></div>
-            <div>Event Status :{this.renderDocumentStatus()} <span></span></div>
+            <div>Document Date : <span className="heading">{this.state.documentDate}</span></div>
+            <div>Event Status :  {this.renderDocumentStatus()} <span></span></div>
             
           </div>
-          <div className="d-block"><label>Stock Colection No : </label><span>{this.state.code}</span></div>
-          <div className="d-block"><label>Ware House : </label><span>{this.state.souWarehouse}</span></div>
-      
-        </div>
+          
+          <div className="d-block"><label >Stock Colection No : </label><span>{this.state.code}</span></div>
+            <div className="d-block"><label >Ware House : </label><span>{this.state.souWarehouse}</span></div>
+          </div>
+          </div>
+       
         <div>
           <div className="d-block"><label> </label><span></span></div>
         </div>
-        <div className="d-block"><label>Item list</label><span></span></div>
-        <ReactTable columns={cols} minRows={10} data={this.state.data} sortable={false} style={{ background: 'white' }}
+        <div className="d-block"><label className="heading">Item list</label><span></span></div>
+        <ReactTable  columns={cols} minRows={10} data={this.state.data} sortable={false} style={{ background: 'white' }}
           showPagination={false}   />
           <Card>
           <CardBody style={{ textAlign: 'right' }}>
