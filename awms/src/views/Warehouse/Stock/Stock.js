@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import { TableGen } from '../MasterData/TableSetup';
 //import Axios from 'axios';
-import { apicall } from '../ComponentCore'
+import { apicall } from '../ComponentCore';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 
@@ -75,7 +75,7 @@ workingData(){
     const cols = [
       { accessor: 'Code', Header: 'Code', editable: false, filterable: false  },
       { accessor: 'DocumentDate', Header: 'Document Date', editable: false, filterable: false, Type: "datetime", dateformat: "datetime" },
-      { accessor: 'EventStatus', Header: 'Event Status', sortable: false, editable: false, filterable: false, Type: "EventStatus"  },
+      { accessor: 'EventStatus', Header: 'Event Status', sortable: false, editable: false, filterable: false, Type: "EventStatus",  },
       { accessor: 'Status', Header: 'Status', editable: false, filterable: false, Type: "DocumentStatus"  },
       { accessor: 'CreateTime', Header: 'Create', editable: false, filterable: false, Type: "datetime", dateformat: "datetime" },
       { accessor: 'ModifyTime', Header: 'Modify', editable: false, Type: "datetime", dateformat: "datetime", filterable: false },

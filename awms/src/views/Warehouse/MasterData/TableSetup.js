@@ -61,7 +61,8 @@ class TableGen extends Component{
       status:"*",
       datafilter :[],
       select:{},
-      addbtn:this.props.addbtn,
+      addbtn: this.props.addbtn,
+      printbtn: this.props.printbtn,
       loading:true,
       pagination:1,
       update:this.props.accept,
@@ -497,20 +498,21 @@ class TableGen extends Component{
   }
 
   createCustomButton(type,text,data){
-    if(type === "Remove"){
+    if (type === "Remove") {
       return <Button type="button" color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '80px' }}
         onClick={() => this.removedata(data)}>Remove</Button>
     }
-    else if(type === "Link"){
+    else if (type === "Link") {
       return <Button type="button" color="info">{
-        <Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-        to={data}>{text}</Link>}
-        </Button>
+        <Link style={{ color: '#FFF', textDecorationLine: 'none' }}
+          to={data}>{text}</Link>}
+      </Button>
     }
-    else if(type === "Barcode"){
-      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-      to={'/mst/sku/manage/barcode?barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+    else if (type === "Barcode") {
+      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine: 'none' }}
+        to={'/mst/sku/manage/barcode?barcode=' + data.Code + '&Name=' + data.Name}>Print</Link>}</Button>
     }
+ 
   }
 
   datetimeBody(value){
@@ -771,13 +773,17 @@ class TableGen extends Component{
   }
 
   createStatusField(data, type){
-    if(type === "EventStatus"){
+    if (type === "EventStatus") {
+
       return <span>
         {
           EventStatus.filter(row => {
             return row.code === data
           })[0].status
         }
+
+        
+
       </span>
     }
     else if(type === "DocumentStatus"){
@@ -825,6 +831,22 @@ class TableGen extends Component{
     name="selection"
     onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>//
   }
+
+  printbarcodeall() {
+    return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+      onClick={() => {
+        let obj = []
+        this.state.data.forEach((datarow, index) => {
+          obj.push({ "barcode": datarow.Code, "Name": datarow.Name });
+        })
+        const ObjStr = JSON.stringify(obj)
+        window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode=' + ObjStr)
+      }}>Print</Button>
+
+
+  }
+
+ 
 
   render(){
     const col = this.props.column
@@ -967,9 +989,20 @@ class TableGen extends Component{
         <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none',textAlign:'right'}}>
           <CardBody>
             <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
-            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}  className="float-right">Cancel</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+          
           </CardBody>
         </Card>
+        <Card style={{ display: this.state.printbtn === true ? 'inlne-block' : 'none', textAlign: 'right' }}>
+          <CardBody>
+            <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} className="float-right">Accept</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+            <Button onClick={() => this.printbarcodeall() } color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Print</Button>
+         
+          </CardBody>
+        </Card>
+
+
       </div>
     )
   }
