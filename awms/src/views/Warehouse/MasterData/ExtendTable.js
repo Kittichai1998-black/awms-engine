@@ -93,6 +93,12 @@ class ExtendTable extends Component{
               'field' : 'holeStatus',
               'mode' : 'check',
             }],
+            eventlist:[{
+              'status' : [{'value':'','label':'All'},{'value':'0','label':'WAIT'},{'value':'22','label':'INV'}],
+              'header' : 'Status',
+              'field' : 'eventStatus',
+              'mode' : 'check',
+            }],
             ...makeDefaultState()
             
         }
@@ -209,6 +215,9 @@ class ExtendTable extends Component{
               /* filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])}) */
               filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + "=" +encodeURIComponent(data["value"]))
             }
+            else if(data["id"] === "eventStatus"){
+              filterlist.push((filterField===undefined?data["id"]:filterField.searchfield) + (data["value"]==="0"?"=0":">0"))
+            }
             else{
               filterlist.forEach((row, index) => {
                 if(row.f === data["id"]){
@@ -222,7 +231,7 @@ class ExtendTable extends Component{
         })
         
         let select = dataselect
-        select["fields"] = filterlist.join()
+        select["fields"] = filterlist.join("&")
         select["sk"] = "0"
         let queryString = createQueryString(select)
         Axois.get(queryString).then(
@@ -273,6 +282,8 @@ class ExtendTable extends Component{
         dropdownfilter=this.state.statuslist
       }else if(name === "holeStatus"){
         dropdownfilter=this.state.holdlist
+      }else if(name === "eventStatus"){
+        dropdownfilter=this.state.eventlist
       }
 
       dropdownfilter.forEach(row => {
@@ -493,6 +504,7 @@ class ExtendTable extends Component{
       const focusf = {color:'green', marginLeft:"-20px", fontSize:"13px"}
       return data.map((child,i) => {
         let disQtys;
+        console.log(child)
         if(child.storageObjectChilds.length > 0){
           disQtys = child.storageObjectChilds.map((v)=>{
             return <div>{v.weigthKG + ' ' + v.weigthKG + (v.weigthKG?' : Min ' + v.weigthKG:'') + (v.weigthKG?" : Max "+v.weigthKG:'')}</div>
@@ -503,6 +515,7 @@ class ExtendTable extends Component{
         }
         
          return <ul key={i} style={child.isFocus===true?focus:focusf}>
+          <span>{child.storageObjectChilds.eventStatus===null?'':child.storageObjectChilds.eventStatus===0?'[WAIT]':'[INV]'} </span>
           <span>{child.baseMaster_Code===null? child.packMaster_Code : child.baseMaster_Code} : {child.baseMaster_Name===null? child.packMaster_Name : child.baseMaster_Name} </span>
           <span>{child.allqty===null?'':'[qty: ' + child.allqty + ']'} </span>
           <span>{child.weigthKG===null?'':'[wei:' + child.weigthKG + 'Kg.]'} </span> 
@@ -601,6 +614,13 @@ class ExtendTable extends Component{
           return "Yes" 
         }
       }
+      else if (rowdata.column.id==="eventStatus"){
+        if(rowdata.row["eventStatus"] === 0){
+          return "WAIT"
+        }else if(rowdata.row["eventStatus"] !== 0){
+          return "INV" 
+        }
+      }
     }
 
     render(){
@@ -626,6 +646,17 @@ class ExtendTable extends Component{
             if(row.Type === "selection"){
               row.Cell = (e) => this.createSelection(e,"checkbox")
               row.className="text-center"
+            }else if(row.Type === "button"){
+              this.props.btn.find(btnrow => {
+                if (row.btntype === "Remove" && btnrow.btntype) {
+                  row.Cell = (e) => <Button type="button" style={{ background: "#ef5350", borderColor: "#ef5350"}} color="success"  onClick={() => this.removedata(e.original)}>Remove</Button>
+                }
+                else{
+                  if(row.btntype === btnrow.btntype){
+                    row.Cell = (e) => btnrow.func(e.original)
+                  }
+                }
+              })
             }
 
             if(row.Cell === "datetime"){

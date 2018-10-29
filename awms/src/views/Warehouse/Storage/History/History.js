@@ -5,7 +5,7 @@ import {TableGen} from '../../MasterData/TableSetup';
 import ExtendTable from '../../MasterData/ExtendTable';
 import queryString from 'query-string'
 import Axios from 'axios';
-import {apicall} from '../../ComponentCore'
+import {apicall, createQueryString} from '../../ComponentCore'
 
 const api = new apicall()
 
@@ -15,141 +15,177 @@ class History extends Component{
 
     this.state = {
       data : [],
-      dataMap : [
-        {datafield:"code",searchfield:"rootBaseCode"},
-        {datafield:"baseMaster_Code",searchfield:"rootBaseTypeCode"},
-        {datafield:"baseMaster_Name",searchfield:"rootBaseTypeName"},
-        {datafield:"viewChildSKUMaster_Codes",searchfield:"sKUCode"},
-        {datafield:"viewChildSKUMaster_Names",searchfield:"sKUName"},
-        {datafield:"viewChildPackMaster_Codes",searchfield:"packCode"},
-        {datafield:"viewChildPackMaster_Names",searchfield:"packName"},
-        {datafield:"branch_Code",searchfield:"branchCode"},
-        {datafield:"branch_Name",searchfield:"branchName"},
-        {datafield:"warehouse_Code",searchfield:"warehouseCode"},
-        {datafield:"warehouse_Name",searchfield:"warehouseName"},
-        {datafield:"areaMaster_Code",searchfield:"areaCode"},
-        {datafield:"areaMaster_Name",searchfield:"areaName"},
-        {datafield:"holeStatus",searchfield:"holdStatus", Filter:"dropdown"},
-        {datafield:"status",searchfield:"status", Filter:"dropdown"},
-        {datafield:"productDate",searchfield:"productDate"},
-        {datafield:"expiryDate",searchfield:"expiryDate"},
-      ],
+      autocomplete:[],
+      statuslist:[{
+        'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
+        'header' : 'Status',
+        'field' : 'Status',
+        'mode' : 'check',
+      }],
       acceptstatus : false,
-      select:{queryString:window.apipath + "/api/trx/sto/search",
-      t:"",
-      q:"",
-      fields:"",
-      s_f:"{rootBaseCode}",
-      s_od:"{ASC}",
-      sk:"",
-      l:20,},
-      pivot:[],
+      select:{queryString:window.apipath + "/api/log",
+      t:"StorageObjectEvent",
+      q:"[{ 'f': 'RootStorageObject_ID', c:'=', 'v': " + queryString.parse(this.props.location.search).ID+"}]",
+      f:"ID,StorageObject_ID,RootStorageObject_ID,ParentStorageObject_ID,StorageObject_ObjectType,StorageObject_Code,StorageObject_Name,StorageObject_EventStatus,StorageObject_Status,Branch_Code,Warehouse_Code,AreaLocationMaster_Code,ActionTime",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      l:100,
+      all:"",},
       sortstatus:0,
-      loaddata:false,
-      updateflag:false,
+      selectiondata:[],
     };
-    this.updateHold = this.updateHold.bind(this)
-    this.getSelectionData = this.getSelectionData.bind(this)
+    this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
+    this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
+    this.getAutocompletee = this.getAutocomplete.bind(this);
+    this.getSelectionData = this.getSelectionData.bind(this);
+    this.initialData = this.initialData.bind(this)
+    this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","Modified","Created"]
   }
-  
+
+  onHandleClickCancel(event){
+    this.forceUpdate();
+    event.preventDefault();
+  }
+
+  componentWillMount(){
+    this.getAutocomplete();
+  }
+
+  componentWillUnmount(){
+    
+  }
+
+  componentDidMount(){
+    //this.initialData()
+  }
+
+
+  onHandleClickLoad(event){
+    api.post(window.apipath + "/api/mst/TransferFileServer/SKUMst",{})
+    this.forceUpdate();
+  }
+
+  getAutocomplete(){
+    const unitselect = {queryString:window.apipath + "/api/mst",
+      t:"UnitType",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+      f:"ID,Code",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      all:"",}
+
+    const packselect = {queryString:window.apipath + "/api/mst",
+      t:"SKUMasterType",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+      f:"ID,Code",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      all:"",}
+
+    Axios.all([Axios.get(createQueryString(packselect)),Axios.get(createQueryString(unitselect))]).then(
+      (Axios.spread((packresult, unitresult) => 
+    {
+      let ddl = this.state.autocomplete
+      let packList = {}
+      let unitList = {}
+      packList["data"] = packresult.data.datas
+      packList["field"] = "SKUMasterType_Code"
+      packList["pair"] = "SKUMasterType_ID"
+      packList["mode"] = "Dropdown"
+
+      unitList["data"] = unitresult.data.datas
+      unitList["field"] = "UnitType_Code"
+      unitList["pair"] = "UnitType_ID"
+      unitList["mode"] = "Dropdown"
+
+      ddl = ddl.concat(packList).concat(unitList)
+      this.setState({autocomplete:ddl})
+    })))
+  }
+
   getSelectionData(data){
-    console.log(data)
-    let obj = []
-    data.forEach((datarow,index) => {
-        obj.push({"ID":datarow.id});
-    })
-    const ObjStr = JSON.stringify(obj)
-    console.log(ObjStr)
-    this.setState({idObj:ObjStr}, () => console.log(this.state.idObj))
+    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
   }
 
-  updateHold(status){
-    const dataedit = this.state.dataedit
-    if (status === 'hold'){
+  createBarcodeBtn(data){
+    return <Button type="button" color="info" 
+    onClick={() => this.history.push('/mst/sku/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
+  }
 
-    }else if(status === 'hold')
-    if(dataedit.length > 0){
-      /* dataedit.forEach((row) => {
-        row["ID"] = row["ID"] <= 0 ? null : row["ID"]
-        this.props.column.forEach(col => {
-          if(col.datatype === "int" && row[col.accessor] === ""){
-            if(col.accessor === "Revision"){
-              if(row[col.accessor] === ""){
-                row[col.accessor] = 1
-              }
-            }
-            else{
-              row[col.accessor] = null
-            }
-          }
-        })
+  initialData(){
+    let selectQ = []
+    const values = queryString.parse(this.props.location.search)
 
-        for(let col of this.props.uneditcolumn){
-          delete row[col]
-        }
-      }) */
-      let updjson = {
-        "_token": sessionStorage.getItem("Token"),
-        "_apikey": null,
-        "t": this.props.table,
-        "pk": "ID",
-        "datas": dataedit,
-        "nr": false
-      }
-      Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
-        this.queryInitialData();
-      })
+    selectQ.push({queryString:window.apipath + "/api/log",
+    t:"StorageObjectEvent",
+    //q:"", //[{ 'f': 'Status', c:'<', 'v': 2}]
+    f:"ID,StorageObject_ID,RootStorageObject_ID,ParentStorageObject_ID,StorageObject_ObjectType,StorageObject_Code,StorageObject_Name,StorageObject_EventStatus,StorageObject_Status,Branch_Code,Warehouse_Code,AreaLocationMaster_Code,ActionTime",
+    g:"",
+    s:"[{'f':'ID','od':'asc'}]",
+    sk:0,
+    l:100,
+    all:"",
+    q:[{ 'f': 'RootStorageObject_ID', c:'=', 'v': values.ID}]})
+    this.setState({select:selectQ, loading:true})
 
-      this.setState({dataedit:[]})
-    }
-}
+
+    
+    //this.state.select.push({"q":[{ 'f': 'RootStorageObject_ID', c:'=', 'v': values}]})
+  }
 
   render(){
     const cols = [
-      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-      {accessor: 'code', Header: 'ฺBase Code', id: "ID", Filter:"text"},
-      {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
-      {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text"},
-      {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text"},
-      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text"},
-      {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', filterable:false},
-      {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
-      {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
-      {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', filterable:false},
-      {accessor: 'branch_Code', Header: 'Branch Code', Filter:"text"},
-      {accessor: 'branch_Name', Header: 'Branch Name', Filter:"text"},
-      {accessor: 'warehouse_Code', Header: 'Warehouse Code', Filter:"text"},
-      {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
-      {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
-      {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
-      {accessor: 'areaLocationMaster_Code', Header: 'Location', filterable:false},
-      {accessor: 'holeStatus', Header: 'Hole',  Status:"text", Filter:"dropdown"},
-      {accessor: 'status', Header: 'Status',  Status:"text", Filter:"dropdown"},
-      {accessor: 'productDate', Header: 'Product Date', },
-      {accessor: 'expiryDate', Header: 'Expire Date', },
-      {accessor: 'createBy', Header: 'Create', filterable:false},
-      {accessor: 'modifyBy', Header: 'Modify', filterable:false},
+      {accessor: 'StorageObject_ID', Header: 'Stock Object', Filter:"text"},
+      {accessor: 'ParentStorageObject_ID', Header: 'Parent Object', Filter:"text"},
+      {accessor: 'RootStorageObject_ID', Header: 'Root Object', Filter:"text"},
+      {accessor: 'Branch_Code', Header: 'Branch', Filter:"text"},
+      {accessor: 'Warehouse_Code', Header: 'Warehouse',Filter:"text"},
+      {accessor: 'AreaLocationMaster_Code', Header: 'Location', Filter:"text"},
+      {accessor: 'StorageObject_EventStatus', Header: 'Event Status', Filter:"text"},
+      {accessor: 'StorageObject_Status', Header: 'Status', Filter:"text"},
+      {accessor: 'ActionTime', Header: 'Action Date', Type:"datetime", dateformat:"datetime",filterable:false},
     ];
-
-    const subcols = [
-      {accessor: 'ID', Header: 'Log ID', id: "ID", }, 
-      {accessor: 'Code', Header: 'Code', id: "Code", },
-      {accessor: 'sumsku', Header: 'sumsku', id: "sumsku", },
-    ];
+    
+    const btnfunc = [{
+      history:this.props.history,
+      btntype:"Barcode",
+      func:this.createBarcodeBtn
+    }]
 
     return(
       <div>
-        <ExtendTable data={this.state.select} column={cols} subcolumn={subcols} 
-        pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData}
-        url={null} filterable={true} subtype={1} filterFields={this.state.dataMap}/>
-        <Card style={{display:'inlne-block',textAlign:'right'}}>
-          <CardBody>
-            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
-              onClick={() => this.updateHold("hold")} color="primary" className="float-right">Hold</Button>
-            <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
-              onClick={() => this.updateHold("unhold")} color="primary" className="float-right">Unhold</Button>
+      {/*
+        column = คอลัมที่ต้องการแสดง
+        data = json ข้อมูลสำหรับ select ผ่าน url
+        ddlfilter = json dropdown สำหรับทำ dropdown filter
+        addbtn = เปิดปิดปุ่ม Add
+        accept = สถานะของในการสั่ง update หรือ insert
+        autocomplete = data field ที่ต้องการทำ autocomplete
+        filterable = เปิดปิดโหมด filter
+        getselection = เก็บค่าที่เลือก
+    
+      */}
+        <div className="clearfix">
+        <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
+          <Button className="float-right" onClick={() => {
+            let data1 = {"exportName":"ProductToShop","whereValues":[]}
+            api.post(window.apipath + "/api/report/export/fileServer", data1)
+          }}>Export Data</Button>
+ 
+        </div>
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
+        btn={btnfunc} uneditcolumn={this.uneditcolumn}
+         table="ams_SKUMaster"/>
+
+        {/* <Card>
+          <CardBody style={{textAlign:'right'}}>
+            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
           </CardBody>
-        </Card>
+        </Card> */}
       </div>
     )
   }

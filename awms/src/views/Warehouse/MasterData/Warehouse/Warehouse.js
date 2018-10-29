@@ -58,16 +58,6 @@ class Warehouse extends Component{
           sk:0,
           all:"",}
     
-        /* const areatypeselect = {queryString:window.apipath + "/api/mst",
-          t:"AreaMasterType",
-          q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-          f:"ID,Code",
-          g:"",
-          s:"[{'f':'ID','od':'asc'}]",
-          sk:0,
-          l:20,
-          all:"",} */
-    
         Axios.all([Axios.get(createQueryString(whselect))]).then(
           (Axios.spread((whresult) => 
         {
@@ -78,11 +68,6 @@ class Warehouse extends Component{
           whList["field"] = "Branch_Code"
           whList["pair"] = "Branch_ID"
           whList["mode"] = "Dropdown"
-    
-          /* areatypelist["data"] = areatyperesult.data.datas
-          areatypelist["field"] = "AreaMasterType_Code"
-          areatypelist["pair"] = "AreaMasterType_ID"
-          areatypelist["mode"] = "Dropdown" */
     
           ddl = ddl.concat(whList)
           this.setState({autocomplete:ddl})
