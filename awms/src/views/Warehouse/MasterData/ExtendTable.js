@@ -255,7 +255,7 @@ class ExtendTable extends Component{
 
     createCustomFilter(name){
       let filter = [...this.state.datafilter]
-      return <Input type="text" id={name}
+      return <Input type="text" id={name} style={{ background: "#FAFAFA" }} placeholder="filter..."
         onKeyPress={(e) => {
           if (e.key === 'Enter'){
               filter.forEach((datarow,index) => {

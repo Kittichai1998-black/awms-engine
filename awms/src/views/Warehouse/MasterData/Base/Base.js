@@ -150,9 +150,11 @@ class Area extends Component{
         
           */}
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={true}
+            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} printbtn={true}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
-             table="ams_BaseMaster" autocode="@@sql_gen_base_code"/>
+              table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
+
+            
           </div>
         )
       }

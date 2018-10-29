@@ -87,7 +87,6 @@ class ListProduct extends Component{
       packList["field"] = "SKUMasterType_Code"
       packList["pair"] = "SKUMasterType_ID"
       packList["mode"] = "Dropdown"
-
       unitList["data"] = unitresult.data.datas
       unitList["field"] = "UnitType_Code"
       unitList["pair"] = "UnitType_ID"
@@ -142,8 +141,8 @@ class ListProduct extends Component{
     
       */}
         <div className="clearfix">
-        <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
-          <Button className="float-right" onClick={() => {
+          <Button className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
+          <Button className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" onClick={() => { 
             let data1 = {"exportName":"ProductToShop","whereValues":[]}
             api.post(window.apipath + "/api/report/export/fileServer", data1)
           }}>Export Data</Button>

@@ -58,12 +58,12 @@ namespace AWMSModel.Criteria
         private static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes,
             long? idFocus, string codeFocus)
         {
-            var rootSto = stos.FirstOrDefault(x => !x.parentID.HasValue);
+            var rootSto = stos.FirstOrDefault();
             if (rootSto == null) return null;
             bool isFucus = false;
 
             var sos = staticObjectSizes.FirstOrDefault(x => x.ID == rootSto.objectSizeID);
-            var res = generateMapstos(null, null, out isFucus).FirstOrDefault();
+            var res = generateMapstos(rootSto.parentID, rootSto.parentType, out isFucus).FirstOrDefault();
             
 
             List<StorageObjectCriteria> generateMapstos(int? parentID, StorageObjectType? parentType, out bool outParentIsFocus)

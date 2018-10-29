@@ -14,12 +14,12 @@ namespace AWMSModel.Criteria
         public object value;
         public SQLOperatorType operatorType;
         public SQLConditionType conditionLeft;
-        public SQLConditionCriteria(string field, object value, SQLOperatorType operatorType, SQLConditionType conditionRight = SQLConditionType.NONE)
+        public SQLConditionCriteria(string field, object value, SQLOperatorType operatorType, SQLConditionType conditionLeft = SQLConditionType.NONE)
         {
             this.field = field;
             this.value = value;
             this.operatorType = operatorType;
-            this.conditionLeft = conditionRight;
+            this.conditionLeft = conditionLeft;
         }
         public SQLConditionCriteria(string field, object value, string operatorType, string conditionLeft = null)
         {

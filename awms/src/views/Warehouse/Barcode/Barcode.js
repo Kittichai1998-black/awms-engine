@@ -249,8 +249,10 @@ class SetBarcode extends Component{
               <span className="mr-sm-1"> : QRCode</span>
               <Input  className="mr-sm-1" type="checkbox" name="chkbar" checked={this.state.chkbar}  onChange={this.handleInputChange}/>
               <span className="mr-sm-1"> : Barcode</span> */}
-              <Button className="mr-sm-1" onClick={this.createMultipleBarcode}>Create</Button>
-              <Button className="mr-sm-1" onClick={this.printDocument}>Print</Button>
+            <Button className="mr-sm-1" color="primary" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '80px' }}
+              onClick={this.createMultipleBarcode}>Create</Button>
+            <Button className="mr-sm-1" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+              onClick={this.printDocument}>Print</Button>
             </FormGroup>
           </Form>
           <div  style={{maxWidth:'10cm',}} ref={form => {this.form = form;}}>{this.listBarcode()}</div>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input,Button,Alert } from 'reactstrap';
+import {Input,Button,Alert,Card,CardBody } from 'reactstrap';
 //import Axios from 'axios';
 import ReactTable from 'react-table';
 import {apicall} from '../ComponentCore'
@@ -33,7 +33,10 @@ class ComfirmBox extends Component{
       sk:0,
       l:10,
       all:"",},
-      visible: false
+      visible: false,
+      showbutton:"none",
+      Name:"Administrator",
+      
       
     };
     this.onDismiss = this.onDismiss.bind(this);
@@ -42,9 +45,24 @@ class ComfirmBox extends Component{
     this.setState({ visible:!this.state.visible });
   }
 
+// componentWillMount(){
+//   this.setState({ showbutton:"none"})
+
+
+// }
+
   componentDidMount(){
     Axios.get(createQueryString(this.state.select2)).then((response) => {
       this.setState({data:response.data.datas})
+
+  
+  if(this.state.Name === "Administrator")  {
+    this.setState({ showbutton:"block"})
+  } else {
+    var ff = document.getElementsByClassName("view-test")
+    console.log(ff[0].remove())
+  }
+
     })
   }
   scanbarcode(){
@@ -81,15 +99,24 @@ class ComfirmBox extends Component{
     return(  
       <div> 
         <Alert isOpen={this.state.visible} toggle={this.onDismiss}>{this.state.checkdata}</Alert>
-     <    label>BarCode : </label> <Input  type="text" placeholder="BoxCode" style={{display:"inline-block",width:"150px"} }
-          onChange={e => {this.setState({barcode:e.target.value})}} 
-          onKeyPress={(e) => {
+        <Card>
+          <CardBody style={{textAlign:'right',backgroundColor:"rgb(228,229,230)"}}>
+            <label>Barcode : </label> {' '}
+            <Input type="text" placeholder="Barcode" style={{display:"inline-block",width:"150px"} }
+            onChange={e => {this.setState({barcode:e.target.value})}} 
+            onKeyPress={(e) => {
                 if(e.key === 'Enter' && this.state.barcode !== ""){
                   this.scanbarcode()
                 }
-        }}></Input>{' '}
+                 }}></Input>{' '}
+        
             <Button color="primary" onClick={() => this.scanbarcode()}>Scan</Button>
-            <br></br><br></br>
+
+          </CardBody>
+        </Card>
+
+        <Button style={{display:this.state.Name==="Administrator"?"block":this.state.showbutton}} className="view-test" >TEST</Button>
+
             <ReactTable columns={cols} minRows={10} sortable={false} style={{background:'white'}}
         showPagination={false} data={this.state.data}/>
       </div>
