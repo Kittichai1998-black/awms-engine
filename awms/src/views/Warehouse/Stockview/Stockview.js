@@ -10,6 +10,7 @@ import moment from 'moment';
 import queryString from 'query-string';
 import DatePicker from 'react-datepicker';
 import ReactAutocomplete from 'react-autocomplete';
+import { Tooltip } from 'reactstrap';
 //import { TableGen } from '../MasterData/TableSetup';
 
 
@@ -31,9 +32,12 @@ const API = new apicall()
 class Stockview extends Component{
   constructor(props) {
     super(props);
+    this.toggle = this.toggle.bind(this);
     this.state = {
       data: [],
       pagedocID: 0,
+      tooltipOpen: false,
+
  
     };
 
@@ -89,10 +93,8 @@ class Stockview extends Component{
        
       })
     }
-    this.renderDocumentStatus();
-    var today = moment();
-    var tomorrow = moment(today).add(1, 'days');
-    this.setState({ date: tomorrow })
+   
+   
  
 
 
@@ -120,7 +122,18 @@ class Stockview extends Component{
     const res = EventStatus.filter(row => {
       return row.code === this.state.documentStatus
     })
-    return res.map(row => row.status)
+    return res.map(row => {
+      return <span><img src={row.pathImg} width={row.width} style={{ marginRight: "10px"}} /></span>
+    })
+  }
+
+  renderStatus() {
+    const res = EventStatus.filter(row => {
+      return row.code === this.state.documentStatus
+    })
+    return res.map(row => {
+      return row.status
+    })
   }
 
   dateTimePicker() {
@@ -167,7 +180,14 @@ class Stockview extends Component{
       />
     }
   }
-  
+
+
+  toggle() {
+    this.setState({
+      tooltipOpen: !this.state.tooltipOpen
+    });
+  }
+
 
 
 
@@ -191,23 +211,37 @@ class Stockview extends Component{
     return (
 
       <div>
+  
 
-     
-          <div className="clearfix">
+        
+        <div className="clearfix">
+          <div className="heading">
             <div className="float-right">
-            <div>Document Date : <span>{this.state.documentDate}</span></div>
-            <div>Event Status :{this.renderDocumentStatus()} <span></span></div>
+              <div>Document Date : <span className="heading">{this.state.documentDate}</span></div>
+              
+              <div href="#" id="TooltipExample">Event Status :
+              <span>
+                  {this.renderDocumentStatus()}
+                  <Tooltip  isOpen={this.state.tooltipOpen} target="TooltipExample" toggle={this.toggle}>
+                  {this.renderStatus()}
+                  </Tooltip>
+                </span>
+                <span ></span></div>
+              
+              
             
           </div>
-          <div className="d-block"><label>Stock Colection No : </label><span>{this.state.code}</span></div>
-          <div className="d-block"><label>Ware House : </label><span>{this.state.souWarehouse}</span></div>
-      
-        </div>
+          
+          <div className="d-block"><label >Stock Colection No : </label><span>{this.state.code}</span></div>
+            <div className="d-block"><label >Ware House : </label><span>{this.state.souWarehouse}</span></div>
+          </div>
+          </div>
+       
         <div>
           <div className="d-block"><label> </label><span></span></div>
         </div>
-        <div className="d-block"><label>Item list</label><span></span></div>
-        <ReactTable columns={cols} minRows={10} data={this.state.data} sortable={false} style={{ background: 'white' }}
+        <div className="d-block"><label className="heading">Item list</label><span></span></div>
+        <ReactTable  columns={cols} minRows={10} data={this.state.data} sortable={false} style={{ background: 'white' }}
           showPagination={false}   />
           <Card>
           <CardBody style={{ textAlign: 'right' }}>

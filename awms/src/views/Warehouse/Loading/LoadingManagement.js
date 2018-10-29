@@ -85,8 +85,8 @@ class LoadingManage extends Component{
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"DocumentEvent"},
       {accessor: 'CreateTime', Header: 'CreateBy', editable:false,Type:"datetime", filterable:false},
       {accessor: 'ModifyTime', Header: 'ModifyBy', editable:false,Type:"datetime", filterable:false},
-      {accessor: 'Remark', Header: 'Remark', editable:false,},
-      {editable:false, Cell:(e) => {
+      { accessor: 'Remark', Header: 'Remark', editable: false, filterable: false },
+      {editable: false, filterable: false,  Cell:(e) => {
         return <Button color="primary" style={{ background: "#26c6da", borderColor: "#26c6da" }}
           onClick={() => { this.props.history.push('/doc/ld/manage?ID='+ e.original.ID)
         }

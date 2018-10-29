@@ -108,6 +108,7 @@ class LoadingDocument extends Component{
               }}/>
           <Button onClick={this.onHandleScanConso} color="primary">Scan</Button></Col>
         </Row>
+
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/>
       </div>

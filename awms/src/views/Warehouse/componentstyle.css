@@ -26,7 +26,7 @@
     font-weight: bolder;
 }
 .tbody{
-    display:table-row-group;
+    display:table-row-group !important;
 }
 
 .-filters .rt-tr .rt-th {
@@ -38,6 +38,16 @@
   color: aliceblue !important;
   height:  45px !important;
   vertical-align:bottom !important;
+}
+
+body {
+  font-family: 'Martel', serif;
+  font-size:medium;
+}
+
+.heading {
+  font-weight: 500;
+ 
 }
 
 

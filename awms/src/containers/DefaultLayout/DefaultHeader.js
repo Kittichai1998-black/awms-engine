@@ -54,8 +54,8 @@ class DefaultHeader extends Component {
             <NavLink href="#"><i className="icon-location-pin"></i></NavLink>
           </NavItem>*/}
           <AppHeaderDropdown direction="down" >
-            <span style={{ paddingRight: '100px' }}><NavLink href="/Login" onClick={this.Logout.bind(this)}><img src={img} height="20px"></img>
-              <span> LOGOUT  </span>
+            <span style={{ paddingRight: '40px' }}><NavLink href="/Login" onClick={this.Logout.bind(this)}><img src={img} height="30px"></img>
+              <span className="heading"> LOGOUT  </span>
               </NavLink></span>
 
             {/*<DropdownToggle nav>
