@@ -261,10 +261,3 @@ __pycache__/
 *.pyc
 /test_build
 /amws-engine
-/AWMSEngine/APIService/UI/GetMapStoAPI.cs
-/AWMSEngine/APIService/UI/SearchStorageObjectAPI.cs
-/AWMSEngine/Engine/Business/Issued/ScanIssuedToPicking.cs
-/AWMSEngine/Engine/Business/Issued/ScanIssuedItemToPicking.cs
-/AWMSEngine/Engine/General/GetMapSto.cs
-/AWMSEngine/Engine/General/SearchStorageObject.cs
-/awms/src/views/ComponentCore
