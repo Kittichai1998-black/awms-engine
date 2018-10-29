@@ -26,18 +26,28 @@
     font-weight: bolder;
 }
 .tbody{
-    display:table-row-group;
+    display:table-row-group !important;
 }
 
-.-filters {
-  background-color: #BDBDBD;
-  color: aliceblue;
+.-filters .rt-tr .rt-th {
+  background-color: #BDBDBD !important;
+  color: aliceblue !important;
 }
-.-header {
-  background-color: #2f353a;
-  color: aliceblue;
-  height:  45px;
-  vertical-align:bottom
+.-header .rt-tr .rt-th {
+  background-color: #2f353a !important;
+  color: aliceblue !important;
+  height:  45px !important;
+  vertical-align:bottom !important;
+}
+
+body {
+  font-family: 'Martel', serif;
+  font-size:medium;
+}
+
+.heading {
+  font-weight: 500;
+ 
 }
 
 

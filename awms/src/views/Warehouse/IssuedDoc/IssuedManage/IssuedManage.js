@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
-import {Link,Redirect}from 'react-router-dom';
 import "react-table/react-table.css";
 import {Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import ReactTable from 'react-table'
-import ReactAutocomplete from 'react-autocomplete';
 import moment from 'moment';
 import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
-import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker } from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree } from '../../ComponentCore'
 import Downshift from 'downshift'
-import ToListTree from '../../../ComponentCore/ToListTree';
-import { type } from 'os';
 
 function isInt(value) {
   return !isNaN(value) && 
@@ -38,7 +34,7 @@ class IssuedManage extends Component{
       select2:{queryString:window.apipath + "/api/viw",
       t:"PackMaster",
       q:'[{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType",
+      f:"id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -151,11 +147,10 @@ class IssuedManage extends Component{
     })
 
   }
-  //Axios.get(createQueryString(this.warehouseselect))
+
   componentDidMount(){
    this.initialData()
       Axios.get(createQueryString(this.state.StorageObject)).then((response) => {
-        //console.log(response.data.datas)
         const storageObjectdata = []
         response.data.datas.forEach(row => {
           storageObjectdata.push({label:row.Code})
@@ -178,7 +173,7 @@ class IssuedManage extends Component{
   createDocument(){
     let acceptdata = []
     this.state.data.forEach(row => {
-      acceptdata.push({packID:row.PackID,packQty:row.PackQty,})
+      acceptdata.push({packID:row.id,packQty:row.PackQty,})
     })
     let postdata = {
       refID:'', forCustomerID:null, batch:null, lot:null,
@@ -228,34 +223,37 @@ class IssuedManage extends Component{
   
   addData(){
     const data = this.state.data
-    data.push({ID:this.addIndex,PackItem:"",PackQty:1,SKU:"",UnitType:"", PackID:""})
+    data.push({id:this.addIndex,PackItem:"",PackQty:1,SKU:"",UnitType:"", ID:""})
     this.addIndex += 1
     this.setState({data})
   }
 
   editData(rowdata, value, field){
     const data = this.state.data;
-    if(rowdata.column.datatype === "int"){
-      let conv = value === '' ? 0 : value
-      const type = isInt(conv)
-      if(type){
-        data[rowdata.index][field] = (conv === 0 ? null : conv);
+    if(value !== ""){
+      if(rowdata.column.datatype === "int"){
+        let conv = value === '' ? 0 : value
+        const type = isInt(conv)
+        if(type){
+          data[rowdata.index][field] = (conv === 0 ? null : conv);
+        }
+        else{
+          alert("??")
+        }
       }
       else{
-        alert("??")
+        data[rowdata.index][field] = value.Code;
+        data[rowdata.index]["SKU"] = value.SKU;
+        data[rowdata.index]["UnitType"] = value.UnitType;
+        data[rowdata.index]["id"] = value.id;
       }
+      this.setState({ data });
     }
-    else{
-      data[rowdata.index][field] = value.Code;
-      data[rowdata.index]["SKU"] = value.SKU;
-      data[rowdata.index]["UnitType"] = value.UnitType;
-      data[rowdata.index]["PackID"] = value.ID;
-    }
-    this.setState({ data });
+
   }
 
   createText(data,field){
-    let datafield = data.filter(row => row.ID === field)
+    let datafield = data.filter(row => row.id === field)
     let result = datafield.map(row => {return <span key={row.Code}>{row.Code + ' : ' + row.Name}</span>})
     return result
   }
@@ -265,11 +263,14 @@ class IssuedManage extends Component{
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
       <Downshift
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
       onChange={selection => {
-        rowdata.value = selection.ID
-        this.editData(rowdata, selection, rowdata.column.id)}
-      }
-      itemToString={item => (item ? item.Code : rowdata.value)}
+        rowdata.value = selection.id
+        this.editData(rowdata, selection, rowdata.column.id)
+      }}
+      itemToString={item => {
+        return item !== null ? item.Code : rowdata.value ;
+      }}
     >
       {({
         getInputProps,
@@ -297,14 +298,15 @@ class IssuedManage extends Component{
                         .filter(item => !inputValue || item.Code.includes(inputValue))
                         .map((item, index) => (
                           <div style={{background:'white', width:'150px'}}
-                            key={item.ID}
+                            key={item.id}
                             {...getItemProps({
                               item,
                               index,
                               style: {
                                 backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                                 fontWeight: selectedItem === item ? 'bold' : 'normal',
-                                width:'150px'
+                                width:'150px',
+                                border:"1px solid black "
                               }
                             })}
                           >
@@ -323,39 +325,6 @@ class IssuedManage extends Component{
     }
   }
 
-  createAutoCompleteCell(rowdata){
-    const style = {borderRadius: '3px',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    background: 'rgba(255, 255, 255, 0.9)',
-    padding: '2px 0',
-    fontSize: '90%',
-    position: 'absolute',
-    overflow: 'auto',
-    maxHeight: '50%',
-    zIndex: '998',}
-    if(this.state.autocomplete.length > 0){
-      return <ReactAutocomplete
-        menuStyle={style}
-        getItemValue={(item) => item.Code + ' : ' + item.Name}
-        items={this.state.autocomplete}
-        shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
-        renderItem={(item, isHighlighted) =>
-          <div key={item.ID} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-            {item.Code + ' : ' + item.Name}
-          </div>
-        }
-        value={rowdata.value}
-        onChange={(e) => {
-          rowdata.value = e.target.value
-          this.editData(rowdata, e.target.value, rowdata.column.id)
-        }}
-        onSelect={(val, row) => {
-          this.editData(rowdata, row, rowdata.column.id)
-        }}
-      />
-    }
-  }
- 
   toggle() {
     this.setState({modalstatus:!this.state.modalstatus});
   }
@@ -365,24 +334,22 @@ class IssuedManage extends Component{
              <ModalHeader toggle={this.toggle}> <span>Name : Pallet, Box</span></ModalHeader>
              <ModalBody>
                <div>   
-                 <AutoSelect data={this.state.storageObjectdata} result={e=>this.setState({codebase:e.label},()=>console.log(this.state.codebase))}/>
-                
+                 <AutoSelect data={this.state.storageObjectdata} result={e=>this.setState({codebase:e.label})}/>
                </div>
              </ModalBody>
              <ModalFooter>
-               <Button color="secondary" id="off" onClick={() => this.onClickSelect(this.state.codebase)}>OK</Button>
+               <Button color="secondary" id="off" onClick={() => {this.onClickSelect(this.state.codebase); this.toggle()}}>OK</Button>
             </ModalFooter>
           </Modal>
 }
 
   onClickSelect(code){
      Axios.get(window.apipath + "/api/trx/mapsto?type=1&code="+code+"&isToChild=true").then((res) => {
-     //console.log(res.data.mapsto.mapstos)
      var resultToListTree = ToListTree(res.data.mapsto,"mapstos")
        this.onClickGroup(resultToListTree)
-     //console.log(resultToListTree)
     })
   }
+
  onClickGroup(data){
   var arrType = data.filter((res)=>{
     return res.type === 2  
@@ -390,7 +357,6 @@ class IssuedManage extends Component{
   var groupArray = require('group-array');
    const groupItem = groupArray(arrType, 'code');
   var arrdata =[]
-  
 
   for(var datarow in groupItem){
     groupItem[datarow].forEach(row => {
@@ -399,14 +365,18 @@ class IssuedManage extends Component{
       arrdata.forEach((row2,index) => {
         if(row2.code === row.code){
         arrdata.splice(index,1)
-        } 
+        }
       });
+      
+      let getUnit = this.state.autocomplete.filter(rowauto => {
+        return rowauto.Code === row.code
+      })
+      row.UnitType = getUnit[0].UnitType
       arrdata.push(row)
       
    });
-  }console.log( groupItem)
-   console.log(arrdata)
-   this.setState({data:arrdata})
+  }
+   this.setState({data:arrdata},() => console.log(this.state.data))
    
  }
 
@@ -432,12 +402,12 @@ class IssuedManage extends Component{
         {Cell:(e) => <Button onClick={()=>{
           const data = this.state.data;
           data.forEach((row, index)=>{
-            if(row.ID === e.original.ID){
+            if(row.id === e.original.id){
               data.splice(index, 1)
             }
           })
           this.setState({data})
-        }}>Remove</Button>}
+        }} color="danger">Remove</Button>}
       ]
     }
     
@@ -474,7 +444,7 @@ class IssuedManage extends Component{
           </Row>
         </div>
         <div className="clearfix">
-        <Button className="float-right" color="danger" onClick={() => this.toggle()}>select base</Button>
+        <Button className="float-right" color="danger" onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
           
         </div>

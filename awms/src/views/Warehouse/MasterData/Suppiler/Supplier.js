@@ -78,7 +78,8 @@ class Supplier extends Component{
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
      <div className="clearfix">
-          <Button className="float-right" onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
+          <Button className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350" }}
+            onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
       </div>
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
       filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
