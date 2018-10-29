@@ -29,7 +29,7 @@ class DefaultMenu extends Component{
       <AppSidebar fixed display="lg">
         <AppSidebarHeader />
         <AppSidebarForm />
-        <AppSidebarNav navConfig={navigation} {...this.props}/>
+        <AppSidebarNav navConfig={navigation(localStorage.getItem("MenuItems"))} {...this.props}/>
         <AppSidebarFooter />
         <AppSidebarMinimizer />
       </AppSidebar>
@@ -62,7 +62,17 @@ class DefaultLayout extends Component {
     localStorage.clear();
     sessionStorage.clear();
   } */
+  constructor(props){
+    super(props)
+    this.state = {
+      menubar:null
+    }
+  }
 
+  componentDidMount(){
+    this.setState({menubar:<DefaultMenu {...this.props}/>})
+  }
+  
   render() {
     return (
       <div className="app">
@@ -86,7 +96,7 @@ class DefaultLayout extends Component {
               </Switch>
             </Container>
           </main>
-          <DefaultMenu {...this.props}/>
+          {this.state.menubar}
           {/*<AppAside fixed hidden>
             <DefaultAside />
           </AppAside> */}

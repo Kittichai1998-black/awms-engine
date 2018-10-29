@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, CardGroup, Col, Container, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 import Axios from 'axios';
-import {Redirect, Link} from 'react-router-dom';
+import {Redirect, Link, Route} from 'react-router-dom';
 import DefaultLayout from '../../../containers/DefaultLayout'
 
 class Login extends Component {
@@ -34,19 +34,19 @@ class Login extends Component {
     event.preventDefault();
   }
 
-  async HandleClick(){
+  HandleClick(){
     if(this.state.username !== "" && this.state.password !== "" )
     {
       this.Authorize();
     }
   }
 
-  async Authorize(){
+  Authorize(){
     let data = {"username":this.state.username, "password":this.state.password, "secretKey":"ABC@123"};
     let config = {
       headers: { 'Access-Control-Allow-Origin':'*','Content-Type': 'application/json; charset=utf-8' ,'accept': 'application/json'}
     };
-    await Axios.post(window.apipath + '/api/token/register', data, config)
+    Axios.post(window.apipath + '/api/token/register', data, config)
      .then((res) => {
        if(res.data._result !== undefined)
        {
@@ -75,8 +75,7 @@ class Login extends Component {
   async GetMenu(token){
     await Axios.get(window.apipath + '/api/PageSetup/menu/token=' + token)
      .then((res) => {
-       localStorage.setItem('MenuItems',JSON.stringify(res.data.items));
-       sessionStorage.setItem('MenuItems',localStorage.MenuItems);
+       localStorage.setItem('MenuItems',JSON.stringify(res.data.webGroups));
      }).then(() => {
       this.setState({status : true});
      }).catch((error) => {
@@ -91,7 +90,8 @@ class Login extends Component {
 
   redirect(){
     if(sessionStorage.getItem("Token") !== null){
-     return <Redirect to="/"/>
+     return <div><Route path="/" Component={DefaultLayout}/>
+     <Redirect to="/"/></div>
     }
   }
 
