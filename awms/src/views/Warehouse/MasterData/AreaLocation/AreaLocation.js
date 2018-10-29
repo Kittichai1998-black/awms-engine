@@ -22,9 +22,9 @@ class AreaLocation extends Component{
         {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+        {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+        /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+        {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
@@ -78,7 +78,7 @@ class AreaLocation extends Component{
     this.dropdownAuto = this.dropdownAuto.bind(this)
     this.autoSelectData = this.autoSelectData.bind(this)
     this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
-    this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
+    this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","Modified","Created"]
 
   }
   onHandleClickCancel(event){
@@ -236,55 +236,52 @@ class AreaLocation extends Component{
   setColumns(){
     if(this.state.grouptype === 2){ 
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text", fixed: "left"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+        /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+        {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+        //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     
     }else  if(this.state.grouptype === 1) {
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        {accessor: 'Code', Header: 'Code', editable:false, Filter:"text", fixed: "left"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode",},
         {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+        /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+        {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+        //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     }else{
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
-        {accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
+        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text", fixed: "left"},
+        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
         {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
         {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
         {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-        {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
-        {accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+        {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+        /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+        {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+        //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
@@ -296,7 +293,7 @@ class AreaLocation extends Component{
       return {queryString:window.apipath + "/api/viw",
       t:"AreaLocationMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " +this.state.areamaster+"}]",
-      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,

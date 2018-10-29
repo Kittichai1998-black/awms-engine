@@ -16,10 +16,10 @@ class Branch extends Component{
           'mode' : 'check',
         }],
         acceptstatus : false,
-        select:{queryString:window.apipath + "/api/mst",
-        t:"Branch",
+        select:{queryString:window.apipath + "/api/viw",
+        t:"BranchMaster",
         q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
-        f:"ID,Code,Name,Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+        f:"ID,Code,Name,Description,Status,Created,Modified",
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
@@ -29,7 +29,7 @@ class Branch extends Component{
         selectiondata:[],
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-      this.uneditcolumn = ["CreateBy","CreateTime","ModifyBy","ModifyTime"]
+      this.uneditcolumn = ["Created","Modified"]
     }
   
     onHandleClickCancel(event){
@@ -46,9 +46,9 @@ class Branch extends Component{
           {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
           //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text",},
           {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-          {accessor: 'CreateBy', Header: 'CreateBy', editable:false,filterable:false},
-          {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          //{accessor: 'ModifyBy', Header: 'ModifyBy', editable:false,filterable:false},
+          {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+          /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
           //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];

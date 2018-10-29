@@ -83,5 +83,6 @@ namespace AWMSModel.Criteria.SP.Response
         public int ViewSKUMaster_Qty;        
         public int ViewPackMaster_Qty;
 
+        public StorageObjectEventStatus EventStatus;
     }
 }

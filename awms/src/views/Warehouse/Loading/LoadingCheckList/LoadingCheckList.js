@@ -42,10 +42,6 @@ class LoadingDocument extends Component{
       all:"",}
   }
 
-  componentDidUpdate(){
-    this.getTableData()
-  }
-
   getTableData(){
     if(this.state.transportvalue !== undefined){
       API.get(window.apipath + "/api/wm/loading/conso?docID=" + this.state.transportvalue).then(res => {
@@ -64,11 +60,13 @@ class LoadingDocument extends Component{
         this.setState({auto_transport})
       })
     })
+    this.getTableData()
   }
 
   onHandleScanConso(){
     let data = [{loadingDocID:this.state.transportvalue, scanCode:this.state.consoCode}]
     API.post(window.apipath + "/api/wm/loading/conso" ,data).then(res => {
+      this.getTableData()
     })
   }
 
@@ -92,23 +90,23 @@ class LoadingDocument extends Component{
       */}
         <Row>
           <Col><label style={{paddingRight:"10px"}}>Loading Document : </label>
-            <div style={{ display: "inline-block", width: "300px" }}><AutoSelect data={this.state.auto_transport} result={(e) => this.setState({ "transportvalue": e.value, "transporttext": e.label, "TransportID": e.TransportID })} /></div>
-          </Col>
+          <div style={{display:"inline-block",width:"300px"}}><AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label, "TransportID":e.TransportID}, () => {this.getTableData()})}/></div></Col>
         </Row>
         <Row>
-          <Col><label style={{ paddingRight: "10px", marginRight: "20px"}}>Transport : </label><span>{this.state.TransportID}</span>          
-            <Input style={{ width: '200px', display: "inline-block", marginLeft: "40px" }} type="text" value={this.state.consoCode}
-                onChange={(e) => {
-                  this.setState({ consoCode: e.target.value })
-                }}
-                onKeyPress={e => {
-                  if (e.key === "Enter") {
-                    this.onHandleScanConso()
-                  }
-                }} />
-              <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '100px' }} color="primary"
-                onClick={this.onHandleScanConso}>Scan</Button>
-          </Col>
+          <Col><label style={{paddingRight:"10px"}}>Transport : </label><span>{this.state.TransportID}</span></Col>
+        </Row>
+        <Row>
+          <Col>
+            <Input style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
+              onChange={(e) => {
+                this.setState({consoCode:e.target.value})
+              }} 
+              onKeyPress={e => {
+                if(e.key === "Enter"){
+                  this.onHandleScanConso()
+                }
+              }}/>
+          <Button onClick={this.onHandleScanConso} color="primary">Scan</Button></Col>
         </Row>
 
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}

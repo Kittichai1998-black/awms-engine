@@ -86,7 +86,7 @@ class IssuedDoc extends Component{
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
       {accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
-      {accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
+      //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
       /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"}, */
     ];
 
