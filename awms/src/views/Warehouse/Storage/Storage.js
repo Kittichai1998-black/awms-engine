@@ -115,17 +115,17 @@ class Storage extends Component{
 
   onClickToDesc(data){
     return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da" }}
-      onClick={() => this.history.push('/sys/storage/history?ID=' + data.id)}>History</Button>
+      onClick={() => this.history.push('/sys/storage/history?TYPEID=R&ID=' + data.id)}>History</Button>
   }
 
 
 
   render(){
     const cols = [
-      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-      {accessor: 'code', Header: 'ฺBase Code', id: "ID", Filter:"text"},
-      {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text"},
-      {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text"},
+      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center" , fixed: "left"},
+      {accessor: 'code', Header: 'Base Code', id: "ID", Filter:"text" , fixed: "left"},
+      {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
+      {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" },
       {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text"},
       {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text"},
       {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', filterable:false},
@@ -149,12 +149,6 @@ class Storage extends Component{
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];
 
-    const subcols = [
-      {accessor: 'ID', Header: 'Log ID', id: "ID", }, 
-      {accessor: 'Code', Header: 'Code', id: "Code", },
-      {accessor: 'sumsku', Header: 'sumsku', id: "sumsku", },
-    ];
-
     const btnfunc = [{
       history:this.props.history,
       btntype:"Link",
@@ -163,15 +157,15 @@ class Storage extends Component{
 
     return(
       <div>
-        <ExtendTable data={this.state.select} column={cols} subcolumn={subcols} 
-        pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData}
+        <ExtendTable data={this.state.select} column={cols} childType="Tree"
+        pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData} 
         url={null} btn={btnfunc} filterable={true} subtype={1} filterFields={this.state.dataMap}/>
         <Card style={{display:'inlne-block',textAlign:'right'}}>
           <CardBody>
-            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
-              onClick={() => this.updateHold("hold")} color="primary" className="float-right">Hold</Button>
             <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
-              onClick={() => this.updateHold("unhold")} color="primary" className="float-right">Unhold</Button>
+              onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
+            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
+              onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
           </CardBody>
         </Card>
       </div>

@@ -5,9 +5,19 @@ import ReactTable from 'react-table'
 import Axois from 'axios';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {EventStatus}  from '../Status'
-import {Clone} from '../ComponentCore'
+
+import {Clone,CreateQueryString} from '../ComponentCore'
 import _ from 'lodash'
+import "react-table/react-table.css";
+
+
+import queryString from 'query-string'
+import Downshift from 'downshift'
+
+import withFixedColumns from "react-table-hoc-fixed-columns";
+
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
+
 
 
 const getColumnWidth = (rows, accessor, headerText) => {
@@ -108,6 +118,7 @@ class ExtendTable extends Component{
         this.checkboxBody = this.checkboxBody.bind(this)
         this.paginationButton = this.paginationButton.bind(this)
         this.subTable = this.subTable.bind(this)
+        this.subTree = this.subTree.bind(this)
         this.onCheckFilterExpand = this.onCheckFilterExpand.bind(this)
         this.addtolist = this.addtolist.bind(this)
         this.sumChild = this.sumChild.bind(this)
@@ -515,24 +526,28 @@ class ExtendTable extends Component{
         }
         
          return <ul key={i} style={child.isFocus===true?focus:focusf}>
+         <div>{<Link to={'/sys/storage/history?TYPEID=O&ID=' + child.id}>
+           
           <span>{child.storageObjectChilds.eventStatus===null?'':child.storageObjectChilds.eventStatus===0?'[WAIT]':'[INV]'} </span>
           <span>{child.baseMaster_Code===null? child.packMaster_Code : child.baseMaster_Code} : {child.baseMaster_Name===null? child.packMaster_Name : child.baseMaster_Name} </span>
           <span>{child.allqty===null?'':'[qty: ' + child.allqty + ']'} </span>
           <span>{child.weigthKG===null?'':'[wei:' + child.weigthKG + 'Kg.]'} </span> 
-          {/* <br/><span style={{color:'gray'}}> {disQtys}</span> */}
-  
+          </Link>} </div>
           { (child.storageObjectChilds.map(child2 => {
             let z = this.addtolist([child2])
             return z})) 
           }
+          
            </ul> 
       })
     }
+    subTree(e){
+      const getSumChild = this.sumChild(Clone([e.original]))
+      return this.addtolist(getSumChild)
+    }
 
     subTable(e){
-      const test = this.sumChild(Clone([e.original]))
-      return this.addtolist(test)
-      /* if(this.props.subtype === 1){
+      if(this.props.subtype === 1){
         let data = []
         e.original.storageObjectChilds.forEach(row => {
           data.push({"id":row.code,
@@ -597,7 +612,7 @@ class ExtendTable extends Component{
       }
       else{
 
-      } */
+      }
     }
     
     setStatusText(rowdata){
@@ -684,7 +699,8 @@ class ExtendTable extends Component{
 
         return(
           <div>
-            <ReactTable data={this.state.data}
+            <ReactTableFixedColumns 
+            data={this.state.data}
             style={{backgroundColor:'white'}}
             loading={this.state.loading}
             filterable={this.props.filterable}
@@ -693,7 +709,7 @@ class ExtendTable extends Component{
             multiSort={false}
             showPagination={true}
             minRows={5}
-            SubComponent={this.subTable}
+            SubComponent={this.props.childType==="Table"?this.subTable:this.subTree}
             PaginationComponent={this.paginationButton}
             /* onSortedChange={(sorted) => {
                 this.setState({data:[], loading:true });
