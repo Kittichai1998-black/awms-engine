@@ -39,15 +39,17 @@
   height:  45px !important;
   vertical-align:bottom !important;
 }
-
-body {
-  font-family: 'Martel', serif;
-  font-size:medium;
-}
-
 .heading {
   font-weight: 500;
  
 }
+.rcorners {
+  border-radius: 20px 80px 80px 20px;
+  background: #bdbdbd;
+  padding: 20px;
+  width: 250px;
+  height: 40px;
+}
+
 
 
