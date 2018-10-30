@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Loading
 {
-    public class ScanConsoToLoading : BaseEngine<ScanConsoToLoading.TReq, ListBaseConsoCanLoading.TRes>
+    public class LoadedStoByScanConso : BaseEngine<LoadedStoByScanConso.TReq, ListBaseConsoCanLoading.TRes>
     {
         public class TReq
         {
@@ -45,11 +45,17 @@ namespace AWMSEngine.Engine.Business.Loading
             if (baseCanLoads.datas.TrueForAll(x => x.isLoaded))
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(
                     reqVO.docID, 
-                    DocumentEventStatus.WORKING, 
-                    DocumentEventStatus.CLOSED,
+                    DocumentEventStatus.WORKING,
                     EntityStatus.ACTIVE,
-                    EntityStatus.DONE, 
+                    DocumentEventStatus.WORKED,
                     this.BuVO);
+            baseCanLoads.datas.FindAll(x => x.isLoaded).ForEach(x =>
+            {
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rootID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.LOADED, this.BuVO);
+            });
+
+
+
 
             return baseCanLoads;
         }

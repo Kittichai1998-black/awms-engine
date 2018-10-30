@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSEngine.APIService.UI;
+using AWMSEngine.APIService.Permission;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -103,7 +103,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                     packInSto.RemoveRange(Math.Abs(adjQty), packInSto.Count()- Math.Abs(adjQty));
                     packInSto.ForEach(x => {
-                        x.eventStatus = StorageObjectEventStatus.ADJUSTED;
+                        x.eventStatus = StorageObjectEventStatus.CORRECTED;
                         ADO.StorageObjectADO.GetInstant().PutV2(x, this.BuVO);
                     });
                     packAdjs = packInSto;

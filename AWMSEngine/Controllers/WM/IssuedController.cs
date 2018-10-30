@@ -56,7 +56,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic GetBSTOCanConso()
         {
             var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            CheckBSTOCanConsoAPI exec = new CheckBSTOCanConsoAPI(this);
+            CheckBaseCanConsoAPI exec = new CheckBaseCanConsoAPI(this);
             var res = exec.Execute(req);
             return res;
         }

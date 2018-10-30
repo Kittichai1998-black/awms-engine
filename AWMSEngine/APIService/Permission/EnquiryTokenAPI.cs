@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.APIService.Token
+namespace AWMSEngine.APIService.Permission
 {
     public class EnquiryTokenAPI : BaseAPIService
     {
