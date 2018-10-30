@@ -90,8 +90,8 @@ class Area extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
+      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
+      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
       {accessor: 'Warehouse_Code', Header: 'Warehouse',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'AreaMasterType_Code', Header: 'AreaMasterType',updateable:false,Filter:"text", Type:"autocomplete"},

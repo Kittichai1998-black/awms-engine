@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {Link}from 'react-router-dom';
 import {Input, Card, Button, CardBody} from 'reactstrap';
 import ReactTable from 'react-table'
-//import Axios from 'axios';
 import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
@@ -87,6 +86,7 @@ class TableGen extends Component{
     this.datePickerBody = this.datePickerBody.bind(this)
     this.onEditDateChange = this.onEditDateChange.bind(this)
     this.datetimeBody = this.datetimeBody.bind(this)
+    this.datetimelog = this.datetimelog.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
@@ -524,6 +524,12 @@ class TableGen extends Component{
       return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
     }
   }
+  datetimelog(value){
+    if(value !== null){
+      const date = moment(value);
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+    }
+  }
   
   checkboxBody(rowdata){
     return <input
@@ -586,7 +592,6 @@ class TableGen extends Component{
   }
 
   onEditValueAutoCode(rowdata,value,field){
-    console.log(rowdata+":"+value+":"+field)
     if (field==="Bank"){
       var codestr = (this.props.autocode)+","+value+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
     }else if(field==="Bay"){
@@ -911,6 +916,9 @@ class TableGen extends Component{
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
             else
               row.Cell = (e) => this.datetimeBody(e.value)
+          }
+          else if(row.Type === "datetimelog"){
+            row.Cell = (e) => this.datetimelog(e.value)
           }
           else if(row.Type === "checkbox"){
               row.Cell = (e) => this.checkboxBody(e)

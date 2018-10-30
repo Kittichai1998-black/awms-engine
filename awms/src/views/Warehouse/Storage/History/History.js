@@ -35,7 +35,6 @@ class History extends Component{
       sortstatus:0,
       selectiondata:[],
     };
-    this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
   }
 
@@ -51,22 +50,17 @@ class History extends Component{
     
   }
 
-  onHandleClickLoad(event){
-    api.post(window.apipath + "/api/mst/TransferFileServer/SKUMst",{})
-    this.forceUpdate();
-  }
-
   render(){
     const cols = [
-      {accessor: 'StorageObject', Header: 'Stock Object', Filter:"text"},
-      {accessor: 'ParentStorageObject', Header: 'Parent Object', Filter:"text"},
-      {accessor: 'RootStorageObject', Header: 'Root Object', Filter:"text"},
-      {accessor: 'Branch_Code', Header: 'Branch', Filter:"text"},
-      {accessor: 'Warehouse_Code', Header: 'Warehouse',Filter:"text"},
-      {accessor: 'AreaLocationMaster_Code', Header: 'Location', Filter:"text"},
-      {accessor: 'StorageObject_EventStatus', Header: 'Event Status', Filter:"text", Type:"EventStatus"},
-      {accessor: 'Status', Header: 'Status', Filter:"text", Type:"Status"},
-      {accessor: 'ActionTime', Header: 'Action Date', Type:"datetime", dateformat:"datetime",filterable:false},
+      {accessor: 'StorageObject', Header: 'Stock Object',filterable:false},
+      {accessor: 'ParentStorageObject', Header: 'Parent Object',filterable:false},
+      {accessor: 'RootStorageObject', Header: 'Root Object',filterable:false},
+      {accessor: 'Branch_Code', Header: 'Branch',filterable:false},
+      {accessor: 'Warehouse_Code', Header: 'Warehouse',filterable:false},
+      {accessor: 'AreaLocationMaster_Code', Header: 'Location',filterable:false},
+      {accessor: 'StorageObject_EventStatus', Header: 'Event Status', Type:"EventStatus",filterable:false},
+      {accessor: 'Status', Header: 'Status', Type:"Status",filterable:false},
+      {accessor: 'ActionTime', Header: 'Action Date', Type:"datetimelog", dateformat:"datetime",filterable:false},
     ];
     
 
@@ -83,15 +77,8 @@ class History extends Component{
         getselection = เก็บค่าที่เลือก
     
       */}
-        <TableGen column={cols} data={this.state.select} 
-        filterable={true} 
-         table="ams_SKUMaster"/>
+        <TableGen column={cols} data={this.state.select} filterable={true} />
 
-        {/* <Card>
-          <CardBody style={{textAlign:'right'}}>
-            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
-          </CardBody>
-        </Card> */}
       </div>
     )
   }
