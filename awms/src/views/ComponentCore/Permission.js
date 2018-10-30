@@ -1,32 +1,56 @@
 const permission = [
-    {"Name":"Administrator", "Code":"1", "Permission":[
-        {"Page":"stockmanage", "Permission":[{
-        "Code":1, Attribute:"Permission_View"},{
-        "Code":2, Attribute:"Permission_Edit"},{
-        "Code":3, Attribute:"Permission_Exec"}]},
-        {"Page":"issuedmanage", "Permission":[{
-        "Code":1, Attribute:"Permission_View"},{
-        "Code":2, Attribute:"Permission_Edit"},{
-        "Code":3, Attribute:"Permission_Exec"}]},
-        {"Page":"issueddoc", "Permission":[{
-        "Code":1, Attribute:"Permission_View"},{
-        "Code":2, Attribute:"Permission_Edit"},{
-        "Code":3, Attribute:"Permission_Exec"}]},
-        {"Page":"issueddoc", "Permission":[{
-        "Code":1, Attribute:"Permission_View"},{
-        "Code":2, Attribute:"Permission_Edit"},{
-        "Code":3, Attribute:"Permission_Exec"}]},
-        {"Page":"issueddoc", "Permission":[{
-        "Code":1, Attribute:"Permission_View"},{
-        "Code":2, Attribute:"Permission_Edit"},{
-        "Code":3, Attribute:"Permission_Exec"}]},
-        {"Page":"issueddoc", "Permission":[{
-        "Code":1, Attribute:"Permission_View"},{
-        "Code":2, Attribute:"Permission_Edit"},{
-        "Code":3, Attribute:"Permission_Exec"}]},
-        {"Page":"issueddoc", "Permission":[{
-        "Code":1, Attribute:"Permission_View"},{
-        "Code":2, Attribute:"Permission_Edit"},{
-        "Code":3, Attribute:"Permission_Exec"}]}
+    {"Name":"Administrator", "Code":"1","Permission":[
+        {"Page":"Area", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Area Location", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"SKU", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"SKU Type", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Base", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Suplier", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Customer", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"User", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Branch", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Warehouse", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Goods Receive Document", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Goods Receive Manage", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Goods Issue Document", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Goods Issue Manage", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Loading  Document", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"sLoading Manage", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Stock Correction Document", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Stock Correction Manage", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Receive Mapping", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Transfer", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Stock Correction", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Picking", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Loading", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Return Box", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},
+        {"Page":"Storange", "Permission":["Permission_View", "Permission_Edit", "Permission_Exec"]},     
+    ]},
+    {"Name":"Staff","Code":"2","Permission":[
+        {"Page":"Area", "Permission":["Permission_View"]},
+        {"Page":"Area Location", "Permission":["Permission_View"]},
+        {"Page":"SKU", "Permission":["Permission_View"]},
+        {"Page":"SKU Type", "Permission":["Permission_View"]},
+        {"Page":"Base", "Permission":["Permission_View"]},
+        {"Page":"Suplier", "Permission":["Permission_View"]},
+        {"Page":"Customer", "Permission":["Permission_View"]},
+        {"Page":"User", "Permission":["Permission_View"]},
+        {"Page":"Branch", "Permission":["Permission_View"]},
+        {"Page":"Warehouse", "Permission":["Permission_View"]},
+        {"Page":"Goods Receive Document", "Permission":["Permission_View"]},
+        {"Page":"Goods Receive Manage", "Permission":["Permission_View"]},
+        {"Page":"Goods Issue Document", "Permission":["Permission_View"]},
+        {"Page":"Goods Issue Manage", "Permission":["Permission_View"]},
+        {"Page":"Loading  Document", "Permission":["Permission_View"]},
+        {"Page":"sLoading Manage", "Permission":["Permission_View"]},
+        {"Page":"Stock Correction Document", "Permission":["Permission_View"]},
+        {"Page":"Stock Correction Manage", "Permission":["Permission_View"]},
+        {"Page":"Receive Mapping", "Permission":["Permission_View"]},
+        {"Page":"Transfer", "Permission":["Permission_View"]},
+        {"Page":"Stock Correction", "Permission":["Permission_View"]},
+        {"Page":"Picking", "Permission":["Permission_View"]},
+        {"Page":"Loading", "Permission":["Permission_View"]},
+        {"Page":"Return Box", "Permission":["Permission_View"]},
+        {"Page":"Storange", "Permission":["Permission_View"]},     
     ]}
 ]

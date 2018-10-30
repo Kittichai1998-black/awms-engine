@@ -14,22 +14,20 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
-
-  
   Logout(){
     sessionStorage.clear();
+    localStorage.clear();
   }
   render() {
 
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
-
     return (
       <React.Fragment> 
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
         <AppNavbarBrand          
-          full={{ src: logo, width: 89, height: 25, alt: 'CoreUI Logo' }}
-          minimized={{ src: sygnet, width: 30, height: 30, alt: 'CoreUI Logo' }}
+          full={{ src: logo, width: 89, height: 50 }}
+          minimized={{ src: sygnet, width: 30, height: 30 }}
          
         />
         <AppSidebarToggler className="d-md-down-none" display="lg"/>
@@ -56,8 +54,8 @@ class DefaultHeader extends Component {
             <NavLink href="#"><i className="icon-location-pin"></i></NavLink>
           </NavItem>*/}
           <AppHeaderDropdown direction="down" >
-            <span style={{ paddingRight: '40px' }}><NavLink href="/Login" onClick={this.Logout.bind(this)}><img src={img} height="20px"></img>
-              <span> LOGOUT  </span>
+            <span style={{ paddingRight: '40px' }}><NavLink href="/Login" onClick={this.Logout.bind(this)}><img src={img} height="30px"></img>
+              <span className="heading"> LOGOUT  </span>
               </NavLink></span>
 
             {/*<DropdownToggle nav>

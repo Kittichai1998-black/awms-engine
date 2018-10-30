@@ -9,7 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import guid from 'guid';
 import hash from 'hash.js';
-import {EventStatus, DocumentStatus, DocumentEventStatus} from '../Status'
+import {EventStatus, DocumentStatus, DocumentEventStatus, Status} from '../Status'
 import Select from 'react-select'
 import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
@@ -63,7 +63,8 @@ class TableGen extends Component{
       status:"*",
       datafilter :[],
       select:{},
-      addbtn:this.props.addbtn,
+      addbtn: this.props.addbtn,
+      printbtn: this.props.printbtn,
       loading:true,
       pagination:1,
       update:this.props.accept,
@@ -110,6 +111,7 @@ class TableGen extends Component{
   }
 
   componentDidUpdate(){
+    console.log(this.state.data)
     if(this.props.updData)
       this.props.updData(this.state.updateData)
     if(this.props.rmvData)
@@ -499,20 +501,21 @@ class TableGen extends Component{
   }
 
   createCustomButton(type,text,data){
-    if(type === "Remove"){
+    if (type === "Remove") {
       return <Button type="button" color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '80px' }}
         onClick={() => this.removedata(data)}>Remove</Button>
     }
-    else if(type === "Link"){
+    else if (type === "Link") {
       return <Button type="button" color="info">{
-        <Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-        to={data}>{text}</Link>}
-        </Button>
+        <Link style={{ color: '#FFF', textDecorationLine: 'none' }}
+          to={data}>{text}</Link>}
+      </Button>
     }
-    else if(type === "Barcode"){
-      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine :'none' }} 
-      to={'/mst/sku/manage/barcode?barcode='+data.Code+'&Name='+data.Name}>Print</Link>}</Button>
+    else if (type === "Barcode") {
+      return <Button type="button" color="info">{<Link style={{ color: '#FFF', textDecorationLine: 'none' }}
+        to={'/mst/sku/manage/barcode?barcode=' + data.Code + '&Name=' + data.Name}>Print</Link>}</Button>
     }
+ 
   }
 
   datetimeBody(value){
@@ -653,14 +656,24 @@ class TableGen extends Component{
     })
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
-      initialInputValue = {rowdata.value}
-      onChange={selection => {
-      rowdata.value = selection.ID
-      this.onEditorValueChange(rowdata, selection.Code, rowdata.column.id)
-      this.onEditorValueChange(rowdata, selection.ID, getdata[0].pair)
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
+      onChange={(selection) => {
+        if(selection){
+          rowdata.value = selection.ID
+          this.onEditorValueChange(rowdata, selection.Code, rowdata.column.id)
+          this.onEditorValueChange(rowdata, selection.ID, getdata[0].pair)
+        }
+        else{
+          rowdata.value = ""
+          this.onEditorValueChange(rowdata, "", rowdata.column.id)
+          this.onEditorValueChange(rowdata, "", getdata[0].pair)
+        }
+      }
     }
-    }
-    itemToString={item => (item ? item.Code : rowdata.value)}
+    itemToString={(item) => { 
+      let getinit = getdata[0].data.filter(item => item.Code === rowdata.value)
+      return item !== null ? item.Code : getinit === null ? null : getinit.Code ;
+    }}
   >
     {({
       getInputProps,
@@ -671,18 +684,24 @@ class TableGen extends Component{
       inputValue,
       highlightedIndex,
       selectedItem,
+      clearSelection,
     }) => (
       <div style={{width: '150px'}}>
         <div style={{position: 'relative'}}>
-                <Input
+                <Input style={{paddingLeft:"20px"}}
                   {...getInputProps({
-                    isOpen,
+                    onChange: e => {
+                      if (e.target.value === '') {
+                        clearSelection()
+                      }
+                    },
+                    isOpen:true,
                     onFocus:()=>openMenu(),
                   })}
                 />
               </div>
               <div style={{position: 'absolute', zIndex:'1000'}}>
-                <div {...getMenuProps({isOpen})} style={{position: 'relative'}}>
+                <div {...getMenuProps({isOpen})} style={{position: 'absolute'}}>
                   {isOpen
                     ? getdata[0].data
                       .filter(item => !inputValue || item.Code.includes(inputValue))
@@ -695,7 +714,8 @@ class TableGen extends Component{
                             style: {
                               backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                               fontWeight: selectedItem === item ? 'bold' : 'normal',
-                              width:'150px'
+                              width:'150px',
+                              border:"1px solid black "
                             }
                           })}
                         >
@@ -773,13 +793,17 @@ class TableGen extends Component{
   }
 
   createStatusField(data, type){
-    if(type === "EventStatus"){
+    if (type === "EventStatus") {
+
       return <span>
         {
           EventStatus.filter(row => {
             return row.code === data
           })[0].status
         }
+
+        
+
       </span>
     }
     else if(type === "DocumentStatus"){
@@ -795,6 +819,15 @@ class TableGen extends Component{
       return <span>
       {
         DocumentEventStatus.filter(row => {
+          return row.code === data
+        })[0].status
+      }
+      </span>
+    }
+    else if(type === "Status"){
+      return <span>
+      {
+        Status.filter(row => {
           return row.code === data
         })[0].status
       }
@@ -827,6 +860,22 @@ class TableGen extends Component{
     name="selection"
     onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>//
   }
+
+  printbarcodeall() {
+    return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+      onClick={() => {
+        let obj = []
+        this.state.data.forEach((datarow, index) => {
+          obj.push({ "barcode": datarow.Code, "Name": datarow.Name });
+        })
+        const ObjStr = JSON.stringify(obj)
+        window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode=' + ObjStr)
+      }}>Print</Button>
+
+
+  }
+
+ 
 
   render(){
     const col = this.props.column
@@ -911,6 +960,9 @@ class TableGen extends Component{
           else if(row.Type === "DocumentEvent"){
             row.Cell = (e) => this.createStatusField(e.value, row.Type)
           }
+          else if(row.Type === "Status"){
+            row.Cell = (e) => this.createStatusField(e.value, row.Type)
+          }
 
           if(row.Aggregated === "blank"){
             row.Aggregated = (e) => {return (<span></span>);}
@@ -969,9 +1021,20 @@ class TableGen extends Component{
         <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none',textAlign:'right'}}>
           <CardBody>
             <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
-            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}  className="float-right">Cancel</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+          
           </CardBody>
         </Card>
+        <Card style={{ display: this.state.printbtn === true ? 'inlne-block' : 'none', textAlign: 'right' }}>
+          <CardBody>
+            <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} className="float-right">Accept</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+            <Button onClick={() => this.printbarcodeall() } color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Print</Button>
+         
+          </CardBody>
+        </Card>
+
+
       </div>
     )
   }
