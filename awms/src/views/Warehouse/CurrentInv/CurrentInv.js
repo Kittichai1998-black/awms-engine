@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import { TableGen } from '../MasterData/TableSetup';
 //import Axios from 'axios';
-import { apicall } from '../ComponentCore'
+import { apicall, DatePicker} from '../ComponentCore'
 import moment from 'moment';
 //import DatePicker from 'react-datepicker';
 
@@ -41,8 +41,12 @@ class CurrentInv extends Component{
       all: "",
    }
 
-
+    this.dateTimePicker = this.dateTimePicker.bind(this)
   
+  }
+
+  dateTimePicker() {
+    return <DatePicker onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
   
@@ -55,15 +59,15 @@ class CurrentInv extends Component{
 
 
 
-    //ExportData() {
-    //  if (this.state.date) {
-    //    let postdata = {
-    //      "exportName": "DocumentAuditToCD",
-    //      "whereValues": [this.state.date]
-    //    }
-    //    API.post(window.apipath + "/api/report/export/fileServer", postdata)
-    //  }
-    //}
+    ExportData() {
+      if (this.state.date) {
+        let postdata = {
+          "exportName": "DocumentAuditToCD",
+          "whereValues": [this.state.date]
+        }
+        API.post(window.apipath + "/api/report/export/fileServer", postdata)
+      }
+    }
   
   render() {
     const cols = [
@@ -79,8 +83,19 @@ class CurrentInv extends Component{
 
       <div>
         <div className="clearfix">
-          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right">Export Data</Button>
-        <div className="float-right"></div>
+
+          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"
+            onClick={() => { this.ExportData() }}>Export Data</Button>
+          <div className="float-right" style={{ marginRight: "5px" }}>{this.dateTimePicker()}</div>
+
+
+
+
+          <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', marginRight: "465px"}} color="primary" className="float-right"
+          >Browse</Button>
+          <div className="float-Left" >{this.dateTimePicker()}</div>
+      
+
       </div>
         <TableGen column={cols}
           data={this.CurrentItem}

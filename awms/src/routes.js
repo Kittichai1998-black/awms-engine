@@ -136,6 +136,12 @@ const Stockview = Loadable({
   loading: Loading,
 });
 
+
+const CurrentInv = Loadable({
+  loader: () => import('./views/Warehouse/CurrentInv'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -169,7 +175,7 @@ const routes = [
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
-  
+  { path: '/doc/crt/manage', exact: true, name: 'CurrentInv', component: CurrentInv},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
 
