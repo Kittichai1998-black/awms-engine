@@ -91,7 +91,6 @@ class Area extends Component{
         })))
     }
     getSelectionData(data){
-        console.log(data)
         let obj = []
         data.forEach((datarow,index) => {
             obj.push({"barcode":datarow.Code,"Name":datarow.Name});

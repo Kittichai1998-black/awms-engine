@@ -105,9 +105,10 @@ namespace AWMSEngine.ADO
         }*/
 
         public int UpdateStatusToChild(long stoRootID, 
-            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus, EntityStatus? toStatus, 
+            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus, 
             VOCriteria buVO)
         {
+            EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(toEventStatus);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("rootid", stoRootID);
             param.Add("fromEventStatus", fromEventStatus);
@@ -170,7 +171,7 @@ namespace AWMSEngine.ADO
             param.Add("mstID", sto.mstID);
             param.Add("areaID", sto.areaID);
             param.Add("eventStatus", sto.eventStatus);
-            //param.Add("code", sto.code);
+            param.Add("status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus));
             param.Add("parentID", sto.parentID);
             param.Add("parentType", sto.parentType);
             param.Add("options", ObjectUtil.ListKeyToQueryString(sto.options));

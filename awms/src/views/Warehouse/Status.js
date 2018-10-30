@@ -66,6 +66,7 @@ const Status = [
     {status:'Inactive' , code:0,},
     {status:'Active' , code:1,},
     {status:'Remove' , code:2,},
+    {status:'Done', code:3,},
 ]
 
 

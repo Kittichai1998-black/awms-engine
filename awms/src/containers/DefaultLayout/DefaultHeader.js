@@ -14,16 +14,14 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
-
-  
   Logout(){
     sessionStorage.clear();
+    localStorage.clear();
   }
   render() {
 
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
-
     return (
       <React.Fragment> 
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
