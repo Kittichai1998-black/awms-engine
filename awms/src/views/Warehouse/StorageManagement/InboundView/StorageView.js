@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import {Button } from 'reactstrap';
 import {TableGen} from '../../MasterData/TableSetup';
 //import Axios from 'axios';
-import {apicall, DatePicker} from '../../ComponentCore'
+import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
 import moment from 'moment';
 
 const Axios = new apicall()
@@ -16,9 +16,14 @@ class IssuedDoc extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'1','label':'Working'},{'value':'2','label':'Reject'},{'value':'3','label':'Complete'},{'value':'*','label':'All'}],
+        'status' : GenerateDropDownStatus("DocumentStatus"),
         'header' : 'Status',
         'field' : 'Status',
+        'mode' : 'check',
+      },{
+        'status' : GenerateDropDownStatus("DocumentEventStatus"),
+        'header' : 'EventStatus',
+        'field' : 'EventStatus',
         'mode' : 'check',
       }],
       acceptstatus : false,
@@ -80,8 +85,8 @@ class IssuedDoc extends Component{
       {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
       {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
-      {accessor: 'Status', Header: 'status', editable:false, Filter:"text", Type:"DocumentStatus"},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"EventStatus"},
+      {accessor: 'Status', Header: 'Status', editable:false, Filter:"dropdown", Type:"DocumentStatus"},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
       {accessor: 'RefID', Header: 'RefID', editable:false,},
@@ -114,7 +119,7 @@ class IssuedDoc extends Component{
         </div>
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
-        statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
+        dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc} defaultCondition={[{'f':'Status','c':'!=','v':2},{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
         accept={false}/>
       </div>

@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 //import Axios from 'axios';
-import {apicall} from '../ComponentCore'
+import {apicall, GenerateDropDownStatus} from '../ComponentCore'
 
 const Axios =  new apicall()
 
@@ -14,14 +14,14 @@ class LoadingManage extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'status' : GenerateDropDownStatus("Status"),
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
       },{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'status' : GenerateDropDownStatus("DocumentEventStatus"),
         'header' : 'EventStatus',
-        'field' : 'Status',
+        'field' : 'EventStatus',
         'mode' : 'check',
       }],
       acceptstatus : false,
@@ -82,7 +82,7 @@ class LoadingManage extends Component{
       {accessor: 'IssuedCode', Header: 'Issued Code',editable:false, Filter:"text"},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"DocumentEvent"},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
       {accessor: 'CreateTime', Header: 'CreateBy', editable:false,Type:"datetime", filterable:false},
       {accessor: 'ModifyTime', Header: 'ModifyBy', editable:false,Type:"datetime", filterable:false},
       { accessor: 'Remark', Header: 'Remark', editable: false, filterable: false },
@@ -107,7 +107,7 @@ class LoadingManage extends Component{
           <Button style={{ background: "#66bb6a", borderColor: "#66bb6a" }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/ld/manage')}>Create Document</Button>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
-        statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
+        dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         accept={false} defalutCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]}/>
         <Card>
           <CardBody>

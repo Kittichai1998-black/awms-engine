@@ -51,7 +51,7 @@ class StorageManagement extends Component{
       barcode:"",
       qty:"1",
       barcodemodal:false,
-      rSelect:"0",
+      rSelect:"1",
       textindent:0,
       showtable:false,
       autocomplete:'',
@@ -99,12 +99,6 @@ class StorageManagement extends Component{
     }
     else if(values[3].toLowerCase() === 'transfer'){
       this.setState({Mode:1})
-    }
-  }
-
-  componentDidUpdate(nextState, prevState){
-    if(this.state.warehouseres === nextState.warehouseres){
-      
     }
   }
 
@@ -199,13 +193,13 @@ class StorageManagement extends Component{
   createListTable(){
     let status = true;
     if(this.state.Mode === 0){
-      if(this.state.barcode === "" || this.state.qty === 0 || this.state.supplierres === "" || this.state.areares === ""
-      || this.state.warehouseres === ""){
+      if(this.state.barcode === undefined || this.state.qty === 0 || this.state.supplierres === undefined || this.state.areares === undefined
+      || this.state.warehouseres === undefined){
         status = false;
       }
     }
     else{
-      if(this.state.barcode === "" || this.state.qty === 0 || this.state.warehouseres === "" || this.state.areares === ""){
+      if(this.state.barcode === undefined || this.state.qty === 0 || this.state.warehouseres === undefined || this.state.areares === undefined){
         status = false;
       }
     }
@@ -218,7 +212,7 @@ class StorageManagement extends Component{
         let header = []
         if(res.data._result.status !== 0)
         {
-          this.setState({poststatus:true,control:"block",rSelect:'1',barcode:"", qty:1, response:"",})
+          this.setState({poststatus:true,control:"block",barcode:"", qty:1, response:"",})
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
             const clonemapsto = Clone(this.state.mapSTOView)
             header = clonemapsto
@@ -227,7 +221,7 @@ class StorageManagement extends Component{
           return [header]
         }
         else{
-          this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>})
+          this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>, barcode:""})
           if([this.state.mapSTOView].length > 0)
           {
             const clonemapsto = Clone(this.state.mapSTOView)
@@ -247,6 +241,7 @@ class StorageManagement extends Component{
       }).then(res =>  res!==null?this.addtolist(res):null).then(res => {this.setState({result:res,poststatus:false})})
     }
     else{
+      this.setState({barcode:""})
       alert("กรอกข้อมูลไม่ครบ")
     }
   }
@@ -268,6 +263,8 @@ class StorageManagement extends Component{
 
   selectMode(mode){
     this.setState({rSelect:mode})
+    let barcode= document.getElementById("barcodetext")
+    barcode.focus()
   }
 
    componentWillUpdate(prevState,nextState){
@@ -355,10 +352,16 @@ class StorageManagement extends Component{
         })
       }
     }
+    let barcode= document.getElementById("barcodetext")
+    barcode.focus()
   }
 
   clearTable(){
-    this.setState({result:null,mapSTOView:null, mapSTO:null, control:"none", response:""})
+    this.setState({result:null,mapSTOView:null, mapSTO:null, control:"none", response:""}, () => {
+      let barcode= document.getElementById("barcodetext")
+      barcode.focus()
+    })
+    
   }
 
   render(){
@@ -373,7 +376,6 @@ class StorageManagement extends Component{
           </Col>
           <Col sm="6">
             <ButtonGroup style={{margin:'0 0 10px 0', width:"100%"}}>
-              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("0")} active={this.state.rSelect === "0"}>Select</Button>
               <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("1")} active={this.state.rSelect === "1"}>Push</Button>
               <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("2")} active={this.state.rSelect === "2"}>Remove</Button>
             </ButtonGroup>
@@ -403,6 +405,7 @@ class StorageManagement extends Component{
           <Col sm="6">
             <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
               <Input id="barcodetext" style={{width:'40%',display:'inline-block'}} type="text"
+                autoFocus
                 value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ด"
                 onChange={e => {this.setState({barcode:e.target.value})}}
                 onKeyPress={(e) => {
@@ -420,9 +423,9 @@ class StorageManagement extends Component{
           {this.state.result}
         </Row>
         <Row className="text-center" style={{display:this.state.control}}>
-            <Button onClick={() => this.approvemapsto(true)} style={this.state.Mode===0?null:display}>Save</Button>
+            <Button onClick={() => this.approvemapsto(true)} style={this.state.Mode===0?null:display} color="primary">Save</Button>
             <Button onClick={() => this.approvemapsto(false)} style={this.state.Mode===0?null:display} color="danger">Cancel</Button>
-            <Button onClick={this.clearTable} color="danger" >Clear</Button>
+            <Button onClick={this.clearTable} color="warning" >Clear</Button>
         </Row>
       </div>
     )
