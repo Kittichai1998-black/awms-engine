@@ -16,6 +16,9 @@ namespace AWMSModel.Criteria.SP.Response
         public string name;
         public int warehouseID;
         public int areaID;
+        public decimal? widthM;
+        public decimal? lengthM;
+        public decimal? heightM;
         public decimal? weiKG;
         public int? objectSizeID;
         public string lot;

@@ -11,28 +11,39 @@ namespace AWMSEngine.Controllers.WM
     [ApiController]
     public class ASRSController : ControllerBase
     {
-        [HttpGet("emptyLocation")]
-        public dynamic CheckEmptyLocation()
+        [HttpGet("location")]
+        public dynamic GetLocationInfo()
         {
-            return null;
+            var value = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var res = new APIService.ASRS.GetLocationInfoAPI(this).Execute(value);
+            return res;
         }
 
-        [HttpPost("startQueueReceiving")]
-        public dynamic StartQueueReceiving([FromBody] dynamic value)
+        [HttpPost("queue/register")]
+        public dynamic RegisterInboundQueueAPI([FromBody] dynamic value)
         {
-            return null;
+            var res = new APIService.ASRS.RegisterQueueAPI(this).Execute(value);
+            return res;
         }
 
-        [HttpPost("DoneQueue")]
+        [HttpPost("queue/done")]
         public dynamic DoneQueue([FromBody] dynamic value)
         {
-            return null;
+            var res = new APIService.ASRS.DoneQueueAPI(this).Execute(value);
+            return res;
         }
 
-        [HttpPost("UpldateQueueLocation")]
-        public dynamic UpldateQueueLocation([FromBody] dynamic value)
+        [HttpPost("queue/workStage")]
+        public dynamic UpldateQueue([FromBody] dynamic value)
         {
-            return null;
+            var res = new APIService.ASRS.WorkingStageQueueAPI(this).Execute(value);
+            return res;
+        }
+        [HttpPut("sto/location")]
+        public dynamic UpldateLocation([FromBody] dynamic value)
+        {
+            var res = new APIService.ASRS.UpdateStoLocationAPI(this).Execute(value);
+            return res;
         }
     }
 }
