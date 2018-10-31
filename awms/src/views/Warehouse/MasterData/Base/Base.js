@@ -104,7 +104,7 @@ class Area extends Component{
         onClick={() => {
             let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
             let barcodestr = JSON.stringify(barcode)
-            window.open('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr, "_blank")
+            window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr, "_blank")
             }}>Print</Button>
       }
 
