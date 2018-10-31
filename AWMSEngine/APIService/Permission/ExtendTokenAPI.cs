@@ -8,23 +8,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.APIService.Token
+namespace AWMSEngine.APIService.Permission
 {
-    public class RemoveTokenAPI : BaseAPIService
+    public class ExtendTokenAPI : BaseAPIService
     {
-        public RemoveTokenAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ExtendTokenAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
-            new RemoveTokenRequestValidate().Execute(this.Logger, this.BuVO, null);
+            //new Validation.RemoveTokenRequestValidate().Execute(this.Logger, this.BuVO);
 
-            var res1 = new RemoveToken().Execute(this.Logger, this.BuVO,
-                new RemoveToken.TReqModel()
+            var res1 = new ExtendToken().Execute(this.Logger, this.BuVO,
+                new ExtendToken.TReqModel()
                 {
                     Token = this.RequestVO.token,
-                    SecretKey = this.RequestVO.secretKey
+                    ExtendKey = this.RequestVO.extendKey
                 });
 
             return res1;

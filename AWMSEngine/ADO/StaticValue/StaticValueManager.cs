@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSModel.Criteria;
+using System.Text.RegularExpressions;
 
 namespace AWMSEngine.ADO.StaticValue
 {
@@ -134,6 +135,29 @@ namespace AWMSEngine.ADO.StaticValue
         {
             string c = code;
             return this._Configs.ContainsKey(c) ? this._Configs[c].DataValue : null;
+        }
+        public bool IsMatchConfigArray(string code, object value)
+        {
+            string v = value.ToString();
+            return Regex.IsMatch(this.GetConfig(code), string.Format("^{0},|,{0},|,{0}$", v));
+        }
+        public EntityStatus? GetStatusInConfigByEventStatus<T>(T? value)
+            where T : struct
+        {
+            if (value == null) return null;
+            string fixCode = value is StorageObjectEventStatus ? "STO" :
+                                (value is DocumentEventStatus) ? "DOC" :
+                                (value is WorkQueueEventStatus) ? "Q" : string.Empty;
+            string v = value.ToString();
+            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_INACTIVE", v))
+                return EntityStatus.INACTIVE;
+            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_ACTIVE", v))
+                return EntityStatus.ACTIVE;
+            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_REMOVE", v))
+                return EntityStatus.REMOVE;
+            if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_DONE", v))
+                return EntityStatus.DONE;
+            throw new Exception("EventStatus Convert To EntityStatus Not Config");
         }
     }
 }

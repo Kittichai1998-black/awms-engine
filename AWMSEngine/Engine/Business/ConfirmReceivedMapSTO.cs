@@ -42,7 +42,6 @@ namespace AWMSEngine.Engine.Business
                         StorageObjectEventStatus.IDEL,
                         EntityStatus.ACTIVE,
                         StorageObjectEventStatus.RECEIVED,
-                        EntityStatus.ACTIVE,
                         this.BuVO);
             }
             else
@@ -53,7 +52,6 @@ namespace AWMSEngine.Engine.Business
                         StorageObjectEventStatus.IDEL,
                         EntityStatus.ACTIVE,
                         StorageObjectEventStatus.REMOVED,
-                        EntityStatus.REMOVE,
                         this.BuVO);
             }
             StorageObjectCriteria res = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);

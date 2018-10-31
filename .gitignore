@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /test_build
 /amws-engine
+/awms/src/views/Warehouse/StorageView.js

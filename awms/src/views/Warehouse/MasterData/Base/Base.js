@@ -104,12 +104,7 @@ class Area extends Component{
         onClick={() => {
             let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
             let barcodestr = JSON.stringify(barcode)
-            if(!this.state.barcodeObj){
-                this.setState({barcodeObj:barcodestr}, () =>
-                this.props.history.push('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj)) 
-            }else{
-                this.props.history.push('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj) 
-            }
+            window.open('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr, "_blank")
             }}>Print</Button>
       }
 
@@ -121,7 +116,7 @@ class Area extends Component{
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-            {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+            {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

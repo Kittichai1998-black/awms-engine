@@ -73,7 +73,6 @@ class TableGen extends Component{
       autocomplete:[],
       rowselect:[],
       selectAll:false,
-      accept:this.props.accept,
       currentPage: 1,
     };
 
@@ -92,6 +91,8 @@ class TableGen extends Component{
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
     this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
     this.createAutoCompleteDownshift = this.createAutoCompleteDownshift.bind(this)
+    this.btmButtomGenerate = this.btmButtomGenerate.bind(this)
+    this.printbarcodeall = this.printbarcodeall.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -111,7 +112,6 @@ class TableGen extends Component{
   }
 
   componentDidUpdate(){
-    console.log(this.state.data)
     if(this.props.updData)
       this.props.updData(this.state.updateData)
     if(this.props.rmvData)
@@ -190,12 +190,13 @@ class TableGen extends Component{
   }
 
   onCheckFliter(filter,dataselect){
+    this.setState({loading:true})
     let filterlist = []
     if(this.props.defaultCondition){
       filterlist = this.props.defaultCondition
     }
     else{
-      filterlist = [{"f":"Status", "c":"<", "v": 2}]
+      filterlist = [{"f":"Status", "c":"!=", "v": 2}]
     }
     
     if(filter.length > 0)
@@ -211,7 +212,7 @@ class TableGen extends Component{
             })
             
             if(data["id"] === "Status"){
-              filterlist.push({"f":data["id"], "c":"<", "v": 2})
+              filterlist.push({"f":data["id"], "c":"!=", "v": 2})
             }
             else{
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
@@ -225,7 +226,7 @@ class TableGen extends Component{
             })
 
             if(data["id"] === "Status"){
-              filterlist.push({"f":data["id"], "c":"<", "v": 2})
+              filterlist.push({"f":data["id"], "c":"!=", "v": 2})
             }
             else{
               filterlist.push({"f":data["id"], "c":"like", "v": encodeURIComponent(data["value"])})
@@ -242,24 +243,34 @@ class TableGen extends Component{
         }
       })
       
-      let select = dataselect
-      select["q"] = JSON.stringify(filterlist)
-      let queryString = createQueryString(select)
-      Axios.get(queryString).then(
-        (res) => {
-          this.setState({data:res.data.datas, loading:false});
-        }
-      )
+      if(dataselect !== undefined){
+        let select = dataselect
+        select["q"] = JSON.stringify(filterlist)
+        let queryString = createQueryString(select)
+        Axios.get(queryString).then(
+          (res) => {
+            this.setState({data:res.data.datas,loading:false});
+          }
+        )
+      }
+      else{
+        this.setState({loading:false})
+      }
     }
     else{
-      const select = dataselect
-      select["q"] = this.state.originalselect
-      let queryString = createQueryString(select)
-      Axios.get(queryString).then(
-          (res) => {
-            this.setState({data:res.data.datas, loading:false});
-          }
-      )
+      if(dataselect !== undefined){
+        const select = dataselect
+        select["q"] = this.state.originalselect
+        let queryString = createQueryString(select)
+        Axios.get(queryString).then(
+            (res) => {
+              this.setState({data:res.data.datas,loading:false});
+            }
+        )
+      }
+      else{
+        this.setState({loading:false})
+      }
     }
   }
 
@@ -426,7 +437,6 @@ class TableGen extends Component{
       <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
         <nav>
           <ul className="pagination">
-            <div></div>
             <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
               onClick={() => this.pageOnHandleClick("prev")}>
             Previous</a></li>
@@ -463,7 +473,7 @@ class TableGen extends Component{
               filter.push({id: name, value:e.target.value})
           }
           this.onCheckFliter(filter,this.state.dataselect)
-          this.setState({datafilter:filter, loading:true})
+          this.setState({datafilter:filter})
         }}>{item}</select>
       }
     })
@@ -484,7 +494,7 @@ class TableGen extends Component{
                 filter.push({id: name, value:e.target.value})
             }
             this.onCheckFliter(filter,this.state.dataselect)
-            this.setState({datafilter:filter, loading:true})
+            this.setState({datafilter:filter})
         }}
       } />
   }
@@ -863,23 +873,42 @@ class TableGen extends Component{
     className="selection"
     type={type}
     name="selection"
-    onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>//
+    onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>
   }
 
   printbarcodeall() {
-    return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-      onClick={() => {
-        let obj = []
-        this.state.data.forEach((datarow, index) => {
-          obj.push({ "barcode": datarow.Code, "Name": datarow.Name });
-        })
-        const ObjStr = JSON.stringify(obj)
-        window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode=' + ObjStr)
-      }}>Print</Button>
-
-
+    let obj = []
+    this.state.data.forEach((datarow, index) => {
+      obj.push({ "barcode": datarow.Code, "Name": datarow.Name });
+    })
+    if(obj.length > 0){
+      const ObjStr = JSON.stringify(obj)
+      window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode=' + ObjStr, "_blank")
+    }
   }
 
+  btmButtomGenerate(){
+    if(this.props.accept === true){
+      return <Card>
+        <CardBody>
+          <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
+          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+        </CardBody>
+      </Card>
+    }
+    else if(this.props.printbtn === true){
+      return <Card>
+          <CardBody>
+            <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} className="float-right">Accept</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+            <Button onClick={() => this.printbarcodeall() } color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Print</Button>
+          </CardBody>
+        </Card>
+    }
+    else{
+      return null
+    }
+  }
  
 
   render(){
@@ -1026,21 +1055,7 @@ class TableGen extends Component{
               this.setState({data:[],dataedit:[], loading:true });
               this.customSorting(sorted)}
           }/>
-        <Card style={{display:this.state.accept === true ? 'inlne-block' : 'none',textAlign:'right'}}>
-          <CardBody>
-            <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
-            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
-          
-          </CardBody>
-        </Card>
-        <Card style={{ display: this.state.printbtn === true ? 'inlne-block' : 'none', textAlign: 'right' }}>
-          <CardBody>
-            <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} className="float-right">Accept</Button>
-            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
-            <Button onClick={() => this.printbarcodeall() } color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Print</Button>
-         
-          </CardBody>
-        </Card>
+        {this.btmButtomGenerate()}
 
 
       </div>

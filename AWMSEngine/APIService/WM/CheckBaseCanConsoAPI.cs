@@ -7,22 +7,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.WM
 {
-    public class CheckBSTOCanConsoAPI : BaseAPIService
+    public class CheckBaseCanConsoAPI : BaseAPIService
     {
-        public CheckBSTOCanConsoAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CheckBaseCanConsoAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = new CheckBSTOCanUseInDocument.TReq()
+            var req = new CheckBaseCanUseInDocument.TReq()
             {
                 baseCode = this.RequestVO.baseCode,
                 //desCustomerID = this.RequestVO.desCustomerID,
                 docID = this.RequestVO.docID,
                 //docType = AWMSModel.Constant.EnumConst.DocumentTypeID.GOODS_ISSUED
             };
-            var res = new CheckBSTOCanUseInDocument().Execute(this.Logger, this.BuVO, req);
+            var res = new CheckBaseCanUseInDocument().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

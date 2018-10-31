@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class CheckBSTOCanUseInDocument : BaseEngine<CheckBSTOCanUseInDocument.TReq, ams_BaseMaster>
+    public class CheckBaseCanUseInDocument : BaseEngine<CheckBaseCanUseInDocument.TReq, ams_BaseMaster>
     {
         public class TReq
         {

@@ -36,8 +36,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
-                    DocumentEventStatus.IDEL, DocumentEventStatus.WORKING, 
-                    EntityStatus.ACTIVE, null,
+                    DocumentEventStatus.IDEL, EntityStatus.ACTIVE,
+                    DocumentEventStatus.WORKING,
                     this.BuVO);
 
                 doc.EventStatus = DocumentEventStatus.WORKING;

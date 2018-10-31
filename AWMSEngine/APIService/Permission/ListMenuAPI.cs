@@ -9,7 +9,7 @@ using AWMSEngine.Common;
 using Microsoft.AspNetCore.Mvc;
 using AWMSEngine.Engine.General;
 
-namespace AWMSEngine.APIService.UI
+namespace AWMSEngine.APIService.Permission
 {
     public class ListMenuAPI : BaseAPIService
     {

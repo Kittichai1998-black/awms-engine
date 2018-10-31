@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
-import {apicall, DatePicker} from '../ComponentCore'
+import {apicall, DatePicker, GenerateDropDownStatus} from '../ComponentCore'
 import moment from 'moment'
 
 const axois = new apicall()
@@ -15,14 +15,14 @@ class IssuedDoc extends Component{
       data : [],
       autocomplete:[],
       statuslist:[{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
+        'status' : GenerateDropDownStatus("Status"),
         'header' : 'Status',
         'field' : 'Status',
         'mode' : 'check',
       },{
-        'status' : [{'value':'0','label':'Inactive'},{'value':'1','label':'Active'},{'value':'*','label':'All'}],
-        'header' : 'E',
-        'field' : 'Status',
+        'status' : GenerateDropDownStatus("DocumentEventStatus"),
+        'header' : 'EventStatus',
+        'field' : 'EventStatus',
         'mode' : 'check',
       }],
       acceptstatus : false,
@@ -49,6 +49,7 @@ class IssuedDoc extends Component{
   }
 
   componentDidMount(){
+    GenerateDropDownStatus("Status")
   }
   
   dateTimePicker(){
@@ -96,7 +97,7 @@ class IssuedDoc extends Component{
       {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"text", Type:"DocumentEvent"},
+      {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
       {accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
@@ -132,7 +133,6 @@ class IssuedDoc extends Component{
                 let resultPath = res.data.fileExport
                 axois.post(window.apipath + "/api/report/export/fileServer", data2).then(res2 => {
                   window.success(resultPath + "<br/>" + res2.data.fileExport)
-                  console.log([...window])
                 })
               }
             })
@@ -140,7 +140,7 @@ class IssuedDoc extends Component{
           <div className="float-right">{this.dateTimePicker()}</div>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
-        statuslist = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
+        dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc}
         accept={false}/>
         <Card>

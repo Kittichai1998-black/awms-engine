@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
@@ -183,10 +184,10 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
         }
 
-        public int UpdateStatusToChild(long docID, 
-            DocumentEventStatus? fromEventStatus, DocumentEventStatus? toEventStatus,
-            EntityStatus? fromStatus, EntityStatus? toStatus, VOCriteria buVO)
+        public int UpdateStatusToChild(long docID,
+            DocumentEventStatus? fromEventStatus, EntityStatus? fromStatus, DocumentEventStatus? toEventStatus, VOCriteria buVO)
         {
+            EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(toEventStatus);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@docID", docID);
             param.Add("@fromStatus", fromStatus);
