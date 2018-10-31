@@ -28,22 +28,26 @@ class CurrentInv extends Component{
     this.state = {
       data: [],
     }
-    
-   this.CurrentItem = {
-        queryString: window.apipath + "/api/viw",
-        t: "Document",
-        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-        f: "Code,DesBranch,DesWarehouse,DesArea",
-        g: "",
-        s: "[{'f':'Code','od':'asc'}]",
-        sk: 0,
-        l: 10,
+
+    this.CurrentItem = {
+      queryString: window.apipath + "/api/trx",
+      t: "StorageObject",
+      q: "",
+      f: "ID,Code,AreaMaster_ID,",
+      g: "",
+      s: "[{'f':'Code','od':'asc'}]",
+      sk: 0,
+      l: 20,
       all: "",
-   }
+    }
 
     this.dateTimePicker = this.dateTimePicker.bind(this)
-  
+
   }
+    
+  
+  
+
 
   dateTimePicker() {
     return <DatePicker onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
@@ -71,10 +75,10 @@ class CurrentInv extends Component{
   
   render() {
     const cols = [
-      { accessor: 'Code', Header: 'Pack Code/Name', editable: false, filterable: false },
-      { accessor: 'DesBranch', Header: 'SKU Code/Name', editable: false, filterable: false},
-      { accessor: 'DesWarehouse', Header: 'Warehouse', editable: false, filterable: false},
-      { accessor: 'DesArea', Header: 'Total', editable: false, filterable: false },
+      { accessor: 'ID', Header: 'Pack Code/Name', editable: false, filterable: false },
+      { accessor: 'Code', Header: 'SKU Code/Name', editable: false, filterable: false},
+      { accessor: '', Header: 'Warehouse', editable: false, filterable: false},
+      { accessor: 'AreaMaster_ID', Header: 'Total Qty', editable: false, filterable: false },
 
   
     ];
@@ -91,7 +95,7 @@ class CurrentInv extends Component{
 
 
 
-          <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', marginRight: "465px"}} color="primary" className="float-right"
+          <Button style={{ background: "#66bb6a", borderColor: "#26c6da", width: '130px', marginRight: "465px"}} color="primary" className="float-right"
           >Browse</Button>
           <div className="float-Left" >{this.dateTimePicker()}</div>
       
