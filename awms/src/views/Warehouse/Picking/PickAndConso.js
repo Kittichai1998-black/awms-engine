@@ -274,7 +274,7 @@ class PickAndConso extends Component{
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
                 <label>Picking : </label>
-                <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                <Input placeholder="Barcode" autoFocus type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
                   if(e.key === "Enter"){
                     this.onHandleClickPickingScan()
                   }
@@ -287,7 +287,7 @@ class PickAndConso extends Component{
                 </div>
               </TabPane>
               <TabPane tabId="2">
-                <label>Conso : </label><Input type="text" placeholder="Input Base" onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
+                <label>Conso : </label><Input type="text" placeholder="Input Base" autoFocus onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
                 <br/>
                 <label>Picking : </label>
                 <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {

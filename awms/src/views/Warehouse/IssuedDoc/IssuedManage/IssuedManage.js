@@ -329,27 +329,6 @@ class IssuedManage extends Component{
     this.setState({modalstatus:!this.state.modalstatus});
   }
 
-  createModal(){
-    return <Modal isOpen={this.state.modalstatus}>
-             <ModalHeader toggle={this.toggle}> <span>Name : Pallet, Box</span></ModalHeader>
-             <ModalBody>
-               <div>   
-                 <AutoSelect data={this.state.storageObjectdata} result={e=>this.setState({codebase:e.label})}/>
-               </div>
-             </ModalBody>
-             <ModalFooter>
-               <Button color="secondary" id="off" onClick={() => {this.onClickSelect(this.state.codebase); this.toggle()}}>OK</Button>
-            </ModalFooter>
-          </Modal>
-}
-
-  onClickSelect(code){
-     Axios.get(window.apipath + "/api/trx/mapsto?type=1&code="+code+"&isToChild=true").then((res) => {
-     var resultToListTree = ToListTree(res.data.mapsto,"mapstos")
-       this.onClickGroup(resultToListTree)
-    })
-  }
-
  onClickGroup(data){
   var arrType = data.filter((res)=>{
     return res.type === 2  
@@ -414,8 +393,6 @@ class IssuedManage extends Component{
     
     return(
       <div>
-       {this.createModal()}
-
         <div className="clearfix">
           <div className="float-right">
             <div>Document Date : <span>{this.state.documentDate}</span></div>
