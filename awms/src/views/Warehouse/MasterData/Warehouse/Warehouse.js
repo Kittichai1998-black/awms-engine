@@ -48,42 +48,41 @@ class Warehouse extends Component{
         Axios.isCancel(true);
     }
 
-      filterList(){
-        const whselect = {queryString:window.apipath + "/api/mst",
-          t:"Branch",
-          q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-          f:"ID,Code",
-          g:"",
-          s:"[{'f':'ID','od':'asc'}]",
-          sk:0,
-          all:"",}
-    
-        Axios.all([Axios.get(createQueryString(whselect))]).then(
-          (Axios.spread((whresult) => 
-        {
-          let ddl = [...this.state.autocomplete]
-          let whList = {}
-          let areatypelist = {}
-          whList["data"] = whresult.data.datas
-          whList["field"] = "Branch_Code"
-          whList["pair"] = "Branch_ID"
-          whList["mode"] = "Dropdown"
-    
-          ddl = ddl.concat(whList)
-          this.setState({autocomplete:ddl})
-        })))
-      }
-
+    filterList(){
+      const whselect = {queryString:window.apipath + "/api/mst",
+        t:"Branch",
+        q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+        f:"ID,Code",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        all:"",}
+  
+      Axios.all([Axios.get(createQueryString(whselect))]).then(
+        (Axios.spread((whresult) => 
+      {
+        let ddl = [...this.state.autocomplete]
+        let whList = {}
+        whList["data"] = whresult.data.datas
+        whList["field"] = "Branch_Code"
+        whList["pair"] = "Branch_ID"
+        whList["mode"] = "Dropdown"
+  
+        ddl = ddl.concat(whList)
+        this.setState({autocomplete:ddl})
+      })))
+    }
+      
     render(){
         const cols = [
-            {accessor: 'Code', Header: 'Code', editable:true,Filter:"text",},
-            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text",},
+            {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
+            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
             {accessor: 'Branch_Code', Header: 'Branch',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
-            {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+            {accessor: 'Created', Header: 'Create', editable:false, filterable:false},
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+            {accessor: 'Modified', Header: 'Modify', editable:false, filterable:false},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];

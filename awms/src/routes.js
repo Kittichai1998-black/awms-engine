@@ -158,7 +158,7 @@ const routes = [
   { path: '/mst/branch/manage', exact: true, name: 'Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
-  { path: '/mst/skutype/manage', exact: true, name: 'skutype', component: SKUType },
+  { path: '/mst/skutype/manage', exact: true, name: 'SKU Type', component: SKUType },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Goods Receive Document', component: InboundView },

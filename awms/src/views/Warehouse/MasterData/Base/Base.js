@@ -104,15 +104,15 @@ class Area extends Component{
         onClick={() => {
             let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
             let barcodestr = JSON.stringify(barcode)
-            window.open('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr, "_blank")
+            window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr, "_blank")
             }}>Print</Button>
       }
 
     render(){
         const cols = [
-            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text"},
-            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text"},
+            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text", fixed: "left"},
+            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
             {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},

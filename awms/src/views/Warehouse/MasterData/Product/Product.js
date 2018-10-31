@@ -108,7 +108,7 @@ class ListProduct extends Component{
 
   render(){
     const cols = [
-      {accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter:"text"},
+      {accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter:"text", fixed: "left"},
       {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
       {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
