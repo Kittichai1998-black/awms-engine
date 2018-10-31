@@ -40,8 +40,8 @@ namespace AWMSEngine.Engine.Business.Loading
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
                 }
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
-                    null, DocumentEventStatus.REJECTED, 
-                    EntityStatus.ACTIVE, EntityStatus.REMOVE,
+                    null, EntityStatus.ACTIVE,
+                    DocumentEventStatus.REJECTED, 
                     this.BuVO);
 
                 doc.EventStatus = DocumentEventStatus.REJECTED;

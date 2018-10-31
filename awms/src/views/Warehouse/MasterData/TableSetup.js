@@ -9,7 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import guid from 'guid';
 import hash from 'hash.js';
-import {EventStatus, DocumentStatus, DocumentEventStatus} from '../Status'
+import {EventStatus, DocumentStatus, DocumentEventStatus, Status} from '../Status'
 import Select from 'react-select'
 import {apicall, createQueryString} from '../ComponentCore'
 import _ from 'lodash'
@@ -834,6 +834,15 @@ class TableGen extends Component{
       }
       </span>
     }
+    else if(type === "Status"){
+      return <span>
+      {
+        Status.filter(row => {
+          return row.code === data
+        })[0].status
+      }
+      </span>
+    }
   }
 
   createSelectAll(){
@@ -978,6 +987,9 @@ class TableGen extends Component{
             row.Cell = (e) => this.createStatusField(e.value, row.Type)
           }
           else if(row.Type === "DocumentEvent"){
+            row.Cell = (e) => this.createStatusField(e.value, row.Type)
+          }
+          else if(row.Type === "Status"){
             row.Cell = (e) => this.createStatusField(e.value, row.Type)
           }
 

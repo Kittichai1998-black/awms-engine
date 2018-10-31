@@ -17,41 +17,41 @@ namespace AMWUtil.Exception
 
         /******VALIDATE*******/
         /// <summary>Data Input Not Found : {0}</summary>
-        [AMWExceptionDescription(TH = "Data Input Not Found : {0}", EN = "Data Input Not Found : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Data Input Not Found : {0}")]
         V1001,
         /// <summary>Invalid Data Input : {0}</summary>
-        [AMWExceptionDescription(TH = "Invalid Data Input : {0}", EN = "Invalid Data Input : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Invalid Data Input : {0}")]
         V1002,
 
         /// <summary>Data System Not Found : {0}</summary>
-        [AMWExceptionDescription(TH = "Data System Not Found : {0}", EN = "Data System Not Found : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Data System Not Found : {0}")]
         V2001,
         /// <summary>Invalid Data System : {0}</summary>
-        [AMWExceptionDescription(TH = "Invalid Data System : {0}", EN = "Invalid Data System : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Invalid Data System : {0}")]
         V2002,
 
         /// <summary>Data Output Not Found : {0}</summary>
-        [AMWExceptionDescription(TH = "Data Output Not Found : {0}", EN = "Data Output Not Found : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Data Output Not Found : {0}")]
         V3001,
         /// <summary>Invalid Data Output : {0}</summary>
-        [AMWExceptionDescription(TH = "Invalid Data Output : {0}", EN = "Invalid Data Ouput : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Invalid Data Ouput : {0}")]
         V3002,
 
         /// <summary>Condition Error : {0}</summary>
-        [AMWExceptionDescription(TH = "Condition Error : {0}", EN = "Condition Error : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Condition Error : {0}")]
         B0001,
         /// <summary>{0} Not enough</summary>
-        [AMWExceptionDescription(TH = "{0} Not Enough", EN = "{0} Not Enough")]
+        [AMWExceptionDescription(TH = "{0}", EN = "{0} Not Enough")]
         B0002,
 
         /// <summary>System Error : {0}</summary>
-        [AMWExceptionDescription(TH = "System Error : {0}", EN = "{0} in System Below")]
+        [AMWExceptionDescription(TH = "{0}", EN = "{0} in System Below")]
         S0001,
         /// <summary>Connection Error : {0}</summary>
-        [AMWExceptionDescription(TH = "Connection Error : {0}", EN = "Connection Error : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Connection Error : {0}")]
         S0002,
         /// <summary>Time Out : {0}</summary>
-        [AMWExceptionDescription(TH = "Time Out : {0}", EN = "Time Out : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Time Out : {0}")]
         S0003,
 
         
@@ -62,7 +62,7 @@ namespace AMWUtil.Exception
         [AMWExceptionDescription(TH = "Authorization Error", EN = "Authorization Error")]
         A0002,
         /// <summary>Token Error : {0}</summary>
-        [AMWExceptionDescription(TH = "Token Error : {0}", EN = "Token Error : {0}")]
+        [AMWExceptionDescription(TH = "{0}", EN = "Token Error : {0}")]
         A0003,
 
 

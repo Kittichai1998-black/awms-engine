@@ -22,8 +22,8 @@ namespace AWMSEngine.APIService.WM
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<ScanConsoToLoading.TReq>(this.RequestVO);
-            var res = new ScanConsoToLoading().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<LoadedStoByScanConso.TReq>(this.RequestVO);
+            var res = new LoadedStoByScanConso().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

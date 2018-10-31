@@ -5,14 +5,14 @@ import moving from '../../img/moving.png';
 import moved from '../../img/moved.png';
 import picking from '../../img/picking.png';
 import picked from '../../img/picked.png';
-import considating from '../../img/considating.png';
-import considated from '../../img/considated.png';
+import considating from '../../img/consolidating.png';
+import considated from '../../img/consolidated.png';
 import removing from '../../img/removing.png';
 import removed from '../../img/removed.png';
 import rejecting from '../../img/rejecting.png';
 import rejected from '../../img/rejected.png';
-import adjucting from '../../img/adjucting.png';
-import adjucted from '../../img/adjucted.png';
+import adjucting from '../../img/adjusting.png';
+import adjucted from '../../img/adjusted.png';
 import issuing from '../../img/issuing.png';
 import issued from '../../img/issued.png';
 import shipping from '../../img/shipping.png';
@@ -66,6 +66,7 @@ const Status = [
     {status:'Inactive' , code:0,},
     {status:'Active' , code:1,},
     {status:'Remove' , code:2,},
+    {status:'Done', code:3,},
 ]
 
 

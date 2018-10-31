@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Button } from 'reactstrap';
-import {TableGen} from '../../MasterData/TableSetup';
+import { Button } from 'reactstrap';
+import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
 import moment from 'moment';
 
 const Axios = new apicall()
 
-class IssuedDoc extends Component{
+class IssuedDoc extends Component {
   constructor(props) {
     super(props);
 
@@ -26,56 +26,58 @@ class IssuedDoc extends Component{
         'field' : 'EventStatus',
         'mode' : 'check',
       }],
-      acceptstatus : false,
-      select:{queryString:window.apipath + "/api/viw",
-      t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-      f:"ID,Code,SouBranch,Status,DesWarehouse,DesArea,SouCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
-      g:"",
-      s:"[{'f':'Code','od':'asc'}]",
-      sk:0,
-      l:10,
-      all:"",},
-      sortstatus:0,
-      selectiondata:[]
+      acceptstatus: false,
+      select: {
+        queryString: window.apipath + "/api/viw",
+        t: "Document",
+        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
+        f: "ID,Code,SouBranch,Status,DesWarehouse,DesArea,SouCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+        g: "",
+        s: "[{'f':'Code','od':'asc'}]",
+        sk: 0,
+        l: 10,
+        all: "",
+      },
+      sortstatus: 0,
+      selectiondata: []
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
     this.dateTimePicker = this.dateTimePicker.bind(this)
   }
 
-  onHandleClickCancel(event){
+  onHandleClickCancel(event) {
     this.forceUpdate();
     event.preventDefault();
   }
 
-  dateTimePicker(){
-    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY"/>
+  dateTimePicker() {
+    return <DatePicker onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
-  getSelectionData(data){
-    this.setState({selectiondata:data})
+  getSelectionData(data) {
+    this.setState({ selectiondata: data })
   }
 
-  workingData(){
-    if(this.state.date){
+  workingData() {
+    if (this.state.date) {
       let postdata = {
-        "exportName":"DocumentAuditToCD",
-        "whereValues":[this.state.date.format('YYYY-MM-DD')]
-       }
+        "exportName": "DocumentAuditToCD",
+        "whereValues": [this.state.date.format('YYYY-MM-DD')]
+      }
       Axios.post(window.apipath + "/api/report/export/fileServer", postdata).then(res => {
-        if(res.data._result.status === 1){
+        if (res.data._result.status === 1) {
           window.success(res.data.fileExport)
         }
       })
     }
   }
 
-  onClickToDesc(data){
-    return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID='+data.ID)}>Detail</Button>
+  onClickToDesc(data) {
+    return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID=' + data.ID)}>Detail</Button>
   }
 
-  render(){
+  render() {
     const cols = [
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
       {accessor: 'DesBranch', Header: 'Branch',editable:false, Filter:"text"},
@@ -96,14 +98,14 @@ class IssuedDoc extends Component{
     ];
 
     const btnfunc = [{
-      history:this.props.history,
-      btntype:"Link",
-      func:this.onClickToDesc
+      history: this.props.history,
+      btntype: "Link",
+      func: this.onClickToDesc
     }]
-    
-    return(
+
+    return (
       <div>
-      {/*
+        {/*
         column = คอลัมที่ต้องการแสดง
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
@@ -115,7 +117,7 @@ class IssuedDoc extends Component{
           <Button className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary"
             onClick={() => { this.workingData() }}>Export Data</Button>
 
-          <div   className="float-right">{this.dateTimePicker()}</div>
+          <div className="float-right">{this.dateTimePicker()}</div>
         </div>
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}

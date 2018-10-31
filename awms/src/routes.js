@@ -117,10 +117,6 @@ const LoadingChecklist = Loadable({
   loading: Loading,
 });
 
-const Historyy = Loadable({
-  loader: () => import('./views/Warehouse/Storage/History'),
-  loading: Loading,
-});
 const ComfrimBox = Loadable({
   loader: () => import('./views/Warehouse/ComfirmBox'),
   loading: Loading,
@@ -137,6 +133,12 @@ const Stock = Loadable({
 
 const Stockview = Loadable({
   loader: () => import('./views/Warehouse/Stockview'),
+  loading: Loading,
+});
+
+
+const CurrentInv = Loadable({
+  loader: () => import('./views/Warehouse/CurrentInv'),
   loading: Loading,
 });
 
@@ -157,7 +159,6 @@ const routes = [
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
   { path: '/mst/skutype/manage', exact: true, name: 'skutype', component: SKUType },
-  { path: '/mst/storage/manage', exact: true, name: 'Storage', component: Storage },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Goods Receive Document', component: InboundView },
@@ -166,14 +167,15 @@ const routes = [
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
-  { path: '/sys/storage', exact: true, name: 'Storage', component: Historyy },
+  { path: '/sys/storage', exact: true, name: 'Storage', component: Storage },
+  { path: '/sys/storage/history', exact: true, name: 'History', component: History },
   { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
   { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
-  
+  { path: '/doc/crt/manage', exact: true, name: 'CurrentInv', component: CurrentInv},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
 

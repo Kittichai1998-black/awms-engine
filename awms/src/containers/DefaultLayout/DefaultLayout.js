@@ -25,8 +25,8 @@ import DefaultHeader from './DefaultHeader';
 
 class DefaultMenu extends Component{
   render(){
-    return(
-      <AppSidebar fixed display="lg">
+    return (
+      <AppSidebar fixed display="lg"  >
         <AppSidebarHeader />
         <AppSidebarForm />
         <AppSidebarNav navConfig={navigation(localStorage.getItem("MenuItems"))} {...this.props}/>
@@ -75,15 +75,15 @@ class DefaultLayout extends Component {
   
   render() {
     return (
-      <div className="app">
-      {checkstatus()}
-        <AppHeader fixed style={{ background: "#eceff1" }}>      
+      <div className="app" >
+        {checkstatus()}
+        <AppHeader fixed style={{ background: "#c8ced3" }} >      
           <DefaultHeader />
         </AppHeader>
-        <div className="app-body">
+        <div className="app-body" >
           <main className="main">
             <AppBreadcrumb appRoutes={routes} />
-            <Container fluid>
+            <Container fluid >
               <Switch>
                 {routes.map((route, idx) => {
                     return route.component ? (<Route key={idx} path={route.path} exact={route.exact} name={route.name} render={props => (
