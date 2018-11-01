@@ -25,7 +25,12 @@ export default class Datepicker extends Component{
                 onChange={this.onHandleDateChange}
                 onChangeRaw={(e) => {
                 if (moment(e.target.value).isValid()){
-                    this.onHandleDateChange(e.target.value)
+                    let convertdate = moment(e.target.value)
+                    this.onHandleDateChange(convertdate)
+                }
+                else{
+                    this.onHandleDateChange(this.state.date)
+                    alert("Format Error")
                 }
             }}
             timeIntervals={1}
