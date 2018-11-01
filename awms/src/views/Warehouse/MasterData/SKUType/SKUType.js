@@ -24,7 +24,7 @@ class SKUMasterType extends Component{
           select:{queryString:window.apipath + "/api/viw",
           t:"SKUMasterType",
           q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-          f:"ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,CreateBy,CreateTime,ModifyBy,ModifyTime",
+          f:"ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
           g:"",
           s:"[{'f':'ID','od':'asc'}]",
           sk:0,
@@ -37,7 +37,7 @@ class SKUMasterType extends Component{
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.getAutocompletee = this.getAutocomplete.bind(this);
         this.getSelectionData = this.getSelectionData.bind(this);
-        this.uneditcolumn = ["ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ModifyBy","ModifyTime","CreateBy","CreateTime"]
+        this.uneditcolumn = ["ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","Modified","Created"]
       }
       onHandleClickCancel(event){
         this.forceUpdate();
@@ -108,13 +108,13 @@ class SKUMasterType extends Component{
     
       render(){
         const cols = [
-          {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
-          {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
-          {accessor: 'ObjectSize_Code', Header: 'ObjectSize Code',updateable:false,Filter:"text", },
-          {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
-          {accessor: 'CreateBy', Header: 'Create By', editable:false,filterable:false},
-          {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          //{accessor: 'ModifyBy', Header: 'Modify By', editable:false,filterable:false},
+          {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
+          {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
+          {accessor: 'ObjectSize_Code', Header: 'ObjectSize Code',updateable:false,Filter:"text", Type:"autocomplete"},
+          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+          {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+          /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
           //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
         ];
@@ -138,16 +138,10 @@ class SKUMasterType extends Component{
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
-            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+            filterable={true} autocomplete={this.state.autocomplete} accept={true}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
-             table="ams_SKUMaster"/>
-    
-            <Card>
-              <CardBody style={{textAlign:'right'}}>
-                <Button onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
-              </CardBody>
-            </Card> 
+             table="ams_SKUMasterType"/>
           </div>
         )
       }

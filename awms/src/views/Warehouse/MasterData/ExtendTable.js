@@ -5,7 +5,7 @@ import ReactTable from 'react-table'
 import Axois from 'axios';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
+import Axios from 'axios';
 import {Clone,CreateQueryString} from '../ComponentCore'
 import _ from 'lodash'
 import "react-table/react-table.css";
@@ -54,6 +54,8 @@ const createQueryString = (select,wherequery) => {
     + (select.l === 0 ? "" : "&l=" + select.l)
     + ("&token=" + sessionStorage.Token)
     return queryS
+
+    
 }
 
 const createQueryStringStorage = (url,field,order) => {
@@ -114,6 +116,7 @@ class ExtendTable extends Component{
         }
         this.onCheckFliter = this.onCheckFliter.bind(this)
         this.datetimeBody = this.datetimeBody.bind(this)
+        this.datetimeFormat = this.datetimeFormat.bind(this)
         this.customSorting = this.customSorting.bind(this)
         this.checkboxBody = this.checkboxBody.bind(this)
         this.paginationButton = this.paginationButton.bind(this)
@@ -125,9 +128,11 @@ class ExtendTable extends Component{
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.createSelectAll = this.createSelectAll.bind(this)
         this.createSelection = this.createSelection.bind(this)
+        this.updateHold = this.updateHold.bind(this)
+        this.initialData = this.initialData.bind(this)
+        this.genCodeName = this.genCodeName.bind(this)
     }
-
-    componentDidMount(){
+    initialData(){
       if(this.props.url === null || this.props.url === undefined){
         const dataselect = this.props.data
         this.setState({dataselect:dataselect})
@@ -146,6 +151,9 @@ class ExtendTable extends Component{
           })
       }
     }
+    componentDidMount(){
+      this.initialData()
+    } 
 
     componentWillUpdate(nextProps, nextState){
       if(!_.isEqual(this.state.data, nextState.data)){
@@ -325,6 +333,14 @@ class ExtendTable extends Component{
           const date = moment(value);
           return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
         }
+    }
+
+    datetimeFormat(value){
+      if(value !== null){
+        var datettt = moment(value)
+        const date = datettt.format('DD-MM-YYYY HH:mm:ss');
+        return date
+      }
     }
 
     checkboxBody(value){
@@ -527,7 +543,6 @@ class ExtendTable extends Component{
         
          return <ul key={i} style={child.isFocus===true?focus:focusf}>
          <div>{<Link to={'/sys/storage/history?TYPEID=O&ID=' + child.id}>
-           
           <span>{child.storageObjectChilds.eventStatus===null?'':child.storageObjectChilds.eventStatus===0?'[WAIT]':'[INV]'} </span>
           <span>{child.baseMaster_Code===null? child.packMaster_Code : child.baseMaster_Code} : {child.baseMaster_Name===null? child.packMaster_Name : child.baseMaster_Name} </span>
           <span>{child.allqty===null?'':'[qty: ' + child.allqty + ']'} </span>
@@ -638,6 +653,51 @@ class ExtendTable extends Component{
       }
     }
 
+    updateHold(status){
+      const dataedit = this.props.dataedit
+      let obj = []
+      if (status === 'hold'){
+        if(dataedit.length > 0){
+          dataedit.forEach((row) =>{
+            row["HoleStatus"]=1
+          })
+        }
+         
+      }else if(status === 'unhold'){
+        if(dataedit.length > 0){
+          dataedit.forEach((row) =>{
+            row["HoleStatus"]=0
+          })
+        }
+      }
+  
+      let updjson = {
+        "_token": sessionStorage.getItem("Token"),
+        "_apikey": null,
+        "t": "amt_StorageObject",
+        "pk": "ID",
+        "datas": dataedit,
+        "nr": false
+      }
+      console.log(updjson)
+      Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
+        this.initialData()
+      })
+      this.setState({dataedit:[]})
+    }
+
+    genCodeName(rowdata){
+      let UserCode =""
+      const DateTime = this.datetimeFormat(null)
+      this.props.userlist.forEach(row => {
+        if(row.ID === rowdata.original["createBy"]){
+          UserCode = row.Code
+        }
+      })
+      
+      return <span>{UserCode===""?"":(UserCode + (DateTime===undefined?"":(" : "+ DateTime)))}</span>;
+    }
+
     render(){
         const col = this.props.column
         col.forEach((row) => {
@@ -672,6 +732,8 @@ class ExtendTable extends Component{
                   }
                 }
               })
+            }else if(row.Type === "codename"){
+              row.Cell = (e) => (this.genCodeName(e))
             }
 
             if(row.Cell === "datetime"){
@@ -715,7 +777,14 @@ class ExtendTable extends Component{
                 this.setState({data:[], loading:true });
                 this.customSorting(sorted)}
             } *//>
-            
+            <Card style={{display:'inlne-block',textAlign:'right'}}>
+              <CardBody>
+                <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
+                  onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
+                <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
+                  onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
+              </CardBody>
+            </Card>
             </div>
         )
     }

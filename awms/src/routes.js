@@ -140,6 +140,12 @@ const StockCard = Loadable({
   loading: Loading,
 });
 
+
+const CurrentInv = Loadable({
+  loader: () => import('./views/Warehouse/CurrentInv'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -156,7 +162,7 @@ const routes = [
   { path: '/mst/branch/manage', exact: true, name: 'Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
-  { path: '/mst/skutype/manage', exact: true, name: 'skutype', component: SKUType },
+  { path: '/mst/skutype/manage', exact: true, name: 'SKU Type', component: SKUType },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Goods Receive Document', component: InboundView },
@@ -174,7 +180,7 @@ const routes = [
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
   { path: '/wm/stc/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
-  
+  { path: '/doc/crt/manage', exact: true, name: 'CurrentInv', component: CurrentInv},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
 

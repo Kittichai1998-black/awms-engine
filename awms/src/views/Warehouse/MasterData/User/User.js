@@ -79,6 +79,8 @@ class User extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
+
+                      
             </div>) 
     }
 }

@@ -23,6 +23,12 @@ namespace AWMSEngine.Engine.General
                     object v = info.GetValue(reqVO);
                     bool x = res.TryAdd(info.Name, v);
                 }
+                var infos2 = t.GetProperties();
+                foreach (var info in infos2)
+                {
+                    object v = info.GetValue(reqVO);
+                    bool x = res.TryAdd(info.Name, v);
+                }
             }
             object resapi = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             res.TryAdd(BusinessVOConst.KEY_RESULT_API, resapi);

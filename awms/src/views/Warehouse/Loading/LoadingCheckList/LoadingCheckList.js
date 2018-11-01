@@ -98,6 +98,7 @@ class LoadingDocument extends Component{
         <Row>
           <Col>
             <Input style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
+              autoFocus
               onChange={(e) => {
                 this.setState({consoCode:e.target.value})
               }} 

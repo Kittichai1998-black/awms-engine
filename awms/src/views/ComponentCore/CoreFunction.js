@@ -1,4 +1,6 @@
 import Axios from 'axios';
+import moment from 'moment';
+import * as Status from '../Warehouse/Status';
 
 class apicall{
     get(url){
@@ -85,4 +87,18 @@ const Clone = (obj) => {
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
-export {apicall, createQueryString, Clone}
+const DateTimeConverter = (value, format) => {
+    const date = moment(value);
+    return date.format(format);
+}
+
+const GenerateDropDownStatus = (status) => {
+    let statusList = []
+    statusList.push({'value':"*",'label':"All"})
+    Status[status].forEach(row => {
+        statusList.push({'value':row.code,'label':row.status})
+    })
+    return statusList
+}
+
+export {apicall, createQueryString, Clone, DateTimeConverter, GenerateDropDownStatus}

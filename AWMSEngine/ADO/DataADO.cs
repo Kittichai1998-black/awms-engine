@@ -170,11 +170,21 @@ namespace AWMSEngine.ADO
                 null,
                 buVO);
         }
-        public List<T> SelectBy<T>(KeyValuePair<string,object>[] wheres, VOCriteria buVO)
+        public List<T> SelectBy<T>(KeyValuePair<string, object>[] wheres, VOCriteria buVO)
              where T : IEntityModel
         {
             return SelectBy<T>(
                 wheres.Select(x => new SQLConditionCriteria(x.Key, x.Value, SQLOperatorType.EQUALS)).ToArray(),
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO);
+        }
+        public List<T> SelectBy<T>(string field, object value, SQLOperatorType op, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return SelectBy<T>(
+                new SQLConditionCriteria[] { new SQLConditionCriteria(field,value,op) },
                 new SQLOrderByCriteria[] { },
                 null,
                 null,
@@ -191,13 +201,14 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             string commWhere = string.Empty;
             string commOrderBy = string.Empty;
-            
+
+            int iField = 0;
             foreach (var w in wheres)
             {
                 commWhere += string.Format("{3} {0} {1} {2} ",
                                         w.field,
                                         w.operatorType.Attribute<ValueAttribute>().Value,
-                                        w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL?"": "@" + w.field,
+                                        w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL ? "" : "@" + w.field + iField,
                                         w.conditionLeft != SQLConditionType.NONE && !string.IsNullOrEmpty(commWhere) ? w.conditionLeft.Attribute<ValueAttribute>().Value :
                                             string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
 
@@ -206,7 +217,8 @@ namespace AWMSEngine.ADO
                 else if (w.value is string && w.operatorType == SQLOperatorType.LIKE) v = w.value.ToString().Replace('*', '%');
                 else if (w.value is string && w.operatorType == SQLOperatorType.IN) v = w.value.ToString().Split(",");
                 else v = w.value;
-                param.Add(w.field, v);
+                param.Add(w.field + iField, v);
+                iField++;
             }
             foreach (var o in orderBys)
             {

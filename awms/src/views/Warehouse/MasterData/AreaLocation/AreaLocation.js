@@ -220,16 +220,11 @@ class AreaLocation extends Component{
   }
 
   createBarcodeBtn(rowdata){
-    return <Button type="button" color="info"
+    return <Button type="button" color="info" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
     onClick={() => {
         let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
         let barcodestr = JSON.stringify(barcode)
-        if(!this.state.barcodeObj){
-            this.setState({barcodeObj:barcodestr}, () =>
-            this.props.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj)) 
-        }else{
-            this.props.history.push('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+this.state.barcodeObj) 
-        }
+        window.open('/mst/arealocation/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr, "_blank")
         }}>Print</Button>
   }
 
@@ -337,9 +332,9 @@ class AreaLocation extends Component{
         getselection = เก็บค่าที่เลือก
       */}
         <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={true}
-                  filterable={true} autocomplete={this.state.autocomplete} accept={true} areagrouptype={this.state.grouptype}
+                  filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
-                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster}/>
+                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={true}/>
       </div>  
     )   
   }

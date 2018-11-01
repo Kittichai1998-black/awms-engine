@@ -421,8 +421,6 @@ class IssuedManage extends Component{
     
     return(
       <div>
-       {this.createModal()}
-
         <div className="clearfix">
           <div className="float-right">
             <div>Document Date : <span>{this.state.documentDate}</span></div>

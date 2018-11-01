@@ -15,8 +15,8 @@ namespace AWMSModel.Criteria
         public StorageObjectType type;
         public long? mstID;
         public long? parentID;
-        public int warehouseID;
-        public int areaID;
+        public long warehouseID;
+        public long areaID;
         public StorageObjectType? parentType;
         public string code;
         public string name;
@@ -25,6 +25,9 @@ namespace AWMSModel.Criteria
 
         public int? objectSizeID;
         public string objectSizeName;
+        public decimal? lengthM;
+        public decimal? widthM;
+        public decimal? heightM;
         public decimal? weiKG;
         public decimal? minWeiKG;
         public decimal? maxWeiKG;
@@ -85,6 +88,11 @@ namespace AWMSModel.Criteria
                             name = x.name,
                             mstID = x.mstID,
                             weiKG = x.weiKG,
+
+                            lengthM = x.lengthM,
+                            widthM = x.widthM,
+                            heightM = x.heightM,
+
                             options = AMWUtil.Common.ObjectUtil.QueryStringToKeyValues(x.options ?? string.Empty),
                             mapstos = generateMapstos(x.id, x.type, out isFocus),
                             isFocus = isFocus,

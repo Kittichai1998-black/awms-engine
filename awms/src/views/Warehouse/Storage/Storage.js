@@ -4,6 +4,8 @@ import {Input, Form, FormGroup, Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import ExtendTable from '../MasterData/ExtendTable';
 import Axios from 'axios';
+import {createQueryString} from '../ComponentCore'
+
 
 class Storage extends Component{
   constructor(props) {
@@ -12,6 +14,7 @@ class Storage extends Component{
     this.state = {
       data : [],
       dataedit:[],
+      userAll:[],
       dataMap : [
         {datafield:"code",searchfield:"rootBaseCode"},
         {datafield:"baseMaster_Code",searchfield:"rootBaseTypeCode"},
@@ -46,9 +49,13 @@ class Storage extends Component{
       loaddata:false,
       updateflag:false,
     };
-    this.updateHold = this.updateHold.bind(this)
+    
     this.getSelectionData = this.getSelectionData.bind(this)
-    //this.queryInitialData = this.queryInitialData.bind(this)
+    this.getUserList = this.getUserList.bind(this)
+  }
+
+  componentWillMount(){
+    this.getUserList();
   }
   
   getSelectionData(data){
@@ -60,78 +67,46 @@ class Storage extends Component{
     this.setState({dataedit:obj}, () => console.log(this.state.dataedit))
   }
 
-  /* queryInitialData(data){
-    if(data){
-      if(this.props.url === null || this.props.url === undefined){
-        const dataselect = data
-        this.setState({dataselect:dataselect})
-        let queryString = createQueryString(data)
-        Axios.get(queryString).then(
-        (res) => {
-          this.setState({data:res.data.datas,loading:false})
-        })        
-      }
-      else{
-        Axios.get(this.props.url).then(
-          (res) => {
-              this.setState({data:res.data.datas,loading:false})
-          })
-      }
-    }
-  } */
-
-  updateHold(status){
-    const dataedit = this.state.dataedit
-    let obj = []
-    if (status === 'hold'){
-      if(dataedit.length > 0){
-        dataedit.forEach((row) =>{
-          row["HoleStatus"]=1
-        })
-      }
-       
-    }else if(status === 'unhold'){
-      if(dataedit.length > 0){
-        dataedit.forEach((row) =>{
-          row["HoleStatus"]=0
-        })
-      }
-    }
-
-    let updjson = {
-      "_token": sessionStorage.getItem("Token"),
-      "_apikey": null,
-      "t": "amt_StorageObject",
-      "pk": "ID",
-      "datas": dataedit,
-      "nr": false
-    }
-    console.log(updjson)
-    Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
-      //this.queryInitialData();
-    })
-    this.setState({dataedit:[]})
-  }
-
   onClickToDesc(data){
     return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da" }}
       onClick={() => this.history.push('/sys/storage/history?TYPEID=R&ID=' + data.id)}>History</Button>
   }
 
+  getUserList(){
+    const userselect = {queryString:window.apipath + "/api/mst",
+      t:"User",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+      f:"ID,Code",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      all:"",}
+
+    Axios.all([Axios.get(createQueryString(userselect))]).then(
+      (Axios.spread((userresult) => 
+    {
+      let list = []
+      let userList = {}
+      userList["data"] = userresult.data.datas
+
+      list = list.concat(userList)
+      this.setState({userAll:userresult.data.datas})
+    })))
+  }
 
 
   render(){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center" , fixed: "left"},
-      {accessor: 'code', Header: 'Base Code', id: "ID", Filter:"text" , fixed: "left"},
-      {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
-      {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" },
-      {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text"},
-      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text"},
+      {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text", fixed: "left"},
+      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text", fixed: "left"},
+      {accessor: 'code', Header: 'Base Code', id: "ID", Filter:"text" , },
+     /*  {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
+      {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" }, */
       {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', filterable:false},
-      {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
+      /* {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
-      {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', filterable:false},
+      {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', filterable:false}, */
       {accessor: 'branch_Code', Header: 'Branch Code', Filter:"text"},
       {accessor: 'branch_Name', Header: 'Branch Name', Filter:"text"},
       {accessor: 'warehouse_Code', Header: 'Warehouse Code', Filter:"text"},
@@ -144,8 +119,8 @@ class Storage extends Component{
       {accessor: 'status', Header: 'Status',  Status:"text", Filter:"dropdown"},
       {accessor: 'productDate', Header: 'Product Date', },
       {accessor: 'expiryDate', Header: 'Expire Date', },
-      {accessor: 'createBy', Header: 'Create', filterable:false},
-      {accessor: 'modifyBy', Header: 'Modify', filterable:false},
+      {accessor: 'createBy', Header: 'Create', filterable:false, Type:"codename"},
+      {accessor: 'modifyBy', Header: 'Modify', filterable:false, Type:"codename"},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];
 
@@ -157,17 +132,9 @@ class Storage extends Component{
 
     return(
       <div>
-        <ExtendTable data={this.state.select} column={cols} childType="Tree"
+        <ExtendTable data={this.state.select} column={cols} childType="Tree" dataedit={this.state.dataedit} userlist={this.state.userAll}
         pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData} 
         url={null} btn={btnfunc} filterable={true} subtype={1} filterFields={this.state.dataMap}/>
-        <Card style={{display:'inlne-block',textAlign:'right'}}>
-          <CardBody>
-            <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
-              onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
-            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
-              onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
-          </CardBody>
-        </Card>
       </div>
     )
   }
