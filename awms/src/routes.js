@@ -135,6 +135,10 @@ const Stockview = Loadable({
   loader: () => import('./views/Warehouse/Stockview'),
   loading: Loading,
 });
+const StockCard = Loadable({
+  loader: () => import('./views/Warehouse/StockCard'),
+  loading: Loading,
+});
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -168,6 +172,7 @@ const routes = [
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
+  { path: '/wm/stc/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },

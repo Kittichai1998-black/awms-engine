@@ -200,13 +200,13 @@ class StockCorrection extends Component{
             <span>{child.minWeiKG?child.minWeiKG+ '/':''}
              {child.weiKG===0?"":child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} 
               {child.allqty !== undefined ? (child.mapstos.length > 0? null:"Qty:") : null}
-             
              </span>
              <span style={{color:'gray',display:'none'}} id={child.id}> {disQtys}      
              </span>
              </div>
-                {child.mapstos.length > 0 ? null : <Input style={{height:"30px", width:"60px",background:"#FFFFE0",display:"inline-block"}} max="" type="number" 
-                onChange={(e)=>{this.ChangeData(e,child.id,child.code,e.target.value,parent)}}/>}
+                {child.mapstos.length > 0 ? null : <Input defaultValue={child.allqty}  style={{height:"30px", width:"60px",background:"#FFFFE0",display:"inline-block"}} max="" type="number" 
+                onChange={(e)=>{this.ChangeData(e,child.id,child.code,e.target.value,parent);
+                child.allqty = e.target.value}}/>}
               
 
              {(child.mapstos.map(child2 => {

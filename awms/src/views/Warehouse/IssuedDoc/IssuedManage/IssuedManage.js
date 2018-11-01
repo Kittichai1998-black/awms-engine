@@ -53,6 +53,7 @@ class IssuedManage extends Component{
       pageID:0,
       addstatus:true,
       adddisplay:"none",
+      basedisplay:"none",
       modalstatus:false,
       storageObjectdata:[]
   
@@ -338,16 +339,22 @@ class IssuedManage extends Component{
                </div>
              </ModalBody>
              <ModalFooter>
-               <Button color="secondary" id="off" onClick={() => {this.onClickSelect(this.state.codebase); this.toggle()}}>OK</Button>
+               <Button color="primary" id="off" onClick={() => {this.onClickSelect(this.state.codebase); this.toggle()}}>OK</Button>
             </ModalFooter>
           </Modal>
 }
 
   onClickSelect(code){
+    this.setState({code})
+    this.setState({basedisplay:"block"})
+    if(code===undefined){
+      return null
+    }else{
      Axios.get(window.apipath + "/api/trx/mapsto?type=1&code="+code+"&isToChild=true").then((res) => {
      var resultToListTree = ToListTree(res.data.mapsto,"mapstos")
        this.onClickGroup(resultToListTree)
-    })
+      })
+    }
   }
 
  onClickGroup(data){
@@ -444,9 +451,10 @@ class IssuedManage extends Component{
           </Row>
         </div>
         <div className="clearfix">
+        
         <Button className="float-right" color="danger" onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
-          
+          <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code} </span>
         </div>
         <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>

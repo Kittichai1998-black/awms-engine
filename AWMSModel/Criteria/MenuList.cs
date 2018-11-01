@@ -15,6 +15,7 @@ namespace AWMSModel.Criteria
         public int Seq { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string Icon { get; set; }
         public List<MenuPage> WebPages { get; set; }
     }
 
@@ -28,6 +29,7 @@ namespace AWMSModel.Criteria
         public string PathLV1 { get; set; }
         public string PathLV2 { get; set; }
         public string PathLV3 { get; set; }
+        public string Icon { get; set; }
     }
 
     public class AllMenuPage
@@ -44,5 +46,6 @@ namespace AWMSModel.Criteria
         public string PathLV1 { get; set; }
         public string PathLV2 { get; set; }
         public string PathLV3 { get; set; }
+        public string Icon { get; set; }
     }
 }

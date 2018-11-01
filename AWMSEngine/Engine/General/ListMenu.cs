@@ -32,7 +32,8 @@ namespace AWMSEngine.Engine.General
 
             foreach(var row in getheader)
             {
-                menugroup.Add(new MenuGroup() { ID = row.ID, Seq = row.Seq, Name = row.Name, Description = row.Description, WebPages = null });
+                menugroup.Add(new MenuGroup() { ID = row.ID, Seq = row.Seq, Name = row.Name, Description = row.Description,Icon= row.Icon
+                    , WebPages = null });
             }
 
 
@@ -53,7 +54,8 @@ namespace AWMSEngine.Engine.General
                         pageID = row.pageID,
                         PathLV1 = row.PathLV1,
                         PathLV2 = row.PathLV2,
-                        PathLV3 = row.PathLV3
+                        PathLV3 = row.PathLV3,
+                        Icon = row.Icon
                     });
 
                     GroupID = row.WebPageGroup_ID;
