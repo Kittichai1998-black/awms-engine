@@ -8,7 +8,7 @@ export default class Datepicker extends Component{
     constructor(){
         super()
         this.state = {
-            date:null
+            date:null,
         }
         this.onHandleDateChange = this.onHandleDateChange.bind(this)
     }
@@ -28,6 +28,10 @@ export default class Datepicker extends Component{
                     this.onHandleDateChange(e.target.value)
                 }
             }}
+            timeIntervals={1}
+            timeFormat="HH:mm"
+            timeCaption="Time"
+            showTimeSelect={this.props.timeselect}
             dateFormat={this.props.dateFormat}/>
         )
     }

@@ -8,8 +8,8 @@ import {apicall, GenerateDropDownStatus} from '../ComponentCore'
 const Axios =  new apicall()
 
 class LoadingManage extends Component{
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
       data : [],
       autocomplete:[],
@@ -106,7 +106,7 @@ class LoadingManage extends Component{
         <div className="clearfix">
           <Button style={{ background: "#66bb6a", borderColor: "#66bb6a" }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/ld/manage')}>Create Document</Button>
         </div>
-        <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
+        <TableGen column={cols} data={this.state.select} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         accept={false} defalutCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]}/>
         <Card>
