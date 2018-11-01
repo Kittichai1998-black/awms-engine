@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.ASRS
 {
-    public class CheckEmptyLocationAPI : BaseAPIService
+    public class GetLocationInfoAPI : BaseAPIService
     {
-        public CheckEmptyLocationAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GetLocationInfoAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 

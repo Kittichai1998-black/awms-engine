@@ -50,15 +50,15 @@ function getmenu(data){
   else{
     let items =[]
       jsonresult.forEach((row) => {
-    //console.log(row.webPages)
+        //console.log(row)
         items.push({       
               name: row.name,
-              icon: 'cui-box',
+              icon: row.icon,
               children: 
                 row.webPages.map((res)=> {
                   return  {id: res.pageID,name: res.pageName
                           ,url: '/'+res.pathLV1+'/'+res.pathLV2+'/'+res.pathLV3
-                          ,icon: 'cui-home',}
+                          ,icon: ' ',}
                 })
         })   
       });

@@ -1,0 +1,190 @@
+import React, { Component } from 'react';
+import "react-table/react-table.css";
+import {  Button, Row, Col } from 'reactstrap';
+import ReactTable from 'react-table';
+//import Axios from 'axios';
+import { apicall,AutoSelect, DatePicker } from '../ComponentCore';
+//import DatePicker from 'react-datepicker';
+import moment from 'moment';
+
+const createQueryString = (select) => {
+  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
+    + (select.q === "" ? "" : "&q=" + select.q)
+    + (select.f === "" ? "" : "&f=" + select.f)
+    + (select.g === "" ? "" : "&g=" + select.g)
+    + (select.s === "" ? "" : "&s=" + select.s)
+    + (select.sk === "" ? "" : "&sk=" + select.sk)
+    + (select.l === 0 ? "" : "&l=" + select.l)
+    + (select.all === "" ? "" : "&all=" + select.all)
+  return queryS
+}
+const Axios = new apicall()
+
+
+class StockCard extends Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      data1:[],
+      data:[],
+      PackMaster:{queryString:window.apipath + "/api/viw",
+      t:"PackMaster",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"concat(Code,' : ',Name) as PackName , Code",
+      g:"",
+      s:"[{'f':'Code','od':'asc'}]",
+      sk:0,
+      l:0,
+      all:"",},
+      Document:{queryString:window.apipath + "/api/trx",
+      t:"Document",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"*",
+      g:"",
+      s:"[{'f':'Code','od':'asc'}]",
+      sk:0,
+      l:0,
+      all:"",},
+      PackMasterdata:[],
+      selectdata:{queryString:window.apipath + "/api/viw",
+      t:"StockCard",
+      q:'[{ "f": "Status", "c":"=", "v": 4}]',
+      f:"*",
+      g:"",
+      s:"[{'f':'Code','od':'asc'}]",
+      sk:0,
+      l:0,
+      all:"",},
+      PackMasterdata:[]
+    
+    }
+    this.onCalculate = this.onCalculate.bind(this)
+  }
+  componentDidMount(){
+       Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
+         const PackMasterdata = []
+         response.data.datas.forEach(row => {
+          var PackData= row.PackName
+          PackMasterdata.push({label:PackData,value:row.Code})
+          
+         })
+           this.setState({PackMasterdata})    
+         })
+       }
+
+  dateTimePickerFrom(){
+    return <DatePicker onChange={(e) => {this.setState({dateFrom:e})}} dateFormat="DD/MM/YYYY"/>
+  }
+  dateTimePickerTo(){
+    return <DatePicker onChange={(e) => {this.setState({dateTo:e})}} dateFormat="DD/MM/YYYY"/>
+  }
+
+  onGetDocument(){
+    let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
+    let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
+    let QueryDoc = this.state.selectdata
+    let JSONDoc = []
+    JSONDoc.push({"f": "DocumentDate", "c":"<=", "v":formatDateTo},
+      {"f": "Code", "c":"=", "v":this.state.CodePack},{"f": "Status", "c":"=", "v":"3"})
+    QueryDoc.q = JSON.stringify(JSONDoc)
+    Axios.get(createQueryString(QueryDoc)).then((res) => {    
+      this.setState({data:res.data.datas},()=>{
+        let dateDoc = this.state.data.filter(row=>{
+          return row.DocumentDate >= formatDateFrom
+        })
+        let dateThrow = this.state.data.filter(row2=>{
+          //console.log(row2.Quantity)
+          return row2.DocumentDate <= formatDateFrom  
+          
+        })
+        let sum = 0
+        var arrdata =[]
+        dateThrow.forEach(row=>{
+          sum+= row.Quantity         
+        })
+        arrdata.push({Total:sum})
+        //this.setState({data:dateDoc})
+        let sumDebit =0
+        let sumCredit=0
+        dateDoc.forEach(row=>{
+       
+         if(row.DocumentType_ID==='1001'){
+          sum=row.Quantity+sum
+          arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
+          sumDebit+=row.Quantity
+         }else if (row.DocumentType_ID==='1002'){
+          sum=row.Quantity-sum
+          arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Credit:row.Quantity,Total:sum})
+          sumCredit+=row.Quantity
+         } else {
+           if (row.Quantity>=0){
+            sum=row.Quantity+sum
+            arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
+            sumDebit+=row.Quantity
+           } else {
+            sum=row.Quantity-sum
+            arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
+            sumCredit+=row.Quantity
+           }
+         }
+
+        })
+        arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
+        this.setState({data1:arrdata})
+
+      })
+        
+    })
+  }
+
+  onCalculate(){
+
+    
+  }
+
+  render(){
+    const cols = [
+      {accessor: 'DocumentDate', Header: 'Date',editable:false,},
+      {accessor: 'DocCode', Header: 'Document',editable:false,},
+      {accessor: 'DocumentType_ID', Header: 'Document Type',editable:false,},
+      {accessor: 'Debit', Header: 'Debit', editable:false,},
+      {accessor: 'Credit', Header: 'Credit', editable:false,},
+      {accessor: 'Total', Header: 'Total', editable:false},
+    ];
+    return(
+      <div>
+        <div>
+        <Row>
+          <Col xs="6">
+          <div>
+            <label style={{marginRight:"10px"}} >SKU : </label>{' '}
+              <div style={{display:"inline-block",width:"300px"}}>
+                <AutoSelect data={this.state.PackMasterdata} result={e=>this.setState({CodePack:e.value}) }/>             
+               </div>
+          </div>
+          </Col>
+          <Col  xs="6"> 
+            <div style={{textAlign:"right"}}>
+              <label style={{width:"50px",marginRight:"10px"}}>Date : </label>
+                <div style={{display:"inline-block"}}>
+                  {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
+                </div>
+                <label style={{width:"50px",textAlign:"center"}}>To</label>
+                <div style={{display:"inline-block"}}>
+                  {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
+                </div>
+                <Button color="primary" id="off" onClick={() => {this.onGetDocument()}}>OK</Button>
+            </div>          
+          </Col>
+        </Row>
+        </div>
+         <br></br>
+        <ReactTable NoDataComponent={()=> null} sortable={false} style={{background:"white"}} filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
+      </div>
+
+
+
+    )
+  }
+}
+export default StockCard;

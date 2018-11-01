@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is Done");
                 if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL)
                 {
-                    var stos = ADO.DocumentADO.GetInstant().ListSTOInDocLock(doc.ID.Value, this.BuVO);
+                    var stos = ADO.DocumentADO.GetInstant().ListStoIDInDocs(doc.ID.Value, this.BuVO);
                     if (stos.Count > 0)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
                 }

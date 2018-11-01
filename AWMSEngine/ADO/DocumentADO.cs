@@ -15,15 +15,15 @@ namespace AWMSEngine.ADO
     {
 
 
-        public List<amt_DocumentItemStorageObject> ListSTOInDocLock(List<long> stoids, DocumentTypeID docTypeID, VOCriteria buVO)
+        public List<amt_DocumentItemStorageObject> ListStoIDInDocs(List<long> stoids, DocumentTypeID docTypeID, VOCriteria buVO)
         {
-            return ListSTOInDocLock(null, stoids, docTypeID, buVO);
+            return ListStoIDInDocs(null, stoids, docTypeID, buVO);
         }
-        public List<amt_DocumentItemStorageObject> ListSTOInDocLock(long docID, VOCriteria buVO)
+        public List<amt_DocumentItemStorageObject> ListStoIDInDocs(long docID, VOCriteria buVO)
         {
-            return ListSTOInDocLock(docID, null, null, buVO);
+            return ListStoIDInDocs(docID, null, null, buVO);
         }
-        public List<amt_DocumentItemStorageObject> ListSTOInDocLock(long? docID, List<long> stoids, DocumentTypeID? docTypeID, VOCriteria buVO)
+        public List<amt_DocumentItemStorageObject> ListStoIDInDocs(long? docID, List<long> stoids, DocumentTypeID? docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("documentID", docID);
@@ -166,9 +166,23 @@ namespace AWMSEngine.ADO
         }
         public List<amt_Document> ListBySTO(List<long> storageObjectIDs, VOCriteria buVO)
         {
+            return this.ListBySTO(storageObjectIDs, null, buVO);
+        }
+        public List<amt_Document> ListBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID, VOCriteria buVO)
+        {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("storageObjectIDs", string.Join(",", storageObjectIDs));
+            param.Add("docTypeID", docTypeID);
             return this.Query<amt_Document>("SP_DOC_LIST_BYSTOID",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+        }
+        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("storageObjectIDs", string.Join(",", storageObjectIDs));
+            return this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYSTOID",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();

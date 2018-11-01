@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.APIService.Doc;
+using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,10 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet("doc")]
         public dynamic Get()
         {
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            //var res = 
-            return null;
+            GetDocAPI exec = new GetDocAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_RECEIVED);
+            var res = exec.Execute(req);
+            return res;
         }
         [HttpPost("doc")]
         public dynamic Create([FromBody]dynamic data)
