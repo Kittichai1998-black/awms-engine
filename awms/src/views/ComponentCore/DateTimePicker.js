@@ -22,15 +22,14 @@ export default class Datepicker extends Component{
         return(
             <DatePicker selected={this.state.date}
                 customInput={<Input/>}
-                onChange={this.onHandleDateChange}
+                onChange={(e) => {
+                    if(e.isValid()){
+                        this.onHandleDateChange(e)
+                    }
+                }}
                 onChangeRaw={(e) => {
                 if (moment(e.target.value).isValid()){
-                    let convertdate = moment(e.target.value)
-                    this.onHandleDateChange(convertdate)
-                }
-                else{
-                    this.onHandleDateChange(this.state.date)
-                    alert("Format Error")
+                    this.onHandleDateChange(moment(e.target.value, 'DD-MM-YYYY hh:mm:ss'))
                 }
             }}
             timeIntervals={1}
