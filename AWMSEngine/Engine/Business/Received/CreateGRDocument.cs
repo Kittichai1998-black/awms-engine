@@ -32,19 +32,19 @@ namespace AWMSEngine.Engine.Business.Received
             public string desWarehouseCode;//คลังต้นทาง
             public string desAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
 
-            public DateTime actionTime;//วันที่ส่ง
+            public DateTime? actionTime;//วันที่ส่ง
             public DateTime documentDate;
             public string remark;
             public string ref1;
             public string ref2;
 
 
-            public List<SKUItem> skuItems;
-            public class SKUItem
+            public List<ReceiveItem> receiveItems;
+            public class ReceiveItem
             {
                 public string skuCode;
                 public string packCode;
-                public int packItemQty;
+                public int? packItemQty;
                 public int quantity;
 
                 public DateTime? expireDate;
@@ -97,12 +97,28 @@ namespace AWMSEngine.Engine.Business.Received
 
             };
 
-            foreach (var skuItem in reqVO.skuItems)
+            foreach (var recItem in reqVO.receiveItems)
             {
-                var skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(skuItem.skuCode, this.BuVO);
-                var packMst = string.IsNullOrWhiteSpace(skuItem.packCode) ?
-                    ADO.MasterADO.GetInstant().GetPackMaster(skuMst.ID.Value, skuItem.packItemQty, this.BuVO) :
-                    ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(skuItem.packCode, this.BuVO);
+                ams_PackMaster packMst = null;
+                ams_SKUMaster skuMst = null;
+
+                if (!string.IsNullOrWhiteSpace(recItem.packCode)) {
+                    packMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(recItem.packCode, this.BuVO);
+                    skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
+                }
+                else if(!string.IsNullOrWhiteSpace(recItem.skuCode) && recItem.packItemQty.HasValue)
+                {
+                    skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(recItem.skuCode, this.BuVO);
+                    if (skuMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบรหัส SKU '" + recItem.skuCode + "'");
+                    packMst = ADO.MasterADO.GetInstant().GetPackMaster(skuMst.ID.Value, recItem.packItemQty.Value, this.BuVO);
+                    if (packMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลแพ็คของ SKU '" + recItem.skuCode + "' ที่มีจำนวน '"+ recItem.packItemQty + " ชิ้น/แพ็ค");
+                }
+                else
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty");
+                }
 
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
@@ -110,16 +126,16 @@ namespace AWMSEngine.Engine.Business.Received
                     Code = skuMst.Code,
                     SKUMaster_ID = skuMst.ID.Value,
                     PackMaster_ID = packMst.ID.Value,
-                    Quantity = skuItem.quantity,
+                    Quantity = recItem.quantity,
                     
                     EventStatus = DocumentEventStatus.WORKING,
 
-                    Options = AMWUtil.Common.ObjectUtil.ListKeyToQueryString(skuItem.options),
-                    ExpireDate = skuItem.expireDate,
-                    ProductionDate = skuItem.productionDate,
-                    Ref1 = skuItem.ref1,
-                    Ref2 = skuItem.ref2,
-                    Ref3 = skuItem.ref3,
+                    Options = AMWUtil.Common.ObjectUtil.ListKeyToQueryString(recItem.options),
+                    ExpireDate = recItem.expireDate,
+                    ProductionDate = recItem.productionDate,
+                    Ref1 = recItem.ref1,
+                    Ref2 = recItem.ref2,
+                    Ref3 = recItem.ref3,
                     StorageObjectIDs = new List<long>()
                 });
             }
