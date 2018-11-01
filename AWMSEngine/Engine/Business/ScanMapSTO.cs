@@ -247,7 +247,7 @@ namespace AWMSEngine.Engine.Business
                         if(newMS.areaID != msf.areaID)
                         {
                             UpdateAreaAllChilds(newMS, msf.areaID);
-                            void UpdateAreaAllChilds(StorageObjectCriteria ms,int aid)
+                            void UpdateAreaAllChilds(StorageObjectCriteria ms,long aid)
                             {
                                 ADOSto.Update(ms, aid, this.BuVO);
                                 ms.mapstos.ForEach(x => UpdateAreaAllChilds(x, aid));

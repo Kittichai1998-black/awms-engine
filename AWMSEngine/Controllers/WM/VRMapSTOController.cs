@@ -25,5 +25,13 @@ namespace AWMSEngine.Controllers.WM
             ConfirmMapSTOReceiveAPI exec = new ConfirmMapSTOReceiveAPI(this);
             return exec.Execute(datas);
         }
+
+        [HttpGet("price")]
+        public dynamic GetPrice()
+        {
+            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            ListPriceByRootID exec = new ListPriceByRootID(this);
+            return exec.Execute(req);// exec.Execute(datas);
+        }
     }
 }

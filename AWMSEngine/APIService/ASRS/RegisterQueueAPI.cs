@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.ASRS
 {
-    public class StartReceivingQueueAPI : BaseAPIService
+    public class RegisterQueueAPI : BaseAPIService
     {
-        public StartReceivingQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public RegisterQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<WorkingQueueReceiving.TReq>(this.RequestVO);
-            var res = new WorkingQueueReceiving().Execute(this.Logger, this.BuVO, req);
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterQueueReceiving.TReq>(this.RequestVO);
+            var res = new RegisterQueueReceiving().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

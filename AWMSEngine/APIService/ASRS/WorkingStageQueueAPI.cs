@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.ASRS
 {
-    public class UpdateQueueEventAPI : BaseAPIService
+    public class WorkingStageQueueAPI : BaseAPIService
     {
-        public UpdateQueueEventAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public WorkingStageQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 

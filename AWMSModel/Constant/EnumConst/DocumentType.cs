@@ -20,7 +20,7 @@ namespace AWMSModel.Constant.EnumConst
         GOODS_RECEIVED_CORRECTIONS = 2001,//GRC
         GOODS_ISSUED_CORRECTIONS = 2002,//GIC
         STOCK_CORRECTIONS = 2003,//SLC
-        STOCK_ADJUST = 2004,//SA
+        STOCK_AUDIT = 2004,//SA
         DISCOUNTS = 3001,//DC
         ASSEMBLIES = 3002,//AS
     }

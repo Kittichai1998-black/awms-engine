@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.ASRS
 {
-    public class EndQueueAPI : BaseAPIService
+    public class ResetQueueAPI : BaseAPIService
     {
-        public EndQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ResetQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
