@@ -56,12 +56,12 @@ class ComfirmBox extends Component{
       this.setState({data:response.data.datas})
 
   
-  if(this.state.Name === "Administrator")  {
-    this.setState({ showbutton:"block"})
-  } else {
-    var ff = document.getElementsByClassName("view-test")
-    console.log(ff[0].remove())
-  }
+  // if(this.state.Name === "Administrator")  {
+  //   this.setState({ showbutton:"block"})
+  // } else {
+  //   var ff = document.getElementsByClassName("view-test")
+  //   console.log(ff[0].remove())
+  // }
 
     })
   }
@@ -115,7 +115,7 @@ class ComfirmBox extends Component{
           </CardBody>
         </Card>
 
-        <Button style={{display:this.state.Name==="Administrator"?"block":this.state.showbutton}} className="view-test" >TEST</Button>
+        {/* <Button style={{display:this.state.Name==="Administrator"?"block":this.state.showbutton}} className="view-test" >TEST</Button> */}
 
             <ReactTable columns={cols} minRows={10} sortable={false} style={{background:'white'}}
         showPagination={false} data={this.state.data}/>

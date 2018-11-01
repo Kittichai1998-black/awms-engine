@@ -41,7 +41,7 @@ class LoadingDocument extends Component{
     this.autocomplete = {queryString:window.apipath + "/api/viw",
       t:"Document",
       q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID, Code, SouBranch, DesCustomer, ActionTime",
+      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCusName",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -57,7 +57,7 @@ class LoadingDocument extends Component{
       all:"",}
   }
  
-  componentDidMount(){
+  componentWillMount(){
     const values = queryString.parse(this.props.location.search)
     if(values.ID){
       this.setState({pageID:values.ID, readonly:true,
@@ -103,7 +103,7 @@ class LoadingDocument extends Component{
         })
       })
       
-      this.setState({documentDate:this.DateNow.format('DD-MMMM-YYYY')})
+      this.setState({documentDate:this.DateNow.format('DD-MM-YYYY')})
       API.get(createQueryString(this.autocomplete)).then((res) => {
           this.setState({autocomplete:res.data.datas,
             adddisplay:"inline-block"})
@@ -142,7 +142,7 @@ class LoadingDocument extends Component{
         highlightedIndex,
         selectedItem,
       }) => (
-        <div style={{width: '150px'}}>
+        <div style={{width: '360px'}}>
           <div style={{position: 'relative'}}>
                   <Input
                     {...getInputProps({
@@ -157,7 +157,7 @@ class LoadingDocument extends Component{
                       ? this.state.autocomplete
                         .filter(item => !inputValue || item.Code.includes(inputValue))
                         .map((item, index) => (
-                          <div style={{background:'white', width:'150px'}}
+                          <div style={{background:'white', width:'360px'}}
                             key={item.ID}
                             {...getItemProps({
                               item,
@@ -165,7 +165,7 @@ class LoadingDocument extends Component{
                               style: {
                                 backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                                 fontWeight: selectedItem === item ? 'bold' : 'normal',
-                                width:'150px'
+                                width:'360px'
                               }
                             })}
                           >
@@ -234,45 +234,12 @@ class LoadingDocument extends Component{
     const date = moment(value.ActionTime);
     const data = this.state.data;
     data[rowdata.index][field] = value.Code;
-    data[rowdata.index]["Customer"] = value.DesCustomer;
+    data[rowdata.index]["Customer"] = value.DesCustomer + " : " + value.DesCusName;
     data[rowdata.index]["IssuedID"] = value.ID;
-    data[rowdata.index]["ActionDate"] = date.format('DD-MM-YYYY HH:mm:ss');
+    data[rowdata.index]["ActionDate"] = date.format('DD-MM-YYYY HH:mm');
     this.setState({ data });
   }
 
-  /* createAutoCompleteCell(rowdata){
-    const style = {borderRadius: '3px',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    background: 'rgba(255, 255, 255, 0.9)',
-    padding: '2px 0',
-    fontSize: '90%',
-    position: 'fixed',
-    overflow: 'auto',
-    maxHeight: '50%',
-    zIndex: '998',}
-    if(this.state.autocomplete.length > 0){
-      return <ReactAutocomplete
-        menuStyle={style}
-        getItemValue={(item) => item.Code + ' : ' + item.Name}
-        items={this.state.autocomplete}
-        shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
-        renderItem={(item, isHighlighted) =>
-          <div key={item.ID} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-            {item.Code}
-          </div>
-        }
-        value={rowdata.value}
-        onChange={(e) => {
-          rowdata.value = e.target.value
-          this.editData(rowdata, e.target.value, rowdata.column.id)
-        }}
-        onSelect={(val, row) => {
-          this.editData(rowdata, row, rowdata.column.id)
-        }}
-      />
-    }
-  } */
-  
   createDocument(){
     let issuedList = []
     this.state.data.forEach(item => {
@@ -307,7 +274,7 @@ class LoadingDocument extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Issued No.',editable:true, Cell: (e) => {
+      {accessor: 'Code', Header: 'Issued No.', width:380,editable:true, Cell: (e) => {
         if(this.state.readonly){
           return <span>{e.original.code}</span>
         }
@@ -317,18 +284,8 @@ class LoadingDocument extends Component{
       }},
       {accessor: 'Customer', Header: 'Customer',editable:false,},
       {accessor: 'ActionDate', Header: 'Action Date',editable:false,},
-      {show: this.state.readonly?false:true, editable:false, Cell:(e) => {
-        return <Button color="danger" onClick={() => {
-          const data = this.state.data
-          data.forEach((datarow,index) => {
-            if(datarow.code === e.original.code){
-              data.splice(index,1);
-            }
-          })
-          this.setState({data})
-        }
-      }>Delete</Button>}},
-      {show: this.state.readonly?false:true, editable:false, Cell:(e) => {
+      
+      {show: this.state.readonly?false:true,width:80 , editable:false, Cell:(e) => {
         return <Button color="primary" onClick={() => {
           if(e.original.IssuedID !== ""){
             if(this.state.readonly){
@@ -340,6 +297,17 @@ class LoadingDocument extends Component{
           }
         }
       }>Detail</Button>}},
+      {show: this.state.readonly?false:true,width:80, editable:false, Cell:(e) => {
+        return <Button color="danger" onClick={() => {
+          const data = this.state.data
+          data.forEach((datarow,index) => {
+            if(datarow.code === e.original.code){
+              data.splice(index,1);
+            }
+          })
+          this.setState({data})
+        }
+      }>Delete</Button>}},
     ];
 
     return(
@@ -372,7 +340,7 @@ class LoadingDocument extends Component{
             style={{ display: this.state.readonly === true ? "none" : this.state.adddisplay, background: "#66bb6a", borderColor: "#66bb6a", width: '130px' }}>Add</Button>
         </div>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
-            showPagination={false}/>
+            showPagination={false} NoDataComponent={() => null}/>
           {this.state.readonly ? this.state.bstostree : null}
           <Card>
           <CardBody>

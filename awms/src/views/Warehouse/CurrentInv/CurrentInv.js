@@ -5,6 +5,9 @@ import { TableGen } from '../MasterData/TableSetup';
 //import Axios from 'axios';
 import { apicall, DatePicker} from '../ComponentCore'
 import moment from 'moment';
+import readXlsxFile from 'read-excel-file'
+import { Script } from 'vm';
+import { Helmet } from "react-helmet";
 //import DatePicker from 'react-datepicker';
 
 const createQueryString = (select) => {
@@ -21,6 +24,8 @@ const createQueryString = (select) => {
 
 
 const API = new apicall()
+const input = document.getElementById('input')
+
  
 class CurrentInv extends Component{
   constructor(props) {
@@ -30,12 +35,12 @@ class CurrentInv extends Component{
     }
 
     this.CurrentItem = {
-      queryString: window.apipath + "/api/trx",
-      t: "StorageObject",
+      queryString: window.apipath + "/api/viw",
+      t: "CurrentInv",
       q: "",
-      f: "ID,Code,AreaMaster_ID,",
+      f: "ID,PackCode,PackName,Warehouse,Total, concat(PackCode, ':' ,PackName)as Pack",
       g: "",
-      s: "[{'f':'Code','od':'asc'}]",
+      s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
       l: 20,
       all: "",
@@ -53,11 +58,22 @@ class CurrentInv extends Component{
     return <DatePicker onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
+
+
   
 
     componentDidMount() {
       API.get(createQueryString(this.CurrentItem)).then(current => { })
     }
+
+  ReadExcell() {
+    input.addEventListener('change', () => {
+      readXlsxFile(input.files[0]).then((rows) => {
+        // `rows` is an array of rows
+        // each row being an array of cells.
+      })
+    }) 
+  }
 
 
 
@@ -75,17 +91,30 @@ class CurrentInv extends Component{
   
   render() {
     const cols = [
-      { accessor: 'ID', Header: 'Pack Code/Name', editable: false, filterable: false },
-      { accessor: 'Code', Header: 'SKU Code/Name', editable: false, filterable: false},
-      { accessor: '', Header: 'Warehouse', editable: false, filterable: false},
-      { accessor: 'AreaMaster_ID', Header: 'Total Qty', editable: false, filterable: false },
+      { accessor: 'Pack', Header: 'Pack Code/Name', editable: false, filterable: false },
+      { accessor: 'Warehouse', Header: 'Warehouse', editable: false, filterable: false},
+      { accessor: 'Total', Header: 'Total Qty', editable: false, filterable: false },
 
   
     ];
 
     return (
-
       <div>
+
+
+        <Helmet>
+          <Script type="text/javascript" src="jqury-3.3.1.min.js"></Script>
+          <Script type="text/javascript" src="xlsx.full.min.js"></Script>
+          <Script type="text/javascript" src="angular.min.js"></Script>
+          <Script type="text/javascript" src="Readdata.js"></Script>
+         
+        </Helmet>
+
+
+
+       
+
+
         <div className="clearfix">
 
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"
@@ -95,9 +124,9 @@ class CurrentInv extends Component{
 
 
 
-          <Button style={{ background: "#66bb6a", borderColor: "#26c6da", width: '130px', marginRight: "465px"}} color="primary" className="float-right"
+          <Button  style={{ background: "#66bb6a", borderColor: "#26c6da", width: '130px', marginRight: "465px"}} color="primary" className="float-right"
           >Browse</Button>
-          <div className="float-Left" >{this.dateTimePicker()}</div>
+          <input type="file" id="input" />
       
 
       </div>
