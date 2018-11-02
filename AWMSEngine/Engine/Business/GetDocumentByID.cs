@@ -33,20 +33,22 @@ namespace AWMSEngine.Engine.Business
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            var doc = ADO.DataADO.GetInstant().SelectBy<TRes.ViewDocument>("amv_Document", "*", "",
-                new SQLConditionCriteria[] {
+            var doc = ADO.DataADO.GetInstant().SelectBy<TRes.ViewDocument>("amv_Document", "*", null,
+                new SQLConditionCriteria[]
+                {
                     new SQLConditionCriteria("ID", reqVO.docID, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("DocumentType_ID", reqVO.docTypeID, SQLOperatorType.EQUALS)
                 },
-                new SQLOrderByCriteria[] { },
-                null,null,this.BuVO).FirstOrDefault();
+                new SQLOrderByCriteria[] { }, null, null,
+                this.BuVO).FirstOrDefault();
             if (doc == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสารในระบบ");
             var docItems = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(
-                new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object>("Document_ID",doc.ID),
-                    new KeyValuePair<string, object>("Status",EntityStatus.ACTIVE)
-                }, 
+                new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("Document_ID",doc.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
+                },
                 this.BuVO);
             doc.documentItems = docItems;
             res.document = doc;

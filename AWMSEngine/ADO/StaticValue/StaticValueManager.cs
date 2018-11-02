@@ -142,13 +142,13 @@ namespace AWMSEngine.ADO.StaticValue
             return Regex.IsMatch(this.GetConfig(code), string.Format("^{0},|,{0},|,{0}$", v));
         }
         public EntityStatus? GetStatusInConfigByEventStatus<T>(T? value)
-            where T : struct
+            where T : struct, IComparable, IFormattable, IConvertible
         {
-            if (value == null) return null;
+            if (!value.HasValue) return null;
             string fixCode = value is StorageObjectEventStatus ? "STO" :
                                 (value is DocumentEventStatus) ? "DOC" :
                                 (value is WorkQueueEventStatus) ? "Q" : string.Empty;
-            string v = value.ToString();
+            int v = AMWUtil.Common.EnumUtil.GetValueInt(value.Value);
             if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_INACTIVE", v))
                 return EntityStatus.INACTIVE;
             if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_ACTIVE", v))

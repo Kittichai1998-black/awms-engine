@@ -84,7 +84,7 @@ namespace AWMSEngine.ADO
             param.Add("batch", batch);
             param.Add("lot", lot);
             param.Add("res", null, System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
-            this.Query<int>("SP_STO_FREE_COUNT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            this.Query<int>("SP_STO_FREE_COUNT_V2", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             return param.Get<int>("res");
         }
 
