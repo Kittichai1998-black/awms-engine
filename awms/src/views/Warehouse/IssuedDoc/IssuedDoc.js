@@ -28,10 +28,10 @@ class IssuedDoc extends Component{
       acceptstatus : false,
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
       f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
+      s:"[{'f':'ID','od':'desc'}]",
       sk:0,
       l:20,
       all:"",},
@@ -141,7 +141,7 @@ class IssuedDoc extends Component{
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc}
+        btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'!=', 'v': 2},{ 'f': 'EventStatus', c:'!=', 'v': 32}]}
         accept={false}/>
         <Card>
           <CardBody>
