@@ -192,7 +192,7 @@ class IssuedManage extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm:ss"/>
+    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm"/>
   }
 
   renderDocumentStatus(){
@@ -264,13 +264,13 @@ class IssuedManage extends Component{
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
       <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
       onChange={selection => {
         rowdata.value = selection.id
         this.editData(rowdata, selection, rowdata.column.id)
       }}
       itemToString={item => {
-        return item !== null ? item.Code + ":" + item.Name : rowdata.value ;
+        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code + " : " + rowdata.original.name ;
       }}
     >
       {({
@@ -307,7 +307,6 @@ class IssuedManage extends Component{
                                 backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                                 fontWeight: selectedItem === item ? 'bold' : 'normal',
                                 width:'500px',
-                                border:"1px solid black "
                               }
                             })}
                           >
@@ -421,6 +420,7 @@ class IssuedManage extends Component{
     
     return(
       <div>
+        {this.createModal()}
         <div className="clearfix">
           <div className="float-right">
             <div>Document Date : <span>{this.state.documentDate}</span></div>
@@ -450,16 +450,16 @@ class IssuedManage extends Component{
         </div>
         <div className="clearfix">
         
-        <Button className="float-right" color="danger" onClick={() => this.toggle()}>Select Base</Button>
+        <Button className="float-right" color="danger" style={{display:this.state.adddisplay}} onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
           <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code} </span>
         </div>
-        <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
+        <ReactTable NoDataComponent={()=>null} columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
         <Card>
           <CardBody style={{textAlign:'right'}}>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
-            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
+            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>
