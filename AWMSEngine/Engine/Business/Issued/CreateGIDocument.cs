@@ -75,7 +75,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     !string.IsNullOrWhiteSpace(reqVO.souBranchCode) ?
                         this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.souWarehouseCode) :
                         souAreaMasterModel != null ?
-                            this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == souAreaMasterModel.Warehouses_ID) :
+                            this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == souAreaMasterModel.Warehouse_ID) :
                             null;
             var souBranchModel =
                 reqVO.souBranchID.HasValue ?
@@ -112,7 +112,7 @@ namespace AWMSEngine.Engine.Business.Issued
             else if (souAreaMasterModel == null && reqVO.souAreaMasterID.HasValue)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souAreaMasterID ไม่ถูกต้อง");
 
-            if (souAreaMasterModel != null && souWarehouseModel != null && souAreaMasterModel.Warehouses_ID != souWarehouseModel.ID)
+            if (souAreaMasterModel != null && souWarehouseModel != null && souAreaMasterModel.Warehouse_ID != souWarehouseModel.ID)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souArea และ souWarehouse ไม่สัมพันธ์กัน");
             if (souBranchModel != null && souWarehouseModel != null && souBranchModel.ID != souWarehouseModel.Branch_ID)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souWarehouse และ souBranchModel ไม่สัมพันธ์กัน");

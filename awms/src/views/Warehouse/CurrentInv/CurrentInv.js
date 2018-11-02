@@ -66,7 +66,7 @@ class CurrentInv extends Component{
 
   ReadExcell() {
     input.addEventListener('change', () => {
- 
+      
     }) 
   }
 
@@ -95,13 +95,6 @@ class CurrentInv extends Component{
 
     return (
       <div>
-
-
-
-
-       
-
-
         <div className="clearfix">
 
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"
