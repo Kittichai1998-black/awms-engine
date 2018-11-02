@@ -59,6 +59,7 @@ class SetBarcode extends Component{
 
   componentDidMount(){
     const values = queryString.parse(this.props.location.search)
+    console.log(values)
     let setup = json.barcodesetup.find((data) => {
       return data.type.toString() === values.barcodesize;
     })

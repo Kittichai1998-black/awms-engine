@@ -115,7 +115,7 @@ class IssuedManage extends Component{
       })
     }
     else{
-      this.setState({documentDate:this.DateNow.format('DD-MMMM-YYYY')})
+      this.setState({documentDate:this.DateNow.format('DD-MM-YYYY')})
       Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
         this.setState({autocomplete:rowselect2.data.datas,
           adddisplay:"inline-block"})
@@ -192,7 +192,7 @@ class IssuedManage extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY HH:mm:ss"/>
+    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm"/>
   }
 
   renderDocumentStatus(){
@@ -264,13 +264,13 @@ class IssuedManage extends Component{
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
       <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
       onChange={selection => {
         rowdata.value = selection.id
         this.editData(rowdata, selection, rowdata.column.id)
       }}
       itemToString={item => {
-        return item !== null ? item.Code : rowdata.value ;
+        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code + " : " + rowdata.original.name ;
       }}
     >
       {({
@@ -283,7 +283,7 @@ class IssuedManage extends Component{
         highlightedIndex,
         selectedItem,
       }) => (
-        <div style={{width: '150px'}}>
+        <div style={{width: '500px'}}>
           <div style={{position: 'relative'}}>
                   <Input
                     {...getInputProps({
@@ -293,12 +293,12 @@ class IssuedManage extends Component{
                   />
                 </div>
                 <div style={{position: 'absolute', zIndex:'1000', height:"100px", overflow:'auto'}}>
-                  <div {...getMenuProps({isOpen})} style={{position: 'relative'}}>
+                  <div {...getMenuProps({isOpen})} style={{position: 'relative', overflowX:"none"}}>
                     {isOpen
                       ? this.state.autocomplete
                         .filter(item => !inputValue || item.Code.includes(inputValue))
                         .map((item, index) => (
-                          <div style={{background:'white', width:'150px'}}
+                          <div style={{background:'white', width:'500px'}}
                             key={item.id}
                             {...getItemProps({
                               item,
@@ -306,12 +306,11 @@ class IssuedManage extends Component{
                               style: {
                                 backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                                 fontWeight: selectedItem === item ? 'bold' : 'normal',
-                                width:'150px',
-                                border:"1px solid black "
+                                width:'500px',
                               }
                             })}
                           >
-                            {item ? item.Code : ''}
+                            {item ? item.Code + " : " + item.Name : ''}
                           </div>
                         ))
                       : null}
@@ -394,7 +393,7 @@ class IssuedManage extends Component{
     let cols
     if(this.state.pageID){
       cols = [
-        {accessor:"packMaster_Code",Header:"Pack Item", Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>},
+        {accessor:"packMaster_Code",Header:"Pack Item", Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>, width:550},
         {accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
         {accessor:"quantity",Header:"PackQty", Cell: (e) => <span>{e.original.quantity}</span>},
         {accessor:"unitType_Name",Header:"UnitType", Cell: (e) => <span>{e.original.unitType_Name}</span>}
@@ -402,7 +401,7 @@ class IssuedManage extends Component{
     }
     else{
       cols = [
-        {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e),},
+        {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e), width:550},
         //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
@@ -421,6 +420,7 @@ class IssuedManage extends Component{
     
     return(
       <div>
+        {this.createModal()}
         <div className="clearfix">
           <div className="float-right">
             <div>Document Date : <span>{this.state.documentDate}</span></div>
@@ -450,16 +450,16 @@ class IssuedManage extends Component{
         </div>
         <div className="clearfix">
         
-        <Button className="float-right" color="danger" onClick={() => this.toggle()}>Select Base</Button>
+        <Button className="float-right" color="danger" style={{display:this.state.adddisplay}} onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
           <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code} </span>
         </div>
-        <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
+        <ReactTable NoDataComponent={()=>null} columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
         <Card>
           <CardBody style={{textAlign:'right'}}>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
-            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
+            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>

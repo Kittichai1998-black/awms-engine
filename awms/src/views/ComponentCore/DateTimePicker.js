@@ -8,7 +8,7 @@ export default class Datepicker extends Component{
     constructor(){
         super()
         this.state = {
-            date:null
+            date:null,
         }
         this.onHandleDateChange = this.onHandleDateChange.bind(this)
     }
@@ -22,12 +22,22 @@ export default class Datepicker extends Component{
         return(
             <DatePicker selected={this.state.date}
                 customInput={<Input/>}
-                onChange={this.onHandleDateChange}
+                onChange={(e) => {
+                    if(e.isValid()){
+                        this.onHandleDateChange(e)
+                    }
+                }}
                 onChangeRaw={(e) => {
                 if (moment(e.target.value).isValid()){
-                    this.onHandleDateChange(e.target.value)
+                    const checkdate = moment(e.target.value, 'DD-MM-YYYY hh:mm:ss')
+                    if(!isNaN(checkdate.date()))
+                        this.onHandleDateChange(moment(e.target.value, 'DD-MM-YYYY hh:mm:ss'))
                 }
             }}
+            timeIntervals={1}
+            timeFormat="HH:mm"
+            timeCaption="Time"
+            showTimeSelect={this.props.timeselect}
             dateFormat={this.props.dateFormat}/>
         )
     }

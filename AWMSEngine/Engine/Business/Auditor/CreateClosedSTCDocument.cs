@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Auditor
 {
-    public class CreateWorkedSTCDocument : BaseEngine<CreateWorkedSTCDocument.TDocReq, amt_Document>
+    public class CreateClosedSTCDocument : BaseEngine<CreateClosedSTCDocument.TDocReq, amt_Document>
     {
 
         public class TDocReq
@@ -61,7 +61,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 Remark = reqVO.remark,
 
                 EventStatus = DocumentEventStatus.CLOSED,
-
+                Status = StaticValue.GetStatusInConfigByEventStatus<DocumentEventStatus>(DocumentEventStatus.CLOSED).Value,
                 DocumentItems = new List<amt_DocumentItem>()
             };
             return newDoc;
@@ -123,7 +123,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                     SKUMaster_ID = packMst.SKUMaster_ID,
                     Quantity = adjQty,
                     StorageObjectIDs = packAdjs.Select(x => x.id.Value).ToList(),
-                    EventStatus = DocumentEventStatus.CLOSED
+                    EventStatus = DocumentEventStatus.CLOSED,
+                    Status = StaticValue.GetStatusInConfigByEventStatus<DocumentEventStatus>(DocumentEventStatus.CLOSED).Value
                 };
                 newDocItems.Add(newDocItem);
 

@@ -9,17 +9,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.Doc
 {
-    public class CreateWorkedSTCDocAPI : BaseAPIService
+    public class CreateClosedSTCDocAPI : BaseAPIService
     {
-        public CreateWorkedSTCDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateClosedSTCDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<CreateWorkedSTCDocument.TDocReq>(this.RequestVO);
-            var res = new CreateWorkedSTCDocument().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<CreateClosedSTCDocument.TDocReq>(this.RequestVO);
+            var res = new CreateClosedSTCDocument().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }

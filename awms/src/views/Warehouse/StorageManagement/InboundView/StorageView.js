@@ -74,7 +74,7 @@ class IssuedDoc extends Component {
   }
 
   onClickToDesc(data) {
-    return <Button type="button" color="info" onClick={() => this.history.push('/wms/issueddoc/manage/issuedmanage?ID=' + data.ID)}>Detail</Button>
+    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
 
   render() {
@@ -94,7 +94,7 @@ class IssuedDoc extends Component {
       {accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
-      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"}, */
+      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];
 
     const btnfunc = [{

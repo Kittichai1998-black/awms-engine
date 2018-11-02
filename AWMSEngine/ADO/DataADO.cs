@@ -195,6 +195,11 @@ namespace AWMSEngine.ADO
         {
             return SelectBy<T>(null, "*", null, wheres, orderBys, limit, skip, buVO);
         }
+        public List<T> SelectBy<T>(SQLConditionCriteria[] wheres, VOCriteria buVO)
+            where T : IEntityModel
+        {
+            return SelectBy<T>(null, "*", null, wheres, new SQLOrderByCriteria[] { }, null, null, buVO);
+        }
         public List<T> SelectBy<T>(string table, string select, string groupBys, SQLConditionCriteria[] wheres, SQLOrderByCriteria[] orderBys, int? limit, int? skip, VOCriteria buVO)
 
         {

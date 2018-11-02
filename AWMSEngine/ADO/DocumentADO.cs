@@ -27,7 +27,7 @@ namespace AWMSEngine.ADO
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("documentID", docID);
-            param.Add("storageObjectIDs", stoids == null ? string.Empty : string.Join(',', stoids));
+            param.Add("storageObjectIDs", stoids == null ? null : string.Join(',', stoids));
             param.Add("documentTypeID", docTypeID);
             var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_IN_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
@@ -87,6 +87,7 @@ namespace AWMSEngine.ADO
 
             param.Add("@remark", doc.Remark);
             param.Add("@eventStatus", doc.EventStatus);
+            param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
             param.Add("@actionBy", buVO.ActionBy);
             var docItems = doc.DocumentItems;
 
@@ -123,6 +124,7 @@ namespace AWMSEngine.ADO
             param.Add("@ref2", docItem.Ref2);
             param.Add("@ref3", docItem.Ref3);
             param.Add("@eventStatus", docItem.EventStatus);
+            param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
             param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));
             param.Add("@actionBy", buVO.ActionBy);
 
