@@ -55,7 +55,7 @@ class IssuedManage extends Component{
       adddisplay:"none",
       basedisplay:"none",
       modalstatus:false,
-      storageObjectdata:[]
+      storageObjectdata:[],
   
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -172,6 +172,8 @@ class IssuedManage extends Component{
 
 
   createDocument(){
+    
+    console.log(postdata)
     let acceptdata = []
     this.state.data.forEach(row => {
       acceptdata.push({packID:row.id,packQty:row.PackQty,})
@@ -183,10 +185,11 @@ class IssuedManage extends Component{
       actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
       remark:this.state.remark,issueItems:acceptdata
     }
+    console.log(postdata)
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
       if(res.data._result.status === 1){
         this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
-        window.location.reload()
+        //window.location.reload()
       }
     })
   }
@@ -250,11 +253,11 @@ class IssuedManage extends Component{
       }
       this.setState({ data });
     }
-
   }
 
   createText(data,field){
-    let datafield = data.filter(row => row.id === field)
+    let datafield = data.filter(row => console.log(row.id))
+    
     let result = datafield.map(row => {return <span key={row.Code}>{row.Code + ' : ' + row.Name}</span>})
     return result
   }
@@ -264,13 +267,13 @@ class IssuedManage extends Component{
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
       <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined || rowdata.original.code === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
       onChange={selection => {
         rowdata.value = selection.id
         this.editData(rowdata, selection, rowdata.column.id)
       }}
       itemToString={item => {
-        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code + " : " + rowdata.original.name ;
+        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code !== undefined ? rowdata.original.code + " : " + rowdata.original.name : "";
       }}
     >
       {({
@@ -454,7 +457,7 @@ class IssuedManage extends Component{
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
           <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code} </span>
         </div>
-        <ReactTable NoDataComponent={()=>null} columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
+        <ReactTable NoDataComponent={() => null} columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
         <Card>
           <CardBody style={{textAlign:'right'}}>
