@@ -237,9 +237,7 @@ class LoadingDocument extends Component{
     data[rowdata.index]["Customer"] = value.DesCustomer + " : " + value.DesCusName;
     data[rowdata.index]["IssuedID"] = value.ID;
     data[rowdata.index]["ActionDate"] = date.format('DD-MM-YYYY HH:mm');
-    let select = this.state.selectedItem
-    select.push(value)
-    this.setState({ data , selectedItem: select});
+    this.setState({ data });
 
     this.state.autocomplete.forEach((row, index) => {
       if(rowdata.original.id === row.id){

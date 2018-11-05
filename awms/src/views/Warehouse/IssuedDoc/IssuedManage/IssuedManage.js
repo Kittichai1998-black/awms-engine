@@ -55,7 +55,7 @@ class IssuedManage extends Component{
       adddisplay:"none",
       basedisplay:"none",
       modalstatus:false,
-      storageObjectdata:[],
+      storageObjectdata:[]
   
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -170,10 +170,7 @@ class IssuedManage extends Component{
     this.setState({selectiondata:data})
   }
 
-
   createDocument(){
-    
-    console.log(postdata)
     let acceptdata = []
     this.state.data.forEach(row => {
       acceptdata.push({packID:row.id,packQty:row.PackQty,})
@@ -189,7 +186,7 @@ class IssuedManage extends Component{
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
       if(res.data._result.status === 1){
         this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
-        //window.location.reload()
+        window.location.reload()
       }
     })
   }
@@ -369,11 +366,12 @@ class IssuedManage extends Component{
 
   for(var datarow in groupItem){
     groupItem[datarow].forEach(row => {
+      row.id = row.mstID
       row.PackItem = row.code
       row.PackQty = groupItem[datarow].length
       arrdata.forEach((row2,index) => {
-        if(row2.code === row.code){
-        arrdata.splice(index,1)
+          if(row2.code === row.code){
+          arrdata.splice(index,1)
         }
       });
       
@@ -397,7 +395,7 @@ class IssuedManage extends Component{
     if(this.state.pageID){
       cols = [
         {accessor:"packMaster_Code",Header:"Pack Item", Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>, width:550},
-        {accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
+        //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
         {accessor:"quantity",Header:"PackQty", Cell: (e) => <span>{e.original.quantity}</span>},
         {accessor:"unitType_Name",Header:"UnitType", Cell: (e) => <span>{e.original.unitType_Name}</span>}
       ]

@@ -31,7 +31,7 @@ class IssuedDoc extends Component {
         queryString: window.apipath + "/api/viw",
         t: "Document",
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-        f: "ID,Code,SouBranch,Status,DesWarehouse,DesArea,SouCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+        f: "ID,Code,SouBranchName,Status,DesWarName,DesAreaName,SouCusName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -80,9 +80,9 @@ class IssuedDoc extends Component {
   render() {
     const cols = [
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'DesBranch', Header: 'Branch',editable:false, Filter:"text"},
-      {accessor: 'DesWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
-      {accessor: 'DesArea', Header: 'Area', editable:false, Filter:"text",},
+      {accessor: 'DesBranchName', Header: 'Branch',editable:false, Filter:"text"},
+      {accessor: 'DesWarName', Header: 'Warehouse', editable:false, Filter:"text",},
+      {accessor: 'DesAreaName', Header: 'Area', editable:false, Filter:"text",},
       {accessor: 'SouCustomer', Header: 'Customer', editable:false, Filter:"text",},
       {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
