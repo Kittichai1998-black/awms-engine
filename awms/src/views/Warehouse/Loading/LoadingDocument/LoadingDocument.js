@@ -40,8 +40,8 @@ class LoadingDocument extends Component{
       
     this.autocomplete = {queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCusName",
+      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "eventStatus", "c":"in", "v": "11,12"}]',
+      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCustomerName",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -71,14 +71,15 @@ class LoadingDocument extends Component{
             data:rowselect1.data.document.documentItems, 
             loading:rowselect1.data.document.code,
             documentStatus:rowselect1.data.document.eventStatus,
-            warehouse:rowselect1.data.document.souWarehouse,
-            transportID:rowselect1.data.document.transport_ID,
+            warehouse:rowselect1.data.document.souWarehouseName,
+            warehouse2:rowselect1.data.document,
+            transportID:rowselect1.data.document.transport,
             documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
             date:moment(rowselect1.data.document.actionTime),
             addstatus:true,
             bstos:rowselect1.data.bstos,
             issuedNo:rowselect1.data.document.code
-          }, () => {this.createList()})
+          }, () => {this.createList(); console.log(this.state.warehouse2)})
         }
       })
     }
@@ -234,7 +235,7 @@ class LoadingDocument extends Component{
     const date = moment(value.ActionTime);
     const data = this.state.data;
     data[rowdata.index][field] = value.Code;
-    data[rowdata.index]["Customer"] = value.DesCustomer + " : " + value.DesCusName;
+    data[rowdata.index]["Customer"] = value.DesCustomer + " : " + value.DesCustomerName;
     data[rowdata.index]["IssuedID"] = value.ID;
     data[rowdata.index]["ActionDate"] = date.format('DD-MM-YYYY HH:mm');
     this.setState({ data });
@@ -248,6 +249,7 @@ class LoadingDocument extends Component{
 
   createDocument(){
     let issuedList = []
+    console.log(this.state.data)
     this.state.data.forEach(item => {
       issuedList.push({issuedDocID:item.IssuedID})
     })
@@ -258,8 +260,8 @@ class LoadingDocument extends Component{
         transportCode:null,
         souWarehouseID:this.state.warehousevalue,
         souWarehouseCode:null,
-        actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),
-        documentDate:this.DateNow.format("YYYY/MM/DD"),
+        actionTime:this.state.date.format("YYYY-MM-DDThh:mm:ss"),
+        documentDate:this.DateNow.format("YYYY-MM-DD"),
         remark:'',
         docItems:issuedList
       }

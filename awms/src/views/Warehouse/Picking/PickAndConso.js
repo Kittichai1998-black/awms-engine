@@ -76,12 +76,13 @@ class PickAndConso extends Component{
     this.setState({rowselect:data, loadIssued:false})
     const documentItem = this.state.documentItem
     const documentItemCon = []
-    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'eventStatus', c:'=', 'v': 11},{'f':'documentType_ID','c':'=','v':'1002'})
+    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'eventStatus', c:'in', 'v': '11,12'},{'f':'documentType_ID','c':'=','v':'1002'})
     documentItem.q = JSON.stringify(documentItemCon)
     this.setState({documentItem:documentItem})
 
     Axios.get(createQueryString(documentItem)).then((rowselect) => {
       this.setState({data:rowselect.data.datas})
+      console.log(rowselect.data.datas)
       return rowselect.data.datas.map(x=> x.ID)
     }).then((res) => {
       const documentItemCount = this.state.documentItemCount
@@ -90,6 +91,8 @@ class PickAndConso extends Component{
 
       Axios.get(createQueryString(documentItemCount)).then((countrow) => {
         const initdata = this.state.data
+        
+        console.log(countrow.data)
         initdata.forEach(row => {
           if(countrow.data.datas.length > 0){
             countrow.data.datas.forEach(crow => {
@@ -111,21 +114,25 @@ class PickAndConso extends Component{
   
   toggleTab(tab) {
     if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab,
-        consoBarcode:"",
-        pickingBarcode:"",
-        pickingAmount:1,
-        mapsto:null
+      this.setState({activeTab: tab}, () => {
+        if(tab !== 3){
+          this.setState({
+            consoBarcode:"",
+            pickingBarcode:"",
+            pickingAmount:1,
+            mapsto:null,
+            pickingList:null
+          })
+        }
       });
     }
   }
   
   createGuideLocation(){
     const data =  this.state.data
-    console.log(data)
     let docItemsStr = ""
     data.forEach(row => {
+      console.log(row.Quantity)
       const qty = row.Quantity.split("/")
       if(qty[0] !== qty[1])
         docItemsStr += "," + row.ID;

@@ -31,7 +31,7 @@ class IssuedDoc extends Component {
         queryString: window.apipath + "/api/viw",
         t: "Document",
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-        f: "ID,Code,SouBranchName,Status,DesWarName,DesAreaName,SouCusName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+        f: "ID,Code,SouBranchName,Status,DesWarehouseName,DesAreaName,SouCustomerName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -74,7 +74,7 @@ class IssuedDoc extends Component {
   }
 
   onClickToDesc(data) {
-    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
+    return <Button style={{color:"white"}} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
 
   render() {

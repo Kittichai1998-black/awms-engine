@@ -182,7 +182,6 @@ class IssuedManage extends Component{
       actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
       remark:this.state.remark,issueItems:acceptdata
     }
-    console.log(postdata)
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
       if(res.data._result.status === 1){
         this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
@@ -253,7 +252,7 @@ class IssuedManage extends Component{
   }
 
   createText(data,field){
-    let datafield = data.filter(row => console.log(row.id))
+    let datafield = data.filter(row => row.id === field)
     
     let result = datafield.map(row => {return <span key={row.Code}>{row.Code + ' : ' + row.Name}</span>})
     return result
