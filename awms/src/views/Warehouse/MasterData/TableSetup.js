@@ -534,10 +534,18 @@ class TableGen extends Component{
  
   }
 
-  datetimeBody(value){
+  datetimeBody(dateformat,value){
     if(value !== null){
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
+      if(dateformat === "datetime"){
+        return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
+      }
+      else if(dateformat === "date"){
+        return <div>{date.format('DD-MM-YYYY')}</div>
+      }
+      else{
+        return <div>{date.format('HH:mm:ss')}</div>
+      }
     }
   }
   datetimelog(value){
@@ -574,7 +582,8 @@ class TableGen extends Component{
         onChangeRaw={(e) => {
           if (moment(value).isValid())
                this.onEditDateChange(e, rowdata);
-       }}/>
+       }}
+       dateFormat="DD/MM/YYYY"/>
     }
     else if(format === 'datetime'){
       return <DatePicker selected={date}
@@ -951,7 +960,7 @@ class TableGen extends Component{
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
             else
-              row.Cell = (e) => this.datetimeBody(e.value)
+              row.Cell = (e) => this.datetimeBody(row.dateformat, e.value)
           }
           else if(row.Type === "datetimelog"){
             row.Cell = (e) => this.datetimelog(e.value)

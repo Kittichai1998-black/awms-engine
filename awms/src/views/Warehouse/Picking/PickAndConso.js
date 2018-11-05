@@ -53,7 +53,7 @@ class PickAndConso extends Component{
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'=', 'v': 11}]",
       f:"ID,Code",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
@@ -81,7 +81,6 @@ class PickAndConso extends Component{
     this.setState({documentItem:documentItem})
 
     Axios.get(createQueryString(documentItem)).then((rowselect) => {
-      console.log(rowselect)
       this.setState({data:rowselect.data.datas})
       return rowselect.data.datas.map(x=> x.ID)
     }).then((res) => {
@@ -224,8 +223,8 @@ class PickAndConso extends Component{
         action: null,
         mapsto:this.state.mapsto
       }
+      console.log(data)
       Axios.post(window.apipath + "/api/wm/issued/sto/pickConso", data).then((res) => {
-        console.log(res.data.mapsto)
         if(res.data.mapsto){
           this.setState({mapsto:res.data.mapsto}, () => {
             const clonemapsto = Clone(this.state.mapsto)
@@ -237,6 +236,14 @@ class PickAndConso extends Component{
   
         this.renderTable(this.state.rowselect)
       })
+    }
+    
+    this.setState({pickingBarcode:"",pickingAmount:1})
+    if(this.state.activeTab === 1){
+      document.getElementById("pickcode").focus()
+    }
+    else if(this.state.activeTab === 2){
+      document.getElementById("pickconso").focus()
     }
   }
 
@@ -274,12 +281,12 @@ class PickAndConso extends Component{
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
                 <label>Picking : </label>
-                <Input placeholder="Barcode" autoFocus type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                <Input id="pickcode" placeholder="Barcode" autoFocus type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
                   if(e.key === "Enter"){
                     this.onHandleClickPickingScan()
                   }
                 }} style={{display:"inline-block", width:"180px"}}/>
-                <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
+                <Input id="pickqty" placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
                 <div>
@@ -290,12 +297,12 @@ class PickAndConso extends Component{
                 <label>Conso : </label><Input type="text" placeholder="Input Base" autoFocus onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
                 <br/>
                 <label>Picking : </label>
-                <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                <Input id="pickconso" placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
                   if(e.key === "Enter"){
                     this.onHandleClickPickingScan()
                   }
                 }} style={{display:"inline-block", width:"180px"}}/>
-                <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
+                <Input id="qtyconso" placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
                 <div>

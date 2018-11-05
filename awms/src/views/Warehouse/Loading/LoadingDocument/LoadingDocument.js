@@ -237,7 +237,15 @@ class LoadingDocument extends Component{
     data[rowdata.index]["Customer"] = value.DesCustomer + " : " + value.DesCusName;
     data[rowdata.index]["IssuedID"] = value.ID;
     data[rowdata.index]["ActionDate"] = date.format('DD-MM-YYYY HH:mm');
-    this.setState({ data });
+    let select = this.state.selectedItem
+    select.push(value)
+    this.setState({ data , selectedItem: select});
+
+    this.state.autocomplete.forEach((row, index) => {
+      if(rowdata.original.id === row.id){
+        this.state.autocomplete.splice(index, 1)
+      }
+    })
   }
 
   createDocument(){
@@ -258,7 +266,8 @@ class LoadingDocument extends Component{
         docItems:issuedList
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
-  
+        this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
+        window.location.reload()
       })
     }
     else{
