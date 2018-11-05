@@ -40,7 +40,7 @@ class LoadingDocument extends Component{
       
     this.autocomplete = {queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"=", "v": 1}]',
+      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "eventStatus", c:"in", "v": "11,12"}]',
       f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCusName",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -265,7 +265,7 @@ class LoadingDocument extends Component{
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
         this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
-        window.location.reload()
+        //window.location.reload()
       })
     }
     else{
