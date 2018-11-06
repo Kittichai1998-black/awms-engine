@@ -185,6 +185,7 @@ const routes = [
   { path: '/sys/sto/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/doc/crt/manage', exact: true, name: 'CurrentInv', component: CurrentInv},
+  { path: '/sys/sto/curinv', exact: true, name: 'CurrentInv', component: CurrentInv},
   { path: '/doc/gr/view', exact: true, name: 'StorageDetail', component: StorageDetail},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
