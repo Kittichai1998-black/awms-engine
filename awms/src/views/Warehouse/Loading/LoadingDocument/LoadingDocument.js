@@ -267,7 +267,7 @@ class LoadingDocument extends Component{
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
         this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
-        window.location.reload()
+        //window.location.reload()
       })
     }
     else{

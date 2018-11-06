@@ -53,7 +53,7 @@ class PickAndConso extends Component{
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'=', 'v': 11}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
       f:"ID,Code",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
@@ -76,7 +76,7 @@ class PickAndConso extends Component{
     this.setState({rowselect:data, loadIssued:false})
     const documentItem = this.state.documentItem
     const documentItemCon = []
-    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'eventStatus', c:'in', 'v': '11,12'},{'f':'documentType_ID','c':'=','v':'1002'})
+    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'Status', c:'!=', 'v': 2},{'f':'documentType_ID','c':'=','v':'1002'})
     documentItem.q = JSON.stringify(documentItemCon)
     this.setState({documentItem:documentItem})
 
