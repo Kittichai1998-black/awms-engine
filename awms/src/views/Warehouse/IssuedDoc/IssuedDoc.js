@@ -3,7 +3,6 @@ import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../ComponentCore'
-import moment from 'moment'
 
 const axois = new apicall()
 
