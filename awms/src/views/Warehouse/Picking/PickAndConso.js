@@ -85,6 +85,7 @@ class PickAndConso extends Component{
       console.log(rowselect.data.datas)
       return rowselect.data.datas.map(x=> x.ID)
     }).then((res) => {
+      console.log(res.join(','))
       const documentItemCount = this.state.documentItemCount
       documentItemCount.q = JSON.stringify([{f:'status',c:'!=',v:'2'},{f:'DocumentItem_ID',c:'in',v:res.join(',')}])
       this.setState({documentItemCount:documentItemCount})
@@ -92,9 +93,9 @@ class PickAndConso extends Component{
       Axios.get(createQueryString(documentItemCount)).then((countrow) => {
         const initdata = this.state.data
         
-        console.log(countrow.data)
         initdata.forEach(row => {
-          if(countrow.data.datas.length > 0){
+          const filterPickItem = countrow.data.datas.filter(frow => frow.DocumentItem_ID === row.ID)
+          if(filterPickItem.length > 0){
             countrow.data.datas.forEach(crow => {
               if(row.ID === crow.DocumentItem_ID){
                 row.Quantity = crow.qty + "/" + row.Quantity
