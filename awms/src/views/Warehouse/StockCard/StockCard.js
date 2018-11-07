@@ -94,7 +94,7 @@ class StockCard extends Component{
         let JSONDoc = []
         JSONDoc.push({"f": "DocumentDate", "c":"<=", "v":formatDateTo},
           {"f": "Code", "c":"=", "v":this.state.CodePack},{"f": "Status", "c":"=", "v":"3"})
-        QueryDoc.q = JSON.stringify(JSONDoc)
+          QueryDoc.q = JSON.stringify(JSONDoc)
             Axios.get(createQueryString(QueryDoc)).then((res) => { 
             this.setState({data:res.data.datas},()=>{
             //console.log(this.state.data)
@@ -155,8 +155,12 @@ class StockCard extends Component{
   render(){
     const cols = [
       {accessor: 'DocumentDate', Header: 'Date',editable:false,Cell: (e) => {
-        let dataDate = moment(e.value).format("DD-MM-YYYY")
-        return <span>{dataDate}</span>
+        if(moment(e.value).isValid()){
+          let dataDate = moment(e.value).format("DD-MM-YYYY")
+          return <span>{dataDate}</span>
+        }else{
+          return <span>{e.value}</span>
+        }
       }},
       {accessor: 'DocCode', Header: 'Document',editable:false,},
       {accessor: 'DocumentType_ID', Header: 'Title',editable:false,},

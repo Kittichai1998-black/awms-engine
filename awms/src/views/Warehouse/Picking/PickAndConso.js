@@ -43,6 +43,7 @@ class PickAndConso extends Component{
       l:0,
       all:"",},
       activeTab: '1',
+      openGuild:'none'
     }
     this.renderTable = this.renderTable.bind(this)
     this.toggleTab = this.toggleTab.bind(this)
@@ -130,6 +131,7 @@ class PickAndConso extends Component{
   }
   
   createGuideLocation(){
+    this.setState({openGuild:"block"})
     const data =  this.state.data
     let docItemsStr = ""
     data.forEach(row => {
@@ -142,7 +144,7 @@ class PickAndConso extends Component{
     if(docItemsStr !== ""){
       Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemIDs=' + docItemsStr.substring(1)).then(res => {
         const reselement = res.data.datas.map((row,i) => {
-          return <span key={i}>Guide for Picking : {row.areaCode} | {row.areaLocationCode}</span>
+          return  <button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{row.areaLocationCode === null ? null:row.areaLocationCode + '-'} {row.areaCode} - {row.code}  </button>
         })
         this.setState({guideLoc:reselement})
       }).catch(res => {alert(res)})
@@ -270,7 +272,8 @@ class PickAndConso extends Component{
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
-          <div style={{fontSize:"18px", color:"red"}}>{this.state.guideLoc}</div>
+
+          <div style={{display:this.state.openGuild, fontSize:"18px", color:"red"}}>Guide for Picking : {this.state.guideLoc}</div>
         </div>
             <Nav tabs>
               <NavItem>

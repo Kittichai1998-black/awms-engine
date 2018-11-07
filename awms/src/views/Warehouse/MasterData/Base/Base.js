@@ -54,7 +54,7 @@ class Area extends Component{
     filterList(){
         const objselect = {queryString:window.apipath + "/api/mst",
             t:"ObjectSize",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+            q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
             f:"ID,Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
