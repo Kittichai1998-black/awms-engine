@@ -31,7 +31,7 @@ class IssuedDoc extends Component {
         queryString: window.apipath + "/api/viw",
         t: "Document",
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-        f: "ID,Code,SouBranchName,Status,DesWarehouseName,DesAreaName,SouCustomerName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+        f: "ID,Code,SouBranchName,Status,DesWarehouseName,DesAreaName,SouCustomerName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy, ActionTime",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
