@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Card, CardBody, Button } from 'reactstrap';
+import { Button } from 'reactstrap';
 import { TableGen } from '../MasterData/TableSetup';
-//import Axios from 'axios';
-import { apicall, DatePicker} from '../ComponentCore'
-import moment from 'moment';
-import readXlsxFile from 'read-excel-file'
-import { Script } from 'vm';
-import { Helmet } from "react-helmet";
-//import DatePicker from 'react-datepicker';
+import { apicall, DatePicker } from '../ComponentCore'
+import Workbook from 'react-excel-workbook'
+
+
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -24,14 +21,46 @@ const createQueryString = (select) => {
 
 
 const API = new apicall()
-const input = document.getElementById('input')
 
- 
+const data1 = [
+  {
+    foo: '123',
+    bar: '456',
+    baz: '789'
+  },
+  {
+    foo: 'abc',
+    bar: 'dfg',
+    baz: 'hij'
+  },
+  {
+    foo: 'aaa',
+    bar: 'bbb',
+    baz: 'ccc'
+  }
+]
+
+const data2 = [
+  {
+    aaa: 1,
+    bbb: 2,
+    ccc: 3
+  },
+  {
+    aaa: 4,
+    bbb: 5,
+    ccc: 6
+  }
+]
+
 class CurrentInv extends Component{
   constructor(props) {
     super(props);
     this.state = {
       data: [],
+     
+           
+   
     }
 
     this.CurrentItem = {
@@ -47,36 +76,45 @@ class CurrentInv extends Component{
     }
 
     this.dateTimePicker = this.dateTimePicker.bind(this)
+    
+
+   
 
   }
-    
-  
-  
 
+
+
+  initialData() {
+    API.get("https://api.myjson.com/bins/194yke").then(Response => {
+      this.setState({ dataExel: Response.data })
+    })
+    
+  }
+
+
+  HeaderData() {
+    
+      let objs = []
+      if (this.state.dataExel.length > 0) {
+        for (let dataEx in this.state.dataExel[0]) {
+          objs.push(<Workbook.Column label="Bar" value="bar" />)
+        }
+
+      }
+      return objs
+    
+
+  }
+  
 
   dateTimePicker() {
     return <DatePicker onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
 
-
-  
-
     componentDidMount() {
       API.get(createQueryString(this.CurrentItem)).then(current => { })
     }
-
-  ReadExcell() {
-    input.addEventListener('change', () => {
-      readXlsxFile(input.files[0]).then((rows) => {
-        // `rows` is an array of rows
-        // each row being an array of cells.
-      })
-    }) 
-  }
-
-
-
 
 
     ExportData() {
@@ -88,6 +126,8 @@ class CurrentInv extends Component{
         API.post(window.apipath + "/api/report/export/fileServer", postdata)
       }
     }
+
+
   
   render() {
     const cols = [
@@ -99,34 +139,31 @@ class CurrentInv extends Component{
     ];
 
     return (
+
       <div>
 
+        <div className="row text-center" style={{ marginTop: '100px' }}>
+          <Workbook filename="example.xlsx" element={<button className="btn btn-lg btn-primary">Export Exel</button>}>
+            <Workbook.Sheet data={this.state.dataExel} name="Sheet A">
+              {
+                this.HeaderData.bind(this)
+              }
+             
+            
+            </Workbook.Sheet>
+          </Workbook>
+        </div>
 
-        <Helmet>
-          <Script type="text/javascript" src="jqury-3.3.1.min.js"></Script>
-          <Script type="text/javascript" src="xlsx.full.min.js"></Script>
-          <Script type="text/javascript" src="angular.min.js"></Script>
-          <Script type="text/javascript" src="Readdata.js"></Script>
-         
-        </Helmet>
-
-
-
-       
-
-
+      
         <div className="clearfix">
 
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"
             onClick={() => { this.ExportData() }}>Export Data</Button>
           <div className="float-right" style={{ marginRight: "5px" }}>{this.dateTimePicker()}</div>
 
-
-
-
-          <Button  style={{ background: "#66bb6a", borderColor: "#26c6da", width: '130px', marginRight: "465px"}} color="primary" className="float-right"
-          >Browse</Button>
-          <input type="file" id="input" />
+          <Button style={{ background: "#66bb6a", borderColor: "#26c6da", width: '130px', marginRight: "465px" }} color="primary" className="float-right"
+            onClick={() => { this.initialData }}>Browse</Button>
+          
       
 
       </div>
@@ -134,7 +171,8 @@ class CurrentInv extends Component{
           data={this.CurrentItem}
           filterable={true} uneditcolumn={this.uneditcolumn}
           table="CurrentInv" />
-      </div>
+        </div>
+     
     )
   }
 }
