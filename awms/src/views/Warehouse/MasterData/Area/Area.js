@@ -28,7 +28,30 @@ class Area extends Component{
       l:100,
       all:"",},
       sortstatus:0,
-      selectiondata:[]
+      selectiondata:[],
+      user_role:{queryString:window.apipath + "/api/mst",
+      t:"User_Role",
+      q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
+      f:"Role_ID",
+      g:"",
+      s:"[{'f':'User_ID','od':'asc'}]",
+      sk:0,
+      l:100,
+      all:"",},
+      sortstatus:0,
+      selectiondata:[],
+      role_permission:{queryString:window.apipath + "/api/mst",
+      t:"Role_Permission",
+      q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
+      f:"Permission_ID",
+      g:"",
+      s:"[{'f':'Role_ID','od':'asc'}]",
+      sk:0,
+      l:100,
+      all:"",},
+      sortstatus:0,
+      selectiondata:[],        
+      showbutton:"none"
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
@@ -42,6 +65,32 @@ class Area extends Component{
 
   componentWillMount(){
     this.filterList();
+    //console.log(localStorage.User_ID)
+
+    let QueryDoc_role = this.state.user_role
+    let QueryDoc_per = this.state.role_permission
+    let JSONDoc_role = []
+    let JSONDoc_per = []
+    JSONDoc_role.push({"f": "User_ID", "c":"=", "v":localStorage.User_ID}) 
+      QueryDoc_role.q = JSON.stringify(JSONDoc_role)
+      if(localStorage.User_ID === '1'){
+        Axios.get(createQueryString(QueryDoc_role)).then((res) => { 
+          //console.log(res.data.datas)
+          this.setState({role:res.data.datas})
+          this.state.role.forEach(row => {
+            console.log(row)
+
+          })
+        })
+        // JSONDoc_per.push({"f": "Role_ID", "c":"=", "v":this.state.data})
+        //   QueryDoc_per.q = JSON.stringify(JSONDoc_per)
+
+        // // Axios.get(createQueryString(QueryDoc_per)).then((row) => { 
+
+        // //   console.log("ccc")
+        // //   console.log(row)
+        // // })
+    }
   }
 
   componentWillUnmount(){
