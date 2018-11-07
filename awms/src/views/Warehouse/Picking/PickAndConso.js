@@ -140,13 +140,21 @@ class PickAndConso extends Component{
       if(qty[0] !== qty[1])
         docItemsStr += "," + row.ID;
     })
-    
+    let guideLoc = []
     if(docItemsStr !== ""){
       Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemIDs=' + docItemsStr.substring(1)).then(res => {
-        const reselement = res.data.datas.map((row,i) => {
-          return  <button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{row.areaLocationCode === null ? null:row.areaLocationCode + '-'} {row.areaCode} - {row.code}  </button>
-        })
-        this.setState({guideLoc:reselement})
+         for( let i= 0; i <5 && i < res.data.datas.length;i++){
+           let resultData =res.data.datas[i]
+           guideLoc.push(<button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{resultData.areaLocationCode === null ? null:resultData.areaLocationCode + '-'} {resultData.areaCode} - {resultData.code} </button>)     
+          }
+          if (res.data.datas.length > 5){
+            guideLoc.push(<span>...</span>)
+          }
+          this.setState({guideLoc})
+        // const reselement = res.data.datas.map((row,i) => {
+        //   return  <button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{row.areaLocationCode === null ? null:row.areaLocationCode + '-'} {row.areaCode} - {row.code}  </button>
+        // })
+        // this.setState({guideLoc:reselement})
       }).catch(res => {alert(res)})
     }
   }
@@ -265,7 +273,7 @@ class PickAndConso extends Component{
     ]
 
     return(
-      <div>
+      <div style={{paddingBottom:'100px'}}>
         <Row>
           <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
           <Col sm="11" xs="10"><AutoSelect data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
