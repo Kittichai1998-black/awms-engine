@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.Business.Loading
             var baseCanLoads = new ListBaseConsoCanLoading().Execute(this.Logger, this.BuVO,
                 new ListBaseConsoCanLoading.TReq() { docID = reqVO.docID });
 
-            var willLoad = baseCanLoads.datas.FirstOrDefault(x => x.code == reqVO.scanCode);
+            var willLoad = baseCanLoads.datas.FirstOrDefault(x => x.code == reqVO.scanCode && !x.isLoaded);
             if (willLoad == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบ Code " + reqVO.scanCode + " ที่ต้องการ Load");
             else if (willLoad.isLoaded)
@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.Business.Loading
             if (baseCanLoads.datas.TrueForAll(x => x.isLoaded))
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(
                     reqVO.docID, 
-                    DocumentEventStatus.WORKING,
+                    null,
                     EntityStatus.ACTIVE,
                     DocumentEventStatus.WORKED,
                     this.BuVO);

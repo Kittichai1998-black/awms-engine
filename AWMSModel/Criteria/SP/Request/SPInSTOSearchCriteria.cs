@@ -31,6 +31,7 @@ namespace AWMSModel.Criteria.SP.Request
         public string areaName;
         public string customerCode;
         public string customerName;
+        public string locationCode;
 
         public string s_f;
         public string s_od;

@@ -139,7 +139,7 @@ namespace AWMSEngine.ADO.StaticValue
         public bool IsMatchConfigArray(string code, object value)
         {
             string v = value.ToString();
-            return Regex.IsMatch(this.GetConfig(code), string.Format("^{0},|,{0},|,{0}$", v));
+            return Regex.IsMatch(this.GetConfig(code), string.Format("^{0}$|^{0},|,{0},|,{0}$", v));
         }
         public EntityStatus? GetStatusInConfigByEventStatus<T>(T? value)
             where T : struct, IComparable, IFormattable, IConvertible

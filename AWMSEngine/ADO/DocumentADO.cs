@@ -74,6 +74,8 @@ namespace AWMSEngine.ADO
             param.Add("@des_warehouse_ID", doc.Des_Warehouse_ID);
             param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID);
 
+            param.Add("@transport_ID", doc.Transport_ID);
+
             param.Add("@actionTime", doc.ActionTime);
             param.Add("@documentDate", doc.DocumentDate);
             param.Add("@options", doc.Options);

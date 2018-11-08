@@ -194,7 +194,7 @@ namespace AWMSEngine.Engine.Business
             else if (msf.eventStatus != StorageObjectEventStatus.RECEIVED)
             {
                 msf.eventStatus = StorageObjectEventStatus.RECEIVED;
-                this.ADOSto.Update(msf, this.BuVO);
+                this.ADOSto.PutV2(msf, this.BuVO);
                 Logger.LogInfo("Mapping Object Storage to Storage");
             }
 

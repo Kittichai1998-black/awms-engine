@@ -67,9 +67,9 @@ namespace AWMSEngine.Engine.Business.Issued
             StorageObjectCriteria stoConso = null;
             //Pick ทั้ง Base
             if (mapSto.code == reqVO.scanCode && baseConso == null &&
-                docItems.TrueForAll(x =>
-                        (x.Quantity - diStos.Count(y => y.DocumentItem_ID == x.ID)) <=//จำนวนสินค้าที่ยังไม่ pick
-                        mapStoTree.Count(y => y.type == StorageObjectType.PACK && y.id == x.PackMaster_ID) //จำนวนสินค้าที่จะหยิบ
+                docItems.Any(x =>
+                        (x.Quantity - diStos.Count(y => y.DocumentItem_ID == x.ID)) >=//จำนวนสินค้าที่ยังไม่ pick
+                        mapStoTree.Count(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID) //จำนวนสินค้าที่จะหยิบ
                         )
                )
             {
@@ -91,10 +91,12 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 docItems.ForEach(x =>
                 {
-                    ADO.DocumentADO.GetInstant().MappingSTO(
-                        x.ID.Value,
-                        mapStoTree.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID).Select(y => y.id.Value).ToList(),
-                        this.BuVO);
+                    var mapStoToDocItem = mapStoTree.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID).Select(y => y.id.Value).ToList();
+                    if (mapStoToDocItem.Count() > 0)
+                        ADO.DocumentADO.GetInstant().MappingSTO(
+                            x.ID.Value,
+                            mapStoToDocItem,
+                            this.BuVO);
                 });
             }
             //Pick สินค้าใน Base
@@ -182,6 +184,15 @@ namespace AWMSEngine.Engine.Business.Issued
                 mapsto = ADO.StorageObjectADO.GetInstant().Get(mapSto.id.Value, mapSto.type, false, true, this.BuVO),
                 mapstoConso = stoConso == null ? null : ADO.StorageObjectADO.GetInstant().Get(stoConso.id.Value, stoConso.type, false, true, this.BuVO)
             };
+            
+            var diStos2 = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("DocumentItem_ID",string.Join(',',docItems.Select(x=>x.ID.Value).ToArray()), SQLOperatorType.IN),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS, SQLConditionType.AND)
+                },
+                new SQLOrderByCriteria[] { }, null, null, this.BuVO);
+            if (docItems.TrueForAll(x => x.Quantity == diStos2.Count(y => y.DocumentItem_ID == x.ID)))
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
 
             return res;
         }

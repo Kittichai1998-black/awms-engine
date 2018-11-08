@@ -27,6 +27,7 @@ namespace AWMSEngine.Engine.Business.Issued
             public string souBranchCode;//สาขาต้นทาง
             public string souWarehouseCode;//คลังต้นทาง
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
+            public int? transportID;
 
             public int? desCustomerID;
             public int? desSupplierID;
@@ -143,6 +144,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 Des_Supplier_ID = desSupplierModel == null ? null : desSupplierModel.ID,
                 Des_Customer_ID = desCustomerModel == null ? null : desCustomerModel.ID,
+
+                Transport_ID = reqVO.transportID,
 
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,

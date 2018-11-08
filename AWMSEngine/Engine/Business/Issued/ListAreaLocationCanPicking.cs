@@ -17,6 +17,8 @@ namespace AWMSEngine.Engine.Business.Issued
             public List<TData> datas;
             public class TData
             {
+                public long id;
+                public string code;
                 public int areaID;
                 public string areaCode;
                 public int? areaLocationID;
@@ -38,6 +40,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 List<SPOutSTORootCanUseCriteria> stos = ADO.StorageObjectADO.GetInstant().ListRootCanPicking(id, this.BuVO);
                 var datas = stos
                     .GroupBy(x => new {
+                        id = x.id,
+                        code = x.code,
                         areaID = x.areaID,
                         areaCode = x.areaCode,
                         areaLocationID = x.areaLocationID,
@@ -49,6 +53,8 @@ namespace AWMSEngine.Engine.Business.Issued
                     })
                     .Select(x => new TRes.TData()
                     {
+                        id = x.Key.id,
+                        code = x.Key.code,
                         areaID = x.Key.areaID,
                         areaCode = x.Key.areaCode,
                         areaLocationID = x.Key.areaLocationID,

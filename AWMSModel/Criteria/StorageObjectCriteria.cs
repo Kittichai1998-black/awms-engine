@@ -70,7 +70,7 @@ namespace AWMSModel.Criteria
             var res = generateMapstos(stoRoot.parentID, stoRoot.parentType, out isFucus).FirstOrDefault();
             
 
-            List<StorageObjectCriteria> generateMapstos(int? parentID, StorageObjectType? parentType, out bool outParentIsFocus)
+            List<StorageObjectCriteria> generateMapstos(long? parentID, StorageObjectType? parentType, out bool outParentIsFocus)
             {
                 List<StorageObjectCriteria> r =
                     stos.Where(x => x.parentID == parentID && x.parentType == parentType)

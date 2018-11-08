@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 
 namespace AWMSEngine.Engine.Business.Received
 {
-    public class ClosedGRDocument : BaseEngine<ClosedGRDocument.TReq, AWMSModel.Criteria.NullCriteria>
+    public class WorkedGRDocument : BaseEngine<WorkedGRDocument.TReq, AWMSModel.Criteria.NullCriteria>
     {
         public class TReq
         {
@@ -16,7 +17,7 @@ namespace AWMSEngine.Engine.Business.Received
         {
             foreach(long docID in reqVO.DocumentIDs)
             {
-                ADO.DocumentADO.GetInstant().Close(docID, false, this.BuVO);
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
             }
             return null;
         }
