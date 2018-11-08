@@ -3,7 +3,6 @@ import "react-table/react-table.css";
 import { Button } from 'reactstrap';
 import { TableGen } from '../MasterData/TableSetup';
 import { apicall, DatePicker } from '../ComponentCore'
-import Workbook from 'react-excel-workbook'
 
 
 
@@ -92,19 +91,7 @@ class CurrentInv extends Component{
   }
 
 
-  HeaderData() {
-    
-      let objs = []
-      if (this.state.dataExel.length > 0) {
-        for (let dataEx in this.state.dataExel[0]) {
-          objs.push(<Workbook.Column label="Bar" value="bar" />)
-        }
 
-      }
-      return objs
-    
-
-  }
   
 
   dateTimePicker() {
@@ -141,21 +128,6 @@ class CurrentInv extends Component{
     return (
 
       <div>
-
-
-        <Helmet>
-          <Script type="text/javascript" src="jqury-3.3.1.min.js"></Script>
-          <Script type="text/javascript" src="xlsx.full.min.js"></Script>
-          <Script type="text/javascript" src="angular.min.js"></Script>
-          <Script type="text/javascript" src="Readdata.js"></Script>
-         
-        </Helmet>
-
-
-
-       
-
-
         <div className="clearfix">
 
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"

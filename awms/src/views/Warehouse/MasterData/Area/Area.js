@@ -79,6 +79,7 @@ class Area extends Component{
           this.setState({role:res.data.datas})
           this.state.role.forEach(row => {
             console.log(row)
+            let dataRole = row.Role
 
           })
         })
