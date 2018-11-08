@@ -21,6 +21,7 @@ class LoadingDocument extends Component{
       adddisplay:"inline-block",
       auto_transport:[],
       auto_warehouse:[],
+      auto_customer:[],
       readonly:false,
       eventstatus:10,
     }
@@ -55,6 +56,15 @@ class LoadingDocument extends Component{
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
       all:"",}
+
+      this.customerselect = {queryString:window.apipath + "/api/mst",
+        t:"Customer",
+        q:'[{ "f": "Status", "c":"=", "v": 1}]',
+        f:"ID,Code, Name",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        all:"",}
   }
  
   componentWillMount(){
@@ -71,8 +81,8 @@ class LoadingDocument extends Component{
             data:rowselect1.data.document.documentItems, 
             loading:rowselect1.data.document.code,
             documentStatus:rowselect1.data.document.eventStatus,
-            warehouse:rowselect1.data.document.souWarehouse,
-            transportID:rowselect1.data.document.transport_ID,
+            warehouse:rowselect1.data.document.souWarehouseName,
+            transport:rowselect1.data.document.transport,
             documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
             date:moment(rowselect1.data.document.actionTime),
             addstatus:true,
@@ -100,6 +110,16 @@ class LoadingDocument extends Component{
             auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
           })
           this.setState({auto_warehouse})
+        })
+      })
+      
+      API.get(createQueryString(this.customerselect)).then(res => {
+        this.setState({auto_customer : res.data.datas ,addstatus:false}, () => {
+          const auto_customer = []
+          this.state.auto_customer.forEach(row => {
+            auto_customer.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+          })
+          this.setState({auto_customer})
         })
       })
       
@@ -268,7 +288,8 @@ class LoadingDocument extends Component{
         actionTime:this.state.date.format("YYYY-MM-DDThh:mm:ss"),
         documentDate:this.DateNow.format("YYYY-MM-DD"),
         remark:'',
-        docItems:issuedList
+        docItems:issuedList,
+        _token:localStorage.getItem("Token")
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
   
