@@ -143,19 +143,6 @@ class CurrentInv extends Component{
       <div>
 
 
-        <Helmet>
-          <Script type="text/javascript" src="jqury-3.3.1.min.js"></Script>
-          <Script type="text/javascript" src="xlsx.full.min.js"></Script>
-          <Script type="text/javascript" src="angular.min.js"></Script>
-          <Script type="text/javascript" src="Readdata.js"></Script>
-         
-        </Helmet>
-
-
-
-       
-
-
         <div className="clearfix">
 
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"
