@@ -25,7 +25,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("doc/closed")]
         public dynamic CreateClosedDoc([FromBody]dynamic req)
         {
-            CreateClosedSTCDocAPI exec = new CreateClosedSTCDocAPI(this);
+            CreateWorkedSTCDocAPI exec = new CreateWorkedSTCDocAPI(this);
             var res = exec.Execute(req);
             return res;
         }

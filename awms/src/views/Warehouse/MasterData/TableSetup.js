@@ -433,27 +433,21 @@ class TableGen extends Component{
   }
 
   paginationButton(){
-    if(this.props.paginationBtn === false)
-    {
-      return <div />
-    }
-    else{
-      return(
-        <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
-          <nav>
-            <ul className="pagination">
-              <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
-                onClick={() => this.pageOnHandleClick("prev")}>
-              Previous</a></li>
-              <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
-                onClick={() => this.pageOnHandleClick("next")}>
-                Next</a></li>
-            </ul>
-            <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
-          </nav>
-        </div>
-      )
-    }
+    return(
+      <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
+        <nav>
+          <ul className="pagination">
+            <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("prev")}>
+            Previous</a></li>
+            <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
+          </ul>
+          <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
+        </nav>
+      </div>
+    )
   }
 
   createSelectButton(event){
@@ -879,7 +873,6 @@ class TableGen extends Component{
     className="selection"
     type={type}
     name="selection"
-    defaultChecked = {true}
     onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>
   }
 

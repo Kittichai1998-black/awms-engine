@@ -14,13 +14,19 @@ export default class AutoSelect extends Component{
     }
 
     componentDidMount(){
-        this.setState({dataselect:this.props.defaultValue, data:this.props.data, multi:this.props.multi? this.props.multi : false})
+        this.setState({data:this.props.data, multi:this.props.multi? this.props.multi : false})
     }
 
     componentWillReceiveProps(nextProps){
         this.setState({data:nextProps.data})
         if(nextProps.child === true){
             this.setState({dataselect:this.state.dataselect})
+        }
+        else{
+            if(nextProps.data.length > 0 && this.state.dataselect.length === 0){
+                this.setState({dataselect:nextProps.data[0]})
+                this.handleChange(nextProps.data[0])
+            }
         }
     }
 

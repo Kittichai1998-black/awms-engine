@@ -55,7 +55,7 @@ class StockCard extends Component{
       sk:0,
       l:0,
       all:"",},
-      PackMasterdata:[],
+      PackMasterdata:[]
     
     }
     this.onCalculate = this.onCalculate.bind(this)
@@ -80,9 +80,6 @@ class StockCard extends Component{
   }
 
   onGetDocument(){
-    if(this.state.dateFrom===undefined ||this.state.dateTo === undefined || this.state.CodePack === undefined ) {
-      alert("Please select data")
-    } else {
     let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
     let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
     
@@ -94,7 +91,7 @@ class StockCard extends Component{
         let JSONDoc = []
         JSONDoc.push({"f": "DocumentDate", "c":"<=", "v":formatDateTo},
           {"f": "Code", "c":"=", "v":this.state.CodePack},{"f": "Status", "c":"=", "v":"3"})
-        QueryDoc.q = JSON.stringify(JSONDoc)
+          QueryDoc.q = JSON.stringify(JSONDoc)
             Axios.get(createQueryString(QueryDoc)).then((res) => { 
             this.setState({data:res.data.datas},()=>{
             //console.log(this.state.data)
@@ -116,7 +113,7 @@ class StockCard extends Component{
             let sumCredit=0
             dateDoc.forEach(row=>{
               if(row.DocumentType_ID===1001){
-                sum=row.Quantity+sum 
+                sum=row.Quantity+sum              
                 arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
                 sumDebit+=row.Quantity
               } else if (row.DocumentType_ID===1002){
@@ -136,15 +133,11 @@ class StockCard extends Component{
               }
             })
             arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
-            this.setState({data1:arrdata})
+            this.setState({data1:arrdata},()=>{console.log(this.state.data1)})
 
-          }else{
-            this.setState({data1:[]})
-          }
-          })       
-        })
-      }
-    }
+      })
+        
+    })
   }
 
   onCalculate(){
@@ -154,9 +147,16 @@ class StockCard extends Component{
 
   render(){
     const cols = [
-      {accessor: 'DocumentDate', Header: 'Date',editable:false,},
+      {accessor: 'DocumentDate', Header: 'Date',editable:false,Cell: (e) => {
+        if(moment(e.value).isValid()){
+          let dataDate = moment(e.value).format("DD-MM-YYYY")
+          return <span>{dataDate}</span>
+        }else{
+          return <span>{e.value}</span>
+        }
+      }},
       {accessor: 'DocCode', Header: 'Document',editable:false,},
-      {accessor: 'DocumentType_ID', Header: 'Title',editable:false,},
+      {accessor: 'DocumentType_ID', Header: 'Document Type',editable:false,},
       {accessor: 'Debit', Header: 'Debit', editable:false,},
       {accessor: 'Credit', Header: 'Credit', editable:false,},
       {accessor: 'Total', Header: 'Total', editable:false},
@@ -182,14 +182,14 @@ class StockCard extends Component{
                 <label style={{width:"50px",textAlign:"center"}}>To</label>
                 <div style={{display:"inline-block"}}>
                   {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
-                </div>{' '}
+                </div>
                 <Button color="primary" id="off" onClick={() => {this.onGetDocument()}}>OK</Button>
             </div>          
           </Col>
         </Row>
         </div>
          <br></br>
-        <ReactTable NoDataComponent={()=><div style={{textAlign:"center",height:"100px",color:"rgb(200,206,211)"}}>No row found</div>} sortable={false} style={{background:"white"}} filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
+        <ReactTable NoDataComponent={()=> null} sortable={false} style={{background:"white"}} filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
       </div>
 
 

@@ -43,6 +43,7 @@ class PickAndConso extends Component{
       l:0,
       all:"",},
       activeTab: '1',
+      openGuild:'none'
     }
     this.renderTable = this.renderTable.bind(this)
     this.toggleTab = this.toggleTab.bind(this)
@@ -50,6 +51,7 @@ class PickAndConso extends Component{
     this.onHandleClickPickingScan = this.onHandleClickPickingScan.bind(this)
     this.onClickDocumentItemDetail = this.onClickDocumentItemDetail.bind(this)
     this.createGuideLocation = this.createGuideLocation.bind(this)
+    this.clearTable = this.clearTable.bind(this)
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
@@ -123,6 +125,7 @@ class PickAndConso extends Component{
   }
   
   createGuideLocation(){
+    this.setState({openGuild:"block"})
     const data =  this.state.data
     console.log(data)
     let docItemsStr = ""
@@ -131,13 +134,22 @@ class PickAndConso extends Component{
       if(qty[0] !== qty[1])
         docItemsStr += "," + row.ID;
     })
-    
+    let guideLoc = []
     if(docItemsStr !== ""){
       Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemIDs=' + docItemsStr.substring(1)).then(res => {
-        const reselement = res.data.datas.map((row,i) => {
-          return <span key={i}>Guide for Picking : {row.areaCode} | {row.areaLocationCode}</span>
-        })
-        this.setState({guideLoc:reselement})
+        this.setState({openGuild:"block"})
+         for( let i= 0; i <5 && i < res.data.datas.length;i++){
+           let resultData =res.data.datas[i]
+           guideLoc.push(<button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{resultData.areaLocationCode === null ? null:resultData.areaLocationCode + '-'} {resultData.areaCode} - {resultData.code} </button>)     
+          }
+          if (res.data.datas.length > 5){
+            guideLoc.push(<span>...</span>)
+          }
+          this.setState({guideLoc})
+        // const reselement = res.data.datas.map((row,i) => {
+        //   return  <button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{row.areaLocationCode === null ? null:row.areaLocationCode + '-'} {row.areaCode} - {row.code}  </button>
+        // })
+        // this.setState({guideLoc:reselement})
       }).catch(res => {alert(res)})
     }
   }
@@ -240,6 +252,11 @@ class PickAndConso extends Component{
     }
   }
 
+  clearTable(){
+    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:null, pickingList:null, popupElement:null})
+    
+  }
+
   render(){
     const cols = [
       {accessor:"Pack",Header:"Pack Item"},
@@ -248,14 +265,15 @@ class PickAndConso extends Component{
     ]
 
     return(
-      <div>
+      <div style={{paddingBottom:'100px'}}>
         <Row>
           <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
           <Col sm="11" xs="10"><AutoSelect data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
-          <div style={{fontSize:"18px", color:"red"}}>{this.state.guideLoc}</div>
+
+          <div style={{display:this.state.openGuild, fontSize:"18px", color:"red"}}>Guide for Picking : {this.state.guideLoc}</div>
         </div>
             <Nav tabs>
               <NavItem>
@@ -282,6 +300,8 @@ class PickAndConso extends Component{
                 <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
+                <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
+                  onClick={this.clearTable} >Clear</Button>
                 <div>
                   {this.state.pickingList}
                 </div>
@@ -298,6 +318,8 @@ class PickAndConso extends Component{
                 <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
+                <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
+                  onClick={this.clearTable} >Clear</Button>
                 <div>
                   {this.state.pickingList}
                 </div>

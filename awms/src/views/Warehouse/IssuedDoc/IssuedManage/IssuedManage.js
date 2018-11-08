@@ -5,7 +5,7 @@ import ReactTable from 'react-table'
 import moment from 'moment';
 import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
-import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree } from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
 import Downshift from 'downshift'
 
 function isInt(value) {
@@ -117,7 +117,7 @@ class IssuedManage extends Component{
     else{
       this.setState({documentDate:this.DateNow.format('DD-MM-YYYY')})
       Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
-        this.setState({autocomplete:rowselect2.data.datas,
+        this.setState({autocomplete:rowselect2.data.datas, autocompleteUpdate:Clone(rowselect2.data.datas),
           adddisplay:"inline-block"})
       })
     }
@@ -192,7 +192,7 @@ class IssuedManage extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm"/>
+    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm:ss"/>
   }
 
   renderDocumentStatus(){
@@ -249,14 +249,21 @@ class IssuedManage extends Component{
         data[rowdata.index]["id"] = value.id;
       }
       this.setState({ data });
+
+      
+    let res = this.state.autocompleteUpdate
+    this.state.data.forEach(datarow => {
+      res = res.filter(row => {
+        return datarow[field] !== row.Code
+      })
+    })
+    this.setState({autocomplete:res})
     }
 
   }
 
-  createText(data,field){
-    let datafield = data.filter(row => row.id === field)
-    let result = datafield.map(row => {return <span key={row.Code}>{row.Code + ' : ' + row.Name}</span>})
-    return result
+  createText(data){
+    return <span>{data}</span>
   }
   
   createAutoComplete(rowdata){
@@ -264,13 +271,13 @@ class IssuedManage extends Component{
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
       <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
       onChange={selection => {
         rowdata.value = selection.id
         this.editData(rowdata, selection, rowdata.column.id)
       }}
       itemToString={item => {
-        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code + " : " + rowdata.original.name ;
+        return item !== null ? item.Code + ":" + item.Name : rowdata.value ;
       }}
     >
       {({
@@ -307,6 +314,7 @@ class IssuedManage extends Component{
                                 backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                                 fontWeight: selectedItem === item ? 'bold' : 'normal',
                                 width:'500px',
+                                border:"1px solid black "
                               }
                             })}
                           >
@@ -405,22 +413,29 @@ class IssuedManage extends Component{
         //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
-        {Cell:(e) => <Button onClick={()=>{
+        /* {Cell:(e) => <Button onClick={()=>{
           const data = this.state.data;
           data.forEach((row, index)=>{
             if(row.id === e.original.id){
               data.splice(index, 1)
             }
           })
-          this.setState({data})
-        }} color="danger">Remove</Button>}
+          this.setState({data}, () => {
+            let res = this.state.autocompleteUpdate
+            this.state.data.forEach((datarow,index) => {
+              res = res.filter(row => {
+                return datarow.Code !== row.Code
+              })
+            })
+            this.setState({autocomplete:res})
+          })
+        }} color="danger">Remove</Button>} */
       ]
     }
     
     
     return(
       <div>
-        {this.createModal()}
         <div className="clearfix">
           <div className="float-right">
             <div>Document Date : <span>{this.state.documentDate}</span></div>
@@ -432,13 +447,13 @@ class IssuedManage extends Component{
         <div className="clearfix">
           <Row>
             <div className="col-6">
-              <div className=""><label style={style}>Branch : </label>{this.state.pageID ? this.createText(this.state.auto_branch, this.state.data.sou_Branch_ID) : 
+              <div className=""><label style={style}>Branch : </label>{this.state.pageID ? this.createText(this.state.data.souBranchName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label}, () => {this.genWarehouseData(this.state.branch)})}/></div>}</div>
-              <div className=""><label style={style}>Customer : </label>{this.state.pageID ? this.createText(this.state.auto_customer, this.state.data.des_Customer_ID) : 
+              <div className=""><label style={style}>Customer : </label>{this.state.pageID ? this.createText(this.state.data.desCustomerName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_customer} result={(e) => this.setState({"customer":e.value, "customerresult":e.label})}/></div>}</div>
             </div>
             <div className="col-6">
-              <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.auto_warehouse, this.state.data.sou_Warehouse_ID) : 
+              <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.souWarehouseName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label})}/></div>}</div>
               <div className=""><label style={style}>Remark : </label>
               {this.state.pageID ? <span>{this.state.remark}</span> : 
@@ -450,16 +465,16 @@ class IssuedManage extends Component{
         </div>
         <div className="clearfix">
         
-        <Button className="float-right" color="danger" style={{display:this.state.adddisplay}} onClick={() => this.toggle()}>Select Base</Button>
+        <Button className="float-right" color="danger" onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
           <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code} </span>
         </div>
-        <ReactTable NoDataComponent={()=>null} columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
+        <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
         <Card>
           <CardBody style={{textAlign:'right'}}>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
-            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
+            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>

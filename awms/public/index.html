@@ -20,18 +20,26 @@
     window.alert = function(msg, color){
         var div = document.createElement("div");
         div.style.textAlign = "center"
-        div.style.width = "100%"
+        div.style.width = "99%"
         div.style.background = color ? color : "rgba(255, 0, 0, 0.2)"
         div.style.transition = "opacity 0.5s";
         div.style.opacity = "1";
+        div.style.position = "fixed";
         div.innerHTML = msg;
+        div.onclick = () => {
+          div.remove()
+        }
+        div.style.border = "1px solid red";
+        div.style.margin = "3px auto";
+        div.style.padding = "2px";
+        div.style.cursor = "pointer"
         const ele = document.getElementById("msg")
-        ele.append(div)
+        ele.prepend(div)
         setTimeout(() => {
             div.style.opacity = "0";
             div.style.opacity = "pointer-events:none";
             setTimeout(() => {ele.removeChild(div)}, 1000)
-        }, 5000)
+        }, 10000)
     }
 
     window.success = function(msg){
@@ -87,6 +95,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <div id="msg" style="position:absolute; top:0; z-index: 9999; width:100%"></div>
+    <div id="msg" style="position:fixed; top:0; z-index: 9999; width:100%"></div>
   </body>
 </html>

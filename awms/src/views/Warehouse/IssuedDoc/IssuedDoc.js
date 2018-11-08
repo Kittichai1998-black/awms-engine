@@ -29,9 +29,9 @@ class IssuedDoc extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
-      f:"ID,Code,SouBranch,SouWarehouse,SouArea,DesCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+      f:"ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Created,ModifyBy",
       g:"",
-      s:"[{'f':'ID','od':'desc'}]",
+      s:"[{'f':'Code','od':'asc'}]",
       sk:0,
       l:20,
       all:"",},
@@ -88,17 +88,17 @@ class IssuedDoc extends Component{
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'SouBranch', Header: 'Branch',editable:false, Filter:"text"},
-      {accessor: 'SouWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
-      {accessor: 'SouArea', Header: 'Area', editable:false, Filter:"text",},
-      {accessor: 'DesCustomer', Header: 'Customer', editable:false, Filter:"text",},
-      {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
-      {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
-      {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
+      {accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
+      {accessor: 'SouWarehouseName', Header: 'Warehouse', editable:false, Filter:"text",},
+      //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
+      {accessor: 'DesCustomerName', Header: 'Customer', editable:false, Filter:"text",},
+      // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
+      // {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
+      // {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
-      {accessor: 'RefID', Header: 'RefID', editable:false,},
+      //{accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
@@ -141,7 +141,7 @@ class IssuedDoc extends Component{
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'!=', 'v': 2},{ 'f': 'EventStatus', c:'!=', 'v': 32}]}
+        btn={btnfunc}
         accept={false}/>
         <Card>
           <CardBody>
