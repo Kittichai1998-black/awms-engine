@@ -41,7 +41,7 @@ class LoadingDocument extends Component{
       
     this.autocomplete = {queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"=", "v": 1}]',
+      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "eventStatus", "c":"in", "v": "11,12"}]',
       f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCustomerName",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -285,6 +285,7 @@ class LoadingDocument extends Component{
         transportCode:null,
         souWarehouseID:this.state.warehousevalue,
         souWarehouseCode:null,
+        desCustomerID:"xx",
         actionTime:this.state.date.format("YYYY-MM-DDThh:mm:ss"),
         documentDate:this.DateNow.format("YYYY-MM-DD"),
         remark:'',

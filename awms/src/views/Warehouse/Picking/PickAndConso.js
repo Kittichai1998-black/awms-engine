@@ -55,7 +55,7 @@ class PickAndConso extends Component{
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
       f:"ID,Code",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
@@ -78,23 +78,26 @@ class PickAndConso extends Component{
     this.setState({rowselect:data, loadIssued:false})
     const documentItem = this.state.documentItem
     const documentItemCon = []
-    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'eventStatus', c:'=', 'v': 11},{'f':'documentType_ID','c':'=','v':'1002'})
+    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'Status', c:'!=', 'v': 2},{'f':'documentType_ID','c':'=','v':'1002'})
     documentItem.q = JSON.stringify(documentItemCon)
     this.setState({documentItem:documentItem})
 
     Axios.get(createQueryString(documentItem)).then((rowselect) => {
-      console.log(rowselect)
       this.setState({data:rowselect.data.datas})
+      console.log(rowselect.data.datas)
       return rowselect.data.datas.map(x=> x.ID)
     }).then((res) => {
+      console.log(res.join(','))
       const documentItemCount = this.state.documentItemCount
       documentItemCount.q = JSON.stringify([{f:'status',c:'!=',v:'2'},{f:'DocumentItem_ID',c:'in',v:res.join(',')}])
       this.setState({documentItemCount:documentItemCount})
 
       Axios.get(createQueryString(documentItemCount)).then((countrow) => {
         const initdata = this.state.data
+        
         initdata.forEach(row => {
-          if(countrow.data.datas.length > 0){
+          const filterPickItem = countrow.data.datas.filter(frow => frow.DocumentItem_ID === row.ID)
+          if(filterPickItem.length > 0){
             countrow.data.datas.forEach(crow => {
               if(row.ID === crow.DocumentItem_ID){
                 row.Quantity = crow.qty + "/" + row.Quantity
@@ -114,12 +117,16 @@ class PickAndConso extends Component{
   
   toggleTab(tab) {
     if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab,
-        consoBarcode:"",
-        pickingBarcode:"",
-        pickingAmount:1,
-        mapsto:null
+      this.setState({activeTab: tab}, () => {
+        if(tab !== 3){
+          this.setState({
+            consoBarcode:"",
+            pickingBarcode:"",
+            pickingAmount:1,
+            mapsto:null,
+            pickingList:null
+          })
+        }
       });
     }
   }
@@ -127,9 +134,9 @@ class PickAndConso extends Component{
   createGuideLocation(){
     this.setState({openGuild:"block"})
     const data =  this.state.data
-    console.log(data)
     let docItemsStr = ""
     data.forEach(row => {
+      console.log(row.Quantity)
       const qty = row.Quantity.split("/")
       if(qty[0] !== qty[1])
         docItemsStr += "," + row.ID;
@@ -236,8 +243,8 @@ class PickAndConso extends Component{
         action: null,
         mapsto:this.state.mapsto
       }
+      console.log(data)
       Axios.post(window.apipath + "/api/wm/issued/sto/pickConso", data).then((res) => {
-        console.log(res.data.mapsto)
         if(res.data.mapsto){
           this.setState({mapsto:res.data.mapsto}, () => {
             const clonemapsto = Clone(this.state.mapsto)
@@ -249,6 +256,14 @@ class PickAndConso extends Component{
   
         this.renderTable(this.state.rowselect)
       })
+    }
+    
+    this.setState({pickingBarcode:"",pickingAmount:1})
+    if(this.state.activeTab === 1){
+      document.getElementById("pickcode").focus()
+    }
+    else if(this.state.activeTab === 2){
+      document.getElementById("pickconso").focus()
     }
   }
 
@@ -268,7 +283,7 @@ class PickAndConso extends Component{
       <div style={{paddingBottom:'100px'}}>
         <Row>
           <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
-          <Col sm="11" xs="10"><AutoSelect data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
+          <Col sm="11" xs="10"><AutoSelect selectfirst={false} data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
@@ -292,12 +307,12 @@ class PickAndConso extends Component{
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
                 <label>Picking : </label>
-                <Input placeholder="Barcode" autoFocus type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                <Input id="pickcode" placeholder="Barcode" autoFocus type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
                   if(e.key === "Enter"){
                     this.onHandleClickPickingScan()
                   }
                 }} style={{display:"inline-block", width:"180px"}}/>
-                <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
+                <Input id="pickqty" placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
@@ -310,12 +325,12 @@ class PickAndConso extends Component{
                 <label>Conso : </label><Input type="text" placeholder="Input Base" autoFocus onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
                 <br/>
                 <label>Picking : </label>
-                <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                <Input id="pickconso" placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
                   if(e.key === "Enter"){
                     this.onHandleClickPickingScan()
                   }
                 }} style={{display:"inline-block", width:"180px"}}/>
-                <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
+                <Input id="qtyconso" placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}

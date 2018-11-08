@@ -86,8 +86,11 @@ namespace AWMSEngine.APIService
                 {
                     if (getKey._apiKey != null)
                         apiKey = getKey._apiKey;
-                    if (RequestVO._apiKey != null)
-                        apiKey = RequestVO._apiKey;
+                    if(request != null)
+                    {
+                        if (request._apiKey != null)
+                            apiKey = request._apiKey;
+                    }
                     if (!string.IsNullOrWhiteSpace(apiKey))
                     {
                         this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
@@ -98,8 +101,11 @@ namespace AWMSEngine.APIService
                     }
                     if (getKey._token != null)
                         token = getKey._token;
-                    if (RequestVO._token != null)
-                        token = RequestVO._token;
+                    if (request != null)
+                    {
+                        if (request._token != null)
+                            token = request._token;
+                    }
                     if (!string.IsNullOrWhiteSpace(token))
                     {
                         this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
@@ -109,7 +115,7 @@ namespace AWMSEngine.APIService
                         token = null;
                     }
                 }
-                catch {
+                catch{
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
                 }
                 

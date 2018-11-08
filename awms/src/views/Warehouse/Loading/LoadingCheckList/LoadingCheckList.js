@@ -90,7 +90,7 @@ class LoadingDocument extends Component{
       */}
         <Row>
           <Col><label style={{paddingRight:"10px"}}>Loading Document : </label>
-          <div style={{display:"inline-block",width:"300px"}}><AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label, "TransportID":e.TransportID}, () => {this.getTableData()})}/></div></Col>
+          <div style={{display:"inline-block",width:"300px"}}><AutoSelect selectfirst={false} data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label, "TransportID":e.TransportID}, () => {this.getTableData()})}/></div></Col>
         </Row>
         <Row>
           <Col><label style={{paddingRight:"10px"}}>Transport : </label><span>{this.state.TransportID}</span></Col>
