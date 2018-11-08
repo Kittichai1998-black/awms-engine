@@ -14,7 +14,7 @@ export default class AutoSelect extends Component{
     }
 
     componentDidMount(){
-        this.setState({dataselect:this.props.defaultValue, data:this.props.data, multi:this.props.multi? this.props.multi : false})
+        this.setState({data:this.props.data, multi:this.props.multi? this.props.multi : false})
     }
 
     componentWillReceiveProps(nextProps){
