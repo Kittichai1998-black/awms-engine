@@ -58,10 +58,10 @@ class LoadingManage extends Component{
         postdata.push(rowdata.ID)
       })
       if(status==="accept"){
-        Axios.post(window.apipath + "/api/wm/loading/doc/working", {docIDs:postdata, _token:localStorage.getItem("Token")}).then((res) => {this.setState({resp:res.data._result.message})})
+        Axios.post(window.apipath + "/api/wm/loading/doc/working", {docIDs:postdata}).then((res) => {this.setState({resp:res.data._result.message})})
       }
       else{
-        Axios.post(window.apipath + "/api/wm/loading/doc/reject", {docIDs:postdata, _token:localStorage.getItem("Token")}).then((res) => {this.setState({resp:res.data._result.message})})
+        Axios.post(window.apipath + "/api/wm/loading/doc/reject", {docIDs:postdata}).then((res) => {this.setState({resp:res.data._result.message})})
       }
     }
   }

@@ -171,7 +171,7 @@ class TableGen extends Component{
   }
   
   removedata(rowdata){
-    const data = [...this.state.data];
+    /* const data = [...this.state.data]; */
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
@@ -180,12 +180,12 @@ class TableGen extends Component{
     })
     rowdata.Status = 2
     dataedit.push(rowdata);
-    data.forEach((datarow,index) => {
+     data.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
         data.splice(index,1);
       }
     })
-    this.setState({ data });
+    this.setState({ data }); */
     this.setState({dataedit});
   }
 
@@ -895,16 +895,16 @@ class TableGen extends Component{
     if(this.props.accept === true){
       return <Card>
         <CardBody>
+          <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}   className="float-right">Accept</Button>
           <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
-          <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} className="float-right">Accept</Button>
         </CardBody>
       </Card>
     }
     else if(this.props.printbtn === true){
       return <Card>
           <CardBody>
-            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
             <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} className="float-right">Accept</Button>
+            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
             <Button onClick={() => this.printbarcodeall() } color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Print</Button>
           </CardBody>
         </Card>

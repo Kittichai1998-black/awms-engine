@@ -4,6 +4,8 @@ import { Button } from 'reactstrap';
 import { TableGen } from '../MasterData/TableSetup';
 import { apicall, DatePicker } from '../ComponentCore'
 import Workbook from 'react-excel-workbook'
+import Axios from 'axios'
+
 
 
 
@@ -19,48 +21,14 @@ const createQueryString = (select) => {
   return queryS
 }
 
-
 const API = new apicall()
 
-const data1 = [
-  {
-    foo: '123',
-    bar: '456',
-    baz: '789'
-  },
-  {
-    foo: 'abc',
-    bar: 'dfg',
-    baz: 'hij'
-  },
-  {
-    foo: 'aaa',
-    bar: 'bbb',
-    baz: 'ccc'
-  }
-]
-
-const data2 = [
-  {
-    aaa: 1,
-    bbb: 2,
-    ccc: 3
-  },
-  {
-    aaa: 4,
-    bbb: 5,
-    ccc: 6
-  }
-]
-
-class CurrentInv extends Component{
+class CurrentInv extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-     
-           
-   
+
     }
 
     this.CurrentItem = {
@@ -76,46 +44,36 @@ class CurrentInv extends Component{
     }
 
     this.dateTimePicker = this.dateTimePicker.bind(this)
+    this.initialData = this.initialData.bind(this)
     
-
-   
-
   }
-
 
 
   initialData() {
-    API.get("https://api.myjson.com/bins/194yke").then(Response => {
-      this.setState({ dataExel: Response.data })
+    Axios.get("https://api.myjson.com/bins/e1qwe").then(Response => {
+      this.setState({ dataExcel: Response.data },() =>console.log(this.state.dataExcel))
+      
     })
-    
+   
   }
-
-
-  HeaderData() {
-    
-      let objs = []
-      if (this.state.dataExel.length > 0) {
-        for (let dataEx in this.state.dataExel[0]) {
-          objs.push(<Workbook.Column label="Bar" value="bar" />)
-        }
-
-      }
-      return objs
-    
-
-  }
+ 
+  //HeaderData() {
+  //    let objs = []
+  //    if (this.state.dataExcel.length > 0) {
+  //      for (let dataEx in this.state.dataExcel[0]) {
+  //        objs.push(<Workbook.Column label="Bar" value="bar" />)
+  //      }
+  //    }
+  //    return obj    
+  //}
   
-
   dateTimePicker() {
     return <DatePicker onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
-
-    componentDidMount() {
-      API.get(createQueryString(this.CurrentItem)).then(current => { })
+  componentDidMount() {
+    this.initialData()
     }
-
 
     ExportData() {
       if (this.state.date) {
@@ -127,52 +85,39 @@ class CurrentInv extends Component{
       }
     }
 
-
-  
   render() {
     const cols = [
       { accessor: 'Pack', Header: 'Pack Code/Name', editable: false, filterable: false },
       { accessor: 'Warehouse', Header: 'Warehouse', editable: false, filterable: false},
       { accessor: 'Total', Header: 'Total Qty', editable: false, filterable: false },
-
-  
+ 
     ];
+    const dataEcel= this.state.dataExcel
 
     return (
-
       <div>
-
-        <div className="row text-center" style={{ marginTop: '100px' }}>
-          <Workbook filename="example.xlsx" element={<button className="btn btn-lg btn-primary">Export Exel</button>}>
-            <Workbook.Sheet data={this.state.dataExel} name="Sheet A">
-              {
-                this.HeaderData.bind(this)
-              }
-             
-            
+     <div className="clearfix">
+          <Workbook filename="CurrentInv.xlsx" element={
+            <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px'}} color="primary" className="float-right"
+            >Export Excel</Button>}>
+            <Workbook.Sheet data={dataEcel} name="Sheet A">
+              <Workbook.Column label="Code" value="code" />
+              <Workbook.Column label="Name" value="name" />
+              <Workbook.Column label="Qtyamw" value="qtyamw" />
+              <Workbook.Column label="Qtyerp" value="qtyerp" />
+              <Workbook.Column label="Total" value="total" />
             </Workbook.Sheet>
           </Workbook>
-        </div>
-
-      
-        <div className="clearfix">
-
-          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"
+          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginRight:"5px" }} color="primary" className="float-right"
             onClick={() => { this.ExportData() }}>Export Data</Button>
           <div className="float-right" style={{ marginRight: "5px" }}>{this.dateTimePicker()}</div>
-
-          <Button style={{ background: "#66bb6a", borderColor: "#26c6da", width: '130px', marginRight: "465px" }} color="primary" className="float-right"
-            onClick={() => { this.initialData }}>Browse</Button>
-          
-      
-
+ 
       </div>
         <TableGen column={cols}
           data={this.CurrentItem}
           filterable={true} uneditcolumn={this.uneditcolumn}
           table="CurrentInv" />
-        </div>
-     
+        </div>     
     )
   }
 }

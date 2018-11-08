@@ -32,10 +32,10 @@ class LoadingDocument extends Component{
     }
     this.onHandleScanConso = this.onHandleScanConso.bind(this)
     this.getTableData = this.getTableData.bind(this)
-    this.documentselect = {queryString:window.apipath + "/api/viw",
+    this.documentselect = {queryString:window.apipath + "/api/trx",
       t:"Document",
       q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1012},{ "f": "EventStatus", "c":"=", "v": 11},{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID,Code,transport",
+      f:"ID,Code,Transport_ID",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -64,7 +64,7 @@ class LoadingDocument extends Component{
   }
 
   onHandleScanConso(){
-    let data = {docID:this.state.transportvalue, scanCode:this.state.consoCode, _token:localStorage.getItem("Token")}
+    let data = [{loadingDocID:this.state.transportvalue, scanCode:this.state.consoCode}]
     API.post(window.apipath + "/api/wm/loading/conso" ,data).then(res => {
       this.getTableData()
     })
