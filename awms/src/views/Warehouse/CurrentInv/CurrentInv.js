@@ -20,38 +20,13 @@ const createQueryString = (select) => {
   return queryS
 }
 
-
 const API = new apicall()
-
-const data1 = [
-  {
-    foo: '123',
-    bar: '456',
-    baz: '789'
-  },
-  {
-    foo: 'abc',
-    bar: 'dfg',
-    baz: 'hij'
-  },
-  {
-    foo: 'aaa',
-    bar: 'bbb',
-    baz: 'ccc'
-  }
-]
-
-
-
-
 
 class CurrentInv extends Component{
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-     
-           
    
     }
 
@@ -70,12 +45,7 @@ class CurrentInv extends Component{
     this.dateTimePicker = this.dateTimePicker.bind(this)
     this.initialData = this.initialData.bind(this)
 
-    
-
-   
-
   }
-
 
 
   initialData() {
@@ -96,11 +66,9 @@ class CurrentInv extends Component{
   //    return obj    
   //}
   
-
   dateTimePicker() {
     return <DatePicker onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
   }
-
 
   componentDidMount() {
     this.initialData()
@@ -121,22 +89,13 @@ class CurrentInv extends Component{
       { accessor: 'Pack', Header: 'Pack Code/Name', editable: false, filterable: false },
       { accessor: 'Warehouse', Header: 'Warehouse', editable: false, filterable: false},
       { accessor: 'Total', Header: 'Total Qty', editable: false, filterable: false },
-
-  
+ 
     ];
-
     const dataEcel= this.state.dataExcel
-    
 
     return (
-
       <div>
-
-        
-
-
-        <div className="clearfix">
- 
+     <div className="clearfix">
           <Workbook filename="CurrentInv.xlsx" element={
             <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px'}} color="primary" className="float-right"
             >Export Excel</Button>}>
@@ -148,18 +107,16 @@ class CurrentInv extends Component{
               <Workbook.Column label="Total" value="total" />
             </Workbook.Sheet>
           </Workbook>
-
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginRight:"5px" }} color="primary" className="float-right"
             onClick={() => { this.ExportData() }}>Export Data</Button>
           <div className="float-right" style={{ marginRight: "5px" }}>{this.dateTimePicker()}</div>
-  
+ 
       </div>
         <TableGen column={cols}
           data={this.CurrentItem}
           filterable={true} uneditcolumn={this.uneditcolumn}
           table="CurrentInv" />
-        </div>
-     
+        </div>     
     )
   }
 }
