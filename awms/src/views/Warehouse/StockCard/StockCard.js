@@ -133,17 +133,14 @@ class StockCard extends Component{
               }
             })
             arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
-            this.setState({data1:arrdata},()=>{console.log(this.state.data1)})
+            this.setState({data1:arrdata})
 
       })
         
     })
   }
 
-  onCalculate(){
 
-    
-  }
 
   render(){
     const cols = [
