@@ -292,7 +292,10 @@ class LoadingDocument extends Component{
         _token:localStorage.getItem("Token")
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
-  
+        if(res.data._result.status === 1){
+          this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
+          window.location.reload()
+        }
       })
     }
     else{

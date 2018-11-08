@@ -251,8 +251,10 @@ class StorageManagement extends Component{
             console.log(clonemapsto)
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
+            window.success("เรียบร้อย")
           })
           return [header]
+          
         }
         else{
           this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>, barcode:""})
@@ -379,9 +381,12 @@ class StorageManagement extends Component{
         Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
           if(res.data._result.status !== 0){
             this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
+            window.success("เรียบร้อย")
             return null
+            
           }else{
             this.setState({response:<span class="text-center">{res.data._result.message}</span>})
+            
           }
         })
       }
