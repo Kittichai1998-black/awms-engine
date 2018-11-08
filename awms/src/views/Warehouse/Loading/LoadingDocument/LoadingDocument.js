@@ -42,7 +42,7 @@ class LoadingDocument extends Component{
     this.autocomplete = {queryString:window.apipath + "/api/viw",
       t:"Document",
       q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCusName",
+      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCustomerName",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
