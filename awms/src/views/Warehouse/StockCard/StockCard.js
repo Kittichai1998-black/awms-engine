@@ -82,55 +82,58 @@ class StockCard extends Component{
   onGetDocument(){
     let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
     let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
-    let QueryDoc = this.state.selectdata
-    let JSONDoc = []
-    JSONDoc.push({"f": "DocumentDate", "c":"<=", "v":formatDateTo},
-      {"f": "Code", "c":"=", "v":this.state.CodePack},{"f": "Status", "c":"=", "v":"3"})
-    QueryDoc.q = JSON.stringify(JSONDoc)
-    Axios.get(createQueryString(QueryDoc)).then((res) => {    
-      this.setState({data:res.data.datas},()=>{
-        let dateDoc = this.state.data.filter(row=>{
-          return row.DocumentDate >= formatDateFrom
-        })
-        let dateThrow = this.state.data.filter(row2=>{
-          //console.log(row2.Quantity)
-          return row2.DocumentDate <= formatDateFrom  
-          
-        })
-        let sum = 0
-        var arrdata =[]
-        dateThrow.forEach(row=>{
-          sum+= row.Quantity         
-        })
-        arrdata.push({Total:sum})
-        //this.setState({data:dateDoc})
-        let sumDebit =0
-        let sumCredit=0
-        dateDoc.forEach(row=>{
-       
-         if(row.DocumentType_ID==='1001'){
-          sum=row.Quantity+sum
-          arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
-          sumDebit+=row.Quantity
-         }else if (row.DocumentType_ID==='1002'){
-          sum=row.Quantity-sum
-          arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Credit:row.Quantity,Total:sum})
-          sumCredit+=row.Quantity
-         } else {
-           if (row.Quantity>=0){
-            sum=row.Quantity+sum
-            arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
-            sumDebit+=row.Quantity
-           } else {
-            sum=row.Quantity-sum
-            arrdata.push({DocumentType_ID:row.DocumentType_ID,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
-            sumCredit+=row.Quantity
-           }
-         }
+    
+      if (formatDateFrom > formatDateTo ){
+        alert("Choose the wrong information")
+      } else {
 
-        })
-        arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
-        this.setState({data1:arrdata})
+        let QueryDoc = this.state.selectdata
+        let JSONDoc = []
+        JSONDoc.push({"f": "DocumentDate", "c":"<=", "v":formatDateTo},
+          {"f": "Code", "c":"=", "v":this.state.CodePack},{"f": "Status", "c":"=", "v":"3"})
+          QueryDoc.q = JSON.stringify(JSONDoc)
+            Axios.get(createQueryString(QueryDoc)).then((res) => { 
+            this.setState({data:res.data.datas},()=>{
+            //console.log(this.state.data)
+            if(this.state.data.length > 0){
+              let dateDoc = this.state.data.filter(row=>{
+              return row.DocumentDate >= formatDateFrom
+              })
+              let dateThrow = this.state.data.filter(row2=>{
+              return row2.DocumentDate <= formatDateFrom           
+              })
+              let sum = 0
+              var arrdata =[]
+                dateThrow.forEach(row=>{
+                  sum+= row.Quantity         
+                })
+            arrdata.push({DocumentType_ID:'Bring Forward',Total:sum})
+
+            let sumDebit =0
+            let sumCredit=0
+            dateDoc.forEach(row=>{
+              if(row.DocumentType_ID===1001){
+                sum=row.Quantity+sum              
+                arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
+                sumDebit+=row.Quantity
+              } else if (row.DocumentType_ID===1002){
+                sum = Math.abs(row.Quantity-sum)
+                arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Credit:Math.abs(row.Quantity),Total:sum})
+                sumCredit+=row.Quantity
+              } else {
+                if (row.Quantity>=0){              
+                  sum=row.Quantity+sum
+                  arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
+                  sumDebit+=row.Quantity
+                } else {
+                  sum=row.Quantity+(sum)
+                  arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Credit:Math.abs(row.Quantity),Total:sum})
+                  sumCredit+=(row.Quantity*(-1))
+                }
+              }
+            })
+            arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
+            this.setState({data1:arrdata},()=>{console.log(this.state.data1)})
 
       })
         
@@ -144,7 +147,14 @@ class StockCard extends Component{
 
   render(){
     const cols = [
-      {accessor: 'DocumentDate', Header: 'Date',editable:false,},
+      {accessor: 'DocumentDate', Header: 'Date',editable:false,Cell: (e) => {
+        if(moment(e.value).isValid()){
+          let dataDate = moment(e.value).format("DD-MM-YYYY")
+          return <span>{dataDate}</span>
+        }else{
+          return <span>{e.value}</span>
+        }
+      }},
       {accessor: 'DocCode', Header: 'Document',editable:false,},
       {accessor: 'DocumentType_ID', Header: 'Document Type',editable:false,},
       {accessor: 'Debit', Header: 'Debit', editable:false,},

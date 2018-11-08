@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import {Input, Button, Row, Col, CardBody, Card } from 'reactstrap';
 import ReactTable from 'react-table';
 import moment from 'moment';
-import {AutoSelect, apicall, createQueryString, DatePicker} from '../../ComponentCore';
+import {AutoSelect, apicall, createQueryString, DatePicker, Clone} from '../../ComponentCore';
 import {DocumentEventStatus} from '../../Status'
 import Downshift from 'downshift'
 import queryString from 'query-string'
@@ -105,10 +105,14 @@ class LoadingDocument extends Component{
       
       this.setState({documentDate:this.DateNow.format('DD-MM-YYYY')})
       API.get(createQueryString(this.autocomplete)).then((res) => {
-          this.setState({autocomplete:res.data.datas,
+          this.setState({autocomplete:res.data.datas, autocompleteUpdate:Clone(res.data.datas),
             adddisplay:"inline-block"})
       })
     }    
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    
   }
 
   createList(){
@@ -121,16 +125,35 @@ class LoadingDocument extends Component{
     this.setState({bstostree:res})
   }
 
+  editData(rowdata, value, field){
+    const date = moment(value.ActionTime);
+    const data = this.state.data;
+    data[rowdata.index][field] = value.Code;
+    data[rowdata.index]["Customer"] = value.DesCustomer + " : " + value.DesCustomerName;
+    data[rowdata.index]["IssuedID"] = value.ID;
+    data[rowdata.index]["ActionDate"] = date.format('DD-MM-YYYY HH:mm');
+    this.setState({ data });
+
+    let res = this.state.autocompleteUpdate
+    this.state.data.forEach(datarow => {
+      res = res.filter(row => {
+        return datarow[field] !== row.Code
+      })
+    })
+    this.setState({autocomplete:res})
+  }
+
   createAutoComplete(rowdata){
     if(!this.state.readonly){
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
       <Downshift
       onChange={selection => {
-        rowdata.value = selection.ID
         this.editData(rowdata, selection, rowdata.column.id)}
       }
-      itemToString={item => (item ? item.Code : rowdata.value)}
+      itemToString={item => {
+        return item !== null ? item.Code : rowdata.value === "" ? "" : rowdata.value
+      }}
     >
       {({
         getInputProps,
@@ -230,16 +253,6 @@ class LoadingDocument extends Component{
     this.setState({data})
   }
 
-  editData(rowdata, value, field){
-    const date = moment(value.ActionTime);
-    const data = this.state.data;
-    data[rowdata.index][field] = value.Code;
-    data[rowdata.index]["Customer"] = value.DesCustomer + " : " + value.DesCusName;
-    data[rowdata.index]["IssuedID"] = value.ID;
-    data[rowdata.index]["ActionDate"] = date.format('DD-MM-YYYY HH:mm');
-    this.setState({ data });
-  }
-
   createDocument(){
     let issuedList = []
     this.state.data.forEach(item => {
@@ -252,8 +265,8 @@ class LoadingDocument extends Component{
         transportCode:null,
         souWarehouseID:this.state.warehousevalue,
         souWarehouseCode:null,
-        actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),
-        documentDate:this.DateNow.format("YYYY/MM/DD"),
+        actionTime:this.state.date.format("YYYY-MM-DDThh:mm:ss"),
+        documentDate:this.DateNow.format("YYYY-MM-DD"),
         remark:'',
         docItems:issuedList
       }
@@ -297,17 +310,25 @@ class LoadingDocument extends Component{
           }
         }
       }>Detail</Button>}},
-      {show: this.state.readonly?false:true,width:80, editable:false, Cell:(e) => {
+      /* {show: this.state.readonly?false:true,width:80, editable:false, Cell:(e) => {
         return <Button color="danger" onClick={() => {
           const data = this.state.data
           data.forEach((datarow,index) => {
-            if(datarow.code === e.original.code){
+            if(datarow.ID === e.original.ID){
               data.splice(index,1);
             }
           })
-          this.setState({data})
+          this.setState({data}, () => {
+            let res = this.state.autocompleteUpdate
+            this.state.data.forEach((datarow,index) => {
+              res = res.filter(row => {
+                return datarow.Code !== row.Code
+              })
+            })
+            this.setState({autocomplete:res})
+          })
         }
-      }>Delete</Button>}},
+      }>Delete</Button>}}, */
     ];
 
     return(
@@ -331,7 +352,7 @@ class LoadingDocument extends Component{
         </Row>
         <Row>
           <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Transport : </label>
-          <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.transportID : <AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label})}/>}</div></Col>
+          <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.transport : <AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label})}/>}</div></Col>
           <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Warehouse : </label>
     <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.warehouse : <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehousevalue":e.value, "warehousetext":e.label})}/>}</div></Col>
         </Row>
@@ -341,7 +362,7 @@ class LoadingDocument extends Component{
         </div>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false} NoDataComponent={() => null}/>
-          {this.state.readonly ? this.state.bstostree : null}
+          {/* {this.state.readonly ? this.state.bstostree : null} */}
           <Card>
           <CardBody>
             <Button color="danger" className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}
