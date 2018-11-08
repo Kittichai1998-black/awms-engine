@@ -433,27 +433,21 @@ class TableGen extends Component{
   }
 
   paginationButton(){
-    if(this.props.paginationBtn === false)
-    {
-      return <div />
-    }
-    else{
-      return(
-        <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
-          <nav>
-            <ul className="pagination">
-              <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
-                onClick={() => this.pageOnHandleClick("prev")}>
-              Previous</a></li>
-              <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
-                onClick={() => this.pageOnHandleClick("next")}>
-                Next</a></li>
-            </ul>
-            <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
-          </nav>
-        </div>
-      )
-    }
+    return(
+      <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
+        <nav>
+          <ul className="pagination">
+            <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("prev")}>
+            Previous</a></li>
+            <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
+          </ul>
+          <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
+        </nav>
+      </div>
+    )
   }
 
   createSelectButton(event){
@@ -534,18 +528,10 @@ class TableGen extends Component{
  
   }
 
-  datetimeBody(dateformat,value){
+  datetimeBody(value){
     if(value !== null){
       const date = moment(value);
-      if(dateformat === "datetime"){
-        return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
-      }
-      else if(dateformat === "date"){
-        return <div>{date.format('DD-MM-YYYY')}</div>
-      }
-      else{
-        return <div>{date.format('HH:mm:ss')}</div>
-      }
+      return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
     }
   }
   datetimelog(value){
@@ -582,8 +568,7 @@ class TableGen extends Component{
         onChangeRaw={(e) => {
           if (moment(value).isValid())
                this.onEditDateChange(e, rowdata);
-       }}
-       dateFormat="DD/MM/YYYY"/>
+       }}/>
     }
     else if(format === 'datetime'){
       return <DatePicker selected={date}
@@ -888,7 +873,6 @@ class TableGen extends Component{
     className="selection"
     type={type}
     name="selection"
-    defaultChecked = {true}
     onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>
   }
 
@@ -960,7 +944,7 @@ class TableGen extends Component{
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
             else
-              row.Cell = (e) => this.datetimeBody(row.dateformat, e.value)
+              row.Cell = (e) => this.datetimeBody(e.value)
           }
           else if(row.Type === "datetimelog"){
             row.Cell = (e) => this.datetimelog(e.value)

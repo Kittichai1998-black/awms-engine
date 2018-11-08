@@ -40,8 +40,8 @@ class LoadingDocument extends Component{
       
     this.autocomplete = {queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "eventStatus", "c":"in", "v": "11,12"}]',
-      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCustomerName",
+      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"=", "v": 1}]',
+      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCusName",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -71,15 +71,14 @@ class LoadingDocument extends Component{
             data:rowselect1.data.document.documentItems, 
             loading:rowselect1.data.document.code,
             documentStatus:rowselect1.data.document.eventStatus,
-            warehouse:rowselect1.data.document.souWarehouseName,
-            warehouse2:rowselect1.data.document,
-            transportID:rowselect1.data.document.transport,
+            warehouse:rowselect1.data.document.souWarehouse,
+            transportID:rowselect1.data.document.transport_ID,
             documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
             date:moment(rowselect1.data.document.actionTime),
             addstatus:true,
             bstos:rowselect1.data.bstos,
             issuedNo:rowselect1.data.document.code
-          }, () => {this.createList(); console.log(this.state.warehouse2)})
+          }, () => {this.createList()})
         }
       })
     }
@@ -266,15 +265,13 @@ class LoadingDocument extends Component{
         transportCode:null,
         souWarehouseID:this.state.warehousevalue,
         souWarehouseCode:null,
-        desCustomerID:"xx",
         actionTime:this.state.date.format("YYYY-MM-DDThh:mm:ss"),
         documentDate:this.DateNow.format("YYYY-MM-DD"),
         remark:'',
         docItems:issuedList
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
-        this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
-        window.location.reload()
+  
       })
     }
     else{

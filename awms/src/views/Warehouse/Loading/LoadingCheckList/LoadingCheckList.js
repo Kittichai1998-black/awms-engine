@@ -64,7 +64,7 @@ class LoadingDocument extends Component{
   }
 
   onHandleScanConso(){
-    let data = {docID:this.state.transportvalue, scanCode:this.state.consoCode}
+    let data = [{loadingDocID:this.state.transportvalue, scanCode:this.state.consoCode}]
     API.post(window.apipath + "/api/wm/loading/conso" ,data).then(res => {
       this.getTableData()
     })

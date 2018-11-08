@@ -29,9 +29,7 @@ export default class Datepicker extends Component{
                 }}
                 onChangeRaw={(e) => {
                 if (moment(e.target.value).isValid()){
-                    const checkdate = moment(e.target.value, 'DD-MM-YYYY hh:mm:ss')
-                    if(!isNaN(checkdate.date()))
-                        this.onHandleDateChange(moment(e.target.value, 'DD-MM-YYYY hh:mm:ss'))
+                    this.onHandleDateChange(moment(e.target.value, 'DD-MM-YYYY hh:mm:ss'))
                 }
             }}
             timeIntervals={1}

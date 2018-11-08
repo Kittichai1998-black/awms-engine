@@ -111,11 +111,11 @@ class LoadingManage extends Component{
         accept={false} defalutCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]}/>
         <Card>
           <CardBody>
+            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px'}}
+              onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
             <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}
               onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
             {this.state.resp}
-            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px'}}
-              onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
           </CardBody>
         </Card>
       </div>

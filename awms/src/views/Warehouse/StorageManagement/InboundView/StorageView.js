@@ -74,7 +74,7 @@ class IssuedDoc extends Component {
   }
 
   onClickToDesc(data) {
-    return <Button style={{color:"white"}} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
+    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
 
   render() {

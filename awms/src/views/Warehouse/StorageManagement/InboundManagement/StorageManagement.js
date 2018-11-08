@@ -221,7 +221,7 @@ class StorageManagement extends Component{
           return [header]
         }
         else{
-          this.setState({response:<span className="text-center" color="danger">{res.data._result.message}</span>, barcode:""})
+          this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>, barcode:""})
           if([this.state.mapSTOView].length > 0)
           {
             const clonemapsto = Clone(this.state.mapSTOView)

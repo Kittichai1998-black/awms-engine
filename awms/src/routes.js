@@ -182,10 +182,9 @@ const routes = [
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
-  { path: '/sys/sto/stccard', exact: true, name: 'Stock Card', component: StockCard },
+  { path: '/wm/stc/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/doc/crt/manage', exact: true, name: 'CurrentInv', component: CurrentInv},
-  { path: '/sys/sto/curinv', exact: true, name: 'CurrentInv', component: CurrentInv},
   { path: '/doc/gr/view', exact: true, name: 'StorageDetail', component: StorageDetail},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];

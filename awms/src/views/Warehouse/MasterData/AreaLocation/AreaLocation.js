@@ -172,7 +172,7 @@ class AreaLocation extends Component{
   filterList(){
     const objselect = {queryString:window.apipath + "/api/mst",
       t:"ObjectSize",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}]",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
       f:"ID,Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -181,7 +181,7 @@ class AreaLocation extends Component{
 
     const areatypeselect = {queryString:window.apipath + "/api/mst",
       t:"AreaMaster",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
       f:"ID,Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",

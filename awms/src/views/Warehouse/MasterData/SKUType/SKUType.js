@@ -60,7 +60,7 @@ class SKUMasterType extends Component{
       getAutocomplete(){
         const objectsizeselect = {queryString:window.apipath + "/api/mst",
           t:"ObjectSize",
-          q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+          q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
           f:"ID,Code",
           g:"",
           s:"[{'f':'ID','od':'asc'}]",
