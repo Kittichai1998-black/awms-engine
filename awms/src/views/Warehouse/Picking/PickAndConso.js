@@ -127,7 +127,6 @@ class PickAndConso extends Component{
   createGuideLocation(){
     this.setState({openGuild:"block"})
     const data =  this.state.data
-    console.log(data)
     let docItemsStr = ""
     data.forEach(row => {
       const qty = row.Quantity.split("/")
@@ -268,7 +267,7 @@ class PickAndConso extends Component{
       <div style={{paddingBottom:'100px'}}>
         <Row>
           <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
-          <Col sm="11" xs="10"><AutoSelect data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
+          <Col sm="11" xs="10"><AutoSelect selectfirst={false} data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
