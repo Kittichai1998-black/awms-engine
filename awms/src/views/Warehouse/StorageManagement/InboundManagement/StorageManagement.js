@@ -233,7 +233,7 @@ class StorageManagement extends Component{
     if(status){
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
       "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
-      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO};
+      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO,_token:localStorage.getItem("Token")};
       Axios.post(window.apipath + "/api/wm/VRMapSTO",data).then(res => {
         let header = []
         if(res.data._result.status !== 0)

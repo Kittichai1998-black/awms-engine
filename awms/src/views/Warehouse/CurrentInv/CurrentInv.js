@@ -142,20 +142,19 @@ class CurrentInv extends Component{
 
       <div>
 
+        <div className="row text-center" style={{ marginTop: '100px' }}>
+          <Workbook filename="example.xlsx" element={<button className="btn btn-lg btn-primary">Export Exel</button>}>
+            <Workbook.Sheet data={this.state.dataExel} name="Sheet A">
+              {
+                this.HeaderData.bind(this)
+              }
+             
+            
+            </Workbook.Sheet>
+          </Workbook>
+        </div>
 
-        <Helmet>
-          <Script type="text/javascript" src="jqury-3.3.1.min.js"></Script>
-          <Script type="text/javascript" src="xlsx.full.min.js"></Script>
-          <Script type="text/javascript" src="angular.min.js"></Script>
-          <Script type="text/javascript" src="Readdata.js"></Script>
-         
-        </Helmet>
-
-
-
-       
-
-
+      
         <div className="clearfix">
 
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right"

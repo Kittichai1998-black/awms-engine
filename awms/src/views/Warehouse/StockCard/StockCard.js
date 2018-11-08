@@ -55,7 +55,7 @@ class StockCard extends Component{
       sk:0,
       l:0,
       all:"",},
-      PackMasterdata:[]
+      PackMasterdata:[],
     
     }
     this.onCalculate = this.onCalculate.bind(this)
@@ -80,6 +80,9 @@ class StockCard extends Component{
   }
 
   onGetDocument(){
+    if(this.state.dateFrom===undefined ||this.state.dateTo === undefined || this.state.CodePack === undefined ) {
+      alert("Please select data")
+    } else {
     let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
     let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
     
@@ -133,11 +136,15 @@ class StockCard extends Component{
               }
             })
             arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
-            this.setState({data1:arrdata},()=>{console.log(this.state.data1)})
+            this.setState({data1:arrdata})
 
-      })
-        
-    })
+          }else{
+            this.setState({data1:[]})
+          }
+          })       
+        })
+      }
+    }
   }
 
   onCalculate(){
@@ -156,7 +163,7 @@ class StockCard extends Component{
         }
       }},
       {accessor: 'DocCode', Header: 'Document',editable:false,},
-      {accessor: 'DocumentType_ID', Header: 'Document Type',editable:false,},
+      {accessor: 'DocumentType_ID', Header: 'Title',editable:false,},
       {accessor: 'Debit', Header: 'Debit', editable:false,},
       {accessor: 'Credit', Header: 'Credit', editable:false,},
       {accessor: 'Total', Header: 'Total', editable:false},
@@ -182,14 +189,14 @@ class StockCard extends Component{
                 <label style={{width:"50px",textAlign:"center"}}>To</label>
                 <div style={{display:"inline-block"}}>
                   {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
-                </div>
+                </div>{' '}
                 <Button color="primary" id="off" onClick={() => {this.onGetDocument()}}>OK</Button>
             </div>          
           </Col>
         </Row>
         </div>
          <br></br>
-        <ReactTable NoDataComponent={()=> null} sortable={false} style={{background:"white"}} filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
+        <ReactTable pageSize="10000" NoDataComponent={()=><div style={{textAlign:"center",height:"100px",color:"rgb(200,206,211)"}}>No row found</div>} sortable={false} style={{background:"white",marginBottom:"50px"}} filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
       </div>
 
 
