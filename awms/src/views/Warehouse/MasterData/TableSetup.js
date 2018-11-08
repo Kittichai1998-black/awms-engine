@@ -171,7 +171,7 @@ class TableGen extends Component{
   }
   
   removedata(rowdata){
-    /* const data = [...this.state.data]; */
+    const data = [...this.state.data];
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
@@ -185,7 +185,7 @@ class TableGen extends Component{
         data.splice(index,1);
       }
     })
-    this.setState({ data }); */
+    this.setState({ data });
     this.setState({dataedit});
   }
 

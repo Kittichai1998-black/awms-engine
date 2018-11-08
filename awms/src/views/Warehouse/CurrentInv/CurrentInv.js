@@ -8,7 +8,6 @@ import Axios from 'axios'
 
 
 
-
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
     + (select.q === "" ? "" : "&q=" + select.q)
@@ -23,12 +22,12 @@ const createQueryString = (select) => {
 
 const API = new apicall()
 
-class CurrentInv extends Component {
+class CurrentInv extends Component{
   constructor(props) {
     super(props);
     this.state = {
       data: [],
-
+   
     }
 
     this.CurrentItem = {
@@ -45,7 +44,7 @@ class CurrentInv extends Component {
 
     this.dateTimePicker = this.dateTimePicker.bind(this)
     this.initialData = this.initialData.bind(this)
-    
+
   }
 
 
