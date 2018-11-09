@@ -36,9 +36,9 @@ class LoadingDocument extends Component{
     this.documentselect = {queryString:window.apipath + "/api/viw",
       t:"Document",
       q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1012},{ "f": "EventStatus", "c":"=", "v": 11},{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID,Code,transport",
+      f:"ID,concat(Code, ' : ', DesCustomerName) as Code,transport",
       g:"",
-      s:"[{'f':'ID','od':'asc'}]",
+      s:"[{'f':'DesCustomerName','od':'asc'}]",
       sk:0,
       all:"",}
   }
