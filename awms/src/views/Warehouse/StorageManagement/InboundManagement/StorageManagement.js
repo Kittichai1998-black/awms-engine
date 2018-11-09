@@ -16,6 +16,7 @@ class StorageManagement extends Component{
       control:"none",
       mapSTO:null,
       mapSTOView:null,
+      loading:false,
       Mode:0,
       radiostate:false,
       supplier:{queryString:window.apipath + "/api/mst",
@@ -230,11 +231,12 @@ class StorageManagement extends Component{
       }
     }
 
-    if(status){
+    if(status && this.state.loading === false){
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
       "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
       "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO,_token:localStorage.getItem("Token")};
       Axios.post(window.apipath + "/api/wm/VRMapSTO",data).then(res => {
+        this.setState({loading:true})
         let header = []
         if(res.data._result.status !== 0)
         {
@@ -248,13 +250,11 @@ class StorageManagement extends Component{
               let allprice = this.state.pricedata.filter(pricerow => pricerow.Code === arrayrow.code)
               arrayrow.price = allprice[0].Price
             })
-            console.log(clonemapsto)
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
             window.success("เรียบร้อย")
           })
           return [header]
-          
         }
         else{
           this.setState({response:<span class="text-center" color="danger">{res.data._result.message}</span>, barcode:""})
@@ -274,7 +274,10 @@ class StorageManagement extends Component{
             return null
           }
         }
-      }).then(res =>  res!==null?this.addtolist(res):null).then(res => {this.setState({result:res,poststatus:false})})
+      }).then(res =>  {
+        this.setState({loading:false})
+        return res!==null?this.addtolist(res):null
+      }).then(res => {this.setState({result:res,poststatus:false})})
     }
     else{
       this.setState({barcode:""})

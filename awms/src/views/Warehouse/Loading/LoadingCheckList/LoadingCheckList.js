@@ -55,7 +55,7 @@ class LoadingDocument extends Component{
       this.setState({auto_transport : res.data.datas}, () => {
         const auto_transport = []
         this.state.auto_transport.forEach(row => {
-          auto_transport.push({value:row.ID, label:row.Code, transportID:row.Transport_ID})
+          auto_transport.push({value:row.ID, label:row.Code, transportID:row.transport})
         })
         this.setState({auto_transport})
       })
@@ -90,14 +90,14 @@ class LoadingDocument extends Component{
       */}
         <Row>
           <Col><label style={{paddingRight:"10px"}}>Loading Document : </label>
-          <div style={{display:"inline-block",width:"300px"}}><AutoSelect selectfirst={false} data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label, "TransportID":e.TransportID}, () => {this.getTableData()})}/></div></Col>
+          <div style={{display:"inline-block",width:"300px"}}><AutoSelect selectfirst={false} data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label, "TransportID":e.transportID}, () => {this.getTableData()})}/></div></Col>
         </Row>
         <Row>
           <Col><label style={{paddingRight:"10px"}}>Transport : </label><span>{this.state.TransportID}</span></Col>
         </Row>
         <Row>
           <Col>
-            <Input style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
+            <Input id="transportCode" style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
               autoFocus
               onChange={(e) => {
                 this.setState({consoCode:e.target.value})

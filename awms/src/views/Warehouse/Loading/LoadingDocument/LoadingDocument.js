@@ -73,6 +73,7 @@ class LoadingDocument extends Component{
       this.setState({pageID:values.ID, readonly:true,
         addstatus:true,})
         API.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
+          console.log(rowselect1.data)
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }
@@ -293,8 +294,10 @@ class LoadingDocument extends Component{
         _token:localStorage.getItem("Token")
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
-        this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
-        window.location.reload()
+        if(res.data._result.status === 1){
+          this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
+          window.location.reload()
+        }
       })
     }
     else{
