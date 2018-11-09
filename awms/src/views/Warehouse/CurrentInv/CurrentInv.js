@@ -49,7 +49,7 @@ class CurrentInv extends Component{
 
 
   initialData() {
-    Axios.get("https://api.myjson.com/bins/e1qwe").then(Response => {
+    Axios.get("https://api.myjson.com/bins/fjzty").then(Response => {
       this.setState({ dataExcel: Response.data },() =>console.log(this.state.dataExcel))
       
     })

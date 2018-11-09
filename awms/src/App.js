@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Switch, BrowserRouter } from 'react-router-dom';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPallet, faBarcode, faPuzzlePiece, faWeightHanging, faPause, faBox, faLayerGroup} from '@fortawesome/free-solid-svg-icons'
+import { faPallet, faBarcode, faPuzzlePiece, faWeightHanging, faPause, faBox, faLayerGroup, faCheck} from '@fortawesome/free-solid-svg-icons'
 import './App.css';
 // Styles
 // CoreUI Icons Set
@@ -19,7 +19,7 @@ import './scss/style.css'
 import { DefaultLayout } from './containers';
 // Pages
 import { Login, Page404, Page500, Register } from './views/Pages';
-library.add(faPallet, faBarcode, faPuzzlePiece, faWeightHanging, faPause, faBox, faLayerGroup)
+library.add(faPallet, faBarcode, faPuzzlePiece, faWeightHanging, faPause, faBox, faLayerGroup, faCheck)
 // import { renderRoutes } from 'react-router-config';
 
 class App extends Component {

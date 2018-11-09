@@ -17,7 +17,7 @@
     <script>
     window.apipath = "http://191.20.80.120:8080";
     
-    window.alert = function(msg, color){
+    window.alert = function(msg, color, border){
         var div = document.createElement("div");
         div.style.textAlign = "center"
         div.style.width = "99%"
@@ -28,7 +28,7 @@
         div.onclick = () => {
           div.remove()
         }
-        div.style.border = "1px solid red";
+        div.style.border = border ? border : "1px solid red";
         div.style.margin = "3px auto";
         div.style.padding = "2px";
         div.style.cursor = "pointer"
@@ -42,7 +42,7 @@
     }
 
     window.success = function(msg){
-        window.alert(msg, "rgba(76, 255, 51, 0.2)")
+        window.alert(msg, "rgba(76, 255, 51, 0.2)","1px solid rgba(76, 255, 51, 0.2)")
     }
 
     window.error = function(msg){

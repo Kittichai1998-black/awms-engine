@@ -185,7 +185,7 @@ class StorageManagement extends Component{
           if(getElement !== "")
             this.setState({DataPopup:getElement, HeaderPopup:child.code}, () => {this.togglePopup()})
           }}>
-            <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
+            <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="check"/>} | </span>
             <span><FontAwesomeIcon icon="pallet"/>{child.code} : {child.name} | </span>
             <span><FontAwesomeIcon icon="layer-group"/>{child.objectSizeName} | </span>
             <span>{child.minWeiKG?child.minWeiKG+ '/':''} {child.weiKG === 0 ? '' : child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} Qty : {child.allqty !== undefined ? child.allqty : null}</span>
