@@ -57,9 +57,9 @@ class PickAndConso extends Component{
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
-      f:"ID,Code, Remark",
+      f:"ID,concat(Code, ' : ', DesCustomerName) as Code, Remark",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
+      s:"[{'f':'DesCustomerName','od':'asc'}]",
       sk:0,
       l:0,
       all:"",}

@@ -528,9 +528,12 @@ class TableGen extends Component{
  
   }
 
-  datetimeBody(value){
+  datetimeBody(value, format){
     if(value !== null){
       const date = moment(value);
+      if(format === "date")
+        return <div>{date.format('DD-MM-YYYY')}</div>
+      else
       return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
     }
   }

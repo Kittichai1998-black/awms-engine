@@ -87,10 +87,10 @@ class IssuedDoc extends Component{
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
+      {accessor: 'DesCustomerName', Header: 'Customer', editable:false, Filter:"text",},
+      //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
       {accessor: 'SouWarehouseName', Header: 'Warehouse', editable:false, Filter:"text",},
       //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
-      {accessor: 'DesCustomerName', Header: 'Customer', editable:false, Filter:"text",},
       // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       // {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
       // {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
