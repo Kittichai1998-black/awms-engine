@@ -48,9 +48,19 @@ class LoadingDocument extends Component{
       API.get(window.apipath + "/api/wm/loading/conso?docID=" + this.state.transportvalue).then(res => {
         let groupdata = _.groupBy(res.data.datas, (e) => {return e.id})
         let groupdisplay = []
-        for(let row in groupdata){
-          groupdisplay.push(groupdata[row][0])
-        }
+            let packname = []
+            for(let row in groupdata){
+              groupdata[row].forEach(grow => {
+                packname.forEach((prow, index) => {
+                  if(prow === grow.packName)
+                    packname.splice(index, 1)
+                })
+                packname.push(grow.packName)
+              })
+              let result = groupdata[row][0]
+              result.item = packname.join(",")
+              groupdisplay.push(groupdata[row][0])
+            }
         this.setState({data:groupdisplay})
       })
     }
@@ -79,7 +89,7 @@ class LoadingDocument extends Component{
   render(){
     const cols = [
       {accessor: 'code', Header: 'Code',editable:false,},
-      {accessor: 'SKU', Header: 'SKU',editable:false},
+      {accessor: 'item', Header: 'Item',editable:false,},
       {accessor: 'docItemID', Header: 'Issued Document',editable:false,},
       {accessor: 'isLoaded', Header: 'Loaded',editable:false, Cell:e => <span>{e.value === true ? "Loaded" : "Wait"}</span>},
     ];
