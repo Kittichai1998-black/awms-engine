@@ -58,6 +58,12 @@ class Area extends Component{
     QueryDoc_per.q = JSON.stringify(JSONDoc_per)
     Axios.get(createQueryString(QueryDoc_per)).then((res) => {
       console.log(res.data.datas)
+      res.data.datas.forEach(row => {
+       let Permission = row.Permission_ID
+       console.log(Permission)
+      })
+
+
     })
 
   }
