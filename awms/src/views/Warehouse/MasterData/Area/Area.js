@@ -27,18 +27,9 @@ class Area extends Component{
       sk:0,
       l:100,
       all:"",},
-      user_per:{queryString:window.apipath + "/api/viw",
-      t:"User_Permission",
-      q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
-      f:"distinct User_ID,Role_ID,Permission_ID,Status",
-      g:"",
-      s:"[{'f':'Role_ID','od':'asc'}]",
-      sk:0,
-      l:100,
-      all:"",},
       sortstatus:0,
       selectiondata:[],        
-      showbutton:"none"
+     
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
@@ -48,18 +39,6 @@ class Area extends Component{
   onHandleClickCancel(event){
     this.forceUpdate();
     event.preventDefault();
-  }
-
-  componentWillMount(){
-    this.filterList();
-    let QueryDoc_per = this.state.user_per
-    let JSONDoc_per = []
-    JSONDoc_per.push({"f": "User_ID", "c":"=", "v":localStorage.User_ID}) 
-    QueryDoc_per.q = JSON.stringify(JSONDoc_per)
-    Axios.get(createQueryString(QueryDoc_per)).then((res) => {
-      console.log(res.data.datas)
-    })
-
   }
 
   componentWillUnmount(){

@@ -7,6 +7,7 @@ import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore'
 import {EventStatus} from '../Status'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames';
+import _ from 'lodash'
 
 const Axios = new apicall()
 
@@ -56,9 +57,9 @@ class PickAndConso extends Component{
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
-      f:"ID,Code",
+      f:"ID,concat(Code, ' : ', DesCustomerName) as Code, Remark",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
+      s:"[{'f':'DesCustomerName','od':'asc'}]",
       sk:0,
       l:0,
       all:"",}
@@ -68,7 +69,7 @@ class PickAndConso extends Component{
     Axios.get(createQueryString(this.select)).then((rowselect) => {
       const autocomplete = []
       rowselect.data.datas.forEach(row => {
-        autocomplete.push({value:row.ID, label: row.Code})
+        autocomplete.push({value:row.ID, label: row.Code, remark: row.Remark})
       })
       this.setState({autocomplete})
     })
@@ -84,10 +85,8 @@ class PickAndConso extends Component{
 
     Axios.get(createQueryString(documentItem)).then((rowselect) => {
       this.setState({data:rowselect.data.datas})
-      console.log(rowselect.data.datas)
       return rowselect.data.datas.map(x=> x.ID)
     }).then((res) => {
-      console.log(res.join(','))
       const documentItemCount = this.state.documentItemCount
       documentItemCount.q = JSON.stringify([{f:'status',c:'!=',v:'2'},{f:'DocumentItem_ID',c:'in',v:res.join(',')}])
       this.setState({documentItemCount:documentItemCount})
@@ -100,8 +99,9 @@ class PickAndConso extends Component{
           if(filterPickItem.length > 0){
             countrow.data.datas.forEach(crow => {
               if(row.ID === crow.DocumentItem_ID){
-                row.Quantity = crow.qty + "/" + row.Quantity
+                row.Quantity = crow.qty + "/" + row.Quantity         
               }
+
             })
           }
           else{
@@ -132,11 +132,9 @@ class PickAndConso extends Component{
   }
   
   createGuideLocation(){
-    this.setState({openGuild:"block"})
     const data =  this.state.data
     let docItemsStr = ""
     data.forEach(row => {
-      console.log(row.Quantity)
       const qty = row.Quantity.split("/")
       if(qty[0] !== qty[1])
         docItemsStr += "," + row.ID;
@@ -144,15 +142,25 @@ class PickAndConso extends Component{
     let guideLoc = []
     if(docItemsStr !== ""){
       Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemIDs=' + docItemsStr.substring(1)).then(res => {
-        this.setState({openGuild:"block"})
-         for( let i= 0; i <5 && i < res.data.datas.length;i++){
-           let resultData =res.data.datas[i]
-           guideLoc.push(<button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{resultData.areaLocationCode === null ? null:resultData.areaLocationCode + '-'} {resultData.areaCode} - {resultData.code} </button>)     
-          }
-          if (res.data.datas.length > 5){
-            guideLoc.push(<span>...</span>)
-          }
-          this.setState({guideLoc})
+        if(res.data.datas.length != 0){
+          this.setState({openGuild:"block"})
+        }else{
+          this.setState({openGuild:"none"})
+        }
+        let grouplocation = _.groupBy(res.data.datas,"code")
+        let groupdata = []
+        for(let row in grouplocation){
+          groupdata.push(grouplocation[row][0])
+        }
+        for( let i= 0; i <5 && i < groupdata.length;i++){
+
+          let resultData =groupdata[i]
+          guideLoc.push(<button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{resultData.areaLocationCode === null ? null:resultData.areaLocationCode + '-'} {resultData.areaCode} - {resultData.code} </button>)     
+        }
+        if (groupdata.length > 5){
+          guideLoc.push(<span>...</span>)
+        }
+        this.setState({guideLoc})
         // const reselement = res.data.datas.map((row,i) => {
         //   return  <button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{row.areaLocationCode === null ? null:row.areaLocationCode + '-'} {row.areaCode} - {row.code}  </button>
         // })
@@ -243,17 +251,18 @@ class PickAndConso extends Component{
         action: null,
         mapsto:this.state.mapsto
       }
-      console.log(data)
       Axios.post(window.apipath + "/api/wm/issued/sto/pickConso", data).then((res) => {
-        if(res.data.mapsto){
-          this.setState({mapsto:res.data.mapsto}, () => {
-            const clonemapsto = Clone(this.state.mapsto)
-            let header = clonemapsto
-            header.mapstos = this.sumChild(clonemapsto.mapstos)
-            this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
-          })
+        if(res.data._result.status === 1){
+          window.success("เรียบร้อย")
+          if(res.data.mapsto){
+            this.setState({mapsto:res.data.mapsto}, () => {
+              const clonemapsto = Clone(this.state.mapsto)
+              let header = clonemapsto
+              header.mapstos = this.sumChild(clonemapsto.mapstos)
+              this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
+            })
+          }
         }
-  
         this.renderTable(this.state.rowselect)
       })
     }
@@ -268,7 +277,7 @@ class PickAndConso extends Component{
   }
 
   clearTable(){
-    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:null, pickingList:null, popupElement:null})
+    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:1, pickingList:null, popupElement:null,mapsto:null})
     
   }
 
@@ -283,7 +292,10 @@ class PickAndConso extends Component{
       <div style={{paddingBottom:'100px'}}>
         <Row>
           <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
-          <Col sm="11" xs="10"><AutoSelect selectfirst={false} data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
+          <Col sm="11" xs="10"><AutoSelect selectfirst={false} data={this.state.autocomplete} result={result => {this.renderTable(result.value); this.setState({remark:result.remark})}}/></Col>
+        </Row>
+        <Row>
+          <Col sm="12" xs="12"><label>Remark :</label>{this.state.remark}</Col>
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
