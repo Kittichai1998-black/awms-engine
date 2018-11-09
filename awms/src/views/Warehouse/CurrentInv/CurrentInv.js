@@ -2,23 +2,12 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Button } from 'reactstrap';
 import { TableGen } from '../MasterData/TableSetup';
-import { apicall, DatePicker } from '../ComponentCore'
+import { apicall, DatePicker, createQueryString } from '../ComponentCore'
 import Workbook from 'react-excel-workbook'
 import Axios from 'axios'
 
 
 
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 
 const API = new apicall()
 
@@ -49,8 +38,8 @@ class CurrentInv extends Component{
 
 
   initialData() {
-    Axios.get("https://api.myjson.com/bins/fjzty").then(Response => {
-      this.setState({ dataExcel: Response.data },() =>console.log(this.state.dataExcel))
+    API.get(window.apipath + "/api/wm/audit/reconcile/fileserver").then(Response => {
+      this.setState({ dataExcel: Response.data.datas },() =>console.log(this.state.dataExcel))
       
     })
    
@@ -100,11 +89,12 @@ class CurrentInv extends Component{
             <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px'}} color="primary" className="float-right"
             >Export Excel</Button>}>
             <Workbook.Sheet data={dataEcel} name="Sheet A">
-              <Workbook.Column label="Code" value="code" />
-              <Workbook.Column label="Name" value="name" />
-              <Workbook.Column label="Qtyamw" value="qtyamw" />
-              <Workbook.Column label="Qtyerp" value="qtyerp" />
-              <Workbook.Column label="Total" value="total" />
+              <Workbook.Column label="PackCode" value="packCode"  />
+              <Workbook.Column label="PackName" value="packName" />
+              <Workbook.Column label="Warehouse" value="warehouse" />
+              <Workbook.Column label="PackQtyWMS" value={row =>""+ row.packQtyWMS} />
+              <Workbook.Column label="PackQtyERP" value={row => "" + row.packQtyERP} />
+              <Workbook.Column label="PackQtyResult" value={row => "" + row.packQtyResult}/>
             </Workbook.Sheet>
           </Workbook>
           <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginRight:"5px" }} color="primary" className="float-right"

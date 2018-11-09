@@ -124,8 +124,9 @@ class PickAndConso extends Component{
           if(filterPickItem.length > 0){
             countrow.data.datas.forEach(crow => {
               if(row.ID === crow.DocumentItem_ID){
-                row.Quantity = crow.qty + "/" + row.Quantity
+                row.Quantity = crow.qty + "/" + row.Quantity         
               }
+
             })
           }
           else{
@@ -156,7 +157,6 @@ class PickAndConso extends Component{
   }
   
   createGuideLocation(){
-    this.setState({openGuild:"block"})
     const data =  this.state.data
     let docItemsStr = ""
     data.forEach(row => {
@@ -167,14 +167,18 @@ class PickAndConso extends Component{
     let guideLoc = []
     if(docItemsStr !== ""){
       Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemIDs=' + docItemsStr.substring(1)).then(res => {
-        this.setState({openGuild:"block"})
-
-        let grouplocation = _.groupBy(res.data.datas, "id")
+        if(res.data.datas.length != 0){
+          this.setState({openGuild:"block"})
+        }else{
+          this.setState({openGuild:"none"})
+        }
+        let grouplocation = _.groupBy(res.data.datas,"code")
         let groupdata = []
         for(let row in grouplocation){
           groupdata.push(grouplocation[row][0])
         }
         for( let i= 0; i <5 && i < groupdata.length;i++){
+
           let resultData =groupdata[i]
           guideLoc.push(<button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{resultData.areaLocationCode === null ? null:resultData.areaLocationCode + '-'} {resultData.areaCode} - {resultData.code} </button>)     
         }
@@ -273,15 +277,17 @@ class PickAndConso extends Component{
         mapsto:this.state.mapsto
       }
       Axios.post(window.apipath + "/api/wm/issued/sto/pickConso", data).then((res) => {
-        if(res.data.mapsto){
-          this.setState({mapsto:res.data.mapsto}, () => {
-            const clonemapsto = Clone(this.state.mapsto)
-            let header = clonemapsto
-            header.mapstos = this.sumChild(clonemapsto.mapstos)
-            this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
-          })
+        if(res.data._result.status === 1){
+          window.success("เรียบร้อย")
+          if(res.data.mapsto){
+            this.setState({mapsto:res.data.mapsto}, () => {
+              const clonemapsto = Clone(this.state.mapsto)
+              let header = clonemapsto
+              header.mapstos = this.sumChild(clonemapsto.mapstos)
+              this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
+            })
+          }
         }
-  
         this.renderTable(this.state.rowselect)
       })
     }
@@ -296,7 +302,7 @@ class PickAndConso extends Component{
   }
 
   clearTable(){
-    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:null, pickingList:null, popupElement:null})
+    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:1, pickingList:null, popupElement:null,mapsto:null})
     
   }
 
