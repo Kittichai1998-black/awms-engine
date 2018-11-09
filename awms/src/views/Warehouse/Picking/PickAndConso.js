@@ -277,7 +277,7 @@ class PickAndConso extends Component{
   }
 
   clearTable(){
-    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:1, pickingList:null, popupElement:null})
+    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:1, pickingList:null, popupElement:null,mapsto:null})
     
   }
 
