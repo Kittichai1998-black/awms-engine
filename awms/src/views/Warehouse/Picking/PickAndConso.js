@@ -99,8 +99,9 @@ class PickAndConso extends Component{
           if(filterPickItem.length > 0){
             countrow.data.datas.forEach(crow => {
               if(row.ID === crow.DocumentItem_ID){
-                row.Quantity = crow.qty + "/" + row.Quantity
+                row.Quantity = crow.qty + "/" + row.Quantity         
               }
+
             })
           }
           else{
@@ -248,15 +249,17 @@ class PickAndConso extends Component{
         mapsto:this.state.mapsto
       }
       Axios.post(window.apipath + "/api/wm/issued/sto/pickConso", data).then((res) => {
-        if(res.data.mapsto){
-          this.setState({mapsto:res.data.mapsto}, () => {
-            const clonemapsto = Clone(this.state.mapsto)
-            let header = clonemapsto
-            header.mapstos = this.sumChild(clonemapsto.mapstos)
-            this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
-          })
+        if(res.data._result.status === 1){
+          window.success("เรียบร้อย")
+          if(res.data.mapsto){
+            this.setState({mapsto:res.data.mapsto}, () => {
+              const clonemapsto = Clone(this.state.mapsto)
+              let header = clonemapsto
+              header.mapstos = this.sumChild(clonemapsto.mapstos)
+              this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
+            })
+          }
         }
-  
         this.renderTable(this.state.rowselect)
       })
     }
