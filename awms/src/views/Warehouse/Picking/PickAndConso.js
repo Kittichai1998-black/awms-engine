@@ -289,8 +289,7 @@ class PickAndConso extends Component{
           <Col sm="11" xs="10"><AutoSelect selectfirst={false} data={this.state.autocomplete} result={result => {this.renderTable(result.value); this.setState({remark:result.remark})}}/></Col>
         </Row>
         <Row>
-          <Col sm="3" xs="3"><label>Remark :</label></Col>
-          <Col sm="9" xs="9"><span>{this.state.remark}</span></Col>
+          <Col sm="12" xs="12"><label>Remark :</label>{this.state.remark}</Col>
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
