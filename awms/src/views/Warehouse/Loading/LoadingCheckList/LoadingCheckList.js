@@ -7,6 +7,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
 import 'react-datepicker/dist/react-datepicker.css';
+import _ from 'lodash'
 
 const API = new apicall();
 
@@ -45,7 +46,12 @@ class LoadingDocument extends Component{
   getTableData(){
     if(this.state.transportvalue !== undefined){
       API.get(window.apipath + "/api/wm/loading/conso?docID=" + this.state.transportvalue).then(res => {
-        this.setState({data:res.data.datas})
+        let groupdata = _.groupBy(res.data.datas, (e) => {return e.id})
+        let groupdisplay = []
+        for(let row in groupdata){
+          groupdisplay.push(groupdata[row][0])
+        }
+        this.setState({data:groupdisplay})
       })
     }
   }
