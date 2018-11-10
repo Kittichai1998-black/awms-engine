@@ -28,10 +28,12 @@ namespace AWMSEngine.Engine.Business.Issued
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            List<amt_DocumentItem> docItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID",reqVO.docID, this.BuVO);
+            reqVO.scanCode = reqVO.scanCode == null ? null : reqVO.scanCode.ToUpper();
+            reqVO.baseCode = reqVO.baseCode == null ? null : reqVO.baseCode.ToUpper();
+            List<amt_DocumentItem> docItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID", reqVO.docID, this.BuVO);
             amt_Document doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(reqVO.docID, this.BuVO);
 
-            var mapSto = reqVO.mapsto != null ? reqVO.mapsto : 
+            var mapSto = reqVO.mapsto != null ? reqVO.mapsto :
                 ADO.StorageObjectADO.GetInstant()
                 .Get(reqVO.scanCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID, false, true, this.BuVO);
             if (mapSto == null)
@@ -50,7 +52,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
             var mapStoTree = mapSto.ToTreeList();
 
-            if (!docItems.Any(x => mapStoTree.Any(y=>y.mstID == x.PackMaster_ID && y.type == StorageObjectType.PACK)))
+            if (!docItems.Any(x => mapStoTree.Any(y => y.mstID == x.PackMaster_ID && y.type == StorageObjectType.PACK)))
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "รายการ " + reqVO.scanCode + " ไม่มีสินค้าตรงกับเอกสาร " + doc.Code);
             if (mapSto.eventStatus == StorageObjectEventStatus.PICKING || mapSto.eventStatus == StorageObjectEventStatus.PICKED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "รายการ " + reqVO.scanCode + " ได้ถูก Picking แล้ว");
@@ -67,13 +69,13 @@ namespace AWMSEngine.Engine.Business.Issued
             StorageObjectCriteria stoConso = null;
             //Pick ทั้ง Base
             if (mapSto.code == reqVO.scanCode && baseConso == null &&
-                docItems.Any(x =>
+                docItems.TrueForAll(x =>
                         (x.Quantity - diStos.Count(y => y.DocumentItem_ID == x.ID)) >=//จำนวนสินค้าที่ยังไม่ pick
                         mapStoTree.Count(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID) //จำนวนสินค้าที่จะหยิบ
                         )
                )
             {
-                if(baseConso != null)
+                if (baseConso != null)
                 {
                     stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, mapSto.warehouseID, mapSto.areaID, false, false, this.BuVO);
                     if (!stoConso.id.HasValue)
@@ -100,7 +102,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 });
             }
             //Pick สินค้าใน Base
-            else if(mapSto.code != reqVO.scanCode)
+            else if (mapSto.code != reqVO.scanCode)
             {
                 if (baseConso != null)
                 {
@@ -122,23 +124,26 @@ namespace AWMSEngine.Engine.Business.Issued
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนที่ Picking เกินประมาณสินค้าที่เบิก");
 
 
-                List<StorageObjectCriteria> dociStoMapList = new List<StorageObjectCriteria>(); 
+                List<StorageObjectCriteria> dociStoMapList = new List<StorageObjectCriteria>();
                 StorageObjectCriteria _stoConso = null;
 
                 var mapStoPickingList = mapStoTree
-                    .Where(x => x.code == reqVO.scanCode && 
-                        x.parentID == mapSto.id && 
-                        x.parentType == mapSto.type && 
+                    .Where(x => x.code == reqVO.scanCode &&
+                        x.parentID == mapSto.id &&
+                        x.parentType == mapSto.type &&
                         x.eventStatus != StorageObjectEventStatus.CONSOLIDATED);//เลือก Pick รายการที่อยู่ภายใต้กล่องที่เลือก 1LV
 
                 if (mapStoPickingList.Count() < reqVO.amount)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนสินค้าที่ต้องการ Picking ไม่เพียงพอ");
                 mapStoPickingList
                     .Take(reqVO.amount)
-                    .ToList().ForEach(x=>
+                    .ToList().ForEach(x =>
                     {
                         if (stoConso != null)
+                        {
                             x.parentID = stoConso.id;
+                            x.parentType = stoConso.type;
+                        }
                         else
                             x.parentID = null;
 
@@ -174,7 +179,7 @@ namespace AWMSEngine.Engine.Business.Issued
             mapStoTree
                 .Where(x => x.type == StorageObjectType.BASE && mapStoTree.Count(y => y.parentID == x.id.Value) == 0)
                 .ToList()
-                .ForEach(x=>
+                .ForEach(x =>
                 {
                     x.eventStatus = StorageObjectEventStatus.REMOVED;
                     ADO.StorageObjectADO.GetInstant().PutV2(x, this.BuVO);
@@ -184,7 +189,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 mapsto = ADO.StorageObjectADO.GetInstant().Get(mapSto.id.Value, mapSto.type, false, true, this.BuVO),
                 mapstoConso = stoConso == null ? null : ADO.StorageObjectADO.GetInstant().Get(stoConso.id.Value, stoConso.type, false, true, this.BuVO)
             };
-            
+
             var diStos2 = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                 new SQLConditionCriteria[] {
                     new SQLConditionCriteria("DocumentItem_ID",string.Join(',',docItems.Select(x=>x.ID.Value).ToArray()), SQLOperatorType.IN),
@@ -194,6 +199,9 @@ namespace AWMSEngine.Engine.Business.Issued
             if (docItems.TrueForAll(x => x.Quantity == diStos2.Count(y => y.DocumentItem_ID == x.ID)))
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
 
+            if (res.mapsto.eventStatus == StorageObjectEventStatus.CONSOLIDATING || res.mapsto.eventStatus == StorageObjectEventStatus.CONSOLIDATED ||
+                res.mapsto.eventStatus == StorageObjectEventStatus.PICKING || res.mapsto.eventStatus == StorageObjectEventStatus.PICKED)
+                res.mapsto = null;
             return res;
         }
     }

@@ -21,25 +21,27 @@ namespace AWMSEngine.ADO.StaticValue
         private List<ams_ObjectSize> _ObjectSizes;
         public List<ams_ObjectSize> ObjectSizes { get => this._ObjectSizes; }
 
-        private List<ams_Branch> _Branch;
-        public List<ams_Branch> Branchs { get => this._Branch; }
+        private List<ams_Branch> _Branchs;
+        public List<ams_Branch> Branchs { get => this._Branchs; }
         private List<ams_Warehouse> _Warehouses;
         public List<ams_Warehouse> Warehouses { get => this._Warehouses; }
-        private List<ams_AreaMaster> _AreaMaster;
-        public List<ams_AreaMaster> AreaMasters { get => this._AreaMaster; }
+        private List<ams_AreaMaster> _AreaMasters;
+        public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
 
         private List<ams_Supplier> _Suppliers;
         public List<ams_Supplier> Suppliers { get => this._Suppliers; }
         private List<ams_Customer> _Customers;
         public List<ams_Customer> Customers { get => this._Customers; }
-        private List<ams_PackMasterType> _PackMasterType;
-        public List<ams_PackMasterType> PackMasterType { get => this._PackMasterType; }
-        private List<ams_SKUMasterType> _SKUMasterType;
-        public List<ams_SKUMasterType> SKUMasterType { get => this._SKUMasterType; }
+        private List<ams_PackMasterType> _PackMasterTypes;
+        public List<ams_PackMasterType> PackMasterTypes { get => this._PackMasterTypes; }
+        private List<ams_SKUMasterType> _SKUMasterTypes;
+        public List<ams_SKUMasterType> SKUMasterTypes { get => this._SKUMasterTypes; }
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
-        private List<ams_Transport> _Transport;
-        public List<ams_Transport> Transport { get => this._Transport; }
+        private List<ams_Transport> _Transports;
+        public List<ams_Transport> Transports { get => this._Transports; }
+        private List<ams_UnitType> _UnitTypes;
+        public List<ams_UnitType> UnitTypes { get => this._UnitTypes; }
 
         private static StaticValueManager instant;
 
@@ -79,9 +81,13 @@ namespace AWMSEngine.ADO.StaticValue
             var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, new VOCriteria()));
             this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
         }
+        public void LoadUnitType()
+        {
+            this._UnitTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_UnitType>("status", 1, new VOCriteria()));
+        }
         public void LoadAreaMaster()
         {
-            this._AreaMaster = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, new VOCriteria()));
+            this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, new VOCriteria()));
         }
         public void LoadWarehouses()
         {
@@ -89,7 +95,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadBranch()
         {
-            this._Branch = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, new VOCriteria()));
+            this._Branchs = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, new VOCriteria()));
         }
         public void LoadCustomer()
         {
@@ -101,7 +107,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadPackMasterType()
         {
-            this._PackMasterType = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, new VOCriteria()));
+            this._PackMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, new VOCriteria()));
         }
         public void LoadAPIService()
         {
@@ -109,11 +115,11 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadSKUMasterType()
         {
-            this._SKUMasterType = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, new VOCriteria()));
+            this._SKUMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, new VOCriteria()));
         }
         public void LoadTransport()
         {
-            this._Transport = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, new VOCriteria()));
+            this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, new VOCriteria()));
         }
 
         public bool IsFeature(FeatureCode code)
