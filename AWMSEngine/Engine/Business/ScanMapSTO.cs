@@ -63,6 +63,7 @@ namespace AWMSEngine.Engine.Business
                 mapsto = ADOSto.Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, false, this.BuVO);
                 if (mapsto == null || mapsto.type == StorageObjectType.PACK)
                 {
+
                     int freeCount = ADOSto.GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, reqVO.batch, reqVO.lot, this.BuVO);
                     if (freeCount < reqVO.amount && (!false && this.StaticValue.IsFeature(FeatureCode.IB0100)))
                     {
@@ -74,9 +75,12 @@ namespace AWMSEngine.Engine.Business
 
                     Logger.LogDebug("//ไม่พบในคลัง ให้หา sto นอกคลังแบบ Free");
                     mapsto = ADOSto.GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
+
                     if (mapsto != null)
                     {
                         Logger.LogDebug("//พบ sto ว่างประเภท " + mapsto.type);
+                        if (mapsto.type == StorageObjectType.PACK)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้าต้องอยู่บน พาเลท หรือ พื้นที่วางสินค้า เท่านั้น");
                         if (!reqVO.areaID.HasValue)
                             throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาเลือก Area");
                         if (!mapsto.id.HasValue)
@@ -86,7 +90,7 @@ namespace AWMSEngine.Engine.Business
                         Logger.LogDebug("//รับเข้าคลัง สถานะ WAIT");
                     }
                     else
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการในคลัง");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Barcode '"+reqVO.scanCode+"' ไม่ตรงกับรายการใดๆในคลัง หรือ รายการที่ตรงไม่พร้อมใช้งาน");
                 }
                 else if (mapsto != null)
                 {

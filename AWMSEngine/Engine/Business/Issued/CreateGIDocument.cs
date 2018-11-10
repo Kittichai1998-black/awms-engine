@@ -180,7 +180,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(issueItem.skuCode, this.BuVO);
                     if (skuMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Code " + issueItem.skuCode);
-                    var packMstType = this.StaticValue.PackMasterType.FirstOrDefault(x => x.Code == issueItem.packTypeCode);
+                    var packMstType = this.StaticValue.PackMasterTypes.FirstOrDefault(x => x.Code == issueItem.packTypeCode);
                     if (packMstType == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pack Type Code " + issueItem.skuCode);
 
