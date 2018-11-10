@@ -1,59 +1,13 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Button,CardBody,Card, ButtonGroup , Row, Col,
+import {Input, Button,CardBody,Card , Row, Col,
     Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 //import Axios from 'axios';
-import ReactTable from 'react-table';
-import {AutoSelect,apicall} from '../ComponentCore'
+import { AutoSelect , apicall, createQueryString ,Clone } from '../ComponentCore'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { runInNewContext } from 'vm';
 
 
 const Axios = new apicall()
-const createQueryString = (select) => {
-    let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    return queryS
-  }
-  function clone(obj) {
-    var copy;
-  
-    // Handle the 3 simple types, and null or undefined
-    if (null == obj || "object" != typeof obj) return obj;
-  
-    // Handle Date
-    if (obj instanceof Date) {
-        copy = new Date();
-        copy.setTime(obj.getTime());
-        return copy;
-    }
-  
-    // Handle Array
-    if (obj instanceof Array) {
-        copy = [];
-        for (var i = 0, len = obj.length; i < len; i++) {
-            copy[i] = clone(obj[i]);
-        }
-        return copy;
-    }
-  
-    // Handle Object
-    if (obj instanceof Object) {
-        copy = {};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-        }
-        return copy;
-    }
-  
-    throw new Error("Unable to copy obj! Its type isn't supported.");
-  }
 class StockCorrection extends Component{
     constructor(props) {
         super(props);
@@ -76,7 +30,6 @@ class StockCorrection extends Component{
             qtyEdit:[],
             remark:"",
             detailPopup:false,
-            warehousedata:[],
             data:[],
             barcode:"",
             qty:"1",
@@ -91,28 +44,27 @@ class StockCorrection extends Component{
         this.detailBaseData = this.detailBaseData.bind(this)
       
       }
-      componentDidMount(){
-        Axios.get(createQueryString(this.state.warehouse)).then(warehouseres => {
-            const warehousedata = []
-            warehouseres.data.datas.forEach(row => {
-              warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
-            })
-            this.setState({warehousedata})
-          })  
-        }
-      dropdownAuto(data, field, fieldres, child){    
-          console.log(data)
-        return <div>
-            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
-            <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
-              <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)}  child={child}/>
-            </div>
-          </div>
-      }
 
-      autoSelectData(field, resdata, resfield){
-        this.setState({[resfield]:resdata.value})
-      }
+    componentWillMount(){
+          Axios.get(createQueryString(this.state.warehouse)).then(res => {
+            this.setState({warehousedata : res.data.datas ,addstatus:false}, () => {
+              const warehousedata = []
+              this.state.warehousedata.forEach(row => {
+                warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+              })
+              this.setState({warehousedata})
+            })
+          })
+    }
+
+    dropdownAuto(){
+      return <div>
+          <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Warehouse : </label> 
+          <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
+            <AutoSelect data={this.state.warehousedata} result={(res) => this.setState({"warehouseres":res.value})}/>
+          </div>
+        </div>
+    }
 
       sumChild(data){
         let getdata = []
@@ -150,7 +102,7 @@ class StockCorrection extends Component{
                         this.setState({showCard:"block"})
                         this.setState({control:"block"})
                         this.setState({mapSTO:response.data, mapSTOView:response.data}, () => {
-                        const clonemapsto = clone(this.state.mapSTOView)
+                        const clonemapsto = Clone(this.state.mapSTOView)
                         header = clonemapsto
                         header.mapstos = this.sumChild(clonemapsto.mapstos)
                         })
@@ -271,13 +223,12 @@ class StockCorrection extends Component{
       }
 
     render(){
-        const display={display:'none'}
       return(
         <div> 
             {this.detailBaseData()}
             <Row>
                 <Col sm="6">
-                  {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false,)}
+                    {this.dropdownAuto()}
                 </Col>
                 <Col sm="6">
                 <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Remark : </label>

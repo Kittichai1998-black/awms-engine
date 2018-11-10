@@ -23,6 +23,9 @@ namespace AWMSEngine.Engine.Business.Loading
             public long? souWarehouseID;
             public string souWarehouseCode;
 
+            public long? desCustomerID;
+            public string desCustomerCode;
+
             public long? transportID;
             public string transportCode;
 
@@ -51,9 +54,13 @@ namespace AWMSEngine.Engine.Business.Loading
 
         private amt_Document NewDocument(TDocReq reqVO)
         {
+            var desCustomer = reqVO.desCustomerID.HasValue ?
+                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID) :
+                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
+
             var transportModel = reqVO.transportID.HasValue ?
-                 this.StaticValue.Transport.FirstOrDefault(x => x.ID == reqVO.transportID) :
-                 this.StaticValue.Transport.FirstOrDefault(x => x.Code == reqVO.transportCode);
+                 this.StaticValue.Transports.FirstOrDefault(x => x.ID == reqVO.transportID) :
+                 this.StaticValue.Transports.FirstOrDefault(x => x.Code == reqVO.transportCode);
             
             var souWarehouseModel =
                 reqVO.souWarehouseID.HasValue ?
@@ -70,6 +77,8 @@ namespace AWMSEngine.Engine.Business.Loading
                         this.StaticValue.Branchs.FirstOrDefault(x => x.ID == souWarehouseModel.Branch_ID) :
                         null;
 
+            if (desCustomer == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Customer ไม่ถูกต้อง");
             if (transportModel == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Transport ไม่ถูกต้อง");
             if (souWarehouseModel == null)
@@ -84,6 +93,8 @@ namespace AWMSEngine.Engine.Business.Loading
 
                 Sou_Warehouse_ID = souWarehouseModel.ID,
                 Sou_Branch_ID = souBranchModel.ID,
+
+                Des_Customer_ID = desCustomer.ID,
 
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,

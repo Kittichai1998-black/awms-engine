@@ -22,18 +22,26 @@ class CurrentInv extends Component{
     this.CurrentItem = {
       queryString: window.apipath + "/api/viw",
       t: "CurrentInv",
-      q: "",
-      f: "ID,PackCode,PackName,Warehouse,Total, concat(PackCode, ':' ,PackName)as Pack",
+      q: "[{ 'f': 'Status', c:'=', 'v': 1}]",
+      f: "ID,Pack,Warehouse,Total",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
-      l: 20,
+      l: 100,
       all: "",
+      sortstatus: 0,
+      selectiondata: [],
     }
 
     this.dateTimePicker = this.dateTimePicker.bind(this)
     this.initialData = this.initialData.bind(this)
+    this.getSelectionData = this.getSelectionData.bind(this);
+ 
 
+  }
+
+  getSelectionData(data) {
+    this.setState({ selectiondata: data }, () => console.log(this.state.selectiondata))
   }
 
 
@@ -63,21 +71,24 @@ class CurrentInv extends Component{
     this.initialData()
     }
 
-    ExportData() {
+  ExportData() {
       if (this.state.date) {
         let postdata = {
           "exportName": "DocumentAuditToCD",
           "whereValues": [this.state.date]
         }
-        API.post(window.apipath + "/api/report/export/fileServer", postdata)
+        let resultPath = postdata.fileExport
+        API.post(window.apipath + "/api/report/export/fileServer", postdata).then(res => {
+          window.success(resultPath + "<br/>" + res.data.fileExport)
+        })
       }
     }
 
   render() {
     const cols = [
-      { accessor: 'Pack', Header: 'Pack Code/Name', editable: false, filterable: false },
-      { accessor: 'Warehouse', Header: 'Warehouse', editable: false, filterable: false},
-      { accessor: 'Total', Header: 'Total Qty', editable: false, filterable: false },
+      { accessor: 'Pack', Header: 'Pack Code/Name',Filter: "text" },
+      { accessor: 'Warehouse', Header: 'Warehouse',Filter: "text"},
+      { accessor: 'Total', Header: 'Total Qty', Filter: "text" },
  
     ];
     const dataEcel= this.state.dataExcel
@@ -86,8 +97,8 @@ class CurrentInv extends Component{
       <div>
      <div className="clearfix">
           <Workbook filename="CurrentInv.xlsx" element={
-            <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px'}} color="primary" className="float-right"
-            >Export Excel</Button>}>
+            <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '150px'}} color="primary" className="float-right"
+            >Dowload Reconsign </Button>}>
             <Workbook.Sheet data={dataEcel} name="Sheet A">
               <Workbook.Column label="PackCode" value="packCode"  />
               <Workbook.Column label="PackName" value="packName" />
@@ -97,14 +108,14 @@ class CurrentInv extends Component{
               <Workbook.Column label="PackQtyResult" value={row => "" + row.packQtyResult}/>
             </Workbook.Sheet>
           </Workbook>
-          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginRight:"5px" }} color="primary" className="float-right"
+          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '150px', marginRight:"5px" }} color="primary" className="float-right"
             onClick={() => { this.ExportData() }}>Export Data</Button>
           <div className="float-right" style={{ marginRight: "5px" }}>{this.dateTimePicker()}</div>
  
       </div>
         <TableGen column={cols}
           data={this.CurrentItem}
-          filterable={true} uneditcolumn={this.uneditcolumn}
+          filterable={true} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} 
           table="CurrentInv" />
         </div>     
     )

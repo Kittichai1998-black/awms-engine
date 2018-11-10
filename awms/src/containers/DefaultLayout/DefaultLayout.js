@@ -76,7 +76,10 @@ class DefaultLayout extends Component {
     }
   }
 
+
+
   componentDidMount(){
+    
     this.setState({menubar:<DefaultMenu {...this.props}/>})
   }
   

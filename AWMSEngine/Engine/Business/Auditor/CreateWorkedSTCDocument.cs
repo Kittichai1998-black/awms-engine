@@ -17,6 +17,7 @@ namespace AWMSEngine.Engine.Business.Auditor
         public class TDocReq
         {
             public long rootStoID;
+            public StorageObjectType rootStoType;
             public string remark;
             public List<AdjustItem> adjustItems;
             public class AdjustItem
@@ -29,7 +30,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override amt_Document ExecuteEngine(TDocReq reqVO)
         {
-            var stomap = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, StorageObjectType.BASE, false, true, this.BuVO);
+            var stomap = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, reqVO.rootStoType, false, true, this.BuVO);
 
             var newDoc = this.NewDocument(reqVO, stomap);
             newDoc.DocumentItems = this.NewDocumentItem(reqVO, newDoc, stomap);
