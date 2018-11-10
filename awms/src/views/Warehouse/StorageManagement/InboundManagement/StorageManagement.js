@@ -120,7 +120,7 @@ class StorageManagement extends Component{
     this.setState({[resfield]:resdata.value}, () => {
       if(field === "Warehouse"){
         const area = this.state.area
-        let areawhere = JSON.parse(area.q)
+        let areawhere = [{ "f": "Status", "c":"=", "v": 1}]
         areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
         area.q = JSON.stringify(areawhere)
 

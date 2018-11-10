@@ -1,15 +1,38 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.Common;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MyTest2
 {
     public class TestPankan1
     {
+        public readonly ITestOutputHelper sysout;
+        public TestPankan1(ITestOutputHelper sysout)
+        {
+            this.sysout = sysout;
+        }
+        [Fact]
+        public void TestDataGenID()
+        {
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+            sysout.WriteLine(ObjectUtil.GenUniqID());
+        }
         [Fact]
         public void TestDataDB1()
         {

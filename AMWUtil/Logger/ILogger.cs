@@ -9,7 +9,9 @@ namespace AMWUtil.Logger
 {
     public interface ILogger
     {
+        string LogRefID { get; }
         string ServiceRefID { get; }
+        
         void LogWrite(string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "");
         void LogInfo(string message, [CallerLineNumber]int lineNumber = 0);
         void LogDebug(string message, [CallerLineNumber]int lineNumber = 0);

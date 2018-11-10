@@ -18,7 +18,9 @@ class PickAndConso extends Component{
       disableconso:true,
       mapsto:null,
       data:[],
+      autocomplete:[],
       autoresult:[],
+      auto_customer:[],
       modalstatus:false,
       rSelect:0,
       consoStatus:2,
@@ -53,28 +55,51 @@ class PickAndConso extends Component{
     this.onClickDocumentItemDetail = this.onClickDocumentItemDetail.bind(this)
     this.createGuideLocation = this.createGuideLocation.bind(this)
     this.clearTable = this.clearTable.bind(this)
+    this.getIssuedList = this.getIssuedList.bind(this)
 
-    this.select={queryString:window.apipath + "/api/viw",
+    this.customerselect = {queryString:window.apipath + "/api/mst",
+    t:"Customer",
+    q:'[{ "f": "Status", "c":"=", "v": 1}]',
+    f:"ID,Code, Name",
+    g:"",
+    s:"[{'f':'ID','od':'asc'}]",
+    sk:0,
+    all:"",}
+
+  }
+
+  componentWillMount(){
+    Axios.get(createQueryString(this.customerselect)).then(res => {
+      this.setState({auto_customer : res.data.datas}, () => {
+        const auto_customer = []
+        this.state.auto_customer.forEach(row => {
+          auto_customer.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+        })
+        this.setState({auto_customer})
+      })
+    })
+  }
+  
+  getIssuedList(){
+    const select={queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
-      f:"ID,concat(Code, ' : ', DesCustomerName) as Code, Remark",
+      q:"[{ 'f': 'Des_Customer_ID', c:'=', 'v': "+ this.state.customervalue +"},{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
+      f:"ID, Code, Remark",
       g:"",
       s:"[{'f':'DesCustomerName','od':'asc'}]",
       sk:0,
       l:0,
       all:"",}
+
+      Axios.get(createQueryString(select)).then((rowselect) => {
+        const autocomplete = []
+        rowselect.data.datas.forEach(row => {
+          autocomplete.push({value:row.ID, label: row.Code, remark: row.Remark})
+        })
+        this.setState({autocomplete})
+      })
   }
 
-  componentDidMount(){
-    Axios.get(createQueryString(this.select)).then((rowselect) => {
-      const autocomplete = []
-      rowselect.data.datas.forEach(row => {
-        autocomplete.push({value:row.ID, label: row.Code, remark: row.Remark})
-      })
-      this.setState({autocomplete})
-    })
-  }
-  
   renderTable(data){
     this.setState({rowselect:data, loadIssued:false})
     const documentItem = this.state.documentItem
@@ -290,6 +315,10 @@ class PickAndConso extends Component{
 
     return(
       <div style={{paddingBottom:'100px'}}>
+        <Row>
+          <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Customer</label></Col>
+          <Col sm="11" xs="10"><AutoSelect data={this.state.auto_customer} result={(e) => {this.setState({"customervalue":e.value, "customertext":e.label}, () => this.getIssuedList())}}/></Col>
+        </Row>
         <Row>
           <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
           <Col sm="11" xs="10"><AutoSelect selectfirst={false} data={this.state.autocomplete} result={result => {this.renderTable(result.value); this.setState({remark:result.remark})}}/></Col>
