@@ -24,6 +24,14 @@ import DefaultFooter from './DefaultFooter';
 import DefaultHeader from './DefaultHeader';
 
 class DefaultMenu extends Component{
+
+  componentDidMount(){
+    var elems = document.querySelectorAll(".cui-layers");
+    [].forEach.call(elems, function(el) {
+        el.remove(".cui-layers");
+    });
+  }
+  
   render(){
     return (
       <AppSidebar fixed display="lg"  >
@@ -69,7 +77,10 @@ class DefaultLayout extends Component {
     }
   }
 
+
+
   componentDidMount(){
+    
     this.setState({menubar:<DefaultMenu {...this.props}/>})
   }
   
