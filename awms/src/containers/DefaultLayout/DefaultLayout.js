@@ -24,6 +24,12 @@ import DefaultFooter from './DefaultFooter';
 import DefaultHeader from './DefaultHeader';
 
 class DefaultMenu extends Component{
+  componentDidMount(){
+    var elems = document.querySelectorAll(".cui-layers");
+    [].forEach.call(elems, function(el) {
+        el.remove(".cui-layers");
+    });
+  }
   render(){
     return (
       <AppSidebar fixed display="lg"  >
@@ -36,6 +42,7 @@ class DefaultMenu extends Component{
     )
   }
 }
+
 
 function checkstatus(){
   const d1 = new Date(localStorage.ExpireTime);

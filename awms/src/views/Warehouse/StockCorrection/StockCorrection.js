@@ -101,6 +101,7 @@ class StockCorrection extends Component{
           })  
         }
       dropdownAuto(data, field, fieldres, child){    
+          console.log(data)
         return <div>
             <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
             <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
@@ -177,7 +178,7 @@ class StockCorrection extends Component{
           let disQtys;
           if(child.parentID === null){
             this.rootID=child.id
-
+            this.rootType = child.type
           }
           if(child.objectSizeMaps.length > 0){
             disQtys = child.objectSizeMaps.map((v,ind)=>{
@@ -248,10 +249,11 @@ class StockCorrection extends Component{
             this.setState({qtyEdit:data})
             rootdata = { "rootStoID":this.rootID,
             "remark":this.state.remark,
-            "adjustItems":data}
+            "adjustItems":data,
+            "rootStoType":this.rootType,}
 
             this.setState({updateQty:rootdata})
-        
+            
       }
 
       clickSubmit(){ 
@@ -259,12 +261,13 @@ class StockCorrection extends Component{
     
         Axios.post(window.apipath + "/api/wm/stkcorr/doc/closed",this.state.updateQty).then((res) => {
             this.createListTable()
+            this.clearTable()
         })
       }
 
       clearTable(){
         this.setState({showCard:"none"})
-        this.setState({result:null,mapSTOView:null, mapSTO:null, control:"none", response:""})
+        this.setState({result:null,mapSTOView:null, control:"none", response:null,mapstos:null,qtyEdit:[]})
       }
 
     render(){
@@ -274,7 +277,7 @@ class StockCorrection extends Component{
             {this.detailBaseData()}
             <Row>
                 <Col sm="6">
-                    {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false)}
+                  {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false,)}
                 </Col>
                 <Col sm="6">
                 <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Remark : </label>
@@ -289,7 +292,8 @@ class StockCorrection extends Component{
                     onChange={e => {this.setState({barcode:e.target.value})}}
                     onKeyPress={(e) => {
                         if(e.key === 'Enter' && this.state.barcode !== ""){
-                        this.createListTable()
+                        this.clearTable()
+                        this.createListTable() 
                          }
                     }}/>{' '}
                     <Button onClick={this.createListTable} color="primary" >Scan</Button>
