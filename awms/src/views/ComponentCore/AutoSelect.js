@@ -24,8 +24,12 @@ export default class AutoSelect extends Component{
         }
         else{
             if(nextProps.data.length > 0 && this.state.dataselect.length === 0){
-                this.setState({dataselect:nextProps.data[0]})
-                this.handleChange(nextProps.data[0])
+                if(this.props.selectfirst === false){
+                }
+                else{
+                    this.setState({dataselect:nextProps.data[0]})
+                    this.handleChange(nextProps.data[0])
+                }
             }
         }
     }

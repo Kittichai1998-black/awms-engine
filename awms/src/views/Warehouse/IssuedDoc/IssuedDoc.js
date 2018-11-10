@@ -3,7 +3,6 @@ import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../ComponentCore'
-import moment from 'moment'
 
 const axois = new apicall()
 
@@ -31,7 +30,7 @@ class IssuedDoc extends Component{
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
       f:"ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Created,ModifyBy",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
+      s:"[{'f':'ID','od':'desc'}]",
       sk:0,
       l:20,
       all:"",},
@@ -88,10 +87,10 @@ class IssuedDoc extends Component{
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
+      {accessor: 'DesCustomerName', Header: 'Customer', editable:false, Filter:"text",},
+      //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
       {accessor: 'SouWarehouseName', Header: 'Warehouse', editable:false, Filter:"text",},
       //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
-      {accessor: 'DesCustomerName', Header: 'Customer', editable:false, Filter:"text",},
       // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       // {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
       // {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
@@ -141,7 +140,7 @@ class IssuedDoc extends Component{
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc}
+        btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'!=', 'v': 2},{ 'f': 'EventStatus', c:'!=', 'v': 32}]}
         accept={false}/>
         <Card>
           <CardBody>

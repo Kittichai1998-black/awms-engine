@@ -16,6 +16,7 @@ class StorageManagement extends Component{
       control:"none",
       mapSTO:null,
       mapSTOView:null,
+      loading:false,
       Mode:0,
       radiostate:false,
       supplier:{queryString:window.apipath + "/api/mst",
@@ -184,7 +185,7 @@ class StorageManagement extends Component{
           if(getElement !== "")
             this.setState({DataPopup:getElement, HeaderPopup:child.code}, () => {this.togglePopup()})
           }}>
-            <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
+            <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="check"/>} | </span>
             <span><FontAwesomeIcon icon="pallet"/>{child.code} : {child.name} | </span>
             <span><FontAwesomeIcon icon="layer-group"/>{child.objectSizeName} | </span>
             <span>{child.minWeiKG?child.minWeiKG+ '/':''} {child.weiKG === 0 ? '' : child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} Qty : {child.allqty !== undefined ? child.allqty : null}</span>
@@ -230,11 +231,12 @@ class StorageManagement extends Component{
       }
     }
 
-    if(status){
+    if(status && this.state.loading === false){
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
       "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
-      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO};
+      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO,_token:localStorage.getItem("Token")};
       Axios.post(window.apipath + "/api/wm/VRMapSTO",data).then(res => {
+        this.setState({loading:true})
         let header = []
         if(res.data._result.status !== 0)
         {
@@ -248,9 +250,9 @@ class StorageManagement extends Component{
               let allprice = this.state.pricedata.filter(pricerow => pricerow.Code === arrayrow.code)
               arrayrow.price = allprice[0].Price
             })
-            console.log(clonemapsto)
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
+            window.success("เรียบร้อย")
           })
           return [header]
         }
@@ -272,7 +274,10 @@ class StorageManagement extends Component{
             return null
           }
         }
-      }).then(res =>  res!==null?this.addtolist(res):null).then(res => {this.setState({result:res,poststatus:false})})
+      }).then(res =>  {
+        this.setState({loading:false})
+        return res!==null?this.addtolist(res):null
+      }).then(res => {this.setState({result:res,poststatus:false})})
     }
     else{
       this.setState({barcode:""})
@@ -379,9 +384,12 @@ class StorageManagement extends Component{
         Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
           if(res.data._result.status !== 0){
             this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
+            window.success("เรียบร้อย")
             return null
+            
           }else{
             this.setState({response:<span class="text-center">{res.data._result.message}</span>})
+            
           }
         })
       }

@@ -170,7 +170,6 @@ class IssuedManage extends Component{
     this.setState({selectiondata:data})
   }
 
-
   createDocument(){
     let acceptdata = []
     this.state.data.forEach(row => {
@@ -192,7 +191,7 @@ class IssuedManage extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm:ss"/>
+    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm"/>
   }
 
   renderDocumentStatus(){
@@ -259,7 +258,6 @@ class IssuedManage extends Component{
     })
     this.setState({autocomplete:res})
     }
-
   }
 
   createText(data){
@@ -271,13 +269,13 @@ class IssuedManage extends Component{
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
       <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
+      initialInputValue = {rowdata.value === "" || rowdata.value === undefined || rowdata.original.code === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
       onChange={selection => {
         rowdata.value = selection.id
         this.editData(rowdata, selection, rowdata.column.id)
       }}
       itemToString={item => {
-        return item !== null ? item.Code + ":" + item.Name : rowdata.value ;
+        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code !== undefined ? rowdata.original.code + " : " + rowdata.original.name : "";
       }}
     >
       {({
@@ -314,7 +312,6 @@ class IssuedManage extends Component{
                                 backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                                 fontWeight: selectedItem === item ? 'bold' : 'normal',
                                 width:'500px',
-                                border:"1px solid black "
                               }
                             })}
                           >
@@ -374,11 +371,12 @@ class IssuedManage extends Component{
 
   for(var datarow in groupItem){
     groupItem[datarow].forEach(row => {
+      row.id = row.mstID
       row.PackItem = row.code
       row.PackQty = groupItem[datarow].length
       arrdata.forEach((row2,index) => {
-        if(row2.code === row.code){
-        arrdata.splice(index,1)
+          if(row2.code === row.code){
+          arrdata.splice(index,1)
         }
       });
       
@@ -402,7 +400,7 @@ class IssuedManage extends Component{
     if(this.state.pageID){
       cols = [
         {accessor:"packMaster_Code",Header:"Pack Item", Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>, width:550},
-        {accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
+        //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
         {accessor:"quantity",Header:"PackQty", Cell: (e) => <span>{e.original.quantity}</span>},
         {accessor:"unitType_Name",Header:"UnitType", Cell: (e) => <span>{e.original.unitType_Name}</span>}
       ]
@@ -436,6 +434,7 @@ class IssuedManage extends Component{
     
     return(
       <div>
+        {this.createModal()}
         <div className="clearfix">
           <div className="float-right">
             <div>Document Date : <span>{this.state.documentDate}</span></div>
@@ -465,16 +464,16 @@ class IssuedManage extends Component{
         </div>
         <div className="clearfix">
         
-        <Button className="float-right" color="danger" onClick={() => this.toggle()}>Select Base</Button>
+        <Button className="float-right" color="danger" style={{display:this.state.adddisplay}} onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
           <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code} </span>
         </div>
-        <ReactTable columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
+        <ReactTable NoDataComponent={() => null} columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
         <Card>
           <CardBody style={{textAlign:'right'}}>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
-            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/wms/issueddoc/manage')}>Close</Button>
+            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>

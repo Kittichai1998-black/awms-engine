@@ -62,7 +62,7 @@ class IssuedDoc extends Component {
   workingData() {
     if (this.state.date) {
       let postdata = {
-        "exportName": "DocumentAuditToCD",
+        "exportName": "DocumentReceivedToCD",
         "whereValues": [this.state.date.format('YYYY-MM-DD')]
       }
       Axios.post(window.apipath + "/api/report/export/fileServer", postdata).then(res => {
@@ -74,7 +74,7 @@ class IssuedDoc extends Component {
   }
 
   onClickToDesc(data) {
-    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
+    return <Button style={{color:"white"}} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
 
   render() {

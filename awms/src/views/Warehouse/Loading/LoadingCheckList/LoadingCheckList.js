@@ -7,6 +7,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
 import 'react-datepicker/dist/react-datepicker.css';
+import _ from 'lodash'
 
 const API = new apicall();
 
@@ -35,9 +36,9 @@ class LoadingDocument extends Component{
     this.documentselect = {queryString:window.apipath + "/api/viw",
       t:"Document",
       q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1012},{ "f": "EventStatus", "c":"=", "v": 11},{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID,Code,transport",
+      f:"ID,concat(Code, ' : ', DesCustomerName) as Code,transport",
       g:"",
-      s:"[{'f':'ID','od':'asc'}]",
+      s:"[{'f':'DesCustomerName','od':'asc'}]",
       sk:0,
       all:"",}
   }
@@ -45,7 +46,22 @@ class LoadingDocument extends Component{
   getTableData(){
     if(this.state.transportvalue !== undefined){
       API.get(window.apipath + "/api/wm/loading/conso?docID=" + this.state.transportvalue).then(res => {
-        this.setState({data:res.data.datas})
+        let groupdata = _.groupBy(res.data.datas, (e) => {return e.id})
+        let groupdisplay = []
+            let packname = []
+            for(let row in groupdata){
+              groupdata[row].forEach(grow => {
+                packname.forEach((prow, index) => {
+                  if(prow === grow.packName)
+                    packname.splice(index, 1)
+                })
+                packname.push(grow.packName)
+              })
+              let result = groupdata[row][0]
+              result.item = packname.join(",")
+              groupdisplay.push(groupdata[row][0])
+            }
+        this.setState({data:groupdisplay})
       })
     }
   }
@@ -55,7 +71,7 @@ class LoadingDocument extends Component{
       this.setState({auto_transport : res.data.datas}, () => {
         const auto_transport = []
         this.state.auto_transport.forEach(row => {
-          auto_transport.push({value:row.ID, label:row.Code, transportID:row.Transport_ID})
+          auto_transport.push({value:row.ID, label:row.Code, transportID:row.transport})
         })
         this.setState({auto_transport})
       })
@@ -73,7 +89,7 @@ class LoadingDocument extends Component{
   render(){
     const cols = [
       {accessor: 'code', Header: 'Code',editable:false,},
-      {accessor: 'SKU', Header: 'SKU',editable:false},
+      {accessor: 'item', Header: 'Item',editable:false,},
       {accessor: 'docItemID', Header: 'Issued Document',editable:false,},
       {accessor: 'isLoaded', Header: 'Loaded',editable:false, Cell:e => <span>{e.value === true ? "Loaded" : "Wait"}</span>},
     ];
@@ -90,14 +106,14 @@ class LoadingDocument extends Component{
       */}
         <Row>
           <Col><label style={{paddingRight:"10px"}}>Loading Document : </label>
-          <div style={{display:"inline-block",width:"300px"}}><AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label, "TransportID":e.TransportID}, () => {this.getTableData()})}/></div></Col>
+          <div style={{display:"inline-block",width:"300px"}}><AutoSelect selectfirst={false} data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label, "TransportID":e.transportID}, () => {this.getTableData()})}/></div></Col>
         </Row>
         <Row>
           <Col><label style={{paddingRight:"10px"}}>Transport : </label><span>{this.state.TransportID}</span></Col>
         </Row>
         <Row>
           <Col>
-            <Input style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
+            <Input id="transportCode" style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
               autoFocus
               onChange={(e) => {
                 this.setState({consoCode:e.target.value})

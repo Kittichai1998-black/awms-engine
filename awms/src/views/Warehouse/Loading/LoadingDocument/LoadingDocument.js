@@ -7,6 +7,7 @@ import {AutoSelect, apicall, createQueryString, DatePicker, Clone} from '../../C
 import {DocumentEventStatus} from '../../Status'
 import Downshift from 'downshift'
 import queryString from 'query-string'
+import _ from 'lodash'
 
 const API = new apicall();
 
@@ -26,8 +27,8 @@ class LoadingDocument extends Component{
       eventstatus:10,
     }
     this.addData = this.addData.bind(this)
+    this.getIssuedList = this.getIssuedList.bind(this)
     this.createDocument = this.createDocument.bind(this)
-    this.createList = this.createList.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
     this.transportselect = {queryString:window.apipath + "/api/mst",
@@ -38,15 +39,6 @@ class LoadingDocument extends Component{
        s:"[{'f':'ID','od':'asc'}]",
        sk:0,
        all:"",}
-      
-    this.autocomplete = {queryString:window.apipath + "/api/viw",
-      t:"Document",
-      q:'[{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCusName",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:0,
-      all:"",}
       
     this.warehouseselect = {queryString:window.apipath + "/api/mst",
       t:"Warehouse",
@@ -73,6 +65,7 @@ class LoadingDocument extends Component{
       this.setState({pageID:values.ID, readonly:true,
         addstatus:true,})
         API.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
+          console.log(rowselect1.data)
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }
@@ -82,13 +75,31 @@ class LoadingDocument extends Component{
             loading:rowselect1.data.document.code,
             documentStatus:rowselect1.data.document.eventStatus,
             warehouse:rowselect1.data.document.souWarehouseName,
+            customer:rowselect1.data.document.desCustomerName,
             transport:rowselect1.data.document.transport,
             documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
             date:moment(rowselect1.data.document.actionTime),
             addstatus:true,
-            bstos:rowselect1.data.bstos,
             issuedNo:rowselect1.data.document.code
-          }, () => {this.createList()})
+          })
+          API.get(window.apipath + "/api/wm/loading/conso?docID=" + values.ID).then(res => {
+            let groupdata = _.groupBy(res.data.datas, (e) => {return e.id})
+            let groupdisplay = []
+            let packname = []
+            for(let row in groupdata){
+              groupdata[row].forEach(grow => {
+                packname.forEach((prow, index) => {
+                  if(prow === grow.packName)
+                    packname.splice(index, 1)
+                })
+                packname.push(grow.packName)
+              })
+              let result = groupdata[row][0]
+              result.item = packname.join(",")
+              groupdisplay.push(groupdata[row][0])
+            }
+            this.setState({bstos:groupdisplay})
+          })
         }
       })
     }
@@ -124,25 +135,12 @@ class LoadingDocument extends Component{
       })
       
       this.setState({documentDate:this.DateNow.format('DD-MM-YYYY')})
-      API.get(createQueryString(this.autocomplete)).then((res) => {
-          this.setState({autocomplete:res.data.datas, autocompleteUpdate:Clone(res.data.datas),
-            adddisplay:"inline-block"})
-      })
+      
     }    
   }
 
   componentDidUpdate(prevProps, prevState){
     
-  }
-
-  createList(){
-    const bstos = this.state.bstos
-    const res = bstos.map((row, index) => {
-      return <div>
-          <span>Code : {row.code}</span>|<span>Qty : {row.packQty}</span>|<span>Warehouse : {row.warehouseCode}</span>
-      </div>
-    })
-    this.setState({bstostree:res})
   }
 
   editData(rowdata, value, field){
@@ -227,6 +225,22 @@ class LoadingDocument extends Component{
     }
   }
 
+  getIssuedList(){
+    const autocomplete = {queryString:window.apipath + "/api/viw",
+      t:"Document",
+      q:'[{ "f": "Des_Customer_ID", "c":"=", "v": '+ this.state.customervalue +'},{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "eventStatus", "c":"in", "v": "11,12"}]',
+      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCustomerName",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      all:"",}
+
+    API.get(createQueryString(autocomplete)).then((res) => {
+      this.setState({autocomplete:res.data.datas, autocompleteUpdate:Clone(res.data.datas),
+        adddisplay:"inline-block"})
+    })
+  }
+
   sumChild(data){
     let getdata = []
     data.forEach(row1 => {
@@ -285,6 +299,8 @@ class LoadingDocument extends Component{
         transportCode:null,
         souWarehouseID:this.state.warehousevalue,
         souWarehouseCode:null,
+        desCustomerID:this.state.customervalue,
+        desCustomerCode:null,
         actionTime:this.state.date.format("YYYY-MM-DDThh:mm:ss"),
         documentDate:this.DateNow.format("YYYY-MM-DD"),
         remark:'',
@@ -292,7 +308,10 @@ class LoadingDocument extends Component{
         _token:localStorage.getItem("Token")
       }
       API.post(window.apipath + "/api/wm/loading/doc", data).then((res) => {
-  
+        if(res.data._result.status === 1){
+          this.props.history.push('/doc/ld/manage?ID='+ res.data.ID)
+          window.location.reload()
+        }
       })
     }
     else{
@@ -307,6 +326,13 @@ class LoadingDocument extends Component{
   }
 
   render(){
+    const colsdetail = [
+      {accessor: 'code', Header: 'Code',editable:false,},
+      {accessor: 'item', Header: 'Item',editable:false,},
+      {accessor: 'docItemID', Header: 'Issued Document',editable:false,},
+      {accessor: 'isLoaded', Header: 'Loaded',editable:false, Cell:e => <span>{e.value === true ? "Loaded" : "Wait"}</span>},
+    ];
+
     const cols = [
       {accessor: 'Code', Header: 'Issued No.', width:380,editable:true, Cell: (e) => {
         if(this.state.readonly){
@@ -316,7 +342,7 @@ class LoadingDocument extends Component{
           return this.createAutoComplete(e)
         }
       }},
-      {accessor: 'Customer', Header: 'Customer',editable:false,},
+      //{accessor: 'Customer', Header: 'Customer',editable:false,},
       {accessor: 'ActionDate', Header: 'Action Date',editable:false,},
       
       {show: this.state.readonly?false:true,width:80 , editable:false, Cell:(e) => {
@@ -375,7 +401,11 @@ class LoadingDocument extends Component{
           <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Transport : </label>
           <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.transport : <AutoSelect data={this.state.auto_transport} result={(e) => this.setState({"transportvalue":e.value, "transporttext":e.label})}/>}</div></Col>
           <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Warehouse : </label>
-    <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.warehouse : <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehousevalue":e.value, "warehousetext":e.label})}/>}</div></Col>
+          <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.warehouse : <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehousevalue":e.value, "warehousetext":e.label})}/>}</div></Col>
+        </Row>
+        <Row>
+          <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Customer : </label>
+          <div style={{width:"250px", display:"inline-block"}}>{this.state.readonly ? this.state.customer : <AutoSelect data={this.state.auto_customer} result={(e) => {this.setState({"customervalue":e.value, "customertext":e.label}, () => this.getIssuedList())}}/>}</div></Col>
         </Row>
         <div className="clearfix">
           <Button onClick={() => this.addData()} color="primary" className="float-right" disabled={this.state.addstatus}
@@ -383,7 +413,8 @@ class LoadingDocument extends Component{
         </div>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false} NoDataComponent={() => null}/>
-          {/* {this.state.readonly ? this.state.bstostree : null} */}
+          {this.state.readonly ? <ReactTable columns={colsdetail} minRows={5} data={this.state.bstos} sortable={false} style={{background:'white'}} filterable={false}
+            showPagination={false}/> : null}
           <Card>
           <CardBody>
             <Button color="danger" className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}
