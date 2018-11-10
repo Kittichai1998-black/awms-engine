@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Common;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -29,7 +30,7 @@ namespace AMWUtil.Logger
 
         internal AMWLogger(string fileName, string refID, string serviceName)
         {
-            this._LogRefID = Guid.NewGuid().ToString("N");
+            this._LogRefID = ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
             this._RefID = refID;
             this.ServiceName = serviceName;
             //this.FileLogger = new StreamWriter(fileFullName, true);

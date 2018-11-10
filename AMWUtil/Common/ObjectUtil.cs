@@ -13,6 +13,37 @@ namespace AMWUtil.Common
 {
     public static class ObjectUtil
     {
+        private static object GenUniqID_Lock = 0;
+        private static int GenUniqID_Run = 0;
+        public static string GenUniqID()
+        {
+            lock (GenUniqID_Lock)
+            {
+                long t = DateTime.UtcNow.Ticks;
+                GenUniqID_Run = GenUniqID_Run >= 1000 ? 0 : GenUniqID_Run + 1;
+                string id = NumZ(t) + NumZ(GenUniqID_Run, 1);
+                return id;
+            }
+        }
+
+        public static string NumZ(long num, int space = 10)
+        {
+            string res = string.Empty;
+            while (num > 0)
+            {
+                long val = num % 36;
+                if (val < 10)
+                {
+                    res = val + res;
+                }
+                else
+                {
+                    res = (char)(65 + (val - 10)) + res;
+                }
+                num = num / 36;
+            }
+            return res + (new String('0', space - res.Length > 0 ? space - res.Length : 0));
+        }
 
         public static T Get<T>(this string s)
         {
