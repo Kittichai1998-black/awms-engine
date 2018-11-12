@@ -363,7 +363,7 @@ class PickAndConso extends Component{
                 </div>
               </TabPane>
               <TabPane tabId="2">
-                <label>Conso : </label><Input type="text" placeholder="Input Base" autoFocus onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
+                <label>Conso : </label><Input value={this.state.consoBarcode} type="text" placeholder="Input Base" autoFocus onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
                 <br/>
                 <label>Picking : </label>
                 <Input id="pickconso" placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {

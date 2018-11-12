@@ -83,6 +83,7 @@ class LoadingDocument extends Component{
     let data = {docID:this.state.transportvalue, scanCode:this.state.consoCode, _token:localStorage.getItem("Token")}
     API.post(window.apipath + "/api/wm/loading/conso" ,data).then(res => {
       this.getTableData()
+      this.setState({consoCode:[]})
     })
   }
 
@@ -113,7 +114,7 @@ class LoadingDocument extends Component{
         </Row>
         <Row>
           <Col>
-            <Input id="transportCode" style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
+          <label style={{paddingRight:"10px"}}>Barcode : </label><Input id="transportCode" style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
               autoFocus
               onChange={(e) => {
                 this.setState({consoCode:e.target.value})

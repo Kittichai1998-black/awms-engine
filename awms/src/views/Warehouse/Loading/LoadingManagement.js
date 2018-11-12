@@ -42,7 +42,7 @@ class LoadingManage extends Component{
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
       f:"ID,Code",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
