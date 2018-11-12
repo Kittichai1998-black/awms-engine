@@ -246,7 +246,7 @@ class User extends Component{
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+            /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"}, */
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
@@ -273,7 +273,7 @@ class User extends Component{
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
-                    <ReactTable columns={colsRole} minRows={5} data={this.state.selectroledata} sortable={false} style={{background:'white'}} getselection={this.getSelectionData}
+                    <ReactTable columns={cols} minRows={5} data={this.state.selectroledata} sortable={false} style={{background:'white'}} getselection={this.getSelectionData}
                         showPagination={false}/>
                    {/*  <TableGen column={colsRole} data={this.state.selectRole} paginationBtn={false} getselection={this.getSelectionData}
                             filterable={true} /> */}
