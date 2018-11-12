@@ -105,11 +105,11 @@ class Storage extends Component{
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center" , fixed: "left"},
       {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text", fixed: "left"},
       {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text", fixed: "left"},
-      { accessor: 'code', Header: 'Base Code', id: "ID", Filter: "text"},
+      { accessor: 'baseMaster_Code', Header: 'Base Code', id: "ID", Filter: "text"},
       { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text" },
      /* {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
       {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" }, */
-      {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', filterable:false},
+      {accessor: 'viewPackMaster_Qty', Header: 'Pack Qty', filterable:false},
       /* {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', filterable:false}, */

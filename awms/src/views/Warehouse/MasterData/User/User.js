@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, Button, CardBody} from 'reactstrap';
 import {TableGen} from '../TableSetup';
+//import Popup from 'reactjs-popup'
 import {apicall, createQueryString} from '../../ComponentCore'
 import ReactTable from 'react-table'
+import { timingSafeEqual } from 'crypto';
 
 const Axios = new apicall()
 
@@ -12,6 +14,12 @@ class User extends Component{
         super(props);
 
         this.state={
+            colsRole:[
+                {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+                {accessor: 'Code', Header: 'Code', editable:false, filterable:false},
+                {accessor: 'Name', Header: 'Name', editable:false, filterable:false},
+                {accessor: 'Description', Header: 'Description', editable:false, filterable:false},
+            ],
             data:[],
             statuslist:[{
                 'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
@@ -21,32 +29,35 @@ class User extends Component{
             }],
             acceptstatus : false,
             select:{queryString:window.apipath + "/api/viw",
-            t:"User",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified",
-            g:"",
-            s:"[{'f':'Code','od':'asc'}]",
-            sk:0,
-            l:100,
-            all:"",},
+                t:"User",
+                q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+                f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified",
+                g:"",
+                s:"[{'f':'Code','od':'asc'}]",
+                sk:0,
+                l:100,
+                all:"",
+            },
             selectRole:{queryString:window.apipath + "/api/mst",
-            t:"Role",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,Code,Name,Description,Status",
-            g:"",
-            s:"[{'f':'Code','od':'asc'}]",
-            sk:0,
-            l:100,
-            all:"",},
+                t:"Role",
+                q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+                f:"ID,Code,Name,Description,Status",
+                g:"",
+                s:"[{'f':'Code','od':'asc'}]",
+                sk:0,
+                l:100,
+                all:"",
+            },
             selectUserRole:{queryString:window.apipath + "/api/mst",
-            t:"User_Role",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,User_ID,Role_ID,Status",
-            g:"",
-            s:"[{'f':'ID','od':'asc'}]",
-            sk:0,
-            l:100,
-            all:"",},
+                t:"User_Role",
+                q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+                f:"ID,User_ID,Role_ID,Status",
+                g:"",
+                s:"[{'f':'ID','od':'asc'}]",
+                sk:0,
+                l:100,
+                all:"",
+            },
             sortstatus:0,
             User_id:0,
             selectiondata:[],
@@ -63,6 +74,9 @@ class User extends Component{
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
         this.setUserRole = this.setUserRole.bind(this)
+        this.openModal = this.openModal.bind(this)
+        this.closeModal = this.closeModal.bind(this)
+        this.createRoleBtn = this.createRoleBtn.bind(this)
     }
 
     onHandleClickCancel(event){
@@ -71,7 +85,7 @@ class User extends Component{
     }
 
     componentDidMount(){
-        this.getData()
+        //this.getData()
     }
     getData(){
         const selectroledata = []
@@ -93,7 +107,6 @@ class User extends Component{
     setUserRole(data){
         if(!this.state.open){
             this.getData()
-            console.log(data)
             let selectroledata = []
             let selectuserroledata = []
             selectroledata = this.state.selectroledata
@@ -104,6 +117,11 @@ class User extends Component{
                     if (selectuserroledata[index].User_ID !== data) {
                         selectuserroledata.splice(index, 1);
                     }
+                /*  else{
+                        if(selectuserroledata[index].Status === 1){
+                            selectuserroledata.Check = true
+                        }
+                    } */
                 
                     index -= 1;
                 }
@@ -121,19 +139,18 @@ class User extends Component{
                 this.setState({User_id:data})
                 this.setState({selectroledata})
                 this.setState({selectuserroledata})
+                console.log(this.state.selectroledata)
+                console.log(this.state.selectuserroledata)
             }
         }
     }
 
-    componentWillUnmount(){
-    }
-
-    openModal(data){
+    openModal(user_id){
         this.setState({ open: true })
-        this.setUserRole(data)
+        this.setUserRole(user_id)
       }
 
-    closeModal () {
+    closeModal() {
         this.setState({ open: false })
         this.setState({dataedit:[]})
     }
@@ -157,6 +174,23 @@ class User extends Component{
         if(dataUpdate.length > 0){
             dataUpdate.forEach((row) => {
             row["ID"] = row["ID"] <= 0 ? null : row["ID"]
+            /* this.props.column.forEach(col => {
+                if(col.datatype === "int" && row[col.accessor] === ""){
+                    if(col.accessor === "Revision"){
+                        if(row[col.accessor] === ""){
+                        row[col.accessor] = 1
+                        }
+                    }
+                    else{
+                        row[col.accessor] = null
+                    }
+                }
+                
+            }) */
+
+            /* for(let col of this.props.uneditcolumn){
+                delete row[col]
+            } */
             })
             let updjson = {
             "_token": sessionStorage.getItem("Token"),
@@ -176,7 +210,8 @@ class User extends Component{
     }
 
     createSelection(rowdata,type){
-        console.log("CHECK=" + rowdata.original.Check + " :  User_id=" + rowdata.original.User_ID)
+        console.log(rowdata.original)
+        console.log("Check=" + rowdata.original.Check + " :  User_id=" + rowdata.original.User_ID)
         return <input
         className="selection"
         type={type}
@@ -187,7 +222,6 @@ class User extends Component{
 
     onHandleSelection(rowdata, value, type){
         if(type === "checkbox"){
-
             const dataUpdate = this.state.dataUpdate
             if(value){
                 if(rowdata.original.User_ID === null){
@@ -195,6 +229,16 @@ class User extends Component{
                 }
             }
             else{
+                if(rowdata.original.User_ID === null){
+                    dataUpdate.forEach((row,index) => {
+                        if(row.Role_ID === rowdata.original.ID){
+                            dataUpdate.splice(index,1)
+                        }
+                    })
+                }else{
+                    console.log(rowdata.original)
+                    //dataUpdate.push({ID:0,User_ID:this.state.User_id,Role_ID:rowdata.original.ID,Status:0})
+                }
             }
             this.setState({dataUpdate})
         }
@@ -214,14 +258,25 @@ class User extends Component{
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+            /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"}, */
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
+        
+
         const btnfunc = [{
-            btntype:"Barcode",
-            func:this.createBarcodeBtn
+            btntype:"Role",
+            func:this.createRoleBtn
        
           }]
+
+        const col = this.state.colsRole
+        col.forEach((row) => {
+            if(row.Type === "selection"){
+                row.Cell = (e) => this.createSelection(e,"checkbox")
+                row.className="text-center"
+              }
+        })
 
         return(
             <div>
@@ -238,6 +293,17 @@ class User extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
+            {/* <Popup open={this.state.open} onClose={this.closeModal}>
+                <div>
+                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white'}} 
+                    getselection={this.getSelectionData} showPagination={false}/>
+                    <Card>
+                        <CardBody>
+                            <Button onClick={() => this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
+                        </CardBody>
+                    </Card>
+                </div>
+            </Popup> */}
             </div>
         ) 
     }
