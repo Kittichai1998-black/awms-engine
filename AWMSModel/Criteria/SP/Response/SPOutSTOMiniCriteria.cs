@@ -7,10 +7,10 @@ namespace AWMSModel.Criteria.SP.Response
 {
     public class SPOutSTOMiniCriteria
     {
-        public int? id;
+        public long? id;
         public StorageObjectType type;
         public int? mstID;
-        public int? parentID;
+        public long? parentID;
         public StorageObjectType? parentType;
         public string code;
         public string name;

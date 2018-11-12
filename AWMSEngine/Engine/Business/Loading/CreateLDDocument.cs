@@ -23,6 +23,9 @@ namespace AWMSEngine.Engine.Business.Loading
             public long? souWarehouseID;
             public string souWarehouseCode;
 
+            public long? desCustomerID;
+            public string desCustomerCode;
+
             public long? transportID;
             public string transportCode;
 
@@ -51,9 +54,13 @@ namespace AWMSEngine.Engine.Business.Loading
 
         private amt_Document NewDocument(TDocReq reqVO)
         {
+            var desCustomer = reqVO.desCustomerID.HasValue ?
+                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID) :
+                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
+
             var transportModel = reqVO.transportID.HasValue ?
-                 this.StaticValue.Transport.FirstOrDefault(x => x.ID == reqVO.transportID) :
-                 this.StaticValue.Transport.FirstOrDefault(x => x.Code == reqVO.transportCode);
+                 this.StaticValue.Transports.FirstOrDefault(x => x.ID == reqVO.transportID) :
+                 this.StaticValue.Transports.FirstOrDefault(x => x.Code == reqVO.transportCode);
             
             var souWarehouseModel =
                 reqVO.souWarehouseID.HasValue ?
@@ -70,15 +77,24 @@ namespace AWMSEngine.Engine.Business.Loading
                         this.StaticValue.Branchs.FirstOrDefault(x => x.ID == souWarehouseModel.Branch_ID) :
                         null;
 
+            if (desCustomer == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Customer ไม่ถูกต้อง");
+            if (transportModel == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Transport ไม่ถูกต้อง");
             if (souWarehouseModel == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "souWarehouse ไม่ถูกต้อง");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Warehouse ไม่ถูกต้อง");
+            if (souBranchModel == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Branch ไม่ถูกต้อง");
 
             amt_Document newDoc = new amt_Document()
             {
                 RefID = reqVO.refID,
+                Transport_ID = transportModel.ID,
 
                 Sou_Warehouse_ID = souWarehouseModel.ID,
                 Sou_Branch_ID = souBranchModel.ID,
+
+                Des_Customer_ID = desCustomer.ID,
 
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,
@@ -102,16 +118,17 @@ namespace AWMSEngine.Engine.Business.Loading
                 var issuedDoc = ADO.DataADO.GetInstant().SelectBy<amt_Document>(
                     new KeyValuePair<string, object>[]{
                         new KeyValuePair<string, object>("ID", docItem.issuedDocID),
-                        new KeyValuePair<string, object>("DocumentType_ID", DocumentTypeID.GOODS_ISSUED),
-                        new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE)
+                        new KeyValuePair<string, object>("DocumentType_ID", DocumentTypeID.GOODS_ISSUED)
                     },
                     this.BuVO).FirstOrDefault();
-                if (newDoc != null && issuedDoc.Sou_Warehouse_ID != newDoc.Sou_Warehouse_ID)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SouWarehouse Issued Document ไม่ตรงกับ Loading Document");
-                if (newDoc != null && issuedDoc.Sou_Branch_ID != newDoc.Sou_Branch_ID)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SouBranch Issued Document ไม่ตรงกับ Loading Document");
                 if (issuedDoc == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบ Good Issued Document ID " + docItem.issuedDocID + " ในฐานข้อมูล");
+                if (issuedDoc.Sou_Warehouse_ID != newDoc.Sou_Warehouse_ID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SouWarehouse Issued Document ไม่ตรงกับ Loading Document");
+                if (issuedDoc.Sou_Branch_ID != newDoc.Sou_Branch_ID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SouBranch Issued Document ไม่ตรงกับ Loading Document");
+                if (issuedDoc.EventStatus != DocumentEventStatus.WORKING && issuedDoc.EventStatus != DocumentEventStatus.WORKED)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Good Issued Document ID '" + docItem.issuedDocID + "' มีสถานะ '" + issuedDoc.EventStatus.ToString() + "'");
                 var newDocItem = new amt_DocumentItem()
                 {
                     Code = issuedDoc.Code,

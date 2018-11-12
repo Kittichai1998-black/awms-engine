@@ -7,6 +7,7 @@ namespace AWMSModel.Entity
 {
     public class amt_StorageObject : BaseEntityCreateModify
     {
+        public long? ID;
         public int AreaLocationMaster_ID;
         public long ParentStorageObject_ID;
         public int BaseMaster_ID;
@@ -20,11 +21,6 @@ namespace AWMSModel.Entity
         public string Options;
         public int HoleStatus;
         public int LockStatus;
-        public DocumentEventStatus EventStatus;
-
-        public string Batch;
-        public string Lot;
-        public DateTime? ExpiryDate;
-        public DateTime? ProductDate;
+        public int EventStatus;
     }
 }

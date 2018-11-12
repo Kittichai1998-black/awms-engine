@@ -27,6 +27,7 @@ namespace AWMSEngine.Engine.Business.Issued
             public string souBranchCode;//สาขาต้นทาง
             public string souWarehouseCode;//คลังต้นทาง
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
+            public int? transportID;
 
             public int? desCustomerID;
             public int? desSupplierID;
@@ -75,7 +76,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     !string.IsNullOrWhiteSpace(reqVO.souBranchCode) ?
                         this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.souWarehouseCode) :
                         souAreaMasterModel != null ?
-                            this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == souAreaMasterModel.Warehouse_ID) :
+                            this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == souAreaMasterModel.Warehouses_ID) :
                             null;
             var souBranchModel =
                 reqVO.souBranchID.HasValue ?
@@ -112,7 +113,7 @@ namespace AWMSEngine.Engine.Business.Issued
             else if (souAreaMasterModel == null && reqVO.souAreaMasterID.HasValue)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souAreaMasterID ไม่ถูกต้อง");
 
-            if (souAreaMasterModel != null && souWarehouseModel != null && souAreaMasterModel.Warehouse_ID != souWarehouseModel.ID)
+            if (souAreaMasterModel != null && souWarehouseModel != null && souAreaMasterModel.Warehouses_ID != souWarehouseModel.ID)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souArea และ souWarehouse ไม่สัมพันธ์กัน");
             if (souBranchModel != null && souWarehouseModel != null && souBranchModel.ID != souWarehouseModel.Branch_ID)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "souWarehouse และ souBranchModel ไม่สัมพันธ์กัน");
@@ -143,6 +144,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 Des_Supplier_ID = desSupplierModel == null ? null : desSupplierModel.ID,
                 Des_Customer_ID = desCustomerModel == null ? null : desCustomerModel.ID,
+
+                Transport_ID = reqVO.transportID,
 
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,
@@ -177,7 +180,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(issueItem.skuCode, this.BuVO);
                     if (skuMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Code " + issueItem.skuCode);
-                    var packMstType = this.StaticValue.PackMasterType.FirstOrDefault(x => x.Code == issueItem.packTypeCode);
+                    var packMstType = this.StaticValue.PackMasterTypes.FirstOrDefault(x => x.Code == issueItem.packTypeCode);
                     if (packMstType == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pack Type Code " + issueItem.skuCode);
 

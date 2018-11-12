@@ -7,6 +7,7 @@ import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore'
 import {EventStatus} from '../Status'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames';
+import _ from 'lodash'
 
 const Axios = new apicall()
 
@@ -17,7 +18,9 @@ class PickAndConso extends Component{
       disableconso:true,
       mapsto:null,
       data:[],
+      autocomplete:[],
       autoresult:[],
+      auto_customer:[],
       modalstatus:false,
       rSelect:0,
       consoStatus:2,
@@ -43,6 +46,7 @@ class PickAndConso extends Component{
       l:0,
       all:"",},
       activeTab: '1',
+      openGuild:'none'
     }
     this.renderTable = this.renderTable.bind(this)
     this.toggleTab = this.toggleTab.bind(this)
@@ -50,38 +54,61 @@ class PickAndConso extends Component{
     this.onHandleClickPickingScan = this.onHandleClickPickingScan.bind(this)
     this.onClickDocumentItemDetail = this.onClickDocumentItemDetail.bind(this)
     this.createGuideLocation = this.createGuideLocation.bind(this)
+    this.clearTable = this.clearTable.bind(this)
+    this.getIssuedList = this.getIssuedList.bind(this)
 
-    this.select={queryString:window.apipath + "/api/viw",
-      t:"Document",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]",
-      f:"ID,Code",
-      g:"",
-      s:"[{'f':'Code','od':'asc'}]",
-      sk:0,
-      l:0,
-      all:"",}
+    this.customerselect = {queryString:window.apipath + "/api/mst",
+    t:"Customer",
+    q:'[{ "f": "Status", "c":"=", "v": 1}]',
+    f:"ID,Code, Name",
+    g:"",
+    s:"[{'f':'ID','od':'asc'}]",
+    sk:0,
+    all:"",}
+
   }
 
-  componentDidMount(){
-    Axios.get(createQueryString(this.select)).then((rowselect) => {
-      const autocomplete = []
-      rowselect.data.datas.forEach(row => {
-        autocomplete.push({value:row.ID, label: row.Code})
+  componentWillMount(){
+    Axios.get(createQueryString(this.customerselect)).then(res => {
+      this.setState({auto_customer : res.data.datas}, () => {
+        const auto_customer = []
+        this.state.auto_customer.forEach(row => {
+          auto_customer.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+        })
+        this.setState({auto_customer})
       })
-      this.setState({autocomplete})
     })
   }
   
+  getIssuedList(){
+    const select={queryString:window.apipath + "/api/viw",
+      t:"Document",
+      q:"[{ 'f': 'Des_Customer_ID', c:'=', 'v': "+ this.state.customervalue +"},{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1}]",
+      f:"ID, Code, Remark",
+      g:"",
+      s:"[{'f':'DesCustomerName','od':'asc'}]",
+      sk:0,
+      l:0,
+      all:"",}
+
+      Axios.get(createQueryString(select)).then((rowselect) => {
+        const autocomplete = []
+        rowselect.data.datas.forEach(row => {
+          autocomplete.push({value:row.ID, label: row.Code, remark: row.Remark})
+        })
+        this.setState({autocomplete})
+      })
+  }
+
   renderTable(data){
     this.setState({rowselect:data, loadIssued:false})
     const documentItem = this.state.documentItem
     const documentItemCon = []
-    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'eventStatus', c:'=', 'v': 11},{'f':'documentType_ID','c':'=','v':'1002'})
+    documentItemCon.push({ 'f': 'Document_ID', c:'in', 'v': data},{ 'f': 'Status', c:'!=', 'v': 2},{'f':'documentType_ID','c':'=','v':'1002'})
     documentItem.q = JSON.stringify(documentItemCon)
     this.setState({documentItem:documentItem})
 
     Axios.get(createQueryString(documentItem)).then((rowselect) => {
-      console.log(rowselect)
       this.setState({data:rowselect.data.datas})
       return rowselect.data.datas.map(x=> x.ID)
     }).then((res) => {
@@ -91,12 +118,15 @@ class PickAndConso extends Component{
 
       Axios.get(createQueryString(documentItemCount)).then((countrow) => {
         const initdata = this.state.data
+        
         initdata.forEach(row => {
-          if(countrow.data.datas.length > 0){
+          const filterPickItem = countrow.data.datas.filter(frow => frow.DocumentItem_ID === row.ID)
+          if(filterPickItem.length > 0){
             countrow.data.datas.forEach(crow => {
               if(row.ID === crow.DocumentItem_ID){
-                row.Quantity = crow.qty + "/" + row.Quantity
+                row.Quantity = crow.qty + "/" + row.Quantity         
               }
+
             })
           }
           else{
@@ -112,32 +142,54 @@ class PickAndConso extends Component{
   
   toggleTab(tab) {
     if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab,
-        consoBarcode:"",
-        pickingBarcode:"",
-        pickingAmount:1,
-        mapsto:null
+      this.setState({activeTab: tab}, () => {
+        if(tab !== 3){
+          this.setState({
+            consoBarcode:"",
+            pickingBarcode:"",
+            pickingAmount:1,
+            mapsto:null,
+            pickingList:null
+          })
+        }
       });
     }
   }
   
   createGuideLocation(){
     const data =  this.state.data
-    console.log(data)
     let docItemsStr = ""
     data.forEach(row => {
       const qty = row.Quantity.split("/")
       if(qty[0] !== qty[1])
         docItemsStr += "," + row.ID;
     })
-    
+    let guideLoc = []
     if(docItemsStr !== ""){
       Axios.get(window.apipath + '/api/wm/issued/location/canpick?docItemIDs=' + docItemsStr.substring(1)).then(res => {
-        const reselement = res.data.datas.map((row,i) => {
-          return <span key={i}>Guide for Picking : {row.areaCode} | {row.areaLocationCode}</span>
-        })
-        this.setState({guideLoc:reselement})
+        if(res.data.datas.length != 0){
+          this.setState({openGuild:"block"})
+        }else{
+          this.setState({openGuild:"none"})
+        }
+        let grouplocation = _.groupBy(res.data.datas,"code")
+        let groupdata = []
+        for(let row in grouplocation){
+          groupdata.push(grouplocation[row][0])
+        }
+        for( let i= 0; i <5 && i < groupdata.length;i++){
+
+          let resultData =groupdata[i]
+          guideLoc.push(<button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{resultData.areaLocationCode === null ? null:resultData.areaLocationCode + '-'} {resultData.areaCode} - {resultData.code} </button>)     
+        }
+        if (groupdata.length > 5){
+          guideLoc.push(<span>...</span>)
+        }
+        this.setState({guideLoc})
+        // const reselement = res.data.datas.map((row,i) => {
+        //   return  <button type="button" class="btn btn-secondary" style={{margin:'3px'}} key={i} >{row.areaLocationCode === null ? null:row.areaLocationCode + '-'} {row.areaCode} - {row.code}  </button>
+        // })
+        // this.setState({guideLoc:reselement})
       }).catch(res => {alert(res)})
     }
   }
@@ -225,19 +277,33 @@ class PickAndConso extends Component{
         mapsto:this.state.mapsto
       }
       Axios.post(window.apipath + "/api/wm/issued/sto/pickConso", data).then((res) => {
-        console.log(res.data.mapsto)
-        if(res.data.mapsto){
-          this.setState({mapsto:res.data.mapsto}, () => {
-            const clonemapsto = Clone(this.state.mapsto)
-            let header = clonemapsto
-            header.mapstos = this.sumChild(clonemapsto.mapstos)
-            this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
-          })
+        if(res.data._result.status === 1){
+          window.success("เรียบร้อย")
+          if(res.data.mapsto){
+            this.setState({mapsto:res.data.mapsto}, () => {
+              const clonemapsto = Clone(this.state.mapsto)
+              let header = clonemapsto
+              header.mapstos = this.sumChild(clonemapsto.mapstos)
+              this.createPickingItemList([header]).then(e => this.setState({pickingList:e}))
+            })
+          }
         }
-  
         this.renderTable(this.state.rowselect)
       })
     }
+    
+    this.setState({pickingBarcode:"",pickingAmount:1})
+    if(this.state.activeTab === 1){
+      document.getElementById("pickcode").focus()
+    }
+    else if(this.state.activeTab === 2){
+      document.getElementById("pickconso").focus()
+    }
+  }
+
+  clearTable(){
+    this.setState({pickingBarcode:null,consoBarcode:null, pickingAmount:1, pickingList:null, popupElement:null,mapsto:null})
+    
   }
 
   render(){
@@ -248,14 +314,22 @@ class PickAndConso extends Component{
     ]
 
     return(
-      <div>
+      <div style={{paddingBottom:'100px'}}>
+        <Row>
+          <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Customer</label></Col>
+          <Col sm="11" xs="10"><AutoSelect data={this.state.auto_customer} result={(e) => {this.setState({"customervalue":e.value, "customertext":e.label}, () => this.getIssuedList())}}/></Col>
+        </Row>
         <Row>
           <Col sm="1" xs="2"><label style={{paddingTop:"7px"}}>Issued</label></Col>
-          <Col sm="11" xs="10"><AutoSelect data={this.state.autocomplete} result={result => this.renderTable(result.value)}/></Col>
+          <Col sm="11" xs="10"><AutoSelect selectfirst={false} data={this.state.autocomplete} result={result => {this.renderTable(result.value); this.setState({remark:result.remark})}}/></Col>
+        </Row>
+        <Row>
+          <Col sm="12" xs="12"><label>Remark :</label>{this.state.remark}</Col>
         </Row>
         <ReactTable NoDataComponent={() => null} data={this.state.data} columns={cols} minRows={3} showPagination={false}  style={{backgroundColor:"white"}}/>
         <div>
-          <div style={{fontSize:"18px", color:"red"}}>{this.state.guideLoc}</div>
+
+          <div style={{display:this.state.openGuild, fontSize:"18px", color:"red"}}>Guide for Picking : {this.state.guideLoc}</div>
         </div>
             <Nav tabs>
               <NavItem>
@@ -274,14 +348,16 @@ class PickAndConso extends Component{
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
                 <label>Picking : </label>
-                <Input placeholder="Barcode" autoFocus type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                <Input id="pickcode" placeholder="Barcode" autoFocus type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
                   if(e.key === "Enter"){
                     this.onHandleClickPickingScan()
                   }
                 }} style={{display:"inline-block", width:"180px"}}/>
-                <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
+                <Input id="pickqty" placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
+                <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
+                  onClick={this.clearTable} >Clear</Button>
                 <div>
                   {this.state.pickingList}
                 </div>
@@ -290,14 +366,16 @@ class PickAndConso extends Component{
                 <label>Conso : </label><Input type="text" placeholder="Input Base" autoFocus onChange={e => this.setState({consoBarcode:e.target.value})} style={{display:"inline-block", width:"200px"}}/>
                 <br/>
                 <label>Picking : </label>
-                <Input placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
+                <Input id="pickconso" placeholder="Barcode" type="text" value={this.state.pickingBarcode} onChange={e => this.setState({pickingBarcode:e.target.value})} onKeyPress={e => {
                   if(e.key === "Enter"){
                     this.onHandleClickPickingScan()
                   }
                 }} style={{display:"inline-block", width:"180px"}}/>
-                <Input placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
+                <Input id="qtyconso" placeholder="Amount" type="text" value={this.state.pickingAmount} onChange={e => this.setState({pickingAmount:e.target.value})} style={{display:"inline-block", width:"100px"}}/>
                 <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
                   onClick={() => this.onHandleClickPickingScan()}>Post</Button>
+                <Button color="primary" style={{ display: "inline", background: "#26c6da", borderColor: "#26c6da", width: '100px'}}
+                  onClick={this.clearTable} >Clear</Button>
                 <div>
                   {this.state.pickingList}
                 </div>

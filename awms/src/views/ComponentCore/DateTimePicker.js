@@ -5,12 +5,19 @@ import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 
 export default class Datepicker extends Component{
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
         this.state = {
             date:null,
         }
         this.onHandleDateChange = this.onHandleDateChange.bind(this)
+    }
+
+    componentDidMount(){
+        if(this.props.defaultDate !== undefined){
+            this.setState({date:this.props.defaultDate})
+            this.onHandleDateChange(moment(this.props.defaultDate, this.props.dateFormat))
+        }
     }
 
     onHandleDateChange(date){
@@ -23,15 +30,13 @@ export default class Datepicker extends Component{
             <DatePicker selected={this.state.date}
                 customInput={<Input/>}
                 onChange={(e) => {
-                    if(e.isValid()){
+                    if(e.isValid() && e !== null){
                         this.onHandleDateChange(e)
                     }
                 }}
                 onChangeRaw={(e) => {
                 if (moment(e.target.value).isValid()){
-                    const checkdate = moment(e.target.value, 'DD-MM-YYYY hh:mm:ss')
-                    if(!isNaN(checkdate.date()))
-                        this.onHandleDateChange(moment(e.target.value, 'DD-MM-YYYY hh:mm:ss'))
+                    this.onHandleDateChange(moment(e.target.value, this.props.dateFormat))
                 }
             }}
             timeIntervals={1}

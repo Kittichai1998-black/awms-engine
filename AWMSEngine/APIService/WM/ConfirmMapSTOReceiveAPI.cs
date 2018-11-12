@@ -58,7 +58,7 @@ namespace AWMSEngine.APIService.WM
                 {
                     if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0103))
                     {
-                        new ClosedGRDocument().Execute(this.Logger, this.BuVO, new ClosedGRDocument.TReq() { DocumentIDs = docIDs });
+                        new WorkedGRDocument().Execute(this.Logger, this.BuVO, new WorkedGRDocument.TReq() { DocumentIDs = docIDs });
                     }
                 }
             }

@@ -6,6 +6,6 @@ namespace AWMSModel.Entity
 {
     public class ams_AreaMaster : BaseEntitySTD
     {
-        public long? Warehouse_ID;
+        public long? Warehouses_ID;
     }
 }

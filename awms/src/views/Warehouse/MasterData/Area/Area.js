@@ -28,7 +28,8 @@ class Area extends Component{
       l:100,
       all:"",},
       sortstatus:0,
-      selectiondata:[]
+      selectiondata:[],        
+     
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
@@ -38,10 +39,6 @@ class Area extends Component{
   onHandleClickCancel(event){
     this.forceUpdate();
     event.preventDefault();
-  }
-
-  componentWillMount(){
-    this.filterList();
   }
 
   componentWillUnmount(){

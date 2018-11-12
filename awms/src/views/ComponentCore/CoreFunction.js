@@ -13,6 +13,7 @@ class apicall{
     }
 
     post(url, data){
+        data._token = localStorage.getItem("Token")
         return Axios.post(url, data).then((res) => {
             if(res.data._result.status === 0){
                 alert(res.data._result.message)
@@ -22,6 +23,7 @@ class apicall{
     }
 
     put(url, data){
+        data._token = localStorage.getItem("Token")
         return Axios.put(url, data).then((res) => {
             if(res.data._result.status === 0){
                 alert(res.data._result.message)
@@ -31,6 +33,7 @@ class apicall{
     }
 
     delete(url, data){
+        data._token = localStorage.getItem("Token")
         return Axios.delete(url, data).then((res) => {
             if(res.data._result.status === 0){
                 alert(res.data._result.message)
@@ -49,7 +52,7 @@ const createQueryString = (select) => {
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
     + (select.all === "" ? "" : "&all=" + select.all)
-    + ("&token=" + sessionStorage.Token)
+    + ("&_token=" + sessionStorage.Token)
     return queryS
   }
 

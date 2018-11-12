@@ -12,29 +12,17 @@ namespace AWMSModel.Entity
         public long? ParentDocument_ID;
         public long? DocumentType_ID;
         public long? Sou_Customer_ID;
-        public string SouCustomer;
         public long? Sou_Supplier_ID;
-        public string SouSupplier;
         public long? Sou_Branch_ID;
-        public string SouBranch;
         public long? Transport_ID;
-        public string Transport;
         public long? Sou_Warehouse_ID;
-        public string SouWarehouse;
         public long? Sou_AreaMaster_ID;
-        public string SouArea;
         public long? Des_Customer_ID;
-        public string DesCustomer;
         public long? Des_Supplier_ID;
-        public string DesSupplier;
         public long? Des_Branch_ID;
-        public string DesBranch;
         public long? Des_Warehouse_ID;
-        public string DesWarehouse;
         public long? Des_AreaMaster_ID;
-        public string DesArea;
         public long? For_Customer_ID;
-        public string ForCustomer;
         public string Batch;
         public string Lot;
         public string Options;
@@ -62,7 +50,33 @@ namespace AWMSModel.Entity
         public long? DesWarID;
         public long? SouAreaID;
         public long? DesAreaID;
-        public DateTime? Created;
-        public DateTime? Modified;
+        public string SouCustomer;
+        public string SouSupplier;
+        public string SouBranch;
+        public string Transport;
+        public string SouWarehouse;
+        public string SouArea;
+        public string DesCustomer;
+        public string DesSupplier;
+        public string DesBranch;
+        public string DesWarehouse;
+        public string DesArea;
+        public string ForCustomer;
+
+        public string SouCustomerName;
+        public string SouSupplierName;
+        public string SouBranchName;
+        public string TransportName;
+        public string SouWarehouseName;
+        public string SouAreaName;
+        public string DesCustomerName;
+        public string DesSupplierName;
+        public string DesBranchName;
+        public string DesWarehouseName;
+        public string DesAreaName;
+        public string ForCustomerName;
+
+        public string Created;
+        public string Modified;
     }
 }

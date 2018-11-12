@@ -57,7 +57,7 @@ class AreaLocation extends Component{
       all:"",},
       area:{queryString:window.apipath + "/api/viw",
       t:"AreaMaster",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      q:'',
       f:"ID,Code,Name,Description,Warehouse_ID,AreaMasterType_ID,GroupType",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -68,7 +68,9 @@ class AreaLocation extends Component{
       selectiondata:[],
       warehousedata:[],
       supplierdata:[],
-      areadata:[]
+      areadata:[],
+      warehouseres:[],
+      areadata:[],
     };
     this.getdataselect = this.getdataselect.bind(this)
     this.getSelectionData = this.getSelectionData.bind(this)
@@ -124,8 +126,10 @@ class AreaLocation extends Component{
     this.setState({[resfield]:resdata.value}, () => {
       if(field === "Warehouse"){
         const area = this.state.area
-        let areawhere = JSON.parse(area.q)
-        areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
+        let areawhere = [{ "f": "Status", "c":"=", "v": 1}]
+        if(this.state.warehouseres !== undefined){
+          areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
+        }
         area.q = JSON.stringify(areawhere)
   
         Axios.get(createQueryString(this.state.area)).then((res) => {
@@ -146,11 +150,11 @@ class AreaLocation extends Component{
     })
   }
 
-  dropdownAuto(data, field, fieldres){    
+  dropdownAuto(data, field, fieldres, child){
     return <div>
         <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>{field} : </label> 
         <div style={{display:"inline-block", width:"40%", minWidth:"200px"}}>
-          <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)}/>
+          <AutoSelect data={data} result={(res) => this.autoSelectData(field, res, fieldres)} child={child}/>
         </div>
       </div>
   }
@@ -202,7 +206,6 @@ class AreaLocation extends Component{
   }
 
   getSelectionData(data){
-      console.log(data)
       let obj = []
       data.forEach((datarow,index) => {
           obj.push({"barcode":datarow.Code,"Name":datarow.Name});
@@ -304,12 +307,12 @@ class AreaLocation extends Component{
       <div>
         <Row>
           <Col>
-              {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres")}
+              {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false)}
           </Col>
         </Row>
         <Row>
           <Col>
-              {this.dropdownAuto(this.state.areadata, "Area", "areares")}
+              {this.dropdownAuto(this.state.areadata, "Area", "areares", true)}
           </Col>
         </Row>
         <Row><Col></Col></Row>

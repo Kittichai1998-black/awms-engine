@@ -37,7 +37,7 @@ namespace AMWUtil.Exception
                     + (Language == ENLanguage.EN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).EN :
                     Language == ENLanguage.CN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).CN :
                         AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).TH)
-                    + " #" + (logger==null ? "???" : logger.ServiceRefID),
+                    + " \nLOG." + (logger==null ? "???" : logger.LogRefID),
                     paramters??new string[] { })
                   )
         {

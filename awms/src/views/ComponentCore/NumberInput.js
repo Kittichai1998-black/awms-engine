@@ -21,7 +21,12 @@ export default class NumberInput extends Component{
                 if(e.target.value >= 0){
                     this.props.onChange(e.target.value);
                     this.setState({value:e.target.value})
-                }}
+                }
+                else{
+                    this.props.onChange(e.target.value);
+                    this.setState({value:e.target.value})
+                }
+            }
             }
             value={this.props.value}
             type="number" 

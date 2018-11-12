@@ -57,11 +57,8 @@ class User extends Component{
             dataUpdate : [],
             rowselect:[],
         };
-        this.openModal = this.openModal.bind(this)
-        this.closeModal = this.closeModal.bind(this)
+
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.createRoleBtn = this.createRoleBtn.bind(this)
-        this.getSelectionData = this.getSelectionData.bind(this)
         this.uneditcolumn = ["Created","Modified"]
         this.createSelection = this.createSelection.bind(this)
         this.onHandleSelection = this.onHandleSelection.bind(this)
@@ -253,26 +250,11 @@ class User extends Component{
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
-          const colsRole = [
-            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-            {accessor: 'Code', Header: 'Code', editable:false, filterable:false},
-            {accessor: 'Name', Header: 'Name', editable:false, filterable:false},
-            {accessor: 'Description', Header: 'Description', editable:false, filterable:false},
-          ]; 
-
         const btnfunc = [{
             btntype:"Barcode",
-            func:this.createRoleBtn
+            func:this.createBarcodeBtn
        
           }]
-
-          const col = colsRole
-          col.forEach((row) => {
-            if(row.Type === "selection"){
-                row.Cell = (e) => this.createSelection(e,"checkbox")
-                row.className="text-center"
-              }
-          })
 
         return(
             <div>

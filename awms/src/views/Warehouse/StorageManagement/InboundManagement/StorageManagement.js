@@ -5,7 +5,7 @@ import {Input, Button, ButtonGroup , Row, Col,
   Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 //import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {AutoSelect, NumberInput, apicall, createQueryString, Clone} from '../../ComponentCore'
+import {AutoSelect, NumberInput, apicall, createQueryString, Clone, ToListTree} from '../../ComponentCore'
 
 const Axios = new apicall()
 
@@ -16,6 +16,7 @@ class StorageManagement extends Component{
       control:"none",
       mapSTO:null,
       mapSTOView:null,
+      loading:false,
       Mode:0,
       radiostate:false,
       supplier:{queryString:window.apipath + "/api/mst",
@@ -40,6 +41,15 @@ class StorageManagement extends Component{
       t:"AreaMaster",
       q:'[{ "f": "Status", "c":"=", "v": 1}]',
       f:"*",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:"",
+      l:"",
+      all:"",},
+      price:{queryString:window.apipath + "/api/mst",
+      t:"SKUMaster",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"ID,Code,Price",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:"",
@@ -89,6 +99,10 @@ class StorageManagement extends Component{
       this.setState({warehousedata})
     })
 
+    Axios.get(createQueryString(this.state.price)).then(priceresult => {
+      this.setState({pricedata:priceresult.data.datas})
+    })
+
     const script3 = document.createElement("script");
     script3.src = "https://code.jquery.com/jquery-3.3.1.min.js";
     script3.type="text/javascript"
@@ -106,7 +120,7 @@ class StorageManagement extends Component{
     this.setState({[resfield]:resdata.value}, () => {
       if(field === "Warehouse"){
         const area = this.state.area
-        let areawhere = JSON.parse(area.q)
+        let areawhere = [{ "f": "Status", "c":"=", "v": 1}]
         areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
         area.q = JSON.stringify(areawhere)
 
@@ -143,12 +157,26 @@ class StorageManagement extends Component{
     return condata.map((child,i) => {
       let disQtys;
       if(child.objectSizeMaps.length > 0){
-        disQtys = child.objectSizeMaps.map((v)=>{
-          return <div><FontAwesomeIcon icon="puzzle-piece"/>{v.innerObjectSizeName + ' ' + v.quantity + (v.minQuantity?' : Min ' + v.minQuantity:'') + (v.maxQuantity?" : Max "+v.maxQuantity:'')}</div>
-          });
+        let qty = 0
+          for(let i = 0; i < child.objectSizeMaps.length; i++){
+            qty += child.objectSizeMaps[i].quantity
+          }
+          let sumprice = 0
+          child.mapstos.forEach(rowp => {
+            if(rowp.price)
+              sumprice += rowp.allqty * rowp.price
+            else
+              child.mapstos.forEach(rowp2 => {
+                rowp2.mapstos.forEach(rowp3 => {
+                  sumprice += rowp3.allqty * rowp3.price
+                })
+              })
+          })
+          child.priceall = sumprice
+          disQtys = <div>จำนวนรวม : {qty}<br/>ราคารวม : {child.priceall}</div>
       }
       else{
-        disQtys = <div><FontAwesomeIcon icon="puzzle-piece"/>{child.allqty}</div>
+        disQtys = <div>จำนวนรวม : {child.allqty}<br/>ราคารวม : {child.allqty * child.price}</div>
       }
 
       return <ul key={i} style={child.isFocus===true?focus:focusf} >
@@ -156,8 +184,8 @@ class StorageManagement extends Component{
           let getElement = document.getElementById(child.id).innerHTML
           if(getElement !== "")
             this.setState({DataPopup:getElement, HeaderPopup:child.code}, () => {this.togglePopup()})
-        }}>
-            <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="box"/>} | </span>
+          }}>
+            <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="check"/>} | </span>
             <span><FontAwesomeIcon icon="pallet"/>{child.code} : {child.name} | </span>
             <span><FontAwesomeIcon icon="layer-group"/>{child.objectSizeName} | </span>
             <span>{child.minWeiKG?child.minWeiKG+ '/':''} {child.weiKG === 0 ? '' : child.weiKG} {child.maxWeiKG?child.maxWeiKG+ '/' : ''} Qty : {child.allqty !== undefined ? child.allqty : null}</span>
@@ -176,7 +204,6 @@ class StorageManagement extends Component{
     data.forEach(row1 => {
       let xx = getdata.filter(row => row.code == row1.code)
       if(xx.length > 0){
-        let qty = xx[0].allqty
         xx[0].allqty = xx[0].allqty + 1
         if(row1.mapstos.length > 0)
           this.sumChild(row1.mapstos)
@@ -204,19 +231,28 @@ class StorageManagement extends Component{
       }
     }
 
-    if(status){
+    if(status && this.state.loading === false){
       let data = {"scanCode":this.state.barcode,"amount":this.state.qty,"action":this.state.rSelect,
       "mode":this.state.Mode,"options":[{key: "supplier_id", value: this.state.supplierres}],
-      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO};
+      "areaID":this.state.areares,"warehouseID":this.state.warehouseres,"mapsto":this.state.mapSTO,_token:localStorage.getItem("Token")};
       Axios.post(window.apipath + "/api/wm/VRMapSTO",data).then(res => {
+        this.setState({loading:true})
         let header = []
         if(res.data._result.status !== 0)
         {
           this.setState({poststatus:true,control:"block",barcode:"", qty:1, response:"",})
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
+            
             const clonemapsto = Clone(this.state.mapSTOView)
+            const array = ToListTree(clonemapsto, "mapstos")
+            const arrayfilter = array.filter(row => row.type === 2)
+            arrayfilter.forEach(arrayrow => {
+              let allprice = this.state.pricedata.filter(pricerow => pricerow.Code === arrayrow.code)
+              arrayrow.price = allprice[0].Price
+            })
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
+            window.success("เรียบร้อย")
           })
           return [header]
         }
@@ -238,7 +274,10 @@ class StorageManagement extends Component{
             return null
           }
         }
-      }).then(res =>  res!==null?this.addtolist(res):null).then(res => {this.setState({result:res,poststatus:false})})
+      }).then(res =>  {
+        this.setState({loading:false})
+        return res!==null?this.addtolist(res):null
+      }).then(res => {this.setState({result:res,poststatus:false})})
     }
     else{
       this.setState({barcode:""})
@@ -345,9 +384,12 @@ class StorageManagement extends Component{
         Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
           if(res.data._result.status !== 0){
             this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
+            window.success("เรียบร้อย")
             return null
+            
           }else{
             this.setState({response:<span class="text-center">{res.data._result.message}</span>})
+            
           }
         })
       }

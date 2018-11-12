@@ -11,12 +11,13 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Auditor
 {
-    public class CreateClosedSTCDocument : BaseEngine<CreateClosedSTCDocument.TDocReq, amt_Document>
+    public class CreateWorkedSTCDocument : BaseEngine<CreateWorkedSTCDocument.TDocReq, amt_Document>
     {
 
         public class TDocReq
         {
             public long rootStoID;
+            public StorageObjectType rootStoType;
             public string remark;
             public List<AdjustItem> adjustItems;
             public class AdjustItem
@@ -29,7 +30,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override amt_Document ExecuteEngine(TDocReq reqVO)
         {
-            var stomap = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, StorageObjectType.BASE, false, true, this.BuVO);
+            var stomap = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, reqVO.rootStoType, false, true, this.BuVO);
 
             var newDoc = this.NewDocument(reqVO, stomap);
             newDoc.DocumentItems = this.NewDocumentItem(reqVO, newDoc, stomap);
@@ -61,7 +62,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 Remark = reqVO.remark,
 
                 EventStatus = DocumentEventStatus.CLOSED,
-                Status = StaticValue.GetStatusInConfigByEventStatus<DocumentEventStatus>(DocumentEventStatus.CLOSED).Value,
+
                 DocumentItems = new List<amt_DocumentItem>()
             };
             return newDoc;
@@ -123,8 +124,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     SKUMaster_ID = packMst.SKUMaster_ID,
                     Quantity = adjQty,
                     StorageObjectIDs = packAdjs.Select(x => x.id.Value).ToList(),
-                    EventStatus = DocumentEventStatus.CLOSED,
-                    Status = StaticValue.GetStatusInConfigByEventStatus<DocumentEventStatus>(DocumentEventStatus.CLOSED).Value
+                    EventStatus = DocumentEventStatus.CLOSED
                 };
                 newDocItems.Add(newDocItem);
 

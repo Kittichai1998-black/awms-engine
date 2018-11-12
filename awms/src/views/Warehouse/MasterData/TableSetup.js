@@ -10,7 +10,7 @@ import guid from 'guid';
 import hash from 'hash.js';
 import {EventStatus, DocumentStatus, DocumentEventStatus, Status} from '../Status'
 import Select from 'react-select'
-import {apicall, createQueryString} from '../ComponentCore'
+import {apicall, createQueryString, Clone} from '../ComponentCore'
 import _ from 'lodash'
 import Downshift from 'downshift'
 import '../componentstyle.css'
@@ -171,7 +171,7 @@ class TableGen extends Component{
   }
   
   removedata(rowdata){
-    /* const data = [...this.state.data]; */
+    const data = [...this.state.data];
     const dataedit = [...this.state.dataedit];
     dataedit.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
@@ -180,12 +180,12 @@ class TableGen extends Component{
     })
     rowdata.Status = 2
     dataedit.push(rowdata);
-    /* data.forEach((datarow,index) => {
+     data.forEach((datarow,index) => {
       if(datarow.ID === rowdata.ID){
         data.splice(index,1);
       }
     })
-    this.setState({ data }); */
+    this.setState({ data });
     this.setState({dataedit});
   }
 
@@ -433,27 +433,21 @@ class TableGen extends Component{
   }
 
   paginationButton(){
-    if(this.props.paginationBtn === false)
-    {
-      return <div />
-    }
-    else{
-      return(
-        <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
-          <nav>
-            <ul className="pagination">
-              <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
-                onClick={() => this.pageOnHandleClick("prev")}>
-              Previous</a></li>
-              <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
-                onClick={() => this.pageOnHandleClick("next")}>
-                Next</a></li>
-            </ul>
-            <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
-          </nav>
-        </div>
-      )
-    }
+    return(
+      <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
+        <nav>
+          <ul className="pagination">
+            <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("prev")}>
+            Previous</a></li>
+            <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
+          </ul>
+          <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
+        </nav>
+      </div>
+    )
   }
 
   createSelectButton(event){
@@ -534,9 +528,12 @@ class TableGen extends Component{
  
   }
 
-  datetimeBody(value){
+  datetimeBody(value, format){
     if(value !== null){
       const date = moment(value);
+      if(format === "date")
+        return <div>{date.format('DD-MM-YYYY')}</div>
+      else
       return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
     }
   }
@@ -789,30 +786,6 @@ class TableGen extends Component{
     }
   }
 
-  onHandleSelection(rowdata, value, type){
-    if(type === "checkbox"){
-      let rowselect = this.state.rowselect;
-      if(value){
-        rowselect.push(rowdata.original)
-      }
-      else{
-        rowselect.forEach((row,index) => {
-          if(row.ID === rowdata.original.ID){
-            rowselect.splice(index,1)
-          }
-        })
-      }
-      this.setState({rowselect}, () => {this.props.getselection(this.state.rowselect)})
-    }
-    else{
-      let rowselect = [];
-      if(value){
-        rowselect.push(rowdata.original)
-      }
-      this.setState({rowselect:rowselect}, () => {this.props.getselection(this.state.rowselect)})
-    }
-  }
-
   createStatusField(data, type){
     if (type === "EventStatus") {
 
@@ -856,36 +829,63 @@ class TableGen extends Component{
     }
   }
 
+  onHandleSelection(rowdata, value, type){
+    if(type === "checkbox"){
+      let rowselect = this.state.rowselect;
+      if(value){
+        rowselect.push(rowdata.original)
+      }
+      else{
+        rowselect.forEach((row,index) => {
+          if(row.ID === rowdata.original.ID){
+            rowselect.splice(index,1)
+          }
+        })
+      }
+      this.setState({rowselect}, () => {this.props.getselection(this.state.rowselect)})
+    }
+    else{
+      let rowselect = [];
+      if(value){
+        rowselect.push(rowdata.original)
+      }
+      this.setState({rowselect:rowselect}, () => {this.props.getselection(this.state.rowselect)})
+    }
+  }
+
   createSelectAll(){
     return <input
     type="checkbox"
     onChange={(e)=> {
-      this.props.getselection(this.state.data);
       var arr = Array.from(document.getElementsByClassName('selection'));
       if(e.target.checked){
+        this.setState({rowselect:Clone(this.state.data)});
+        this.props.getselection(Clone(this.state.data));
         arr.forEach(row => {
           row.checked = true
         })
       }
       else{
+        this.setState({rowselect:[]});
+        this.props.getselection([]);
         arr.forEach(row => {
           row.checked = false
         })
       }
     }}/>
   }
+
   createSelection(rowdata,type){
     return <input
     className="selection"
     type={type}
     name="selection"
-    defaultChecked = {true}
     onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>
   }
 
   printbarcodeall() {
     let obj = []
-    this.state.data.forEach((datarow, index) => {
+    this.state.rowselect.forEach((datarow, index) => {
       obj.push({ "barcode": datarow.Code, "Name": datarow.Name });
     })
     if(obj.length > 0){

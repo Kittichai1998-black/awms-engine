@@ -31,7 +31,7 @@ class IssuedDoc extends Component {
         queryString: window.apipath + "/api/viw",
         t: "Document",
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-        f: "ID,Code,SouBranch,Status,DesWarehouse,DesArea,SouCustomer,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,CreateBy,ModifyBy",
+        f: "ID,Code,SouBranchName,Status,DesWarehouseName,DesAreaName,SouCustomerName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,Created,ModifyBy,ActionTime",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -62,7 +62,7 @@ class IssuedDoc extends Component {
   workingData() {
     if (this.state.date) {
       let postdata = {
-        "exportName": "DocumentAuditToCD",
+        "exportName": "DocumentReceivedToCD",
         "whereValues": [this.state.date.format('YYYY-MM-DD')]
       }
       Axios.post(window.apipath + "/api/report/export/fileServer", postdata).then(res => {
@@ -74,24 +74,24 @@ class IssuedDoc extends Component {
   }
 
   onClickToDesc(data) {
-    return <Button type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
+    return <Button style={{color:"white"}} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
 
   render() {
     const cols = [
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'DesBranch', Header: 'Branch',editable:false, Filter:"text"},
-      {accessor: 'DesWarehouse', Header: 'Warehouse', editable:false, Filter:"text",},
-      {accessor: 'DesArea', Header: 'Area', editable:false, Filter:"text",},
-      {accessor: 'SouCustomer', Header: 'Customer', editable:false, Filter:"text",},
-      {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
-      {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
-      {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
+      //{accessor: 'DesBranchName', Header: 'Branch',editable:false, Filter:"text"},
+      {accessor: 'DesWarehouseName', Header: 'Warehouse', editable:false, Filter:"text",},
+      {accessor: 'DesAreaName', Header: 'Area', editable:false, Filter:"text",},
+      // {accessor: 'SouCustomer', Header: 'Customer', editable:false, Filter:"text",},
+      // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
+      // {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
+      // {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
       {accessor: 'Status', Header: 'Status', editable:false, Filter:"dropdown", Type:"DocumentStatus"},
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
-      {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      //{accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
-      {accessor: 'RefID', Header: 'RefID', editable:false,},
+      //{accessor: 'RefID', Header: 'RefID', editable:false,},
       {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},

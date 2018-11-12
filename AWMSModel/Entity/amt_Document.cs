@@ -24,7 +24,7 @@ namespace AWMSModel.Entity
         public long? Des_Warehouse_ID;
         public long? Des_AreaMaster_ID;
 
-        public int? Transport_ID;
+        public long? Transport_ID;
 
         public string Options;
         public string Remark;

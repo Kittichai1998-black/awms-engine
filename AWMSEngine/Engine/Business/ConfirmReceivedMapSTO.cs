@@ -22,38 +22,48 @@ namespace AWMSEngine.Engine.Business
 
         protected override StorageObjectCriteria ExecuteEngine(ConfirmReceivedMapSTO.TReqModle reqVO)
         {
+            List<dynamic> updates = new List<dynamic>();
             if (reqVO.type == StorageObjectType.LOCATION)
             {
-                var sto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new KeyValuePair<string, object>[] {
-                new KeyValuePair<string, object>("AreaLocationMaster_ID",reqVO.rootStoID),
-                new KeyValuePair<string, object>("status",1),
-                }, this.BuVO).FirstOrDefault();
-                if (sto == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "AreaLocationMaster.ID");
-                reqVO.rootStoID = sto.ID.Value;
-                reqVO.type = StorageObjectType.BASE;
-            }
-            
-            if (reqVO.isConfirm)
-            {
-                ADO.StorageObjectADO.GetInstant()
-                    .UpdateStatusToChild(
-                        reqVO.rootStoID, 
-                        StorageObjectEventStatus.IDEL,
-                        EntityStatus.ACTIVE,
-                        StorageObjectEventStatus.RECEIVED,
-                        this.BuVO);
+                var sto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    new SQLConditionCriteria[]
+                    {
+                        new SQLConditionCriteria("AreaLocationMaster_ID",reqVO.rootStoID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("status", EntityStatus.REMOVE, SQLOperatorType.LESS)
+                    }, this.BuVO);
+                if (sto == null && sto.Count() == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบสินค้าใน Area");
+                sto.ForEach(x => updates.Add(new { rootStoID = x.ID, type = x.ObjectType }));
             }
             else
             {
-                ADO.StorageObjectADO.GetInstant()
-                    .UpdateStatusToChild(
-                        reqVO.rootStoID,
-                        StorageObjectEventStatus.IDEL,
-                        EntityStatus.ACTIVE,
-                        StorageObjectEventStatus.REMOVED,
-                        this.BuVO);
+                updates.Add(new { rootStoID = reqVO.rootStoID, type = reqVO.type });
             }
+
+            foreach (var u in updates)
+            {
+                if (reqVO.isConfirm)
+                {
+                    ADO.StorageObjectADO.GetInstant()
+                        .UpdateStatusToChild(
+                            u.rootStoID,
+                            StorageObjectEventStatus.IDEL,
+                            null,
+                            StorageObjectEventStatus.RECEIVED,
+                            this.BuVO);
+                }
+                else
+                {
+                    ADO.StorageObjectADO.GetInstant()
+                        .UpdateStatusToChild(
+                            u.rootStoID,
+                            StorageObjectEventStatus.IDEL,
+                            null,
+                            StorageObjectEventStatus.REMOVED,
+                            this.BuVO);
+                }
+            }
+            
             StorageObjectCriteria res = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootStoID, reqVO.type, false, true, this.BuVO);
             //if (res == null) res = new StorageObjectCriteria();
 

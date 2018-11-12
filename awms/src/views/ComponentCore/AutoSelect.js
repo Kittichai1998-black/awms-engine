@@ -14,7 +14,7 @@ export default class AutoSelect extends Component{
     }
 
     componentDidMount(){
-        this.setState({dataselect:this.props.defaultValue, data:this.props.data, multi:this.props.multi? this.props.multi : false})
+        this.setState({data:this.props.data, multi:this.props.multi? this.props.multi : false})
     }
 
     componentWillReceiveProps(nextProps){
@@ -22,10 +22,19 @@ export default class AutoSelect extends Component{
         if(nextProps.child === true){
             this.setState({dataselect:this.state.dataselect})
         }
+        
+        if(nextProps.data.length > 0 && this.state.dataselect.length === 0){
+            if(this.props.selectfirst === false){
+            }
+            else{
+                this.setState({dataselect:nextProps.data[0]})
+                this.handleChange(nextProps.data[0])
+            }
+        }
     }
 
     componentDidUpdate(nextProps, prevProps){
-        if(!_.isEqual(this.state.data, prevProps.data)){
+        if(_.isEqual(this.state.data, prevProps.data) === false && this.state.data !== undefined && prevProps.data !== undefined){
             this.setState({dataselect:[]})
         }
     }
