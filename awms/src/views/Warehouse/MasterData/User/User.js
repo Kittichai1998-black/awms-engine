@@ -49,10 +49,13 @@ class User extends Component{
             l:100,
             all:"",},
             sortstatus:0,
+            User_id:0,
             selectiondata:[],
             open: false,
             selectiondata:[],
-            selectroledata:[]
+            selectroledata:[],
+            dataUpdate : [],
+            rowselect:[],
         };
         this.openModal = this.openModal.bind(this)
         this.closeModal = this.closeModal.bind(this)
@@ -62,8 +65,8 @@ class User extends Component{
         this.uneditcolumn = ["Created","Modified"]
         this.createSelection = this.createSelection.bind(this)
         this.onHandleSelection = this.onHandleSelection.bind(this)
-        this.test = this.test.bind(this)
-        this.test2 = this.test2.bind(this)
+        this.getData = this.getData.bind(this)
+        this.setUserRole = this.setUserRole.bind(this)
     }
 
     onHandleClickCancel(event){
@@ -72,42 +75,78 @@ class User extends Component{
     }
 
     componentDidMount(){
-        
-        //this.test()
+        this.getData()
     }
-    test2(){
-        //this.setState({selectroledata:[]},() => console.log(this.state.selectuserroledata))
+    getData(){
+        const selectroledata = []
+        const selectuserroledata = []
+        Axios.get(createQueryString(this.state.selectRole)).then((response) => {
+            response.data.datas.forEach(row => {
+                selectroledata.push({ID:row.ID,Code:row.Code,Name:row.Name,Description:row.Description,Check:false,User_ID:null})
+            })
+            this.setState({selectroledata})
+        })
+        Axios.get(createQueryString(this.state.selectUserRole)).then((responset) => {
+            responset.data.datas.forEach(row => {
+                selectuserroledata.push({ID:row.ID,User_ID:row.User_ID,Role_ID:row.Role_ID,Status:row.Status})
+            })
+            this.setState({selectuserroledata})
+        })
     }
        
-    test(){
-        if(this.state.open){
-            const selectroledata = []
-            const selectuserroledata = []
-            Axios.get(createQueryString(this.state.selectRole)).then((response) => {
-                response.data.datas.forEach(row => {
-                    selectroledata.push({ID:row.ID,Code:row.Code,Name:row.Name,Description:row.Description,User_ID:""})
+    setUserRole(data){
+        if(!this.state.open){
+            this.getData()
+            console.log(data)
+            let selectroledata = []
+            let selectuserroledata = []
+            selectroledata = this.state.selectroledata
+            selectuserroledata = this.state.selectuserroledata
+            if(selectuserroledata !== undefined){
+                var index = selectuserroledata.length-1
+                while ( index>= 0) {
+                    if (selectuserroledata[index].User_ID !== data) {
+                        selectuserroledata.splice(index, 1);
+                    }
+                /*  else{
+                        if(selectuserroledata[index].Status === 1){
+                            selectuserroledata.Check = true
+                        }
+                    } */
+                
+                    index -= 1;
+                }
+                selectroledata.forEach(rowRole =>{
+                    selectuserroledata.forEach(rowRoleUser => {
+                        if(rowRole.ID===rowRoleUser.Role_ID){
+                            rowRole.User_ID = rowRoleUser.User_ID
+                            if(rowRoleUser.Status === 1){
+                                rowRole.Check = true
+                            }
+                        }
+                    })
+                    
                 })
+                this.setState({User_id:data})
                 this.setState({selectroledata})
-            })
-            Axios.get(createQueryString(this.state.selectUserRole)).then((responset) => {
-                responset.data.datas.forEach(row => {
-                    selectuserroledata.push({User_ID:row.User_ID,Role_ID:row.Role_ID})
-                })
-                this.setState({selectuserroledata},() => this.test2())
-            })
+                this.setState({selectuserroledata})
+                console.log(this.state.selectroledata)
+                console.log(this.state.selectuserroledata)
+            }
         }
     }
 
     componentWillUnmount(){
     }
 
-    openModal (){
+    openModal(data){
         this.setState({ open: true })
-        this.test()
+        this.setUserRole(data)
       }
 
     closeModal () {
         this.setState({ open: false })
+        this.setState({dataedit:[]})
     }
 
     getSelectionData(data){
@@ -121,44 +160,78 @@ class User extends Component{
 
     createRoleBtn(rowdata){
         return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-          onClick={this.openModal}>Role</Button>
+          onClick={() => this.openModal(rowdata.ID)}>Role</Button>
         }
     
     updateRole(){
+        const dataUpdate = this.state.dataUpdate
+        if(dataUpdate.length > 0){
+            dataUpdate.forEach((row) => {
+            row["ID"] = row["ID"] <= 0 ? null : row["ID"]
+            /* this.props.column.forEach(col => {
+                if(col.datatype === "int" && row[col.accessor] === ""){
+                    if(col.accessor === "Revision"){
+                        if(row[col.accessor] === ""){
+                        row[col.accessor] = 1
+                        }
+                    }
+                    else{
+                        row[col.accessor] = null
+                    }
+                }
+                
+            }) */
+
+            /* for(let col of this.props.uneditcolumn){
+                delete row[col]
+            } */
+            })
+            let updjson = {
+            "_token": sessionStorage.getItem("Token"),
+            "_apikey": null,
+            "t": "ams_User_Role",
+            "pk": "ID",
+            "datas": dataUpdate,
+            "nr": false
+            }
+            Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
+            
+            })
+    
+            this.setState({dataUpdate:[]})
+        }
         return this.closeModal
     }
 
     createSelection(rowdata,type){
+        console.log("CHECK=" + rowdata.original.Check + " :  User_id=" + rowdata.original.User_ID)
         return <input
         className="selection"
         type={type}
         name="selection"
-        defaultChecked = {true}
+        defaultChecked = {rowdata.original.Check}
         onChange={(e)=> this.onHandleSelection(rowdata, e.target.checked, type)}/>
     }
 
     onHandleSelection(rowdata, value, type){
         if(type === "checkbox"){
-            let rowselect = this.state.rowselect;
+            //let rowUpdate = []
+            const dataUpdate = this.state.dataUpdate
             if(value){
-            rowselect.push(rowdata.original)
+                if(rowdata.original.User_ID === null){
+                    dataUpdate.push({ID:0,User_ID:this.state.User_id,Role_ID:rowdata.original.ID,Status:1})
+                }
             }
             else{
-            rowselect.forEach((row,index) => {
+            /* rowselect.forEach((row,index) => {
                 if(row.ID === rowdata.original.ID){
                 rowselect.splice(index,1)
                 }
-            })
+            }) */
             }
-            this.setState({rowselect}, () => {this.props.getselection(this.state.rowselect)})
+            this.setState({dataUpdate})
         }
-        else{
-            let rowselect = [];
-            if(value){
-            rowselect.push(rowdata.original)
-            }
-            this.setState({rowselect:rowselect}, () => {this.props.getselection(this.state.rowselect)})
-        }
+        console.log(this.state.dataUpdate)
     }
 
     render(){
@@ -176,7 +249,7 @@ class User extends Component{
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"}, */
+            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
@@ -224,7 +297,7 @@ class User extends Component{
                             filterable={true} /> */}
                     <Card>
                         <CardBody>
-                            <Button onClick={this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
+                            <Button onClick={() => this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
                         </CardBody>
                     </Card>
                 </div>

@@ -87,11 +87,11 @@ class AreaLocation extends Component{
   }
   
   componentWillMount(){
-  this.filterList();
+    this.filterList();
   }
 
   componentWillUnmount(){
-  Axios.isCancel(true);
+    Axios.isCancel(true);
   }
 
   componentDidMount(){
@@ -114,14 +114,6 @@ class AreaLocation extends Component{
       })}
     )))
   }
-
-  /* componentDidUpdate(){
-    if(this.state.areamaster !== "" && this.state.areamaster !== undefined){
-      if(this.state.data === null){
-        this.setState({data:this.getdataselect()})
-      }
-    }
-  } */
 
   componentWillUpdate(nextProps,nextState){
   /* console.log(nextProps)
