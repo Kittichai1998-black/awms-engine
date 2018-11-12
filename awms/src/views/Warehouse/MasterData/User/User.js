@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, Button, CardBody} from 'reactstrap';
 import {TableGen} from '../TableSetup';
-import Popup from 'reactjs-popup'
 import {apicall, createQueryString} from '../../ComponentCore'
 import ReactTable from 'react-table'
 
@@ -105,11 +104,6 @@ class User extends Component{
                     if (selectuserroledata[index].User_ID !== data) {
                         selectuserroledata.splice(index, 1);
                     }
-                /*  else{
-                        if(selectuserroledata[index].Status === 1){
-                            selectuserroledata.Check = true
-                        }
-                    } */
                 
                     index -= 1;
                 }
@@ -127,8 +121,6 @@ class User extends Component{
                 this.setState({User_id:data})
                 this.setState({selectroledata})
                 this.setState({selectuserroledata})
-                console.log(this.state.selectroledata)
-                console.log(this.state.selectuserroledata)
             }
         }
     }
@@ -165,23 +157,6 @@ class User extends Component{
         if(dataUpdate.length > 0){
             dataUpdate.forEach((row) => {
             row["ID"] = row["ID"] <= 0 ? null : row["ID"]
-            /* this.props.column.forEach(col => {
-                if(col.datatype === "int" && row[col.accessor] === ""){
-                    if(col.accessor === "Revision"){
-                        if(row[col.accessor] === ""){
-                        row[col.accessor] = 1
-                        }
-                    }
-                    else{
-                        row[col.accessor] = null
-                    }
-                }
-                
-            }) */
-
-            /* for(let col of this.props.uneditcolumn){
-                delete row[col]
-            } */
             })
             let updjson = {
             "_token": sessionStorage.getItem("Token"),
@@ -212,7 +187,7 @@ class User extends Component{
 
     onHandleSelection(rowdata, value, type){
         if(type === "checkbox"){
-            //let rowUpdate = []
+
             const dataUpdate = this.state.dataUpdate
             if(value){
                 if(rowdata.original.User_ID === null){
@@ -220,11 +195,6 @@ class User extends Component{
                 }
             }
             else{
-            /* rowselect.forEach((row,index) => {
-                if(row.ID === rowdata.original.ID){
-                rowselect.splice(index,1)
-                }
-            }) */
             }
             this.setState({dataUpdate})
         }
@@ -243,10 +213,7 @@ class User extends Component{
             {accessor: 'TelMobile', Header: 'Mobile', editable:true},
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
-            /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
-            //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"}, */
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
@@ -271,19 +238,6 @@ class User extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
-            <Popup open={this.state.open} onClose={this.closeModal}>
-                <div>
-                    <ReactTable columns={cols} minRows={5} data={this.state.selectroledata} sortable={false} style={{background:'white'}} getselection={this.getSelectionData}
-                        showPagination={false}/>
-                   {/*  <TableGen column={colsRole} data={this.state.selectRole} paginationBtn={false} getselection={this.getSelectionData}
-                            filterable={true} /> */}
-                    <Card>
-                        <CardBody>
-                            <Button onClick={() => this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
-                        </CardBody>
-                    </Card>
-                </div>
-            </Popup>          
             </div>
         ) 
     }
