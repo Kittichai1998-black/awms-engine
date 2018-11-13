@@ -15,8 +15,8 @@ namespace AWMSModel.Constant.EnumConst
         CANCELING = 23,
         CANCELED = 24,
 
-        LIFTING = 31,
-        LIFTED = 32,
+        COMPLETING = 31,
+        COMPLETIED = 32,
 
         WARNING = 90,
     }
