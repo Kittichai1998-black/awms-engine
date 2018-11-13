@@ -163,7 +163,7 @@ namespace AWMSEngine.ADO.StaticValue
                 return EntityStatus.REMOVE;
             if (this.IsMatchConfigArray("ESTS_" + fixCode + "_FOR_DONE", v))
                 return EntityStatus.DONE;
-            throw new Exception("EventStatus Convert To EntityStatus Not Config");
+            throw new Exception("EventStatus '" + value ?? "" + "' Convert To EntityStatus Not Config");
         }
     }
 }
