@@ -19,7 +19,7 @@ import shipping from '../../img/shipping.png';
 import shipped from '../../img/shipped.png';
 
 const EventStatus = [
-  { status: 'IDEL', code: 10, pathImg: idel, width: '30px' },
+  { status: 'IDLE', code: 10, pathImg: idel, width: '30px' },
   { status: 'RECEIVING', code: 11, pathImg: receiving, width: '30px' },
   { status: 'RECEIVED', code: 12, pathImg: received, width: '30px' },
   { status: 'MOVING', code: 13, pathImg: moving, width: '30px' },
@@ -45,7 +45,7 @@ const EventStatus = [
 
 
 const DocumentEventStatus = [
-    {status:'IDEL' , code:10,},
+    {status:'IDLE' , code:10,},
     {status:'WORKING' , code:11,},
     {status:'WORKED' , code:12,},
     {status:'REMOVING' , code:21,},

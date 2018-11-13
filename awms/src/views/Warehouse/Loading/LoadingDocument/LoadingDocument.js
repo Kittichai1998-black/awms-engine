@@ -65,7 +65,6 @@ class LoadingDocument extends Component{
       this.setState({pageID:values.ID, readonly:true,
         addstatus:true,})
         API.get(window.apipath + "/api/wm/loading/doc/?getMapSto=true&docID=" + values.ID).then((rowselect1) => {
-          console.log(rowselect1.data)
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }

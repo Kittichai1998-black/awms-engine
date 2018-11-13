@@ -51,7 +51,7 @@ function getmenu(data){
     let items =[]
       jsonresult.forEach((row) => {
         //console.log(row)
-        items.push({       
+        items.push({   
               name: row.name,
               icon: row.icon,
               children: 

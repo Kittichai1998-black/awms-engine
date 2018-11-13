@@ -350,6 +350,7 @@ class IssuedManage extends Component{
 
   onClickSelect(code){
     this.setState({code})
+    this.setState({remark:code})
     this.setState({basedisplay:"block"})
     if(code===undefined){
       return null
@@ -368,7 +369,6 @@ class IssuedManage extends Component{
   var groupArray = require('group-array');
    const groupItem = groupArray(arrType, 'code');
   var arrdata =[]
-
   for(var datarow in groupItem){
     groupItem[datarow].forEach(row => {
       row.id = row.mstID
@@ -388,7 +388,7 @@ class IssuedManage extends Component{
       
    });
   }
-   this.setState({data:arrdata},() => console.log(this.state.data))
+   this.setState({data:arrdata})
    
  }
 
@@ -455,8 +455,9 @@ class IssuedManage extends Component{
               <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.souWarehouseName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label})}/></div>}</div>
               <div className=""><label style={style}>Remark : </label>
-              {this.state.pageID ? <span>{this.state.remark}</span> : 
+              {this.state.pageID ? <span> {this.state.remark}</span> :
               <Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
               value={this.state.remark === undefined ? "" : this.state.remark}/>}
               </div>
             </div>
@@ -466,7 +467,7 @@ class IssuedManage extends Component{
         
         <Button className="float-right" color="danger" style={{display:this.state.adddisplay}} onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{display:this.state.adddisplay}}>Add</Button>
-          <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code} </span>
+          {/* <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code}</span> */}
         </div>
         <ReactTable NoDataComponent={() => null} columns={cols} minRows={10} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>

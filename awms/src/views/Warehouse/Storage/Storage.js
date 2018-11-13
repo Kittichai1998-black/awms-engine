@@ -6,7 +6,6 @@ import ExtendTable from '../MasterData/ExtendTable';
 import Axios from 'axios';
 import {createQueryString} from '../ComponentCore'
 
-
 class Storage extends Component{
   constructor(props) {
     super(props);
@@ -14,7 +13,9 @@ class Storage extends Component{
     this.state = {
       data : [],
       dataedit:[],
-      userAll:[],
+      userAll: [],
+    
+    
       dataMap : [
         {datafield:"code",searchfield:"rootBaseCode"},
         {datafield:"baseMaster_Code",searchfield:"rootBaseTypeCode"},
@@ -28,8 +29,8 @@ class Storage extends Component{
         {datafield:"warehouse_Code",searchfield:"warehouseCode"},
         {datafield:"warehouse_Name",searchfield:"warehouseName"},
         {datafield:"areaMaster_Code",searchfield:"areaCode"},
-        { datafield: "areaMaster_Name", searchfield: "areaName" },
-        { datafield:'areaLocationMaster_Code', searchfield:'locationCode'},
+        {datafield: "areaMaster_Name", searchfield: "areaName" },
+        {datafield:'areaLocationMaster_Code', searchfield:'locationCode'},
         {datafield:"holeStatus",searchfield:"holdStatus", Filter:"dropdown"},
         {datafield:"eventStatus",searchfield:"eventStatus", Filter:"dropdown"},
         {datafield:"status",searchfield:"status", Filter:"dropdown"},
@@ -53,7 +54,10 @@ class Storage extends Component{
     
     this.getSelectionData = this.getSelectionData.bind(this)
     this.getUserList = this.getUserList.bind(this)
+   
   }
+
+
 
   componentWillMount(){
     this.getUserList();
@@ -65,7 +69,7 @@ class Storage extends Component{
         obj.push({"ID":datarow.id,"HoleStatus":0});
     })
     const ObjStr = JSON.stringify(obj)
-    this.setState({dataedit:obj}, () => console.log(this.state.dataedit))
+    this.setState({dataedit:obj})
   }
 
   onClickToDesc(data){
@@ -90,8 +94,8 @@ class Storage extends Component{
       let userList = {}
       userList["data"] = userresult.data.datas
 
-      list = list.concat(userList)
-      this.setState({userAll:userresult.data.datas})
+        list = list.concat(userList)
+        this.setState({ userAll: userresult.data.datas } ,() => console.log(this.state.userAll))
     })))
   }
 
@@ -101,10 +105,11 @@ class Storage extends Component{
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center" , fixed: "left"},
       {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text", fixed: "left"},
       {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text", fixed: "left"},
-      {accessor: 'code', Header: 'Base Code', id: "ID", Filter:"text" , },
-     /*  {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
+      { accessor: 'baseMaster_Code', Header: 'Base Code', id: "ID", Filter: "text"},
+      { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text" },
+     /* {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
       {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" }, */
-      {accessor: 'viewChildPackMaster_Qty', Header: 'Pack Qty', filterable:false},
+      {accessor: 'viewPackMaster_Qty', Header: 'Pack Qty', filterable:false},
       /* {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', filterable:false}, */
@@ -114,7 +119,6 @@ class Storage extends Component{
       {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
       {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
       {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
-      { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text" },
       {accessor: 'holeStatus', Header: 'Hold',  Status:"text", Filter:"dropdown"},
       {accessor: 'eventStatus', Header: 'Event',  Status:"text", Filter:"dropdown"},
       {accessor: 'status', Header: 'Status',  Status:"text", Filter:"dropdown"},
@@ -135,7 +139,7 @@ class Storage extends Component{
       <div>
         <ExtendTable data={this.state.select} column={cols} childType="Tree" dataedit={this.state.dataedit} userlist={this.state.userAll}
         pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData} 
-        url={null} btn={btnfunc} filterable={true} subtype={1} filterFields={this.state.dataMap}/>
+          url={null} btn={btnfunc} filterable={true} subtype={1} filterFields={this.state.dataMap} />
       </div>
     )
   }

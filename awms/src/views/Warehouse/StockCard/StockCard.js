@@ -60,23 +60,22 @@ class StockCard extends Component{
     }
     this.onCalculate = this.onCalculate.bind(this)
   }
-  componentDidMount(){
+  componentWillMount(){
        Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
          const PackMasterdata = []
          response.data.datas.forEach(row => {
           var PackData= row.PackName
           PackMasterdata.push({label:PackData,value:row.Code})
-          
          })
            this.setState({PackMasterdata})    
          })
        }
 
   dateTimePickerFrom(){
-    return <DatePicker onChange={(e) => {this.setState({dateFrom:e})}} dateFormat="DD/MM/YYYY"/>
+    return <DatePicker defaultDate={moment()} onChange={(e) => {this.setState({dateFrom:e})}} dateFormat="DD/MM/YYYY"/>
   }
   dateTimePickerTo(){
-    return <DatePicker onChange={(e) => {this.setState({dateTo:e})}} dateFormat="DD/MM/YYYY"/>
+    return <DatePicker defaultDate={moment()} onChange={(e) => {this.setState({dateTo:e})}} dateFormat="DD/MM/YYYY"/>
   }
 
   onGetDocument(){
