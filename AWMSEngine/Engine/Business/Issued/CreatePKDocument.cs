@@ -73,11 +73,11 @@ namespace AWMSEngine.Engine.Business.Issued
                 this.StaticValue.Branchs.FirstOrDefault(x => x.ID == reqVO.souBranchID) : 
                 this.StaticValue.Branchs.FirstOrDefault(x => x.Code == reqVO.souBranchCode);
             var souAreaMasterModel = reqVO.souAreaMasterID.HasValue?
-                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.ID == reqVO.souAreaMasterID):
-                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.Code == reqVO.souAreaMasterCode);
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.souAreaMasterID):
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.souAreaMasterCode);
             var desSupplierModel = reqVO.desSupplierID.HasValue?
-                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.ID == reqVO.desSupplierID):
-                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.desSupplierID):
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
             var desCustomerModel = reqVO.desCustomerID.HasValue?
                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID):
                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);

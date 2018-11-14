@@ -28,9 +28,11 @@ namespace AWMSEngine.ADO.StaticValue
         public List<ams_Warehouse> Warehouses { get => this._Warehouses; }
 
         private List<ams_AreaMaster> _AreaMasters;
-        public List<ams_AreaMaster> AreaMasterLines { get => this._AreaMasters; }
+        public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
+        private List<ams_AreaMasterLine> _AreaMasterLines;
+        public List<ams_AreaMasterLine> AreaMasterLines { get => this._AreaMasterLines; }
 
         private List<ams_Supplier> _Suppliers;
         public List<ams_Supplier> Suppliers { get => this._Suppliers; }
@@ -46,8 +48,6 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
-        private List<ams_AreaMasterLine> _AreaMasterLines;
-        public List<ams_AreaMasterLine> AreaMasterLine { get => this._AreaMasterLines; }
         
         private List<ams_Transport> _Transports;
         public List<ams_Transport> Transports { get => this._Transports; }

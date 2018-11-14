@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AWMSModel.Constant.EnumConst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,13 +7,24 @@ namespace AWMSModel.Criteria.SP.Response
 {
     public class SPOutQueueResponseCriteria
     {
+        public int queueID;//รหัสคิว
+        public int seq;
+        public int queueParentID;
+        public int queueRefID;
+        public WorkQueueEventStatus queueStatus;
+
+        public string warehouseCode;//รหัสคลังสินค้า
+        public string areaCode;//รหัสโซน
+        public string locationCode;//รหัสเกต
+
         public string souWarehouseCode;//รหัสคลังสินค้า
         public string souAreaCode;//รหัสโซน
         public string souLocationCode;//รหัสเกต
+
         public string desWarehouseCode;//รหัสคลังสินค้า
         public string desAreaCode;//รหัสโซน
         public string desLocationCode;//รหัสเกต
-        public int queueID;//รหัสคิว
+
         public BaseInfo baseInfo;//ข้อมูลพาเลทและสินค้าในพาเลท
         public class BaseInfo
         {

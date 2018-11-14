@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.General
             long? amId = reqVO.areaID;
             if (!amId.HasValue)
             {
-                var area = StaticValueManager.GetInstant().AreaMasterLines.FirstOrDefault(x => x.Code == reqVO.areaCode);
+                var area = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
                 if (area == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + reqVO.areaCode + "'");
                 amId = area.ID;

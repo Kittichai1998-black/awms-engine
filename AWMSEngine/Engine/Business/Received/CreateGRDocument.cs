@@ -72,13 +72,13 @@ namespace AWMSEngine.Engine.Business.Received
                 Sou_Supplier_ID = string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID,
                 Sou_Branch_ID = string.IsNullOrWhiteSpace(reqVO.souBranchCode) ? null : this.StaticValue.Branchs.First(x => x.Code == reqVO.souBranchCode).ID,
                 Sou_Warehouse_ID = string.IsNullOrWhiteSpace(reqVO.souWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.souWarehouseCode).ID,
-                Sou_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.souAreaMasterCode) ? null : this.StaticValue.AreaMasterLines.First(x => x.Code == reqVO.souAreaMasterCode).ID,
+                Sou_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.souAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.souAreaMasterCode).ID,
 
                 Des_Customer_ID = null,
                 Des_Supplier_ID = null,
                 Des_Branch_ID = string.IsNullOrWhiteSpace(reqVO.desBranchCode) ? null : this.StaticValue.Branchs.First(x => x.Code == reqVO.desBranchCode).ID,
                 Des_Warehouse_ID = string.IsNullOrWhiteSpace(reqVO.desWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.desWarehouseCode).ID,
-                Des_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.desAreaMasterCode) ? null : this.StaticValue.AreaMasterLines.First(x => x.Code == reqVO.desAreaMasterCode).ID,
+                Des_AreaMaster_ID = string.IsNullOrWhiteSpace(reqVO.desAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desAreaMasterCode).ID,
                 DocumentDate = reqVO.documentDate,
                 ActionTime = reqVO.actionTime,
 

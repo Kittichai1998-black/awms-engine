@@ -30,7 +30,7 @@ namespace AWMSEngine.ADO
             string warehouseCode, string areaCode, string bank, int? bay, int level, VOCriteria buVO)
         {
             var wm = StaticValue.StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Code == warehouseCode);
-            var am = StaticValue.StaticValueManager.GetInstant().AreaMasterLines.FirstOrDefault(x => x.Code == areaCode);
+            var am = StaticValue.StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == areaCode);
             if (wm == null)
                 throw new AMWException(buVO.Logger, AMWExceptionCode.V1001, "ไม่พบรหัส Warehouse '" + warehouseCode + "'");
             if (am == null)
