@@ -173,6 +173,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         }
         private TRes GenerateResponse(StorageObjectCriteria mapsto, TReq reqVO)
         {
+
             TRes res = new TRes()
             {
                 souWarehouseCode = reqVO.warehouseCode,

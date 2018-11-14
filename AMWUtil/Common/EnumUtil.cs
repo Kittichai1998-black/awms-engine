@@ -11,7 +11,45 @@ namespace AMWUtil.Common
 {
     public static class EnumUtil
     {
+        public class ObjectView : EnumDisplayAttribute
+        {
+            public object Value { get; set; }
+        }
 
+        public static List<ObjectView> ListObjectView<T>()
+             where T : struct, IComparable, IFormattable, IConvertible
+        {
+            var enums = List<T>();
+            List<ObjectView> res = new List<ObjectView>();
+            foreach(var e in enums)
+            {
+                ObjectView viw = null;
+                var attr = AttributeUtil.Attribute<EnumDisplayAttribute>(e);
+                if (attr != null)
+                {
+                    viw = (ObjectView)attr;
+                    viw.Value = e;
+                }
+                else
+                {
+                    viw = new ObjectView() { Value = e, Name = e.ToString(), Order = 1 };
+                }
+                res.Add(viw);
+            }
+            return res.OrderBy(x => x.Order).OrderBy(x => x.Name).ToList();
+        }
+        public static Type GetEnumType(string enumName)
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var type = assembly.GetType(enumName);
+                if (type == null)
+                    continue;
+                if (type.IsEnum)
+                    return type;
+            }
+            return null;
+        }
         public static string GetDisplayName<T>(this T enumVal)
              where T : struct, IComparable, IFormattable, IConvertible
         {

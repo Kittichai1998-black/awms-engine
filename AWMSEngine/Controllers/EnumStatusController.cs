@@ -17,7 +17,7 @@ namespace AWMSEngine.Controllers
         [HttpGet("{key}")]
         public dynamic GetEnumStatus(string key)
         {
-            Type t = Type.GetType("AWMSModel.Constant.EnumConst." + key);
+            Type t = EnumUtil.GetEnumType("AWMSModel.Constant.EnumConst." + key);
             MethodInfo method = typeof(EnumUtil).GetMethod("ListObjectView");
             method = method.MakeGenericMethod(t);
             var res = method.Invoke(this, new object[0]);

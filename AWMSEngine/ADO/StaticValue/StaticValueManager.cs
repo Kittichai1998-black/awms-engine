@@ -23,23 +23,33 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_Branch> _Branchs;
         public List<ams_Branch> Branchs { get => this._Branchs; }
+
         private List<ams_Warehouse> _Warehouses;
         public List<ams_Warehouse> Warehouses { get => this._Warehouses; }
+
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
+        private List<ams_AreaMasterType> _AreaMasterTypes;
+        public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
 
         private List<ams_Supplier> _Suppliers;
         public List<ams_Supplier> Suppliers { get => this._Suppliers; }
+
         private List<ams_Customer> _Customers;
         public List<ams_Customer> Customers { get => this._Customers; }
+
         private List<ams_PackMasterType> _PackMasterTypes;
         public List<ams_PackMasterType> PackMasterTypes { get => this._PackMasterTypes; }
+
         private List<ams_SKUMasterType> _SKUMasterTypes;
         public List<ams_SKUMasterType> SKUMasterTypes { get => this._SKUMasterTypes; }
+
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
+
         private List<ams_Transport> _Transports;
         public List<ams_Transport> Transports { get => this._Transports; }
+
         private List<ams_UnitType> _UnitTypes;
         public List<ams_UnitType> UnitTypes { get => this._UnitTypes; }
 
@@ -88,6 +98,10 @@ namespace AWMSEngine.ADO.StaticValue
         public void LoadAreaMaster()
         {
             this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, new VOCriteria()));
+        }
+        public void LoadAreaMasterType()
+        {
+            this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, new VOCriteria()));
         }
         public void LoadWarehouses()
         {
