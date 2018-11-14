@@ -152,7 +152,6 @@ class TableGen extends Component{
   }
 
   componentDidMount(){
-    
     if(this.props.data){
       this.queryInitialData(this.props.data);
       this.setState({originalselect:this.props.data.q})
@@ -733,7 +732,6 @@ class TableGen extends Component{
                               backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                               fontWeight: selectedItem === item ? 'bold' : 'normal',
                               width:'150px',
-                              border:"1px solid black "
                             }
                           })}
                         >
@@ -795,9 +793,6 @@ class TableGen extends Component{
             return row.code === data
           })[0].status
         }
-
-        
-
       </span>
     }
     else if(type === "DocumentStatus"){

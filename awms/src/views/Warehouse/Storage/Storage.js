@@ -56,9 +56,7 @@ class Storage extends Component{
     this.getUserList = this.getUserList.bind(this)
    
   }
-
-
-
+  
   componentWillMount(){
     this.getUserList();
   }
@@ -103,13 +101,13 @@ class Storage extends Component{
   render(){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center" , fixed: "left"},
-      {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text", fixed: "left"},
-      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text", fixed: "left"},
-      { accessor: 'baseMaster_Code', Header: 'Base Code', id: "ID", Filter: "text"},
+      {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text", fixed: "left", sortable:false},
+      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text", fixed: "left", sortable:false},
+      { accessor: 'baseMaster_Code', Header: 'Base Code', Filter: "text"},
       { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text" },
      /* {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
       {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" }, */
-      {accessor: 'viewPackMaster_Qty', Header: 'Pack Qty', filterable:false},
+      {accessor: 'viewPackMaster_Qty', Header: 'Pack Qty', filterable:false, sortable:false},
       /* {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', filterable:false}, */
@@ -119,13 +117,13 @@ class Storage extends Component{
       {accessor: 'warehouse_Name', Header: 'Warehouse Name', Filter:"text"},
       {accessor: 'areaMaster_Code', Header: 'Area Code', Filter:"text"},
       {accessor: 'areaMaster_Name', Header: 'Area Name', Filter:"text"},
-      {accessor: 'holeStatus', Header: 'Hold',  Status:"text", Filter:"dropdown"},
-      {accessor: 'eventStatus', Header: 'Event',  Status:"text", Filter:"dropdown"},
-      {accessor: 'status', Header: 'Status',  Status:"text", Filter:"dropdown"},
+      {accessor: 'holeStatus', Header: 'Hold',  Status:"text", Filter:"dropdown", sortable:false},
+      {accessor: 'eventStatus', Header: 'Event',  Status:"text", Filter:"dropdown", sortable:false},
+      {accessor: 'status', Header: 'Status',  Status:"text", Filter:"dropdown", sortable:false},
       {accessor: 'productDate', Header: 'Product Date', },
       {accessor: 'expiryDate', Header: 'Expire Date', },
-      {accessor: 'createBy', Header: 'Create', filterable:false, Type:"codename"},
-      {accessor: 'modifyBy', Header: 'Modify', filterable:false, Type:"codename"},
+      {accessor: 'createBy', Header: 'Create', filterable:false, Type:"codename", sortable:false},
+      {accessor: 'modifyBy', Header: 'Modify', filterable:false, Type:"codename", sortable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];
 
