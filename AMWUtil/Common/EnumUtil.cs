@@ -11,8 +11,12 @@ namespace AMWUtil.Common
 {
     public static class EnumUtil
     {
-        public class ObjectView : EnumDisplayAttribute
+        public class ObjectView
         {
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public int Order { get; set; }
+            public string Icon { get; set; }
             public object Value { get; set; }
         }
 
@@ -27,7 +31,7 @@ namespace AMWUtil.Common
                 var attr = AttributeUtil.Attribute<EnumDisplayAttribute>(e);
                 if (attr != null)
                 {
-                    viw = (ObjectView)attr;
+                    viw = ObjectUtil.JsonCast<ObjectView>(attr);
                     viw.Value = e;
                 }
                 else

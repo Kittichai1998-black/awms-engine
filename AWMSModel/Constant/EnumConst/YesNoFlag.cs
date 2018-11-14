@@ -4,7 +4,9 @@ using System.Text;
 
 namespace AWMSModel.Constant.EnumConst
 {
-    class YesNoFlag
+    public enum YesNoFlag
     {
+        YES = 1,
+        No = 0
     }
 }

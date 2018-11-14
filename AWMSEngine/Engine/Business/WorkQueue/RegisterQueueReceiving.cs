@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
@@ -30,7 +31,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (wm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + reqVO.warehouseCode + "'");
-            var am = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouses_ID == wm.ID);
+            var am = this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouses_ID == wm.ID);
             if (am == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + reqVO.areaCode + "'");
             var lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
@@ -77,7 +78,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             ADO.StorageObjectADO.GetInstant()
                 .PutV2(mapsto, this.BuVO);
 
-            var res = this.GenerateResponse(mapsto,reqVO);
+            var res = this.GenerateResponse(mapsto, lm, reqVO);
             return res;
         }
 
@@ -142,8 +143,16 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         {
 
         }
-        private SPOutQueueResponseCriteria GenerateResponse(StorageObjectCriteria mapsto, TReq reqVO)
+        private SPOutQueueResponseCriteria GenerateResponse(StorageObjectCriteria mapsto, ams_AreaLocationMaster lm, TReq reqVO)
         {
+            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(mapsto.areaID, lm.ID, this.BuVO);
+            var desAreaDefault = desAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
+
+            SPworkQueue queue = new SPworkQueue()
+            {
+
+            };
+            ADO.QueueADO.GetInstant().PUT(queue, this.BuVO);
             var res = new SPOutQueueResponseCriteria()
             {
                 souWarehouseCode = reqVO.warehouseCode,
@@ -151,8 +160,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 souLocationCode = reqVO.loactionCode,
 
                 desWarehouseCode = reqVO.warehouseCode,
-                desAreaCode = "STO",
-                desLocationCode = null,
+                desAreaCode = desAreaDefault.Des_AreaMaster_Code,
+                desLocationCode = desAreaDefault.Des_AreaLocationMaster_Code,
 
                 queueID = 1,
 

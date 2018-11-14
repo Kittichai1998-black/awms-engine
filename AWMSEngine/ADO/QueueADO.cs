@@ -9,15 +9,16 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.ADO
 {
-    public class QueueADO : BaseMSSQLAccess<MasterADO>
+    public class QueueADO : BaseMSSQLAccess<QueueADO>
     {
-        public List<amt_WorkQueue> PUT(SPworkQueue obj, VOCriteria buVO)
+        public SPworkQueue PUT(SPworkQueue obj, VOCriteria buVO)
         {
             var param = this.CreateDynamicParameters(obj);
             param.Add("userid", buVO.ActionBy);
 
-            var res = this.Query<amt_WorkQueue>("SP_QUEUE_PUT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
-            return res;
+            var id = this.ExecuteScalar<long>("SP_QUEUE_PUT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            obj.ID = id;
+            return obj;
         }
     }
 }

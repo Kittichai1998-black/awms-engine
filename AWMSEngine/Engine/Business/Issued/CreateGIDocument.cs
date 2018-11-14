@@ -68,8 +68,8 @@ namespace AWMSEngine.Engine.Business.Issued
                  this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.forCustomerID) :
                  this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.forCustomerCode);
             var souAreaMasterModel = reqVO.souAreaMasterID.HasValue ?
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.souAreaMasterID) :
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.souAreaMasterCode);
+                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.ID == reqVO.souAreaMasterID) :
+                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.Code == reqVO.souAreaMasterCode);
             var souWarehouseModel =
                 reqVO.souWarehouseID.HasValue ?
                     this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == reqVO.souWarehouseID) :
@@ -87,8 +87,8 @@ namespace AWMSEngine.Engine.Business.Issued
                         this.StaticValue.Branchs.FirstOrDefault(x => x.ID == souWarehouseModel.Branch_ID) :
                         null;
             var desSupplierModel = reqVO.desSupplierID.HasValue?
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.desSupplierID):
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
+                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.ID == reqVO.desSupplierID):
+                this.StaticValue.AreaMasterLines.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
             var desCustomerModel = reqVO.desCustomerID.HasValue?
                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID):
                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
