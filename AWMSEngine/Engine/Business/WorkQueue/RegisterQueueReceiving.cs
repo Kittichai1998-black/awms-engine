@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.WorkQueue
 {
-    public class RegisterQueueReceiving : BaseEngine<RegisterQueueReceiving.TReq,RegisterQueueReceiving.TRes>
+    public class RegisterQueueReceiving : BaseEngine<RegisterQueueReceiving.TReq, SPOutQueueResponseCriteria>
     {
         public class TReq //ข้อมูล Request จาก WCS
         {
@@ -23,38 +24,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             public string areaCode;//รหัสโซน
             public string loactionCode;//รหัสเกต
         }
-        public class TRes //ข้อมูล Response ไปให้ WCS
-        {
-            public string souWarehouseCode;//รหัสคลังสินค้า
-            public string souAreaCode;//รหัสโซน
-            public string souLocationCode;//รหัสเกต
-            public string desWarehouseCode;//รหัสคลังสินค้า
-            public string desAreaCode;//รหัสโซน
-            public string desLocationCode;//รหัสเกต
-            public int queueID;//รหัสคิว
-            public BaseInfo baseInfo;//ข้อมูลพาเลทและสินค้าในพาเลท
-            public class BaseInfo
-            {
-                public string baseCode;//รหัสพาเลท
-                public List<PackInfo> packInfos;//ข้อมูลสินค้าในพาเลท
-                public class PackInfo
-                {
-                    public string packCode;//รหัส Packet
-                    public int packQty;//จำนวน Packet
-                    public string skuCode;//รหัส SKU
-                    public int skuQty;//จำนวนสินค้านับจาก SKU
-                    public string lot;
-                    public string batch;
-
-                    public DateTime? minProductDate;//วันผลิด ต่ำสุดจากทั้งหมดใยพาเลท
-                    public DateTime? maxProductDate;//วันผลิด สูงสุดจากทั้งหมดใยพาเลท
-                    public DateTime? minExpireDate;//วันหมดอายุ ต่ำสุดจากทั้งหมดใยพาเลท
-                    public DateTime? maxExpireDate;//วันหมดอายุ สูงสุดจากทั้งหมดใยพาเลท
-                }
-            }
-        }
-
-        protected override TRes ExecuteEngine(TReq reqVO)
+        
+        protected override SPOutQueueResponseCriteria ExecuteEngine(TReq reqVO)
         {
             var wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (wm == null)
@@ -171,9 +142,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         {
 
         }
-        private TRes GenerateResponse(StorageObjectCriteria mapsto, TReq reqVO)
+        private SPOutQueueResponseCriteria GenerateResponse(StorageObjectCriteria mapsto, TReq reqVO)
         {
-            TRes res = new TRes()
+            var res = new SPOutQueueResponseCriteria()
             {
                 souWarehouseCode = reqVO.warehouseCode,
                 souAreaCode = reqVO.areaCode,
@@ -185,7 +156,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 queueID = 1,
 
-                baseInfo = new TRes.BaseInfo()
+                baseInfo = new SPOutQueueResponseCriteria.BaseInfo()
                 {
                     baseCode = mapsto.code,
                     packInfos = mapsto.ToTreeList()
@@ -198,7 +169,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                     })
                                     .Select(x=> {
                                         //var sm = ADO.DataADO.GetInstant().SelectBy<dynamic>()
-                                        var v = new TRes.BaseInfo.PackInfo()
+                                        var v = new SPOutQueueResponseCriteria.BaseInfo.PackInfo()
                                         {
                                             packCode = x.Key.packCode,
                                             packQty = x.Count(),
