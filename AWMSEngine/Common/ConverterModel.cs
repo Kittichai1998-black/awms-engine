@@ -1,4 +1,5 @@
-﻿using AWMSModel.Criteria.SP.Response;
+﻿using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Common
 {
-    public class ConvertSPWorkQueueToWorkQueueCriteria
+    public static class ConverterModel
     {
 
-        public WorkQueueCriteria ConvertToSPOutQueueResponseCriteria()
+        public static WorkQueueCriteria ToWorkQueueCriteria(this SPworkQueue workQ)
         {
             WorkQueueCriteria res = new WorkQueueCriteria()
             {
