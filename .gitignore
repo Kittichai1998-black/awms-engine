@@ -263,3 +263,4 @@ __pycache__/
 /amws-engine
 /awms/src/views/Warehouse/StorageView.js
 *.cs
+/AWMSEngine/Properties/PublishProfiles/FolderProfile.pubxml

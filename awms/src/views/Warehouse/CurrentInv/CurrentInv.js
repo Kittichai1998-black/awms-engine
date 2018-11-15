@@ -98,7 +98,7 @@ class CurrentInv extends Component{
      <div className="clearfix">
           <Workbook filename="CurrentInv.xlsx" element={
             <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '150px'}} color="primary" className="float-right"
-            >Dowload Reconsign </Button>}>
+            >Download Reconsign </Button>}>
             <Workbook.Sheet data={dataEcel} name="Sheet A">
               <Workbook.Column label="PackCode" value="packCode"  />
               <Workbook.Column label="PackName" value="packName" />

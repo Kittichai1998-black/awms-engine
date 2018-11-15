@@ -33,7 +33,7 @@ class IssuedDoc extends Component {
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
         f: "ID,Code,SouBranchName,Status,DesWarehouseName,DesAreaName,SouCustomerName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,Created,ModifyBy,ActionTime",
         g: "",
-        s: "[{'f':'Code','od':'asc'}]",
+        s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
         l: 10,
         all: "",
