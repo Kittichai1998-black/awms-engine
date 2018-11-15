@@ -138,7 +138,7 @@ class Storage extends Component{
         <ExtendTable data={this.state.select} column={cols} childType="Tree" dataedit={this.state.dataedit} userlist={this.state.userAll}
           pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData} 
           url={null} btn={btnfunc} filterable={true} subtype={1} filterFields={this.state.dataMap} 
-          btnHold={false}/>
+          btnHold={true}/>
       </div>
     )
   }

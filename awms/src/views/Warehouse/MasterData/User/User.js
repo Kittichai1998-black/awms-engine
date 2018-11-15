@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Card, Button, CardBody} from 'reactstrap';
 import {TableGen} from '../TableSetup';
-//import Popup from 'reactjs-popup'
+import Popup from 'reactjs-popup'
 import {apicall, createQueryString} from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { timingSafeEqual } from 'crypto';
@@ -118,13 +118,7 @@ class User extends Component{
                 while ( index>= 0) {
                     if (selectuserroledata[index].User_ID !== data) {
                         selectuserroledata.splice(index, 1);
-                    }
-                /*  else{
-                        if(selectuserroledata[index].Status === 1){
-                            selectuserroledata.Check = true
-                        }
-                    } */
-                
+                    }              
                     index -= 1;
                 }
                 selectroledata.forEach(rowRole =>{
@@ -245,7 +239,7 @@ class User extends Component{
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
-            /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"}, */
+            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
@@ -278,7 +272,7 @@ class User extends Component{
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                       filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
-           {/*  <Popup open={this.state.open} onClose={this.closeModal}>
+            <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
                     <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white'}} 
                     getselection={this.getSelectionData} showPagination={false}/>
@@ -288,7 +282,7 @@ class User extends Component{
                         </CardBody>
                     </Card>
                 </div>
-            </Popup> */}
+            </Popup>
             </div>
         ) 
     }
