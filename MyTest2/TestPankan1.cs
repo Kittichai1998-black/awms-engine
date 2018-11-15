@@ -4,6 +4,7 @@ using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,6 +17,15 @@ namespace MyTest2
         public TestPankan1(ITestOutputHelper sysout)
         {
             this.sysout = sysout;
+        }
+        [Fact]
+        public void TestGenericType()
+        {
+            
+            Type t = EnumUtil.GetEnumType("AWMSModel.Constant.EnumConst.EntityStatus");
+            MethodInfo method = typeof(EnumUtil).GetMethod("ListObjectView");
+            method = method.MakeGenericMethod(t);
+            var res = method.Invoke(this, new object[0]);
         }
         [Fact]
         public void TestDataGenID()

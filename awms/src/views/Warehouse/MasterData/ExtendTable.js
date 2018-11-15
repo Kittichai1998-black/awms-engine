@@ -694,6 +694,22 @@ class ExtendTable extends Component{
       return <span>{UserCode===""?"":(UserCode + (DateTime===undefined?"":(" : "+ DateTime)))}</span>;
     }
 
+    btnGenerate(){
+      if(this.props.btnHold === true){
+        return <Card style={{display:'inlne-block',textAlign:'right'}}>
+              <CardBody>
+                <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
+                  onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
+                <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
+                  onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
+              </CardBody>
+            </Card>
+      }
+      else{
+        return null
+      }
+    }
+
     render(){
         const col = this.props.column
         col.forEach((row) => {
@@ -773,14 +789,7 @@ class ExtendTable extends Component{
                 this.setState({data:[],dataedit:[], loading:true });
                 this.customSorting(sorted)}
             } />
-            <Card style={{display:'inlne-block',textAlign:'right'}}>
-              <CardBody>
-                <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
-                  onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
-                <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
-                  onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
-              </CardBody>
-            </Card>
+            {this.btnGenerate()}
             </div>
         )
     }
