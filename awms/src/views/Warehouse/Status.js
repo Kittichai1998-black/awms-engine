@@ -41,9 +41,6 @@ const EventStatus = [
   { status: 'CHANGE_BASE', code: 90}
 ]
 
-
-
-
 const DocumentEventStatus = [
     {status:'IDLE' , code:10,},
     {status:'WORKING' , code:11,},
@@ -69,7 +66,35 @@ const Status = [
     {status:'Done', code:3,},
 ]
 
+const StorageObjectEventStatus = [
+    {status: "IDEL",code: 10},
+    {status: "RECEIVING",code: 11},
+    {status: "RECEIVED",code: 12},
+    {status: "AUDITING",code: 13},
+    {status:'AUDITED', code:14},
+    {status: "ISSUING",code: 15},
+    {status: "ISSUED",code: 16},
+    {status: "PICKING", code: 17},
+    {status: "PICKED", code: 18},
+    {status: "REMOVING",code: 21},
+    {status: "REMOVED",code: 22},
+    {status: "REJECTING",code: 23},
+    {status: "REJECTED",code: 24},
+    {status: "CORRECTING",code: 25},
+    {status: "CORRECTED",code: 26},
+    {status: "LOADING",code: 31},
+    {status: "LOADED",code: 32},
+    {status: "SHIPPING",code: 33},
+    {status: "SHIPPED", code: 34},
+    {status: "CONSOLIDATING",code: 111},
+    {status: "CONSOLIDATED",code: 112},
+    {status: "MOVING",code: 113},
+    {status: "MOVED",code: 114},
+    {status: "TRANSFERING",code: 115},
+    {status: "TRANSFERED",code: 116}
+    
+]
 
 
 
-export {EventStatus, DocumentStatus, Status, DocumentEventStatus}
+export {EventStatus, DocumentStatus, Status, DocumentEventStatus, StorageObjectEventStatus}

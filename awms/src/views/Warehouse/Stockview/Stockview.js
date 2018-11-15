@@ -76,16 +76,18 @@ class Stockview extends Component{
             let bstosdata = rowselect1.data.bstos.filter(row2 => {
               return row.packMaster_ID === row2.packID
             })
-            this.setState({
-              data: [{
-                rootCode: bstosdata[0].rootCode,
-                packCode: bstosdata[0].packCode,
-                packName: bstosdata[0].packName,
-                quantity: row.quantity,
-                unitType_Code: row.unitType_Code,
-              
-              }]
-            })
+            if (bstosdata.length > 0) {
+              this.setState({
+                data: [{
+                  rootCode: bstosdata[0].rootCode,
+                  packCode: bstosdata[0].packCode,
+                  packName: bstosdata[0].packName,
+                  quantity: row.quantity,
+                  unitType_Code: row.unitType_Code,
+
+                }]
+              })
+            }
             
           })
          
@@ -211,13 +213,10 @@ class Stockview extends Component{
     return (
 
       <div>
-  
-
-        
         <div className="clearfix">
-          <div className="heading">
+          <div>
             <div className="float-right">
-              <div>Document Date : <span className="heading">{this.state.documentDate}</span></div>
+              <div>Document Date : <span>{this.state.documentDate}</span></div>
               
               <div href="#" id="TooltipExample">Event Status :
               <span>

@@ -122,7 +122,7 @@ class IssuedDoc extends Component {
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc} defaultCondition={[{'f':'Status','c':'!=','v':2},{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
+        btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
         accept={false}/>
       </div>
     )
