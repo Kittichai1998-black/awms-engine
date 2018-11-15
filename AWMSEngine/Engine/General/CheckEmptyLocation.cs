@@ -17,10 +17,11 @@ namespace AWMSEngine.Engine.General
             public string warehouseCode;
             public long? areaID;
             public string areaCode;
-            //public string locationCode;
-            public string Bank;
-            public int? Bay;
-            public int? Level;
+            public string locationCode;
+            public string gate;
+            public string bank;
+            public int? bay;
+            public int? level;
         }
         public class TRes {
             public List<EmptyLocation> locations;
@@ -49,7 +50,7 @@ namespace AWMSEngine.Engine.General
                 amId = area.ID;
             }
             var locations = ADO.AreaADO.GetInstant()
-                .CountItemInLocation(wmId, amId, null, null, reqVO.Bank, reqVO.Bay, reqVO.Level, this.BuVO)
+                .CountItemInLocation(wmId, amId, reqVO.locationCode, reqVO.gate, reqVO.bank, reqVO.bay, reqVO.level, this.BuVO)
                 .Select(x => {
                     var v = ObjectUtil.JsonCast<TRes.EmptyLocation>(x);
                     v.isEmpty = v.countProducts == 0;

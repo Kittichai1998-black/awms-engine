@@ -67,6 +67,11 @@ const SKUType = Loadable({
   loading: Loading,
 });
 
+const ObjectSize = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/ObjectSize'),
+  loading: Loading,
+});
+
 const Storage = Loadable({
   loader: () => import('./views/Warehouse/Storage'),
   loading: Loading,
@@ -167,6 +172,7 @@ const routes = [
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
   { path: '/mst/skutype/manage', exact: true, name: 'SKU Type', component: SKUType },
+  { path: '/mst/objectsize/manage', exact: true, name: 'Object Size', component: ObjectSize },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Goods Receive Document', component: InboundView },
@@ -184,7 +190,6 @@ const routes = [
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
   { path: '/sys/sto/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
-  { path: '/doc/crt/manage', exact: true, name: 'CurrentInv', component: CurrentInv},
   { path: '/sys/sto/curinv', exact: true, name: 'CurrentInv', component: CurrentInv},
   { path: '/doc/gr/view', exact: true, name: 'StorageDetail', component: StorageDetail},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },

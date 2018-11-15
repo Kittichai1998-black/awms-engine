@@ -49,7 +49,7 @@ const createQueryString = (select,wherequery) => {
     + (select.l === 0 ? "" : "&l=" + select.l)
     + (select.all === "" ? "" : "&all=" + select.all) */
     +(select.s_f === "" ? "" : "&s_f=" + select.s_f)
-    +(select.s_od === "" ? "" : "&s_od" + select.s_od)
+    +(select.s_od === "" ? "" : "&s_od=" + select.s_od)
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
     + ("&token=" + sessionStorage.Token)
@@ -351,14 +351,10 @@ class ExtendTable extends Component{
 
     customSorting(data){
         const select = this.props.data
-        select["s"] = JSON.stringify([{'f':data[0].id,'od':data[0].desc === false ? 'asc' : 'desc'}])
+        select["s_f"] = data[0].id
+        select["s_od"] = data[0].desc === false ? 'asc' : 'desc'
         let queryString = ""
-        if(this.props.url === undefined || null){
-          queryString = createQueryString(select)
-        }
-        else{
-          queryString = createQueryStringStorage(this.props.url,data[0].id,data[0].desc === false ? 'asc' : 'desc')
-        }
+        queryString = createQueryString(select)
         Axois.get(queryString).then(
         (res) => {
             this.setState({data:res.data.datas, loading:false})
@@ -698,6 +694,22 @@ class ExtendTable extends Component{
       return <span>{UserCode===""?"":(UserCode + (DateTime===undefined?"":(" : "+ DateTime)))}</span>;
     }
 
+    btnGenerate(){
+      if(this.props.btnHold === true){
+        return <Card style={{display:'inlne-block',textAlign:'right'}}>
+              <CardBody>
+                <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
+                  onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
+                <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
+                  onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
+              </CardBody>
+            </Card>
+      }
+      else{
+        return null
+      }
+    }
+
     render(){
         const col = this.props.column
         col.forEach((row) => {
@@ -773,18 +785,11 @@ class ExtendTable extends Component{
             minRows={5}
             SubComponent={this.props.childType==="Table"?this.subTable:this.subTree}
             PaginationComponent={this.paginationButton}
-            /* onSortedChange={(sorted) => {
-                this.setState({data:[], loading:true });
+            onSortedChange={(sorted) => {
+                this.setState({data:[],dataedit:[], loading:true });
                 this.customSorting(sorted)}
-            } *//>
-            <Card style={{display:'inlne-block',textAlign:'right'}}>
-              <CardBody>
-                <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
-                  onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
-                <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
-                  onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
-              </CardBody>
-            </Card>
+            } />
+            {this.btnGenerate()}
             </div>
         )
     }

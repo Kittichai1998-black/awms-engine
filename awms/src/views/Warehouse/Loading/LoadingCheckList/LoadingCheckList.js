@@ -166,6 +166,7 @@ class LoadingDocument extends Component{
           </Col>
         </Row>
 
+        <ReactTable NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
       <div id="per_button_table" style={{display:this.state.showbutton}}>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/>

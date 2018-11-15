@@ -211,7 +211,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                              new DocumentTypeID[] { DocumentTypeID.GOODS_ISSUED },
                                              this.BuVO);
                     if (issueItem.packQty > countDocLock.freePackQty)
-                        throw new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.B0001, "Receive over the amount in the warehouse.");
+                        throw new AMWUtil.Exception.AMWException(this.Logger, AMWUtil.Exception.AMWExceptionCode.B0001, "Issue over the amount in the warehouse.");
                 }
 
                 var newDocItem = new amt_DocumentItem()

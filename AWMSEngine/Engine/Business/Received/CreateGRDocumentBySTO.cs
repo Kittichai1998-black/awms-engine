@@ -56,7 +56,6 @@ namespace AWMSEngine.Engine.Business.Received
                 Sou_Branch_ID = null,
                 Sou_Warehouse_ID = null,
                 Sou_AreaMaster_ID = null,
-
                 Des_Customer_ID = null,
                 Des_Supplier_ID = null,
                 Des_Branch_ID = des_Branch_ID,
@@ -72,7 +71,8 @@ namespace AWMSEngine.Engine.Business.Received
                 Ref2 = null,
                 ParentDocument_ID = null,
                 DocumentItems = new List<amt_DocumentItem>(),
-                Remark = null
+                Remark = reqVO.stomap.code
+
 
             };
             var packs = stopacks

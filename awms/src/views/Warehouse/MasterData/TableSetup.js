@@ -7,8 +7,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import guid from 'guid';
-import hash from 'hash.js';
-import {EventStatus, DocumentStatus, DocumentEventStatus, Status} from '../Status'
+import {EventStatus, DocumentStatus, DocumentEventStatus, Status, StorageObjectEventStatus} from '../Status'
 import Select from 'react-select'
 import {apicall, createQueryString, Clone} from '../ComponentCore'
 import _ from 'lodash'
@@ -327,8 +326,6 @@ class TableGen extends Component{
                 guidstr = guidstr.replace('-','');
               
               }
-              console.log(guidstr)
-              //var guidstr = guid.raw().toUpperCase().replace('-','').toUpperCase();
               row[col.accessor] = "@@sql_gen_password,"+row[col.accessor]+","+guidstr
               row["SoftPassword"] = guidstr
             }
@@ -672,6 +669,7 @@ class TableGen extends Component{
     const getdata = this.state.autocomplete.filter(row=>{
       return row.field  === rowdata.column.id
     })
+    console.log(getdata)
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
       initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
@@ -733,7 +731,6 @@ class TableGen extends Component{
                               backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
                               fontWeight: selectedItem === item ? 'bold' : 'normal',
                               width:'150px',
-                              border:"1px solid black "
                             }
                           })}
                         >
@@ -788,16 +785,36 @@ class TableGen extends Component{
 
   createStatusField(data, type){
     if (type === "EventStatus") {
-
+      let strStatus
+      const results = EventStatus.filter(row => {            
+        return row.code === data
+      })
+      if(results.length > 0){
+        strStatus = results[0].status
+      }
+      else{
+        strStatus = ""
+      }
       return <span>
         {
-          EventStatus.filter(row => {
-            return row.code === data
-          })[0].status
+          strStatus
         }
-
-        
-
+      </span>
+    }else if(type === "StorageObjectEventStatus"){
+      let strStatus
+      const results = StorageObjectEventStatus.filter(row => {            
+        return row.code === data
+      })
+      if(results.length > 0){
+        strStatus = results[0].status
+      }
+      else{
+        strStatus = ""
+      }
+      return <span>
+        {
+          strStatus
+        }
       </span>
     }
     else if(type === "DocumentStatus"){
@@ -1006,6 +1023,9 @@ class TableGen extends Component{
             row.Cell = (e) => this.createStatusField(e.value, row.Type)
           }
           else if(row.Type === "EventStatus"){
+            row.Cell = (e) => this.createStatusField(e.value, row.Type)
+          }
+          else if(row.Type === "StorageObjectEventStatus"){
             row.Cell = (e) => this.createStatusField(e.value, row.Type)
           }
           else if(row.Type === "DocumentEvent"){

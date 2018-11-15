@@ -5,6 +5,7 @@ using AWMSEngine.ADO;
 using AWMSEngine.Engine.General;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -118,7 +119,9 @@ namespace AWMSEngine.APIService
                 catch{
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
                 }
-                
+                if(this.Logger == null)
+                    this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
+
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 this.Logger.LogBegin();
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
@@ -135,7 +138,8 @@ namespace AWMSEngine.APIService
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
                 this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
 
-                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
+                var tokenInfo = ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault();
+                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, tokenInfo);
                 this.Logger.LogInfo("token : " + token);
 
                 this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);

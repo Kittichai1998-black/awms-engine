@@ -34,7 +34,7 @@ class IssuedDoc extends Component {
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
         f: "ID,Code,SouBranchName,Status,DesWarehouseName,DesAreaName,SouCustomerName,ForCustomer,Batch,Lot,DocumentDate,EventStatus,RefID,Created,ModifyBy,ActionTime",
         g: "",
-        s: "[{'f':'Code','od':'asc'}]",
+        s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
         l: 10,
         all: "",
@@ -156,7 +156,7 @@ displayButtonByPermission(perID){
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        btn={btnfunc} defaultCondition={[{'f':'Status','c':'!=','v':2},{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
+        btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
         accept={false}/>
       </div>
     )

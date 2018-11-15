@@ -68,6 +68,10 @@ class Area extends Component{
     event.preventDefault();
   }
 
+  componentWillMount(){
+    this.filterList();
+  }
+  
   componentWillUnmount(){
     Axios.isCancel(true);
   }

@@ -58,7 +58,7 @@ class History extends Component{
       {accessor: 'Branch_Code', Header: 'Branch',filterable:false},
       {accessor: 'Warehouse_Code', Header: 'Warehouse',filterable:false},
       {accessor: 'AreaLocationMaster_Code', Header: 'Location',filterable:false},
-      {accessor: 'StorageObject_EventStatus', Header: 'Event Status', Type:"EventStatus",filterable:false},
+      {accessor: 'StorageObject_EventStatus', Header: 'Event Status', Type:"StorageObjectEventStatus",filterable:false},
       {accessor: 'Status', Header: 'Status', Type:"Status",filterable:false},
       {accessor: 'ActionTime', Header: 'Action Date', Type:"datetimelog", dateformat:"datetime",filterable:false},
     ];

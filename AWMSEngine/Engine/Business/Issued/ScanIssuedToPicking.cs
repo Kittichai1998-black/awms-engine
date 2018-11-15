@@ -68,7 +68,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
             StorageObjectCriteria stoConso = null;
             //Pick ทั้ง Base
-            if (mapSto.code == reqVO.scanCode && baseConso == null &&
+            if (mapSto.code == reqVO.scanCode && baseConso == null && mapSto.type == StorageObjectType.BASE &&
                 docItems.TrueForAll(x =>
                         (x.Quantity - diStos.Count(y => y.DocumentItem_ID == x.ID)) >=//จำนวนสินค้าที่ยังไม่ pick
                         mapStoTree.Count(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID) //จำนวนสินค้าที่จะหยิบ
