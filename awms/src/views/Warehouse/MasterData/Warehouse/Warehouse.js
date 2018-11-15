@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {createQueryString} from '../../ComponentCore'
+import GetPermission from '../../../ComponentCore/Permission';
 
 class Warehouse extends Component{
     constructor(props) {
@@ -32,6 +33,7 @@ class Warehouse extends Component{
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
       this.filterList = this.filterList.bind(this)
+      this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
       this.uneditcolumn = ["Branch_Code","Branch_Name","Created","Modified"]  
     }
 
@@ -42,8 +44,30 @@ class Warehouse extends Component{
 
     componentWillMount(){
         this.filterList();
+         //permission
+        this.setState({showbutton:"none"})
+        GetPermission(this.displayButtonByPermission)
+        //permission
       }
-    
+    //permission
+    displayButtonByPermission(perID){
+        this.setState({perID:perID})
+        let check = false
+        perID.forEach(row => {
+            if(row === 18){
+            check = true
+            }if(row === 19){
+            check = false
+            }
+        })
+            if(check === true){  
+                this.setState({permissionView:false})
+            }else if(check === false){
+                this.setState({permissionView:true})
+            }
+        }
+        //permission
+
     componentWillUnmount(){
         Axios.isCancel(true);
     }
@@ -84,14 +108,14 @@ class Warehouse extends Component{
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             {accessor: 'Modified', Header: 'Modify', editable:false, filterable:false},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];
 
         const btnfunc = [{
             btntype:"Barcode",
             func:this.createBarcodeBtn
         }]
-
+        const view  = this.state.permissionView
         return(
             <div>
                 {/*
@@ -99,8 +123,8 @@ class Warehouse extends Component{
                     data = json ข้อมูลสำหรับ select ผ่าน url
                     ddlfilter = json dropdown สำหรับทำ dropdown filter
                 */}
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-                            filterable={true} autocomplete={this.state.autocomplete} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+                            filterable={true} autocomplete={this.state.autocomplete} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                             table="ams_Warehouse"/>
 
             </div>

@@ -5,6 +5,7 @@ import {Input, Button,CardBody,Card , Row, Col,
 //import Axios from 'axios';
 import { AutoSelect , apicall, createQueryString ,Clone } from '../ComponentCore'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import GetPermission from '../../ComponentCore/Permission';
 
 
 const Axios = new apicall()
@@ -42,7 +43,7 @@ class StockCorrection extends Component{
         this.Highlight = {background:"green"}
         this.togglePopup = this.togglePopup.bind(this)
         this.detailBaseData = this.detailBaseData.bind(this)
-      
+        this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
       }
 
     componentWillMount(){
@@ -55,7 +56,33 @@ class StockCorrection extends Component{
               this.setState({warehousedata})
             })
           })
+      //permission
+        this.setState({showbutton:"none"})
+        GetPermission(this.displayButtonByPermission)
+        //permission
     }
+//permission
+displayButtonByPermission(perID){
+
+  this.setState({perID:perID})
+  let check = false
+  perID.forEach(row => {
+      if(row === 38 ){
+        check = true
+      }if(row === 39){
+        check = false
+      }
+    })
+       if(check === true){  
+          var PerButtonConfirm = document.getElementById("per_button_confirm")
+          PerButtonConfirm.remove()     
+          var PerButtonCancel = document.getElementById("per_button_cancel")
+          PerButtonCancel.remove()    
+       }if(check === false){
+          this.setState({showbutton:"block"})
+       }
+  }
+  //permission
 
     dropdownAuto(){
       return <div>
@@ -264,8 +291,8 @@ class StockCorrection extends Component{
             </Card>
 
             <Row className="text-center" style={{display:this.state.control}}>
-                <Button onClick={this.clickSubmit} color="primary">Confirm</Button>
-                <Button onClick={this.clearTable} color="danger" >Cancel</Button>
+                <Button onClick={this.clickSubmit} color="primary" id="per_button_confirm">Confirm</Button>
+                <Button onClick={this.clearTable} color="danger" id="per_button_cancel" >Cancel</Button>
             </Row>
         </div>
       

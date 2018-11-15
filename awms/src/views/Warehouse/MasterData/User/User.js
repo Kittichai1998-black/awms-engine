@@ -4,6 +4,7 @@ import {Card, Button, CardBody} from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import {apicall, createQueryString} from '../../ComponentCore'
 import ReactTable from 'react-table'
+import GetPermission from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -63,7 +64,32 @@ class User extends Component{
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
         this.setUserRole = this.setUserRole.bind(this)
+        this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     }
+    componentWillMount(){
+        //permission
+        this.setState({showbutton:"none"})
+        GetPermission(this.displayButtonByPermission)
+        //permission
+      }
+      //permission
+    displayButtonByPermission(perID){
+        this.setState({perID:perID})
+        let check = false
+        perID.forEach(row => {
+            if(row === 14){
+            check = true
+            }if(row === 15){
+            check = false
+            }
+        })
+            if(check === true){  
+                this.setState({permissionView:false})
+            }else if(check === false){
+                this.setState({permissionView:true})
+            }
+        }
+        //permission
 
     onHandleClickCancel(event){
         this.forceUpdate();
@@ -214,7 +240,7 @@ class User extends Component{
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
         const btnfunc = [{
@@ -222,7 +248,7 @@ class User extends Component{
             func:this.createBarcodeBtn
        
           }]
-
+        const view  = this.state.permissionView
         return(
             <div>
           {/*
@@ -235,8 +261,8 @@ class User extends Component{
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-                      filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+                      filterable={true} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
             </div>
         ) 

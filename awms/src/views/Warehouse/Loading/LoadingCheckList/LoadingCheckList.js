@@ -8,6 +8,7 @@ import DatePicker from 'react-datepicker';
 import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from 'lodash'
+import GetPermission from '../../../ComponentCore/Permission';
 
 const API = new apicall();
 
@@ -41,7 +42,42 @@ class LoadingDocument extends Component{
       s:"[{'f':'DesCustomerName','od':'asc'}]",
       sk:0,
       all:"",}
+      this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
+  componentWillMount(){
+    //permission
+    this.setState({showbutton:"none"})
+    GetPermission(this.displayButtonByPermission)
+    //permission
+  }
+  //permission
+  displayButtonByPermission(perID){
+    this.setState({perID:perID})
+    let check = false
+    perID.forEach(row => {
+        if(row === 33){
+          check = true
+        }else if(row === 34){
+          check = false
+        }
+      })
+        if(check === true){  
+            var PerButtonInput = document.getElementById("per_button_input")
+            PerButtonInput.remove()     
+            var PerButtonScan = document.getElementById("per_button_scan")
+            PerButtonScan.remove()    
+            var PerButtonCode = document.getElementById("transportCode")
+            PerButtonCode.remove() 
+            var PerButtonTable = document.getElementById("per_button_table")
+            PerButtonTable.remove() 
+
+        }else if(check === false){
+            this.setState({showbutton:"block"})
+        }else{
+            this.props.history.push("/404")
+        } 
+  }
+  //permission
 
   getTableData(){
     if(this.state.transportvalue !== undefined){
@@ -113,22 +149,27 @@ class LoadingDocument extends Component{
           <Col><label style={{paddingRight:"10px"}}>Transport : </label><span>{this.state.TransportID}</span></Col>
         </Row>
         <Row>
-          <Col>
-          <label style={{paddingRight:"10px"}}>Barcode : </label><Input id="transportCode" style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
-              autoFocus
-              onChange={(e) => {
-                this.setState({consoCode:e.target.value})
-              }} 
-              onKeyPress={e => {
-                if(e.key === "Enter"){
-                  this.onHandleScanConso()
-                }
-              }}/>
-          <Button onClick={this.onHandleScanConso} color="primary">Scan</Button></Col>
+          <Col>    
+            <div style={{display:this.state.showbutton}}>
+              <label id="per_button_input" style={{paddingRight:"10px"}}>Barcode : </label><Input id="transportCode" style={{width:'200px', display:"inline-block"}} type="text" value={this.state.consoCode} 
+                  autoFocus
+                  onChange={(e) => {
+                    this.setState({consoCode:e.target.value})
+                  }} 
+                  onKeyPress={e => {
+                    if(e.key === "Enter"){
+                      this.onHandleScanConso()
+                    }
+                  }}/>
+              <Button id="per_button_scan" onClick={this.onHandleScanConso} color="primary">Scan</Button>
+            </div>
+          </Col>
         </Row>
 
+      <div id="per_button_table" style={{display:this.state.showbutton}}>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/>
+        </div>
       </div>
     )
   }

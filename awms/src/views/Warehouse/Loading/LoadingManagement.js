@@ -4,6 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, GenerateDropDownStatus} from '../ComponentCore'
+import GetPermission from '../../ComponentCore/Permission';
 
 const Axios =  new apicall()
 
@@ -39,6 +40,7 @@ class LoadingManage extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
 
     this.select={queryString:window.apipath + "/api/viw",
       t:"Document",
@@ -50,6 +52,39 @@ class LoadingManage extends Component{
       l:0,
       all:"",}
   }
+
+  componentWillMount(){
+    //permission
+    this.setState({showbutton:"none"})
+    GetPermission(this.displayButtonByPermission)
+    //permission
+  }
+  //permission
+displayButtonByPermission(perID){
+  this.setState({perID:perID})
+  let check = false
+  perID.forEach(row => {
+      if(row === 31){
+        check = true
+      }else if(row === 32){
+        check = false
+      }
+    })
+       if(check === true){  
+          var PerButtonReject = document.getElementById("per_button_Reject")
+          PerButtonReject.remove()     
+          var PerButtoWorking = document.getElementById("per_button_Working")
+          PerButtoWorking.remove()    
+          var PerButtonCrete = document.getElementById("per_button_create")
+          PerButtonCrete.remove() 
+ 
+       }else if(check === false){
+          this.setState({showbutton:"block"})
+       }else{
+          this.props.history.push("/404")
+       } 
+  }
+  //permission
 
   workingData(data,status){
     let postdata = []
@@ -104,18 +139,18 @@ class LoadingManage extends Component{
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <div className="clearfix">
+        <div className="clearfix" id="per_button_create" style={{display:this.state.showbutton}}>
           <Button style={{ background: "#66bb6a", borderColor: "#66bb6a" }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/ld/manage')}>Create Document</Button>
         </div>
         <TableGen column={cols} data={this.state.select} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         accept={false} defalutCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'status', c:'=', 'v': 1},{ 'f': 'eventStatus', c:'=', 'v': 11}]}/>
-        <Card>
-          <CardBody>
+        <Card >
+          <CardBody >
             <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px'}}
-              onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
+              onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" id="per_button_Working" style={{display:this.state.showbutton}} className="float-right" >Working</Button>
             <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }}
-              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" id="per_button_Reject" style={{display:this.state.showbutton}} className="float-right">Reject</Button>
             {this.state.resp}
           </CardBody>
         </Card>

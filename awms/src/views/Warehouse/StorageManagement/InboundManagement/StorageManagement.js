@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
+import React,  { Component} from 'react';
+import ReactDOM from 'react-dom'
 import "react-table/react-table.css";
 import "../style.css";
+import {Redirect } from 'react-router-dom';
 import {Input, Button, ButtonGroup , Row, Col,
   Modal, ModalHeader, ModalBody, ModalFooter  } from 'reactstrap';
 //import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {AutoSelect, NumberInput, apicall, createQueryString, Clone, ToListTree} from '../../ComponentCore'
+import GetPermission from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -67,6 +70,7 @@ class StorageManagement extends Component{
       autocomplete:'',
       poststatus:false,
       detailPopup:false,
+      display:"none"
     };
 
     this.createListTable = this.createListTable.bind(this)
@@ -80,8 +84,45 @@ class StorageManagement extends Component{
     this.togglePopup = this.togglePopup.bind(this)
     this.detailBaseData = this.detailBaseData.bind(this)
     this.createMarkup = this.createMarkup.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
   
+componentWillMount(){
+  //permission
+  this.setState({showbutton:"none"})
+  GetPermission(this.displayButtonByPermission)
+  //permission
+}
+//permission
+displayButtonByPermission(perID){
+
+this.setState({perID:perID})
+let check = false
+perID.forEach(row => {
+    if(row === 22 || row === 24){
+      check = true
+    }if(row === 23 || row === 25){
+      check = false
+    }
+  })
+     if(check === true){  
+        var PerButtonPush = document.getElementById("per_button_push")
+        PerButtonPush.remove()     
+        var PerButtonRemove = document.getElementById("per_button_remove")
+        PerButtonRemove.remove()    
+        var PerButtonSave = document.getElementById("per_button_save")
+        PerButtonSave.remove()
+        var PerButtonCancel = document.getElementById("per_button_cancel")
+        PerButtonCancel.remove() 
+        var PerButtonClear = document.getElementById("per_button_clear")
+        PerButtonClear.remove()  
+
+     }else if(check === false){
+        this.setState({showbutton:"block"})
+     }
+}
+//permission
+
   componentDidMount(){
     Axios.get(createQueryString(this.state.supplier)).then(supplierresult => {
       const supplierdata = []
@@ -218,6 +259,7 @@ class StorageManagement extends Component{
   }
   
   createListTable(){
+    
     let status = true;
     if(this.state.Mode === 0){
       if(this.state.barcode === undefined || this.state.qty === 0 || this.state.supplierres === undefined || this.state.areares === undefined
@@ -239,8 +281,10 @@ class StorageManagement extends Component{
         this.setState({loading:true})
         let header = []
         if(res.data._result.status !== 0)
-        {
+        {console.log("cccddd")
+
           this.setState({poststatus:true,control:"block",barcode:"", qty:1, response:"",})
+          this.setState({poststatus:true,barcode:"", qty:1, response:"",})
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
             
             const clonemapsto = Clone(this.state.mapSTOView)
@@ -416,10 +460,10 @@ class StorageManagement extends Component{
           <Col sm="6">
             <label style={{fontWeight:"bold", fontSize:"1.1em"}}>Mode : {this.state.Mode===0?'Register':'Transfer'}</label>
           </Col>
-          <Col sm="6">
-            <ButtonGroup style={{margin:'0 0 10px 0', width:"100%"}}>
-              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("1")} active={this.state.rSelect === "1"}>Push</Button>
-              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("2")} active={this.state.rSelect === "2"}>Remove</Button>
+          <Col sm="6" >
+            <ButtonGroup style={{margin:'0 0 10px 0', width:"100%",display:this.state.showbutton}}>
+              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("1")} id="per_button_push" active={this.state.rSelect === "1"}>Push</Button>
+              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("2")} id="per_button_remove"active={this.state.rSelect === "2"}>Remove</Button>
             </ButtonGroup>
           </Col>
         </Row>
@@ -465,9 +509,9 @@ class StorageManagement extends Component{
           {this.state.result}
         </Row>
         <Row className="text-center" style={{display:this.state.control}}>
-            <Button onClick={() => this.approvemapsto(true)} style={this.state.Mode===0?null:display} color="primary">Save</Button>
-            <Button onClick={() => this.approvemapsto(false)} style={this.state.Mode===0?null:display} color="danger">Cancel</Button>
-            <Button onClick={this.clearTable} color="warning" >Clear</Button>
+            <Button onClick={() => this.approvemapsto(true)} style={this.state.Mode===0?null:display} id="per_button_save" color="primary">Save</Button>
+            <Button onClick={() => this.approvemapsto(false)} style={this.state.Mode===0?null:display} id="per_button_cancel" color="danger">Cancel</Button>
+            <Button onClick={this.clearTable} color="warning" id="per_button_clear" >Clear</Button>
         </Row>
       </div>
     )
