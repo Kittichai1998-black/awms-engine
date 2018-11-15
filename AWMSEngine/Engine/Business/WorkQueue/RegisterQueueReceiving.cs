@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.WorkQueue
 {
-    public class RegisterQueueReceiving : BaseEngine<RegisterQueueReceiving.TReq, SPOutQueueResponseCriteria>
+    public class RegisterQueueReceiving : BaseEngine<RegisterQueueReceiving.TReq, WorkQueueCriteria>
     {
         public class TReq //ข้อมูล Request จาก WCS
         {
@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             public string loactionCode;//รหัสเกต
         }
         
-        protected override SPOutQueueResponseCriteria ExecuteEngine(TReq reqVO)
+        protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (wm == null)
@@ -143,7 +143,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         {
 
         }
-        private SPOutQueueResponseCriteria GenerateResponse(StorageObjectCriteria mapsto, ams_AreaLocationMaster lm, TReq reqVO)
+        private WorkQueueCriteria GenerateResponse(StorageObjectCriteria mapsto, ams_AreaLocationMaster lm, TReq reqVO)
         {
             var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(mapsto.areaID, lm.ID, this.BuVO);
             var desAreaDefault = desAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
@@ -153,7 +153,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
             };
             ADO.QueueADO.GetInstant().PUT(queue, this.BuVO);
-            var res = new SPOutQueueResponseCriteria()
+            var res = new WorkQueueCriteria()
             {
                 souWarehouseCode = reqVO.warehouseCode,
                 souAreaCode = reqVO.areaCode,
@@ -162,10 +162,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 desWarehouseCode = reqVO.warehouseCode,
                 desAreaCode = desAreaDefault.Des_AreaMaster_Code,
                 desLocationCode = desAreaDefault.Des_AreaLocationMaster_Code,
-
+                
                 queueID = 1,
-
-                baseInfo = new SPOutQueueResponseCriteria.BaseInfo()
+                
+                baseInfo = new WorkQueueCriteria.BaseInfo()
                 {
                     baseCode = mapsto.code,
                     packInfos = mapsto.ToTreeList()
@@ -178,7 +178,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                     })
                                     .Select(x=> {
                                         //var sm = ADO.DataADO.GetInstant().SelectBy<dynamic>()
-                                        var v = new SPOutQueueResponseCriteria.BaseInfo.PackInfo()
+                                        var v = new WorkQueueCriteria.BaseInfo.PackInfo()
                                         {
                                             packCode = x.Key.packCode,
                                             packQty = x.Count(),

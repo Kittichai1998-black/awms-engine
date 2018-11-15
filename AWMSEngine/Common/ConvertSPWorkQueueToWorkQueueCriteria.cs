@@ -9,9 +9,9 @@ namespace AWMSEngine.Common
     public class ConvertSPWorkQueueToWorkQueueCriteria
     {
 
-        public SPOutQueueResponseCriteria ConvertToSPOutQueueResponseCriteria()
+        public WorkQueueCriteria ConvertToSPOutQueueResponseCriteria()
         {
-            SPOutQueueResponseCriteria res = new SPOutQueueResponseCriteria()
+            WorkQueueCriteria res = new WorkQueueCriteria()
             {
                 //areaCode = ADO.StaticValue.StaticValueManager.GetInstant().AreaMasterLines.Find(x => x.ID == this.AreaMaster_ID).Code
             };

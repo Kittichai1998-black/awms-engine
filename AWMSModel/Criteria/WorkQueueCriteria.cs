@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AWMSModel.Criteria.SP.Response
+namespace AWMSModel.Criteria
 {
-    public class SPOutQueueResponseCriteria
+    public class WorkQueueCriteria
     {
-        public int queueID;//รหัสคิว
+        public long? queueID;//รหัสคิว
         public int seq;
-        public int queueParentID;
-        public int queueRefID;
+        public long? queueParentID;
+        public string queueRefID;
         public WorkQueueEventStatus queueStatus;
 
         public string warehouseCode;//รหัสคลังสินค้า
