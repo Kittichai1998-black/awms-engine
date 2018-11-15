@@ -37,5 +37,17 @@ namespace AWMSEngine.ADO
                 throw new AMWException(buVO.Logger, AMWExceptionCode.V1001, "ไม่พบรหัส Area '" + areaCode + "'");
             return CountItemInLocation(wm.ID.Value, am.ID.Value, null, null, bank, bay, level, buVO);
         }
+        public List<SPOutAreaLineCriteria> ListDestinationArea(long souAreaID, VOCriteria buVO)
+        {
+            return this.ListDestinationArea(souAreaID, null, buVO);
+        }
+        public List<SPOutAreaLineCriteria> ListDestinationArea(long souAreaID, long? souLocationID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
+            datas.Add("souAreaID", souAreaID);
+            datas.Add("souLocationID", souLocationID);
+            var res = this.Query<SPOutAreaLineCriteria>("SP_AREA_DES_LIST_BY_SOU", System.Data.CommandType.StoredProcedure, datas, buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
     }
 }
