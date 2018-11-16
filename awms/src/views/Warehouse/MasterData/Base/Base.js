@@ -4,7 +4,7 @@ import {Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {createQueryString} from '../../ComponentCore'
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 class Area extends Component{
     constructor(props) {
@@ -45,30 +45,32 @@ class Area extends Component{
         event.preventDefault();
     }
 
-    componentWillMount(){
+    async componentWillMount(){
         this.filterList();
         //permission
-        GetPermission(this.displayButtonByPermission)
+        let data =await GetPermission()
+        Nodisplay(data,12,this.props.history)
+        this.displayButtonByPermission(data)
         //permission
     }
-//permission
-displayButtonByPermission(perID){
-    this.setState({perID:perID})
-    let check = false
-    perID.forEach(row => {
-        if(row === 12){
-          check = true
-        }if(row === 13){
-          check = false
-        }
-      })
-         if(check === true){  
-            this.setState({permissionView:false})
-         }else if(check === false){
-            this.setState({permissionView:true})
-         }
-    }
     //permission
+    displayButtonByPermission(perID){
+        this.setState({perID:perID})
+        let check = false
+        perID.forEach(row => {
+            if(row === 12){
+            check = true
+            }if(row === 13){
+            check = false
+            }
+        })
+            if(check === true){  
+                this.setState({permissionView:false})
+            }else if(check === false){
+                this.setState({permissionView:true})
+            }
+        }
+        //permission
 
     componentWillUnmount(){
     Axios.isCancel(true);

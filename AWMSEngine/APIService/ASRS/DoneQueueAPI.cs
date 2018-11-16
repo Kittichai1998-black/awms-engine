@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AWMSEngine.Engine.Business.WorkQueue;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,10 @@ namespace AWMSEngine.APIService.ASRS
 
         protected override dynamic ExecuteEngineManual()
         {
-            throw new NotImplementedException();
+            this.BeginTransaction();
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneQueue.TReq>(this.RequestVO);
+            var res = new DoneQueue().Execute(this.Logger, this.BuVO, req);
+            return res;
         }
     }
 }

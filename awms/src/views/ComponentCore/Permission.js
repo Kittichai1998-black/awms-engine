@@ -2,7 +2,7 @@ import {apicall,createQueryString} from './CoreFunction'
 
 const Axios = new apicall()
 
-function GetPermission(perID){
+async function GetPermission(perID){
     const UserPer = {queryString:window.apipath + "/api/viw",
     t:"User_Permission",
     q:"[{ 'f': 'Status', c:'=', 'v': 1}]",
@@ -18,10 +18,21 @@ function GetPermission(perID){
     let JSONDoc_per = []
     JSONDoc_per.push({"f": "User_ID", "c":"=", "v":localStorage.User_ID}) 
     QueryDoc_per.q = JSON.stringify(JSONDoc_per)
-    Axios.get(createQueryString(QueryDoc_per)).then((res) => {
-      res.data.datas.forEach(row => {
-        per.push(row.Permission_ID)
-      })
-      perID(per)
+    const xx = await Axios.get(createQueryString(QueryDoc_per))
+    xx.data.datas.forEach(row => {
+      per.push(row.Permission_ID)
     })
-    } export default GetPermission
+    
+    return per
+    }
+
+  function Nodisplay(perID,perView,props){
+      const view =perID.find((res)=>{
+        return res === perView
+      })
+      console.log(view)
+      if(!view){
+        props.push("/403")
+        console.log("ccc")
+  }
+    } export {GetPermission,Nodisplay}

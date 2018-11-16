@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 class Branch extends Component{
     constructor(props) {
@@ -34,11 +34,12 @@ class Branch extends Component{
       this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     }
   
-    componentWillMount(){
+    async componentWillMount(){
       //permission
-      this.setState({showbutton:"none"})
-      GetPermission(this.displayButtonByPermission)
-      //permission
+      let data =await GetPermission()
+      Nodisplay(data,16,this.props.history)
+      this.displayButtonByPermission(data)
+      //permission  
     }
     //permission
   displayButtonByPermission(perID){

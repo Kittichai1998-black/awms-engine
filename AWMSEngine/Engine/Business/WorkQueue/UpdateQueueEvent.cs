@@ -53,7 +53,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }, this.BuVO).FirstOrDefault();
 
             var eventStatus = selectByID.EventStatus;
-            if (wm == selectByID.Des_Warehouse_ID && am == selectByID.Des_Area_ID && lm == selectByID.Des_AreaLocation_ID)
+            if (wm == selectByID.Des_Warehouse_ID
+                && am == selectByID.Des_Area_ID
+                && lm == (selectByID.Des_AreaLocation_ID == null ? null : lm))
             {
                 if(eventStatus == WorkQueueEventStatus.WORKING)
                 {

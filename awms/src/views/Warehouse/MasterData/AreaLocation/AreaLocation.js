@@ -4,7 +4,7 @@ import {Button , Row, Col} from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {AutoSelect, createQueryString} from '../../ComponentCore'
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 class AreaLocation extends Component{
   constructor(props) {
@@ -90,10 +90,12 @@ class AreaLocation extends Component{
       event.preventDefault();
   }
   
-  componentWillMount(){
+  async componentWillMount(){
     this.filterList();
     //permission
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,10,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
 //permission

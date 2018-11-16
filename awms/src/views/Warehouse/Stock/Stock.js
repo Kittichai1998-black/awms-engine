@@ -6,7 +6,7 @@ import { TableGen } from '../MasterData/TableSetup';
 import { apicall } from '../ComponentCore';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
-
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 
 
@@ -46,6 +46,15 @@ class Stock extends Component{
 
     
   }
+  async componentWillMount(){
+    //permission
+    this.setState({showbutton:"none"})
+    let data = await GetPermission()
+    Nodisplay(data,36,this.props.history)
+    
+    //permission
+  }
+ 
 
   componentDidMount() {
 

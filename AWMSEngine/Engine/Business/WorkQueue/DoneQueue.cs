@@ -76,7 +76,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }
             else
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่ตรงกัน");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Work Destination not Equal Present Destination");
             }
 
             SPworkQueue workQueue = new SPworkQueue()
