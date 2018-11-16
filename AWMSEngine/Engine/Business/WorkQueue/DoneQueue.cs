@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             return res;
         }
 
-        private WorkQueueCriteria GenerateResult(TReq req, int? wm, int? am, int? lm)
+        private WorkQueueCriteria GenerateResult(TReq req, long? wm, long? am, long? lm)
         {
             var selectByID = DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[] {
                 new SQLConditionCriteria("ID", req.queueID, SQLOperatorType.EQUALS)
@@ -62,8 +62,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var eventStatus = selectByID.EventStatus;
             if (wm == selectByID.Des_Warehouse_ID
                 && am == selectByID.Des_Area_ID
-                && lm == (selectByID.Des_AreaLocation_ID ? null : lm)
-                )
+                && lm == (selectByID.Des_AreaLocation_ID == null ? null : lm))
             {
                 if (eventStatus == WorkQueueEventStatus.WORKED)
                 {
@@ -76,7 +75,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }
             else
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่ตรงกัน");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Work Destination not Equal Present Destination");
             }
 
             SPworkQueue workQueue = new SPworkQueue()
