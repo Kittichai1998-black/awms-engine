@@ -42,6 +42,7 @@ class Area extends Component{
   }
 
   componentWillMount(){
+    dfdfdfdf
     this.filterList();
   }
   
