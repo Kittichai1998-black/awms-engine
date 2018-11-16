@@ -34,6 +34,7 @@ class StockCorrection extends Component{
             data:[],
             barcode:"",
             qty:"1",
+            warehousedata:[]
         };
         this.dropdownAuto = this.dropdownAuto.bind(this)
         this.createListTable = this.createListTable.bind(this)
