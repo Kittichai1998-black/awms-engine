@@ -6,6 +6,7 @@ import ReactTable from 'react-table';
 import { apicall,AutoSelect, DatePicker } from '../ComponentCore';
 //import DatePicker from 'react-datepicker';
 import moment from 'moment';
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -60,7 +61,7 @@ class StockCard extends Component{
     }
     this.onCalculate = this.onCalculate.bind(this)
   }
-  componentWillMount(){
+ async componentWillMount(){
        Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
          const PackMasterdata = []
          response.data.datas.forEach(row => {
@@ -69,7 +70,11 @@ class StockCard extends Component{
          })
            this.setState({PackMasterdata})    
          })
-       }
+      //permission
+      let data = await GetPermission()
+      Nodisplay(data,38,this.props.history)
+      //permission
+  }
 
   dateTimePickerFrom(){
     return <DatePicker defaultDate={moment()} onChange={(e) => {this.setState({dateFrom:e})}} dateFormat="DD/MM/YYYY"/>

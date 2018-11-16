@@ -5,6 +5,8 @@ import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
 import moment from 'moment';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+
 
 const Axios = new apicall()
 
@@ -44,7 +46,42 @@ class IssuedDoc extends Component {
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
     this.dateTimePicker = this.dateTimePicker.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
+
+  async componentWillMount(){
+    //permission
+    this.setState({showbutton:"none"})
+    let data =await GetPermission()
+    Nodisplay(data,21,this.props.history)
+    this.displayButtonByPermission(data)
+    //permission
+  }
+
+//permission
+displayButtonByPermission(perID){
+
+  this.setState({perID:perID})
+  let check = false
+ for(let i = 0;i < perID.length; i++){
+   let data = perID[i]
+   if(data === 20){
+      check = false
+      break
+    }if(data === 21){
+      check = true
+    }
+ }
+       if(check === true){  
+          var PerButtonExport = document.getElementById("per_button_export")
+          PerButtonExport.remove()     
+          var PerButtonDate = document.getElementById("per_button_date")
+          PerButtonDate.remove()    
+       }else if(check === false){
+          this.setState({showbutton:"block"})
+       }
+  }
+  //permission
 
   onHandleClickCancel(event) {
     this.forceUpdate();
@@ -113,11 +150,11 @@ class IssuedDoc extends Component {
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <div className="clearfix">
-          <Button className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary"
+        <div className="clearfix" style={{display:this.state.showbutton}} >
+          <Button id="per_button_export" className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary"
             onClick={() => { this.workingData() }}>Export Data</Button>
 
-          <div className="float-right">{this.dateTimePicker()}</div>
+          <div id="per_button_date" className="float-right">{this.dateTimePicker()}</div>
         </div>
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}

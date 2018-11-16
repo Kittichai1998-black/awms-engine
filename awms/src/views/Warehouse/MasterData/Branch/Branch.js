@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 class Branch extends Component{
     constructor(props) {
@@ -30,8 +31,35 @@ class Branch extends Component{
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
       this.uneditcolumn = ["Created","Modified"]
+      this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     }
   
+    async componentWillMount(){
+      //permission
+      let data =await GetPermission()
+      Nodisplay(data,16,this.props.history)
+      this.displayButtonByPermission(data)
+      //permission  
+    }
+    //permission
+  displayButtonByPermission(perID){
+    this.setState({perID:perID})
+    let check = false
+    perID.forEach(row => {
+        if(row === 16){
+          check = true
+        }if(row === 17){
+          check = false
+        }
+      })
+        if(check === true){  
+          this.setState({permissionView:false})
+        }else if(check === false){
+          this.setState({permissionView:true})
+        }
+    }
+    //permission
+
     onHandleClickCancel(event){
         this.forceUpdate();
         event.preventDefault();
@@ -50,13 +78,14 @@ class Branch extends Component{
           /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
           //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+          {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];
         const btnfunc = [{
           history:this.props.history,
           btntype:"Barcode",
           func:this.createBarcodeBtn
       }]
+      const view  = this.state.permissionView
         return(
           <div>
           {/*
@@ -64,8 +93,8 @@ class Branch extends Component{
             data = json ข้อมูลสำหรับ select ผ่าน url
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
-          <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-            filterable={true} accept={true} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            filterable={true} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
           table="ams_Branch"/>
           </div>
         )

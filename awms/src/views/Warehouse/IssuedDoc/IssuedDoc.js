@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../ComponentCore'
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 const axois = new apicall()
 
@@ -40,7 +41,63 @@ class IssuedDoc extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
     this.dateTimePicker = this.dateTimePicker.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
+
+  async componentWillMount(){
+    //permission
+    this.setState({showbutton:"none"})
+    let data = await GetPermission()
+    Nodisplay(data,26,this.props.history)
+    this.displayButtonByPermission(data)
+    //permission
+  }
+//permission
+displayButtonByPermission(perID){
+  this.setState({perID:perID})
+  let check = 0
+  perID.forEach(row => {
+      if(row === 26){
+        check = 0
+      }if(row === 27){
+        check = 1
+      }if(row === 28){
+        if(check === 1){
+            check = 3
+        }else{
+            check = 2
+        }
+       }
+     })
+     if(check === 0){  
+        var PerButtonWorking = document.getElementById("per_button_working")
+        PerButtonWorking.remove()     
+        var PerButtonReject = document.getElementById("per_button_reject")
+        PerButtonReject.remove()    
+        var PerButtonExport = document.getElementById("per_button_export")
+        PerButtonExport.remove()
+        var PerButtonDate = document.getElementById("per_button_date")
+        PerButtonDate.remove() 
+
+     }else if(check === 1){
+        this.setState({showbutton:"block"})
+        var PerButtonExport = document.getElementById("per_button_export")
+        PerButtonExport.remove()
+        var PerButtonDate = document.getElementById("per_button_date")
+        PerButtonDate.remove() 
+     }else if(check === 2){
+        this.setState({showbutton:"block"})
+        var PerButtonWorking = document.getElementById("per_button_working")
+        PerButtonWorking.remove()     
+        var PerButtonReject = document.getElementById("per_button_reject")
+        PerButtonReject.remove() 
+        var PerButtonDoc = document.getElementById("per_button_doc")
+        PerButtonDoc.remove() 
+     }else if(check === 3){
+        this.setState({showbutton:"block"})
+     }
+}
+//permission
 
   onHandleClickCancel(event){
     this.forceUpdate();
@@ -122,9 +179,9 @@ class IssuedDoc extends Component{
       */}
         <div className="clearfix">
 
-          <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px'  }}color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+          <Button id="per_button_doc" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px',display:this.state.showbutton }}color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
           
-          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" className="float-right" onClick={() => {
+          <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px',display:this.state.showbutton }} color="primary" className="float-right" onClick={() => {
             let data1 = {"exportName":"DocumentIssuedToShop","whereValues":[this.state.date.format('YYYY-MM-DD')]}
             let data2 = {"exportName":"DocumentIssuedToCD","whereValues":[this.state.date.format('YYYY-MM-DD')]}
             axois.post(window.apipath + "/api/report/export/fileServer", data1).then(res => {
@@ -136,7 +193,7 @@ class IssuedDoc extends Component{
               }
             })
           }}>Export Data</Button>
-          <div className="float-right">{this.dateTimePicker()}</div>
+          <div id="per_button_date" className="float-right" style={{display:this.state.showbutton}}>{this.dateTimePicker()}</div>
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
@@ -144,8 +201,8 @@ class IssuedDoc extends Component{
         accept={false}/>
         <Card>
           <CardBody>
-            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
-            <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
+            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            <Button id="per_button_working" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', display:this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
             {this.state.resp}
           </CardBody>
         </Card>

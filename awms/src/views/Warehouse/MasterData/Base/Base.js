@@ -4,6 +4,7 @@ import {Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {createQueryString} from '../../ComponentCore'
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 class Area extends Component{
     constructor(props) {
@@ -35,6 +36,7 @@ class Area extends Component{
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
+        this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
         this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","Created","Modified"]
     }
 
@@ -43,9 +45,32 @@ class Area extends Component{
         event.preventDefault();
     }
 
-    componentWillMount(){
-    this.filterList();
+    async componentWillMount(){
+        this.filterList();
+        //permission
+        let data =await GetPermission()
+        Nodisplay(data,12,this.props.history)
+        this.displayButtonByPermission(data)
+        //permission
     }
+    //permission
+    displayButtonByPermission(perID){
+        this.setState({perID:perID})
+        let check = false
+        perID.forEach(row => {
+            if(row === 12){
+            check = true
+            }if(row === 13){
+            check = false
+            }
+        })
+            if(check === true){  
+                this.setState({permissionView:false})
+            }else if(check === false){
+                this.setState({permissionView:true})
+            }
+        }
+        //permission
 
     componentWillUnmount(){
     Axios.isCancel(true);
@@ -121,8 +146,8 @@ class Area extends Component{
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
         
         const btnfunc = [{
@@ -130,7 +155,7 @@ class Area extends Component{
             btntype:"Barcode",
             func:this.createBarcodeBtn
         }]
-    
+        const view  = this.state.permissionView
         return(
           <div>
           {/*
@@ -144,8 +169,8 @@ class Area extends Component{
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} printbtn={true}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} printbtn={view}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
               table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
 

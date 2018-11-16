@@ -4,6 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 const api = new apicall()
 
@@ -37,6 +38,7 @@ class ListProduct extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","Modified","Created"]
   }
 
@@ -45,10 +47,44 @@ class ListProduct extends Component{
     event.preventDefault();
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     this.getAutocomplete();
+    //permission
+    this.setState({showbutton:"none"})
+    let data = await GetPermission()
+    Nodisplay(data,42,this.props.history)
+    this.displayButtonByPermission(data)
+    //permission
   }
+//permission
+displayButtonByPermission(perID){
 
+  this.setState({perID:perID})
+  let check = 0
+  perID.forEach(row => {
+      if(row === 42){
+        check = 0
+      }if(row === 43){
+        check = 1
+      }if(row === 44){
+        check = 2
+      }
+    })
+       if(check === 0){  
+          var PerButtonExport = document.getElementById("per_button_export")
+          PerButtonExport.remove()     
+          var PerButtonLoad = document.getElementById("per_button_load")
+          PerButtonLoad.remove()           
+       }else if(check === 1){
+          var PerButtonExport = document.getElementById("per_button_export")
+          PerButtonExport.remove()     
+          var PerButtonLoad = document.getElementById("per_button_load")
+          PerButtonLoad.remove()
+       }else {
+          this.setState({showbutton:"block"})
+       }
+  }
+  //permission
   componentWillUnmount(){
     
   }
@@ -140,9 +176,9 @@ class ListProduct extends Component{
         getselection = เก็บค่าที่เลือก
     
       */}
-        <div className="clearfix">
-          <Button className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
-          <Button className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" onClick={() => { 
+        <div className="clearfix" style={{display:this.state.showbutton}}>
+          <Button id="per_button_load" className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
+          <Button id="per_button_export" className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" onClick={() => { 
             let data1 = {"exportName":"ProductToShop","whereValues":[]}
             api.post(window.apipath + "/api/report/export/fileServer", data1)
           }}>Export Data</Button>

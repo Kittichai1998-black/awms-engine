@@ -4,6 +4,8 @@ import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 //import Axios from 'axios';
 import {apicall} from '../../ComponentCore'
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+
 
 const Axios = new apicall()
 
@@ -35,8 +37,39 @@ class Supplier extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this); 
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Created","Modified"]
   }
+  async componentWillMount(){
+   //permission
+    this.setState({showbutton:"none"})
+    let data = await GetPermission()
+    Nodisplay(data,2,this.props.history)
+    this.displayButtonByPermission(data)
+    //permission
+  }
+  //permission
+displayButtonByPermission(perID){
+
+  this.setState({perID:perID})
+  let check = false
+  perID.forEach(row => {
+      if(row === 2){
+        check = true
+      }if(row === 3){
+        check = false
+      }if(row === 4){
+        check = false
+      }
+    })
+       if(check === true){  
+          var PerButtonLoad = document.getElementById("per_button_load")
+          PerButtonLoad.remove()     
+       }else if(check === false){
+          this.setState({showbutton:"block"})
+       }
+  }
+  //permission
 
   onHandleClickCancel(event){
     this.forceUpdate();
@@ -78,7 +111,7 @@ class Supplier extends Component{
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
      <div className="clearfix">
-          <Button className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350" }}
+          <Button id="per_button_load" className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350",display:this.state.showbutton }}
             onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
       </div>
       <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 

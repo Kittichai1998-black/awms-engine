@@ -5,6 +5,7 @@ import {TableGen} from '../MasterData/TableSetup';
 import ExtendTable from '../MasterData/ExtendTable';
 import Axios from 'axios';
 import {createQueryString} from '../ComponentCore'
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 class Storage extends Component{
   constructor(props) {
@@ -54,13 +55,39 @@ class Storage extends Component{
     
     this.getSelectionData = this.getSelectionData.bind(this)
     this.getUserList = this.getUserList.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
    
   }
-  
-  componentWillMount(){
+
+  async componentWillMount(){
     this.getUserList();
+    //permission
+    let data = await GetPermission()
+    Nodisplay(data,35,this.props.history)
+    this.displayButtonByPermission(data)
+    //permission
   }
   
+  //permission
+  displayButtonByPermission(perID){
+    this.setState({perID:perID})
+    let check = false
+    perID.forEach(row => {
+        if(row === 35){
+          check = true
+        }if(row === 51){
+          check = false
+        }
+      })
+        if(check === true){  
+          this.setState({permissionView:false})
+        }else if(check === false){
+          this.setState({permissionView:true})
+        }
+    }
+    //permission
+
+
   getSelectionData(data){
     let obj = []
     data.forEach((datarow,index) => {
@@ -124,7 +151,7 @@ class Storage extends Component{
       {accessor: 'expiryDate', Header: 'Expire Date', },
       {accessor: 'createBy', Header: 'Create', filterable:false, Type:"codename", sortable:false},
       {accessor: 'modifyBy', Header: 'Modify', filterable:false, Type:"codename", sortable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
+      {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];
 
     const btnfunc = [{
@@ -132,13 +159,13 @@ class Storage extends Component{
       btntype:"Link",
       func:this.onClickToDesc
     }]
-
+    const view  = this.state.permissionView
     return(
       <div>
         <ExtendTable data={this.state.select} column={cols} childType="Tree" dataedit={this.state.dataedit} userlist={this.state.userAll}
           pivotBy={this.state.pivot} subtablewidth={700} getselection={this.getSelectionData} 
           url={null} btn={btnfunc} filterable={true} subtype={1} filterFields={this.state.dataMap} 
-          btnHold={true}/>
+          btnHold={view}/>
       </div>
     )
   }

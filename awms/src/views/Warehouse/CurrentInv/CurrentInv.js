@@ -5,8 +5,7 @@ import { TableGen } from '../MasterData/TableSetup';
 import { apicall, DatePicker, createQueryString } from '../ComponentCore'
 import Workbook from 'react-excel-workbook'
 import Axios from 'axios'
-
-
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 
 const API = new apicall()
@@ -35,10 +34,45 @@ class CurrentInv extends Component{
 
     this.dateTimePicker = this.dateTimePicker.bind(this)
     this.initialData = this.initialData.bind(this)
-    this.getSelectionData = this.getSelectionData.bind(this);
+    this.getSelectionData = this.getSelectionData.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
  
 
   }
+  async componentWillMount(){
+    //permission
+    this.setState({showbutton:"none"})
+    let data = await GetPermission()
+    Nodisplay(data,42,this.props.history)
+    this.displayButtonByPermission(data)
+    //permission
+  }
+  //permission
+  displayButtonByPermission(perID){
+    this.setState({perID:perID})
+    let check = false
+    let i= [42]
+    i.forEach(row => {
+        if(row === 41){
+          check = true
+        }else if(row === 42){
+          check = false
+        }
+      })
+        if(check === true){  
+            var PerButtonDate= document.getElementById("per_button_date")
+            PerButtonDate.remove()     
+            var PerButtonExport = document.getElementById("per_button_export")
+            PerButtonExport.remove()    
+            var PerButtonDowload = document.getElementById("per_button_dowload")
+            PerButtonDowload.remove()
+        }else if(check === false){
+            this.setState({showbutton:"block"})
+        }else{
+            this.props.history.push("/404")
+        } 
+  }
+  //permission
 
   getSelectionData(data) {
     this.setState({ selectiondata: data }, () => console.log(this.state.selectiondata))
@@ -95,7 +129,7 @@ class CurrentInv extends Component{
 
     return (
       <div>
-     <div className="clearfix">
+     <div className="clearfix" id="per_button_dowload" style={{display:this.state.showbutton}}>
           <Workbook filename="CurrentInv.xlsx" element={
             <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '150px'}} color="primary" className="float-right"
             >Download Reconsign </Button>}>
@@ -108,9 +142,9 @@ class CurrentInv extends Component{
               <Workbook.Column label="PackQtyResult" value={row => "" + row.packQtyResult}/>
             </Workbook.Sheet>
           </Workbook>
-          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '150px', marginRight:"5px" }} color="primary" className="float-right"
+          <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '150px', marginRight:"5px" ,display:this.state.showbutton  }} color="primary" className="float-right"
             onClick={() => { this.ExportData() }}>Export Data</Button>
-          <div className="float-right" style={{ marginRight: "5px" }}>{this.dateTimePicker()}</div>
+          <div id="per_button_date" className="float-right" style={{ marginRight: "5px",display:this.state.showbutton }}>{this.dateTimePicker()}</div>
  
       </div>
         <TableGen column={cols}

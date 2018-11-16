@@ -92,6 +92,7 @@ class TableGen extends Component{
     this.createAutoCompleteDownshift = this.createAutoCompleteDownshift.bind(this)
     this.btmButtomGenerate = this.btmButtomGenerate.bind(this)
     this.printbarcodeall = this.printbarcodeall.bind(this)
+    this.AddGenerate = this.AddGenerate.bind(this)
     
     this.data = []
     this.sortstatus=0
@@ -668,7 +669,7 @@ class TableGen extends Component{
     const getdata = this.state.autocomplete.filter(row=>{
       return row.field  === rowdata.column.id
     })
-    console.log(getdata)
+    //console.log(getdata)
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
       initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
@@ -911,6 +912,7 @@ class TableGen extends Component{
   }
 
   btmButtomGenerate(){
+   
     if(this.props.accept === true){
       return <Card>
         <CardBody>
@@ -918,8 +920,8 @@ class TableGen extends Component{
           <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
         </CardBody>
       </Card>
-    }
-    else if(this.props.printbtn === true){
+    } 
+    else if(this.props.printbtn === true ){
       return <Card>
           <CardBody>
             <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} className="float-right">Accept</Button>
@@ -933,6 +935,12 @@ class TableGen extends Component{
     }
   }
  
+  AddGenerate(){
+    if(this.props.addbtn === true)
+      return <Button onClick={this.onHandleClickAdd} style={{ width: 200, background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
+    else
+      return null;
+  }
 
   render(){
     const col = this.props.column
@@ -1037,10 +1045,9 @@ class TableGen extends Component{
             row.Aggregated = (e) => this.createSelectButton(e.row._subRows[0]._original)
           }
         })
-
     return(
       <div style={{ overflowX: 'auto'}}>
-        <Button onClick={this.onHandleClickAdd} style={{ width: 200, display: this.state.addbtn === true ? 'inline' : 'none', background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
+        {this.AddGenerate()}
         <div className="clearfix"></div>
         <ReactTableFixedColumns
           className="-striped" 

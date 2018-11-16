@@ -8,6 +8,7 @@ import {EventStatus} from '../Status'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames';
 import _ from 'lodash'
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -56,6 +57,7 @@ class PickAndConso extends Component{
     this.createGuideLocation = this.createGuideLocation.bind(this)
     this.clearTable = this.clearTable.bind(this)
     this.getIssuedList = this.getIssuedList.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
 
     this.customerselect = {queryString:window.apipath + "/api/mst",
     t:"Customer",
@@ -68,7 +70,7 @@ class PickAndConso extends Component{
 
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     Axios.get(createQueryString(this.customerselect)).then(res => {
       this.setState({auto_customer : res.data.datas}, () => {
         const auto_customer = []
@@ -78,8 +80,34 @@ class PickAndConso extends Component{
         this.setState({auto_customer})
       })
     })
+    //permission
+    this.setState({showbutton:"none"})
+    let data = await GetPermission()
+    Nodisplay(data,29,this.props.history)
+    this.displayButtonByPermission(data)
+    //permission
   }
-  
+  //permission
+displayButtonByPermission(perID){
+
+  this.setState({perID:perID})
+  let check = false
+  perID.forEach(row => {
+      if(row === 29){
+        check = true
+      }else if(row === 30){
+        check = false
+      }
+    })
+       if(check === true){  
+          var PerButtonPush = document.getElementById("per_button_tap")
+          PerButtonPush.remove()      
+       }else if(check === false){
+          this.setState({showbutton:"block"})
+       }
+  }
+  //permission
+
   getIssuedList(){
     const select={queryString:window.apipath + "/api/viw",
       t:"Document",
@@ -331,7 +359,8 @@ class PickAndConso extends Component{
 
           <div style={{display:this.state.openGuild, fontSize:"18px", color:"red"}}>Guide for Picking : {this.state.guideLoc}</div>
         </div>
-            <Nav tabs>
+        <div id="per_button_tap" style={{display:this.state.showbutton}}>
+            <Nav tabs >
               <NavItem>
                 <NavLink disabled={this.state.loadIssued}
                   className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggleTab('1'); }}>Pick</NavLink>
@@ -386,6 +415,7 @@ class PickAndConso extends Component{
                 </div>
               </TabPane>
             </TabContent>
+          </div>
       </div>
     )
   }
