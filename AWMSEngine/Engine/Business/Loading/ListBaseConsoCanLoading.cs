@@ -25,6 +25,7 @@ namespace AWMSEngine.Engine.Business.Loading
                 public long docItemID;
                 public long linkDocID;
                 public bool isLoaded;
+                public string issuedCode;
             }
         }
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -38,10 +39,12 @@ namespace AWMSEngine.Engine.Business.Loading
             docLoadItems.ForEach(x => {
                 var rsi = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(x.LinkDocument_ID, null, DocumentTypeID.GOODS_ISSUED, this.BuVO);
                 var rsiList = rsi.JsonCast<List<TRes.DataItem>>();
+                var docIssuedItems = ADO.DataADO.GetInstant().SelectBy<amt_Document>("ID", x.LinkDocument_ID, this.BuVO);
                 rsiList.ForEach(y => {
                     y.docItemID = x.ID.Value;
                     y.linkDocID = x.LinkDocument_ID.Value;
                     y.isLoaded = rootStoInLoad.Any(z => z.id == y.id);
+                    y.issuedCode = docIssuedItems[0].Code;
                 });
                 rootStoInIssueds.AddRange(rsiList);
             });
