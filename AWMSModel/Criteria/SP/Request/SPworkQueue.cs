@@ -11,6 +11,8 @@ namespace AWMSModel.Criteria.SP.Request
     {
         public long? ID;
         public IOType IOType;
+        public int Seq;
+        public string RefID;
         public long? Parent_WorkQueue_ID;
         public long? Document_ID;
         public long? DocumentItem_ID;

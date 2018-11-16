@@ -23,7 +23,7 @@ namespace AWMSModel.Criteria
         public string lot;
         public string batch;
 
-        public int? objectSizeID;
+        public long? objectSizeID;
         public string objectSizeName;
         public decimal? lengthM;
         public decimal? widthM;

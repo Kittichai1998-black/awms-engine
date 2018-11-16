@@ -83,7 +83,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     StorageObjectCriteria bstoConso = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID, false, true, this.BuVO);
                     if(bstoConso == null)
                     {
-                        bstoConso = ADO.StorageObjectADO.GetInstant().GetFree(reqVO.baseCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID, false, true, this.BuVO);
+                        bstoConso = ADO.StorageObjectADO.GetInstant().GetFree(reqVO.baseCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID,null,null, false, true, this.BuVO);
                         if (bstoConso == null)
                             throw new AMWException(this.Logger, AMWExceptionCode.V2001, "รหัสกล่อง/ถาด/พาเลท ไม่ถูกต้อง");
                     }

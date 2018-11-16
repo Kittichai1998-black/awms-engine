@@ -51,8 +51,22 @@ namespace AWMSEngine.ADO
         }
         public int UpdateEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
         {
+            var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(eventStatus);
             var res = DataADO.GetInstant().UpdateByID<amt_Document>(id, buVO,
-                new KeyValuePair<string, object>("EventStatus", eventStatus));
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string, object>("EventStatus", eventStatus),
+                    new KeyValuePair<string, object>("Status", status)
+                });
+            return res;
+        }
+        public int UpdateItemEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
+        {
+            var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(eventStatus);
+            var res = DataADO.GetInstant().UpdateByID<amt_DocumentItem>(id, buVO,
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string, object>("EventStatus", eventStatus),
+                    new KeyValuePair<string, object>("Status", status)
+                });
             return res;
         }
 
@@ -180,10 +194,26 @@ namespace AWMSEngine.ADO
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
         }
+        public List<SPOutDocItemCanMap> ListItemCanMap(string packCode,DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("packCode", packCode);
+            param.Add("docTypeID", docTypeID);
+            var res = this.Query<SPOutDocItemCanMap>("SP_DOCITEM_LIST_CANMAP",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
         public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, VOCriteria buVO)
+        {
+            return ListItemBySTO(storageObjectIDs, null, buVO);
+        }
+        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("storageObjectIDs", string.Join(",", storageObjectIDs));
+            param.Add("docTypeID", docTypeID);
             return this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYSTOID",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
