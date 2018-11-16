@@ -62,7 +62,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var eventStatus = selectByID.EventStatus;
             if (wm == selectByID.Des_Warehouse_ID
                 && am == selectByID.Des_Area_ID
-                && lm == (selectByID.Des_AreaLocation_ID == null ? null : lm))
+                && lm == (selectByID.Des_AreaLocation_ID.HasValue ? null : lm)
+                )
             {
                 if (eventStatus == WorkQueueEventStatus.WORKED)
                 {

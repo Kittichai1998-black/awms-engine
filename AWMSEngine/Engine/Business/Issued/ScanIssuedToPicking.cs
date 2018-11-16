@@ -77,7 +77,7 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 if (baseConso != null)
                 {
-                    stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, mapSto.warehouseID, mapSto.areaID, false, false, this.BuVO);
+                    stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, mapSto.warehouseID, mapSto.areaID,mapSto.batch,mapSto.lot, false, false, this.BuVO);
                     if (!stoConso.id.HasValue)
                         ADO.StorageObjectADO.GetInstant().Create(stoConso, mapSto.batch, mapSto.lot, this.BuVO);
                     mapSto.parentID = stoConso.id;
@@ -108,7 +108,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     stoConso = ADO.StorageObjectADO.GetInstant().Get(baseConso.Code, mapSto.warehouseID, mapSto.areaID, false, false, this.BuVO);
                     if (stoConso == null)
-                        stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, mapSto.warehouseID, mapSto.areaID, false, false, this.BuVO);
+                        stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, mapSto.warehouseID, mapSto.areaID,mapSto.batch,mapSto.lot, false, false, this.BuVO);
                     if (!stoConso.id.HasValue)
                         ADO.StorageObjectADO.GetInstant().Create(stoConso, mapSto.batch, mapSto.lot, this.BuVO);
                 }

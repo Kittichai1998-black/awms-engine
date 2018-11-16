@@ -64,7 +64,7 @@ namespace AWMSEngine.Engine.Business
                 if (mapsto == null || mapsto.type == StorageObjectType.PACK)
                 {
 
-                    int freeCount = ADOSto.GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, reqVO.batch, reqVO.lot, this.BuVO);
+                    int freeCount = ADOSto.GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID,  reqVO.batch, reqVO.lot, false, this.BuVO);
                     if (freeCount < reqVO.amount && (!false && this.StaticValue.IsFeature(FeatureCode.IB0100)))
                     {
                         if (!false && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.scanCode, this.BuVO) != null)
@@ -74,7 +74,7 @@ namespace AWMSEngine.Engine.Business
                     }
 
                     Logger.LogDebug("//ไม่พบในคลัง ให้หา sto นอกคลังแบบ Free");
-                    mapsto = ADOSto.GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
+                    mapsto = ADOSto.GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, false, true, this.BuVO);
 
                     if (mapsto != null)
                     {
@@ -202,7 +202,7 @@ namespace AWMSEngine.Engine.Business
                 Logger.LogInfo("Mapping Object Storage to Storage");
             }
 
-            int freeCount = ADOSto.GetFreeCount(scanCode, warehouseID, areaID, isInStorage, batch, lot, this.BuVO);
+            int freeCount = ADOSto.GetFreeCount(scanCode, warehouseID, areaID, batch, lot, isInStorage,this.BuVO);
             if (freeCount < amount && (isInStorage || (!isInStorage && this.StaticValue.IsFeature(FeatureCode.IB0100))))
             {
                 if (!isInStorage && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(scanCode, this.BuVO) != null)
@@ -215,7 +215,7 @@ namespace AWMSEngine.Engine.Business
 
             for (int i = 0; i < amount; i++)
             {
-                StorageObjectCriteria newMS = ADOSto.GetFree(scanCode,warehouseID, areaID, isInStorage, true, this.BuVO);
+                StorageObjectCriteria newMS = ADOSto.GetFree(scanCode,warehouseID, areaID, batch,lot, isInStorage, true, this.BuVO);
 
                 if (newMS == null)
                 {
