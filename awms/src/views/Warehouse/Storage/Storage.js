@@ -5,6 +5,7 @@ import {TableGen} from '../MasterData/TableSetup';
 import ExtendTable from '../MasterData/ExtendTable';
 import Axios from 'axios';
 import {createQueryString} from '../ComponentCore'
+import GetPermission from '../../ComponentCore/Permission';
 
 class Storage extends Component{
   constructor(props) {
@@ -54,11 +55,48 @@ class Storage extends Component{
     
     this.getSelectionData = this.getSelectionData.bind(this)
     this.getUserList = this.getUserList.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
    
   }
+
+//permission
+displayButtonByPermission(perID){
+  this.setState({perID:perID})
+  let check = false
+  perID.forEach(row => {
+      if(row === 35){
+        check = true
+      }else if(row === 51){
+        check = false
+      }
+    })
+       if(check === true){  
+          // var PerButtonPush = document.getElementById("per_button_push")
+          // PerButtonPush.remove()     
+          // var PerButtonRemove = document.getElementById("per_button_remove")
+          // PerButtonRemove.remove()    
+          // var PerButtonSave = document.getElementById("per_button_save")
+          // PerButtonSave.remove()
+          // var PerButtonCancel = document.getElementById("per_button_cancel")
+          // PerButtonCancel.remove() 
+          // var PerButtonClear = document.getElementById("per_button_clear")
+          // PerButtonClear.remove()  
   
+       }else if(check === false){
+          this.setState({showbutton:"block"})
+       }else{
+          this.props.history.push("/404")
+       } 
+  }
+  //permission
+
+
   componentWillMount(){
     this.getUserList();
+    //permission
+    this.setState({showbutton:"none"})
+    GetPermission(this.displayButtonByPermission)
+    //permission
   }
   
   getSelectionData(data){

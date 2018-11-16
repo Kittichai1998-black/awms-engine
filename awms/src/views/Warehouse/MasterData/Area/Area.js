@@ -3,11 +3,12 @@ import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {createQueryString} from '../../ComponentCore'
+import GetPermission from '../../../ComponentCore/Permission';
+
 
 class Area extends Component{
   constructor(props) {
     super(props);
-
     this.state = {
       data : [],
       autocomplete:[],
@@ -28,13 +29,39 @@ class Area extends Component{
       l:100,
       all:"",},
       sortstatus:0,
-      selectiondata:[],        
+      selectiondata:[]    
      
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Warehouse_Code","Warehouse_Name","Warehouse_Description","AreaMasterType_Code","AreaMasterType_Name","AreaMasterType_Description","Created","Modified"]
   }
+  componentWillMount(){
+    this.filterList()
+    //permission
+    GetPermission(this.displayButtonByPermission)
+    //permission
+  }
+  //permission
+  displayButtonByPermission(perID){
+    this.setState({perID:perID})
+    let check = false
+    perID.forEach(row => {
+        if(row === 8){
+          check = true
+        }if(row === 9){
+          check = false
+        }
+      })
+        if(check === true){  
+          this.setState({permissionView:false})
+
+        }else if(check === false){
+          this.setState({permissionView:true})
+        }
+  }
+  //permission
 
   onHandleClickCancel(event){
     this.forceUpdate();
@@ -97,19 +124,18 @@ class Area extends Component{
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
       {accessor: 'Warehouse_Code', Header: 'Warehouse',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'AreaMasterType_Code', Header: 'AreaMasterType',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-      {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+      {accessor: 'Status', Header: 'Status',Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+      {accessor: 'Created', Header: 'Create',filterable:false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      {show:this.state.permissionView, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ]; 
-  
     const btnfunc = [{
       btntype:"Barcode",
       func:this.createBarcodeBtn
     }]
-
+    const view  = this.state.permissionView
     return(
       <div>
       {/*
@@ -117,13 +143,13 @@ class Area extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-              filterable={true} autocomplete={this.state.autocomplete} accept={true}
+      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+              filterable={true} autocomplete={this.state.autocomplete} accept={view}
               btn={btnfunc} uneditcolumn={this.uneditcolumn}
         table="ams_AreaMaster"/>
       </div>
     )
   }
 }
-
+//permissionEdit={this.state.permissionEdit}
 export default Area;

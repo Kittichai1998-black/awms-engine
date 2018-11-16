@@ -4,6 +4,7 @@ import {Button , Row, Col} from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {AutoSelect, createQueryString} from '../../ComponentCore'
+import GetPermission from '../../../ComponentCore/Permission';
 
 class AreaLocation extends Component{
   constructor(props) {
@@ -80,6 +81,7 @@ class AreaLocation extends Component{
     this.dropdownAuto = this.dropdownAuto.bind(this)
     this.autoSelectData = this.autoSelectData.bind(this)
     this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","Modified","Created"]
 
   }
@@ -90,8 +92,29 @@ class AreaLocation extends Component{
   
   componentWillMount(){
     this.filterList();
+    //permission
+    GetPermission(this.displayButtonByPermission)
+    //permission
   }
-
+//permission
+displayButtonByPermission(perID){
+  this.setState({perID:perID})
+  let check = false
+  perID.forEach(row => {
+      if(row === 10){
+        check = true
+      }if(row === 11){
+        check = false
+      }
+    })
+       if(check === true){  
+        this.setState({permissionView:false})
+       }else if(check === false){
+        this.setState({permissionView:true})
+       }
+  }
+  //permission
+  
   componentWillUnmount(){
     Axios.isCancel(true);
   }
@@ -238,8 +261,8 @@ class AreaLocation extends Component{
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     
     }else  if(this.state.grouptype === 1) {
@@ -254,8 +277,8 @@ class AreaLocation extends Component{
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     }else{
       return [
@@ -272,8 +295,8 @@ class AreaLocation extends Component{
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     }
   }
@@ -302,7 +325,7 @@ class AreaLocation extends Component{
       func:this.createBarcodeBtn
   
     }]
-
+    const view  = this.state.permissionView
     return(
       <div>
         <Row>
@@ -326,10 +349,10 @@ class AreaLocation extends Component{
         filterable = เปิดปิดโหมด filter
         getselection = เก็บค่าที่เลือก
       */}
-        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={true}
+        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
                   filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
-                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={true}/>
+                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>
       </div>  
     )   
   }

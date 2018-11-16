@@ -26,7 +26,11 @@ class IssuedDoc extends Component {
     if(values.docID){
       Axios.get(window.apipath + "/api/wm/received/doc?docID=" + values.docID).then(res => {
         if (res.data._result.status === 1) {
-          this.setState({data:res.data.document.documentItems, DocumentCode:res.data.document.code})
+          this.setState({
+            data: res.data.document.documentItems,
+            DocumentCode: res.data.document.code,
+            Remark: res.data.document.remark
+          })
         }
       })
     }
@@ -63,6 +67,7 @@ class IssuedDoc extends Component {
     
       */}
         <div><label>Document Code : </label>{this.state.DocumentCode}</div>
+        <div><label>Remark : </label>{this.state.Remark}</div>
         <ReactTable columns={cols} data={this.state.data} NoDataComponent={()=>null} style={{background:"white"}}
         sortable={false} filterable={false} editable={false} minRows={5} showPagination={false}/>
         <div className="clearfix">

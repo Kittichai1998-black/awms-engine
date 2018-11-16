@@ -7,6 +7,7 @@ import { apicall,AutoSelect, DatePicker } from '../ComponentCore';
 //import DatePicker from 'react-datepicker';
 import moment from 'moment';
 
+
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
     + (select.q === "" ? "" : "&q=" + select.q)

@@ -4,6 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import GetPermission from '../../../ComponentCore/Permission';
 
 const api = new apicall()
 
@@ -37,6 +38,7 @@ class SKUMasterType extends Component{
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.getAutocompletee = this.getAutocomplete.bind(this);
         this.getSelectionData = this.getSelectionData.bind(this);
+        this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
         this.uneditcolumn = ["ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","Modified","Created"]
       }
       onHandleClickCancel(event){
@@ -46,8 +48,33 @@ class SKUMasterType extends Component{
     
       componentWillMount(){
         this.getAutocomplete();
+        //permission
+        this.setState({showbutton:"none"})
+        GetPermission(this.displayButtonByPermission)
+        //permission
       }
-    
+    //permission
+displayButtonByPermission(perID){
+
+  this.setState({perID:perID})
+  let check = false
+  perID.forEach(row => {
+      if(row === 45 ){
+        check = true
+      }if(row === 46 ){
+        check = false
+      }if(row === 47 ){
+        check = false
+      }
+    })
+       if(check === true){  
+        this.setState({permissionView:false})
+       }else if(check === false){
+        this.setState({permissionView:true})
+       }
+  }
+  //permission
+
       componentWillUnmount(){
         
       }
@@ -124,7 +151,7 @@ class SKUMasterType extends Component{
           btntype:"Barcode",
           func:this.createBarcodeBtn
         }]
-    
+        const view  = this.state.permissionView
         return(
           <div>
           {/*
@@ -138,8 +165,8 @@ class SKUMasterType extends Component{
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-            filterable={true} autocomplete={this.state.autocomplete} accept={true}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            filterable={true} autocomplete={this.state.autocomplete} accept={view}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
              table="ams_SKUMasterType"/>
           </div>
