@@ -5,7 +5,8 @@ import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
 import moment from 'moment';
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+
 
 const Axios = new apicall()
 
@@ -48,10 +49,12 @@ class IssuedDoc extends Component {
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data =await GetPermission()
+    Nodisplay(data,21,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
 

@@ -5,7 +5,7 @@ import {Input, Button,CardBody,Card , Row, Col,
 //import Axios from 'axios';
 import { AutoSelect , apicall, createQueryString ,Clone } from '../ComponentCore'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import GetPermission from '../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 
 const Axios = new apicall()
@@ -46,7 +46,7 @@ class StockCorrection extends Component{
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
       }
 
-    componentWillMount(){
+      async componentWillMount(){
           Axios.get(createQueryString(this.state.warehouse)).then(res => {
             this.setState({warehousedata : res.data.datas ,addstatus:false}, () => {
               const warehousedata = []
@@ -57,9 +57,11 @@ class StockCorrection extends Component{
             })
           })
       //permission
-        this.setState({showbutton:"none"})
-        GetPermission(this.displayButtonByPermission)
-        //permission
+      this.setState({showbutton:"none"})
+      let data = await GetPermission()
+      Nodisplay(data,38,this.props.history)
+      this.displayButtonByPermission(data)
+      //permission
     }
 //permission
 displayButtonByPermission(perID){

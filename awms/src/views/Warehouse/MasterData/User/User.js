@@ -6,7 +6,7 @@ import Popup from 'reactjs-popup'
 import {apicall, createQueryString} from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { timingSafeEqual } from 'crypto';
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -77,10 +77,11 @@ class User extends Component{
         this.setUserRole = this.setUserRole.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     }
-    componentWillMount(){
+    async componentWillMount(){
         //permission
-        this.setState({showbutton:"none"})
-        GetPermission(this.displayButtonByPermission)
+        let data = await GetPermission()
+        Nodisplay(data,14,this.props.history)
+        this.displayButtonByPermission(data)
         //permission
       }
       //permission

@@ -8,7 +8,7 @@ import {EventStatus} from '../Status'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames';
 import _ from 'lodash'
-import GetPermission from '../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -70,7 +70,7 @@ class PickAndConso extends Component{
 
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     Axios.get(createQueryString(this.customerselect)).then(res => {
       this.setState({auto_customer : res.data.datas}, () => {
         const auto_customer = []
@@ -82,9 +82,10 @@ class PickAndConso extends Component{
     })
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,29,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
- 
   }
   //permission
 displayButtonByPermission(perID){

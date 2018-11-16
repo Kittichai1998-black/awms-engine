@@ -4,7 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, GenerateDropDownStatus} from '../ComponentCore'
-import GetPermission from '../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 const Axios =  new apicall()
 
@@ -53,10 +53,12 @@ class LoadingManage extends Component{
       all:"",}
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,31,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
   //permission

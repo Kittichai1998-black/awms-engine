@@ -4,7 +4,7 @@ import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 //import Axios from 'axios';
 import {apicall} from '../../ComponentCore'
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 
 const Axios = new apicall()
@@ -40,10 +40,12 @@ class Supplier extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Created","Modified"]
   }
-  componentWillMount(){
-    //permission
+  async componentWillMount(){
+   //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,2,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
   //permission

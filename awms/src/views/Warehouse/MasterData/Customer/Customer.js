@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import {apicall} from '../../ComponentCore'
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -38,10 +38,12 @@ class Customer extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Created","Modified"]
   }
-  componentWillMount(){
+  async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,5,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
   //permission

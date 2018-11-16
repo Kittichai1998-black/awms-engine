@@ -4,7 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 const api = new apicall()
 
@@ -46,11 +46,12 @@ class SKUMasterType extends Component{
         event.preventDefault();
       }
     
-      componentWillMount(){
+      async componentWillMount(){
         this.getAutocomplete();
         //permission
-        this.setState({showbutton:"none"})
-        GetPermission(this.displayButtonByPermission)
+        let data = await GetPermission()
+        Nodisplay(data,45,this.props.history)
+        this.displayButtonByPermission(data)
         //permission
       }
     //permission

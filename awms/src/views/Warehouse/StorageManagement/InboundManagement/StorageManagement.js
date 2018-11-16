@@ -8,7 +8,7 @@ import {Input, Button, ButtonGroup , Row, Col,
 //import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {AutoSelect, NumberInput, apicall, createQueryString, Clone, ToListTree} from '../../ComponentCore'
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -87,11 +87,24 @@ class StorageManagement extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
   
-componentWillMount(){
+  async componentWillMount(){
   //permission
-  this.setState({showbutton:"none"})
-  GetPermission(this.displayButtonByPermission)
-  //permission
+    const values = this.props.location.pathname.split('/')
+    if(values[3].toLowerCase() === 'revmap'){
+      this.setState({Mode:0})
+      this.setState({showbutton:"none"})
+      let data = await GetPermission()
+      Nodisplay(data,22,this.props.history)
+      this.displayButtonByPermission(data)
+    }
+    else if(values[3].toLowerCase() === 'transfer'){
+      this.setState({Mode:1})
+      this.setState({showbutton:"none"})
+      let data = await GetPermission()
+      Nodisplay(data,24,this.props.history)
+      this.displayButtonByPermission(data)
+    }
+    //permission
 }
 //permission
 displayButtonByPermission(perID){
@@ -148,13 +161,13 @@ perID.forEach(row => {
     script3.src = "https://code.jquery.com/jquery-3.3.1.min.js";
     script3.type="text/javascript"
     document.head.appendChild(script3);
-    const values = this.props.location.pathname.split('/')
-    if(values[3].toLowerCase() === 'register'){
-      this.setState({Mode:0})
-    }
-    else if(values[3].toLowerCase() === 'transfer'){
-      this.setState({Mode:1})
-    }
+    // const values = this.props.location.pathname.split('/')
+    // if(values[3].toLowerCase() === 'register'){
+    //   this.setState({Mode:0})
+    // }
+    // else if(values[3].toLowerCase() === 'transfer'){
+    //   this.setState({Mode:1})
+    // }
   }
 
   autoSelectData(field, resdata, resfield){
