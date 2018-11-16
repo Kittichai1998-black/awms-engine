@@ -27,7 +27,7 @@ class LoadingManage extends Component{
       acceptstatus : false,
       select:{queryString:window.apipath + "/api/viw",
       t:"Loading",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1012},{ 'f': 'status', c:'in', 'v': 1}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1012}]",
       f:"ID,Code,CustomerName,DocumentType_ID,Transport_ID,ActionTime,DocumentDate,EventStatus,Status,CreateTime,ModifyTime,Remark,IssuedCode,LinkDocument_ID",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
