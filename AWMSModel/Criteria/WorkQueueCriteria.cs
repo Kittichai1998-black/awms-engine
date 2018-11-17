@@ -39,10 +39,10 @@ namespace AWMSModel.Criteria
                 public string lot;
                 public string batch;
 
-                public DateTime? minProductDate;//วันผลิด ต่ำสุดจากทั้งหมดใยพาเลท
-                public DateTime? maxProductDate;//วันผลิด สูงสุดจากทั้งหมดใยพาเลท
-                public DateTime? minExpireDate;//วันหมดอายุ ต่ำสุดจากทั้งหมดใยพาเลท
-                public DateTime? maxExpireDate;//วันหมดอายุ สูงสุดจากทั้งหมดใยพาเลท
+                //public DateTime? minProductDate;//วันผลิด ต่ำสุดจากทั้งหมดใยพาเลท
+                //public DateTime? maxProductDate;//วันผลิด สูงสุดจากทั้งหมดใยพาเลท
+                //public DateTime? minExpireDate;//วันหมดอายุ ต่ำสุดจากทั้งหมดใยพาเลท
+                //public DateTime? maxExpireDate;//วันหมดอายุ สูงสุดจากทั้งหมดใยพาเลท
             }
         }
     }
