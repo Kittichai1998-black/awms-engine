@@ -28,13 +28,13 @@ namespace AWMSEngine.Engine.Business.Loading
             var baseCanLoads = new ListBaseConsoCanLoading().Execute(this.Logger, this.BuVO,
                 new ListBaseConsoCanLoading.TReq() { docID = reqVO.docID });
 
-            var willLoad = baseCanLoads.datas.FirstOrDefault(x => x.code == reqVO.scanCode && !x.isLoaded);
+            var willLoad = baseCanLoads.datas.FirstOrDefault(x => x.rootCode == reqVO.scanCode && !x.isLoaded);
             if (willLoad == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบ Code " + reqVO.scanCode + " ที่ต้องการ Load");
             else if (willLoad.isLoaded)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Code " + reqVO.scanCode + " ได้ทำการ Load เสร็จแล้ว ไม่สามารถ Load ซ่ำได้");
 
-            willLoad.isLoaded = true;
+            baseCanLoads.datas.FindAll(x => x.rootCode == willLoad.rootCode).ForEach(x => x.isLoaded = true);
             var stoLoads = ADO.StorageObjectADO.GetInstant().Get(willLoad.id, willLoad.objectType, false, true, this.BuVO).ToTreeList();
 
             ADO.DocumentADO.GetInstant().MappingSTO(
@@ -49,14 +49,10 @@ namespace AWMSEngine.Engine.Business.Loading
                     EntityStatus.ACTIVE,
                     DocumentEventStatus.WORKED,
                     this.BuVO);
-            baseCanLoads.datas.FindAll(x => x.isLoaded).ForEach(x =>
-            {
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rootID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.LOADED, this.BuVO);
-            });
 
+            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(willLoad.rootID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.LOADED, this.BuVO);
 
-
-
+            
             return baseCanLoads;
         }
     }

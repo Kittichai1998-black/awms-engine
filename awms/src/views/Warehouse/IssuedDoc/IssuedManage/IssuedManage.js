@@ -173,7 +173,11 @@ class IssuedManage extends Component{
   createDocument(){
     let acceptdata = []
     this.state.data.forEach(row => {
-      acceptdata.push({packID:row.id,packQty:row.PackQty,})
+      if (row.id > 0) 
+      acceptdata.push({
+        packID: row.id,
+        packQty: row.PackQty,
+      })
     })
     let postdata = {
       refID:'', forCustomerID:null, batch:null, lot:null,
@@ -182,6 +186,7 @@ class IssuedManage extends Component{
       actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
       remark:this.state.remark,issueItems:acceptdata
     }
+    console.log(acceptdata)
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
       if(res.data._result.status === 1){
         this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
@@ -224,7 +229,7 @@ class IssuedManage extends Component{
   addData(){
     const data = this.state.data
     data.push({id:this.addIndex,PackItem:"",PackQty:1,SKU:"",UnitType:"", ID:""})
-    this.addIndex += 1
+    this.addIndex -= 1
     this.setState({data})
   }
 

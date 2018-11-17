@@ -3,8 +3,7 @@ import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {createQueryString} from '../../ComponentCore'
-import GetPermission from '../../../ComponentCore/Permission';
-
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 class Area extends Component{
   constructor(props) {
@@ -37,17 +36,21 @@ class Area extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Warehouse_Code","Warehouse_Name","Warehouse_Description","AreaMasterType_Code","AreaMasterType_Name","AreaMasterType_Description","Created","Modified"]
   }
-  componentWillMount(){
+  async componentWillMount(){
     this.filterList()
     //permission
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,8,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
   //permission
   displayButtonByPermission(perID){
     this.setState({perID:perID})
     let check = false
+   
     perID.forEach(row => {
+        
         if(row === 8){
           check = true
         }if(row === 9){
@@ -56,7 +59,6 @@ class Area extends Component{
       })
         if(check === true){  
           this.setState({permissionView:false})
-
         }else if(check === false){
           this.setState({permissionView:true})
         }
@@ -68,11 +70,6 @@ class Area extends Component{
     event.preventDefault();
   }
 
-  componentWillMount(){
-    dfdfdfdf
-    this.filterList();
-  }
-  
   componentWillUnmount(){
     Axios.isCancel(true);
   }

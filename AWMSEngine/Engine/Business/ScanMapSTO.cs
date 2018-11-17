@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class ScanMapSTO : BaseEngine<ScanMapSTO.TReqel, StorageObjectCriteria>
+    public class ScanMapSto : BaseEngine<ScanMapSto.TReq, StorageObjectCriteria>
     {
         private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
 
-        public class TReqel
+        public class TReq
         {
             public string scanCode;
             public string batch;
@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.Business
             public List<KeyValuePair<string, string>> options;
             public StorageObjectCriteria mapsto;
         }
-        protected override StorageObjectCriteria ExecuteEngine(TReqel reqVO)
+        protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
             StorageObjectCriteria mapsto = null;
             if(reqVO.mapsto == null)
@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria ExecFirstScan(TReqel reqVO)
+        private StorageObjectCriteria ExecFirstScan(TReq reqVO)
         {
             StorageObjectCriteria mapsto = null;
             Logger.LogDebug("//สแกนครั้งแรก");
@@ -64,7 +64,7 @@ namespace AWMSEngine.Engine.Business
                 if (mapsto == null || mapsto.type == StorageObjectType.PACK)
                 {
 
-                    int freeCount = ADOSto.GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, reqVO.batch, reqVO.lot, this.BuVO);
+                    int freeCount = ADOSto.GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID,  reqVO.batch, reqVO.lot, false, this.BuVO);
                     if (freeCount < reqVO.amount && (!false && this.StaticValue.IsFeature(FeatureCode.IB0100)))
                     {
                         if (!false && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.scanCode, this.BuVO) != null)
@@ -74,7 +74,7 @@ namespace AWMSEngine.Engine.Business
                     }
 
                     Logger.LogDebug("//ไม่พบในคลัง ให้หา sto นอกคลังแบบ Free");
-                    mapsto = ADOSto.GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
+                    mapsto = ADOSto.GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, false, true, this.BuVO);
 
                     if (mapsto != null)
                     {
@@ -109,7 +109,7 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria ExecNextScan(TReqel reqVO)
+        private StorageObjectCriteria ExecNextScan(TReq reqVO)
         {
             Logger.LogInfo("Get STO From Request.(Action)");
             StorageObjectCriteria mapsto = reqVO.mapsto;
@@ -202,7 +202,7 @@ namespace AWMSEngine.Engine.Business
                 Logger.LogInfo("Mapping Object Storage to Storage");
             }
 
-            int freeCount = ADOSto.GetFreeCount(scanCode, warehouseID, areaID, isInStorage, batch, lot, this.BuVO);
+            int freeCount = ADOSto.GetFreeCount(scanCode, warehouseID, areaID, batch, lot, isInStorage,this.BuVO);
             if (freeCount < amount && (isInStorage || (!isInStorage && this.StaticValue.IsFeature(FeatureCode.IB0100))))
             {
                 if (!isInStorage && ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(scanCode, this.BuVO) != null)
@@ -215,7 +215,7 @@ namespace AWMSEngine.Engine.Business
 
             for (int i = 0; i < amount; i++)
             {
-                StorageObjectCriteria newMS = ADOSto.GetFree(scanCode,warehouseID, areaID, isInStorage, true, this.BuVO);
+                StorageObjectCriteria newMS = ADOSto.GetFree(scanCode,warehouseID, areaID, batch,lot, isInStorage, true, this.BuVO);
 
                 if (newMS == null)
                 {

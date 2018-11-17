@@ -4,7 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, GenerateDropDownStatus} from '../ComponentCore'
-import GetPermission from '../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 const Axios =  new apicall()
 
@@ -28,7 +28,7 @@ class LoadingManage extends Component{
       acceptstatus : false,
       select:{queryString:window.apipath + "/api/viw",
       t:"Loading",
-      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1012},{ 'f': 'status', c:'in', 'v': 1}]",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1012}]",
       f:"ID,Code,CustomerName,DocumentType_ID,Transport_ID,ActionTime,DocumentDate,EventStatus,Status,CreateTime,ModifyTime,Remark,IssuedCode,LinkDocument_ID",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
@@ -53,10 +53,12 @@ class LoadingManage extends Component{
       all:"",}
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,31,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
   //permission

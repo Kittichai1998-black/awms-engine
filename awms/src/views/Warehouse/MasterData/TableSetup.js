@@ -669,7 +669,7 @@ class TableGen extends Component{
     const getdata = this.state.autocomplete.filter(row=>{
       return row.field  === rowdata.column.id
     })
-    console.log(getdata)
+    //console.log(getdata)
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
       initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}

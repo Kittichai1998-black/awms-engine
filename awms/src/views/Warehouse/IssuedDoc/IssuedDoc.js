@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import {Card, CardBody, Button } from 'reactstrap';
 import {TableGen} from '../MasterData/TableSetup';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../ComponentCore'
-import GetPermission from '../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 const axois = new apicall()
 
@@ -44,10 +44,12 @@ class IssuedDoc extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
 
-  componentWillMount(){
+  async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,26,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
 //permission

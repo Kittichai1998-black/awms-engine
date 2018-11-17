@@ -68,14 +68,14 @@ class LoadingDocument extends Component{
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }
-        else{
+        else {
           this.setState({
             data:rowselect1.data.document.documentItems, 
             loading:rowselect1.data.document.code,
-            documentStatus:rowselect1.data.document.eventStatus,
             warehouse:rowselect1.data.document.souWarehouseName,
             customer:rowselect1.data.document.desCustomerName,
-            transport:rowselect1.data.document.transport,
+            transport: rowselect1.data.document.transport,
+            eventstatus: rowselect1.data.document.eventStatus,
             documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
             date:moment(rowselect1.data.document.actionTime),
             addstatus:true,
@@ -226,9 +226,9 @@ class LoadingDocument extends Component{
 
   getIssuedList(){
     const autocomplete = {queryString:window.apipath + "/api/viw",
-      t:"Document",
+      t:"DocumentIssuedNotUse",
       q:'[{ "f": "Des_Customer_ID", "c":"=", "v": '+ this.state.customervalue +'},{ "f": "DocumentType_ID", "c":"=", "v": 1002},{ "f": "eventStatus", "c":"in", "v": "11,12"}]',
-      f:"ID, Code, SouBranch, DesCustomer, ActionTime, DesCustomerName",
+      f:"ID, Code,Des_Customer_Code, ActionTime, Des_Customer_Name",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -282,13 +282,14 @@ class LoadingDocument extends Component{
   addData(){
     const data = this.state.data
     data.push({ID:this.addIndex,Code:"",Branch:"",Customer:"",ActionDate:"",IssuedID:""})
-    this.addIndex += 1
+    this.addIndex -= 1
     this.setState({data})
   }
 
   createDocument(){
     let issuedList = []
     this.state.data.forEach(item => {
+      if (item.IssuedID > 0) 
       issuedList.push({issuedDocID:item.IssuedID})
     })
     if(this.state.transportvalue && this.state.warehousevalue && this.state.date !== undefined){

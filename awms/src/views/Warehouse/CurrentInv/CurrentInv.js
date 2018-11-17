@@ -5,9 +5,7 @@ import { TableGen } from '../MasterData/TableSetup';
 import { apicall, DatePicker, createQueryString } from '../ComponentCore'
 import Workbook from 'react-excel-workbook'
 import Axios from 'axios'
-import GetPermission from '../../ComponentCore/Permission';
-
-
+import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 
 
 const API = new apicall()
@@ -41,10 +39,12 @@ class CurrentInv extends Component{
  
 
   }
-  componentWillMount(){
+  async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,42,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
   //permission

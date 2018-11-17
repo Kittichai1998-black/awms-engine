@@ -8,7 +8,7 @@ import DatePicker from 'react-datepicker';
 import {AutoSelect, apicall, createQueryString} from '../../ComponentCore';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from 'lodash'
-import GetPermission from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 const API = new apicall();
 
@@ -44,10 +44,12 @@ class LoadingDocument extends Component{
       all:"",}
       this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
-  componentWillMount(){
+  async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    GetPermission(this.displayButtonByPermission)
+    let data = await GetPermission()
+    Nodisplay(data,33,this.props.history)
+    this.displayButtonByPermission(data)
     //permission
   }
   //permission
