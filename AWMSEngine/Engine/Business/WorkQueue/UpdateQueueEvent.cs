@@ -48,14 +48,18 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
         private WorkQueueCriteria GenerateResult(TReq req, long? wm, long? am, long? lm)
         {
-            var selectByID = DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[] {
+            var workqueueID = DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[] {
                 new SQLConditionCriteria("ID", req.queueID, SQLOperatorType.EQUALS)
             }, this.BuVO).FirstOrDefault();
 
-            var eventStatus = selectByID.EventStatus;
-            if (wm == selectByID.Des_Warehouse_ID
-                && am == selectByID.Des_Area_ID
-                && lm == (selectByID.Des_AreaLocation_ID == null ? null : lm))
+            var baseID = DataADO.GetInstant().SelectBy<ams_BaseMaster>(new SQLConditionCriteria[] {
+                new SQLConditionCriteria("Code", req.baseCode, SQLOperatorType.EQUALS)
+            }, this.BuVO).FirstOrDefault();
+
+            var eventStatus = workqueueID.EventStatus;
+            if (wm == workqueueID.Des_Warehouse_ID
+                && am == workqueueID.Des_Area_ID
+                && lm == (workqueueID.Des_AreaLocation_ID == null ? null : lm))
             {
                 if(eventStatus == WorkQueueEventStatus.WORKING)
                 {
@@ -79,25 +83,27 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }
 
             SPworkQueue workQueue = new SPworkQueue() {
-                ID = selectByID.ID,
-                IOType = selectByID.IOType,
-                Parent_WorkQueue_ID = selectByID.Parent_WorkQueue_ID,   
-                Document_ID = selectByID.Document_ID,
-                DocumentItem_ID = selectByID.DocumentItem_ID,
-                StorageObject_ID = selectByID.StorageObject_ID,
-                StorageObject_Code = selectByID.StorageObject_Code,
-                Sou_Warehouse_ID = selectByID.Sou_Warehouse_ID,
-                Sou_AreaMaster_ID = selectByID.Sou_Area_ID,
-                Sou_AreaLocationMaster_ID = selectByID.Sou_AreaLocation_ID,
-                Des_Warehouse_ID = selectByID.Des_Warehouse_ID,
-                Des_AreaMaster_ID = selectByID.Des_Area_ID,
-                Des_AreaLocationMaster_ID = selectByID.Des_AreaLocation_ID,
-                Priority = selectByID.Priority,
+                ID = workqueueID.ID,
+                IOType = workqueueID.IOType,
+                Parent_WorkQueue_ID = workqueueID.Parent_WorkQueue_ID,   
+                Document_ID = workqueueID.Document_ID,
+                DocumentItem_ID = workqueueID.DocumentItem_ID,
+                StorageObject_ID = workqueueID.StorageObject_ID,
+                StorageObject_Code = workqueueID.StorageObject_Code,
+                Sou_Warehouse_ID = workqueueID.Sou_Warehouse_ID,
+                Sou_AreaMaster_ID = workqueueID.Sou_Area_ID,
+                Sou_AreaLocationMaster_ID = workqueueID.Sou_AreaLocation_ID,
+                Des_Warehouse_ID = workqueueID.Des_Warehouse_ID,
+                Des_AreaMaster_ID = workqueueID.Des_Area_ID,
+                Des_AreaLocationMaster_ID = workqueueID.Des_AreaLocation_ID,
+                Priority = workqueueID.Priority,
                 EventStatus = eventStatus,
-                Status = selectByID.Status
+                Status = workqueueID.Status
             };
 
             var resQueue = QueueADO.GetInstant().PUT(workQueue, this.BuVO);
+            if(baseID != null)
+                StorageObjectADO.GetInstant().UpdateStatusToChild(baseID.ID.Value, null, EntityStatus.ACTIVE,StorageObjectEventStatus.RECEIVING , this.BuVO);
 
             var res = new WorkQueueCriteria()
             {
@@ -115,9 +121,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 areaCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.AreaMaster_ID).Code,
                 locationCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.AreaLocationMaster_ID).Code,
                 queueParentID = resQueue.Parent_WorkQueue_ID,
-                queueRefID = selectByID.RefID,
+                queueRefID = workqueueID.RefID,
                 queueStatus = resQueue.EventStatus,
-                seq = selectByID.Seq
+                seq = workqueueID.Seq
             };
 
             return res;
