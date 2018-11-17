@@ -32,13 +32,13 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (wm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + reqVO.warehouseCode + "'");
-            var am = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouses_ID == wm.ID);
+            var am = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == wm.ID);
             if (am == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + reqVO.areaCode + "'");
             var alm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.loactionCode),
-                    new KeyValuePair<string,object>("Area_ID",am.ID.Value),
+                    new KeyValuePair<string,object>("AreaMaster_ID",am.ID.Value),
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
             if (alm == null)
@@ -93,7 +93,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 Sou_AreaMaster_ID = am.ID.Value,
                 Sou_AreaLocationMaster_ID = alm.ID,
 
-                Des_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.ID == desAreaDefault.Des_AreaMaster_ID).Warehouses_ID.Value,
+                Des_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.ID == desAreaDefault.Des_AreaMaster_ID).Warehouse_ID.Value,
                 Des_AreaMaster_ID = desAreaDefault.Des_AreaMaster_ID.Value,
                 Des_AreaLocationMaster_ID = desAreaDefault.Des_AreaLocationMaster_ID,
 

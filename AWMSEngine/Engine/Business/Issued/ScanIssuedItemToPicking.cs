@@ -31,7 +31,7 @@ namespace AWMSEngine.Engine.Business.Issued
             amt_DocumentItem docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(reqVO.docItemID, this.BuVO);
             amt_Document doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docItem.Document_ID, this.BuVO);
 
-            var resMapsto = new ScanMapSTO().Execute(this.Logger, this.BuVO, new ScanMapSTO.TReqel()
+            var resMapsto = new ScanMapSto().Execute(this.Logger, this.BuVO, new ScanMapSto.TReq()
             {
                 action = reqVO.action,
                 amount = reqVO.amount,

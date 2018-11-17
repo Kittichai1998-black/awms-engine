@@ -72,7 +72,12 @@ namespace AWMSEngine.Engine.Business.Issued
                 docItems.TrueForAll(x =>
                         (x.Quantity - diStos.Count(y => y.DocumentItem_ID == x.ID)) >=//จำนวนสินค้าที่ยังไม่ pick
                         mapStoTree.Count(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID) //จำนวนสินค้าที่จะหยิบ
-                        )
+                        ) &&
+               mapStoTree.Where(x => x.type == StorageObjectType.PACK)
+                           .GroupBy(x => x.mstID)
+                           .Select(x => x.Key.Value)
+                           .ToList()
+                           .TrueForAll(x => docItems.Any(y => y.PackMaster_ID == x))
                )
             {
                 if (baseConso != null)
