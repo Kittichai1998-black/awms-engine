@@ -45,8 +45,7 @@ class LoadingManage extends Component{
       selectiondata: [],
       isVisibility: false,
       datashow: [],
-      datasitems: [],
-
+      datasitems: []
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this)
@@ -141,7 +140,7 @@ displayButtonByPermission(perID){
       }).then(() => {
         //console.log(documents); console.log(dataitems);
         this.setState({
-          data: documents.document.documentItems,
+          //data: documents.document.documentItems,
           customer: documents.document.desCustomerName,
           CodeDoc: documents.document.code,
           ActionDate: moment(documents.document.actionTime).format("DD/MM/YYYY"),
