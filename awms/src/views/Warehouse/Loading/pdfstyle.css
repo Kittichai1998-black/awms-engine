@@ -1,0 +1,120 @@
+#divHidden {
+  overflow: hidden;
+  height: 0;
+}
+
+.pdf {
+  width: 720px;
+  height: auto;
+  font-size: 14px;
+}
+
+.iconpdf {
+  width: 17px;
+  height: inherit;
+}
+
+#showtable {
+  text-align: center;
+}
+
+  #showtable table, #showtable td, #showtable th {
+    border: 1px solid black;
+  }
+
+div.bordertd {
+  border: 1px solid black;
+  width: 80%;
+  padding-left: 3px;
+  padding-top: 3px;
+  padding-right: 5px;
+}
+
+div.borderfooter {
+  border: 1px solid black;
+  width: 99%;
+  padding-left: 3px;
+  padding-top: 3px;
+}
+
+table.showitems {
+  table-layout: auto;
+  border-collapse: collapse;
+  width: 100%;
+}
+.showitems td:nth-child(1) {
+  width: 300px;
+}
+.showitems td:nth-child(2) {
+  width: 3600px;
+}
+.showitems td:nth-child(3) {
+  width: 300px;
+}
+.showitems td:nth-child(4) {
+  width: 300px;
+}
+.showitems td:nth-child(5) {
+  width: 500px;
+}
+#showtable th {
+  height: 30px;
+}
+
+#showtable tr {
+  height: 25px;
+}
+
+#header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#header2, #header3, #header5 {
+  text-align: left;
+}
+
+#header2 tr, #header3 tr {
+    height: 30px;
+  }
+
+#header4 {
+  text-align: center;
+}
+
+#header4 tr {
+    height: 30px;
+  }
+
+table.hidtb {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: auto;
+}
+
+.righttb {
+  text-align: right;
+}
+
+.lefttb {
+  text-align: left;
+}
+
+.leftobj {
+  float: right;
+}
+
+p.pleft {
+  text-align: left;
+}
+
+.mybox {
+  width: 20px;
+  height: 20px;
+}
+
+.topcorner {
+  position: absolute;
+  top: 1;
+  right: 0;
+}
