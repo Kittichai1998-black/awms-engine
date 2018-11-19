@@ -14,12 +14,12 @@ namespace AWMSModel.Entity
         public long? DocumentItem_ID;
         public long StorageObject_ID;
         public string StorageObject_Code;
-        public int Sou_Warehouse_ID;
-        public int Sou_Area_ID;
-        public int? Sou_AreaLocation_ID;
-        public int Des_Warehouse_ID;
-        public int Des_Area_ID;
-        public int? Des_AreaLocation_ID;
+        public long Sou_Warehouse_ID;
+        public long Sou_Area_ID;
+        public long? Sou_AreaLocation_ID;
+        public long Des_Warehouse_ID;
+        public long Des_Area_ID;
+        public long? Des_AreaLocation_ID;
         public int Priority;
         public string RefID;
         public WorkQueueEventStatus EventStatus;

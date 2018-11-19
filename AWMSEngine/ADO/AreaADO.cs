@@ -1,6 +1,8 @@
 ﻿using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
+using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +49,14 @@ namespace AWMSEngine.ADO
             datas.Add("souAreaID", souAreaID);
             datas.Add("souLocationID", souLocationID);
             var res = this.Query<SPOutAreaLineCriteria>("SP_AREA_DES_LIST_BY_SOU", System.Data.CommandType.StoredProcedure, datas, buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<ams_AreaLocationMaster> ListAreaLocationMaster(long[] id, VOCriteria buVO)
+        {
+           var res = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+               new SQLConditionCriteria("id", string.Join(",", id), SQLOperatorType.IN),
+               buVO);
             return res;
         }
     }

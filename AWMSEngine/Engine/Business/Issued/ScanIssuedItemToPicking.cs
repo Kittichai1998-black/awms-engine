@@ -31,7 +31,7 @@ namespace AWMSEngine.Engine.Business.Issued
             amt_DocumentItem docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(reqVO.docItemID, this.BuVO);
             amt_Document doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docItem.Document_ID, this.BuVO);
 
-            var resMapsto = new ScanMapSTO().Execute(this.Logger, this.BuVO, new ScanMapSTO.TReqel()
+            var resMapsto = new ScanMapSto().Execute(this.Logger, this.BuVO, new ScanMapSto.TReq()
             {
                 action = reqVO.action,
                 amount = reqVO.amount,
@@ -83,7 +83,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     StorageObjectCriteria bstoConso = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID, false, true, this.BuVO);
                     if(bstoConso == null)
                     {
-                        bstoConso = ADO.StorageObjectADO.GetInstant().GetFree(reqVO.baseCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID, false, true, this.BuVO);
+                        bstoConso = ADO.StorageObjectADO.GetInstant().GetFree(reqVO.baseCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID,null,null, false, true, this.BuVO);
                         if (bstoConso == null)
                             throw new AMWException(this.Logger, AMWExceptionCode.V2001, "รหัสกล่อง/ถาด/พาเลท ไม่ถูกต้อง");
                     }

@@ -15,7 +15,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost]
         public dynamic VRMapping(dynamic datas)
         {
-            ScanMapSTOAPI exec = new ScanMapSTOAPI(this);
+            ScanMapStoAPI exec = new ScanMapStoAPI(this);
             return exec.Execute(datas);
         }
 

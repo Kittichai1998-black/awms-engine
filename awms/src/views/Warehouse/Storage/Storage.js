@@ -19,7 +19,7 @@ class Storage extends Component{
     
       dataMap : [
         {datafield:"code",searchfield:"rootBaseCode"},
-        {datafield:"baseMaster_Code",searchfield:"rootBaseTypeCode"},
+        { datafield:"baseMaster_Code", searchfield:"rootBaseCode"},
         {datafield:"baseMaster_Name",searchfield:"rootBaseTypeName"},
         {datafield:"viewChildSKUMaster_Codes",searchfield:"sKUCode"},
         {datafield:"viewChildSKUMaster_Names",searchfield:"sKUName"},

@@ -9,7 +9,7 @@ namespace AWMSModel.Entity
     {
         public long? ID;
         public int AreaLocationMaster_ID;
-        public long ParentStorageObject_ID;
+        public long? ParentStorageObject_ID;
         public int BaseMaster_ID;
         public int PackMaster_ID;
         public string Code;

@@ -31,7 +31,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             else
                 wmid = wm.ID;
 
-            var am = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouses_ID == wm.ID);
+            var am = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == wm.ID);
             if (am == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + reqVO.areaCode + "'");
             else
@@ -62,7 +62,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var eventStatus = selectByID.EventStatus;
             if (wm == selectByID.Des_Warehouse_ID
                 && am == selectByID.Des_Area_ID
-                && lm == (selectByID.Des_AreaLocation_ID == null ? null : lm))
+                && lm == (selectByID.Des_AreaLocation_ID.HasValue ? null : lm)
+                )
             {
                 if (eventStatus == WorkQueueEventStatus.WORKED)
                 {
