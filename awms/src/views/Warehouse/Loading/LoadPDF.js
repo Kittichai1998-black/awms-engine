@@ -2,7 +2,7 @@ import React from 'react'
 import './pdfstyle.css';
 import _ from 'lodash';
 
-const checkBox = <img class="mybox" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjMycHgiIGhlaWdodD0iMzJweCIgdmlld0JveD0iMCAwIDI3OC43OTkgMjc4Ljc5OSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjc4Ljc5OSAyNzguNzk5OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTI2NS41NCwwSDEzLjI1OUM1LjkzOSwwLDAuMDAzLDUuOTM2LDAuMDAzLDEzLjI1NnYyNTIuMjg3YzAsNy4zMiw1LjkzNiwxMy4yNTYsMTMuMjU2LDEzLjI1NkgyNjUuNTQgICBjNy4zMTgsMCwxMy4yNTYtNS45MzYsMTMuMjU2LTEzLjI1NlYxMy4yNTVDMjc4Ljc5Niw1LjkzNSwyNzIuODYsMCwyNjUuNTQsMHogTTI1Mi4yODQsMjUyLjI4N0gyNi41MTVWMjYuNTExaDIyNS43NjlWMjUyLjI4N3oiIGZpbGw9IiMwMDAwMDAiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />;
+const checkBox = <img className="mybox" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjMycHgiIGhlaWdodD0iMzJweCIgdmlld0JveD0iMCAwIDI3OC43OTkgMjc4Ljc5OSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjc4Ljc5OSAyNzguNzk5OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTI2NS41NCwwSDEzLjI1OUM1LjkzOSwwLDAuMDAzLDUuOTM2LDAuMDAzLDEzLjI1NnYyNTIuMjg3YzAsNy4zMiw1LjkzNiwxMy4yNTYsMTMuMjU2LDEzLjI1NkgyNjUuNTQgICBjNy4zMTgsMCwxMy4yNTYtNS45MzYsMTMuMjU2LTEzLjI1NlYxMy4yNTVDMjc4Ljc5Niw1LjkzNSwyNzIuODYsMCwyNjUuNTQsMHogTTI1Mi4yODQsMjUyLjI4N0gyNi41MTVWMjYuNTExaDIyNS43NjlWMjUyLjI4N3oiIGZpbGw9IiMwMDAwMDAiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />;
 
 class LoadPDF extends React.Component {
   constructor(props) {
@@ -59,7 +59,7 @@ class LoadPDF extends React.Component {
       return (
         <tr key={index}>
           <td>{items.id}</td>
-          <td class="lefttb"><div style={{ float: 'left', text_align: 'left'}}>Code:{items.code} {items.item}</div></td>
+          <td className="lefttb"><div style={{ float: 'left', text_align: 'left'}}>Code:{items.code} {items.item}</div></td>
           <td>{items.qty}</td>
           <td></td>
           <td></td>
@@ -74,7 +74,7 @@ class LoadPDF extends React.Component {
 
       <div className="container" id="divHidden">
         <br />
-        <div id="myPDF" class="pdf">
+        <div id="myPDF" className="pdf">
           <div id="detail">
             <div id="header">
               <h4>มูลนิธิ ยุวพัฒน์</h4>
@@ -82,14 +82,14 @@ class LoadPDF extends React.Component {
             </div>
 
             <div>
-              <table class="hidtb" id="header2">
+              <table className="hidtb" id="header2">
                 <tbody>
                   <tr>
-                    <td class="lefttb">
-                      <tr>ผู้ขออนุญาตนำของออก.......................................................................</tr>
-                      <tr>บริษัท.............{this.state.BranchName}............................โทร............................................</tr>
+                    <td className="lefttb">
+                      <tr><td>ผู้ขออนุญาตนำของออก.......................................................................</td></tr>
+                      <tr><td>บริษัท.............{this.state.BranchName}............................โทร............................................</td></tr>
                     </td>
-                    <td class="leftobj">
+                    <td className="leftobj">
                       <tr>วันที่นำออก.................{this.props.actionDate}...................</tr>
                       <tr>เวลา..........................{this.props.actionTime} น. .............................</tr>
                     </td>
@@ -98,7 +98,7 @@ class LoadPDF extends React.Component {
               </table>
             </div>
             <div>
-              <table class="hidtb" id="header3">
+              <table className="hidtb" id="header3">
                 <tbody>
                   <tr>
                     <td>
@@ -107,7 +107,7 @@ class LoadPDF extends React.Component {
                       <tr></tr>
                     </td>
                     <td>
-                      <div class="leftobj">
+                      <div className="leftobj">
                         <tr>{checkBox} ส่งซ่อม และจะนำกลับเข้าคลังปันกันประมาณวันที่........................................................................................</tr>
                         <tr>{checkBox} นำออกไปใช้งานภายนอกชั่วคราว และจะนำกลับเข้าคลังฯ ประมาณวันที่................................................</tr>
                         <tr>{checkBox} นำออกถาวร (ระบุ)...................{this.props.customer}....................................................</tr>
@@ -118,10 +118,10 @@ class LoadPDF extends React.Component {
               </table>
             </div>
             <div>
-              <p class="pleft">มูลนิธิฯ อนุญาตให้นำของออกได้ ตามรายการข้างล่างนี้</p>
+              <p className="pleft">มูลนิธิฯ อนุญาตให้นำของออกได้ ตามรายการข้างล่างนี้</p>
             </div>
             <div>
-              <table class="showitems" id="showtable">
+              <table className="showitems" id="showtable">
                 <thead>
                   <tr>
                     <th>ลำดับที่</th>
@@ -145,7 +145,7 @@ class LoadPDF extends React.Component {
           <br />
           <div id="allfooter">
             <div id="footer1">
-              <table class="hidtb" id="header4">
+              <table className="hidtb" id="header4">
                 <tbody>
                   <tr>
                     <td>
@@ -162,9 +162,9 @@ class LoadPDF extends React.Component {
 
                   <tr>
                     <td>
-                      <div class="bordertd">
+                      <div className="bordertd">
                         <tr>กรณีที่ผู้ขออนุญาตเป็นระดับปฏิบัติการต้องมีผู้บังคับบัญชา</tr>
-                        <tr class="lefttb">ระดับผู้จัดการลงนามรับทราบการนำออก</tr>
+                        <tr className="lefttb">ระดับผู้จัดการลงนามรับทราบการนำออก</tr>
                         <tr>&nbsp;</tr>
                         <tr>ผู้จัดการลงนาม.................................................................</tr>
                         <tr>(..................................................)</tr>
@@ -172,19 +172,20 @@ class LoadPDF extends React.Component {
                     </td>
                     <td>
                       <tr>เจ้าหน้าที่ รปภ. ตรวจสอบของออก</tr>
-                      <tr class="lefttb" >ลงนาม</tr>
+                      <tr className="lefttb" >ลงนาม</tr>
                       <tr>(..................................................)</tr>
                       <tr>วันที่........../........../..........</tr>
                       <tr>เจ้าหน้าที่ รปภ. ตรวจสอบของนำคืน</tr>
-                      <tr class="lefttb">ลงนาม</tr>
+                      <tr className="lefttb">ลงนาม</tr>
                       <tr>(..................................................)</tr>
                       <tr>วันที่........../........../..........</tr>
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <div class="borderfooter">
-                <table class="hidtb" id="header5">
+              <div className="borderfooter">
+                <table className="hidtb" id="header5">
+                  <tbody>
                   <tr>
                     <td>หมายเหตุ :&nbsp;</td>
                     <td>1. ใบนำของออกถาวรเมื่อ รปภ.ลงนามแล้ว ให้นำส่งคืนยัง ผจก.คลังสินค้า</td>
@@ -193,9 +194,11 @@ class LoadPDF extends React.Component {
                     <td>&nbsp;</td>
                     <td>2. ใบนำของออกชั่วคราว / ส่งซ่อม เมื่อ รปภ.ลงนามแล้ว ให้นำฉบับจริงส่ง ผจก คลัง เพื่อเก็บไว้ตรวจรับคืน</td>
                   </tr>
-                  <tr collapse="2">
-                    &nbsp;
-              </tr>
+                  <tr>
+                      <td>&nbsp;</td>
+                      <td>&nbsp;</td>
+                  </tr>
+                  </tbody>
                 </table>
               </div>
             </div>
