@@ -24,7 +24,7 @@ namespace AWMSEngine.Engine.General
         {
             var config = this.StaticValue.GetConfig("LDAP_USE");
                 if(config == "Y"){   
-                    DirectoryEntry drentry = new DirectoryEntry("LDAP://BOT.OR.TH");
+                    DirectoryEntry drentry = new DirectoryEntry(this.StaticValue.GetConfig("LDAP_HOST"));
                     drentry.Username = reqVO.Username;
                     drentry.Password = reqVO.Password;
                     object native = drentry.NativeObject;
