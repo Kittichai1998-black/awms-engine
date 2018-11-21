@@ -20,8 +20,7 @@ namespace AWMSEngine.APIService.Data
 
         protected override dynamic ExecuteEngineManual()
         {
-            object x = 1;
-
+            this.BeginTransaction();
             var res1 = new InsertSql().Execute(this.Logger, this.BuVO,
                 new InsertSql.TReqModel()
                 {
