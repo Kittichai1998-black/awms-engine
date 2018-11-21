@@ -27,6 +27,19 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public amt_Token LDAP(string secretKey, int actionBy,
+            VOCriteria buVO)
+        {
+            var param = new Dapper.DynamicParameters();
+            param.Add("@secretKey", secretKey);
+            param.Add("@actionBy", actionBy);
+            var res = this.Query<amt_Token>(
+                                "SP_LDAP_REGISTER",
+                                CommandType.StoredProcedure,param, buVO.Logger, buVO.SqlTransaction)
+                            .FirstOrDefault();
+            return res;
+        }
+
         public amt_Token_status Remove(string token, string secretKey, int actionBy,
             VOCriteria buVO)
         {

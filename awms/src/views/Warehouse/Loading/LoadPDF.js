@@ -58,7 +58,7 @@ class LoadPDF extends React.Component {
     return this.props.groupdisplay.map((items, index) => {
       return (
         <tr key={index}>
-          <td>{items.id}</td>
+          <td>{items.no}</td>
           <td className="lefttb"><div style={{ float: 'left', text_align: 'left'}}>Code:{items.code} {items.item}</div></td>
           <td>{items.qty}</td>
           <td></td>

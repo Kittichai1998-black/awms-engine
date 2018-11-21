@@ -26,7 +26,7 @@ class APIKey extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"APIKey",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,APIKey,Status,Created,Modified,Revision",
+      f:"ID,Code,Name,Description,APIKey,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:"",

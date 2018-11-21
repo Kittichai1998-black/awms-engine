@@ -84,7 +84,7 @@ class LoadingDocument extends Component{
             issuedNo: rowselect1.data.document.code,
           })
           API.get(window.apipath + "/api/wm/loading/conso?docID=" + values.ID).then(res => {
-            let groupdata = _.groupBy(res.data.datas, (e) => {return e.id})
+            let groupdata = _.groupBy(res.data.datas, (e) => { return e.id })
             let groupdisplay = []
             let packname = []
             for(let row in groupdata){
