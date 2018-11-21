@@ -31,7 +31,7 @@ class LoadingManage extends Component{
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1012}]",
       f:"ID,Code,CustomerName,DocumentType_ID,Transport_ID,ActionTime,DocumentDate,EventStatus,Status,CreateTime,ModifyTime,Remark,IssuedCode,LinkDocument_ID",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
+      s:"[{'f':'Code','od':'desc'}]",
       sk:0,
       l:20,
       all:"",},
@@ -47,7 +47,7 @@ class LoadingManage extends Component{
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
       f:"ID,Code",
       g:"",
-      s:"[{'f':'Code','od':'asc'}]",
+      s:"[{'f':'Code','od':'desc'}]",
       sk:0,
       l:0,
       all:"",}

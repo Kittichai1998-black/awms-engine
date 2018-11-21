@@ -20,7 +20,7 @@ class Storage extends Component{
       dataMap : [
         {datafield:"code",searchfield:"rootBaseCode"},
         { datafield:"baseMaster_Code", searchfield:"rootBaseCode"},
-        {datafield:"baseMaster_Name",searchfield:"rootBaseTypeName"},
+        {datafield:"baseMaster_Name",searchfield:"rootBaseName"},
         {datafield:"viewChildSKUMaster_Codes",searchfield:"sKUCode"},
         {datafield:"viewChildSKUMaster_Names",searchfield:"sKUName"},
         {datafield:"viewChildPackMaster_Codes",searchfield:"packCode"},
@@ -75,7 +75,7 @@ class Storage extends Component{
     perID.forEach(row => {
         if(row === 35){
           check = true
-        }if(row === 51){
+        }if(row === 51){ //48
           check = false
         }
       })
@@ -129,9 +129,9 @@ class Storage extends Component{
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center" , fixed: "left"},
       {accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter:"text", fixed: "left", sortable:false},
-      {accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter:"text", fixed: "left", sortable:false},
-      { accessor: 'baseMaster_Code', Header: 'Base Code', Filter: "text"},
-      { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text" },
+      { accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter: "text", fixed: "left", sortable: false },
+      { accessor: 'baseMaster_Code', Header: 'Base Code', Filter: "text", sortable: true },
+      { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text", sortable: true },
      /* {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
       {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" }, */
       {accessor: 'viewPackMaster_Qty', Header: 'Pack Qty', filterable:false, sortable:false},
