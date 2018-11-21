@@ -70,7 +70,7 @@ namespace AWMSEngine.ADO
                     .ToList();
 
 
-            if (r == null) return null;
+            if (r == null || r.Count == 0) return null;
 
             StorageObjectCriteria res = StorageObjectCriteria.Generate(r, StaticValueManager.GetInstant().ObjectSizes, id);
             return res;

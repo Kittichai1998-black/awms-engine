@@ -251,7 +251,8 @@ class ExtendTable extends Component{
         
         let select = dataselect
         select["fields"] = filterlist.join("&")
-        select["sk"] = "0"
+        select["sk"] = 0
+        this.setState({ currentPage: 1 })
         let queryString = createQueryString(select)
         Axois.get(queryString).then(
           (res) => {
@@ -262,7 +263,8 @@ class ExtendTable extends Component{
       else{
         const select = dataselect
         select["fields"] = this.state.originalselect
-        select["sk"] = "0"
+        select["sk"] = 0
+        this.setState({ currentPage: 1 })
         let queryString = createQueryString(select)
         Axois.get(queryString).then(
             (res) => {
@@ -349,10 +351,11 @@ class ExtendTable extends Component{
             readOnly/>
     }
 
-    customSorting(data){
-        const select = this.props.data
+  customSorting(data) {
+    const select = this.state.dataselect
         select["s_f"] = data[0].id
-        select["s_od"] = data[0].desc === false ? 'asc' : 'desc'
+      select["s_od"] = data[0].desc === false ? 'asc' : 'desc'
+      select["sk"] =""
         let queryString = ""
         queryString = createQueryString(select)
         Axois.get(queryString).then(

@@ -226,11 +226,13 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                         lot = x.lot
                                     })
                                     .Select(x=> {
-                                        //var sm = ADO.DataADO.GetInstant().SelectBy<dynamic>()
+                                        amv_PackMaster pkViw = ADO.DataADO.GetInstant().SelectByID<amv_PackMaster>(x.Key.packID, this.BuVO);
                                         var v = new WorkQueueCriteria.BaseInfo.PackInfo()
                                         {
                                             packCode = x.Key.packCode,
                                             packQty = x.Count(),
+                                            skuCode = pkViw.SKUCode,
+                                            skuQty = pkViw.ItemQty * x.Count(),
                                             batch = x.Key.batch,
                                             lot = x.Key.lot
                                         };

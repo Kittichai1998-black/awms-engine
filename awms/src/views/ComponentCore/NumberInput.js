@@ -7,7 +7,10 @@ export default class NumberInput extends Component{
         this.state ={
             value:1,
         }
-    }
+  }
+  componentDidMount() {
+    this.setState({ value: this.props.value })
+}
     onKeyPress(event) {
         const keyCode = event.keyCode || event.which;
         const keyValue = String.fromCharCode(keyCode);
@@ -24,7 +27,7 @@ export default class NumberInput extends Component{
                 }
             }
             }
-            value={this.props.value}
+            value={this.state.value}
             type="number" 
             step="1"
             style={this.props.style}/>

@@ -245,6 +245,8 @@ class TableGen extends Component{
       if(dataselect !== undefined){
         let select = dataselect
         select["q"] = JSON.stringify(filterlist)
+        select["sk"] = 0
+        this.setState({ currentPage: 1 })
         let queryString = createQueryString(select)
         Axios.get(queryString).then(
           (res) => {
@@ -257,9 +259,12 @@ class TableGen extends Component{
       }
     }
     else{
-      if(dataselect !== undefined){
+      if (dataselect !== undefined) {
+
         const select = dataselect
         select["q"] = this.state.originalselect
+        select["sk"] = 0
+        this.setState({ currentPage: 1 })
         let queryString = createQueryString(select)
         Axios.get(queryString).then(
             (res) => {
@@ -975,7 +980,7 @@ class TableGen extends Component{
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
             else
-              row.Cell = (e) => this.datetimeBody(e.value)
+              row.Cell = (e) => this.datetimeBody(e.value, row.dateformat)
           }
           else if(row.Type === "datetimelog"){
             row.Cell = (e) => this.datetimelog(e.value)
