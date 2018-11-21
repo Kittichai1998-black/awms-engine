@@ -155,6 +155,52 @@ const StorageDetail = Loadable({
   loading: Loading,
 });
 
+const APIKey = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/APIKey'),
+  loading: Loading,
+});
+
+const ClientSecret = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/ClientSecret'),
+  loading: Loading,
+});
+
+const Config = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Config'),
+  loading: Loading,
+});
+
+const DocumentType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/DocumentType'),
+  loading: Loading,
+});
+
+const Feature = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Feature'),
+  loading: Loading,
+});
+
+const JobSchedule = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/JobSchedule'),
+  loading: Loading,
+});
+
+const Role = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Role'),
+  loading: Loading,
+});
+
+const BaseMasterType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/BaseMasterType'),
+  loading: Loading,
+});
+
+const Transport = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Transport'),
+  loading: Loading,
+});
+
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -192,6 +238,15 @@ const routes = [
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'CurrentInv', component: CurrentInv},
   { path: '/doc/gr/view', exact: true, name: 'StorageDetail', component: StorageDetail},
+  { path: '/mst/APIKey/manage', exact: true, name: 'APIKey', component: APIKey},
+  { path: '/mst/cs/manage', exact: true, name: 'ClientSecret', component: ClientSecret},
+  { path: '/mst/conf/manage', exact: true, name: 'Config', component: Config},
+  { path: '/mst/doctype/manage', exact: true, name: 'DocumentType', component:DocumentType},
+  { path: '/mst/ft/manage', exact: true, name: 'Feature', component:Feature},
+  { path: '/mst/jobs/manage', exact: true, name: 'JobSchedule', component:JobSchedule},
+  { path: '/mst/role/manage', exact: true, name: 'Role', component:Role},
+  { path: '/mst/btype/manage', exact: true, name: 'BaseMasterType', component:BaseMasterType},
+  { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
 

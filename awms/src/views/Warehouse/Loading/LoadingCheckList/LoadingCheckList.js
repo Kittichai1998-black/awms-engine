@@ -98,6 +98,7 @@ class LoadingDocument extends Component{
               let result = groupdata[row][0]
               result.item = packname.join(",")
               groupdisplay.push(groupdata[row][0])
+              packname = []
             }
         this.setState({data:groupdisplay})
       })
@@ -129,7 +130,7 @@ class LoadingDocument extends Component{
     const cols = [
       {accessor: 'code', Header: 'Code',editable:false,},
       {accessor: 'item', Header: 'Item',editable:false,},
-      {accessor: 'docItemID', Header: 'Issued Document',editable:false,},
+      {accessor: 'issuedCode', Header: 'Issued Document',editable:false,},
       {accessor: 'isLoaded', Header: 'Loaded',editable:false, Cell:e => <span>{e.value === true ? "Loaded" : "Wait"}</span>},
     ];
 
@@ -168,11 +169,9 @@ class LoadingDocument extends Component{
           </Col>
         </Row>
 
-        <ReactTable NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false} />
-      <div id="per_button_table" style={{display:this.state.showbutton}}>
-        <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
-            showPagination={false}/> 
-        </div>
+        <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{ background: 'white' }} filterable={false}
+          showPagination={false} NoDataComponent={() => null} defaultPageSize={100000} />
+
         </div>
  
     )
