@@ -1,0 +1,6 @@
+{
+    "name": "Role",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./Role.js"
+  }

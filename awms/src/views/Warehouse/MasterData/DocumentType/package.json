@@ -1,0 +1,6 @@
+{
+    "name": "DocumentType",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./DocumentType.js"
+  }

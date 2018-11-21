@@ -36,6 +36,7 @@ namespace AWMSModel.Criteria.SP.Request
         public DateTime? TargetStartTime;
         public DateTime? ActualTime;
         public EntityStatus Status;
+        public int Seq;
 
     }
 }

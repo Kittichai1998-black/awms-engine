@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class ScanMapSTO : BaseEngine<ScanMapSTO.TReqel, StorageObjectCriteria>
+    public class ScanMapSto : BaseEngine<ScanMapSto.TReq, StorageObjectCriteria>
     {
         private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
 
-        public class TReqel
+        public class TReq
         {
             public string scanCode;
             public string batch;
@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.Business
             public List<KeyValuePair<string, string>> options;
             public StorageObjectCriteria mapsto;
         }
-        protected override StorageObjectCriteria ExecuteEngine(TReqel reqVO)
+        protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
             StorageObjectCriteria mapsto = null;
             if(reqVO.mapsto == null)
@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria ExecFirstScan(TReqel reqVO)
+        private StorageObjectCriteria ExecFirstScan(TReq reqVO)
         {
             StorageObjectCriteria mapsto = null;
             Logger.LogDebug("//สแกนครั้งแรก");
@@ -109,7 +109,7 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria ExecNextScan(TReqel reqVO)
+        private StorageObjectCriteria ExecNextScan(TReq reqVO)
         {
             Logger.LogInfo("Get STO From Request.(Action)");
             StorageObjectCriteria mapsto = reqVO.mapsto;
