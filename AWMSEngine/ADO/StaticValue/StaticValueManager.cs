@@ -31,8 +31,8 @@ namespace AWMSEngine.ADO.StaticValue
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
-        private List<ams_AreaMasterLine> _AreaMasterLines;
-        public List<ams_AreaMasterLine> AreaMasterLines { get => this._AreaMasterLines; }
+        private List<ams_AreaRoute> _AreaMasterLines;
+        public List<ams_AreaRoute> AreaMasterLines { get => this._AreaMasterLines; }
 
         private List<ams_Supplier> _Suppliers;
         public List<ams_Supplier> Suppliers { get => this._Suppliers; }
@@ -103,7 +103,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadAreaMasterLine()
         {
-            this._AreaMasterLines = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterLine>("status", 1, new VOCriteria()));
+            this._AreaMasterLines = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, new VOCriteria()));
         }
         public void LoadAreaMasterType()
         {

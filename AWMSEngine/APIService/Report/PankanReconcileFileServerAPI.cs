@@ -53,10 +53,10 @@ namespace AWMSEngine.APIService.Report
                     {
                         string line = fs.ReadLine();
                         string[] vals = line.Split('|');
-                        if (vals.Length != 5 || !line.StartsWith("B")) continue;
-                        string warehouseCode = vals[2];
-                        string packCode = vals[3];
-                        int qty = int.Parse(vals[4]);
+                        if (!line.StartsWith("B")) continue;
+                        string warehouseCode = vals[3];
+                        string packCode = vals[4];
+                        int qty = int.Parse(vals[5]);
                         
                         var data = res.datas.FirstOrDefault(x => x.packCode == packCode && x.warehouse == warehouseCode);
                         if (data != null)
