@@ -33,6 +33,10 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + id);
+                if (doc.EventStatus == DocumentEventStatus.WORKED)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้าขึ้นรถแล้ว ไม่สามารถลบใบเบิกได้");
+                }
                 if (doc.Status == EntityStatus.DONE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is Done");
                 if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL && doc.EventStatus != DocumentEventStatus.WORKING)
@@ -41,6 +45,9 @@ namespace AWMSEngine.Engine.Business.Issued
                     if (stos.Count > 0)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
                 }
+
+                
+
                 List<amt_DocumentItem> linkDocItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                                                         new SQLConditionCriteria[] {
                                                             new SQLConditionCriteria("LinkDocument_ID",doc.ID, SQLOperatorType.EQUALS),
@@ -54,6 +61,8 @@ namespace AWMSEngine.Engine.Business.Issued
                         }, this.BuVO).Select(x=>x.Code).ToArray();
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "กรุณา Reject เอกสาร '" + string.Join(',', docConfixs) + "' ก่อน");
                 }
+
+               
 
                 var stoToReceives = ADO.DocumentADO.GetInstant().ListStoIDInDocs(doc.ID.Value, this.BuVO);
                 var stoLasters = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(

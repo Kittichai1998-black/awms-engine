@@ -344,7 +344,7 @@ class LoadingDocument extends Component{
     const colsdetail = [
       {accessor: 'code', Header: 'Code',editable:false,},
       {accessor: 'item', Header: 'Item',editable:false,},
-      {accessor: 'docItemID', Header: 'Issued Document',editable:false,},
+      { accessor: 'issuedCode', Header: 'Issued Document',editable:false,},
       {accessor: 'isLoaded', Header: 'Loaded',editable:false, Cell:e => <span>{e.value === true ? "Loaded" : "Wait"}</span>},
     ];
 
@@ -429,8 +429,9 @@ class LoadingDocument extends Component{
             style={{ display: this.state.readonly === true ? "none" : this.state.adddisplay, background: "#66bb6a", borderColor: "#66bb6a", width: '130px' }}>Add</Button>
         </div>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
-            showPagination={false} NoDataComponent={() => null}/>
-          {this.state.readonly ? <ReactTable columns={colsdetail} minRows={5} data={this.state.bstos} sortable={false} style={{background:'white'}} filterable={false}
+          showPagination={false} NoDataComponent={() => null} defaultPageSize={100000}/>
+        {this.state.readonly ?
+          <ReactTable columns={colsdetail} minRows={5} data={this.state.bstos} defaultPageSize={100000} sortable={false} style={{ background: 'white' }} filterable={false}
             showPagination={false}/> : null}
           <Card>
           <CardBody>

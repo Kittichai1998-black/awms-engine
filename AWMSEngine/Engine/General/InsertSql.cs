@@ -9,10 +9,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AWMSModel.Criteria;
 
 namespace AWMSEngine.Engine.General
 {
-    public class InsertSql : BaseEngine<InsertSql.TReqModel, Dictionary<string,dynamic>>
+    public class InsertSql : BaseEngine<InsertSql.TReqModel, NullCriteria>
     {
         public class TReqModel
         {
@@ -21,8 +22,9 @@ namespace AWMSEngine.Engine.General
             public string nr;
             public dynamic datas;
         }
+        
 
-        protected override Dictionary<string, dynamic> ExecuteEngine(InsertSql.TReqModel reqVO)
+        protected override NullCriteria ExecuteEngine(InsertSql.TReqModel reqVO)
         {
             var tokenModel = 0;
             var get_table = reqVO.t.ToString();
@@ -38,13 +40,7 @@ namespace AWMSEngine.Engine.General
                     get_revision,
                     this.BuVO);
 
-
-            if (tokenModel != 0)
-            {
-                Dictionary<string, dynamic> list = new Dictionary<string, dynamic>();
-                list.Add(reqVO.datas.Path.ToString(), reqVO.datas);
-                return list;
-            }
+            
             return null;
         }
         

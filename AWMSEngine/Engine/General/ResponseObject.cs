@@ -1,6 +1,7 @@
 ﻿using AWMSEngine.Common;
 using AWMSModel.Constant.StringConst;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -16,18 +17,25 @@ namespace AWMSEngine.Engine.General
             ExpandoObject res = new ExpandoObject();
             if(reqVO != null)
             {
-                var t = reqVO.GetType();
-                var infos = t.GetFields();
-                foreach (var info in infos)
+                if(reqVO is ICollection)
                 {
-                    object v = info.GetValue(reqVO);
-                    bool x = res.TryAdd(info.Name, v);
+                    res.TryAdd("datas", reqVO);
                 }
-                var infos2 = t.GetProperties();
-                foreach (var info in infos2)
+                else
                 {
-                    object v = info.GetValue(reqVO);
-                    bool x = res.TryAdd(info.Name, v);
+                    var t = reqVO.GetType();
+                    var infos = t.GetFields();
+                    foreach (var info in infos)
+                    {
+                        object v = info.GetValue(reqVO);
+                        bool x = res.TryAdd(info.Name, v);
+                    }
+                    var infos2 = t.GetProperties();
+                    foreach (var info in infos2)
+                    {
+                        object v = info.GetValue(reqVO);
+                        bool x = res.TryAdd(info.Name, v);
+                    }
                 }
             }
             object resapi = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
