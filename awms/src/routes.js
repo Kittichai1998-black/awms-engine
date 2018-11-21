@@ -190,11 +190,6 @@ const Role = Loadable({
   loading: Loading,
 });
 
-const BaseMasterType = Loadable({
-  loader: () => import('./views/Warehouse/MasterData/BaseMasterType'),
-  loading: Loading,
-});
-
 const Transport = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Transport'),
   loading: Loading,
@@ -245,7 +240,6 @@ const routes = [
   { path: '/mst/ft/manage', exact: true, name: 'Feature', component:Feature},
   { path: '/mst/jobs/manage', exact: true, name: 'JobSchedule', component:JobSchedule},
   { path: '/mst/role/manage', exact: true, name: 'Role', component:Role},
-  { path: '/mst/btype/manage', exact: true, name: 'BaseMasterType', component:BaseMasterType},
   { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
 ];
