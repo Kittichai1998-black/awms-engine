@@ -15,7 +15,7 @@ import _ from 'lodash'
 import Downshift from 'downshift'
 import '../componentstyle.css'
 import withFixedColumns from "react-table-hoc-fixed-columns";
-import arrimg from '../../../../img/arrowhead.svg'
+import arrimg from '../../../../src/img/arrowhead.svg'
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
@@ -742,7 +742,7 @@ class TableGen extends Component{
   </Downshift></div>
   }
 
-  createAutocomplete(rowdata){
+  createAutoComplete(rowdata){
     const style = {borderRadius: '3px',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
     background: 'rgba(255, 255, 255, 0.9)',
@@ -775,7 +775,7 @@ class TableGen extends Component{
             {item.Code}
           </div>
         }
-        value={rowdata.value}
+        value={rowdata.value === null ? "" : rowdata.value}
         onChange={(e) => {
           this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)
         }}

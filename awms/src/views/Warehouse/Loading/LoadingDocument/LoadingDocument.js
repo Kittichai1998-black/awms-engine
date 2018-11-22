@@ -8,6 +8,7 @@ import {DocumentEventStatus} from '../../Status'
 import Downshift from 'downshift'
 import queryString from 'query-string'
 import _ from 'lodash'
+import ReactAutocomplete from 'react-autocomplete'
 import arrimg from '../../../../img/arrowhead.svg'
 
 const API = new apicall();
@@ -83,7 +84,7 @@ class LoadingDocument extends Component{
             issuedNo:rowselect1.data.document.code
           })
           API.get(window.apipath + "/api/wm/loading/conso?docID=" + values.ID).then(res => {
-            let groupdata = _.groupBy(json.bstos, (e) => {return e.id})
+            let groupdata = _.groupBy(res.data.datas, (e) => {return e.id})
             let groupdisplay = []
             let packname = []
             for(let row in groupdata){
@@ -411,7 +412,7 @@ class LoadingDocument extends Component{
           }
         }
       }>Detail</Button>}},
-      /* {show: this.state.readonly?false:true,width:80, editable:false, Cell:(e) => {
+      {show: this.state.readonly?false:true,width:80, editable:false, Cell:(e) => {
         return <Button color="danger" onClick={() => {
           const data = this.state.data
           data.forEach((datarow,index) => {
@@ -429,7 +430,7 @@ class LoadingDocument extends Component{
             this.setState({autocomplete:res})
           })
         }
-      }>Delete</Button>}}, */
+      }>Delete</Button>}},
     ];
 
     return(
