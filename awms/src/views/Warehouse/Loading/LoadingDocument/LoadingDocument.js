@@ -8,6 +8,7 @@ import {DocumentEventStatus} from '../../Status'
 import Downshift from 'downshift'
 import queryString from 'query-string'
 import _ from 'lodash'
+import arrimg from '../../../../img/arrowhead.svg'
 
 const API = new apicall();
 
@@ -82,7 +83,7 @@ class LoadingDocument extends Component{
             issuedNo:rowselect1.data.document.code
           })
           API.get(window.apipath + "/api/wm/loading/conso?docID=" + values.ID).then(res => {
-            let groupdata = _.groupBy(res.data.datas, (e) => {return e.id})
+            let groupdata = _.groupBy(json.bstos, (e) => {return e.id})
             let groupdisplay = []
             let packname = []
             for(let row in groupdata){
@@ -96,7 +97,9 @@ class LoadingDocument extends Component{
               let result = groupdata[row][0]
               result.item = packname.join(",")
               groupdisplay.push(groupdata[row][0])
+              packname = []
             }
+            console.log(groupdisplay)
             this.setState({bstos:groupdisplay})
           })
         }
@@ -160,7 +163,7 @@ class LoadingDocument extends Component{
     this.setState({autocomplete:res})
   }
 
-  createAutoComplete(rowdata){
+  /* createAutoComplete(rowdata){
     if(!this.state.readonly){
 
       return <div style={{display: 'flex',flexDirection: 'column',}}>
@@ -218,6 +221,58 @@ class LoadingDocument extends Component{
         </div>
       )}
     </Downshift></div>
+    }
+    else{
+      return <span>{rowdata.value}</span>
+    }
+  } */
+
+  createAutoComplete(rowdata){
+    if(!this.state.readonly){
+      const style = {borderRadius: '3px',
+      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+      background: 'rgba(255, 255, 255, 0.9)',
+      padding: '2px 0',
+      fontSize: '90%',
+      position: 'fixed',
+      overflow: 'auto',
+      maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+      zIndex: '998',}
+  
+      return <ReactAutocomplete
+          inputProps={{ style: {
+            width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',
+            backgroundPosition: "8px 8px",
+            backgroundSize:"10px",
+            backgroundRepeat: "no-repeat",
+            paddingLeft: "25px"
+          } }}
+          wrapperStyle={ {width: "100%"} }
+          menuStyle={style}
+          getItemValue={(item) => item.SKU}
+          items={this.state.autocomplete}
+          shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
+          renderItem={(item, isHighlighted) =>
+            <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+              {item.SKU}
+            </div>
+          }
+          value={rowdata.original.SKU}
+          onChange={(e) => {
+            const res = this.state.autocomplete.filter(row => {
+              return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
+            });
+            if(res.length === 1){
+              this.editData(rowdata, res[0], rowdata.column.id)
+            }
+            else{
+              this.editData(rowdata, e.target.value, rowdata.column.id)
+            }
+          }}
+          onSelect={(val, row) => {
+            this.editData(rowdata, row, rowdata.column.id)
+          }}
+        />
     }
     else{
       return <span>{rowdata.value}</span>
@@ -412,7 +467,7 @@ class LoadingDocument extends Component{
         </div>
         <ReactTable columns={cols} minRows={5} data={this.state.data} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false} NoDataComponent={() => null}/>
-          {this.state.readonly ? <ReactTable columns={colsdetail} minRows={5} data={this.state.bstos} sortable={false} style={{background:'white'}} filterable={false}
+          {this.state.readonly ? <ReactTable columns={colsdetail} minRows={5} defaultPageSize={1000} data={this.state.bstos} sortable={false} style={{background:'white'}} filterable={false}
             showPagination={false}/> : null}
           <Card>
           <CardBody>

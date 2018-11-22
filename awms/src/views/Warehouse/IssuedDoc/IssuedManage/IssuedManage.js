@@ -7,6 +7,8 @@ import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
 import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
 import Downshift from 'downshift'
+import ReactAutocomplete from 'react-autocomplete'
+import arrimg from '../../../../img/arrowhead.svg'
 
 function isInt(value) {
   return !isNaN(value) && 
@@ -123,9 +125,9 @@ class IssuedManage extends Component{
     }
 
     this.renderDocumentStatus();
-    var today = moment();
-    var tomorrow = moment(today).add(1, 'days');
-    this.setState({date:tomorrow})
+      /* var today = moment();
+      var tomorrow = moment(today).add(1, 'days');
+      this.setState({date:tomorrow}) */
 
     Axios.get(createQueryString(this.branchselect)).then(branchresult => {
       this.setState({auto_branch : branchresult.data.datas, addstatus:false }, () => {
@@ -172,14 +174,16 @@ class IssuedManage extends Component{
 
   createDocument(){
     let acceptdata = []
+    console.log(this.state.data)
     this.state.data.forEach(row => {
-      acceptdata.push({packID:row.id,packQty:row.PackQty,})
+      if(row.id != undefined)
+        acceptdata.push({packID:row.id,packQty:row.PackQty,})
     })
     let postdata = {
       refID:'', forCustomerID:null, batch:null, lot:null,
       souBranchID:this.state.branch,souWarehouseID:this.state.warehouse,souAreaMasterID:null,
       desCustomerID:this.state.customer,desSupplierID:null,
-      actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
+      actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
       remark:this.state.remark,issueItems:acceptdata
     }
     Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
@@ -191,7 +195,7 @@ class IssuedManage extends Component{
   }
 
   dateTimePicker(){
-    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm"/>
+    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e}, () => {console.log(this.state.date.format("YYYY/MM/DD HH:mm:ss"))})}} dateFormat="DD-MM-YYYY HH:mm"/>
   }
 
   renderDocumentStatus(){
@@ -223,8 +227,8 @@ class IssuedManage extends Component{
   
   addData(){
     const data = this.state.data
-    data.push({id:this.addIndex,PackItem:"",PackQty:1,SKU:"",UnitType:"", ID:""})
-    this.addIndex += 1
+    data.push({id:-1,PackItem:"",PackQty:1,SKU:"",UnitType:"", ID:""})
+    this.addIndex -= 1
     this.setState({data})
   }
 
@@ -243,7 +247,7 @@ class IssuedManage extends Component{
       }
       else{
         data[rowdata.index][field] = value.Code;
-        data[rowdata.index]["SKU"] = value.SKU;
+        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitType"] = value.UnitType;
         data[rowdata.index]["id"] = value.id;
       }
@@ -258,6 +262,13 @@ class IssuedManage extends Component{
     })
     this.setState({autocomplete:res})
     }
+    else{
+      data[rowdata.index][field] = "";
+      data[rowdata.index]["SKU"] = "";
+      data[rowdata.index]["UnitType"] = "";
+      data[rowdata.index]["id"] = "";
+    }
+    this.setState({ data });
   }
 
   createText(data){
@@ -265,71 +276,52 @@ class IssuedManage extends Component{
   }
   
   createAutoComplete(rowdata){
-    if(!this.state.readonly){
+    const style = {borderRadius: '3px',
+    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+    background: 'rgba(255, 255, 255, 0.9)',
+    padding: '2px 0',
+    fontSize: '90%',
+    position: 'fixed',
+    overflow: 'auto',
+    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+    zIndex: '998',}
 
-      return <div style={{display: 'flex',flexDirection: 'column',}}>
-      <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined || rowdata.original.code === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
-      onChange={selection => {
-        rowdata.value = selection.id
-        this.editData(rowdata, selection, rowdata.column.id)
-      }}
-      itemToString={item => {
-        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code !== undefined ? rowdata.original.code + " : " + rowdata.original.name : "";
-      }}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getMenuProps,
-        isOpen,
-        openMenu,
-        inputValue,
-        highlightedIndex,
-        selectedItem,
-      }) => (
-        <div style={{width: '500px'}}>
-          <div style={{position: 'relative'}}>
-                  <Input
-                    {...getInputProps({
-                      isOpen,
-                      onFocus:()=>openMenu(),
-                    })}
-                  />
-                </div>
-                <div style={{position: 'absolute', zIndex:'1000', height:"100px", overflow:'auto'}}>
-                  <div {...getMenuProps({isOpen})} style={{position: 'relative', overflowX:"none"}}>
-                    {isOpen
-                      ? this.state.autocomplete
-                        .filter(item => !inputValue || item.Code.includes(inputValue))
-                        .map((item, index) => (
-                          <div style={{background:'white', width:'500px'}}
-                            key={item.id}
-                            {...getItemProps({
-                              item,
-                              index,
-                              style: {
-                                backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
-                                fontWeight: selectedItem === item ? 'bold' : 'normal',
-                                width:'500px',
-                              }
-                            })}
-                          >
-                            {item ? item.Code + " : " + item.Name : ''}
-                          </div>
-                        ))
-                      : null}
-                  </div>
-                </div>
-        </div>
-      )}
-    </Downshift></div>
-    }
-    else{
-      return <span>{rowdata.value}</span>
-    }
+    return <ReactAutocomplete
+        inputProps={{ style: {
+          width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',
+          backgroundPosition: "8px 8px",
+          backgroundSize:"10px",
+          backgroundRepeat: "no-repeat",
+          paddingLeft: "25px"
+        } }}
+        wrapperStyle={ {width: "100%"} }
+        menuStyle={style}
+        getItemValue={(item) => item.SKU}
+        items={this.state.autocomplete}
+        shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
+        renderItem={(item, isHighlighted) =>
+          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+            {item.SKU}
+          </div>
+        }
+        value={rowdata.original.SKU}
+        onChange={(e) => {
+          const res = this.state.autocomplete.filter(row => {
+            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
+          });
+          if(res.length === 1){
+            this.editData(rowdata, res[0], rowdata.column.id)
+          }
+          else{
+            this.editData(rowdata, e.target.value, rowdata.column.id)
+          }
+        }}
+        onSelect={(val, row) => {
+          this.editData(rowdata, row, rowdata.column.id)
+        }}
+      />
   }
-
+  
   toggle() {
     this.setState({modalstatus:!this.state.modalstatus});
   }
@@ -349,9 +341,7 @@ class IssuedManage extends Component{
 }
 
   onClickSelect(code){
-    this.setState({code})
-    this.setState({remark:code})
-    this.setState({basedisplay:"block"})
+    this.setState({code,remark:code,basedisplay:"block"})
     if(code===undefined){
       return null
     }else{
@@ -367,26 +357,23 @@ class IssuedManage extends Component{
     return res.type === 2  
   })
   var groupArray = require('group-array');
-   const groupItem = groupArray(arrType, 'code');
+  const groupItem = groupArray(arrType, 'code');
   var arrdata =[]
   for(var datarow in groupItem){
-    groupItem[datarow].forEach(row => {
-      row.id = row.mstID
-      row.PackItem = row.code
-      row.PackQty = groupItem[datarow].length
+    groupItem[datarow][0].id = groupItem[datarow][0].mstID
+      groupItem[datarow][0].PackItem = groupItem[datarow][0].code
+      groupItem[datarow][0].PackQty = groupItem[datarow].length
       arrdata.forEach((row2,index) => {
-          if(row2.code === row.code){
+          if(row2.code === groupItem[datarow][0].code){
           arrdata.splice(index,1)
         }
       });
-      
       let getUnit = this.state.autocomplete.filter(rowauto => {
-        return rowauto.Code === row.code
+        return rowauto.Code === groupItem[datarow][0].code
       })
-      row.UnitType = getUnit[0].UnitType
-      arrdata.push(row)
+      groupItem[datarow][0].UnitType = getUnit[0].UnitType
+      arrdata.push(groupItem[datarow][0])
       
-   });
   }
    this.setState({data:arrdata})
    
@@ -411,7 +398,7 @@ class IssuedManage extends Component{
         //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
-        /* {Cell:(e) => <Button onClick={()=>{
+        {Cell:(e) => <Button onClick={()=>{
           const data = this.state.data;
           data.forEach((row, index)=>{
             if(row.id === e.original.id){
@@ -427,7 +414,7 @@ class IssuedManage extends Component{
             })
             this.setState({autocomplete:res})
           })
-        }} color="danger">Remove</Button>} */
+        }} color="danger">Remove</Button>}
       ]
     }
     

@@ -14,10 +14,8 @@ export default class Datepicker extends Component{
     }
 
     componentDidMount(){
-        if(this.props.defaultDate !== undefined){
-            this.setState({date:this.props.defaultDate})
-            this.onHandleDateChange(moment(this.props.defaultDate, this.props.dateFormat))
-        }
+        this.setState({date:moment()})
+        this.onHandleDateChange(moment(moment().format(this.props.dateFormat), this.props.dateFormat))
     }
 
     onHandleDateChange(date){
@@ -32,6 +30,7 @@ export default class Datepicker extends Component{
                 onChange={(e) => {
                     if(e.isValid() && e !== null){
                         this.onHandleDateChange(e)
+                        console.log(e)
                     }
                 }}
                 onChangeRaw={(e) => {
