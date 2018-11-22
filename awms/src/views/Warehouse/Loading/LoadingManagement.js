@@ -172,7 +172,7 @@ displayButtonByPermission(perID){
         </div>
         <TableGen column={cols} data={this.state.select} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-        accept={false} defalutCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'eventStatus', c:'=', 'v': 11}]}/>
+        accept={false} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1012}]}/>
         <Card >
           <CardBody >
             <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px'}}
