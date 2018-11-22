@@ -259,6 +259,7 @@ class TableGen extends Component{
     else{
       if(dataselect !== undefined){
         const select = dataselect
+        this.setState({ currentPage: 1 })
         select["q"] = this.state.originalselect
         let queryString = createQueryString(select)
         Axios.get(queryString).then(
@@ -355,6 +356,7 @@ class TableGen extends Component{
     const select = this.props.data
     select["s"] = JSON.stringify([{'f':data[0].id,'od':data[0].desc === false ? 'asc' : 'desc'}])
     let queryString = ""
+    this.setState({ currentPage: 1 })
     if(this.props.url === undefined || null){
       queryString = createQueryString(select)
     }

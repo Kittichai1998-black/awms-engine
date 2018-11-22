@@ -97,17 +97,18 @@ namespace AMWUtil.DataAccess
             if (logger != null) logger.LogInfo("Execute OK = " + cmdTxt);
             return res;
         }
-        
-        public DynamicParameters CreateDynamicParameters(object criteria)
+
+        public DynamicParameters CreateDynamicParameters(object criteria, params string[] paramUnSets)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            Enumerable.ToList(criteria.GetType()
-                .GetFields()
-)
+            Enumerable.ToList(criteria.GetType().GetFields())
                 .ForEach(x => {
-                    var val = x.GetValue(criteria);
-                    var v = ObjectUtil.IsEmptyNull(val) ? null : val;
-                    param.Add(x.Name, v);
+                    if (!paramUnSets.Any(y => y.Equals(x.Name)))
+                    {
+                        var val = x.GetValue(criteria);
+                        var v = ObjectUtil.IsEmptyNull(val) ? null : val;
+                        param.Add(x.Name, v);
+                    }
                 });
             return param;
         }

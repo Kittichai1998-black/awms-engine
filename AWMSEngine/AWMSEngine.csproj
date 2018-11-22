@@ -34,6 +34,7 @@
     <PackageReference Include="CsvHelper" Version="7.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Z.Expressions.Eval" Version="2.6.5" />
   </ItemGroup>

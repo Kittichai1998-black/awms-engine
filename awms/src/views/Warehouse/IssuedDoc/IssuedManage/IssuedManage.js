@@ -123,9 +123,9 @@ class IssuedManage extends Component{
     }
 
     this.renderDocumentStatus();
-    var today = moment();
-    var tomorrow = moment(today).add(1, 'days');
-    this.setState({date:tomorrow})
+    //var today = moment();
+    //var tomorrow = moment(today).add(1, 'days');
+    //this.setState({date:tomorrow})
 
     Axios.get(createQueryString(this.branchselect)).then(branchresult => {
       this.setState({auto_branch : branchresult.data.datas, addstatus:false }, () => {
@@ -183,20 +183,23 @@ class IssuedManage extends Component{
       refID:'', forCustomerID:null, batch:null, lot:null,
       souBranchID:this.state.branch,souWarehouseID:this.state.warehouse,souAreaMasterID:null,
       desCustomerID:this.state.customer,desSupplierID:null,
-      actionTime:this.state.date.format("YYYY/MM/DDThh:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
+      actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
       remark:this.state.remark,issueItems:acceptdata
     }
-    console.log(acceptdata)
-    Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
-      if(res.data._result.status === 1){
-        this.props.history.push('/doc/gi/manage?ID='+ res.data.ID)
-        window.location.reload()
-      }
-    })
+    if (acceptdata.length > 0) {
+      Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
+        if (res.data._result.status === 1) {
+          this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
+          window.location.reload()
+        }
+      })
+    }
+
+ 
   }
 
   dateTimePicker(){
-    return <DatePicker timeselect={true} onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY HH:mm"/>
+    return <DatePicker timeselect={true} onChange={(e) => { this.setState({ date: e }, () => console.log(this.state.date.format("YYYY/MM/DDTHH:mm:ss"))) }} dateFormat="DD-MM-YYYY HH:mm"/>
   }
 
   renderDocumentStatus(){
@@ -413,24 +416,22 @@ class IssuedManage extends Component{
   var groupArray = require('group-array');
    const groupItem = groupArray(arrType, 'code');
   var arrdata =[]
-  for(var datarow in groupItem){
-    groupItem[datarow].forEach(row => {
-      row.id = row.mstID
-      row.PackItem = row.code
-      row.PackQty = groupItem[datarow].length
-      arrdata.forEach((row2,index) => {
-          if(row2.code === row.code){
-          arrdata.splice(index,1)
-        }
-      });
-      
-      let getUnit = this.state.autocomplete.filter(rowauto => {
-        return rowauto.Code === row.code
-      })
-      row.UnitType = getUnit[0].UnitType
-      arrdata.push(row)
-      
-   });
+   for (var datarow in groupItem) {
+     groupItem[datarow][0].id = groupItem[datarow][0].mstID
+     groupItem[datarow][0].PackItem = groupItem[datarow][0].code
+     groupItem[datarow][0].PackQty = groupItem[datarow].length
+     arrdata.forEach((row2, index) => {
+       if (row2.code === groupItem[datarow][0].code) {
+         arrdata.splice(index, 1)
+       }
+     });
+     let getUnit = this.state.autocomplete.filter(rowauto => {
+       return rowauto.Code === groupItem[datarow][0].code
+     })
+     groupItem[datarow][0].UnitType = getUnit[0].UnitType
+     arrdata.push(groupItem[datarow][0])
+
+   
   }
    this.setState({data:arrdata})
    
@@ -455,7 +456,7 @@ class IssuedManage extends Component{
         //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {accessor:"UnitType",Header:"UnitType",},
-        /* {Cell:(e) => <Button onClick={()=>{
+        {Cell:(e) => <Button onClick={()=>{
           const data = this.state.data;
           data.forEach((row, index)=>{
             if(row.id === e.original.id){
@@ -471,7 +472,7 @@ class IssuedManage extends Component{
             })
             this.setState({autocomplete:res})
           })
-        }} color="danger">Remove</Button>} */
+        }} color="danger">Remove</Button>} 
       ]
     }
     
@@ -485,7 +486,7 @@ class IssuedManage extends Component{
             <div>Event Status : {this.renderDocumentStatus()}</div>
           </div>
           <div className="d-block"><label style={style}>Issued No : </label><span>{this.state.issuedNo}</span></div>
-          <div className="d-block"><label style={style}>Action Time : </label><div style={{display:"inline-block"}}>{this.state.pageID ? <span>{this.state.date.format("DD-MM-YYYY hh:mm:ss")}</span> : this.dateTimePicker()}</div></div>
+          <div className="d-block"><label style={style}>Action Time : </label><div style={{display:"inline-block"}}>{this.state.pageID ? <span>{this.state.date.format("DD-MM-YYYY HH:mm:ss")}</span> : this.dateTimePicker()}</div></div>
         </div>
         <div className="clearfix">
           <Row>

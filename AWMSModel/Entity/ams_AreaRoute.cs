@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class ams_AreaMasterLine : BaseEntityID
+    public class ams_AreaRoute : BaseEntityID
     {
         public int Sou_AreaMaster_ID;
         public int? Sou_AreaLocationMaster_ID;
