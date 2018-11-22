@@ -17,6 +17,9 @@ export default class NumberInput extends Component{
         if (/\+|-/.test(keyValue) )
           event.preventDefault();
     }
+    componentDidMount(){
+        this.setState({value:this.props.value})
+    }
 
     render(){
         return(

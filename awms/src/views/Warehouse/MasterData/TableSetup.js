@@ -14,6 +14,7 @@ import _ from 'lodash'
 import Downshift from 'downshift'
 import '../componentstyle.css'
 import withFixedColumns from "react-table-hoc-fixed-columns";
+import arrimg from '../../../../src/img/arrowhead.svg'
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
@@ -244,6 +245,8 @@ class TableGen extends Component{
       
       if(dataselect !== undefined){
         let select = dataselect
+        select["sk"] = 0
+        this.setState({currentPage:1})
         select["q"] = JSON.stringify(filterlist)
         let queryString = createQueryString(select)
         Axios.get(queryString).then(
@@ -259,7 +262,8 @@ class TableGen extends Component{
     else{
       if(dataselect !== undefined){
         const select = dataselect
-        this.setState({ currentPage: 1 })
+        select["sk"] = 0
+        this.setState({currentPage:1})
         select["q"] = this.state.originalselect
         let queryString = createQueryString(select)
         Axios.get(queryString).then(
@@ -496,17 +500,6 @@ class TableGen extends Component{
             this.setState({datafilter:filter})
         }}
       } />
-  }
-
-  createAutocompleteExtend(){
-    const options = [
-      { value: 'chocolate', label: 'Chocolate' },
-      { value: 'strawberry', label: 'Strawberry' },
-      { value: 'strawberry1', label: 'Strawberry1' },
-      { value: 'strawberry2', label: 'Strawberry2' },
-      { value: 'vanilla', label: 'Vanilla' }
-    ]
-    return <Select className="menu-outer-top" options={options} onChange={(e) => this.datax = e} value={this.datax}/>
   }
 
   createCustomButton(type,text,data){
@@ -747,7 +740,7 @@ class TableGen extends Component{
   </Downshift></div>
   }
 
-  createAutocomplete(rowdata){
+  createAutoComplete(rowdata){
     const style = {borderRadius: '3px',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
     background: 'rgba(255, 255, 255, 0.9)',
@@ -763,6 +756,14 @@ class TableGen extends Component{
       })
       if(getdata.length > 0){
         return <ReactAutocomplete 
+        inputProps={{ style: {
+          width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',
+          backgroundPosition: "8px 8px",
+          backgroundSize:"10px",
+          backgroundRepeat: "no-repeat",
+          paddingLeft: "25px"
+        } }}
+        wrapperStyle={ {width: "100%"} }
         menuStyle={style}
         getItemValue={(item) => item.Code}
         items={getdata[0].data}
@@ -772,7 +773,7 @@ class TableGen extends Component{
             {item.Code}
           </div>
         }
-        value={rowdata.value}
+        value={rowdata.value === null ? "" : rowdata.value}
         onChange={(e) => {
           this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id)
         }}
@@ -1011,7 +1012,8 @@ class TableGen extends Component{
             })
           }
           else if(row.Type === "autocomplete"){
-            row.Cell = (e) => this.createAutoCompleteDownshift(e)
+            //row.Cell = (e) => this.createAutoCompleteDownshift(e)
+            row.Cell = (e) => this.createAutoComplete(e)
           }
           else if(row.Type === "selection"){
             row.Cell = (e) => this.createSelection(e,"checkbox")

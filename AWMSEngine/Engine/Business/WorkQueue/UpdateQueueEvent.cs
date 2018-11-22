@@ -38,8 +38,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     new KeyValuePair<string,object>("Area_ID",am.ID.Value),
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
-            if (lm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.locationCode + "'");
+            //if (lm == null)
+                //throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.locationCode + "'");
 
             var res = GenerateResult(reqVO, wm.ID, am.ID, lm.ID);
 
@@ -64,6 +64,14 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 if(eventStatus == WorkQueueEventStatus.WORKING)
                 {
                     eventStatus = WorkQueueEventStatus.WORKED;
+                    if (workqueueID.IOType == IOType.INPUT)
+                    {
+                        StorageObjectADO.GetInstant().UpdateStatusToChild(baseID.ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                    }
+                    else if (workqueueID.IOType == IOType.OUTPUT)
+                    {
+                        StorageObjectADO.GetInstant().UpdateStatusToChild(baseID.ID.Value, StorageObjectEventStatus.ISSUING, EntityStatus.ACTIVE, StorageObjectEventStatus.ISSUED, this.BuVO);
+                    }
                 }
                 else
                 {
@@ -75,12 +83,22 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 if (eventStatus == WorkQueueEventStatus.IDEL)
                 {
                     eventStatus = WorkQueueEventStatus.WORKING;
+                    if (workqueueID.IOType == IOType.INPUT)
+                    {
+                        StorageObjectADO.GetInstant().UpdateStatusToChild(baseID.ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                    }
+                    else if (workqueueID.IOType == IOType.OUTPUT)
+                    {
+                        StorageObjectADO.GetInstant().UpdateStatusToChild(baseID.ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.ISSUING, this.BuVO);
+                    }
                 }
                 else
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ข้ามหน้าข้ามตา");
                 }
             }
+
+
 
             SPworkQueue workQueue = new SPworkQueue() {
                 ID = workqueueID.ID,
@@ -102,8 +120,6 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             };
 
             var resQueue = QueueADO.GetInstant().PUT(workQueue, this.BuVO);
-            if(baseID != null)
-                StorageObjectADO.GetInstant().UpdateStatusToChild(baseID.ID.Value, null, EntityStatus.ACTIVE,StorageObjectEventStatus.RECEIVING , this.BuVO);
 
             var res = new WorkQueueCriteria()
             {

@@ -15,11 +15,16 @@ namespace AWMSEngine.APIService.Mst
         {
         }
 
+        public class Treq
+        {
+
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
-            List<ams_SKUMaster> req1 = ObjectUtil.DynamicToModel<ams_SKUMaster>(this.RequestVO);
-
-            var res = new MasterPut<ams_SKUMaster>().Execute(this.Logger, this.BuVO, null);
+            List<ams_SKUMaster> req1 = ObjectUtil.DynamicToModel<ams_SKUMaster>(this.RequestVO.data);
+            this.BeginTransaction();
+            var res = new MasterPut<ams_SKUMaster>().Execute(this.Logger, this.BuVO, req1);
 
             return res;
         }

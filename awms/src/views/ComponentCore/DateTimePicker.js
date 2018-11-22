@@ -30,6 +30,7 @@ export default class Datepicker extends Component{
                 onChange={(e) => {
                     if(e.isValid() && e !== null){
                         this.onHandleDateChange(e)
+                        console.log(e)
                     }
                 }}
                 onChangeRaw={(e) => {

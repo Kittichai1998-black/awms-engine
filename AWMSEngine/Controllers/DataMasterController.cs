@@ -64,6 +64,18 @@ namespace AWMSEngine.Controllers
             PutSupplierFromFileServerAPI api = new PutSupplierFromFileServerAPI(this);
             return api.Execute(request);
         }
+
+        [HttpPost("SAP/SKUMaster")]
+        public dynamic SAP_SKUMaster([FromBody]dynamic request)
+        {
+            PutSKUMasterAPI api = new PutSKUMasterAPI(this);
+            return api.Execute(request);
+        }
+
+
+
+
+
         /*[HttpPost("TransferFileServer/SKUMst/Csv")]
         public dynamic TransferSF_SKUMst_Csv([FromBody]dynamic request)
         {
