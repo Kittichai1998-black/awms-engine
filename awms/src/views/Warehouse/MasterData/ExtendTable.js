@@ -355,7 +355,8 @@ class ExtendTable extends Component{
     const select = this.state.dataselect
         select["s_f"] = data[0].id
       select["s_od"] = data[0].desc === false ? 'asc' : 'desc'
-      select["sk"] =""
+    select["sk"] = ""
+    this.setState({ currentPage: 1 })
         let queryString = ""
         queryString = createQueryString(select)
         Axois.get(queryString).then(

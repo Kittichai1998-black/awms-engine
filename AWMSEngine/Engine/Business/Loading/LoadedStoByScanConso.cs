@@ -34,6 +34,7 @@ namespace AWMSEngine.Engine.Business.Loading
             else if (willLoad.isLoaded)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Code " + reqVO.scanCode + " ได้ทำการ Load เสร็จแล้ว ไม่สามารถ Load ซ่ำได้");
 
+            if (willLoad.objectType!= StorageObjectType.PACK)
             baseCanLoads.datas.FindAll(x => x.rootCode == willLoad.rootCode).ForEach(x => x.isLoaded = true);
             var stoLoads = ADO.StorageObjectADO.GetInstant().Get(willLoad.id, willLoad.objectType, false, true, this.BuVO).ToTreeList();
 
