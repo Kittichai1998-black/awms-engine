@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.General
                 //param.RemoveAll(x => x.Key.Equals("Status", "CreateBy", "CreateDate", "ModifyBy", "ModifyTime"));
                 if (e.ID.HasValue)
                 {
-                    ADOData.UpdateByID<T>(e.ID.Value, this.BuVO, param.ToArray());
+                    ADOData.UpdateByCode<T>(e.Code, this.BuVO, param.ToArray());
                 }
                 else
                 {

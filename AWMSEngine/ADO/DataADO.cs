@@ -331,6 +331,50 @@ namespace AWMSEngine.ADO
                     buVO.Logger, buVO.SqlTransaction);
             return res;
         }
+
+        public int UpdateByCode<T>(string code, VOCriteria buVO, params KeyValuePair<string, object>[] values)
+             where T : IEntityModel
+        {
+            string commSets = string.Empty;
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            foreach (var x in Enumerable.ToList(values))
+            {
+                if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
+                    continue;
+
+                if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
+                {
+                    commSets +=
+                        string.Format("{0}{1}={1}",
+                            string.IsNullOrEmpty(commSets) ? string.Empty : ",",
+                            x.Key,
+                            this.CommandByConfig(x.Value.ToString()));
+                }
+                else
+                {
+                    commSets +=
+                        string.Format("{0}{1}=@{1}",
+                            string.IsNullOrEmpty(commSets) ? string.Empty : ",",
+                            x.Key);
+                    param.Add(x.Key, x.Value);
+                }
+            }
+            if (typeof(BaseEntityCreateModify).IsAssignableFrom(typeof(T)))
+            {
+                commSets += ",ModifyBy=@actionBy,ModifyTime=getdate()";
+                param.Add("actionBy", buVO.ActionBy);
+            }
+            param.Add("code", code);
+
+            var res = this.Execute(
+                    string.Format("update {0} set {1} where code=@code",
+                        typeof(T).Name.Split('.').Last(), commSets),
+                    CommandType.Text,
+                    param,
+                    buVO.Logger, buVO.SqlTransaction);
+            return res;
+        }
+
         public long? Insert<T>(VOCriteria buVO, T data)
              where T : IEntityModel
         {
