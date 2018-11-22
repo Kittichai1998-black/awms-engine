@@ -420,9 +420,7 @@ class LoadingDocument extends Component{
         <Row>
           <Col sm="6" xs="6"><label style={{paddingRight:"10px"}}>Customer : </label>
             <div style={{ width: "250px", display: "inline-block" }}>{this.state.readonly ? this.state.customer : <AutoSelect data={this.state.auto_customer} result={(e) => { this.setState({ "customervalue": e.value, "customertext": e.label }, () => this.getIssuedList()) }} />}</div></Col>
-          <Col><Button color="primary" onClick={() => {
-            this.onLoadPDF()
-          }}>{iconpdf} Download PDF</Button></Col>
+          <Col sm="6" xs="6"><Button color="primary" className="float-right" onClick={() => { this.onLoadPDF() }} style={{ display: this.state.readonly === true ? this.state.adddisplay : "none" }}>{iconpdf} Download PDF</Button></Col>
         </Row>
         <div className="clearfix">
           <Button onClick={() => this.addData()} color="primary" className="float-right" disabled={this.state.addstatus}
