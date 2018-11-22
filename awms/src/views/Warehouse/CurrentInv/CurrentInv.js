@@ -137,7 +137,7 @@ class CurrentInv extends Component{
               <Workbook.Column label="PackCode" value="packCode"  />
               <Workbook.Column label="PackName" value="packName" />
               <Workbook.Column label="Warehouse" value="warehouse" />
-              <Workbook.Column label="PackQtyWMS" value={row =>""+ row.packQtyWMS} />
+              <Workbook.Column label="PackQtyWMS" value={row => "" + row.packQtyWMS} />
               <Workbook.Column label="PackQtyERP" value={row => "" + row.packQtyERP} />
               <Workbook.Column label="PackQtyResult" value={row => "" + row.packQtyResult}/>
             </Workbook.Sheet>

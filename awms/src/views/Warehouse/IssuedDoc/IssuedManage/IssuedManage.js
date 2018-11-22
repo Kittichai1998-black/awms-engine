@@ -7,6 +7,7 @@ import {DocumentEventStatus} from '../../Status'
 import queryString from 'query-string'
 import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
 import Downshift from 'downshift'
+import ReactAutocomplete from 'react-autocomplete'
 
 function isInt(value) {
   return !isNaN(value) && 

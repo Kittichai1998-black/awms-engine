@@ -351,19 +351,22 @@ class ExtendTable extends Component{
             readOnly/>
     }
 
-  customSorting(data) {
-    const select = this.state.dataselect
-        select["s_f"] = data[0].id
-      select["s_od"] = data[0].desc === false ? 'asc' : 'desc'
-    select["sk"] = ""
-    this.setState({ currentPage: 1 })
-        let queryString = ""
-        queryString = createQueryString(select)
-        Axois.get(queryString).then(
-        (res) => {
-            this.setState({data:res.data.datas, loading:false})
-        })
-    }
+   
+
+customSorting(data){
+  const select = this.props.data
+  let filterField = this.props.filterFields.find(o => o.datafield === data[0].id)
+  select["s_f"] = filterField.searchfield
+  select["s_od"] = data[0].desc === false ? 'asc' : 'desc'
+  select["sk"] = ""
+  this.setState({ currentPage: 1 })
+  let queryString = ""
+  queryString = createQueryString(select)
+  Axois.get(queryString).then(
+    (res) => {
+      this.setState({ data: res.data.datas, loading: false })
+    })
+}
 
     pageOnHandleClick(position){
       if(this.props.url === undefined || this.props.url === null)

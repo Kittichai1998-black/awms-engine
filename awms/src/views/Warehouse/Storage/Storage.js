@@ -31,7 +31,7 @@ class Storage extends Component{
         {datafield:"warehouse_Name",searchfield:"warehouseName"},
         {datafield:"areaMaster_Code",searchfield:"areaCode"},
         {datafield: "areaMaster_Name", searchfield: "areaName" },
-        {datafield:'areaLocationMaster_Code', searchfield:'locationCode'},
+        { datafield: 'areaLocationMaster_Code', searchfield:'locationCode'},
         {datafield:"holeStatus",searchfield:"holdStatus", Filter:"dropdown"},
         {datafield:"eventStatus",searchfield:"eventStatus", Filter:"dropdown"},
         {datafield:"status",searchfield:"status", Filter:"dropdown"},
