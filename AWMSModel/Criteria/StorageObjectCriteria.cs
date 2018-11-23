@@ -49,6 +49,15 @@ namespace AWMSModel.Criteria
             public decimal? maxQuantity;
         }
 
+
+        public static StorageObjectCriteria GetMapStoLastFocus(StorageObjectCriteria mapsto)
+        {
+            var res = mapsto.mapstos.FirstOrDefault(x => x.isFocus);
+            if (res != null)
+                return GetMapStoLastFocus(res);
+            return mapsto;
+        }
+
         public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes, string codeFocus)
         {
             return Generate(stos, staticObjectSizes, null, codeFocus);

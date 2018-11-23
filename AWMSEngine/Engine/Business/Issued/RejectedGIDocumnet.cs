@@ -34,10 +34,15 @@ namespace AWMSEngine.Engine.Business.Issued
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + id);
 
+             
                 if (doc.DocumentType_ID == DocumentTypeID.LOADING && doc.EventStatus == DocumentEventStatus.WORKED) {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้าขึ้นรถแล้ว ไม่สามารถลบใบเบิกได้");
 
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้าขึ้นรถแล้ว ไม่สามารถลบได้");
                 }
+
+
+             
+
                 //if (doc.Status == EntityStatus.DONE)
                 //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is Done");
 
@@ -65,28 +70,31 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 }
 
-               
-
-
-
-                 var stoToReceives = ADO.DocumentADO.GetInstant().ListStoIDInDocs(doc.ID.Value, this.BuVO);
+ 
+                var stoToReceives = ADO.DocumentADO.GetInstant().ListStoIDInDocs(doc.ID.Value, this.BuVO);
                 var stoLasters = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                         new SQLConditionCriteria[] {
                             new SQLConditionCriteria("ID",string.Join(",",stoToReceives.Select(x=>x.StorageObject_ID).ToArray()), SQLOperatorType.IN)
                         }, this.BuVO);
-                var rootStoToReceives = stoLasters.Where(x => x.Status == EntityStatus.ACTIVE)
+                var rootStoToReceives = stoLasters.Where(x => x.Status == EntityStatus.ACTIVE && x.Status == EntityStatus.DONE)
                     .GroupBy(x => x.ParentStorageObject_ID ?? x.ID)
                     .Select(x => x.Key.Value);
-                //////////////////
+                
                 rootStoToReceives.ToList().ForEach(x =>
                 {
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.DONE, StorageObjectEventStatus.RECEIVED, this.BuVO);
                 });
 
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
-                    null, EntityStatus.ACTIVE, 
+                    null, EntityStatus.ACTIVE,
                     DocumentEventStatus.REJECTED, 
                     this.BuVO);
+
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
+                   null, EntityStatus.DONE,
+                   DocumentEventStatus.REJECTED,
+                   this.BuVO);
 
                 doc.EventStatus = DocumentEventStatus.REJECTED;
                 doc.Status = EntityStatus.REMOVE;
