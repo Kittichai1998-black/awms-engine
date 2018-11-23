@@ -126,7 +126,7 @@ displayButtonByPermission(perID){
       this.setState({ divpdf: <GenBillPDF id={id} clearpdf={this.clearpdf} /> });
     });
   }
-   
+ 
   render() {
     
     const cols = [
@@ -157,7 +157,6 @@ displayButtonByPermission(perID){
     
     return(
       <div>
-        {this.state.isClick ? this.state.divpdf : null}
 
       {/*
         column = คอลัมที่ต้องการแสดง
@@ -182,6 +181,7 @@ displayButtonByPermission(perID){
             {this.state.resp}
           </CardBody>
         </Card>
+        {this.state.isClick ? this.state.divpdf : null}
 
       </div>
     )
