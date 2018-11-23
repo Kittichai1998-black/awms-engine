@@ -11,8 +11,9 @@ namespace AWMSModel.Criteria.SP.Response
         public long DocumentItem_ID;
         public string DocumentItemCode;
         public long DocumentType_ID;
-        public long Batch;
-        public long PackCode;
+        public string PackCode;
+        public string Batch;
+        public string Lot;
         public long Qty;
         public long MaxQty;
     }
