@@ -58,11 +58,11 @@ class LoadPDF extends React.Component {
     return this.props.groupdisplay.map((items, index) => {
       return (
         <tr key={index}>
-          <td>{items.no}</td>
-          <td className="lefttb"><div style={{ float: 'left', text_align: 'left'}}>Code:{items.code} {items.item}</div></td>
+          <td>{index+1}</td>
+          <td className="lefttb"><div style={{ float: 'left', text_align: 'left'}}>{items.code}: {items.item}</div></td>
           <td>{items.qty}</td>
           <td></td>
-          <td></td>
+          <td>{items.issuedcode}</td>
         </tr>
 
       );
@@ -97,6 +97,7 @@ class LoadPDF extends React.Component {
                 </tbody>
               </table>
             </div>
+            
             <div>
               <table className="hidtb" id="header3">
                 <tbody>
@@ -134,7 +135,7 @@ class LoadPDF extends React.Component {
 
                 <tbody>
                   {this.readDataItems()}
-                  {this.addTable()}
+                  {/*this.addTable()*/}
                 </tbody>
               </table>
             </div>

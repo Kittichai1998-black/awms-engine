@@ -23,7 +23,8 @@ class GenBillPDF extends React.Component {
       data: [],
       datasitems: [],
       datashow: [],
-      showResults: false 
+      showResults: false,
+      issued: []
     };
     this.htmlToPDF = this.htmlToPDF.bind(this);
     this.genData = this.genData.bind(this); 
@@ -105,34 +106,48 @@ class GenBillPDF extends React.Component {
     var groupdisplay = [];
     var packname = []; 
     let groupdata = _.groupBy(dataitems, (e) => { return e.id });
-    console.log(groupdata);
-    
     var no = parseInt(0);
     for (let row in groupdata) {
       var packNames = "";
-      var packQty = parseInt(0);
       var code = "";
+      var issuedcode = "";
       groupdata[row].forEach((grow, index) => {
         code = grow.code
+        issuedcode = grow.issuedCode
         packname.forEach((prow, index) => {
-          if (prow === grow.packName)
+
+          if (prow === grow.packName) {
             packname.splice(index, 1)
+          }
         })
         packname.push(grow.packName)
-        packQty += grow.packQty;
-
+ 
       })
       packNames = packname.join(",");
+
+      //รวมค่า packQTY
+      let sumpackQty = _.uniqBy(groupdata[row], (e) => { return e.packID });
+      //console.log(sumpackQty);
+      let sumqty = _.sumBy(sumpackQty, 'packQty');
+      //console.log("sumqty " + sumqty);
 
       groupdisplay.push({
         "no": no += 1,
         "id": row,
         "code": code,
         "item": packNames,
-        "qty": packQty
+        "qty": sumqty,
+        "issuedcode": issuedcode
       });
       packname = []
+      sumpackQty= []
     }
+    //console.log(groupdata);
+    //join all issuedCode
+    //let issueddoc = _.uniqBy(dataitems, (e) => { return e.issuedCode });
+    //let issued = _.map(issueddoc, 'issuedCode');
+
+
     this.setState({ datashow: groupdisplay }, () => this.htmlToPDF());
   }
 
@@ -146,6 +161,7 @@ class GenBillPDF extends React.Component {
           actionTime={this.state.ActionTime}
           codeDoc={this.state.CodeDoc}
           groupdisplay={this.state.datashow}
+          issued={this.state.issued}
         />
       </React.Fragment>
     )
