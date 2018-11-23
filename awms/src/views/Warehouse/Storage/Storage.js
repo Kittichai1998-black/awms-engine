@@ -80,7 +80,7 @@ class Storage extends Component{
         }
       })
         if(check === true){  
-          this.setState({permissionView:false})
+          this.setState({permissionView:true})
         }else if(check === false){
           this.setState({permissionView:true})
         }

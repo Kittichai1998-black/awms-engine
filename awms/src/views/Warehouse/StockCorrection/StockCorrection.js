@@ -81,7 +81,7 @@ displayButtonByPermission(perID){
           PerButtonConfirm.remove()     
           var PerButtonCancel = document.getElementById("per_button_cancel")
           PerButtonCancel.remove()    
-       }if(check === false){
+       }if(check === true){
           this.setState({showbutton:"block"})
        }
   }
