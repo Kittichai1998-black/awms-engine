@@ -103,9 +103,10 @@ class GenBillPDF extends React.Component {
   genData() {
     let dataitems = this.state.datasitems.datas;
     var groupdisplay = [];
-    var packname = [];
+    var packname = []; 
     let groupdata = _.groupBy(dataitems, (e) => { return e.id });
     console.log(groupdata);
+    
     var no = parseInt(0);
     for (let row in groupdata) {
       var packNames = "";
@@ -119,6 +120,7 @@ class GenBillPDF extends React.Component {
         })
         packname.push(grow.packName)
         packQty += grow.packQty;
+
       })
       packNames = packname.join(",");
 
