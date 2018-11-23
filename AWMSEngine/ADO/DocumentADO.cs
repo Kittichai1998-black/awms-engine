@@ -194,11 +194,13 @@ namespace AWMSEngine.ADO
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
         }
-        public List<SPOutDocItemCanMap> ListItemCanMap(string packCode,DocumentTypeID docTypeID, VOCriteria buVO)
+        public List<SPOutDocItemCanMap> ListItemCanMap(string packCode,DocumentTypeID docTypeID,string batch,string lot, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("packCode", packCode);
             param.Add("docTypeID", docTypeID);
+            param.Add("batch", batch);
+            param.Add("lot", lot);
             var res = this.Query<SPOutDocItemCanMap>("SP_DOCITEM_LIST_CANMAP",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
