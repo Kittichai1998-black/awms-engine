@@ -198,6 +198,12 @@ namespace AWMSEngine.ADO
             param.Add("options", ObjectUtil.ListKeyToQueryString(sto.options));
             param.Add("batch", sto.batch);
             param.Add("lot", sto.lot);
+
+            param.Add("weiKG", sto.weiKG);
+            param.Add("widthM", sto.widthM);
+            param.Add("heightM", sto.heightM);
+            param.Add("lengthM", sto.lengthM);
+
             param.Add("actionBy", buVO.ActionBy);
             param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_STO_PUT_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);

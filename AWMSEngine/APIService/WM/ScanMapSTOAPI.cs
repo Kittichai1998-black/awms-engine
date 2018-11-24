@@ -22,8 +22,8 @@ namespace AWMSEngine.APIService.WM
             this.BeginTransaction();
             var options = ObjectUtil.DynamicToModel<List<KeyValuePair<string, string>>>(this.RequestVO.options);
             var mapsto = ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestVO.mapsto);
-            var res = new ScanMapSto().Execute(this.Logger, this.BuVO,
-                new ScanMapSto.TReq()
+            var res = new ScanMapStoV2().Execute(this.Logger, this.BuVO,
+                new ScanMapStoV2.TReq()
                 {
                     scanCode = this.RequestVO.scanCode,
                     warehouseID = this.RequestVO.warehouseID,
