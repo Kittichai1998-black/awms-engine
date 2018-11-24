@@ -76,7 +76,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         new SQLConditionCriteria[] {
                             new SQLConditionCriteria("ID",string.Join(",",stoToReceives.Select(x=>x.StorageObject_ID).ToArray()), SQLOperatorType.IN)
                         }, this.BuVO);
-                var rootStoToReceives = stoLasters.Where(x => x.Status == EntityStatus.ACTIVE && x.Status == EntityStatus.DONE)
+                var rootStoToReceives = stoLasters.Where(x => x.Status == EntityStatus.ACTIVE || x.Status == EntityStatus.DONE)
                     .GroupBy(x => x.ParentStorageObject_ID ?? x.ID)
                     .Select(x => x.Key.Value);
                 
