@@ -63,10 +63,10 @@ namespace AWMSEngine.Engine
             }
             catch (System.Exception ex)
             {
-                var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
+                //var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
                 this.Logger.LogError(ex.StackTrace);
                 resultStatus = new { status = 0, code = AMWExceptionCode.U0000.ToString(), message = ex.Message, techmessage = ex.StackTrace };
-                throw e;
+                throw ex;
             }
             finally
             {

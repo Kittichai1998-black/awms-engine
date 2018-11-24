@@ -181,7 +181,8 @@ namespace AWMSEngine.Engine.Business
             StorageObjectCriteria mapsto)
         {
             var firstMapSto = this.GetMapStoLastFocus(mapsto);
-
+            string a = null;
+            int aa = int.Parse(a);
             ams_PackMaster pm = ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.scanCode, this.BuVO);
             ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
@@ -200,7 +201,7 @@ namespace AWMSEngine.Engine.Business
                     long? docItemID = null;
                     if (this.StaticValue.IsFeature(FeatureCode.IB0100))
                     {
-                        var docItemCanMaps = ADO.DocumentADO.GetInstant().ListItemCanMap(pm.Code, DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+                        var docItemCanMaps = ADO.DocumentADO.GetInstant().ListItemCanMap(pm.Code, DocumentTypeID.GOODS_RECEIVED, reqVO.batch, reqVO.lot, this.BuVO);
                         if (docItemCanMaps == null || docItemCanMaps.Count == 0)
                             throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Goods Recevie");
                         var docItemCanMap = docItemCanMaps.FirstOrDefault(x => reqVO.amount <= (x.MaxQty - x.Qty));
