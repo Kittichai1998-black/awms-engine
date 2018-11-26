@@ -4,18 +4,68 @@ import _ from 'lodash';
 
 const checkBox = <img className="mybox" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjMycHgiIGhlaWdodD0iMzJweCIgdmlld0JveD0iMCAwIDI3OC43OTkgMjc4Ljc5OSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjc4Ljc5OSAyNzguNzk5OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTI2NS41NCwwSDEzLjI1OUM1LjkzOSwwLDAuMDAzLDUuOTM2LDAuMDAzLDEzLjI1NnYyNTIuMjg3YzAsNy4zMiw1LjkzNiwxMy4yNTYsMTMuMjU2LDEzLjI1NkgyNjUuNTQgICBjNy4zMTgsMCwxMy4yNTYtNS45MzYsMTMuMjU2LTEzLjI1NlYxMy4yNTVDMjc4Ljc5Niw1LjkzNSwyNzIuODYsMCwyNjUuNTQsMHogTTI1Mi4yODQsMjUyLjI4N0gyNi41MTVWMjYuNTExaDIyNS43NjlWMjUyLjI4N3oiIGZpbGw9IiMwMDAwMDAiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />;
 
+class DataTable extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  readDataItems() {
+    return this.props.groupdisplay.map((items, index) => {
+      return (
+        <tr key={index}>
+          <td>{items.no}</td>
+          <td className="lefttb"><div style={{ float: 'left', text_align: 'left' }}>{items.code}: {items.item}</div></td>
+          <td>{items.qty}</td>
+          <td></td>
+          <td>{items.issuedcode}</td>
+        </tr>
+
+      );
+    })
+  }
+
+  render() {
+    return (
+      <div id={this.props.divId}>
+        <table className="showitems" id="showtable" width="100%">
+          <thead>
+            <tr>
+              <th>ลำดับที่</th>
+              <th>รายการ</th>
+              <th>ปริมาณ</th>
+              <th>หน่วย</th>
+              <th>หมายเหตุ</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {this.readDataItems()}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+}
+
+
 class LoadPDF extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       BranchName: "ปันกัน",
-      datasitems: [],
-      datashow: []
     };
-    this.addTable = this.addTable.bind(this);
 
+    this.addTable = this.addTable.bind(this);
   }
- 
+
+  createDatatable() {
+    console.log(this.props.groupdisplay);
+    return this.props.groupdisplay.map((items, index) => {
+      return (
+        <DataTable groupdisplay={items.groupdisplay} divId={"table" + index} />
+      );
+    })
+  }
   addTable = () => {
     var datalength = this.props.groupdisplay.length;
     let table = []
@@ -54,21 +104,6 @@ class LoadPDF extends React.Component {
     return table
   }
 
-  readDataItems() {
-    return this.props.groupdisplay.map((items, index) => {
-      return (
-        <tr key={index}>
-          <td>{index+1}</td>
-          <td className="lefttb"><div style={{ float: 'left', text_align: 'left'}}>{items.code}: {items.item}</div></td>
-          <td>{items.qty}</td>
-          <td></td>
-          <td>{items.issuedcode}</td>
-        </tr>
-
-      );
-    })
-  }
-
   render() {
     return (
 
@@ -76,72 +111,59 @@ class LoadPDF extends React.Component {
         <br />
         <div id="myPDF" className="pdf">
           <div id="detail">
-            <div id="header">
-              <h4>มูลนิธิ ยุวพัฒน์</h4>
-              <h4>ใบขออนุญาตนำของออกนอกคลัง ปันกัน</h4>
+            <div id="detailhead">
+
+              <div id="header">
+                <h4>มูลนิธิ ยุวพัฒน์</h4>
+                <h4>ใบขออนุญาตนำของออกนอกคลัง ปันกัน</h4>
+              </div>
+
+              <div>
+                <table className="hidtb" id="header2">
+                  <tbody>
+                    <tr>
+                      <td className="lefttb">
+                        <tr><td>ผู้ขออนุญาตนำของออก.......................................................................</td></tr>
+                        <tr><td>บริษัท.............{this.state.BranchName}............................โทร............................................</td></tr>
+                      </td>
+                      <td className="leftobj">
+                        <tr>วันที่นำออก.................{this.props.actionDate}...................</tr>
+                        <tr>เวลา..........................{this.props.actionTime} น. .............................</tr>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div>
+                <table className="hidtb" id="header3">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <tr>วัตถุประสงค์การนำออก</tr>
+                        <tr></tr>
+                        <tr></tr>
+                      </td>
+                      <td>
+                        <div className="leftobj">
+                          <tr>{checkBox} ส่งซ่อม และจะนำกลับเข้าคลังปันกันประมาณวันที่........................................................................................</tr>
+                          <tr>{checkBox} นำออกไปใช้งานภายนอกชั่วคราว และจะนำกลับเข้าคลังฯ ประมาณวันที่................................................</tr>
+                          <tr>{checkBox} นำออกถาวร (ระบุ)...................{this.props.customer}....................................................</tr>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <p className="pleft">มูลนิธิฯ อนุญาตให้นำของออกได้ ตามรายการข้างล่างนี้</p>
+              </div>
             </div>
 
-            <div>
-              <table className="hidtb" id="header2">
-                <tbody>
-                  <tr>
-                    <td className="lefttb">
-                      <tr><td>ผู้ขออนุญาตนำของออก.......................................................................</td></tr>
-                      <tr><td>บริษัท.............{this.state.BranchName}............................โทร............................................</td></tr>
-                    </td>
-                    <td className="leftobj">
-                      <tr>วันที่นำออก.................{this.props.actionDate}...................</tr>
-                      <tr>เวลา..........................{this.props.actionTime} น. .............................</tr>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div id="datatable">
+              {this.createDatatable()}
             </div>
-            
-            <div>
-              <table className="hidtb" id="header3">
-                <tbody>
-                  <tr>
-                    <td>
-                      <tr>วัตถุประสงค์การนำออก</tr>
-                      <tr></tr>
-                      <tr></tr>
-                    </td>
-                    <td>
-                      <div className="leftobj">
-                        <tr>{checkBox} ส่งซ่อม และจะนำกลับเข้าคลังปันกันประมาณวันที่........................................................................................</tr>
-                        <tr>{checkBox} นำออกไปใช้งานภายนอกชั่วคราว และจะนำกลับเข้าคลังฯ ประมาณวันที่................................................</tr>
-                        <tr>{checkBox} นำออกถาวร (ระบุ)...................{this.props.customer}....................................................</tr>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div>
-              <p className="pleft">มูลนิธิฯ อนุญาตให้นำของออกได้ ตามรายการข้างล่างนี้</p>
-            </div>
-            <div>
-              <table className="showitems" id="showtable">
-                <thead>
-                  <tr>
-                    <th>ลำดับที่</th>
-                    <th>รายการ</th>
-                    <th>ปริมาณ</th>
-                    <th>หน่วย</th>
-                    <th>หมายเหตุ</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {this.readDataItems()}
-                  {/*this.addTable()*/}
-                </tbody>
-              </table>
-            </div>
-
           </div>
-
           <br />
           <br />
           <div id="allfooter">
@@ -187,18 +209,18 @@ class LoadPDF extends React.Component {
               <div className="borderfooter">
                 <table className="hidtb" id="header5">
                   <tbody>
-                  <tr>
-                    <td>หมายเหตุ :&nbsp;</td>
-                    <td>1. ใบนำของออกถาวรเมื่อ รปภ.ลงนามแล้ว ให้นำส่งคืนยัง ผจก.คลังสินค้า</td>
-                  </tr>
-                  <tr>
-                    <td>&nbsp;</td>
-                    <td>2. ใบนำของออกชั่วคราว / ส่งซ่อม เมื่อ รปภ.ลงนามแล้ว ให้นำฉบับจริงส่ง ผจก คลัง เพื่อเก็บไว้ตรวจรับคืน</td>
-                  </tr>
-                  <tr>
+                    <tr>
+                      <td>หมายเหตุ :&nbsp;</td>
+                      <td>1. ใบนำของออกถาวรเมื่อ รปภ.ลงนามแล้ว ให้นำส่งคืนยัง ผจก.คลังสินค้า</td>
+                    </tr>
+                    <tr>
+                      <td>&nbsp;</td>
+                      <td>2. ใบนำของออกชั่วคราว / ส่งซ่อม เมื่อ รปภ.ลงนามแล้ว ให้นำฉบับจริงส่ง ผจก คลัง เพื่อเก็บไว้ตรวจรับคืน</td>
+                    </tr>
+                    <tr>
                       <td>&nbsp;</td>
                       <td>&nbsp;</td>
-                  </tr>
+                    </tr>
                   </tbody>
                 </table>
               </div>
