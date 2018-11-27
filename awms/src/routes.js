@@ -195,6 +195,11 @@ const Transport = Loadable({
   loading: Loading,
 });
 
+const ReceiveManage = Loadable({
+  loader: () => import('./views/Warehouse/StorageManagement/InboundView/ReceiveManage/ReceiveManage'),
+  loading: Loading,
+});
+
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -219,6 +224,7 @@ const routes = [
   { path: '/doc/gr/list', exact: true, name: 'Goods Receive Document', component: InboundView },
   { path: '/doc/gi/list', exact: true, name: 'Goods Issue Document', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Goods Issue Manage', component: IssuedManage },
+  { path: '/doc/gr/manage', exact: true, name: 'Receive Manage', component: ReceiveManage },
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
