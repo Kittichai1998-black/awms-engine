@@ -143,7 +143,6 @@ displayButtonByPermission(perID){
           {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
           /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
-          {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
         ];

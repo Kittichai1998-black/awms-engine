@@ -350,7 +350,7 @@ class TableGen extends Component{
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
           this.queryInitialData(this.state.dataselect);
-        })
+        }).then(() => Axios.post(window.apipath + "/api/mst/loadstatic"))
   
         this.setState({dataedit:[]})
       }

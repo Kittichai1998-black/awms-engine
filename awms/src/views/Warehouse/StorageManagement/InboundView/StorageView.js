@@ -151,6 +151,7 @@ displayButtonByPermission(perID){
     
       */}
         <div className="clearfix" style={{display:this.state.showbutton}} >
+          <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px',display:this.state.showbutton }}color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gr/manage')}>Create Document</Button>
           <Button id="per_button_export" className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary"
             onClick={() => { this.workingData() }}>Export Data</Button>
 
