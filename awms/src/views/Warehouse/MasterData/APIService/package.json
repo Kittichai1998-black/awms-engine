@@ -1,0 +1,6 @@
+{
+    "name": "APIService",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./APIService.js"
+  }
