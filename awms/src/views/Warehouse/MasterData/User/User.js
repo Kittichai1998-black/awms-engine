@@ -295,7 +295,7 @@ class User extends Component{
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
-                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white'}} 
+                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white','max-height': '400px'}} 
                     getselection={this.getSelectionData} showPagination={false}/>
                     <Card>
                         <CardBody>

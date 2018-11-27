@@ -352,7 +352,7 @@ class ObjectSize extends Component{
 
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
-                    <ReactTable columns={this.state.colsMap} minRows={3} data={this.state.selectdata} sortable={false} style={{background:'white',height: '400px'}} 
+                    <ReactTable columns={this.state.colsMap} minRows={3} data={this.state.selectdata} sortable={false} style={{background:'white','max-height': '400px'}} 
                     getselection={this.getSelectionData} showPagination={false}/>
                     <Card>
                         <CardBody>
