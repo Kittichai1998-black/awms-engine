@@ -8,7 +8,7 @@ import queryString from 'query-string'
 import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../../ComponentCore'
 import Downshift from 'downshift'
 import ReactAutocomplete from 'react-autocomplete'
-//import arrimg from '../../../../img/arrowhead.svg'
+import arrimg from '../../../../../img/arrowhead.svg'
 
 function isInt(value) {
   return !isNaN(value) && 
@@ -69,7 +69,7 @@ class ReceiveManage extends Component{
     this.genWarehouseData = this.genWarehouseData.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
-    this.createAutocomplete = this.createAutocomplete.bind(this)
+    this.createAutoComplete = this.createAutoComplete.bind(this)
 
     this.branchselect = {queryString:window.apipath + "/api/mst",
       t:"Branch",
@@ -106,7 +106,6 @@ class ReceiveManage extends Component{
     Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
       this.setState({autocomplete:rowselect2.data.datas, autocompleteUpdate:Clone(rowselect2.data.datas),
         adddisplay:"inline-block"})
-        console.log(this.state.autocomplete)
     })
   }
 
@@ -249,43 +248,62 @@ class ReceiveManage extends Component{
   createText(data){
     return <span>{data}</span>
   }
-  createAutocomplete(rowdata){
-    console.log("ccc")
-    const style = {borderRadius: '3px',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    background: 'rgba(255, 255, 255, 0.9)',
-    padding: '2px 0',
-    fontSize: '90%',
-    position: 'fixed',
-    overflow: 'auto',
-    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
-    zIndex: '998',}
-    if(this.state.autocomplete.length > 0){
-      const getdata = this.state.autocomplete.filter(row=>{
-        return row.field  === rowdata.column.id
-      })
-      if(getdata.length > 0){
-        return <ReactAutocomplete 
+  createAutoComplete(rowdata) {
+    if (!this.state.readonly) {
+      const style = {
+        borderRadius: '3px',
+        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+        background: 'rgba(255, 255, 255, 0.9)',
+        padding: '2px 0',
+        fontSize: '90%',
+        position: 'fixed',
+        overflow: 'auto',
+        maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+        zIndex: '998',
+      }
+
+      return <ReactAutocomplete
+        inputProps={{
+          style: {
+            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
+            backgroundPosition: "8px 8px",
+            backgroundSize: "10px",
+            backgroundRepeat: "no-repeat",
+            paddingLeft: "25px"
+          }
+        }}
+        wrapperStyle={{ width: "100%" }}
         menuStyle={style}
-        getItemValue={(item) => item.Code}
-        items={getdata}
-        shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
+        getItemValue={(item) => item.SKU}
+        items={this.state.autocomplete}
+        shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
         renderItem={(item, isHighlighted) =>
           <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-            {item.Code}
+            {item.SKU}
           </div>
         }
-        value={rowdata.value}
+        value={rowdata.original.SKU}
         onChange={(e) => {
-          console.log(e)
-          this.editData(rowdata, e.target.value, rowdata.column.id)
+          const res = this.state.autocomplete.filter(row => {
+            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
+          });
+          if (res.length === 1) {
+            if (res[0].SKU === e.target.value)
+              this.editData(rowdata, res[0], rowdata.column.id)
+            else
+              this.editData(rowdata, e.target.value, rowdata.column.id)
+          }
+          else {
+            this.editData(rowdata, e.target.value, rowdata.column.id)
+          }
         }}
         onSelect={(val, row) => {
-          this.editData(rowdata, row.Code, rowdata.column.id)
-          this.editData(rowdata, row.ID, getdata[0].pair)
+          this.editData(rowdata, row, rowdata.column.id)
         }}
       />
-      }
+    }
+    else {
+      return <span>{rowdata.value}</span>
     }
   }
 
@@ -307,7 +325,7 @@ class ReceiveManage extends Component{
     }
     else{
       cols = [
-        {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutocomplete(e), width:550}, 
+        {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e), width:550}, 
         //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
         {Cell:(e) => <Button onClick={()=>{
