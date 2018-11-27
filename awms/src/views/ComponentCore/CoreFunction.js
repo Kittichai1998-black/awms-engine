@@ -12,8 +12,11 @@ class apicall{
         });
     }
 
+
     post(url, data){
-        data._token = localStorage.getItem("Token")
+        
+        if(data !== undefined){ 
+        data._token = localStorage.getItem("Token")}
         return Axios.post(url, data).then((res) => {
             if(res.data._result.status === 0){
                 alert(res.data._result.message)
