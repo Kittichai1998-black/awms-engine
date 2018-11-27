@@ -34,6 +34,7 @@ class Area extends Component{
           modalstatus: false,
           baseTypeSelect: [],
           objectSizeSelect: [],
+          dataedit: []
         };
         this.getSelectionData = this.getSelectionData.bind(this)
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -181,6 +182,8 @@ class Area extends Component{
 
   onCreateMultiBases() {
     console.log(this.state.baseTypeCode + " " + this.state.objectSizeCode + " "+ this.state.mName +" "+ this.state.mAmount);
+    const dataedit = this.state.dataedit;
+
 
   }
 
@@ -264,10 +267,10 @@ class Area extends Component{
             getselection = เก็บค่าที่เลือก
             createModal = Box เพิ่มข้อมูลBaseแบบหลายเเถว
           */}
-            {/*this.createModal()*/}
+            {/*this.createModal()}
             <div className="clearfix">
               <Button className="float-right" color="success" style={{ width: 200, background: "#66bb6a", borderColor: "#66bb6a" }} type="button" onClick={() => this.toggle()}>Double Add</Button>
-              </div>
+              </div>*/}
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
             filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} printbtn={view}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
