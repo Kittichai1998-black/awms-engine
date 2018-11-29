@@ -14,7 +14,7 @@ class AreaLocation extends Component{
       data : null,
       autocomplete:[],
       cols1:[
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
         //{accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
@@ -27,7 +27,7 @@ class AreaLocation extends Component{
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ],
       cols2:[],
@@ -82,7 +82,7 @@ class AreaLocation extends Component{
     this.autoSelectData = this.autoSelectData.bind(this)
     this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","Modified","Created"]
+    this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","Modified","Created"]
 
   }
   onHandleClickCancel(event){
@@ -193,8 +193,8 @@ displayButtonByPermission(perID){
   filterList(){
     const objselect = {queryString:window.apipath + "/api/mst",
       t:"ObjectSize",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -251,7 +251,7 @@ displayButtonByPermission(perID){
   setColumns(){
     if(this.state.grouptype === 2){ 
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text", fixed: "left"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
@@ -263,13 +263,13 @@ displayButtonByPermission(perID){
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     
     }else  if(this.state.grouptype === 1) {
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         {accessor: 'Code', Header: 'Code', editable:false, Filter:"text", fixed: "left"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode",},
@@ -279,12 +279,12 @@ displayButtonByPermission(perID){
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     }else{
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text", fixed: "left"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
@@ -297,7 +297,7 @@ displayButtonByPermission(perID){
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     }
@@ -308,7 +308,7 @@ displayButtonByPermission(perID){
       return {queryString:window.apipath + "/api/viw",
       t:"AreaLocationMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " +this.state.areamaster+"}]",
-      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
+      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -351,10 +351,14 @@ displayButtonByPermission(perID){
         filterable = เปิดปิดโหมด filter
         getselection = เก็บค่าที่เลือก
       */}
-        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
+        {/* <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
                   filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
-                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>
+                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>*/}
+        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
+          filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn} defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'AreaMaster_ID', c: '=', 'v': this.state.areamaster }]}
+          table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} accept={view}/>
       </div>  
     )   
   }

@@ -25,8 +25,8 @@ class ListProduct extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"SKUMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f: "ID,SKUMasterType_ID,SKUMasterType_Code,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,"+
-        "Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code",
+        f: "ID,SKUMasterType_ID,SKUMasterType_Code,UnitType_ID,UnitType_Code,Code,"+
+        "Name,Description,WeightKG,WidthM,LengthM,HeightM,Cost,Price,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -37,10 +37,9 @@ class ListProduct extends Component{
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.getAutocompletee = this.getAutocomplete.bind(this);
-    this.getSelectionData = this.getSelectionData.bind(this);
+    this.getAutocompletee = this.getAutocomplete.bind(this); 
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["SKUMasterType_Code", "SKUMasterType_Name", "UnitType_Code", "UnitType_Name", "UnitType_Description", "Created", "Modified", "Revision","ObjectSize_Code"]
+    this.uneditcolumn = ["SKUMasterType_Code", "SKUMasterType_Name", "UnitType_Code", "Created", "Modified", "Revision", "ObjectSize_Code"]
   }
 
   onHandleClickCancel(event){
@@ -91,7 +90,7 @@ displayButtonByPermission(perID){
     const unitselect = {queryString:window.apipath + "/api/mst",
       t:"UnitType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -143,10 +142,6 @@ displayButtonByPermission(perID){
     })))
   }
 
-  getSelectionData(data){
-    this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
-  }
-
   createBarcodeBtn(data){
     return <Button type="button" color="info" 
     onClick={() => this.history.push('/mst/sku/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
@@ -156,26 +151,23 @@ displayButtonByPermission(perID){
     const cols = [
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
       { accessor: 'SKUMasterType_Code', Header: 'SKU Type', updateable: false, Filter: "text", Type: "autocomplete" },
-      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
+      { accessor: 'Code', Header: 'Code', editable: true,Filter:"text",},
       { accessor: 'Name', Header: 'Name', editable: true,Filter:"text",},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
-      { accessor: 'UnitType_Code', Header: 'Unit Type',  Filter: "text", Type: "autocomplete" },
-      { accessor: 'WeightKG', Header: 'Weight (KG)', editable: true, datatype: "int", Filter: "text" },
-      { accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int", Filter: "text"},
-      { accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int", Filter: "text"},
-      { accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int", Filter: "text" },
+      { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
+      { accessor: 'WeightKG', Header: 'Weight (KG)', editable: true, datatype: "int" },
+      { accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
+      { accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
+      { accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},
+      { accessor: 'ObjectSize_Code', Header: 'ObjectSize Code', Filter: "text", Type: "autocomplete" },
       { accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
       { accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
-      { accessor: 'ObjectSize_Code', Header: 'ObjectSize Code', Filter: "text", Type: "autocomplete" },
-
-      
-
       { accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
       { accessor: 'Created', Header: 'Create', filterable:false},
       /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
       //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      //{ show: this.state.permissionView, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
+      { show: this.state.permissionView, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
     ];
     
     const btnfunc = [{
@@ -199,7 +191,7 @@ displayButtonByPermission(perID){
       */}
          
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
-          filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={view}
+          filterable={true} autocomplete={this.state.autocomplete} accept={view}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}
           table="ams_SKUMaster"/>
 

@@ -21,7 +21,7 @@ class APIService extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"APIService",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,ActionCommand,APIServiceGroup_ID,APIServiceGroup_Code,APIServiceGroup_Name,Permission_ID,Permission_Code,Permission_Name,Status,Created,Modified",
+      f:"ID,Code,Name,Description,ActionCommand,APIServiceGroup_ID,APIServiceGroup_Code,Permission_ID,Permission_Code,Status,Created,Modified",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -32,7 +32,7 @@ class APIService extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
-    this.uneditcolumn = ["APIServiceGroup_Code","APIServiceGroup_Name","Permission_Code","Permission_Name","Created","Modified"]
+    this.uneditcolumn = ["APIServiceGroup_Code","Permission_Code","Created","Modified"]
   }
 
   onHandleClickCancel(event){
@@ -52,7 +52,7 @@ class APIService extends Component{
     const Permissionselect = {queryString:window.apipath + "/api/mst",
       t:"Permission",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -61,7 +61,7 @@ class APIService extends Component{
     const APIServiceGroupselect = {queryString:window.apipath + "/api/mst",
       t:"APIServiceGroup",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,

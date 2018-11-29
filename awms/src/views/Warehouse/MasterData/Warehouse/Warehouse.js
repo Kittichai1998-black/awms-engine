@@ -34,7 +34,7 @@ class Warehouse extends Component{
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
       this.filterList = this.filterList.bind(this)
       this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-      this.uneditcolumn = ["Branch_Code","Branch_Name","Created","Modified"]  
+      this.uneditcolumn = ["Branch_Code","Created","Modified"]  
     }
 
     onHandleClickCancel(event){
@@ -77,7 +77,7 @@ class Warehouse extends Component{
       const whselect = {queryString:window.apipath + "/api/mst",
         t:"Branch",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-        f:"ID,Code",
+        f:"ID,concat(Code,' : ',Name) as Code",
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
