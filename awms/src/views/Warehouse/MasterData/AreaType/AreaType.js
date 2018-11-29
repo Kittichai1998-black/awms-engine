@@ -49,52 +49,70 @@ class AreaType extends Component{
         Axios.isCancel(true);
     }
 
-    filterList(){
-        const whselect = {queryString:window.apipath + "/api/mst",
-            t:"Warehouse",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
-            g:"",
-            s:"[{'f':'ID','od':'asc'}]",
-            sk:0,
-            all:"",}
+  filterList() {
+    const groupTypeSelect = { queryString: window.apipath + "/api/enum/AreaMasterGroupType" }
+    const groupType = []
+    Axios.all([Axios.get(createQueryString(groupTypeSelect))]).then(
+      (Axios.spread((result) => {
+        result.data.forEach(row => {
+          groupType.push({ ID: row.value, Code: row.name })
+        })
+        
+        let ddl = [...this.state.autocomplete]
+        let groupTypeList = {}
+        groupTypeList["data"] = groupType
+        groupTypeList["field"] = "GroupType"
+        groupTypeList["pair"] = "GroupType"
+        groupTypeList["mode"] = "Dropdown"
 
-        const areatypeselect = {queryString:window.apipath + "/api/mst",
-            t:"AreaMasterType",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
-            g:"",
-            s:"[{'f':'ID','od':'asc'}]",
-            sk:0,
-            all:"",}
+        ddl = ddl.concat(groupTypeList)
+        this.setState({ autocomplete: ddl })
+      })))
+    //    const whselect = {queryString:window.apipath + "/api/mst",
+    //        t:"Warehouse",
+    //        q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+    //        f:"ID,Code",
+    //        g:"",
+    //        s:"[{'f':'ID','od':'asc'}]",
+    //        sk:0,
+    //        all:"",}
 
-    Axios.all([Axios.get(createQueryString(whselect)),Axios.get(createQueryString(areatypeselect))]).then(
-        (Axios.spread((whresult, areatyperesult) => 
-        {
-            let ddl = [...this.state.autocomplete]
-            let whList = {}
-            let areatypelist = {}
-            whList["data"] = whresult.data.datas
-            whList["field"] = "Warehouse_Code"
-            whList["pair"] = "Warehouse_ID"
-            whList["mode"] = "Dropdown"
+    //    const areatypeselect = {queryString:window.apipath + "/api/mst",
+    //        t:"AreaMasterType",
+    //        q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+    //        f:"ID,Code",
+    //        g:"",
+    //        s:"[{'f':'ID','od':'asc'}]",
+    //        sk:0,
+    //        all:"",}
 
-            areatypelist["data"] = areatyperesult.data.datas
-            areatypelist["field"] = "AreaMasterType_Code"
-            areatypelist["pair"] = "AreaMasterType_ID"
-            areatypelist["mode"] = "Dropdown"
+    //Axios.all([Axios.get(createQueryString(whselect)),Axios.get(createQueryString(areatypeselect))]).then(
+    //    (Axios.spread((whresult, areatyperesult) => 
+    //    {
+    //        let ddl = [...this.state.autocomplete]
+    //        let whList = {}
+    //        let areatypelist = {}
+    //        whList["data"] = whresult.data.datas
+    //        whList["field"] = "Warehouse_Code"
+    //        whList["pair"] = "Warehouse_ID"
+    //        whList["mode"] = "Dropdown"
 
-            ddl = ddl.concat(whList).concat(areatypelist)
-            this.setState({autocomplete:ddl})
-        })))
+    //        areatypelist["data"] = areatyperesult.data.datas
+    //        areatypelist["field"] = "AreaMasterType_Code"
+    //        areatypelist["pair"] = "AreaMasterType_ID"
+    //        areatypelist["mode"] = "Dropdown"
+
+    //        ddl = ddl.concat(whList).concat(areatypelist)
+    //        this.setState({autocomplete:ddl})
+    //    })))
     }
 
     render(){
         const cols = [
             {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
-            {accessor: 'GroupType', Header: 'Group Type', editable:true,Filter:"text"},
-            {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+          { accessor: 'GroupType', Header: 'Group Type', updateable: false, Filter: "text", Type: "autocomplete"},
+            {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" , Filter:"dropdown"},
             
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             /* {accessor: 'Warehouse_Code', Header: 'Warehouse',updateable:false,Filter:"text", Type:"autocomplete"},

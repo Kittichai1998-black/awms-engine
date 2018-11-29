@@ -769,8 +769,7 @@ class TableGen extends Component{
           rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
         }
       }
-      if(getdata.length > 0){
-        
+      if (getdata.length > 0) {
         return <ReactAutocomplete
         inputProps={{ style: {
           width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',

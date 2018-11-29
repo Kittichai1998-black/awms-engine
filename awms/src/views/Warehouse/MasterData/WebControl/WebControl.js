@@ -21,7 +21,7 @@ class WebControl extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"WebControl",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,ElementSelector,WebPage_ID,WebPage_Code,WebPage_Name,Permission_ID,Permission_Code,Permission_Name,Status,Created,Modified",
+      f:"ID,Code,Name,Description,ElementSelector,WebPage_ID,WebPage_Code,Permission_ID,Permission_Code,Status,Created,Modified",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -32,7 +32,7 @@ class WebControl extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
-    this.uneditcolumn = ["WebPage_Code","WebPage_Name","Permission_Code","Permission_Name","Created","Modified"]
+    this.uneditcolumn = ["WebPage_Code","Permission_Code","Created","Modified"]
   }
 
   onHandleClickCancel(event){
@@ -52,7 +52,7 @@ class WebControl extends Component{
     const WebPageselect = {queryString:window.apipath + "/api/mst",
       t:"WebPage",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -61,7 +61,7 @@ class WebControl extends Component{
     const Permissionselect = {queryString:window.apipath + "/api/mst",
       t:"Permission",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,

@@ -21,7 +21,7 @@ class WebPage extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"WebPage",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,Seq,PathLV1,PathLV2,PathLV3,WebPageGroup_ID,WebPageGroup_Code,WebPageGroup_Name,Permission_ID,Permission_Code,Permission_Name,Icon,Status,Created,Modified",
+      f:"ID,Code,Name,Description,Seq,PathLV1,PathLV2,PathLV3,WebPageGroup_ID,WebPageGroup_Code,Permission_ID,Permission_Code,Icon,Status,Created,Modified",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -32,7 +32,7 @@ class WebPage extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
-    this.uneditcolumn = ["WebPageGroup_Code","WebPageGroup_Name","Permission_Code","Permission_Name","Created","Modified"]
+    this.uneditcolumn = ["WebPageGroup_Code","Permission_Code","Created","Modified"]
   }
 
   onHandleClickCancel(event){
@@ -52,7 +52,7 @@ class WebPage extends Component{
     const WebPageGroupselect = {queryString:window.apipath + "/api/mst",
       t:"WebPageGroup",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -61,7 +61,7 @@ class WebPage extends Component{
     const Permissionselect = {queryString:window.apipath + "/api/mst",
       t:"Permission",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
