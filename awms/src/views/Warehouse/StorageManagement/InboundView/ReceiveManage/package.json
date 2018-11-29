@@ -1,0 +1,6 @@
+{
+  "name": "ReceiveManage",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./IReceiveManage.js"
+}

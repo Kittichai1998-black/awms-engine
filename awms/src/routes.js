@@ -17,6 +17,16 @@ const Products = Loadable({
   loading: Loading,
 });
 
+const Pack = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Pack'),
+  loading: Loading,
+});
+
+const PackType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/PackType'),
+  loading: Loading,
+});
+
 const Barcode = Loadable({
   loader: () => import('./views/Warehouse/Barcode'),
   loading: Loading,
@@ -37,13 +47,28 @@ const Area = Loadable({
   loading: Loading,
 });
 
+const AreaType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaType'),
+  loading: Loading,
+});
+
 const AreaLocation = Loadable({
   loader: () => import('./views/Warehouse/MasterData/AreaLocation'),
   loading: Loading,
 });
 
+const AreaRoute = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaRoute'),
+  loading: Loading,
+});
+
 const Base = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Base'),
+  loading: Loading,
+});
+
+const BaseType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/BaseType'),
   loading: Loading,
 });
 
@@ -62,6 +87,21 @@ const Warehouse = Loadable({
   loading: Loading,
 });
 
+const Permission = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Permission'),
+  loading: Loading,
+});
+
+const APIServiceGroup = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/APIServiceGroup'),
+  loading: Loading,
+});
+
+const APIService = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/APIService'),
+  loading: Loading,
+});
+
 const SKUType = Loadable({
   loader: () => import('./views/Warehouse/MasterData/SKUType'),
   loading: Loading,
@@ -69,6 +109,31 @@ const SKUType = Loadable({
 
 const ObjectSize = Loadable({
   loader: () => import('./views/Warehouse/MasterData/ObjectSize'),
+  loading: Loading,
+});
+
+const JobScheduleModule = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/JobScheduleModule'),
+  loading: Loading,
+});
+
+const UnitType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/UnitType'),
+  loading: Loading,
+});
+
+const WebControl = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/WebControl'),
+  loading: Loading,
+});
+
+const WebPage = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/WebPage'),
+  loading: Loading,
+});
+
+const WebPageGroup = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/WebPageGroup'),
   loading: Loading,
 });
 
@@ -201,19 +266,31 @@ const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/mst/sku/manage', exact: true, name: 'Product', component: Products },
+  { path: '/mst/pack/manage', exact: true, name: 'Pack', component: Pack },
+  { path: '/mst/packtype/manage', exact: true, name: 'Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/customer/manage', exact: true, name: 'Customer', component: Customer },
   { path: '/mst/supplier/manage', exact: true, name: 'Supplier', component: Supplier },
   { path: '/mst/area/manage', exact: true, name: 'Area', component: Area },
+  { path: '/mst/areatype/manage', exact: true, name: 'Area Type', component: AreaType },
   { path: '/mst/arealocation/manage', exact: true, name: 'Area Location', component: AreaLocation },
   { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
+  { path: '/mst/arearoute/manage', exact: true, name: 'Area Route', component: AreaRoute },
   { path: '/mst/base/manage', exact: true, name: 'Base', component: Base },
+  { path: '/mst/basetype/manage', exact: true, name: 'Base Type', component: BaseType },
   { path: '/mst/base/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/branch/manage', exact: true, name: 'Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
+  { path: '/mst/permission/manage', exact: true, name: 'Permission', component: Permission },
+  { path: '/mst/apiservicegroup/manage', exact: true, name: 'API Service Group', component: APIServiceGroup },
+  { path: '/mst/apiservice/manage', exact: true, name: 'API Service', component: APIService },
   { path: '/mst/skutype/manage', exact: true, name: 'SKU Type', component: SKUType },
   { path: '/mst/objectsize/manage', exact: true, name: 'Object Size', component: ObjectSize },
+  { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Job Schedule Module', component: JobScheduleModule },
+  { path: '/mst/unittype/manage', exact: true, name: 'Unit Type', component: UnitType },
+  { path: '/mst/webpage/manage', exact: true, name: 'Web Page', component: WebPage },
+  { path: '/mst/webpagegroup/manage', exact: true, name: 'Web Page Group', component: WebPageGroup },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Goods Receive Document', component: InboundView },

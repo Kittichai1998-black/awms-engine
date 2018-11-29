@@ -65,7 +65,8 @@ class User extends Component{
             open: false,
             selectiondata:[],
             selectroledata:[],
-            dataUpdate : [],
+            selectroledata:[],
+            dataUpdate:[],
             rowselect:[],
         };
 
@@ -109,7 +110,6 @@ class User extends Component{
     }
 
     componentDidMount(){
-        //this.getData()
     }
 
     getData(user_id){
@@ -127,7 +127,6 @@ class User extends Component{
                 this.setState({selectuserroledata},() => this.setUserRole(user_id))
             })
         })
-        
     }
        
     setUserRole(data){
@@ -160,8 +159,6 @@ class User extends Component{
                 this.setState({User_id:data})
                 this.setState({selectroledata})
                 this.setState({selectuserroledata})
-                //console.log(this.state.selectroledata)
-                //console.log(this.state.selectuserroledata)
             }
             this.openModal()
         }
@@ -169,7 +166,6 @@ class User extends Component{
 
     openModal(){
         this.setState({ open: true })
-        //this.setUserRole(user_id)
       }
 
     closeModal() {
@@ -183,7 +179,7 @@ class User extends Component{
             obj.push({"ID":datarow.ID});
         })
         const ObjStr = JSON.stringify(obj)
-        this.setState({barcodeObj:ObjStr}, () => console.log(this.state.barcodeObj))
+        this.setState({barcodeObj:ObjStr})
     }
 
     createRoleBtn(rowdata){
@@ -247,7 +243,6 @@ class User extends Component{
             }
             this.setState({dataUpdate})
         }
-        console.log(this.state.dataUpdate)
     }
 
     render(){
@@ -263,9 +258,8 @@ class User extends Component{
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
-            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+            {show: this.state.permissionView, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
         const btnfunc = [{
@@ -300,7 +294,7 @@ class User extends Component{
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
-                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white'}} 
+                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white','max-height': '400px'}} 
                     getselection={this.getSelectionData} showPagination={false}/>
                     <Card>
                         <CardBody>

@@ -3,7 +3,7 @@ import img from '../../img/Home.jpg'
 class Dashboard extends Component{
   componentDidMount(){
     var ff = document.getElementsByClassName("app-body")
-    ff[0].style.background = "rgb(247,148,29)"
+    ff[0].style.background = "rgb(255,255,255)"
 
   }
   componentWillUnmount(){

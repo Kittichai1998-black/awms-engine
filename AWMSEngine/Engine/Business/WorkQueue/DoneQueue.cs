@@ -40,20 +40,16 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.locationCode),
-                    new KeyValuePair<string,object>("Area_ID",am.ID.Value),
+                    new KeyValuePair<string,object>("AreaMaster_ID",am.ID.Value),
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
-            if (lm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.locationCode + "'");
-            else
-                lmid = lm.ID;
 
-            var res = GenerateResult(reqVO, wmid, amid, lmid);
+            var res = GenerateResult(reqVO, Convert.ToInt64(wmid), Convert.ToInt64(amid), lm == null ? null : lm.ID);
 
             return res;
         }
 
-        private WorkQueueCriteria GenerateResult(TReq req, long? wm, long? am, long? lm)
+        private WorkQueueCriteria GenerateResult(TReq req, long wm, long am, long? lm)
         {
             var selectByID = DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[] {
                 new SQLConditionCriteria("ID", req.queueID, SQLOperatorType.EQUALS)
@@ -96,28 +92,56 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 Des_AreaLocationMaster_ID = selectByID.Des_AreaLocation_ID,
                 Priority = selectByID.Priority,
                 EventStatus = eventStatus,
-                Status = selectByID.Status
+                Status = selectByID.Status,
+                Warehouse_ID = wm,
+                AreaMaster_ID = am,
+                AreaLocationMaster_ID = lm
             };
 
             var resQueue = QueueADO.GetInstant().PUT(workQueue, this.BuVO);
 
+            var sou_lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("ID",resQueue.Sou_AreaLocationMaster_ID),
+                    new KeyValuePair<string,object>("AreaMaster_ID",resQueue.Sou_AreaMaster_ID),
+                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                }, this.BuVO).FirstOrDefault();
+
+            var des_lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("ID",resQueue.Des_AreaLocationMaster_ID),
+                    new KeyValuePair<string,object>("AreaMaster_ID",resQueue.Des_AreaMaster_ID),
+                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                }, this.BuVO).FirstOrDefault();
+
+            var pre_lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("ID",resQueue.AreaLocationMaster_ID),
+                    new KeyValuePair<string,object>("AreaMaster_ID",resQueue.AreaMaster_ID),
+                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                }, this.BuVO).FirstOrDefault();
+
             var res = new WorkQueueCriteria()
             {
-                souWarehouseCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Sou_Warehouse_ID).Code,
-                souAreaCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Sou_AreaMaster_ID).Code,
-                souLocationCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Sou_AreaLocationMaster_ID).Code,
+                souWarehouseCode =
+                this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Sou_Warehouse_ID).Code,
+                souAreaCode =
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == resQueue.Sou_AreaMaster_ID).Code,
+                souLocationCode = sou_lm == null ? null : sou_lm.Code,
 
                 desWarehouseCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Des_Warehouse_ID).Code,
-                desAreaCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Des_AreaMaster_ID).Code,
-                desLocationCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Des_AreaLocationMaster_ID).Code,
+                desAreaCode = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == resQueue.Des_AreaMaster_ID).Code,
+                desLocationCode = des_lm == null ? null : des_lm.Code,
 
                 queueID = resQueue.ID,
                 baseInfo = null, //send null to wcs
-                warehouseCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Warehouse_ID).Code,
-                areaCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.AreaMaster_ID).Code,
-                locationCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.AreaLocationMaster_ID).Code,
-                queueParentID = resQueue.Parent_WorkQueue_ID,
-                queueRefID = selectByID.RefID,
+                warehouseCode = resQueue.Warehouse_ID == 0 ? "" :
+                this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Warehouse_ID).Code,
+                areaCode = resQueue.AreaMaster_ID == 0 ? "" :
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == resQueue.AreaMaster_ID).Code,
+                locationCode = pre_lm == null ? null : pre_lm.Code,
+                queueParentID = resQueue.Parent_WorkQueue_ID == null ? null : resQueue.Parent_WorkQueue_ID,
+                queueRefID = selectByID.RefID == null ? null : selectByID.RefID,
                 queueStatus = resQueue.EventStatus,
                 seq = selectByID.Seq
             };

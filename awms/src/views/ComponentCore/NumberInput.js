@@ -24,10 +24,10 @@ export default class NumberInput extends Component{
     render(){
         return(
             <Input onChange={e => {
-                if(e.target.value !='0'){
+                
                     this.props.onChange(e.target.value);
                     this.setState({value:e.target.value})
-                }
+                
             }
             }
             value={this.state.value}

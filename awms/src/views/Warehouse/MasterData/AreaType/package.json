@@ -1,0 +1,6 @@
+{
+    "name": "AreaType",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./AreaType.js"
+}
