@@ -773,8 +773,7 @@ class TableGen extends Component{
           })
         }
       }
-      if(getdata.length > 0){
-        
+      if (getdata.length > 0) {
         return <ReactAutocomplete
         inputProps={{ style: {
           width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',

@@ -258,9 +258,8 @@ class User extends Component{
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
-            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+            {show: this.state.permissionView, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
         const btnfunc = [{

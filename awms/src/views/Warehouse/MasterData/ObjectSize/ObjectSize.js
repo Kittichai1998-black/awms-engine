@@ -108,7 +108,6 @@ class ObjectSize extends Component{
             objTypeList["field"] = "ObjectType"
             objTypeList["pair"] = "ObjectType"
             objTypeList["mode"] = "Dropdown"
-    
             ddl = ddl.concat(objTypeList)
             this.setState({autocomplete:ddl})
         })))
