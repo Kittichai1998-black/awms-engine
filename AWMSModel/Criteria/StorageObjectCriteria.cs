@@ -60,11 +60,17 @@ namespace AWMSModel.Criteria
             return mapsto;
         }
 
-        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes, string codeFocus)
+        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
+            List<ams_ObjectSize> staticObjectSizes,
+            List<ams_UnitType> staticUnitTypes,
+            string codeFocus)
         {
             return Generate(stos, staticObjectSizes, null, codeFocus);
         }
-        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes, List<ams_UnitType> staticUnitTypes, long idFocus)
+        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
+            List<ams_ObjectSize> staticObjectSizes,
+            List<ams_UnitType> staticUnitTypes,
+            long idFocus)
         {
             return Generate(stos, staticObjectSizes, staticUnitTypes, idFocus, null);
         }
