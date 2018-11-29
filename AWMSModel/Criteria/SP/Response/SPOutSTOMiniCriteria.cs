@@ -16,6 +16,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string name;
         public int warehouseID;
         public int areaID;
+        public int unitID;
         public decimal? widthM;
         public decimal? lengthM;
         public decimal? heightM;
