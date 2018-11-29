@@ -117,6 +117,11 @@ const JobScheduleModule = Loadable({
   loading: Loading,
 });
 
+const UnitType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/UnitType'),
+  loading: Loading,
+});
+
 const WebControl = Loadable({
   loader: () => import('./views/Warehouse/MasterData/WebControl'),
   loading: Loading,
@@ -283,7 +288,7 @@ const routes = [
   { path: '/mst/skutype/manage', exact: true, name: 'SKU Type', component: SKUType },
   { path: '/mst/objectsize/manage', exact: true, name: 'Object Size', component: ObjectSize },
   { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Job Schedule Module', component: JobScheduleModule },
-  { path: '/mst/webcontrol/manage', exact: true, name: 'Web Control', component: WebControl },
+  { path: '/mst/unittype/manage', exact: true, name: 'Unit Type', component: UnitType },
   { path: '/mst/webpage/manage', exact: true, name: 'Web Page', component: WebPage },
   { path: '/mst/webpagegroup/manage', exact: true, name: 'Web Page Group', component: WebPageGroup },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },

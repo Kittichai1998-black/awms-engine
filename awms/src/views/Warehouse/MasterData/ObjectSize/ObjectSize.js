@@ -64,6 +64,7 @@ class ObjectSize extends Component{
             selectMapData:[],
             dataUpdate:[],
             rowselect:[],
+            enumfield:["ObjectType"]
         };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
@@ -348,7 +349,7 @@ class ObjectSize extends Component{
           <div>
           <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                   btn={btnfunc} filterable={true} autocomplete={this.state.autocomplete} accept={true} uneditcolumn={this.uneditcolumn}
-            table="ams_ObjectSize"/>
+            table="ams_ObjectSize" enumfield={this.state.enumfield}/>
 
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>

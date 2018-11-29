@@ -666,9 +666,7 @@ class TableGen extends Component{
     const getdata = this.state.autocomplete.filter(row=>{
       return row.field  === rowdata.column.id
     })
-    //const getdata2 = getdata.filter(row=>{
 
-    //})
     if(rowdata.column.id==="ObjectType"){
       if((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined){
         rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
@@ -763,10 +761,16 @@ class TableGen extends Component{
       const getdata = this.state.autocomplete.filter(row=>{
         return row.field  === rowdata.column.id
       })
-      
-      if(rowdata.column.id==="ObjectType"){
-        if((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined){
-          rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
+      if (this.props.enumfield !== undefined){
+        const enumvalue = [...this.props.enumfield]
+        if (enumvalue.length > 0) {
+          enumvalue.forEach((row,index) => {
+            if(rowdata.column.id===row){
+              if((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined){
+                rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
+              }
+            }
+          })
         }
       }
       if(getdata.length > 0){

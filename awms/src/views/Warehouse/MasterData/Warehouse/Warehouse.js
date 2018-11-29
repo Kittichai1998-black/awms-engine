@@ -22,7 +22,7 @@ class Warehouse extends Component{
         select:{queryString:window.apipath + "/api/viw",
         t:"WarehouseMaster",
         q:"[{ 'f': 'Status', c:'!=', 'v': 2}]",
-        f:"ID,Code,Name,Description,Branch_ID,Branch_Code,Branch_Name,Status,Created,Modified",
+        f:"ID,Code,Name,Description,Branch_ID,Branch_Code,Status,Created,Modified",
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:"",
