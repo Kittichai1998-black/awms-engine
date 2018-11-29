@@ -25,7 +25,7 @@ class SKUMasterType extends Component{
           select:{queryString:window.apipath + "/api/viw",
           t:"SKUMasterType",
           q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-          f:"ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
+          f:"ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified",
           g:"",
           s:"[{'f':'ID','od':'asc'}]",
           sk:0,
@@ -39,7 +39,7 @@ class SKUMasterType extends Component{
         this.getAutocompletee = this.getAutocomplete.bind(this);
         this.getSelectionData = this.getSelectionData.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","Modified","Created"]
+        this.uneditcolumn = ["ObjectSize_Code","Modified","Created"]
       }
       onHandleClickCancel(event){
         this.forceUpdate();
@@ -88,8 +88,8 @@ displayButtonByPermission(perID){
       getAutocomplete(){
         const objectsizeselect = {queryString:window.apipath + "/api/mst",
           t:"ObjectSize",
-          q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-          f:"ID,Code",
+          q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+          f:"ID,concat(Code,' : ',Name) as Code",
           g:"",
           s:"[{'f':'ID','od':'asc'}]",
           sk:0,
@@ -138,13 +138,13 @@ displayButtonByPermission(perID){
         const cols = [
           {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
           {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
-          {accessor: 'ObjectSize_Code', Header: 'ObjectSize Code',updateable:false,Filter:"text", Type:"autocomplete"},
+          {accessor: 'ObjectSize_Code', Header: 'Default ObjectSize Code',updateable:false,Filter:"text", Type:"autocomplete"},
           {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
           {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
           /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
           //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
+          { show: this.state.permissionView, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
         
         const btnfunc = [{

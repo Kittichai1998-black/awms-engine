@@ -21,7 +21,7 @@ class Area extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"AreaMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,Warehouse_ID,Warehouse_Code,Warehouse_Name,Warehouse_Description,AreaMasterType_ID,AreaMasterType_Code,AreaMasterType_Name,AreaMasterType_Description,Status,Created,Modified",
+      f:"ID,Code,Name,Description,Warehouse_ID,Warehouse_Code,AreaMasterType_ID,AreaMasterType_Code,Status,Created,Modified",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -34,7 +34,7 @@ class Area extends Component{
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["Warehouse_Code","Warehouse_Name","Warehouse_Description","AreaMasterType_Code","AreaMasterType_Name","AreaMasterType_Description","Created","Modified"]
+    this.uneditcolumn = ["Warehouse_Code","AreaMasterType_Code","Created","Modified"]
   }
   async componentWillMount(){
     this.filterList()
@@ -78,7 +78,7 @@ class Area extends Component{
     const whselect = {queryString:window.apipath + "/api/mst",
       t:"Warehouse",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -87,7 +87,7 @@ class Area extends Component{
     const areatypeselect = {queryString:window.apipath + "/api/mst",
       t:"AreaMasterType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,

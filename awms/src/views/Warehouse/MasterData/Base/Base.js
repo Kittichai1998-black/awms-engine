@@ -23,7 +23,7 @@ class Area extends Component{
             select:{queryString:window.apipath + "/api/viw",
             t:"BaseMaster",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,BaseMasterType_Name,BaseMasterType_Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
+            f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified",
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
@@ -37,7 +37,7 @@ class Area extends Component{
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","Created","Modified"]
+        this.uneditcolumn = ["BaseMasterType_Code","ObjectSize_Code","ObjCode","PackCode","Created","Modified"]
     }
 
     onHandleClickCancel(event){
@@ -79,8 +79,8 @@ class Area extends Component{
     filterList(){
         const objselect = {queryString:window.apipath + "/api/mst",
             t:"ObjectSize",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
+            q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
+            f:"ID,concat(Code,' : ',Name) as Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
@@ -89,7 +89,7 @@ class Area extends Component{
         const basetypeselect = {queryString:window.apipath + "/api/mst",
             t:"BaseMasterType",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
+            f:"ID,concat(Code,' : ',Name) as Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,

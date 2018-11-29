@@ -59,12 +59,11 @@ displayButtonByPermission(perID){
       check = false
     }
     })
-       if(check === true){  
-          var PerButtonLoad = document.getElementById("per_button_load")
-          PerButtonLoad.remove()     
-       }else if(check === false){
-          this.setState({showbutton:"block"})
-       }
+  if (check === true) {
+    this.setState({ permissionView: false })
+  } else if (check === false) {
+    this.setState({ permissionView: true })
+  }
   }
   //permission
 
@@ -80,20 +79,21 @@ displayButtonByPermission(perID){
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
-      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
+      { accessor: 'Code', Header: 'Code', editable: true,Filter:"text", fixed: "left"},
+      { accessor: 'Name', Header: 'Name', editable: true,Filter:"text", fixed: "left"},
       //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
-      {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
-      {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+      { accessor: 'Status', Header: 'Status', editable: true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
+      { accessor: 'Created', Header: 'Create', editable: false,filterable:false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false}, */
-      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+      { accessor: 'Modified', Header: 'Modify', editable: false,filterable:false},
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
-      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
+      { show: this.state.permissionView, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" }
     ];
     const btnfunc = [{
       btntype:"Barcode",
       func:this.createBarcodeBtn
     }]
+    const view = this.state.permissionView
 
     return(
       <div>
@@ -102,13 +102,13 @@ displayButtonByPermission(perID){
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-      <div className="clearfix">
+        {/*<div className="clearfix">
           <Button id="per_button_load" style={{ background: "#ef5350", borderColor: "#ef5350",display:this.state.showbutton }}
             onClick={this.onHandleClickLoad} color="danger" className="float-right">Load ข้อมูล Customer</Button>
-      </div>
-      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
-        filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn}
-        table="ams_Customer"/> 
+      </div>*/}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+          filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view}
+          table="ams_Customer"/> 
       </div>
     )
   }

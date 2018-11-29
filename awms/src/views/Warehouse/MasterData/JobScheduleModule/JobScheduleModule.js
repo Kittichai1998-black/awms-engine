@@ -21,7 +21,7 @@ class JobScheduleModule extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"JobScheduleModule",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,JobScheduleH_ID,JobScheduleH_Code,JobScheduleH_Name,APIService_ID,APIService_Code,APIService_Name,Seq,Code,Name,Description,FailBreakFlag,Status,Created,Modified",
+      f:"ID,JobScheduleH_ID,JobScheduleH_Code,APIService_ID,APIService_Code,Seq,Code,Name,Description,FailBreakFlag,Status,Created,Modified",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -32,7 +32,7 @@ class JobScheduleModule extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
-    this.uneditcolumn = ["JobScheduleH_Code","JobScheduleH_Name","APIService_Code","APIService_Name","Created","Modified"]
+    this.uneditcolumn = ["JobScheduleH_Code","APIService_Code","Created","Modified"]
   }
 
   onHandleClickCancel(event){
@@ -52,7 +52,7 @@ class JobScheduleModule extends Component{
     const JobScheduleselect = {queryString:window.apipath + "/api/mst",
       t:"JobSchedule",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -61,7 +61,7 @@ class JobScheduleModule extends Component{
     const APIServiceselect = {queryString:window.apipath + "/api/mst",
       t:"APIService",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
