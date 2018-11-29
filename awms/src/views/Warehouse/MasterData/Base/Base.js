@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Row, Col, Input, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {Button } from 'reactstrap';
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
-import { createQueryString, AutoSelect} from '../../ComponentCore'
+import {createQueryString} from '../../ComponentCore'
 import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 
 class Area extends Component{
@@ -23,27 +23,21 @@ class Area extends Component{
             select:{queryString:window.apipath + "/api/viw",
             t:"BaseMaster",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,BaseMasterType_Name,BaseMasterType_Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
+            f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified",
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
             l:100,
             all:"",},
             sortstatus:0,
-            selectiondata: [],
-          modalstatus: false,
-          baseTypeSelect: [],
-          objectSizeSelect: [],
+            selectiondata:[]
         };
         this.getSelectionData = this.getSelectionData.bind(this)
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","Created","Modified"]
-        this.toggle = this.toggle.bind(this)
-        this.onCreateMultiBases = this.onCreateMultiBases.bind(this)
-        this.onClearInput = this.onClearInput.bind(this)
+        this.uneditcolumn = ["BaseMasterType_Code","ObjectSize_Code","ObjCode","PackCode","Created","Modified"]
     }
 
     onHandleClickCancel(event){
@@ -85,8 +79,8 @@ class Area extends Component{
     filterList(){
         const objselect = {queryString:window.apipath + "/api/mst",
             t:"ObjectSize",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
+            q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
+            f:"ID,concat(Code,' : ',Name) as Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
@@ -95,7 +89,7 @@ class Area extends Component{
         const basetypeselect = {queryString:window.apipath + "/api/mst",
             t:"BaseMasterType",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
+            f:"ID,concat(Code,' : ',Name) as Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
@@ -120,42 +114,6 @@ class Area extends Component{
             ddl = ddl.concat(objList).concat(basetypelist)
             this.setState({autocomplete:ddl})
         })))
-      const baseTypeQ = {
-        queryString: window.apipath + "/api/mst",
-        t: "BaseMasterType",
-        q: "[{ 'f': 'Status', c:'<', 'v': 2}",
-        f: "ID,Code,Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        all: "",
-      }
-        const objectSizeQ = {
-        queryString: window.apipath + "/api/mst",
-        t: "ObjectSize",
-          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
-        f: "ID,Code",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        all: "",
-      }
-
-      Axios.get(createQueryString(baseTypeQ)).then((response) => {
-        const baseTypeSelectdata = []
-        response.data.datas.forEach(row => {
-          baseTypeSelectdata.push({ label: row.Code, name: row.Name })
-        })
-        this.setState({ baseTypeSelect: baseTypeSelectdata })
-      })
-
-      Axios.get(createQueryString(objectSizeQ)).then((response) => {
-        const objectSizeSelectdata = []
-        response.data.datas.forEach(row => {
-          objectSizeSelectdata.push({ label: row.Code })
-        })
-        this.setState({ objectSizeSelect: objectSizeSelectdata })
-      })
     }
     getSelectionData(data){
         let obj = []
@@ -175,60 +133,7 @@ class Area extends Component{
             }}>Print</Button>
       }
 
-    toggle() {
-      this.setState({ modalstatus: !this.state.modalstatus });
-    }
-
-  onCreateMultiBases() {
-    console.log(this.state.baseTypeCode + " " + this.state.objectSizeCode + " "+ this.state.mName +" "+ this.state.mAmount);
-
-  }
-
-  onClearInput() {
-    this.setState({ mName: null, mAmount: null, baseTypeCode: null, objectSizeCode: null })
-  }
-  createModal() {
-    return <Modal isOpen={this.state.modalstatus}>
-      <ModalHeader toggle={this.toggle}> <span>Add Base</span></ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col xs="2">
-            <label>Base Type:</label>
-          </Col>
-          <Col xs="4">
-            <AutoSelect data={this.state.baseTypeSelect} result={e => this.setState({ baseTypeCode: e.label }, () => this.setState({ mName: e.name }))} />
-          </Col>
-          <Col xs="2">
-            <label>Object Size:</label>
-          </Col>
-          <Col xs="4">
-            <AutoSelect data={this.state.objectSizeSelect} result={e => this.setState({ objectSizeCode: e.label })} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs="2">
-            <label>Name:</label>
-          </Col>
-          <Col xs="8">
-            <Input type="text" name="mName" id="mName" placeholder="Name" value={this.state.mName} onChange={e => this.setState({ mName: e.target.value })} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs="2">
-            <label>Amount:</label>
-          </Col>
-          <Col xs="4">
-            <Input type="text" name="mAmount" id="mAmount" placeholder="0" value={this.state.mAmount} onChange={e => this.setState({ mAmount: e.target.value })}/>
-          </Col>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="primary" id="create" onClick={() => { this.onCreateMultiBases(); this.toggle(); }}>Create</Button>
-        <Button color="danger" id="cancel" onClick={() => { this.onClearInput(); this.toggle() }}>Cancel</Button>
-      </ModalFooter>
-    </Modal>
-  }
-  render() {
+    render(){
         const cols = [
             {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
             {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text", fixed: "left"},
@@ -262,12 +167,8 @@ class Area extends Component{
             autocomplete = data field ที่ต้องการทำ autocomplete
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
-            createModal = Box เพิ่มข้อมูลBaseแบบหลายเเถว
+        
           */}
-            {/*this.createModal()*/}
-            <div className="clearfix">
-              <Button className="float-right" color="success" style={{ width: 200, background: "#66bb6a", borderColor: "#66bb6a" }} type="button" onClick={() => this.toggle()}>Double Add</Button>
-              </div>
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
             filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} printbtn={view}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}

@@ -71,6 +71,7 @@ class TableGen extends Component{
       uneditable:[],
       datetime:moment(),
       autocomplete:[],
+      autocomplete2:[],
       rowselect:[],
       selectAll:false,
       currentPage: 1,
@@ -109,7 +110,7 @@ class TableGen extends Component{
     else{
       this.queryInitialData(nextProps.data);
     }
-    this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
+    this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete, })
   }
 
   componentDidUpdate(){
@@ -350,7 +351,7 @@ class TableGen extends Component{
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
           this.queryInitialData(this.state.dataselect);
-        }).then(() => Axios.post(window.apipath + "/api/mst/loadstatic"))
+        })
   
         this.setState({dataedit:[]})
       }
@@ -661,10 +662,16 @@ class TableGen extends Component{
   }
 
   createAutoCompleteDownshift(rowdata){
+
     const getdata = this.state.autocomplete.filter(row=>{
       return row.field  === rowdata.column.id
     })
-    //console.log(getdata)
+
+    if(rowdata.column.id==="ObjectType"){
+      if((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined){
+        rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
+      }
+    }
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
       initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
@@ -754,8 +761,20 @@ class TableGen extends Component{
       const getdata = this.state.autocomplete.filter(row=>{
         return row.field  === rowdata.column.id
       })
-      if(getdata.length > 0){
-        return <ReactAutocomplete 
+      if (this.props.enumfield !== undefined){
+        const enumvalue = [...this.props.enumfield]
+        if (enumvalue.length > 0) {
+          enumvalue.forEach((row,index) => {
+            if(rowdata.column.id===row){
+              if((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined){
+                rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
+              }
+            }
+          })
+        }
+      }
+      if (getdata.length > 0) {
+        return <ReactAutocomplete
         inputProps={{ style: {
           width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',
           backgroundPosition: "8px 8px",

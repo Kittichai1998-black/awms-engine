@@ -33,16 +33,20 @@ namespace AWMSEngine.Engine.Business.Issued
             List<amt_DocumentItem> docItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID", reqVO.docID, this.BuVO);
             amt_Document doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(reqVO.docID, this.BuVO);
 
+
             var mapSto = reqVO.mapsto != null ? reqVO.mapsto :
                 ADO.StorageObjectADO.GetInstant()
                 .Get(reqVO.scanCode, doc.Sou_Warehouse_ID, doc.Sou_AreaMaster_ID, false, true, this.BuVO);
-            if (mapSto == null)
+
+            var firstMapSto = StorageObjectCriteria.GetMapStoLastFocus(mapSto);
+
+            if (firstMapSto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการ " + reqVO.scanCode + " ในคลังสินค้า");
-            if (mapSto.type == StorageObjectType.PACK)
+            if (firstMapSto.type == StorageObjectType.PACK)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการ " + reqVO.scanCode + " ในคลังสินค้า");
-            if (mapSto.eventStatus == StorageObjectEventStatus.IDEL)
+            if (firstMapSto.eventStatus == StorageObjectEventStatus.IDEL)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการ " + reqVO.scanCode + " ในคลังสินค้า");
-            mapSto.isFocus = true;
+            firstMapSto.isFocus = true;
 
             var baseConso = string.IsNullOrWhiteSpace(reqVO.baseCode) ? null :
                 new CheckBaseCanUseInDocument().Execute(this.Logger, this.BuVO, new CheckBaseCanUseInDocument.TReq() { baseCode = reqVO.baseCode, docID = doc.ID.Value });
@@ -50,13 +54,13 @@ namespace AWMSEngine.Engine.Business.Issued
             if (!string.IsNullOrWhiteSpace(reqVO.baseCode) && baseConso == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Base Conso Code " + reqVO.baseCode + " ไม่ถูกต้อง");
 
-            var mapStoTree = mapSto.ToTreeList();
+            var mapStoTree = firstMapSto.ToTreeList();
 
             if (!docItems.Any(x => mapStoTree.Any(y => y.mstID == x.PackMaster_ID && y.type == StorageObjectType.PACK)))
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "รายการ " + reqVO.scanCode + " ไม่มีสินค้าตรงกับเอกสาร " + doc.Code);
-            if (mapSto.eventStatus == StorageObjectEventStatus.PICKING || mapSto.eventStatus == StorageObjectEventStatus.PICKED)
+            if (firstMapSto.eventStatus == StorageObjectEventStatus.PICKING || firstMapSto.eventStatus == StorageObjectEventStatus.PICKED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "รายการ " + reqVO.scanCode + " ได้ถูก Picking แล้ว");
-            if (mapSto.eventStatus == StorageObjectEventStatus.CONSOLIDATING || mapSto.eventStatus == StorageObjectEventStatus.CONSOLIDATED)
+            if (firstMapSto.eventStatus == StorageObjectEventStatus.CONSOLIDATING || firstMapSto.eventStatus == StorageObjectEventStatus.CONSOLIDATED)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "รายการ " + reqVO.scanCode + " ได้ถูก Consolidate แล้ว");
 
             var diStos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
@@ -68,7 +72,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
             StorageObjectCriteria stoConso = null;
             //Pick ทั้ง Base
-            if (mapSto.code == reqVO.scanCode && baseConso == null && mapSto.type == StorageObjectType.BASE &&
+            if (firstMapSto.code == reqVO.scanCode && baseConso == null && firstMapSto.type == StorageObjectType.BASE &&
                 docItems.TrueForAll(x =>
                         (x.Quantity - diStos.Count(y => y.DocumentItem_ID == x.ID)) >=//จำนวนสินค้าที่ยังไม่ pick
                         mapStoTree.Count(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID) //จำนวนสินค้าที่จะหยิบ
@@ -82,19 +86,19 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 if (baseConso != null)
                 {
-                    stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, mapSto.warehouseID, mapSto.areaID,mapSto.batch,mapSto.lot, false, false, this.BuVO);
+                    stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, firstMapSto.warehouseID, firstMapSto.areaID,firstMapSto.batch,firstMapSto.lot, false, false, this.BuVO);
                     if (!stoConso.id.HasValue)
-                        ADO.StorageObjectADO.GetInstant().Create(stoConso, mapSto.batch, mapSto.lot, this.BuVO);
-                    mapSto.parentID = stoConso.id;
+                        ADO.StorageObjectADO.GetInstant().Create(stoConso, firstMapSto.batch, firstMapSto.lot, this.BuVO);
+                    firstMapSto.parentID = stoConso.id;
                 }
                 else
                 {
-                    stoConso = mapSto.Clone();
-                    mapSto.parentID = null;
+                    stoConso = firstMapSto.Clone();
+                    firstMapSto.parentID = null;
                 }
-                ADO.StorageObjectADO.GetInstant().PutV2(mapSto, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().PutV2(firstMapSto, this.BuVO);
                 ADO.StorageObjectADO.GetInstant()
-                    .UpdateStatusToChild(mapSto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.CONSOLIDATED, this.BuVO);
+                    .UpdateStatusToChild(firstMapSto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.CONSOLIDATED, this.BuVO);
 
                 docItems.ForEach(x =>
                 {
@@ -107,15 +111,15 @@ namespace AWMSEngine.Engine.Business.Issued
                 });
             }
             //Pick สินค้าใน Base
-            else if (mapSto.code != reqVO.scanCode)
+            else if (firstMapSto.code != reqVO.scanCode)
             {
                 if (baseConso != null)
                 {
-                    stoConso = ADO.StorageObjectADO.GetInstant().Get(baseConso.Code, mapSto.warehouseID, mapSto.areaID, false, false, this.BuVO);
+                    stoConso = ADO.StorageObjectADO.GetInstant().Get(baseConso.Code, firstMapSto.warehouseID, firstMapSto.areaID, false, false, this.BuVO);
                     if (stoConso == null)
-                        stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, mapSto.warehouseID, mapSto.areaID,mapSto.batch,mapSto.lot, false, false, this.BuVO);
+                        stoConso = ADO.StorageObjectADO.GetInstant().GetFree(baseConso.Code, firstMapSto.warehouseID, firstMapSto.areaID,firstMapSto.batch,firstMapSto.lot, false, false, this.BuVO);
                     if (!stoConso.id.HasValue)
-                        ADO.StorageObjectADO.GetInstant().Create(stoConso, mapSto.batch, mapSto.lot, this.BuVO);
+                        ADO.StorageObjectADO.GetInstant().Create(stoConso, firstMapSto.batch, firstMapSto.lot, this.BuVO);
                 }
                 else if (reqVO.amount > 1)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนสินค้าที่ต้องการ Picking มากกว่า 1 ชิ้น จำเป็นต้องเลื่อกกล่อง Conso");
@@ -134,8 +138,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 var mapStoPickingList = mapStoTree
                     .Where(x => x.code == reqVO.scanCode &&
-                        x.parentID == mapSto.id &&
-                        x.parentType == mapSto.type &&
+                        x.parentID == firstMapSto.id &&
+                        x.parentType == firstMapSto.type &&
                         x.eventStatus != StorageObjectEventStatus.CONSOLIDATED);//เลือก Pick รายการที่อยู่ภายใต้กล่องที่เลือก 1LV
 
                 if (mapStoPickingList.Count() < reqVO.amount)
@@ -191,7 +195,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 });
 
             TRes res = new TRes() {
-                mapsto = ADO.StorageObjectADO.GetInstant().Get(mapSto.id.Value, mapSto.type, false, true, this.BuVO),
+                mapsto = ADO.StorageObjectADO.GetInstant().Get(firstMapSto.id.Value, firstMapSto.type, false, true, this.BuVO),
                 mapstoConso = stoConso == null ? null : ADO.StorageObjectADO.GetInstant().Get(stoConso.id.Value, stoConso.type, false, true, this.BuVO)
             };
 
