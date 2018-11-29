@@ -978,7 +978,7 @@ class TableGen extends Component{
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
             else
-              row.Cell = (e) => this.datetimeBody(e.value)
+              row.Cell = (e) => this.datetimeBody(e.value,row.dateformat)
           }
           else if(row.Type === "datetimelog"){
             row.Cell = (e) => this.datetimelog(e.value)
