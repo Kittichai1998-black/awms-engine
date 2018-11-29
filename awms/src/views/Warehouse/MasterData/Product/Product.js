@@ -25,7 +25,8 @@ class ListProduct extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"SKUMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,SKUMasterType_ID,concat(SKUMasterType_Code,' : ',SKUMasterType_Name) as SKUMasterType_Code,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified",
+        f: "ID,SKUMasterType_ID,SKUMasterType_Code,UnitType_ID,UnitType_Code,UnitType_Name,UnitType_Description,Code,"+
+        "Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -39,7 +40,7 @@ class ListProduct extends Component{
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["SKUMasterType_Code","SKUMasterType_Name","UnitType_Code","UnitType_Name","UnitType_Description","Modified","Created"]
+    this.uneditcolumn = ["SKUMasterType_Code", "SKUMasterType_Name", "UnitType_Code", "UnitType_Name", "UnitType_Description", "Created", "Modified", "Revision","ObjectSize_Code"]
   }
 
   onHandleClickCancel(event){
@@ -60,29 +61,21 @@ class ListProduct extends Component{
 displayButtonByPermission(perID){
 
   this.setState({perID:perID})
-  let check = 0
+  let check = false
   perID.forEach(row => {
       if(row === 42){
-        check = 0
+        check = true
       }if(row === 43){
-        check = 1
+        check = false
       }if(row === 44){
-        check = 2
+        check = false
       }
     })
-       if(check === 0){  
-          var PerButtonExport = document.getElementById("per_button_export")
-          PerButtonExport.remove()     
-          var PerButtonLoad = document.getElementById("per_button_load")
-          PerButtonLoad.remove()           
-       }else if(check === 1){
-          var PerButtonExport = document.getElementById("per_button_export")
-          PerButtonExport.remove()     
-          var PerButtonLoad = document.getElementById("per_button_load")
-          PerButtonLoad.remove()
-       }else {
-          this.setState({showbutton:"block"})
-       }
+    if (check === true) {
+      this.setState({ permissionView: false })
+    } else if (check === false) {
+      this.setState({ permissionView: true })
+    }  
   }
   //permission
   componentWillUnmount(){
@@ -107,28 +100,45 @@ displayButtonByPermission(perID){
     const packselect = {queryString:window.apipath + "/api/mst",
       t:"SKUMasterType",
       q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
       all:"",}
+    const objectsizeselect = {
+      queryString: window.apipath + "/api/mst",
+      t: "ObjectSize",
+      q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+      f: "ID,concat(Code,' : ',Name) as Code",
+      g: "",
+      s: "[{'f':'ID','od':'asc'}]",
+      sk: 0,
+      all: "",
+    }
 
-    Axios.all([Axios.get(createQueryString(packselect)),Axios.get(createQueryString(unitselect))]).then(
-      (Axios.spread((packresult, unitresult) => 
+    Axios.all([Axios.get(createQueryString(packselect)), Axios.get(createQueryString(unitselect)), Axios.get(createQueryString(objectsizeselect))]).then(
+      (Axios.spread((packresult, unitresult, objectsizeresult) => 
     {
       let ddl = this.state.autocomplete
       let packList = {}
-      let unitList = {}
+        let unitList = {}
+        let objectsizeList = {}
       packList["data"] = packresult.data.datas
       packList["field"] = "SKUMasterType_Code"
       packList["pair"] = "SKUMasterType_ID"
       packList["mode"] = "Dropdown"
+
       unitList["data"] = unitresult.data.datas
       unitList["field"] = "UnitType_Code"
       unitList["pair"] = "UnitType_ID"
       unitList["mode"] = "Dropdown"
 
-      ddl = ddl.concat(packList).concat(unitList)
+        objectsizeList["data"] = objectsizeresult.data.datas
+        objectsizeList["field"] = "ObjectSize_Code"
+        objectsizeList["pair"] = "ObjectSize_ID"
+        objectsizeList["mode"] = "Dropdown"
+
+        ddl = ddl.concat(packList).concat(unitList).concat(objectsizeList)
       this.setState({autocomplete:ddl})
     })))
   }
@@ -144,17 +154,28 @@ displayButtonByPermission(perID){
 
   render(){
     const cols = [
-      {accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter:"text", fixed: "left"},
+      //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
+      { accessor: 'SKUMasterType_Code', Header: 'SKU Type', updateable: false, Filter: "text", Type: "autocomplete" },
       {accessor: 'Code', Header: 'Code', editable:false,Filter:"text",},
-      {accessor: 'Name', Header: 'Name', editable:false,Filter:"text",},
+      { accessor: 'Name', Header: 'Name', editable: true,Filter:"text",},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
-      {accessor: 'Status', Header: 'Status', editable:false, Type:"checkbox" ,Filter:"dropdown"},
-      {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", },
-      {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+      { accessor: 'UnitType_Code', Header: 'Unit Type',  Filter: "text", Type: "autocomplete" },
+      { accessor: 'WeightKG', Header: 'Weight (KG)', editable: true, datatype: "int", Filter: "text" },
+      { accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int", Filter: "text"},
+      { accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int", Filter: "text"},
+      { accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int", Filter: "text" },
+      { accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
+      { accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
+      { accessor: 'ObjectSize_Code', Header: 'ObjectSize Code', Filter: "text", Type: "autocomplete" },
+
+      
+
+      { accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
+      { accessor: 'Created', Header: 'Create', filterable:false},
       /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
       //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      /* {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"}, */
+      //{ show: this.state.permissionView, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
     ];
     
     const btnfunc = [{
@@ -162,7 +183,7 @@ displayButtonByPermission(perID){
       btntype:"Barcode",
       func:this.createBarcodeBtn
     }]
-
+    const view = this.state.permissionView
     return(
       <div>
       {/*
@@ -176,24 +197,12 @@ displayButtonByPermission(perID){
         getselection = เก็บค่าที่เลือก
     
       */}
-        <div className="clearfix" style={{display:this.state.showbutton}}>
-          <Button id="per_button_load" className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} onClick={this.onHandleClickLoad} color="danger">Load ข้อมูลสินค้า</Button>
-          <Button id="per_button_export" className="float-right" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }} color="primary" onClick={() => { 
-            let data1 = {"exportName":"ProductToShop","whereValues":[]}
-            api.post(window.apipath + "/api/report/export/fileServer", data1)
-          }}>Export Data</Button>
- 
-        </div>
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
-        filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} 
-        btn={btnfunc} uneditcolumn={this.uneditcolumn}
-         table="ams_SKUMaster"/>
+         
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+          filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={view}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          table="ams_SKUMaster"/>
 
-        {/* <Card>
-          <CardBody style={{textAlign:'right'}}>
-            <Button style={{ background: "#ef5350", borderColor: "#ef5350", width: '150px' }} onClick={this.onHandleClickLoad} color="danger"className="mr-sm-1">Load ข้อมูลสินค้า</Button>
-          </CardBody>
-        </Card> */}
       </div>
     )
   }
