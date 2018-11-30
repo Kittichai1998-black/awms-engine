@@ -29,10 +29,12 @@ class UnitType extends Component{
         all:"",},
         sortstatus:0,
         selectiondata:[],        
+        enumfield:["ObjectType"]
        
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-      this.uneditcolumn = ["Created","Modified"]
+      this.filterList = this.filterList.bind(this)
+      this.uneditcolumn = ["Created", "Modified"]
     }
 
     onHandleClickCancel(event){
@@ -40,18 +42,39 @@ class UnitType extends Component{
         event.preventDefault();
     }
 
+  componentWillMount() {
+    this.filterList()
+  }
 
-    
     componentWillUnmount(){
         Axios.isCancel(true);
     }
+  filterList() {
+    const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
+    const objType = []
+    Axios.all([Axios.get(createQueryString(objTypeSelect))]).then(
+      (Axios.spread((result) => {
+        result.data.forEach(row => {
+          objType.push({ ID: row.value, Code: row.name })
+        })
 
+        let ddl = [...this.state.autocomplete]
+        let objTypeList = {}
+        objTypeList["data"] = objType
+        objTypeList["field"] = "ObjectType"
+        objTypeList["pair"] = "ObjectType"
+        objTypeList["mode"] = "Dropdown"
+        ddl = ddl.concat(objTypeList)
+        this.setState({ autocomplete: ddl })
+      })))
+
+  } 
 
     render(){
         const cols = [
             {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
-            {accessor: 'ObjectType', Header: 'Object Type', editable:true,Filter:"text"},
+          { accessor: 'ObjectType', Header: 'Object Type', updateable: false, Filter: "text", Type: "autocomplete" },
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
             
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
@@ -79,7 +102,7 @@ class UnitType extends Component{
         */}
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                 filterable={true} autocomplete={this.state.autocomplete} accept={true}
-                btn={btnfunc} uneditcolumn={this.uneditcolumn}
+              btn={btnfunc} uneditcolumn={this.uneditcolumn} enumfield={this.state.enumfield}
                 table="ams_UnitType"/>
         </div>
         )

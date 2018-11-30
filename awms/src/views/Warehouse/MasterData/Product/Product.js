@@ -155,7 +155,7 @@ displayButtonByPermission(perID){
       { accessor: 'Name', Header: 'Name', editable: true,Filter:"text",},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
       { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
-      { accessor: 'WeightKG', Header: 'Weight (KG)', editable: true, datatype: "int" },
+      { accessor: 'WeightKG', Header: 'Weight (Kg.)', editable: true, datatype: "int" },
       { accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
       { accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
       { accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},
