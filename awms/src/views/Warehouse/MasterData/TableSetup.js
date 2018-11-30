@@ -306,7 +306,7 @@ class TableGen extends Component{
     
     this.setState({data:adddata.sort((a,b) => a.ID - b.ID)});
   }
-
+ 
   updateData(){
       const dataedit = this.state.dataedit
       if(dataedit.length > 0){
@@ -334,6 +334,61 @@ class TableGen extends Component{
               }
               row[col.accessor] = "@@sql_gen_password,"+row[col.accessor]+","+guidstr
               row["SoftPassword"] = guidstr
+            }
+            //check ช่องกรอก Bank bay level gate
+            if (this.props.areagrouptype === 1) {
+              if (col.accessor === "Bank") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bank");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Bay") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bay");
+                  delete row["Code"]
+
+                }
+              }
+              if (col.accessor === "Level") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Level");
+                  delete row["Code"]
+
+                }
+              }
+            } else if (this.props.areagrouptype === 2) {
+              if (col.accessor === "Gate") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Gate");
+                  delete row["Code"]
+                }
+              }
+            } else {
+              if (col.accessor === "Bank") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bank");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Bay") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bay");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Level") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Level");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Gate") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Gate");
+                  delete row["Code"]
+                }
+              }
             }
           })
 
@@ -600,11 +655,25 @@ class TableGen extends Component{
   onEditValueAutoCode(rowdata,value,field){
     if (field==="Bank"){
       var codestr = (this.props.autocode)+","+value+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
-    }else if(field==="Bay"){
-      var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+value+","+rowdata.row["Level"]
-    }else if(field==="Level"){
+    } else if (field === "Bay") {
+      let conv = value === '' ? 0 : value
+      const type = isInt(conv)
+      if (type) {
+        var codestr = (this.props.autocode) + "," + rowdata.row["Bank"] + "," + value + "," + rowdata.row["Level"]
+      }
+      else {
+        alert("เฉพาะตัวเลขเท่านั้น")
+      }
+    } else if (field === "Level") {
+      let conv = value === '' ? 0 : value
+      const type = isInt(conv)
+      if (type) {
       var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+value
-    }else if(field==="Gate"){
+      }
+      else {
+        alert("เฉพาะตัวเลขเท่านั้น")
+      }
+    } else if (field === "Gate") {
       var codestr = (this.props.autocode)+","+value
     }
     this.onEditorValueChange(rowdata, this.props.areamaster,"AreaMaster_ID")
@@ -612,7 +681,7 @@ class TableGen extends Component{
     this.onEditorValueChange(rowdata, value, rowdata.column.id)
   }
 
-  autoGenLocationCode(rowdata){
+  autoGenLocationCode(rowdata) {
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
     onChange={(e) => {this.onEditValueAutoCode(rowdata,e.target.value,rowdata.column.id)}} />
   }
@@ -991,8 +1060,7 @@ class TableGen extends Component{
           else if(row.editable && (row.body === undefined || !row.body)){
             row.Cell = (e) => (this.inputTextEditor(e))
           }
- 
-                 
+
           if(row.Type === "datetime"){
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
