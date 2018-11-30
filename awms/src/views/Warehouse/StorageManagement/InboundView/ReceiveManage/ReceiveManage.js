@@ -70,6 +70,7 @@ class ReceiveManage extends Component{
     this.DateNow = moment()
     this.addIndex = 0
     this.createAutoComplete = this.createAutoComplete.bind(this)
+    this.Addbutton = this.Addbutton.bind(this)
 
     this.branchselect = {queryString:window.apipath + "/api/mst",
       t:"Branch",
@@ -90,33 +91,57 @@ class ReceiveManage extends Component{
     all:"",}
   }
   componentDidMount(){  
+
     this.initialData()    
+
        }
   initialData(){
-    Axios.get(createQueryString(this.branchselect)).then(branchresult => {
-      this.setState({auto_branch : branchresult.data.datas, addstatus:false }, () => {
-        const auto_branch = []
-        this.state.auto_branch.forEach(row => {
-          auto_branch.push({value:row.ID, label:row.Code + ' : ' + row.Name })
-        })
-        this.setState({auto_branch,auto_Desbranch:Clone(auto_branch)})
- 
+    const values = queryString.parse(this.props.location.search)
+    this.setState({check:values.ID})
+    if(values.ID !== undefined){
+      this.setState({pageID:values.ID,addstatus:true,})
+        Axios.get(window.apipath + "/api/wm/received/doc?docID=" + values.ID).then((rowselect1) => {
+        if(rowselect1.data._result.status === 0){
+          this.setState({data:[]})
+        }
+        else{
+          this.setState({data:[rowselect1.data.document]})
+          this.state.data.forEach(row => {
+            this.setState({souBranchName:row.souBranchName,desBranchName:row.desBranchName,
+            souWareName:row.souWarehouseName,desWareName:row.desWarehouseName,batchName:row.batch,
+            lotName:row.lot,remarkName:row.remark,ref1Name:row.ref1,ref2Name:row.ref2,codeDoc:row.code,
+            documentDate:moment(row.documentDate).format("DD-MM-YYYY"),documentItems:row.documentItems
+          })            
+          })   
+        }
       })
-    })
+    }else{
+
     Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
       this.setState({autocomplete:rowselect2.data.datas, autocompleteUpdate:Clone(rowselect2.data.datas),
         adddisplay:"inline-block"})
     })
   }
+    Axios.get(createQueryString(this.branchselect)).then(branchresult => {
+      this.setState({auto_branch : branchresult.data.datas, addstatus:false }, () => {
+        const auto_branch = []
+        this.state.auto_branch.forEach(row => {
+          auto_branch.push({value:row.ID, label:row.Code + ' : ' + row.Name,code:row.Code })
+        })
+        this.setState({auto_branch,auto_Desbranch:Clone(auto_branch)})
+ 
+      })
+    })
+  }
 
-  genWarehouseData(data){
+  genWarehouseData(data){ 
     if(data){
       const warehouse = this.warehouseselect
       warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
       Axios.get(createQueryString(warehouse)).then((res) => {
         const auto_warehouse = []
         res.data.datas.forEach(row => {
-          auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+          auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name,Warecode:row.Code })
         })
         this.setState({auto_warehouse})
       })
@@ -130,7 +155,7 @@ class ReceiveManage extends Component{
       Axios.get(createQueryString(warehouse)).then((res) => {
         const auto_Deswarehouse = []
         res.data.datas.forEach(row => {
-          auto_Deswarehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+          auto_Deswarehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name,DesWarecode:row.Code  })
         })
         this.setState({auto_Deswarehouse})
       })
@@ -148,60 +173,52 @@ class ReceiveManage extends Component{
 
   createDocument(){
     let acceptdata = []
-    console.log(this.state.data)
-    this.state.data.forEach(row => {
-      if (row.id > 0) 
+    this.state.data.forEach(row => {  
+      let qty = row.PackQty === "" ? 0 : row.PackQty;
+      if (row.id > 0 && qty > 0){
       acceptdata.push({
-        packID: row.id,
-        packQty: row.PackQty,
+        skuCode: null,
+        packItemQty:null,
+        packCode:row.PackItem,
+        quantity: row.PackQty,
+        expireDate:null,
+        productionDate:null,
+        ref1:null,
+        ref2:null,
+        ref3:null,
+        options:null
       })
-    })
-    let postdata = {
-      refID:'', forCustomerID:null, batch:null, lot:null,
-      souBranchID:this.state.branch,souWarehouseID:this.state.warehouse,souAreaMasterID:null,
-      desCustomerID:this.state.customer,desSupplierID:null,
-      actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
-      remark:this.state.remark,issueItems:acceptdata
-    }
-    if (acceptdata.length > 0) {
-      Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
-        if (res.data._result.status === 1) {
-          this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
-          window.location.reload()
-        }
-      })
-    }
-  }
-
-  renderDocumentStatus(){
-    const res = DocumentEventStatus.filter(row => {
-      return row.code === this.state.documentStatus
-    })
-    return res.map(row => row.status)
-  }
-
-  genWarehouseData(data){
-    if(data){
-      const warehouse = this.warehouseselect
-      warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
-      Axios.get(createQueryString(warehouse)).then((res) => {
-        const auto_warehouse = []
-        res.data.datas.forEach(row => {
-          auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+      let postdata = {
+        refID:null, forCustomerCode:null, batch:this.state.batch, lot:this.state.lot,
+        souSupplierCode:null,souCustomerCode:null,
+        souBranchCode:this.state.branchCode,souWarehouseCode:this.state.WareCode,souAreaMasterCode:null,
+        desBranchCode:this.state.DesbranchCode,desWarehouseCode:this.state.DesWareCode,desAreaMasterCode:null,
+        actionTime:null,documentDate:this.DateNow.format("YYYY/MM/DD"),
+        remark:this.state.remark,ref1:this.state.ref1,ref2:this.state.ref2,
+        receiveItems:acceptdata
+      }
+      if (acceptdata.length > 0) {
+        Axios.post(window.apipath + "/api/wm/received/doc", postdata).then((res) => {
+          if (res.data._result.status === 1) {
+            this.props.history.push('/doc/gr/manage?ID=' + res.data.ID)
+            window.location.reload()
+          }
         })
-        this.setState({auto_warehouse})
-      })
+      }
+    }else{
+      alert("Quantity is null")
     }
-  }
+    }) 
+    }
 
   inputCell(field, rowdata){
-    return <NumberInput value={rowdata.value}
+    return <NumberInput value={rowdata.value} 
     onChange={(e) => {this.editData(rowdata, e, "PackQty")}}/>
   }
   
   addData(){
     const data = this.state.data
-    data.push({id:this.addIndex,PackItem:"",PackQty:1})
+    data.push({id:this.addIndex,PackItem:"",PackQty:1,UnitType:""})
     this.addIndex -= 1
     this.setState({data})
   }
@@ -211,13 +228,7 @@ class ReceiveManage extends Component{
     if(value !== ""){
       if(rowdata.column.datatype === "int"){
         let conv = value === '' ? 0 : value
-        const type = isInt(conv)
-        if(type){
-          data[rowdata.index][field] = (conv === 0 ? null : conv);
-        }
-        else{
-          alert("??")
-        }
+        data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else{
         data[rowdata.index][field] = value.Code;
@@ -236,11 +247,14 @@ class ReceiveManage extends Component{
     })
     this.setState({autocomplete:res})
     }
-    else{
+    else if (rowdata.column.datatype !== "int"){
       data[rowdata.index][field] = "";
       data[rowdata.index]["SKU"] = "";
       data[rowdata.index]["UnitType"] = "";
       data[rowdata.index]["id"] = "";
+    }
+    else if (rowdata.column.datatype === "int") {
+      data[rowdata.index][field] = "";
     }
     this.setState({ data });
   }
@@ -248,6 +262,7 @@ class ReceiveManage extends Component{
   createText(data){
     return <span>{data}</span>
   }
+
   createAutoComplete(rowdata) {
     if (!this.state.readonly) {
       const style = {
@@ -307,20 +322,21 @@ class ReceiveManage extends Component{
     }
   }
 
+  Addbutton(){
+    return <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus}>Add</Button>
+  }
+
+
   render(){
     
     const style={width:"100px", textAlign:"right", paddingRight:"10px"}
     let cols
     if(this.state.pageID){
       cols = [ 
-        {accessor:"skuCode",Header:"skuCode"},
+        {accessor:"packMaster_Code",Header:"Pack Item", Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>, width:550},
         //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
-        {accessor:"packItemQty",Header:"packItemQty"},
-        {accessor:"packCode",Header:"packCode"},
-        {accessor:"quantity",Header:"quantity" },
-        {accessor:"expireDate",Header:"expireDate"},
-        {accessor:"productionDate",Header:"productionDate"}
-        
+        {accessor:"quantity",Header:"PackQty", Cell: (e) => <span>{e.original.quantity}</span>},
+        {accessor:"unitType_Name",Header:"UnitType", Cell: (e) => <span>{e.original.unitType_Name}</span>}       
       ]
     }
     else{
@@ -328,8 +344,8 @@ class ReceiveManage extends Component{
         {accessor:"PackItem",Header:"Pack Item", editable:true, Cell: (e) => this.createAutoComplete(e), width:550}, 
         //{accessor:"SKU",Header:"SKU",},
         {accessor:"PackQty",Header:"PackQty", editable:true, Cell: e => this.inputCell("qty", e), datatype:"int"},
+        {accessor:"UnitType",Header:"UnitType",},
         {Cell:(e) => <Button onClick={()=>{
-          console.log(this.state.data)
           const data = this.state.data;
           data.forEach((row, index)=>{
             if(row.id === e.original.id){
@@ -354,50 +370,59 @@ class ReceiveManage extends Component{
     return(
       <div>
         <div className="clearfix">
+          <div className="float-right"> 
+    <div><label style={{width:"100px", textAlign:"right", paddingRight:"10px"}}>Receive No :</label>{this.state.pageID ?<span>{this.state.codeDoc}</span>:<span>(Auto Generate)</span>}</div>        
+          <div><label>Document Date : </label>{this.state.pageID ?<span> {this.state.documentDate}</span>:<span> {this.DateNow.format("YYYY/MM/DD")}</span>}</div>  
+          </div>
+      </div>
+        <div className="clearfix">
           <Row>
-            <div className="col-4">
-              <label style={style}>Batch: </label><Input onChange={(e) => this.setState({batch:e.target.value})} style={{display:"inline-block", width:"200px"}} /><br></br>
-              <label style={style}>Lot: </label><Input onChange={(e) => this.setState({lot:e.target.value})} style={{display:"inline-block", width:"200px"}} />
-              <label style={style}>Remark: </label><Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"200px"}} />
-              
+            <div className="col-6">
+                <div className=""><label style={{width:"150px", display:"inline-block"}}>SourceBranch: </label>{this.state.pageID ? this.createText(this.state.souBranchName) : 
+                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label,"branchCode":e.code}, () => {this.genWarehouseData(this.state.branch)})}/></div>}</div>     
+                <div className=""><label style={{width:"150px", display:"inline-block"}}>DestinationBranch: </label>{this.state.pageID ? this.createText(this.state.desBranchName) : 
+                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_Desbranch} result={(e) => this.setState({"Desbranch":e.value, "Desbranchresult":e.label,"DesbranchCode":e.code}, () => {this.genDesWarehouseData(this.state.Desbranch)})}/></div>}</div>          
             </div>
-            <div className="col-8">
-            <Row>
-              <Col xs="6">      
-                <div className=""><label style={{width:"150px", display:"inline-block"}}>SourceBranch: </label>{this.state.pageID ? this.createText(this.state.data.souBranchName) : 
-                  <div style={{width:"190px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label}, () => {this.genWarehouseData(this.state.branch)})}/></div>}</div>      
-              </Col>
-              <Col xs="6"><div className=""><label style={{width:"150px", display:"inline-block"}}>DestinationBranch: </label>{this.state.pageID ? this.createText(this.state.data.souBranchName) : 
-                  <div style={{width:"190px", display:"inline-block"}}><AutoSelect data={this.state.auto_Desbranch} result={(e) => this.setState({"Desbranch":e.value, "Desbranchresult":e.label}, () => {this.genDesWarehouseData(this.state.Desbranch)})}/></div>}</div>  
-              </Col>
-            </Row>
-            <Row>
-              <Col xs="6">      
-                <div className=""><label style={{width:"150px", display:"inline-block"}}>SourceWarehouse: </label>{this.state.pageID ? this.createText(this.state.data.souWarehouseName) : 
-                  <div style={{width:"190px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label})}/></div>}</div>      
-              </Col>
-              <Col xs="6"><div className=""><label style={{width:"150px", display:"inline-block"}}>DestinationWarehouse: </label>{this.state.pageID ? this.createText(this.state.data.souWarehouseName) : 
-                  <div style={{width:"190px", display:"inline-block"}}><AutoSelect data={this.state.auto_Deswarehouse} result={(e) => this.setState({"Deswarehouse":e.value, "Deswarehouseresult":e.label})}/></div>}</div>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs="6">      
-              <label style={{width:"150px", display:"inline-block"}}>ref1: </label><Input onChange={(e) => this.setState({ref1:e.target.value})} style={{display:"inline-block", width:"190px"}} />
+            <div className="col-6">    
+                <div className=""><label style={{width:"170px", display:"inline-block"}}>SourceWarehouse: </label>{this.state.pageID ? this.createText(this.state.souWareName) : 
+                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label,"WareCode":e.Warecode})}/></div>}</div>      
+                <div className=""><label style={{width:"170px", display:"inline-block"}}>DestinationWarehouse: </label>{this.state.pageID ? this.createText(this.state.desWareName) : 
+                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_Deswarehouse} result={(e) => this.setState({"Deswarehouse":e.value, "Deswarehouseresult":e.label,"DesWareCode":e.DesWarecode})}/></div>}</div>          
+            </div>
+          </Row>   
+          <Row>
+              <Col xs="6">                 
+                <label style={{width:"150px", display:"inline-block"}}>Batch: </label>{this.state.pageID ? this.createText(this.state.batchName) :<Input onChange={(e) => this.setState({batch:e.target.value})} style={{display:"inline-block", width:"355px"}} />}<br></br>
               </Col>
               <Col xs="6">
-              <label style={{width:"150px", display:"inline-block"}}>ref2: </label><Input onChange={(e) => this.setState({ref2:e.target.value})} style={{display:"inline-block", width:"190px"}} />
+              <Row>
+                <Col xs="6">
+                  <label style={{width:"110px", display:"inline-block"}}>MaterialDocNo.: </label>{this.state.pageID ? this.createText(this.state.ref1Name) :<Input onChange={(e) => this.setState({ref1:e.target.value})} style={{display:"inline-block", width:"130px"}} />}
+                </Col>
+                <Col xs="6">
+                  <label style={{width:"115px", display:"inline-block"}}>MaterialDocYears: </label>{this.state.pageID ? this.createText(this.state.ref2Name) :<Input onChange={(e) => this.setState({ref2:e.target.value})} style={{display:"inline-block", width:"130px"}} />}<br/>
+                </Col>
+              </Row>  
+              </Col>
+          </Row>
+            <Row>
+              <Col>
+                <label style={{width:"150px", display:"inline-block"}}>Remark: </label>{this.state.pageID ? this.createText(this.state.batchName) :<Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"935px"}} />}               
               </Col>
             </Row>
-            <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus}>Add</Button>
-            </div>
-          </Row>          
-        </div>      
-        <ReactTable NoDataComponent={() => null} columns={cols} minRows={10} data={this.state.data} sortable={false} style={{background:'white'}}
+            <Row>
+              <Col>
+                {this.state.pageID ?null:this.Addbutton()}               
+              </Col>
+            </Row> 
+       </div>
+        <ReactTable NoDataComponent={() => null} columns={cols} minRows={10} data={this.state.check === undefined ? this.state.data : this.state.documentItems} sortable={false} style={{background:'white'}}
             showPagination={false}/>
+            
         <Card>
           <CardBody style={{textAlign:'right'}}>
             <Button onClick={() => this.createDocument()} style={{display:this.state.adddisplay}} color="primary"className="mr-sm-1">Create</Button>
-            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
+            <Button style={{color:"#FFF"}} type="button" color="danger" onClick={() => this.props.history.push('/doc/gr/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>
