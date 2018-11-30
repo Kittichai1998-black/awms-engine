@@ -22,6 +22,8 @@ namespace AWMSModel.Criteria
         public string name;
         public string lot;
         public string batch;
+        public int unitID;
+        public string unitCode;
 
         public long? objectSizeID;
         public string objectSizeName;
@@ -58,16 +60,23 @@ namespace AWMSModel.Criteria
             return mapsto;
         }
 
-        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes, string codeFocus)
+        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
+            List<ams_ObjectSize> staticObjectSizes,
+            List<ams_UnitType> staticUnitTypes,
+            string codeFocus)
         {
             return Generate(stos, staticObjectSizes, null, codeFocus);
         }
-        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes, long idFocus)
+        public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
+            List<ams_ObjectSize> staticObjectSizes,
+            List<ams_UnitType> staticUnitTypes,
+            long idFocus)
         {
-            return Generate(stos, staticObjectSizes, idFocus, null);
+            return Generate(stos, staticObjectSizes, staticUnitTypes, idFocus, null);
         }
 
-        private static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, List<ams_ObjectSize> staticObjectSizes,
+        private static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos,
+            List<ams_ObjectSize> staticObjectSizes, List<ams_UnitType> staticUnitTypes,
             long? idFocus, string codeFocus)
         {
             if (stos.Count() == 0) return null;
@@ -90,6 +99,8 @@ namespace AWMSModel.Criteria
                         {
                             id = x.id,
                             type = x.type,
+                            unitID = x.unitID,
+                            unitCode = staticUnitTypes.First(y => y.ID == x.unitID).Code,
                             parentID = x.parentID,
                             parentType = x.parentType,
                             warehouseID = x.warehouseID,

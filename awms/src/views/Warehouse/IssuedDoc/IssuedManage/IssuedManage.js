@@ -113,6 +113,7 @@ class IssuedManage extends Component{
           date:moment(rowselect1.data.document.actionTime),
           addstatus:true,
           issuedNo:rowselect1.data.document.code})
+
         }
       })
     }
@@ -293,116 +294,7 @@ class IssuedManage extends Component{
   createText(data){
     return <span>{data}</span>
   }
-  /*
-  createAutoComplete(rowdata){
-    const style = {borderRadius: '3px',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    background: 'rgba(255, 255, 255, 0.9)',
-    padding: '2px 0',
-    fontSize: '90%',
-    position: 'fixed',
-    overflow: 'auto',
-    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
-    zIndex: '998',}
-
-    return <ReactAutocomplete
-        inputProps={{ style: {
-          width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',
-          backgroundPosition: "8px 8px",
-          backgroundSize:"10px",
-          backgroundRepeat: "no-repeat",
-          paddingLeft: "25px"
-        } }}
-        wrapperStyle={ {width: "100%"} }
-        menuStyle={style}
-        getItemValue={(item) => item.SKU}
-        items={this.state.autocomplete}
-        shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
-        renderItem={(item, isHighlighted) =>
-          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-            {item.SKU}
-          </div>
-        }
-        value={rowdata.original.SKU}
-        onChange={(e) => {
-          const res = this.state.autocomplete.filter(row => {
-            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
-          });
-          if(res.length === 1){
-            this.editData(rowdata, res[0], rowdata.column.id)
-          }
-          else{
-            this.editData(rowdata, e.target.value, rowdata.column.id)
-          }
-        }}
-        onSelect={(val, row) => {
-          this.editData(rowdata, row, rowdata.column.id)
-        }}
-      />
-  }
-  
-      return <div style={{display: 'flex',flexDirection: 'column',}}>
-      <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined || rowdata.original.code === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
-      onChange={selection => {
-        rowdata.value = selection.id
-        this.editData(rowdata, selection, rowdata.column.id)
-      }}
-      itemToString={item => {
-        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code !== undefined ? rowdata.original.code + " : " + rowdata.original.name : "";
-      }}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getMenuProps,
-        isOpen,
-        openMenu,
-        inputValue,
-        highlightedIndex,
-        selectedItem,
-      }) => (
-        <div style={{width: '500px'}}>
-          <div style={{position: 'relative'}}>
-                  <Input
-                    {...getInputProps({
-                      isOpen,
-                      onFocus:()=>openMenu(),
-                    })}
-                  />
-                </div>
-                <div style={{position: 'absolute', zIndex:'1000', height:"100px", overflow:'auto'}}>
-                  <div {...getMenuProps({isOpen})} style={{position: 'relative', overflowX:"none"}}>
-                    {isOpen
-                      ? this.state.autocomplete
-                        .filter(item => !inputValue || item.Code.includes(inputValue))
-                        .map((item, index) => (
-                          <div style={{background:'white', width:'500px'}}
-                            key={item.id}
-                            {...getItemProps({
-                              item,
-                              index,
-                              style: {
-                                backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
-                                fontWeight: selectedItem === item ? 'bold' : 'normal',
-                                width:'500px',
-                              }
-                            })}
-                          >
-                            {item ? item.Code + " : " + item.Name : ''}
-                          </div>
-                        ))
-                      : null}
-                  </div>
-                </div>
-        </div>
-      )}
-    </Downshift></div>
-    }
-    else{
-      return <span>{rowdata.value}</span>
-    }
-  } */
+ 
 
   toggle() {
     this.setState({modalstatus:!this.state.modalstatus});

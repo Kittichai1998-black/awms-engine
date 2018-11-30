@@ -17,8 +17,10 @@ namespace AWMSModel.Criteria.SP.Response
 
         public long mstID;
         public long packID;
+        public long packUnitID;
         public string packCode;
         public string packName;
+        public string packUnitCode;
 
         public int areaID;
         public string areaCode;

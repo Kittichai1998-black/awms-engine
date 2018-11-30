@@ -99,7 +99,7 @@ namespace MyTest2
             var objsizes = new List<AWMSModel.Entity.ams_ObjectSize>();
             objsizes.Add(new AWMSModel.Entity.ams_ObjectSize() { ID = 1, Code="XXX", ObjectSizeInners=new List<AWMSModel.Entity.ams_ObjectSizeMap>() });
             //objsizes[0].ObjectSizeInners.Add(new AWMSModel.Entity.ams_ObjectSizeMap() { ID=1,Code="XXX" });
-            StorageObjectCriteria sto = StorageObjectCriteria.Generate(values,objsizes , 443);
+            StorageObjectCriteria sto = StorageObjectCriteria.Generate(values,objsizes,null , 443);
 
         }
     }
