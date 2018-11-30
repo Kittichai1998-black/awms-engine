@@ -112,7 +112,7 @@ class User extends Component{
     componentDidMount(){
     }
 
-    getData(user_id){
+    getData(){
         const selectroledata = []
         const selectuserroledata = []
         Axios.get(createQueryString(this.state.selectRole)).then((response) => {
@@ -124,7 +124,7 @@ class User extends Component{
                 responset.data.datas.forEach(row => {
                     selectuserroledata.push({ID:row.ID,User_ID:row.User_ID,Role_ID:row.Role_ID,Status:row.Status})
                 })
-                this.setState({selectuserroledata},() => this.setUserRole(user_id))
+                this.setState({selectuserroledata},() => this.setUserRole("user_id"))
             })
         })
     }
@@ -183,8 +183,9 @@ class User extends Component{
     }
 
     createRoleBtn(rowdata){
+        console.log(rowdata.ID)
         return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-          onClick={() => this.getData(rowdata.ID)}>Role</Button>
+          onClick={() => this.getData()}>Role</Button>
         }
     
     updateRole(){
