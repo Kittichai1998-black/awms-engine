@@ -29,7 +29,15 @@ namespace AWMSEngine.APIService.Data
                     pk = this.RequestVO.pk,
                     t = this.RequestVO.t
                 });
-
+            var stManager = ADO.StaticValue.StaticValueManager.GetInstant();
+            Type stManagerType = stManager.GetType();
+            foreach(var mt in stManagerType.GetMethods())
+            {
+                if (mt.Name.ToUpper().Equals("LOAD" + ((string)this.RequestVO.t).ToUpper().Substring(4)))
+                {
+                    mt.Invoke(stManager, null);
+                }
+            }
             return res1;
         }
     }

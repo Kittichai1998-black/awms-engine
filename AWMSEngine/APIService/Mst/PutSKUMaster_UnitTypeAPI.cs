@@ -11,9 +11,9 @@ using AWMSEngine.ADO.StaticValue;
 
 namespace AWMSEngine.APIService.Mst
 {
-    public class PutSKUUnitTypeMasterAPI : BaseAPIService
+    public class PutSKUMaster_UnitTypeAPI : BaseAPIService
     {
-        public PutSKUUnitTypeMasterAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutSKUMaster_UnitTypeAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
@@ -32,7 +32,7 @@ namespace AWMSEngine.APIService.Mst
         {
             this.BeginTransaction();
 
-            List<TReq> dataReqs = ObjectUtil.DynamicToModel<List<TReq>>(this.RequestVO);
+            List<TReq> dataReqs = ObjectUtil.DynamicToModel<List<TReq>>(this.RequestVO.data);
             List<TReq> unitReqs = dataReqs.GroupBy(x => new TReq() { unit = x.unit }).Select(x => x.Key).ToList();
             unitReqs.RemoveAll(x => StaticValueManager.GetInstant().UnitTypes.Any(y => y.Code == x.unit));
             if (unitReqs.Count()>0)

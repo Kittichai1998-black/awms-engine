@@ -18,9 +18,9 @@ namespace AWMSEngine.APIService.Mst.Ers
 
         protected override dynamic ExecuteEngineManual()
         {
-            List<ams_Warehouse> req = ObjectUtil.DynamicToModel<ams_Warehouse>(this.RequestVO.data);
+            List<ers_SAPMovementType> req = ObjectUtil.DynamicToModel<ers_SAPMovementType>(this.RequestVO.data);
             this.BeginTransaction();
-            var res = new MasterPut<ams_Warehouse>().Execute(this.Logger, this.BuVO, req);
+            var res = new MasterPut<ers_SAPMovementType>().Execute(this.Logger, this.BuVO, req);
 
             return res;
         }
