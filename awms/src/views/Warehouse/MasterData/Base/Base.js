@@ -23,7 +23,7 @@ class Area extends Component{
             select:{queryString:window.apipath + "/api/viw",
             t:"BaseMaster",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-            f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,BaseMasterType_Name,BaseMasterType_Description,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
+              f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Status,Created,Modified",
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
@@ -37,7 +37,7 @@ class Area extends Component{
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code","BaseMasterType_Name","BaseMasterType_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","ObjCode","PackCode","Created","Modified"]
+        this.uneditcolumn = ["BaseMasterType_Code", "ObjectSize_Code","UnitType_Code","Created","Modified"]
     }
 
     onHandleClickCancel(event){
@@ -79,8 +79,8 @@ class Area extends Component{
     filterList(){
         const objselect = {queryString:window.apipath + "/api/mst",
             t:"ObjectSize",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
+            q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
+            f:"ID,concat(Code,' : ',Name) as Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
@@ -89,17 +89,27 @@ class Area extends Component{
         const basetypeselect = {queryString:window.apipath + "/api/mst",
             t:"BaseMasterType",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,Code",
+            f:"ID,concat(Code,' : ',Name) as Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
             all:"",}
-
-    Axios.all([Axios.get(createQueryString(objselect)),Axios.get(createQueryString(basetypeselect))]).then(
-        (Axios.spread((objresult, basetyperesult) => 
+        const unitselect = {
+          queryString: window.apipath + "/api/mst",
+          t: "UnitType",
+          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
+          f: "ID,concat(Code,' : ',Name) as Code",
+          g: "",
+          s: "[{'f':'ID','od':'asc'}]",
+          sk: 0,
+          all: "",
+        }
+      Axios.all([Axios.get(createQueryString(objselect)), Axios.get(createQueryString(basetypeselect)), Axios.get(createQueryString(unitselect))]).then(
+        (Axios.spread((objresult, basetyperesult, unitresult) => 
         {
             let ddl = [...this.state.autocomplete]
             let objList = {}
+            let unitList = {}
             let basetypelist = {}
             objList["data"] = objresult.data.datas
             objList["field"] = "ObjectSize_Code"
@@ -111,7 +121,11 @@ class Area extends Component{
             basetypelist["pair"] = "BaseMasterType_ID"
             basetypelist["mode"] = "Dropdown"
 
-            ddl = ddl.concat(objList).concat(basetypelist)
+            unitList["data"] = unitresult.data.datas
+            unitList["field"] = "UnitType_Code"
+            unitList["pair"] = "UnitType_ID"
+            unitList["mode"] = "Dropdown"
+          ddl = ddl.concat(objList).concat(basetypelist).concat(unitList)
             this.setState({autocomplete:ddl})
         })))
     }
@@ -140,7 +154,8 @@ class Area extends Component{
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
-            {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+          { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
+          { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */

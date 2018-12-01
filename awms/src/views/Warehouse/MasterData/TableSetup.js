@@ -71,6 +71,7 @@ class TableGen extends Component{
       uneditable:[],
       datetime:moment(),
       autocomplete:[],
+      autocomplete2:[],
       rowselect:[],
       selectAll:false,
       currentPage: 1,
@@ -109,7 +110,7 @@ class TableGen extends Component{
     else{
       this.queryInitialData(nextProps.data);
     }
-    this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete,})
+    this.setState({dropdownfilter:nextProps.ddlfilter, autocomplete:nextProps.autocomplete, })
   }
 
   componentDidUpdate(){
@@ -305,7 +306,7 @@ class TableGen extends Component{
     
     this.setState({data:adddata.sort((a,b) => a.ID - b.ID)});
   }
-
+ 
   updateData(){
       const dataedit = this.state.dataedit
       if(dataedit.length > 0){
@@ -333,6 +334,61 @@ class TableGen extends Component{
               }
               row[col.accessor] = "@@sql_gen_password,"+row[col.accessor]+","+guidstr
               row["SoftPassword"] = guidstr
+            }
+            //check ช่องกรอก Bank bay level gate
+            if (this.props.areagrouptype === 1) {
+              if (col.accessor === "Bank") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bank");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Bay") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bay");
+                  delete row["Code"]
+
+                }
+              }
+              if (col.accessor === "Level") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Level");
+                  delete row["Code"]
+
+                }
+              }
+            } else if (this.props.areagrouptype === 2) {
+              if (col.accessor === "Gate") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Gate");
+                  delete row["Code"]
+                }
+              }
+            } else {
+              if (col.accessor === "Bank") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bank");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Bay") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Bay");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Level") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Level");
+                  delete row["Code"]
+                }
+              }
+              if (col.accessor === "Gate") {
+                if (row[col.accessor] === "") {
+                  alert("กรุณากรอกข้อมูล Gate");
+                  delete row["Code"]
+                }
+              }
             }
           })
 
@@ -599,11 +655,25 @@ class TableGen extends Component{
   onEditValueAutoCode(rowdata,value,field){
     if (field==="Bank"){
       var codestr = (this.props.autocode)+","+value+","+rowdata.row["Bay"]+","+rowdata.row["Level"]
-    }else if(field==="Bay"){
-      var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+value+","+rowdata.row["Level"]
-    }else if(field==="Level"){
+    } else if (field === "Bay") {
+      let conv = value === '' ? 0 : value
+      const type = isInt(conv)
+      if (type) {
+        var codestr = (this.props.autocode) + "," + rowdata.row["Bank"] + "," + value + "," + rowdata.row["Level"]
+      }
+      else {
+        alert("เฉพาะตัวเลขเท่านั้น")
+      }
+    } else if (field === "Level") {
+      let conv = value === '' ? 0 : value
+      const type = isInt(conv)
+      if (type) {
       var codestr = (this.props.autocode)+","+rowdata.row["Bank"]+","+rowdata.row["Bay"]+","+value
-    }else if(field==="Gate"){
+      }
+      else {
+        alert("เฉพาะตัวเลขเท่านั้น")
+      }
+    } else if (field === "Gate") {
       var codestr = (this.props.autocode)+","+value
     }
     this.onEditorValueChange(rowdata, this.props.areamaster,"AreaMaster_ID")
@@ -611,7 +681,7 @@ class TableGen extends Component{
     this.onEditorValueChange(rowdata, value, rowdata.column.id)
   }
 
-  autoGenLocationCode(rowdata){
+  autoGenLocationCode(rowdata) {
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
     onChange={(e) => {this.onEditValueAutoCode(rowdata,e.target.value,rowdata.column.id)}} />
   }
@@ -661,10 +731,16 @@ class TableGen extends Component{
   }
 
   createAutoCompleteDownshift(rowdata){
+
     const getdata = this.state.autocomplete.filter(row=>{
       return row.field  === rowdata.column.id
     })
-    //console.log(getdata)
+
+    if(rowdata.column.id==="ObjectType"){
+      if((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined){
+        rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
+      }
+    }
     return <div style={{display: 'flex',flexDirection: 'column',}}>
     <Downshift
       initialInputValue = {rowdata.value === "" || rowdata.value === undefined ? "" : rowdata.value}
@@ -754,8 +830,20 @@ class TableGen extends Component{
       const getdata = this.state.autocomplete.filter(row=>{
         return row.field  === rowdata.column.id
       })
-      if(getdata.length > 0){
-        return <ReactAutocomplete 
+      if (this.props.enumfield !== undefined){
+        const enumvalue = [...this.props.enumfield]
+        if (enumvalue.length > 0) {
+          enumvalue.forEach((row,index) => {
+            if(rowdata.column.id===row){
+              if((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined){
+                rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
+              }
+            }
+          })
+        }
+      }
+      if (getdata.length > 0) {
+        return <ReactAutocomplete
         inputProps={{ style: {
           width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',
           backgroundPosition: "8px 8px",
@@ -972,13 +1060,12 @@ class TableGen extends Component{
           else if(row.editable && (row.body === undefined || !row.body)){
             row.Cell = (e) => (this.inputTextEditor(e))
           }
- 
-                 
+
           if(row.Type === "datetime"){
             if(row.editable === true)
               row.Cell = (e) => this.datePickerBody(row.dateformat,e.value, e)
             else
-              row.Cell = (e) => this.datetimeBody(e.value)
+              row.Cell = (e) => this.datetimeBody(e.value,row.dateformat)
           }
           else if(row.Type === "datetimelog"){
             row.Cell = (e) => this.datetimelog(e.value)

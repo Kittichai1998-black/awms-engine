@@ -65,7 +65,8 @@ class User extends Component{
             open: false,
             selectiondata:[],
             selectroledata:[],
-            dataUpdate : [],
+            selectroledata:[],
+            dataUpdate:[],
             rowselect:[],
         };
 
@@ -75,7 +76,11 @@ class User extends Component{
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
         this.setUserRole = this.setUserRole.bind(this)
-        this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
+      this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
+      this.createRoleBtn = this.createRoleBtn.bind(this)
+      this.closeModal = this.closeModal.bind(this)
+      this.updateRole = this.updateRole.bind(this)
+      
     }
     async componentWillMount(){
         //permission
@@ -109,10 +114,10 @@ class User extends Component{
     }
 
     componentDidMount(){
-        //this.getData()
     }
 
-    getData(user_id){
+  getData(user_id) {
+       
         const selectroledata = []
         const selectuserroledata = []
         Axios.get(createQueryString(this.state.selectRole)).then((response) => {
@@ -124,10 +129,9 @@ class User extends Component{
                 responset.data.datas.forEach(row => {
                     selectuserroledata.push({ID:row.ID,User_ID:row.User_ID,Role_ID:row.Role_ID,Status:row.Status})
                 })
-                this.setState({selectuserroledata},() => this.setUserRole(user_id))
+                this.setState({selectuserroledata},() => this.setUserRole("user_id"))
             })
         })
-        
     }
        
     setUserRole(data){
@@ -160,8 +164,6 @@ class User extends Component{
                 this.setState({User_id:data})
                 this.setState({selectroledata})
                 this.setState({selectuserroledata})
-                //console.log(this.state.selectroledata)
-                //console.log(this.state.selectuserroledata)
             }
             this.openModal()
         }
@@ -169,7 +171,6 @@ class User extends Component{
 
     openModal(){
         this.setState({ open: true })
-        //this.setUserRole(user_id)
       }
 
     closeModal() {
@@ -183,33 +184,35 @@ class User extends Component{
             obj.push({"ID":datarow.ID});
         })
         const ObjStr = JSON.stringify(obj)
-        this.setState({barcodeObj:ObjStr}, () => console.log(this.state.barcodeObj))
+        this.setState({barcodeObj:ObjStr})
     }
 
-    createRoleBtn(rowdata){
+  createRoleBtn(rowdata) {
         return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-          onClick={() => this.getData(rowdata.ID)}>Role</Button>
+      onClick={() => this.getData(rowdata.ID)}>Role</Button>
         }
     
     updateRole(){
         const dataUpdate = this.state.dataUpdate
-        if(dataUpdate.length > 0){
-            dataUpdate.forEach((row) => {
-                row["ID"] = row["ID"] <= 0 ? null : row["ID"]
-            })
-            let updjson = {
-                "_token": sessionStorage.getItem("Token"),
-                "_apikey": null,
-                "t": "ams_User_Role",
-                "pk": "ID",
-                "datas": dataUpdate,
-                "nr": false
-            }
-            Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
-            })
-            this.setState({dataUpdate:[]})
-            this.closeModal()
+      if (dataUpdate.length > 0) {
+        dataUpdate.forEach((row) => {
+          row["ID"] = row["ID"] <= 0 ? null : row["ID"]
+        })
+        let updjson = {
+          "_token": sessionStorage.getItem("Token"),
+          "_apikey": null,
+          "t": "ams_User_Role",
+          "pk": "ID",
+          "datas": dataUpdate,
+          "nr": false
         }
+        Axios.put(window.apipath + "/api/mst", updjson).then((result) => {
+        })
+        this.setState({ dataUpdate: [] })
+        this.closeModal()
+      } else {
+        alert("ข้อมูลไม่มีการแก้ไขใหม่");
+      }
     }
 
     createSelection(rowdata,type){
@@ -247,7 +250,6 @@ class User extends Component{
             }
             this.setState({dataUpdate})
         }
-        console.log(this.state.dataUpdate)
     }
 
     render(){
@@ -263,9 +265,8 @@ class User extends Component{
             {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
-            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"},
-            {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+            {show: this.state.permissionView, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
 
         const btnfunc = [{
@@ -300,7 +301,7 @@ class User extends Component{
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
-                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white'}} 
+                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white','max-height': '400px'}} 
                     getselection={this.getSelectionData} showPagination={false}/>
                     <Card>
                         <CardBody>

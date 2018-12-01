@@ -47,6 +47,11 @@ namespace AWMSEngine.Engine.Business.Received
             long? des_AreaMaster_ID = reqVO.stomap.areaID;
             this.StaticValue.Warehouses.FindAll(x => x.ID == des_Warehouse_ID).ForEach(x => des_Branch_ID = x.Branch_ID);
 
+            //var docItem = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+            //string des_Supplier_ID = docItem.Options;
+            
+
+
             doc = new amt_Document()
             {
                 ActionTime = null,
@@ -57,7 +62,6 @@ namespace AWMSEngine.Engine.Business.Received
                 Sou_Warehouse_ID = null,
                 Sou_AreaMaster_ID = null,
                 Des_Customer_ID = null,
-                Des_Supplier_ID = null,
                 Des_Branch_ID = des_Branch_ID,
                 Des_Warehouse_ID = des_Warehouse_ID,
                 Des_AreaMaster_ID = des_AreaMaster_ID,

@@ -113,6 +113,7 @@ class IssuedManage extends Component{
           date:moment(rowselect1.data.document.actionTime),
           addstatus:true,
           issuedNo:rowselect1.data.document.code})
+
         }
       })
     }
@@ -172,22 +173,30 @@ class IssuedManage extends Component{
     this.setState({selectiondata:data})
   }
 
-  createDocument(){
+  createDocument() {
     let acceptdata = []
-    console.log(this.state.data)
     this.state.data.forEach(row => {
-      if (row.id > 0) 
+      let qty = row.PackQty === "" ? 0 : row.PackQty;
+      if (row.id > 0 && qty > 0) 
       acceptdata.push({
         packID: row.id,
         packQty: row.PackQty,
       })
     })
     let postdata = {
-      refID:'', forCustomerID:null, batch:null, lot:null,
-      souBranchID:this.state.branch,souWarehouseID:this.state.warehouse,souAreaMasterID:null,
-      desCustomerID:this.state.customer,desSupplierID:null,
-      actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
-      remark:this.state.remark,issueItems:acceptdata
+      refID:''
+      , forCustomerID:null
+      , batch:this.state.Batch
+      , lot:null
+      , souBranchID:this.state.branch
+      , souWarehouseID:this.state.warehouse
+      , souAreaMasterID:null
+      , desCustomerID:this.state.customer
+      , desSupplierID:null
+      , actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss")
+      , documentDate:this.DateNow.format("YYYY/MM/DD")
+      , remark:this.state.remark
+      , issueItems:acceptdata
     }
     if (acceptdata.length > 0) {
       Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
@@ -228,8 +237,8 @@ class IssuedManage extends Component{
   inputCell(field, rowdata){
     /* return  <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
     onChange={(e) => {this.editData(rowdata, e.target.value, "PackQty")}} />; */
-    return <NumberInput value={rowdata.value}
-    onChange={(e) => {this.editData(rowdata, e, "PackQty")}}/>
+    return <Input value={rowdata.value}
+      onChange={(e) => { this.editData(rowdata, e.target.value, "PackQty") }} />
   }
   
   addData(){
@@ -245,12 +254,13 @@ class IssuedManage extends Component{
       if(rowdata.column.datatype === "int"){
         let conv = value === '' ? 0 : value
         const type = isInt(conv)
-        if(type){
-          data[rowdata.index][field] = (conv === 0 ? null : conv);
-        }
-        else{
-          alert("??")
-        }
+        //if(type){
+        //  data[rowdata.index][field] = (conv === 0 ? null : conv);
+        //}
+        //else{
+        //  alert("??")
+        //}
+        data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else{
         data[rowdata.index][field] = value.Code;
@@ -269,11 +279,14 @@ class IssuedManage extends Component{
     })
     this.setState({autocomplete:res})
     }
-    else{
+    else if (rowdata.column.datatype !== "int"){
       data[rowdata.index][field] = "";
       data[rowdata.index]["SKU"] = "";
       data[rowdata.index]["UnitType"] = "";
       data[rowdata.index]["id"] = "";
+    }
+    else if (rowdata.column.datatype === "int") {
+      data[rowdata.index][field] = "";
     }
     this.setState({ data });
   }
@@ -281,116 +294,7 @@ class IssuedManage extends Component{
   createText(data){
     return <span>{data}</span>
   }
-  /*
-  createAutoComplete(rowdata){
-    const style = {borderRadius: '3px',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    background: 'rgba(255, 255, 255, 0.9)',
-    padding: '2px 0',
-    fontSize: '90%',
-    position: 'fixed',
-    overflow: 'auto',
-    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
-    zIndex: '998',}
-
-    return <ReactAutocomplete
-        inputProps={{ style: {
-          width: "100%", borderRadius: "1px", backgroundImage:'url('+ arrimg +')',
-          backgroundPosition: "8px 8px",
-          backgroundSize:"10px",
-          backgroundRepeat: "no-repeat",
-          paddingLeft: "25px"
-        } }}
-        wrapperStyle={ {width: "100%"} }
-        menuStyle={style}
-        getItemValue={(item) => item.SKU}
-        items={this.state.autocomplete}
-        shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
-        renderItem={(item, isHighlighted) =>
-          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-            {item.SKU}
-          </div>
-        }
-        value={rowdata.original.SKU}
-        onChange={(e) => {
-          const res = this.state.autocomplete.filter(row => {
-            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
-          });
-          if(res.length === 1){
-            this.editData(rowdata, res[0], rowdata.column.id)
-          }
-          else{
-            this.editData(rowdata, e.target.value, rowdata.column.id)
-          }
-        }}
-        onSelect={(val, row) => {
-          this.editData(rowdata, row, rowdata.column.id)
-        }}
-      />
-  }
-  
-      return <div style={{display: 'flex',flexDirection: 'column',}}>
-      <Downshift
-      initialInputValue = {rowdata.value === "" || rowdata.value === undefined || rowdata.original.code === undefined ? "" : rowdata.original.code + " : " + rowdata.original.name}
-      onChange={selection => {
-        rowdata.value = selection.id
-        this.editData(rowdata, selection, rowdata.column.id)
-      }}
-      itemToString={item => {
-        return item !== null ? item.Code + " : " + item.Name : rowdata.original.code !== undefined ? rowdata.original.code + " : " + rowdata.original.name : "";
-      }}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getMenuProps,
-        isOpen,
-        openMenu,
-        inputValue,
-        highlightedIndex,
-        selectedItem,
-      }) => (
-        <div style={{width: '500px'}}>
-          <div style={{position: 'relative'}}>
-                  <Input
-                    {...getInputProps({
-                      isOpen,
-                      onFocus:()=>openMenu(),
-                    })}
-                  />
-                </div>
-                <div style={{position: 'absolute', zIndex:'1000', height:"100px", overflow:'auto'}}>
-                  <div {...getMenuProps({isOpen})} style={{position: 'relative', overflowX:"none"}}>
-                    {isOpen
-                      ? this.state.autocomplete
-                        .filter(item => !inputValue || item.Code.includes(inputValue))
-                        .map((item, index) => (
-                          <div style={{background:'white', width:'500px'}}
-                            key={item.id}
-                            {...getItemProps({
-                              item,
-                              index,
-                              style: {
-                                backgroundColor:highlightedIndex === index ? 'lightgray' : 'white',
-                                fontWeight: selectedItem === item ? 'bold' : 'normal',
-                                width:'500px',
-                              }
-                            })}
-                          >
-                            {item ? item.Code + " : " + item.Name : ''}
-                          </div>
-                        ))
-                      : null}
-                  </div>
-                </div>
-        </div>
-      )}
-    </Downshift></div>
-    }
-    else{
-      return <span>{rowdata.value}</span>
-    }
-  } */
+ 
 
   toggle() {
     this.setState({modalstatus:!this.state.modalstatus});
@@ -422,42 +326,62 @@ class IssuedManage extends Component{
     }
   }
 
-  createAutocomplete(rowdata){
-    const style = {borderRadius: '3px',
-    boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-    background: 'rgba(255, 255, 255, 0.9)',
-    padding: '2px 0',
-    fontSize: '90%',
-    position: 'fixed',
-    overflow: 'auto',
-    maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
-    zIndex: '998',}
-    if(this.state.autocomplete.length > 0){
-      const getdata = this.state.autocomplete.filter(row=>{
-        return row.field  === rowdata.column.id
-      })
-      if(getdata.length > 0){
-        return <ReactAutocomplete 
+  createAutoComplete(rowdata) {
+    if (!this.state.readonly) {
+      const style = {
+        borderRadius: '3px',
+        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+        background: 'rgba(255, 255, 255, 0.9)',
+        padding: '2px 0',
+        fontSize: '90%',
+        position: 'fixed',
+        overflow: 'auto',
+        maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+        zIndex: '998',
+      }
+
+      return <ReactAutocomplete
+        inputProps={{
+          style: {
+            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
+            backgroundPosition: "8px 8px",
+            backgroundSize: "10px",
+            backgroundRepeat: "no-repeat",
+            paddingLeft: "25px"
+          }
+        }}
+        wrapperStyle={{ width: "100%" }}
         menuStyle={style}
-        getItemValue={(item) => item.Code}
-        items={getdata}
-        shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
+        getItemValue={(item) => item.SKU}
+        items={this.state.autocomplete}
+        shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
         renderItem={(item, isHighlighted) =>
           <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
-            {item.Code}
+            {item.SKU}
           </div>
         }
-        value={rowdata.value}
+        value={rowdata.original.SKU}
         onChange={(e) => {
-          console.log(e)
-          this.editData(rowdata, e.target.value, rowdata.column.id)
+          const res = this.state.autocomplete.filter(row => {
+            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
+          });
+          if (res.length === 1) {
+            if (res[0].SKU === e.target.value)
+              this.editData(rowdata, res[0], rowdata.column.id)
+            else
+              this.editData(rowdata, e.target.value, rowdata.column.id)
+          }
+          else {
+            this.editData(rowdata, e.target.value, rowdata.column.id)
+          }
         }}
         onSelect={(val, row) => {
-          this.editData(rowdata, row.Code, rowdata.column.id)
-          this.editData(rowdata, row.ID, getdata[0].pair)
+          this.editData(rowdata, row, rowdata.column.id)
         }}
       />
-      }
+    }
+    else {
+      return <span>{rowdata.value}</span>
     }
   }
 
@@ -481,18 +405,19 @@ class IssuedManage extends Component{
        return rowauto.Code === groupItem[datarow][0].code
      })
      groupItem[datarow][0].UnitType = getUnit[0].UnitType
+     groupItem[datarow][0].SKU = getUnit[0].SKU
      arrdata.push(groupItem[datarow][0])
 
    
-  }
-   this.setState({data:arrdata})
+   }
+   this.setState({ data: arrdata }, () => console.log(this.state.data))
    
  }
 
 
   render(){
     
-    const style={width:"100px", textAlign:"right", paddingRight:"10px"}
+    const style={width:"200px", textAlign:"right", paddingRight:"10px"}
     let cols
     if(this.state.pageID){
       cols = [
@@ -545,12 +470,36 @@ class IssuedManage extends Component{
             <div className="col-6">
               <div className=""><label style={style}>Branch : </label>{this.state.pageID ? this.createText(this.state.data.souBranchName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label}, () => {this.genWarehouseData(this.state.branch)})}/></div>}</div>
-              <div className=""><label style={style}>Customer : </label>{this.state.pageID ? this.createText(this.state.data.desCustomerName) : 
+              <div className=""><label style={style}>Destination Customer : </label>{this.state.pageID ? this.createText(this.state.data.desCustomerName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_customer} result={(e) => this.setState({"customer":e.value, "customerresult":e.label})}/></div>}</div>
+              <div className=""><label style={style}>Batch : </label>
+              {this.state.pageID ? <span> {this.state.Batch}</span> :
+              <Input onChange={(e) => this.setState({Batch:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.Batch === undefined ? "" : this.state.Batch}/>}
+              </div>
+              <div className=""><label style={style}>Movement Type : </label>
+              {this.state.pageID ? <span> {this.state.MovementType}</span> :
+              <Input onChange={(e) => this.setState({MovementType:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.MovementType === undefined ? "" : this.state.MovementType}/>}
+              </div>
             </div>
             <div className="col-6">
               <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.souWarehouseName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label})}/></div>}</div>
+                <div className=""><label style={style}>Materials Document : </label>
+              {this.state.pageID ? <span> {this.state.MatDoc}</span> :
+              <Input onChange={(e) => this.setState({MatDoc:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.MatDoc === undefined ? "" : this.state.MatDoc}/>}
+              </div>
+              <div className=""><label style={style}>Materials Document Year: </label>
+              {this.state.pageID ? <span> {this.state.MatDocYear}</span> :
+              <Input onChange={(e) => this.setState({MatDocYear:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.MatDocYear === undefined ? "" : this.state.MatDocYear}/>}
+              </div>
               <div className=""><label style={style}>Remark : </label>
               {this.state.pageID ? <span> {this.state.remark}</span> :
               <Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"300px"}}

@@ -14,20 +14,21 @@ class AreaLocation extends Component{
       data : null,
       autocomplete:[],
       cols1:[
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text"},
         //{accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        { accessor: 'Bay', Header: 'Bay', editable: true, Filter: "text", Type: "autolocationcode"},
+        { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", Type: "autolocationcode"},
+        { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
+        { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ],
       cols2:[],
@@ -82,7 +83,7 @@ class AreaLocation extends Component{
     this.autoSelectData = this.autoSelectData.bind(this)
     this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["AreaMaster_Code","AreaMaster_Name","AreaMaster_Description","ObjectSize_Code","ObjectSize_Name","ObjectSize_Description","Modified","Created"]
+    this.uneditcolumn = ["AreaMaster_Code", "AreaMaster_Name", "AreaMaster_Description", "ObjectSize_Code","UnitType_Code","Modified","Created"]
 
   }
   onHandleClickCancel(event){
@@ -193,8 +194,8 @@ displayButtonByPermission(perID){
   filterList(){
     const objselect = {queryString:window.apipath + "/api/mst",
       t:"ObjectSize",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-      f:"ID,Code",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}",
+      f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -208,13 +209,23 @@ displayButtonByPermission(perID){
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
       all:"",}
-
-    Axios.all([Axios.get(createQueryString(objselect)),Axios.get(createQueryString(areatypeselect))]).then(
-      (Axios.spread((objresult, areatyperesult) => 
+    const unitselect = {
+      queryString: window.apipath + "/api/mst",
+      t: "UnitType",
+      q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}]",
+      f: "ID,concat(Code,' : ',Name) as Code",
+      g: "",
+      s: "[{'f':'ID','od':'asc'}]",
+      sk: 0,
+      all: "",
+    }
+    Axios.all([Axios.get(createQueryString(objselect)), Axios.get(createQueryString(areatypeselect)), Axios.get(createQueryString(unitselect))]).then(
+      (Axios.spread((objresult, areatyperesult, unitresult) => 
     {
       let ddl = [...this.state.autocomplete]
       let objList = {}
-      let areatypelist = {}
+        let areatypelist = {}
+        let unitList = {}
       objList["data"] = objresult.data.datas
       objList["field"] = "ObjectSize_Code"
       objList["pair"] = "ObjectSize_ID"
@@ -225,7 +236,11 @@ displayButtonByPermission(perID){
       areatypelist["pair"] = "AreaMaster_ID"
       areatypelist["mode"] = "Dropdown"
 
-      ddl = ddl.concat(objList).concat(areatypelist)
+        unitList["data"] = unitresult.data.datas
+        unitList["field"] = "UnitType_Code"
+        unitList["pair"] = "UnitType_ID"
+        unitList["mode"] = "Dropdown"
+        ddl = ddl.concat(objList).concat(areatypelist).concat(unitList)
       this.setState({autocomplete:ddl})
     })))
   }
@@ -249,55 +264,58 @@ displayButtonByPermission(perID){
   }
 
   setColumns(){
-    if(this.state.grouptype === 2){ 
+    if (this.state.grouptype === 1) { //STORAGE
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         {accessor: 'Code', Header: 'Code',  editable:false, Filter:"text", fixed: "left"},
-        {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
-        {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left" },
+        { accessor: 'Bank', Header: 'Bank', editable: true, Filter: "text", Type: "autolocationcode"},
+        { accessor: 'Bay', Header: 'Bay', editable: true, Filter: "text", Type: "autolocationcode"},
+        { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", Type: "autolocationcode"},
+        { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
+        { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     
-    }else  if(this.state.grouptype === 1) {
+    }else  if(this.state.grouptype === 2) { //Gate
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         {accessor: 'Code', Header: 'Code', editable:false, Filter:"text", fixed: "left"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
-        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode",},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode"},
+        { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
+        { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
-    }else{
+    } else { // STAGING
       return [
-        {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+        //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         {accessor: 'Code', Header: 'Code', Type:"autolocationcode", editable:false, Filter:"text", fixed: "left"},
         {accessor: 'Name', Header: 'Name', editable:true ,Filter:"text", fixed: "left"},
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text"},
         {accessor: 'Bank', Header: 'Bank', editable:true, Filter:"text"},
-        {accessor: 'Bay', Header: 'Bay', editable:true, Filter:"text"},
-        {accessor: 'Level', Header: 'Level', editable:true, Filter:"text"},
-        {accessor: 'ObjectSize_Code', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+        { accessor: 'Bay', Header: 'Bay', editable: true, Filter: "text", datatype: "int"},
+        { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", datatype: "int"},
+        { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
+        { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
         {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-        {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+        //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
       ]; 
     }
@@ -308,7 +326,7 @@ displayButtonByPermission(perID){
       return {queryString:window.apipath + "/api/viw",
       t:"AreaLocationMaster",
       q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " +this.state.areamaster+"}]",
-      f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,ObjectSize_Name,ObjectSize_Description,Status,Created,Modified",
+        f:"ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Status,Created,Modified",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -351,10 +369,14 @@ displayButtonByPermission(perID){
         filterable = เปิดปิดโหมด filter
         getselection = เก็บค่าที่เลือก
       */}
-        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
+        {/* <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
                   filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
-                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>
+                  table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>*/}
+        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
+          filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn} defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'AreaMaster_ID', c: '=', 'v': this.state.areamaster }]}
+          table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} accept={view}/>
       </div>  
     )   
   }

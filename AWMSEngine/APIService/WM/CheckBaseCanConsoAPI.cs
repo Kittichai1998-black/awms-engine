@@ -22,7 +22,9 @@ namespace AWMSEngine.APIService.WM
                 docID = this.RequestVO.docID,
                 //docType = AWMSModel.Constant.EnumConst.DocumentTypeID.GOODS_ISSUED
             };
+
             var res = new CheckBaseCanUseInDocument().Execute(this.Logger, this.BuVO, req);
+
             return res;
         }
     }

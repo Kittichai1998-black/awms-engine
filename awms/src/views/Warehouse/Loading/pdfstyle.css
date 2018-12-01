@@ -1,7 +1,7 @@
-#divHidden {
+/*#divHidden {
   overflow: hidden;
   height: 0;
-}
+}*/
 
 .pdf {
   width: 720px;
@@ -46,13 +46,13 @@ table.showitems {
   width: 300px;
 }
 .showitems td:nth-child(2) {
-  width: 3600px;
+  width: 3700px;
 }
 .showitems td:nth-child(3) {
-  width: 300px;
+  width: 250px;
 }
 .showitems td:nth-child(4) {
-  width: 300px;
+  width: 250px;
 }
 .showitems td:nth-child(5) {
   width: 500px;
@@ -76,7 +76,7 @@ table.showitems {
 
 #header2 tr, #header3 tr {
     height: 30px;
-  }
+}
 
 #header4 {
   text-align: center;

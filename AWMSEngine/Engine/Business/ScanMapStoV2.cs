@@ -131,10 +131,16 @@ namespace AWMSEngine.Engine.Business
             }
             else if (reqVO.action == VirtualMapSTOActionType.ADD)
             {
+                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDEL, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ เพิ่ม สินค้าลงใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
+
                 this.ActionAdd(reqVO, mapsto);
             }
             else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
             {
+                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDEL, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ ลบ สินค้าจากใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
+
                 this.ActionRemove(reqVO, mapsto);
             }
 
