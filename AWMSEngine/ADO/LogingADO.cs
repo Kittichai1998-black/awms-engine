@@ -22,7 +22,7 @@ namespace AWMSEngine.ADO
             param.Add("@IPRemote", ipRemote);
             param.Add("@IPLocal", ipLocal);
             param.Add("@ServerName ", serverName);
-            param.Add("@InputText ", AMWUtil.Common.ObjectUtil.Json(request));
+            param.Add("@InputText ", "");
             param.Add("@Url ", url);
             param.Add("@ActionBy", buVO.ActionBy);
             param.Add("@ID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.InputOutput);
@@ -49,7 +49,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@APIServiceEvent_ID", logID);
             param.Add("@ClassName", className);
-            param.Add("@InputText ", AMWUtil.Common.ObjectUtil.Json(request));
+            param.Add("@InputText ", "");
             param.Add("@ID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.InputOutput);
             this.Execute("SP_LOG_APISERVICE_ACTION_EVENT", System.Data.CommandType.StoredProcedure, param, buVO.Logger);
             long id = param.Get<long>("@ID");

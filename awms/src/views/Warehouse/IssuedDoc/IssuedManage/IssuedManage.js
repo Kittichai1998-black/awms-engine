@@ -184,11 +184,19 @@ class IssuedManage extends Component{
       })
     })
     let postdata = {
-      refID:'', forCustomerID:null, batch:null, lot:null,
-      souBranchID:this.state.branch,souWarehouseID:this.state.warehouse,souAreaMasterID:null,
-      desCustomerID:this.state.customer,desSupplierID:null,
-      actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss"),documentDate:this.DateNow.format("YYYY/MM/DD"),
-      remark:this.state.remark,issueItems:acceptdata
+      refID:''
+      , forCustomerID:null
+      , batch:this.state.Batch
+      , lot:null
+      , souBranchID:this.state.branch
+      , souWarehouseID:this.state.warehouse
+      , souAreaMasterID:null
+      , desCustomerID:this.state.customer
+      , desSupplierID:null
+      , actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss")
+      , documentDate:this.DateNow.format("YYYY/MM/DD")
+      , remark:this.state.remark
+      , issueItems:acceptdata
     }
     if (acceptdata.length > 0) {
       Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
@@ -409,7 +417,7 @@ class IssuedManage extends Component{
 
   render(){
     
-    const style={width:"100px", textAlign:"right", paddingRight:"10px"}
+    const style={width:"200px", textAlign:"right", paddingRight:"10px"}
     let cols
     if(this.state.pageID){
       cols = [
@@ -462,12 +470,36 @@ class IssuedManage extends Component{
             <div className="col-6">
               <div className=""><label style={style}>Branch : </label>{this.state.pageID ? this.createText(this.state.data.souBranchName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({"branch":e.value, "branchresult":e.label}, () => {this.genWarehouseData(this.state.branch)})}/></div>}</div>
-              <div className=""><label style={style}>Customer : </label>{this.state.pageID ? this.createText(this.state.data.desCustomerName) : 
+              <div className=""><label style={style}>Destination Customer : </label>{this.state.pageID ? this.createText(this.state.data.desCustomerName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_customer} result={(e) => this.setState({"customer":e.value, "customerresult":e.label})}/></div>}</div>
+              <div className=""><label style={style}>Batch : </label>
+              {this.state.pageID ? <span> {this.state.Batch}</span> :
+              <Input onChange={(e) => this.setState({Batch:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.Batch === undefined ? "" : this.state.Batch}/>}
+              </div>
+              <div className=""><label style={style}>Movement Type : </label>
+              {this.state.pageID ? <span> {this.state.MovementType}</span> :
+              <Input onChange={(e) => this.setState({MovementType:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.MovementType === undefined ? "" : this.state.MovementType}/>}
+              </div>
             </div>
             <div className="col-6">
               <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.souWarehouseName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label})}/></div>}</div>
+                <div className=""><label style={style}>Materials Document : </label>
+              {this.state.pageID ? <span> {this.state.MatDoc}</span> :
+              <Input onChange={(e) => this.setState({MatDoc:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.MatDoc === undefined ? "" : this.state.MatDoc}/>}
+              </div>
+              <div className=""><label style={style}>Materials Document Year: </label>
+              {this.state.pageID ? <span> {this.state.MatDocYear}</span> :
+              <Input onChange={(e) => this.setState({MatDocYear:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              
+              value={this.state.MatDocYear === undefined ? "" : this.state.MatDocYear}/>}
+              </div>
               <div className=""><label style={style}>Remark : </label>
               {this.state.pageID ? <span> {this.state.remark}</span> :
               <Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"300px"}}

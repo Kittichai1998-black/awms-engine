@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.Business.Received
 
             };
             var packs = stopacks
-                .GroupBy(x => new { code = x.code, mstID = x.mstID, options = ObjectUtil.ListKeyToQueryString(x.options) })
+                .GroupBy(x => new { code = x.code, mstID = x.mstID, options = x.options })
                 .Select(x => new { key = x.Key, count = x.Count(), stoIDs = x.Select(y => y.id.Value).ToList() });
             //if (packs.Count() == 0)
             //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบสินค้ารอรับเข้า");

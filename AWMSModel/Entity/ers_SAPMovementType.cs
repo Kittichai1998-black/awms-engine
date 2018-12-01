@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    class ers_SAPMovementType: BaseEntitySTD
+    public class ers_SAPMovementType : BaseEntitySTD
     {
     }
 }

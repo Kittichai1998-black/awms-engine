@@ -270,7 +270,7 @@ const ReceiveManage = Loadable({
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/mst/sku/manage', exact: true, name: 'Product', component: Products },
+  { path: '/mst/sku/manage', exact: true, name: 'SKU', component: Products },
   { path: '/mst/pack/manage', exact: true, name: 'Pack', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },

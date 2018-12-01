@@ -76,7 +76,11 @@ class User extends Component{
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
         this.setUserRole = this.setUserRole.bind(this)
-        this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
+      this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
+      this.createRoleBtn = this.createRoleBtn.bind(this)
+      this.closeModal = this.closeModal.bind(this)
+      this.updateRole = this.updateRole.bind(this)
+      
     }
     async componentWillMount(){
         //permission
@@ -112,7 +116,8 @@ class User extends Component{
     componentDidMount(){
     }
 
-    getData(user_id){
+  getData(user_id) {
+       
         const selectroledata = []
         const selectuserroledata = []
         Axios.get(createQueryString(this.state.selectRole)).then((response) => {
@@ -124,7 +129,7 @@ class User extends Component{
                 responset.data.datas.forEach(row => {
                     selectuserroledata.push({ID:row.ID,User_ID:row.User_ID,Role_ID:row.Role_ID,Status:row.Status})
                 })
-                this.setState({selectuserroledata},() => this.setUserRole(user_id))
+                this.setState({selectuserroledata},() => this.setUserRole("user_id"))
             })
         })
     }
@@ -182,30 +187,32 @@ class User extends Component{
         this.setState({barcodeObj:ObjStr})
     }
 
-    createRoleBtn(rowdata){
+  createRoleBtn(rowdata) {
         return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-          onClick={() => this.getData(rowdata.ID)}>Role</Button>
+      onClick={() => this.getData(rowdata.ID)}>Role</Button>
         }
     
     updateRole(){
         const dataUpdate = this.state.dataUpdate
-        if(dataUpdate.length > 0){
-            dataUpdate.forEach((row) => {
-                row["ID"] = row["ID"] <= 0 ? null : row["ID"]
-            })
-            let updjson = {
-                "_token": sessionStorage.getItem("Token"),
-                "_apikey": null,
-                "t": "ams_User_Role",
-                "pk": "ID",
-                "datas": dataUpdate,
-                "nr": false
-            }
-            Axios.put(window.apipath + "/api/mst", updjson).then((result) =>{
-            })
-            this.setState({dataUpdate:[]})
-            this.closeModal()
+      if (dataUpdate.length > 0) {
+        dataUpdate.forEach((row) => {
+          row["ID"] = row["ID"] <= 0 ? null : row["ID"]
+        })
+        let updjson = {
+          "_token": sessionStorage.getItem("Token"),
+          "_apikey": null,
+          "t": "ams_User_Role",
+          "pk": "ID",
+          "datas": dataUpdate,
+          "nr": false
         }
+        Axios.put(window.apipath + "/api/mst", updjson).then((result) => {
+        })
+        this.setState({ dataUpdate: [] })
+        this.closeModal()
+      } else {
+        alert("ข้อมูลไม่มีการแก้ไขใหม่");
+      }
     }
 
     createSelection(rowdata,type){
