@@ -174,7 +174,7 @@ namespace AWMSEngine.ADO
             //param.Add("code", sto.code);
             param.Add("parentID", sto.parentID);
             param.Add("parentType", sto.parentType);
-            param.Add("options", ObjectUtil.ListKeyToQueryString(sto.options));
+            param.Add("options", sto.options);
             param.Add("batch", batch);
             param.Add("lot", lot);
             param.Add("actionBy", buVO.ActionBy);
@@ -195,7 +195,7 @@ namespace AWMSEngine.ADO
             param.Add("status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(sto.eventStatus));
             param.Add("parentID", sto.parentID);
             param.Add("parentType", sto.parentType);
-            param.Add("options", ObjectUtil.ListKeyToQueryString(sto.options));
+            param.Add("options", sto.options);
             param.Add("batch", sto.batch);
             param.Add("lot", sto.lot);
 

@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
+using AWMSEngine.Engine.Business.Received;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -44,7 +45,6 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             if (alm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.loactionCode + "'");
 
-
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, wm.ID, null, false, true, this.BuVO);
             if (mapsto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Base Code '" + reqVO.baseCode + "'");
@@ -54,6 +54,13 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             if (mapsto.eventStatus == StorageObjectEventStatus.IDEL)
             {
                 docItemsInSto = this.GetReceiveDocumentItem(mapsto, reqVO);
+                if(docItemsInSto == null)
+                {
+                    if(this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == mapsto.options) != null)
+                        new CreateGRDocumentBySTO().Execute(this.Logger, this.BuVO, new CreateGRDocumentBySTO.TReq { stomap = mapsto });
+                    else
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่มีข้อมูล Warehouse ในระบบ");
+                }
                 mapsto.eventStatus = StorageObjectEventStatus.RECEIVING;
             }
             else if (mapsto.eventStatus == StorageObjectEventStatus.AUDITING || mapsto.eventStatus == StorageObjectEventStatus.AUDITED)
@@ -62,6 +69,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }
             else if (mapsto.eventStatus == StorageObjectEventStatus.RECEIVED)
             {
+                List<long> itemList = mapsto.ToTreeList().Select(x => x.id.Value).ToList();
+                var stoList = ADO.DocumentADO.GetInstant().ListStoIDInDocs(itemList, DocumentTypeID.PICKING, this.BuVO);
+                if(stoList.Count > 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากงาน Picking ยังไม่เรียบร้อย");
                 //this.ValidateWarehouseMoving(mapsto, reqVO);
             }
             else
@@ -140,8 +151,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     DocumentTypeID.GOODS_RECEIVED,
                     this.BuVO);
 
-            if (docItems.Count == 0)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับเข้าได้. เนื่องจากไม่มีเอกสาร Goods Receve อ้างอิง");
+            //if (docItems.Count == 0)
+            //    throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับเข้าได้. เนื่องจากไม่มีเอกสาร Goods Receve อ้างอิง");
 
             return docItems;
         }

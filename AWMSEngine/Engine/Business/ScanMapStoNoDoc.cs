@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business
 {
-    public class ScanMapStoV2 : BaseEngine<ScanMapStoV2.TReq, StorageObjectCriteria>
+    public class ScanMapStoNoDoc : BaseEngine<ScanMapStoNoDoc.TReq, StorageObjectCriteria>
     {
         private StorageObjectADO ADOSto = ADO.StorageObjectADO.GetInstant();
 
@@ -197,16 +197,16 @@ namespace AWMSEngine.Engine.Business
                 if(pm != null)
                 {
                     long? docItemID = null;
-                    if (this.StaticValue.IsFeature(FeatureCode.IB0100))
-                    {
-                        var docItemCanMaps = ADO.DocumentADO.GetInstant().ListItemCanMap(pm.Code, DocumentTypeID.GOODS_RECEIVED, reqVO.batch, reqVO.lot, this.BuVO);
-                        if (docItemCanMaps == null || docItemCanMaps.Count == 0)
-                            throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Goods Recevie");
-                        var docItemCanMap = docItemCanMaps.FirstOrDefault(x => reqVO.amount <= (x.MaxQty - x.Qty));
-                        if(docItemCanMap == null)
-                            throw new AMWException(this.Logger, AMWExceptionCode.V2001, "จำนวนรับเข้าคงเหลือจาก Goods Recevie ไม่ถูกต้อง");
-                        docItemID = docItemCanMap.DocumentItem_ID;
-                    }
+                    //if (this.StaticValue.IsFeature(FeatureCode.IB0100))
+                    //{
+                    //    var docItemCanMaps = ADO.DocumentADO.GetInstant().ListItemCanMap(pm.Code, DocumentTypeID.GOODS_RECEIVED, reqVO.batch, reqVO.lot, this.BuVO);
+                    //    if (docItemCanMaps == null || docItemCanMaps.Count == 0)
+                    //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Goods Recevie");
+                    //    var docItemCanMap = docItemCanMaps.FirstOrDefault(x => reqVO.amount <= (x.MaxQty - x.Qty));
+                    //    if(docItemCanMap == null)
+                    //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "จำนวนรับเข้าคงเหลือจาก Goods Recevie ไม่ถูกต้อง");
+                    //    docItemID = docItemCanMap.DocumentItem_ID;
+                    //}
                     List<long> mapDocByStoIDs = new List<long>();
                     for(int i = 0; i < reqVO.amount; i++)
                     {
