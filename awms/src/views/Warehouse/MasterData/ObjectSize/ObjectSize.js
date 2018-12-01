@@ -348,7 +348,7 @@ class ObjectSize extends Component{
     
         return(
           <div>
-          <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={true} expFilename={"ObjectSize"}
                   btn={btnfunc} filterable={true} autocomplete={this.state.autocomplete} accept={true} uneditcolumn={this.uneditcolumn}
             table="ams_ObjectSize" enumfield={this.state.enumfield}/>
 

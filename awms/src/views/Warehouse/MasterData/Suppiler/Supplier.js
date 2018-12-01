@@ -114,7 +114,7 @@ displayButtonByPermission(perID){
           <Button id="per_button_load" className="float-right" style={{ background: "#ef5350", borderColor: "#ef5350",display:this.state.showbutton }}
             onClick={this.onHandleClickLoad} color="danger">Load ข้อมูล Supplier</Button>
       </div>*/}
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"Supplier"}
           filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view}
           table="ams_Supplier"/>
       

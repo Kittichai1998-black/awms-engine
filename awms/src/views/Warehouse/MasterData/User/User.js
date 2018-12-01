@@ -296,7 +296,7 @@ class User extends Component{
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"User"}
                       filterable={true} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>

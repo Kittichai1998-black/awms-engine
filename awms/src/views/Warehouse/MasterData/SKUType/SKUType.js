@@ -166,7 +166,7 @@ displayButtonByPermission(perID){
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"SKUType"}
             filterable={true} autocomplete={this.state.autocomplete} accept={view}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
              table="ams_SKUMasterType"/>

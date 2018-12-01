@@ -138,7 +138,7 @@ class AreaType extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
         */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={true} expFilename={"AreaType"}
                 filterable={true} autocomplete={this.state.autocomplete} accept={true}
               btn={btnfunc} uneditcolumn={this.uneditcolumn} enumfield={this.state.enumfield}
                 table="ams_AreaMasterType"/>
