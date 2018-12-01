@@ -29,7 +29,7 @@ class IssuedDoc extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
-      f:"ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Created,ModifyBy",
+      f:"ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Created,ModifyBy",
       g:"",
       s:"[{'f':'ID','od':'desc'}]",
       sk:0,
@@ -109,7 +109,7 @@ displayButtonByPermission(perID){
   }
   
   dateTimePicker(){
-    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD/MM/YYYY"/>
+    return <DatePicker onChange={(e) => {this.setState({date:e})}} dateFormat="DD-MM-YYYY"/>
   }
 
   getSelectionData(data){
@@ -144,18 +144,22 @@ displayButtonByPermission(perID){
     const cols = [
       {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'DesCustomerName', Header: 'Customer', editable:false, Filter:"text",},
+      {accessor: 'DesCustomerName', Header: 'Destination Customer', editable:false, Filter:"text",},
       //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
-      {accessor: 'SouWarehouseName', Header: 'Warehouse', editable:false, Filter:"text",},
+      {accessor: 'DesWarehouseName', Header: 'Destination Warehouse', editable:false, Filter:"text",},
       //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
       // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
-      // {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
+      {accessor: 'Batch', Header: 'Batch', editable:false, Filter:"text",},
+      {accessor: 'RefID', Header: 'Material Document', editable:false, Filter:"text",},
+      {accessor: 'Ref1', Header: 'Material Document Year', editable:false, Filter:"text",},
+      {accessor: 'Ref2', Header: 'Movement Type', editable:false, Filter:"text",},
       // {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
       {accessor: 'ActionTime', Header: 'Action Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:false},
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
+      //movementtype
       //{accessor: 'RefID', Header: 'RefID', editable:false,},
-      {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
+      {accessor: 'Created', Header: 'Create', editable:false, filterable:false},
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];

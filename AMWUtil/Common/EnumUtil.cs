@@ -83,6 +83,11 @@ namespace AMWUtil.Common
             return res;
         }
 
+        public static bool In<T>(this T val,params T[] comps)
+            where T : struct, IComparable, IFormattable, IConvertible
+        {
+            return comps.Any(x => x.Equals(val));
+        }
         public static List<T> List<T>()
             where T : struct, IComparable, IFormattable, IConvertible
         {

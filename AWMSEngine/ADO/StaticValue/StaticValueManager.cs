@@ -101,7 +101,7 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, new VOCriteria()));
         }
-        public void LoadAreaMasterLine()
+        public void LoadAreaRoute()
         {
             this._AreaMasterLines = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, new VOCriteria()));
         }
@@ -109,7 +109,7 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, new VOCriteria()));
         }
-        public void LoadWarehouses()
+        public void LoadWarehouse()
         {
             this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, new VOCriteria()));
         }
