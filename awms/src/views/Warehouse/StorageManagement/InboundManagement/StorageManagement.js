@@ -507,7 +507,7 @@ perID.forEach(row => {
                 autoFocus
                 value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ด"
                 onChange={e => {this.setState({barcode:e.target.value})}}
-                onKeyPress={(e) => {
+                onKeyPress={(e) => {                  
                 if(e.key === 'Enter' && this.state.barcode !== ""){
                   this.createListTable()
                 }

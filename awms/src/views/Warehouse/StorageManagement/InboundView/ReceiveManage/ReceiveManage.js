@@ -215,6 +215,7 @@ class ReceiveManage extends Component{
         ref3:null,
         options:null
       })
+    }) 
       let postdata = {
         refID:this.state.refID, forCustomerCode:null, batch:this.state.batch, lot:this.state.lot,
         souSupplierCode:null,souCustomerCode:null,
@@ -227,12 +228,12 @@ class ReceiveManage extends Component{
       if (acceptdata.length > 0) {
         Axios.post(window.apipath + "/api/wm/received/doc", postdata).then((res) => {
           if (res.data._result.status === 1) {
+            console.log(res.data.ID)
             this.props.history.push('/doc/gr/manage?ID=' + res.data.ID)
             window.location.reload()
           }
         })
       }
-    }) 
     }
   }
   inputCell(field, rowdata){
