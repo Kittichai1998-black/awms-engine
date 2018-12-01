@@ -219,6 +219,8 @@ class ObjectSize extends Component{
             })
             this.setState({dataUpdate:[]})
             this.closeModal()
+        } else {
+          alert("ข้อมูลไม่มีการแก้ไขใหม่");
         }
     }
 

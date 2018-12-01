@@ -28,7 +28,8 @@ class AreaType extends Component{
         l:100,
         all:"",},
         sortstatus:0,
-        selectiondata:[],        
+        selectiondata: [],
+        enumfield: ["GroupType"]     
        
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -139,7 +140,7 @@ class AreaType extends Component{
         */}
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
                 filterable={true} autocomplete={this.state.autocomplete} accept={true}
-                btn={btnfunc} uneditcolumn={this.uneditcolumn}
+              btn={btnfunc} uneditcolumn={this.uneditcolumn} enumfield={this.state.enumfield}
                 table="ams_AreaMasterType"/>
         </div>
         )
