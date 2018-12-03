@@ -26,7 +26,7 @@ namespace AWMSEngine.Engine.Business.Received
                 {
                     scanCode = row.code,
                     batch = row.batch,
-                    amount = Convert.ToInt32(row.qty),
+                    amount = Convert.ToInt32(Convert.ToDouble(row.qty)),
                     mode = VirtualMapSTOModeType.REGISTER,
                     action = VirtualMapSTOActionType.ADD,
                     options = row.source,

@@ -21,7 +21,7 @@ class StorageManagement extends Component{
       mapSTO:null,
       mapSTOView:null,
       loading:false,
-      Mode:0,
+      Mode:1,
       radiostate:false,
       warehouse:{queryString:window.apipath + "/api/mst",
       t:"Warehouse",
@@ -53,6 +53,7 @@ class StorageManagement extends Component{
       warehousedata:[],
       areadata:[],
       barcode:"",
+      pallet:"",
       qty:"1",
       barcodemodal:false,
       rSelect:"1",
@@ -67,13 +68,13 @@ class StorageManagement extends Component{
     this.createListTable = this.createListTable.bind(this)
     this.addtolist = this.addtolist.bind(this)
     this.dropdownAuto = this.dropdownAuto.bind(this)
-    this.toggle = this.toggle.bind(this)
+    /* this.toggle = this.toggle.bind(this) */
     this.approvemapsto = this.approvemapsto.bind(this)
     this.clearTable = this.clearTable.bind(this)
     this.autoSelectData = this.autoSelectData.bind(this)
-    this.togglePopup = this.togglePopup.bind(this)
-    this.detailBaseData = this.detailBaseData.bind(this)
-    this.createMarkup = this.createMarkup.bind(this)
+    /* this.togglePopup = this.togglePopup.bind(this) */
+    /* this.detailBaseData = this.detailBaseData.bind(this) */
+    /* this.createMarkup = this.createMarkup.bind(this) */
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
   
@@ -130,19 +131,15 @@ perID.forEach(row => {
     Axios.get(createQueryString(this.state.warehouse)).then(warehouseresult => {
       const warehousedata = []
       warehouseresult.data.datas.forEach(row => {
-        warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name })
+        warehousedata.push({value:row.ID, label:row.Code + ' : ' + row.Name, code:row.Code })
       })
       this.setState({warehousedata})
     })
 
-    Axios.get(createQueryString(this.state.price)).then(priceresult => {
-      this.setState({pricedata:priceresult.data.datas})
-    })
-
-    const script3 = document.createElement("script");
+    /* const script3 = document.createElement("script");
     script3.src = "https://code.jquery.com/jquery-3.3.1.min.js";
     script3.type="text/javascript"
-    document.head.appendChild(script3);
+    document.head.appendChild(script3); */
     // const values = this.props.location.pathname.split('/')
     // if(values[3].toLowerCase() === 'register'){
     //   this.setState({Mode:0})
@@ -153,17 +150,17 @@ perID.forEach(row => {
   }
 
   autoSelectData(field, resdata, resfield){
-    this.setState({[resfield]:resdata.value}, () => {
+    this.setState({[resfield]:resdata}, () => {
       if(field === "Warehouse"){
         const area = this.state.area
         let areawhere = [{ "f": "Status", "c":"=", "v": 1}]
-        areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres})
+        areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres.value})
         area.q = JSON.stringify(areawhere)
 
-        Axios.get(createQueryString(this.state.area)).then((res) => {
+        Axios.get(createQueryString(area)).then((res) => {
           const areadata = []
           res.data.datas.forEach(row => {
-            areadata.push({value:row.Code, label:row.Code + ' : ' + row.Name })
+            areadata.push({value:row.ID, label:row.Code + ' : ' + row.Name, code:row.Code })
           })
           this.setState({areadata})
         })
@@ -216,11 +213,7 @@ perID.forEach(row => {
       }
 
       return <ul key={i} style={child.isFocus===true?focus:focusf} >
-        <div onClick={(e) => {
-          let getElement = document.getElementById(child.id).innerHTML
-          if(getElement !== "")
-            this.setState({DataPopup:getElement, HeaderPopup:child.code}, () => {this.togglePopup()})
-          }}>
+        <div>
             <span>{child.eventStatus === 10 ? <FontAwesomeIcon icon="pause"/> : <FontAwesomeIcon icon="check"/>} | </span>
             <span><FontAwesomeIcon icon="pallet"/>{child.code} : {child.name} | </span>
             <span><FontAwesomeIcon icon="layer-group"/>{child.objectSizeName} | </span>
@@ -254,54 +247,37 @@ perID.forEach(row => {
   }
   
   createListTable(){
-    
     let status = true;
-    if(this.state.Mode === 0){
-      if(this.state.barcode === undefined || this.state.qty === 0 || this.state.areares === undefined
-      || this.state.warehouseres === undefined){
-        status = false;
-      }
-    }
-    else{
-      if(this.state.barcode === undefined || this.state.qty === 0 || this.state.souwarehouseres === undefined|| this.state.warehouseres === undefined || this.state.areares === undefined){
-        status = false;
-      }
-    }
-    //"options":"sou_Warehouse_ID=" + this.state.souwarehouseres,
     if(status && this.state.loading === false){
-      let itemdata = this.state.data;
+
+      let itemdata = Clone(this.state.data);
       itemdata.forEach(row => {
-        row.source = this.state.souwarehouseres;
+        row.source = this.state.souwarehouseres.code;
       })
       itemdata.unshift({
-        source : this.state.souwarehouseres,
+        source : this.state.souwarehouseres === undefined ? null : this.state.souwarehouseres.code,
         code:this.state.palletcode,
-        batch : itemdata[0].batch,
+        batch : itemdata[0] === undefined ? null : itemdata[0].batch,
         qty : 1,
         baseUnit : ""
       })
 
       let data = {
-        "areaCode":this.state.areares,
-        "warehouseCode":this.state.warehouseres,
+        "areaCode":this.state.areares.code,
+        "warehouseCode":this.state.warehouseres.code,
         "data":itemdata,
         _token:localStorage.getItem("Token")};
+      
       Axios.post(window.apipath + "/api/wm/asrs/sto/mapping",data).then(res => {
         this.setState({loading:true})
         let header = []
         if(res.data._result.status !== 0)
         {
           this.setState({poststatus:true,control:"block",barcode:"", qty:1, response:"",})
-          this.setState({poststatus:true,barcode:"", qty:1, response:"",})
           this.setState({mapSTO:res.data, mapSTOView:res.data}, () => {
             
             const clonemapsto = Clone(this.state.mapSTOView)
-            const array = ToListTree(clonemapsto, "mapstos")
-            const arrayfilter = array.filter(row => row.type === 2)
-            arrayfilter.forEach(arrayrow => {
-              let allprice = this.state.pricedata.filter(pricerow => pricerow.Code === arrayrow.code)
-              arrayrow.price = allprice[0].Price
-            })
+            
             header = clonemapsto
             header.mapstos = this.sumChild(clonemapsto.mapstos)
             window.success("เรียบร้อย")
@@ -329,14 +305,14 @@ perID.forEach(row => {
       }).then(res =>  {
         this.setState({loading:false})
         return res!==null?this.addtolist(res):null
-      }).then(res => {this.setState({result:res,poststatus:false, data:[]})})
+      }).then(res => {this.setState({result:res,poststatus:false})})
     }
     else{
       this.setState({barcode:""})
       alert("กรอกข้อมูลไม่ครบ")
     }
   }
-
+/* 
   toggle() {
     this.setState({
       barcodemodal: !this.state.barcodemodal
@@ -350,7 +326,7 @@ perID.forEach(row => {
     this.setState({
       detailPopup: !this.state.detailPopup
     });
-  }
+  } */
 
   selectMode(mode){
     this.setState({rSelect:mode})
@@ -358,9 +334,9 @@ perID.forEach(row => {
     barcode.focus()
   }
 
-   componentWillUpdate(prevState,nextState){
-     if(nextState.barcodemodal === true)
-     {
+  componentWillUpdate(prevState,nextState){
+    if(nextState.barcodemodal === true)
+    {
       const script = document.createElement("script");
       script.src = "http://localhost/zxing.js";
       script.type="text/javascript"
@@ -372,11 +348,10 @@ perID.forEach(row => {
       document.body.appendChild(script2);
       script2.onload = (function(){ 
         window.startVDO()
-        
       }).bind(this);
-     }
-   }
-
+    }
+  }
+/* 
   barcodeReaderPopup(){
     return  <Modal isOpen={this.state.barcodemodal}  className={this.props.className}>
               <ModalHeader toggle={this.toggle}></ModalHeader>
@@ -410,7 +385,7 @@ perID.forEach(row => {
                 <Button color="secondary" id="off" onClick={this.togglePopup}>Cancel</Button>
               </ModalFooter>
             </Modal>
-  }
+  } */
 
   approvemapsto(flag){
     let conf
@@ -426,7 +401,7 @@ perID.forEach(row => {
         Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
           if(res.data._result.status !== 0){
             this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
-            window.success("เรียบร้อย")
+            window.success("Complete")
             return null
             
           }else{
@@ -440,9 +415,44 @@ perID.forEach(row => {
     barcode.focus()
   }
 
+  barcodeManage(barcode){
+    if(barcode.substring(0,3) === "PLL"){
+      this.setState({palletcode:barcode}, () => {this.createListTable()});
+    }
+    else if(barcode.length === 48){
+      const data = this.state.data;
+      let qrCodeData = {
+        source : this.state.souwarehouseres.code,
+        code : this.state.barcode.substring(0, 18).trim(),
+        batch : this.state.barcode.substring(18, 28).trim(),
+        qty : this.state.barcode.substring(28, 45).trim(),
+        baseUnit : this.state.barcode.substring(45, 48).trim()
+      };
+      data.forEach((row, index) => {
+        if(row.batch === qrCodeData.batch){
+          data.splice(index, 1);
+        }
+      })
+      data.push(qrCodeData);
+      this.setState({data:data, barcode:"",}, () => {
+        if(this.state.souwarehouseres){
+          this.createListTable();
+        }
+      });
+    }
+    else if(barcode.length === 10){
+      let souWarehouse = barcode.trim();
+      this.setState({souwarehouseres:souWarehouse, barcode:"",}, () => {
+        if(this.state.data.length > 0){
+          this.createListTable()
+        }
+      })
+    }
+  }
+
   clearTable(){
     this.setState({result:null,mapSTOView:null, mapSTO:null, control:"none", response:""}, () => {
-      let barcode= document.getElementById("pallet")
+      let barcode= document.getElementById("qrcode")
       barcode.focus()
     })
     
@@ -452,79 +462,42 @@ perID.forEach(row => {
     const display={display:'none'}
     return(
       <div>
-        {this.detailBaseData()}
-        {this.barcodeReaderPopup()}
+        {/* {this.detailBaseData()}
+        {this.barcodeReaderPopup()} */}
         <Row>
           <Col sm="6">
             <label style={{fontWeight:"bold", fontSize:"1.1em"}}>Mode : {this.state.Mode===0?'Register':'Transfer'}</label>
           </Col>
           <Col sm="6" >
-            <ButtonGroup style={{margin:'0 0 10px 0', width:"100%",display:this.state.showbutton}}>
-              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("1")} id="per_button_push" active={this.state.rSelect === "1"}>Push</Button>
-              <Button style={{width:"33%"}} color="primary" onClick={() => this.selectMode("2")} id="per_button_remove"active={this.state.rSelect === "2"}>Remove</Button>
-            </ButtonGroup>
           </Col>
         </Row>
         <Row>
-          <Col>
-              {this.dropdownAuto(this.state.warehousedata, "Source", "souwarehouseres", false)}
-          </Col>
-          <Col>
+          <Col sm="6" >
               {this.dropdownAuto(this.state.warehousedata, "Warehouse", "warehouseres", false)}
           </Col>
-        </Row>
-        <Row>
-          <Col>
+          <Col sm="6" >
               {this.dropdownAuto(this.state.areadata, "Area", "areares", true)}
           </Col>
+        </Row>
+        <Row>
           <Col>
-            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Quantity : </label>
+            {/* <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Quantity : </label>
             <NumberInput value={this.state.qty} onChange={value => this.setState({qty:value})} style={{width:'40%',display:'inline-block'}}/>{' '}
-            <Button id="start" onClick={() => {this.setState({barcodemodal:true})}} color="danger" style={{display:'none'}}>Scan</Button>{' '}
+            <Button id="start" onClick={() => {this.setState({barcodemodal:true})}} color="danger" style={{display:'none'}}>Scan</Button>{' '} */}
           </Col>
         </Row>
         <Row>
-          <Col sm="6">
-            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
-              <Input id="pallet" style={{width:'40%',display:'inline-block'}} type="text"
-                autoFocus
-                value={this.state.palletcode} placeholder="กรุณาใส่บาร์โค้ดพาเลท"
-                onChange={e => {this.setState({palletcode:e.target.value})}}
-                onKeyPress={(e) => {
-                if(e.key === 'Enter' && this.state.barcode !== ""){
-                  let qrcode= document.getElementById("qrcode")
-                  qrcode.focus();
-                }
-              }}/>
-          </Col>
-          <Col sm="6">
-            <label style={{width:'80px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode : </label>
+          <Col>
+            <label style={{width:'90px',display:"inline-block", textAlign:"right", marginRight:"10px"}}>Barcode Scan : </label>
               <Input id="qrcode" style={{width:'40%',display:'inline-block'}} type="text"
-                autoFocus
                 value={this.state.barcode} placeholder="กรุณาใส่บาร์โค้ดสินค้า"
+                onChange={e => {this.setState({barcode:e.target.value})}}
                 onKeyPress={(e) => {
-                if(e.key === 'Enter' && this.state.barcode !== "" && this.state.barcode > 48){
-                  const data = this.state.data;
-                  let qrCodeData = {
-                    source : "",
-                    code : this.state.barcode.substring(0, 18),
-                    batch : this.state.barcode.substring(18, 28),
-                    qty : this.state.barcode.substring(28, 45),
-                    baseUnit : this.state.barcode.substring(45, 48)
-                  };
-                  data.forEach((row, index) => {
-                    if(row.code === qrCodeData.code){
-                      data.splice(index, 1);
-                    }
-                    else{
-                      data.push(qrCodeData);
-                    }
-                  })
-
-                  this.setState({data:data, barcode:this.state.barcode.substring(0, 18)}, () => {this.createListTable()});
+                if(e.key === 'Enter'){
+                  this.barcodeManage(e.target.value)
                 }
               }}/>
-              {/* <Button onClick={this.createListTable} color="danger" style={{display:'inline-block'}} disabled={this.state.poststatus}>Post</Button> */}
+              <Button onClick={this.createListTable} color="danger" style={{display:'inline-block'}} disabled={this.state.poststatus}>Post</Button>
           </Col>
         </Row>
         <Row>

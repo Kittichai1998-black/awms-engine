@@ -65,7 +65,7 @@ namespace AWMSModel.Criteria
             List<ams_UnitType> staticUnitTypes,
             string codeFocus)
         {
-            return Generate(stos, staticObjectSizes, null, codeFocus);
+            return Generate(stos, staticObjectSizes, staticUnitTypes, null, codeFocus);
         }
         public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
             List<ams_ObjectSize> staticObjectSizes,
