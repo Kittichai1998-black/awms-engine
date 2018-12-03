@@ -117,6 +117,7 @@ class ReceiveManage extends Component{
         else{
           this.setState({data:[rowselect1.data.document]})
           this.state.data.forEach(row => {
+            console.log(row.desWarehouseName)
             this.setState({souBranchName:row.souBranchName,desBranchName:row.desBranchName,
             souWareName:row.souWarehouseName,desWareName:row.desWarehouseName,batchName:row.batch,
             lotName:row.lot,remarkName:row.remark,MatDocYear:row.ref1,Movement:row.ref2,codeDoc:row.code,
@@ -160,13 +161,17 @@ class ReceiveManage extends Component{
   genWarehouseData(data){ 
     if(data){
       const warehouse = this.warehouseselect
+      console.log(this.state.branch)
       warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
       Axios.get(createQueryString(warehouse)).then((res) => {
         const auto_warehouse = []
         res.data.datas.forEach(row => {
+          console.log(row)
           auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name,Warecode:row.Code })
+          console.log(row.Code )
         })
-        this.setState({auto_warehouse})
+        this.setState({auto_warehouse}) 
+        console.log(this.state.auto_warehouse)
       })
     }
   }
@@ -196,11 +201,12 @@ class ReceiveManage extends Component{
 
   createDocument(){
     let acceptdata = []
-    var xx = this.state.data.filter(x => x.PackQty <= 0 || x.PackQty === "")
-      if(xx.length > 0){
+    var filterQty = this.state.data.filter(x => x.PackQty <= 0 || x.PackQty === "")
+      if(filterQty.length > 0){
         alert("Quantity is null")
       }else{
     this.state.data.forEach(row => {  
+      console.log(this.state.WareCode)
       let qty = row.PackQty === "" ? 0 : row.PackQty;
       if (row.id > 0 && qty > 0)
       acceptdata.push({
@@ -226,6 +232,7 @@ class ReceiveManage extends Component{
         receiveItems:acceptdata
       }
       if (acceptdata.length > 0) {
+        console.log(postdata)
         Axios.post(window.apipath + "/api/wm/received/doc", postdata).then((res) => {
           if (res.data._result.status === 1) {
             console.log(res.data.ID)
@@ -296,7 +303,8 @@ class ReceiveManage extends Component{
         background: 'rgba(255, 255, 255, 0.9)',
         padding: '2px 0',
         fontSize: '90%',
-        position: 'fixed',
+        //position: 'fixed',
+        height:'200px',
         overflow: 'auto',
         maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
         zIndex: '998',
@@ -309,7 +317,8 @@ class ReceiveManage extends Component{
             backgroundPosition: "8px 8px",
             backgroundSize: "10px",
             backgroundRepeat: "no-repeat",
-            paddingLeft: "25px"
+            paddingLeft: "25px",
+            position: 'relative',
           }
         }}
         wrapperStyle={{ width: "100%" }}
@@ -410,7 +419,7 @@ class ReceiveManage extends Component{
             </div>
             <div className="col-6">    
                 <div className=""><label style={{width:"170px", display:"inline-block"}}>SourceWarehouse: </label>{this.state.pageID ? this.createText(this.state.souWareName) : 
-                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label,"WareCode":e.Warecode})}/></div>}</div>      
+                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse": e.value, "warehouseresult":e.label,"WareCode":e.Warecode !== undefined ?e.Warecode :null})}/></div>}</div>      
                 <div className=""><label style={{width:"170px", display:"inline-block"}}>DestinationWarehouse: </label>{this.state.pageID ? this.createText(this.state.desWareName) : 
                   <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_Deswarehouse} result={(e) => this.setState({"Deswarehouse":e.value, "Deswarehouseresult":e.label,"DesWareCode":e.DesWarecode})}/></div>}</div>          
             </div>
@@ -422,7 +431,7 @@ class ReceiveManage extends Component{
               <Col xs="6">
               <Row>
               <Col>
-                <label style={{width:"170px", display:"inline-block"}}>Remark: </label>{this.state.pageID ? this.createText(this.state.batchName) :<Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"355px"}} />}               
+                <label style={{width:"170px", display:"inline-block"}}>Remark: </label>{this.state.pageID ? this.createText(this.state.remarkName) :<Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"355px"}} />}               
               </Col>
             </Row>
               </Col>
