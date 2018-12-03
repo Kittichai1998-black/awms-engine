@@ -112,7 +112,7 @@ displayButtonByPermission(perID){
   {
     const cols = [
       {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
-      {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:"text"},
+      {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:""},
       {accessor: 'SouWarehouseName', Header: 'DestinationWarehouse', editable:false, Filter:"text",},
       {accessor: 'SouBranchName', Header: 'SourceBranch', editable:false, Filter:"text",},
       {accessor: 'DesWarehouseName', Header: 'SourceWarehouse', editable:false, Filter:"text",},
@@ -121,7 +121,7 @@ displayButtonByPermission(perID){
       {accessor: 'Ref1', Header: 'MaterialDocYears', editable:false, Filter:"text",},
       {accessor: 'Ref2', Header: 'MovementType', editable:false, Filter:"text",},
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
-      {accessor: 'Created', Header: 'CreateBy', editable:false, filterable:false},
+      {accessor: 'Created', Header: 'Created', editable:false, filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
     ];
 
