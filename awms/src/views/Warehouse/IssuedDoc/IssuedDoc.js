@@ -29,7 +29,7 @@ class IssuedDoc extends Component{
       select:{queryString:window.apipath + "/api/viw",
       t:"Document",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
-      f:"ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Created,ModifyBy",
+      f:"ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,DesWarehouseName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Created,ModifyBy",
       g:"",
       s:"[{'f':'ID','od':'desc'}]",
       sk:0,
