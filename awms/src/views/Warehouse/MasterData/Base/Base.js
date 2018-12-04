@@ -184,9 +184,9 @@ class Area extends Component{
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"Base"}
             filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} printbtn={view}
-            btn={btnfunc} uneditcolumn={this.uneditcolumn}
+              btn={btnfunc} uneditcolumn={this.uneditcolumn} 
               table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
 
             

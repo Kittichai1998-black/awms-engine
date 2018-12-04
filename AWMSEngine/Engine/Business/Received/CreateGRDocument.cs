@@ -58,6 +58,13 @@ namespace AWMSEngine.Engine.Business.Received
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
+            DocumentEventStatus AutoEventStatusDoc= DocumentEventStatus.IDEL;
+            string auto = this.StaticValue.GetConfig("AUTO_RECEIVE");
+                if(auto == "AUTO")
+                {
+                    AutoEventStatusDoc = DocumentEventStatus.WORKING;
+                }
+
             amt_Document doc = new amt_Document()
             {
                 ID = null,
@@ -87,7 +94,7 @@ namespace AWMSEngine.Engine.Business.Received
                 Ref2 = reqVO.ref2,
 
                 DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                EventStatus = DocumentEventStatus.WORKING,
+                EventStatus = AutoEventStatusDoc,
 
                 Remark = reqVO.remark,
                 Options = null,
@@ -99,6 +106,13 @@ namespace AWMSEngine.Engine.Business.Received
 
             foreach (var recItem in reqVO.receiveItems)
             {
+
+                DocumentEventStatus AutoEventStatusDocItems = DocumentEventStatus.IDEL;
+                string autoDocItems = this.StaticValue.GetConfig("AUTO_RECEIVE");
+                if (autoDocItems == "AUTO")
+                {
+                    AutoEventStatusDocItems = DocumentEventStatus.WORKING;
+                }
                 ams_PackMaster packMst = null;
                 ams_SKUMaster skuMst = null;
 
@@ -128,7 +142,7 @@ namespace AWMSEngine.Engine.Business.Received
                     PackMaster_ID = packMst.ID.Value,
                     Quantity = recItem.quantity,
                     
-                    EventStatus = DocumentEventStatus.WORKING,
+                    EventStatus = AutoEventStatusDocItems,
 
                     Options = AMWUtil.Common.ObjectUtil.ListKeyToQueryString(recItem.options),
                     ExpireDate = recItem.expireDate,

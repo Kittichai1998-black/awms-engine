@@ -45,5 +45,12 @@ namespace AWMSEngine.Controllers.WM
             var res = new APIService.ASRS.UpdateStoLocationAPI(this).Execute(value);
             return res;
         }
+
+        [HttpPost("sto/mapping")]
+        public dynamic Mapping([FromBody] dynamic value)
+        {
+            var res = new APIService.ASRS.WCSMappingPalletAPI(this).Execute(value);
+            return res;
+        }
     }
 }

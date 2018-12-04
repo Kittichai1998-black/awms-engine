@@ -124,7 +124,7 @@ class Warehouse extends Component{
                     data = json ข้อมูลสำหรับ select ผ่าน url
                     ddlfilter = json dropdown สำหรับทำ dropdown filter
                 */}
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"Warehouse"}
                             filterable={true} autocomplete={this.state.autocomplete} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                             table="ams_Warehouse"/>
 
