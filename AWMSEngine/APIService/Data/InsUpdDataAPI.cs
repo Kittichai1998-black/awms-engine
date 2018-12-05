@@ -29,6 +29,7 @@ namespace AWMSEngine.APIService.Data
                     pk = this.RequestVO.pk,
                     t = this.RequestVO.t
                 });
+            this.CommitTransaction();
             var stManager = ADO.StaticValue.StaticValueManager.GetInstant();
             Type stManagerType = stManager.GetType();
             foreach(var mt in stManagerType.GetMethods())
