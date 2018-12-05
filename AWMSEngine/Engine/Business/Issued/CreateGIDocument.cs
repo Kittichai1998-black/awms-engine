@@ -16,6 +16,8 @@ namespace AWMSEngine.Engine.Business.Issued
         public class TDocReq
         {
             public string refID;
+            public string ref1;
+            public string ref2;
             public int? forCustomerID;
             public string forCustomerCode;
             public string batch;
@@ -31,8 +33,14 @@ namespace AWMSEngine.Engine.Business.Issued
 
             public int? desCustomerID;
             public int? desSupplierID;
+            public int? desBranchID;
+            public int? desWarehouseID;
+            public int? desAreaMasterID;
             public string desCustomerCode;//ผู้ผลิตต้นทาง
             public string desSupplierCode;//ผู้จัดจำหน่ายต้นทาง
+            public string desBranchCode;
+            public string desWarehouseCode;
+            public string desAreaMasterCode;
 
             public DateTime? actionTime;//วันที่ส่ง
             public DateTime documentDate;
@@ -92,6 +100,25 @@ namespace AWMSEngine.Engine.Business.Issued
             var desCustomerModel = reqVO.desCustomerID.HasValue?
                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID):
                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);
+            var desAreaMasterModel = reqVO.desAreaMasterID.HasValue ?
+               this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.desAreaMasterID) :
+               this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaMasterCode);
+            var desWarehouseModel =
+                reqVO.desWarehouseID.HasValue ?
+                    this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == reqVO.desWarehouseID) :
+                    !string.IsNullOrWhiteSpace(reqVO.desBranchCode) ?
+                        this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode) :
+                        desAreaMasterModel != null ?
+                            this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == desAreaMasterModel.Warehouse_ID) :
+                            null;
+            var desBranchModel =
+                reqVO.desBranchID.HasValue ?
+                this.StaticValue.Branchs.FirstOrDefault(x => x.ID == reqVO.desBranchID) :
+                !string.IsNullOrWhiteSpace(reqVO.desBranchCode) ?
+                    this.StaticValue.Branchs.FirstOrDefault(x => x.Code == reqVO.desBranchCode) :
+                    desWarehouseModel != null ?
+                        this.StaticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouseModel.Branch_ID) :
+                        null;
 
             if (forCustomerModel == null && !string.IsNullOrWhiteSpace(reqVO.forCustomerCode))
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "forCustomerCode ไม่ถูกต้อง");
@@ -131,9 +158,31 @@ namespace AWMSEngine.Engine.Business.Issued
             else if (desCustomerModel == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "กรุณาส่ง desCustomerCode");
 
+            if (desWarehouseModel == null && !string.IsNullOrWhiteSpace(reqVO.desWarehouseCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desWarehouseCode ไม่ถูกต้อง");
+            else if (desWarehouseModel == null && reqVO.desWarehouseID.HasValue)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desWarehouseID ไม่ถูกต้อง");
+
+            if (desBranchModel == null && !string.IsNullOrWhiteSpace(reqVO.desBranchCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desBranchCode ไม่ถูกต้อง");
+            else if (desBranchModel == null && reqVO.desBranchID.HasValue)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desBranchID ไม่ถูกต้อง");
+
+            if (desAreaMasterModel == null && !string.IsNullOrWhiteSpace(reqVO.desAreaMasterCode))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desAreaMasterCode ไม่ถูกต้อง");
+            else if (desAreaMasterModel == null && reqVO.desAreaMasterID.HasValue)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desAreaMasterID ไม่ถูกต้อง");
+
+            if (desAreaMasterModel != null && desWarehouseModel != null && desAreaMasterModel.Warehouse_ID != desWarehouseModel.ID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desArea และ desWarehouse ไม่สัมพันธ์กัน");
+            if (desBranchModel != null && desWarehouseModel != null && desBranchModel.ID != desWarehouseModel.Branch_ID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "desWarehouse และ desBranchModel ไม่สัมพันธ์กัน");
+
             amt_Document newDoc = new amt_Document()
             {
                 RefID = reqVO.refID,
+                Ref1 = reqVO.ref1,
+                Ref2 = reqVO.ref2,
                 Lot = reqVO.lot,
                 Batch = reqVO.batch,
                 For_Customer_ID = forCustomerModel == null ? null : forCustomerModel.ID,
@@ -144,6 +193,10 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 Des_Supplier_ID = desSupplierModel == null ? null : desSupplierModel.ID,
                 Des_Customer_ID = desCustomerModel == null ? null : desCustomerModel.ID,
+
+                Des_Warehouse_ID = desWarehouseModel == null ? null : desWarehouseModel.ID,
+                Des_Branch_ID = desBranchModel == null ? null : desBranchModel.ID,
+                Des_AreaMaster_ID = desAreaMasterModel == null ? null : desAreaMasterModel.ID,
 
                 Transport_ID = reqVO.transportID,
 
