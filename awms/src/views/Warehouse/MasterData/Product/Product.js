@@ -4,8 +4,7 @@ import {Card, CardBody, Button } from 'reactstrap';
 import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
-import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
-
+import { GetPermission, Nodisplay } from '../../../ComponentCore/Permission';
 const api = new apicall()
 
 class ListProduct extends Component{
@@ -159,7 +158,7 @@ displayButtonByPermission(perID){
       { accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
       { accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
       { accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},
-      { accessor: 'ObjectSize_Code', Header: 'ObjectSize Code', Filter: "text", Type: "autocomplete" },
+      { accessor: 'ObjectSize_Code', Header: 'Object Size', Filter: "text", Type: "autocomplete" },
       { accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
       { accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
       { accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
@@ -190,11 +189,11 @@ displayButtonByPermission(perID){
     
       */}
          
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
-          filterable={true} autocomplete={this.state.autocomplete} accept={view}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view}
+          filterable={true} autocomplete={this.state.autocomplete} accept={view} expFilename={"SKU"}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}
-          table="ams_SKUMaster"/>
-
+          table="ams_SKUMaster" />
+        
       </div>
     )
   }

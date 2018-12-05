@@ -26,6 +26,7 @@ class ReceiveManage extends Component{
       data : [],
       branch:[],
       auto_branch:[],
+      auto_movementType:[],
       auto_warehouse:[],
       auto_customer:[],
       branch:"",
@@ -50,7 +51,7 @@ class ReceiveManage extends Component{
       s:"[{'f':'ID','od':'asc'}]",
       sk:"",
       l:"",
-      all:"",},   
+      all:"",},
       inputstatus:true,
       pageID:0,
       addstatus:true,
@@ -74,6 +75,15 @@ class ReceiveManage extends Component{
 
     this.branchselect = {queryString:window.apipath + "/api/mst",
       t:"Branch",
+      q:'[{ "f": "Status", "c":"=", "v": 1}]',
+      f:"ID,Code, Name",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      all:"",}
+
+    this.movementTypeselect = {queryString:window.apipath + "/api/ers",
+      t:"SAPMovementType",
       q:'[{ "f": "Status", "c":"=", "v": 1}]',
       f:"ID,Code, Name",
       g:"",
@@ -107,10 +117,12 @@ class ReceiveManage extends Component{
         else{
           this.setState({data:[rowselect1.data.document]})
           this.state.data.forEach(row => {
+            console.log(row.desWarehouseName)
             this.setState({souBranchName:row.souBranchName,desBranchName:row.desBranchName,
             souWareName:row.souWarehouseName,desWareName:row.desWarehouseName,batchName:row.batch,
-            lotName:row.lot,remarkName:row.remark,ref1Name:row.ref1,ref2Name:row.ref2,codeDoc:row.code,
-            documentDate:moment(row.documentDate).format("DD-MM-YYYY"),documentItems:row.documentItems
+            lotName:row.lot,remarkName:row.remark,MatDocYear:row.ref1,Movement:row.ref2,codeDoc:row.code,
+            documentDate:moment(row.documentDate).format("DD-MM-YYYY"),documentItems:row.documentItems,
+            MatDocNo:row.refID
           })            
           })   
         }
@@ -132,18 +144,34 @@ class ReceiveManage extends Component{
  
       })
     })
+
+    Axios.get(createQueryString(this.movementTypeselect)).then(movementTyperesult => {
+      this.setState({auto_movementType : movementTyperesult.data.datas, addstatus:false }, () => {
+        const auto_movementType = []
+        this.state.auto_movementType.forEach(row => {
+          auto_movementType.push({value:row.ID, label:row.Code + ' : ' + row.Name,code:row.Code })
+        })
+        this.setState({auto_movementType})
+      })
+    })
+
+
   }
 
   genWarehouseData(data){ 
     if(data){
       const warehouse = this.warehouseselect
+      console.log(this.state.branch)
       warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
       Axios.get(createQueryString(warehouse)).then((res) => {
         const auto_warehouse = []
         res.data.datas.forEach(row => {
+          console.log(row)
           auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name,Warecode:row.Code })
+          console.log(row.Code )
         })
-        this.setState({auto_warehouse})
+        this.setState({auto_warehouse}) 
+        console.log(this.state.auto_warehouse)
       })
     }
   }
@@ -173,9 +201,14 @@ class ReceiveManage extends Component{
 
   createDocument(){
     let acceptdata = []
+    var filterQty = this.state.data.filter(x => x.PackQty <= 0 || x.PackQty === "")
+      if(filterQty.length > 0){
+        alert("Quantity is null")
+      }else{
     this.state.data.forEach(row => {  
+      console.log(this.state.WareCode)
       let qty = row.PackQty === "" ? 0 : row.PackQty;
-      if (row.id > 0 && qty > 0){
+      if (row.id > 0 && qty > 0)
       acceptdata.push({
         skuCode: null,
         packItemQty:null,
@@ -188,29 +221,28 @@ class ReceiveManage extends Component{
         ref3:null,
         options:null
       })
+    }) 
       let postdata = {
-        refID:null, forCustomerCode:null, batch:this.state.batch, lot:this.state.lot,
+        refID:this.state.refID, forCustomerCode:null, batch:this.state.batch, lot:this.state.lot,
         souSupplierCode:null,souCustomerCode:null,
         souBranchCode:this.state.branchCode,souWarehouseCode:this.state.WareCode,souAreaMasterCode:null,
         desBranchCode:this.state.DesbranchCode,desWarehouseCode:this.state.DesWareCode,desAreaMasterCode:null,
         actionTime:null,documentDate:this.DateNow.format("YYYY/MM/DD"),
-        remark:this.state.remark,ref1:this.state.ref1,ref2:this.state.ref2,
+        remark:this.state.remark,ref1:this.state.ref1,ref2:this.state.movementTypeCode,
         receiveItems:acceptdata
       }
       if (acceptdata.length > 0) {
+        console.log(postdata)
         Axios.post(window.apipath + "/api/wm/received/doc", postdata).then((res) => {
           if (res.data._result.status === 1) {
+            console.log(res.data.ID)
             this.props.history.push('/doc/gr/manage?ID=' + res.data.ID)
             window.location.reload()
           }
         })
       }
-    }else{
-      alert("Quantity is null")
     }
-    }) 
-    }
-
+  }
   inputCell(field, rowdata){
     return <NumberInput value={rowdata.value} 
     onChange={(e) => {this.editData(rowdata, e, "PackQty")}}/>
@@ -271,7 +303,8 @@ class ReceiveManage extends Component{
         background: 'rgba(255, 255, 255, 0.9)',
         padding: '2px 0',
         fontSize: '90%',
-        position: 'fixed',
+        //position: 'fixed',
+        height:'200px',
         overflow: 'auto',
         maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
         zIndex: '998',
@@ -284,7 +317,8 @@ class ReceiveManage extends Component{
             backgroundPosition: "8px 8px",
             backgroundSize: "10px",
             backgroundRepeat: "no-repeat",
-            paddingLeft: "25px"
+            paddingLeft: "25px",
+            position: 'relative',
           }
         }}
         wrapperStyle={{ width: "100%" }}
@@ -385,7 +419,7 @@ class ReceiveManage extends Component{
             </div>
             <div className="col-6">    
                 <div className=""><label style={{width:"170px", display:"inline-block"}}>SourceWarehouse: </label>{this.state.pageID ? this.createText(this.state.souWareName) : 
-                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label,"WareCode":e.Warecode})}/></div>}</div>      
+                  <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse": e.value, "warehouseresult":e.label,"WareCode":e.Warecode !== undefined ?e.Warecode :null})}/></div>}</div>      
                 <div className=""><label style={{width:"170px", display:"inline-block"}}>DestinationWarehouse: </label>{this.state.pageID ? this.createText(this.state.desWareName) : 
                   <div style={{width:"355px", display:"inline-block"}}><AutoSelect data={this.state.auto_Deswarehouse} result={(e) => this.setState({"Deswarehouse":e.value, "Deswarehouseresult":e.label,"DesWareCode":e.DesWarecode})}/></div>}</div>          
             </div>
@@ -396,20 +430,24 @@ class ReceiveManage extends Component{
               </Col>
               <Col xs="6">
               <Row>
-                <Col xs="6">
-                  <label style={{width:"110px", display:"inline-block"}}>MaterialDocNo.: </label>{this.state.pageID ? this.createText(this.state.ref1Name) :<Input onChange={(e) => this.setState({ref1:e.target.value})} style={{display:"inline-block", width:"130px"}} />}
-                </Col>
-                <Col xs="6">
-                  <label style={{width:"115px", display:"inline-block"}}>MaterialDocYears: </label>{this.state.pageID ? this.createText(this.state.ref2Name) :<Input onChange={(e) => this.setState({ref2:e.target.value})} style={{display:"inline-block", width:"130px"}} />}<br/>
-                </Col>
-              </Row>  
-              </Col>
-          </Row>
-            <Row>
               <Col>
-                <label style={{width:"150px", display:"inline-block"}}>Remark: </label>{this.state.pageID ? this.createText(this.state.batchName) :<Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"935px"}} />}               
+                <label style={{width:"170px", display:"inline-block"}}>Remark: </label>{this.state.pageID ? this.createText(this.state.remarkName) :<Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"355px"}} />}               
               </Col>
             </Row>
+              </Col>
+          </Row>
+          <Row>
+            <Col xs="6" sm="4">
+              <div className=""><label style={{width:"120px", display:"inline-block"}}>MovementType: </label>{this.state.pageID ? this.createText(this.state.Movement) : 
+                  <div style={{width:"200px", display:"inline-block"}}><AutoSelect data={this.state.auto_movementType} result={(e) => this.setState({"movementType":e.value, "movementTyperesult":e.label,"movementTypeCode":e.code})}/></div>}</div>     
+            </Col>
+            <Col xs="6" sm="4">
+              <label style={{width:"110px", display:"inline-block"}}>MaterialDocNo.: </label>{this.state.pageID ? this.createText(this.state.MatDocNo) :<Input onChange={(e) => this.setState({refID:e.target.value})} style={{display:"inline-block", width:"200px"}} />}
+            </Col>
+            <Col sm="4">
+              <label style={{width:"115px", display:"inline-block"}}>MaterialDocYears: </label>{this.state.pageID ? this.createText(this.state.MatDocYear) :<Input onChange={(e) => this.setState({ref1:e.target.value})} style={{display:"inline-block", width:"200px"}} />}<br/>
+            </Col>
+              </Row>
             <Row>
               <Col>
                 {this.state.pageID ?null:this.Addbutton()}               

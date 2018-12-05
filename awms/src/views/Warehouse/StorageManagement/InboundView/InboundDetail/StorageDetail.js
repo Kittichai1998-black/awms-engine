@@ -6,6 +6,7 @@ import ReactTable from 'react-table'
 import {apicall, DatePicker, createQueryString} from '../../../ComponentCore'
 import moment from 'moment';
 import queryString from 'query-string'
+import _ from 'lodash'
 
 const Axios = new apicall()
 
@@ -15,7 +16,7 @@ class IssuedDoc extends Component {
 
     this.state = {
       data : [],
-      xxx:[]
+      data2:[]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.dateTimePicker = this.dateTimePicker.bind(this)
@@ -23,22 +24,48 @@ class IssuedDoc extends Component {
 
   componentDidMount(){
     const values = queryString.parse(this.props.location.search)
-    console.log(values)
+    var ID = values.docID.toString()
     if(values.docID){
-      Axios.get(window.apipath + "/api/wm/received/doc?docID=" + values.docID).then(res => {
+      console.log(ID)   
+      Axios.get(window.apipath + "/api/wm/received/doc/?docID="+ID+"&getMapSto=true").then(res => {  
+
         if (res.data._result.status === 1) {
           this.setState({
-            data: res.data.document.documentItems,
             DocumentCode: res.data.document.code,
             Remark: res.data.document.remark
           })
+          var groupPack = _.groupBy(res.data.bstos,"packCode")        
+          let sumArr =[]
+          
+          for (let res1 in groupPack){     
+              let sum = 0
+              groupPack[res1].forEach(res2 => {
+                sum += res2.packQty
+                res2.sumQty = sum
+                sumArr.forEach(response => {
+                  if(response.code === res2.code){
+                    res2.code = "";
+                  }
+                })
+              })
+          sumArr.push(groupPack[res1][groupPack[res1].length -1])
+          }
+              
+          var result = res.data.document.documentItems
+            this.setState({data2:sumArr}, () => {
+              result.forEach(row1 =>{
+                this.state.data2.forEach(row2 =>{
+                  if(row1.packMaster_Code === row2.packCode){
+                    row1.sumQty = row2.sumQty
+                  }
+                })
+              })
+            })
+            this.setState({data:result})
         }
-      })
-      var ID = values.docID.toString()
-      Axios.get(window.apipath + "/api/wm/received/doc/?docID="+ID+"&getMapSto=true").then(res => {
-        console.log(res.data.bstos)
-        this.setState({xxx:res.data.bstos})
-        console.log(this.state.xxx)
+        
+          
+          console.log(this.state.data)
        })
     }
 
@@ -58,15 +85,15 @@ class IssuedDoc extends Component {
 
   render() {
     const cols = [
-      {accessor: 'packMaster_Code', Header: 'PackItem', editable:false, Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>},
-      {accessor: 'quantity', Header: 'Quantity',editable:false,},
+      {accessor: 'packMaster_Code', Header: 'PackItem', editable:false, Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>,},
+      {accessor: 'sumQty', Header: 'Quantity',editable:false, Cell: (e) => <span>{e.original.sumQty === undefined ? '-'+ ' / ' + e.original.quantity : e.original.sumQty + ' / ' + e.original.quantity === undefined ? '-' : e.original.quantity}</span>,},
       {accessor: 'unitType_Name', Header: 'UnitType', editable:false,},
     ];
     const colsdetail = [
       {accessor: 'code', Header: 'Base',editable:false,},
       {accessor: 'packCode', Header: 'PackItem',editable:false,Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>},
-      {accessor: 'packQty', Header: 'Quantity',editable:false,},
-      {accessor: 'isLoaded', Header: 'UnitType',editable:false,},
+      {accessor: 'sumQty', Header: 'Quantity',editable:false,},
+      {accessor: 'packUnitCode', Header: 'UnitType',editable:false,},
     ];
 
     return (
@@ -84,7 +111,7 @@ class IssuedDoc extends Component {
         <ReactTable columns={cols} data={this.state.data} NoDataComponent={()=>null} style={{background:"white"}}
           sortable={false} filterable={false} editable={false} minRows={5} showPagination={false}/><br/>
 
-        <ReactTable columns={colsdetail} data={this.state.xxx} NoDataComponent={()=>null} style={{background:"white"}}
+        <ReactTable columns={colsdetail} data={this.state.data2} NoDataComponent={()=>null} style={{background:"white"}}
           sortable={false} filterable={false} editable={false} minRows={5} showPagination={false}/>
         <div className="clearfix">
           <Button color="danger" style={{margin:"10px 0"}} className="float-right" onClick={this.onHandleClickCancel}>Back</Button>

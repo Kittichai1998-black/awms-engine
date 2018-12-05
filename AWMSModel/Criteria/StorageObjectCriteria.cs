@@ -36,7 +36,7 @@ namespace AWMSModel.Criteria
         public bool isFocus;
         public StorageObjectEventStatus eventStatus;
         public List<ObjectSizeMap> objectSizeMaps;
-        public List<KeyValuePair<string, string>> options;
+        public string options;
         public List<StorageObjectCriteria> mapstos;
         
 
@@ -65,7 +65,7 @@ namespace AWMSModel.Criteria
             List<ams_UnitType> staticUnitTypes,
             string codeFocus)
         {
-            return Generate(stos, staticObjectSizes, null, codeFocus);
+            return Generate(stos, staticObjectSizes, staticUnitTypes, null, codeFocus);
         }
         public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
             List<ams_ObjectSize> staticObjectSizes,
@@ -114,7 +114,7 @@ namespace AWMSModel.Criteria
                             widthM = x.widthM,
                             heightM = x.heightM,
 
-                            options = AMWUtil.Common.ObjectUtil.QueryStringToKeyValues(x.options ?? string.Empty),
+                            options = x.options ?? string.Empty,
                             mapstos = generateMapstos(x.id, x.type, out isFocus),
                             isFocus = isFocus,
                             objectSizeID = x.objectSizeID,

@@ -20,7 +20,6 @@ namespace AWMSEngine.APIService.WM
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var options = ObjectUtil.DynamicToModel<List<KeyValuePair<string, string>>>(this.RequestVO.options);
             var mapsto = ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestVO.mapsto);
             var res = new ScanMapStoV2().Execute(this.Logger, this.BuVO,
                 new ScanMapStoV2.TReq()
@@ -32,7 +31,7 @@ namespace AWMSEngine.APIService.WM
                     lot = this.RequestVO.lot,
                     amount = this.RequestVO.amount,
                     mode = (VirtualMapSTOModeType)this.RequestVO.mode,
-                    options = options,
+                    options = this.RequestVO.options,
                     action = (VirtualMapSTOActionType)this.RequestVO.action,
                     mapsto = mapsto
                 });

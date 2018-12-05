@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.Business
             public long? areaID;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
-            public List<KeyValuePair<string, string>> options;
+            public string options;
             public StorageObjectCriteria mapsto;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
@@ -180,7 +180,7 @@ namespace AWMSEngine.Engine.Business
             string lot,
             int amount,
             bool isInStorage,
-            List<KeyValuePair<string, string>> options,
+            string options,
             StorageObjectCriteria mapsto)
         {
             //var oldCode = this.GetMapStoLastFocus(mapsto).code;

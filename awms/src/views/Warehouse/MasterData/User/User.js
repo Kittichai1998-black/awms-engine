@@ -129,7 +129,7 @@ class User extends Component{
                 responset.data.datas.forEach(row => {
                     selectuserroledata.push({ID:row.ID,User_ID:row.User_ID,Role_ID:row.Role_ID,Status:row.Status})
                 })
-                this.setState({selectuserroledata},() => this.setUserRole(user_id))
+                this.setState({selectuserroledata},() => this.setUserRole("user_id"))
             })
         })
     }
@@ -296,7 +296,7 @@ class User extends Component{
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={view}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"User"}
                       filterable={true} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>

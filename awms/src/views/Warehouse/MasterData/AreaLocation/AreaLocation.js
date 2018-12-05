@@ -373,7 +373,7 @@ displayButtonByPermission(perID){
                   filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
                   table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>*/}
-        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addbtn={view}
+        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"AreaLocation"}
           filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
           btn={btnfunc} uneditcolumn={this.uneditcolumn} defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'AreaMaster_ID', c: '=', 'v': this.state.areamaster }]}
           table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} accept={view}/>
