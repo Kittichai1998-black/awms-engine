@@ -139,7 +139,7 @@ displayButtonByPermission(perID){
           {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
           {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
           {accessor: 'ObjectSize_Code', Header: 'Default ObjectSize Code',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+          //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
           {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
           /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

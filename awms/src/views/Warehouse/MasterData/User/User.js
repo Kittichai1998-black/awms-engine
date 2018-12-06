@@ -188,8 +188,8 @@ class User extends Component{
     }
 
   createRoleBtn(rowdata) {
-        return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-      onClick={() => this.getData(rowdata.ID)}>Role</Button>
+    return <div class="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+      onClick={() => this.getData(rowdata.ID)}>Role</Button></div>
         }
     
     updateRole(){
@@ -262,7 +262,7 @@ class User extends Component{
             {accessor: 'FacebookID', Header: 'Facebook ID', editable:true},
             {accessor: 'TelOffice', Header: 'Office Tel.', editable:true},
             {accessor: 'TelMobile', Header: 'Mobile', editable:true},
-            {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+            //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"},

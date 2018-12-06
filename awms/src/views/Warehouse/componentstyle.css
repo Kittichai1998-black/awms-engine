@@ -55,3 +55,11 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
+
+.rmv .rt-td{
+  background: rgba(250, 76, 76, 0.74) !important;
+}
+
+.editrow .rt-td {
+  background: rgba(238, 194, 24, 0.74) !important;
+}
