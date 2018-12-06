@@ -349,6 +349,7 @@ class TableGen extends Component {
     if (dataedit.length > 0) {
       dataedit.forEach((row) => {
         row["ID"] = row["ID"] <= 0 ? null : row["ID"]
+        row["Code"] = row["Code"] === "" ? (row["Status"] === 2 ? "" : null) : row["Code"]
         this.props.column.forEach(col => {
           if (col.datatype === "int" && row[col.accessor] === "") {
             if (col.accessor === "Revision") {
@@ -371,6 +372,18 @@ class TableGen extends Component {
             }
             row[col.accessor] = "@@sql_gen_password," + row[col.accessor] + "," + guidstr
             row["SoftPassword"] = guidstr
+          }
+          if (col.accessor === "ObjectType") {
+            if (row[col.accessor] === "") {
+              alert("กรุณาเลือก ObjectType");
+              row["ObjectType"] = null
+            }
+          }
+          if (col.accessor === "GroupType") {
+            if (row[col.accessor] === "") {
+              alert("กรุณาเลือก GroupType");
+              row["GroupType"] = null
+            }
           }
           //check ช่องกรอก Bank bay level gate
           if (this.props.areagrouptype === 1) {
@@ -770,8 +783,12 @@ class TableGen extends Component {
 
     } else {
       var rowBaseCode = rowdata.row["Code"]
-      if (!rowBaseCode.includes(this.props.autocode)) {
-        return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
+      if (rowBaseCode != null || rowBaseCode != undefined) {
+        if (!rowBaseCode.includes(this.props.autocode)) {
+          return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
+        } 
+      } else {
+        return null;
       }
     }
   }
@@ -916,6 +933,8 @@ class TableGen extends Component {
             if (rowdata.column.id === row) {
               if ((getdata[0].data.find(x => x.ID === rowdata.value)) !== undefined) {
                 rowdata.value = getdata[0].data.find(x => x.ID === rowdata.value).Code
+              } else {
+                rowdata.value = null
               }
             }
           })
@@ -936,7 +955,7 @@ class TableGen extends Component {
           menuStyle={style}
           getItemValue={(item) => item.Code}
           items={getdata[0].data}
-          shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
+          shouldItemRender={(item, value) => value === null ? "" : item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
           renderItem={(item, isHighlighted) =>
             <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
               {item.Code}

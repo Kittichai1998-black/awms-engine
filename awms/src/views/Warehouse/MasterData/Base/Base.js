@@ -85,15 +85,16 @@ class Area extends Component{
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
             all:"",}
-
-        const basetypeselect = {queryString:window.apipath + "/api/mst",
-            t:"BaseMasterType",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,concat(Code,' : ',Name) as Code",
-            g:"",
-            s:"[{'f':'ID','od':'asc'}]",
-            sk:0,
-            all:"",}
+        const basetypeselect = {
+          queryString: window.apipath + "/api/viw",
+          t: "BaseMasterType",
+          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
+          f: "ID,concat(Code,' : ',Name) as Code",
+          g: "",
+          s: "[{'f':'ID','od':'asc'}]",
+          sk: 0,
+          all: "",
+        }
         const unitselect = {
           queryString: window.apipath + "/api/mst",
           t: "UnitType",
