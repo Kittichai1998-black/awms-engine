@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.Business
             public string batch;
             public string lot;
             public int amount;
+            public DateTime? productDate;
             public long? warehouseID;
             public long? areaID;
             public VirtualMapSTOModeType mode;
@@ -115,6 +116,10 @@ namespace AWMSEngine.Engine.Business
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ต้องสแกนพาเลทหรือกล่อง ก่อนสแกนสินค้า");
                     //ADO.DocumentADO.GetInstant().ListItemCanMap(reqVO.scanCode, DocumentTypeID.GOODS_RECEIVED, this.BuVO);
                 }
+                else
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่มีรหัส" + reqVO.scanCode + "ในระบบ");
+                }
             }
 
             return mapsto;
@@ -131,10 +136,16 @@ namespace AWMSEngine.Engine.Business
             }
             else if (reqVO.action == VirtualMapSTOActionType.ADD)
             {
+                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDEL, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ เพิ่ม สินค้าลงใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
+
                 this.ActionAdd(reqVO, mapsto);
             }
             else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
             {
+                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDEL, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ ลบ สินค้าจากใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
+
                 this.ActionRemove(reqVO, mapsto);
             }
 
@@ -194,7 +205,7 @@ namespace AWMSEngine.Engine.Business
             if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
             {
                 //StorageObjectCriteria registMapSto = null;
-                if(pm != null)
+                if (pm != null)
                 {
                     long? docItemID = null;
                     //if (this.StaticValue.IsFeature(FeatureCode.IB0100))
@@ -203,12 +214,12 @@ namespace AWMSEngine.Engine.Business
                     //    if (docItemCanMaps == null || docItemCanMaps.Count == 0)
                     //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Goods Recevie");
                     //    var docItemCanMap = docItemCanMaps.FirstOrDefault(x => reqVO.amount <= (x.MaxQty - x.Qty));
-                    //    if(docItemCanMap == null)
+                    //    if (docItemCanMap == null)
                     //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "จำนวนรับเข้าคงเหลือจาก Goods Recevie ไม่ถูกต้อง");
                     //    docItemID = docItemCanMap.DocumentItem_ID;
                     //}
                     List<long> mapDocByStoIDs = new List<long>();
-                    for(int i = 0; i < reqVO.amount; i++)
+                    for (int i = 0; i < reqVO.amount; i++)
                     {
                         var regisMap = this.GenerateStoCrit(pm, pm.ObjectSize_ID, reqVO);
 
@@ -224,11 +235,11 @@ namespace AWMSEngine.Engine.Business
                     if (docItemID.HasValue)
                         ADO.DocumentADO.GetInstant().MappingSTO(docItemID.Value, mapDocByStoIDs, this.BuVO);
                 }
-                else if(bm != null)
+                else if (bm != null)
                 {
                     StorageObjectCriteria regisMap = ADO.StorageObjectADO.GetInstant()
                         .Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, false, this.BuVO);
-                    
+
                     if (regisMap == null)
                         regisMap = this.GenerateStoCrit(bm, bm.ObjectSize_ID, reqVO);
 
@@ -251,10 +262,10 @@ namespace AWMSEngine.Engine.Business
                 if (reqVO.amount > countStoFree)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนที่ต้องการโอนย้าย '" + reqVO.amount + "' มีมากกว่าจำนวนที่อยู่ในระบบ '" + countStoFree + "' ");
 
-                for(int i = 0; i < reqVO.amount; i++)
+                for (int i = 0; i < reqVO.amount; i++)
                 {
                     var transferMapSto = ADO.StorageObjectADO.GetInstant()
-                                    .GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, true,  this.BuVO);
+                                    .GetFree(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, true, this.BuVO);
 
                     transferMapSto.parentID = firstMapSto.id;
                     transferMapSto.parentType = firstMapSto.type;
@@ -264,7 +275,7 @@ namespace AWMSEngine.Engine.Business
 
                     foreach (var sto in transferMapSto.ToTreeList())
                     {
-                        if(sto.areaID != firstMapSto.areaID || sto.warehouseID != firstMapSto.warehouseID)
+                        if (sto.areaID != firstMapSto.areaID || sto.warehouseID != firstMapSto.warehouseID)
                         {
                             transferMapSto.areaID = firstMapSto.areaID;
                             transferMapSto.warehouseID = firstMapSto.warehouseID;

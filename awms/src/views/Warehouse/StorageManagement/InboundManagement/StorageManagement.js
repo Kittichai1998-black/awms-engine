@@ -41,15 +41,6 @@ class StorageManagement extends Component{
       sk:"",
       l:"",
       all:"",},
-      price:{queryString:window.apipath + "/api/mst",
-      t:"SKUMaster",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
-      f:"ID,Code,Price",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:"",
-      l:"",
-      all:"",},
       warehousedata:[],
       areadata:[],
       barcode:"",
@@ -153,7 +144,7 @@ perID.forEach(row => {
     this.setState({[resfield]:resdata}, () => {
       if(field === "Warehouse"){
         const area = this.state.area
-        let areawhere = [{ "f": "Status", "c":"=", "v": 1}]
+        let areawhere = [{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"in", "v": "SM,FF,FR"}]
         areawhere.push({'f':'warehouse_ID','c':'=','v':this.state.warehouseres.value})
         area.q = JSON.stringify(areawhere)
 
@@ -194,22 +185,10 @@ perID.forEach(row => {
           for(let i = 0; i < child.objectSizeMaps.length; i++){
             qty += child.objectSizeMaps[i].quantity
           }
-          let sumprice = 0
-          child.mapstos.forEach(rowp => {
-            if(rowp.price)
-              sumprice += rowp.allqty * rowp.price
-            else
-              child.mapstos.forEach(rowp2 => {
-                rowp2.mapstos.forEach(rowp3 => {
-                  sumprice += rowp3.allqty * rowp3.price
-                })
-              })
-          })
-          child.priceall = sumprice
-          disQtys = <div>จำนวนรวม : {qty}<br/>ราคารวม : {child.priceall}</div>
+          disQtys = <div>จำนวนรวม : {qty}</div>
       }
       else{
-        disQtys = <div>จำนวนรวม : {child.allqty}<br/>ราคารวม : {child.allqty * child.price}</div>
+        disQtys = <div>จำนวนรวม : {child.allqty}</div>
       }
 
       return <ul key={i} style={child.isFocus===true?focus:focusf} >
@@ -400,7 +379,7 @@ perID.forEach(row => {
         const approvedata = {isConfirm:flag,rootStoID:this.state.mapSTO.id,type:this.state.mapSTO.type}
         Axios.post(window.apipath + "/api/wm/VRMapSTO/confirm", approvedata).then((res) => {
           if(res.data._result.status !== 0){
-            this.setState({result:null,mapSTOView:null,mapSTO:null, control:"none", response:"",})
+            this.setState({mapSTO:null, control:"none", response:"",})
             window.success("Complete")
             return null
             
@@ -411,7 +390,7 @@ perID.forEach(row => {
         })
       }
     }
-    let barcode= document.getElementById("barcodetext")
+    let barcode= document.getElementById("qrcode")
     barcode.focus()
   }
 
