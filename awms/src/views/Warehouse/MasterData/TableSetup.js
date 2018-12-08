@@ -82,7 +82,8 @@ class TableGen extends Component {
       currentPage: 1,
       dropdownOpen: false,
       filename: "data",
-      enumvalue: []
+      enumvalue: [],
+      statusUpdateData: null
     };
     this.toggle = this.toggle.bind(this);
     this.customSorting = this.customSorting.bind(this);
@@ -103,6 +104,7 @@ class TableGen extends Component {
     this.btmButtomGenerate = this.btmButtomGenerate.bind(this)
     this.printbarcodeall = this.printbarcodeall.bind(this)
     this.AddGenerate = this.AddGenerate.bind(this)
+    this.Notification = this.Notification.bind(this)
     this.data = []
     this.sortstatus = 0
     this.order = 0
@@ -202,7 +204,7 @@ class TableGen extends Component {
       }
     })
     this.setState({ data });
-    this.setState({ dataedit });
+    this.setState({ dataedit }, () => this.setState({statusUpdateData: "remove"}));
   }
 
   onCheckFliter(filter, dataselect) {
@@ -455,10 +457,12 @@ class TableGen extends Component {
         "nr": false
       }
       Axios.put(window.apipath + "/api/mst", updjson).then((result) => {
+        //alert("อัพเดทข้อมูลเสร็จเรียบร้อย");
+        this.Notification(this.state.statusUpdateData)
         this.queryInitialData(this.state.dataselect);
       })
 
-      this.setState({ dataedit: [] })
+      this.setState({ dataedit: [] });
     }
   }
 
@@ -821,7 +825,7 @@ class TableGen extends Component {
       }
     })
     dataedit.push(data[rowdata.index]);
-    this.setState({ dataedit });
+    this.setState({ dataedit }, () => this.setState({ statusUpdateData: "edit" }));
   }
 
   createAutoCompleteDownshift(rowdata) {
@@ -1130,13 +1134,14 @@ class TableGen extends Component {
     if (this.props.addbtn === true) {
       return <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a"}} type="button" color="success" className="float-right">Add</Button>
     } else if (this.props.exportbtn === true) {
+      const dataxls = [...this.state.data];
       return (
         <div>
           <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a", marginLeft: '5px'  }} type="button" color="success" className="float-right">Add</Button>
           <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} className="float-right">
             <DropdownToggle caret color="warning">{iconprint} Export File</DropdownToggle>
             <DropdownMenu>
-              <ExportExcel column={this.props.column} data={this.state.data} filename={this.props.expFilename} />
+              <ExportExcel column={this.props.column} dataxls={dataxls} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
               <DropdownItem>{iconpdf} PDF</DropdownItem>
             </DropdownMenu>
           </ButtonDropdown>
@@ -1146,7 +1151,17 @@ class TableGen extends Component {
       return null;
     }
   }
-  
+
+  Notification(state) {
+  switch (state) {
+    case 'edit':
+      return alert("เพิ่ม/แก้ไข ข้อมูลสำเร็จ");
+    case 'remove':
+      return alert("ลบข้อมูลสำเร็จ");
+    default:
+      return null;
+  }
+}
   render() {
     const col = this.props.column
     col.forEach((row) => {

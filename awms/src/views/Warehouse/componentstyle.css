@@ -63,3 +63,20 @@
 .editrow .rt-td {
   background: rgba(238, 194, 24, 0.74) !important;
 }
+
+.success .rt-td {
+  background: rgba(65, 204, 32, 0.80) !important;
+}
+.working .rt-td {
+  background: rgba(238, 194, 24, 0.74) !important;
+}
+.error .rt-td {
+  background: rgba(250, 76, 76, 0.74) !important;
+}
+.cancel .rt-td {
+  background: rgba(189, 189, 189, 0.76) !important;
+}
+.inqueue .rt-td {
+  background: aliceblue !important;
+}
+
