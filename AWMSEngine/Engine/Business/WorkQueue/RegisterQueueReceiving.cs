@@ -113,6 +113,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 EventStatus = WorkQueueEventStatus.WORKING,
                 Status = EntityStatus.ACTIVE,
+                StartTime = DateTime.Now,
                 
             };
             ADO.QueueADO.GetInstant().PUT(workQ, this.BuVO);
