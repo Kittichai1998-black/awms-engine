@@ -33,6 +33,7 @@ namespace AWMSModel.Criteria
         public decimal? weiKG;
         public decimal? minWeiKG;
         public decimal? maxWeiKG;
+        public DateTime? productDate;
         public bool isFocus;
         public StorageObjectEventStatus eventStatus;
         public List<ObjectSizeMap> objectSizeMaps;
@@ -87,7 +88,6 @@ namespace AWMSModel.Criteria
             var sos = staticObjectSizes.FirstOrDefault(x => x.ID == stoRoot.objectSizeID);
             var res = generateMapstos(stoRoot.parentID, stoRoot.parentType, out isFucus).FirstOrDefault();
             
-
             List<StorageObjectCriteria> generateMapstos(long? parentID, StorageObjectType? parentType, out bool outParentIsFocus)
             {
                 List<StorageObjectCriteria> r =
@@ -113,6 +113,7 @@ namespace AWMSModel.Criteria
                             lengthM = x.lengthM,
                             widthM = x.widthM,
                             heightM = x.heightM,
+                            productDate = x.productDate,
 
                             options = x.options ?? string.Empty,
                             mapstos = generateMapstos(x.id, x.type, out isFocus),

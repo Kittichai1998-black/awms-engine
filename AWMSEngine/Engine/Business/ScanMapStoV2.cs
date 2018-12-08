@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.Business
             public string batch;
             public string lot;
             public int amount;
+            public DateTime? productDate;
             public long? warehouseID;
             public long? areaID;
             public VirtualMapSTOModeType mode;
@@ -114,6 +115,10 @@ namespace AWMSEngine.Engine.Business
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ต้องสแกนพาเลทหรือกล่อง ก่อนสแกนสินค้า");
                     //ADO.DocumentADO.GetInstant().ListItemCanMap(reqVO.scanCode, DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+                }
+                else
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่มีรหัส" + reqVO.scanCode + "ในระบบ");
                 }
             }
 

@@ -52,5 +52,13 @@ namespace AWMSEngine.Controllers.WM
             var res = new APIService.ASRS.WCSMappingPalletAPI(this).Execute(value);
             return res;
         }
+
+        [HttpGet("queue/view")]
+        public dynamic View()
+        {
+            var value = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var res = new APIService.ASRS.ViewQueueAPI(this).Execute(value);
+            return res;
+        }
     }
 }

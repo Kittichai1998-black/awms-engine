@@ -30,6 +30,7 @@ namespace AWMSEngine.Engine.Business.Received
                     mode = VirtualMapSTOModeType.REGISTER,
                     action = VirtualMapSTOActionType.ADD,
                     options = row.source,
+                    productDate = row.stampDate,
                     mapsto = mapsto,
                     warehouseID = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == row.warehouseCode).ID,
                     areaID = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == row.areaCode).ID,
