@@ -154,7 +154,10 @@ class TaskList extends Component{
       { accessor: "Product", Header: "Product" },
       { accessor: "Amount", Header: "Amount" },
     ]
-    
+    const options = [
+      { value: '0', label: 'Front Area' },
+      { value: '1', label: 'Rear Area' }
+    ];
     return (
       <div>
         <Fullscreen
@@ -164,10 +167,12 @@ class TaskList extends Component{
           <div style={this.state.isFull ? {backgroundColor: '#e4e7ea', padding: '1.5625em'} : {}} className="fullscreen">
         <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
           <Row>
-            <Col sm="3" xs="12" md="4" lg="5"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={1000} /></span></label></Col>
-            <Col sm="3" xs="5" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Area: </label></Col>
-                <Col sm="5" xs="6" md="4" lg="3">{/*<AutoSelect />*/}</Col>
-                <Col sm="1" xs="1" md="2" lg="2"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
+            <Col sm="3" xs="12" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={1000} /></span></label></Col>
+                <Col sm="3" xs="3" md="2" lg="3"><label className="float-right" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Area: </label></Col>
+                <Col sm="5" xs="7" md="5" lg="4">{<AutoSelect className="float-right" data={options} result={(e) => {
+                  this.setState({ areavalue: e.value, areatext: e.label }, () => console.log(this.state.areavalue + " " + this.state.areatext))
+                }}/>}</Col>
+                <Col sm="1" xs="2" md="1" lg="1"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
           </Row>
       </div>
          
