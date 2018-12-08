@@ -265,6 +265,10 @@ const ReceiveManage = Loadable({
   loading: Loading,
 });
 
+const TaskList = Loadable({
+  loader: () => import('./views/Warehouse/TaskList/TaskList'),
+  loading: Loading,
+});
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -326,6 +330,8 @@ const routes = [
   { path: '/mst/role/manage', exact: true, name: 'Role', component:Role},
   { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
+  { path: '/wm/sto/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
+
 ];
 
 export default routes;
