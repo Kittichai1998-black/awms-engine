@@ -152,8 +152,8 @@ class Role extends Component{
   }
 
   createMapBtn(rowdata){
-    return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-      onClick={() => this.getData(rowdata.ID)}>Permission</Button>
+    return <div class="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '100px' }}
+      onClick={() => this.getData(rowdata.ID)}>Permission</Button></div>
   }
 
   updateRolePermission(){
@@ -237,7 +237,7 @@ class Role extends Component{
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left"},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed:"left"},
       {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
+      //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
       {accessor: 'Created', Header: 'Create',filterable:false},
       {accessor: 'Modified', Header: 'Modify',filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Map", btntext:"Map"},

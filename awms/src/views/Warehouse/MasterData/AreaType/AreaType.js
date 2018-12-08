@@ -113,7 +113,7 @@ class AreaType extends Component{
             {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
           { accessor: 'GroupType', Header: 'Group Type', updateable: false, Filter: "text", Type: "autocomplete"},
-            {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" , Filter:"dropdown"},
+            //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" , Filter:"dropdown"},
             
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             /* {accessor: 'Warehouse_Code', Header: 'Warehouse',updateable:false,Filter:"text", Type:"autocomplete"},

@@ -50,7 +50,7 @@ class ClientSecret extends Component{
       {accessor: 'SecretKey', Header: 'SecretKey', editable:true,Filter:"text"},
       {accessor: 'IPAddress', Header: 'IPAddress', editable:true,Filter:"text"},
       {accessor: 'MacAddress', Header: 'MacAddress', editable:true,Filter:"text"},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
+      //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
       {accessor: 'Created', Header: 'Create',filterable:false},
       {accessor: 'Modified', Header: 'Modify',filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},

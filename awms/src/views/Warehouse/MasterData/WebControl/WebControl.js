@@ -96,7 +96,7 @@ class WebControl extends Component{
       {accessor: 'ElementSelector', Header: 'Element Selector', sortable:false,Filter:"text",editable:true},
       {accessor: 'WebPage_Code', Header: 'Web Page',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'Permission_Code', Header: 'Permission',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+      //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

@@ -31,6 +31,11 @@ class IssuedManage extends Component{
       branch:"",
       customer:"",
       warehouse:"",
+      Batch:"",
+      refID:"",
+      ref1:"",
+      ref2:"",
+      remark:"",  
       documentStatus:10,
       issuedNo:"-",
       select2:{queryString:window.apipath + "/api/viw",
@@ -107,12 +112,19 @@ class IssuedManage extends Component{
           this.setState({data:[]})
         }
         else{
-          this.setState({data:rowselect1.data.document, remark:rowselect1.data.document.remark,
-          documentStatus:rowselect1.data.document.eventStatus,
-          documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
-          date:moment(rowselect1.data.document.actionTime),
-          addstatus:true,
-          issuedNo:rowselect1.data.document.code})
+          this.setState({
+            data:rowselect1.data.document, 
+            remark:rowselect1.data.document.remark,
+            documentStatus:rowselect1.data.document.eventStatus,
+            documentDate:moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
+            date:moment(rowselect1.data.document.actionTime),
+            addstatus:true,
+            issuedNo:rowselect1.data.document.code,
+            Batch:rowselect1.data.document.batch,
+            refID:rowselect1.data.document.refID,
+            ref1:rowselect1.data.document.ref1,
+            ref2:rowselect1.data.document.ref2
+          })
 
         }
       })
@@ -184,15 +196,17 @@ class IssuedManage extends Component{
       })
     })
     let postdata = {
-      refID:''
-      , forCustomerID:null
+        forCustomerID:null
       , batch:this.state.Batch
       , lot:null
       , souBranchID:this.state.branch
-      , souWarehouseID:this.state.warehouse
+      , desWarehouseID:this.state.warehouse
       , souAreaMasterID:null
       , desCustomerID:this.state.customer
       , desSupplierID:null
+      , refID:this.state.refID
+      , ref1:this.state.ref1
+      , ref2:this.state.ref2
       , actionTime:this.state.date.format("YYYY/MM/DDTHH:mm:ss")
       , documentDate:this.DateNow.format("YYYY/MM/DD")
       , remark:this.state.remark
@@ -479,26 +493,26 @@ class IssuedManage extends Component{
               value={this.state.Batch === undefined ? "" : this.state.Batch}/>}
               </div>
               <div className=""><label style={style}>Movement Type : </label>
-              {this.state.pageID ? <span> {this.state.MovementType}</span> :
-              <Input onChange={(e) => this.setState({MovementType:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              {this.state.pageID ? <span> {this.state.ref2}</span> :
+              <Input onChange={(e) => this.setState({ref2:e.target.value})} style={{display:"inline-block", width:"300px"}}
               
-              value={this.state.MovementType === undefined ? "" : this.state.MovementType}/>}
+              value={this.state.ref2 === undefined ? "" : this.state.ref2}/>}
               </div>
             </div>
             <div className="col-6">
-              <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.souWarehouseName) : 
+              <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.desWarehouseName) : 
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label})}/></div>}</div>
                 <div className=""><label style={style}>Materials Document : </label>
-              {this.state.pageID ? <span> {this.state.MatDoc}</span> :
-              <Input onChange={(e) => this.setState({MatDoc:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              {this.state.pageID ? <span> {this.state.refID}</span> :
+              <Input onChange={(e) => this.setState({refID:e.target.value})} style={{display:"inline-block", width:"300px"}}
               
-              value={this.state.MatDoc === undefined ? "" : this.state.MatDoc}/>}
+              value={this.state.refID === undefined ? "" : this.state.refID}/>}
               </div>
               <div className=""><label style={style}>Materials Document Year: </label>
-              {this.state.pageID ? <span> {this.state.MatDocYear}</span> :
-              <Input onChange={(e) => this.setState({MatDocYear:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              {this.state.pageID ? <span> {this.state.ref1}</span> :
+              <Input onChange={(e) => this.setState({ref1:e.target.value})} style={{display:"inline-block", width:"300px"}}
               
-              value={this.state.MatDocYear === undefined ? "" : this.state.MatDocYear}/>}
+              value={this.state.ref1 === undefined ? "" : this.state.ref1}/>}
               </div>
               <div className=""><label style={style}>Remark : </label>
               {this.state.pageID ? <span> {this.state.remark}</span> :

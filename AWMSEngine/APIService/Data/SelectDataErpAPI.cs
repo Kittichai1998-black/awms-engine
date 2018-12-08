@@ -28,7 +28,8 @@ namespace AWMSEngine.APIService.Data
                     l= this.RequestVO.l,
                     q = this.RequestVO.q,
                     s = this.RequestVO.s,
-                    sk = this.RequestVO.sk
+                    sk = this.RequestVO.sk,
+                    isCounts = this.RequestVO.isCounts
                 });
 
             return res1;

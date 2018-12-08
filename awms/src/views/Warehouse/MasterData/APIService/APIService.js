@@ -96,7 +96,7 @@ class APIService extends Component{
       {accessor: 'ActionCommand', Header: 'Action Command', sortable:false,Filter:"text",editable:true,},
       {accessor: 'Permission_Code', Header: 'Permission',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'APIServiceGroup_Code', Header: 'API Service Group',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+      //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

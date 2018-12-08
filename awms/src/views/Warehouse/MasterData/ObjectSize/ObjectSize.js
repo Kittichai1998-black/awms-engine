@@ -315,7 +315,7 @@ class ObjectSize extends Component{
           {accessor: 'ObjectType', Header: 'Object Type',updateable:false,Filter:"text", Type:"autocomplete"},
           {accessor: 'MinWeigthKG', Header: 'Minimun Weigth(Kg.)', editable:true,Filter:"text",datatype:"int"},
           {accessor: 'MaxWeigthKG', Header: 'Maximun Weigth(Kg.)', editable:true,Filter:"text",datatype:"int"},
-          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+          //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
           {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
           {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Map", btntext:"Map"},

@@ -23,7 +23,7 @@ class AreaLocation extends Component{
         { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", Type: "autolocationcode"},
         { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
         { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
@@ -274,7 +274,7 @@ displayButtonByPermission(perID){
         { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", Type: "autolocationcode"},
         { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
         { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
@@ -291,7 +291,7 @@ displayButtonByPermission(perID){
         {accessor: 'Gate', Header: 'Gate', editable:true, Filter:"text", Type:"autolocationcode"},
         { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
         { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
@@ -310,7 +310,7 @@ displayButtonByPermission(perID){
         { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", datatype: "int"},
         { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
         { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
-        {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+        //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
         {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

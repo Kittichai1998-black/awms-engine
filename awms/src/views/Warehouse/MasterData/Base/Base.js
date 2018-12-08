@@ -85,15 +85,16 @@ class Area extends Component{
             s:"[{'f':'ID','od':'asc'}]",
             sk:0,
             all:"",}
-
-        const basetypeselect = {queryString:window.apipath + "/api/mst",
-            t:"BaseMasterType",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
-            f:"ID,concat(Code,' : ',Name) as Code",
-            g:"",
-            s:"[{'f':'ID','od':'asc'}]",
-            sk:0,
-            all:"",}
+        const basetypeselect = {
+          queryString: window.apipath + "/api/viw",
+          t: "BaseMasterType",
+          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
+          f: "ID,concat(Code,' : ',Name) as Code",
+          g: "",
+          s: "[{'f':'ID','od':'asc'}]",
+          sk: 0,
+          all: "",
+        }
         const unitselect = {
           queryString: window.apipath + "/api/mst",
           t: "UnitType",
@@ -156,7 +157,7 @@ class Area extends Component{
             {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
           { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
           { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
-            {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+            //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

@@ -29,10 +29,12 @@ namespace AWMSEngine.Engine.General
             public string sk;
             public string l;
             public string ft;
+            public bool? isCounts;
         }
         public class TResModel
         {
             public List<dynamic> datas;
+            public int? counts;
         }
 
         protected override TResModel ExecuteEngine(TReqModel reqVO)
@@ -69,6 +71,12 @@ namespace AWMSEngine.Engine.General
                 var datas = ADO.DataADO.GetInstant().SelectBy<dynamic>(reqVO.table_prefix + tb, reqVO.f, reqVO.g, whares.ToArray(), orders.ToArray(), reqVO.l.GetTry<int>(), reqVO.sk.GetTry<int>(), this.BuVO);
                 TResModel res = new TResModel();
                 res.datas = datas;
+                if(reqVO.isCounts.HasValue && reqVO.isCounts.Value)
+                {
+                    var dataCount = ADO.DataADO.GetInstant().SelectBy<dynamic>(reqVO.table_prefix + tb, "count(1) c", reqVO.g, whares.ToArray(), null, null, null, this.BuVO).First();
+                    res.counts = (int)dataCount.c;
+                }
+
                 return res;
             }
 
