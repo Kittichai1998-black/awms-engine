@@ -108,6 +108,7 @@ namespace AWMSEngine.ADO
 
                 param.Add("@remark", doc.Remark);
                 param.Add("@eventStatus", doc.EventStatus);
+                param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
                 param.Add("@actionBy", buVO.ActionBy);
 
                 doc = this.Query<amt_Document>("SP_DOC_CREATE",
@@ -149,8 +150,11 @@ namespace AWMSEngine.ADO
             param.Add("@productionDate", docItem.ProductionDate);
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);
-            param.Add("@ref3", docItem.Ref3);
+            param.Add("@refID", docItem.RefID);
+            param.Add("@batch", docItem.Batch);
+            param.Add("@lot", docItem.Lot);
             param.Add("@eventStatus", docItem.EventStatus);
+            param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
             //param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));
             param.Add("@actionBy", buVO.ActionBy);
 
@@ -161,7 +165,8 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction)
                                 .FirstOrDefault();
 
-            this.MappingSTO(docItem.ID.Value, tmp, buVO);
+            if (tmp != null && tmp.Count() > 0)
+                this.MappingSTO(docItem.ID.Value, tmp, buVO);
             docItem.StorageObjectIDs = tmp;
 
             /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()

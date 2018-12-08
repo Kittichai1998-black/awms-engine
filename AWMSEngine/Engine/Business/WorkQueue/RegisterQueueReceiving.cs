@@ -344,7 +344,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                             ProductionDate = x.key.productDate,
                             Ref1 = null,
                             Ref2 = null,
-                            Ref3 = null,
+                            RefID = null,
                             StorageObjectIDs = x.stoIDs
                         });
                     };

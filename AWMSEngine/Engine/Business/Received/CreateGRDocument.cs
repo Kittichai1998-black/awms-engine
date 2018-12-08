@@ -38,6 +38,7 @@ namespace AWMSEngine.Engine.Business.Received
             public string ref1;
             public string ref2;
 
+            public DocumentEventStatus eventStatus = DocumentEventStatus.IDEL;
 
             public List<ReceiveItem> receiveItems;
             public class ReceiveItem
@@ -45,6 +46,7 @@ namespace AWMSEngine.Engine.Business.Received
                 public string skuCode;
                 public string packCode;
                 public int? packItemQty;
+                public string packItemUnit;
                 public int quantity;
 
                 public DateTime? expireDate;
@@ -52,18 +54,14 @@ namespace AWMSEngine.Engine.Business.Received
 
                 public string ref1;
                 public string ref2;
-                public string ref3;
-                public KeyValuePair<string, object>[] options;
+                public string refID;
+                public string options;
+
+                public DocumentEventStatus eventStatus = DocumentEventStatus.IDEL;
             }
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            DocumentEventStatus AutoEventStatusDoc= DocumentEventStatus.IDEL;
-            string auto = this.StaticValue.GetConfig("AUTO_RECEIVE");
-                if(auto == "AUTO")
-                {
-                    AutoEventStatusDoc = DocumentEventStatus.WORKING;
-                }
 
             amt_Document doc = new amt_Document()
             {
@@ -94,7 +92,7 @@ namespace AWMSEngine.Engine.Business.Received
                 Ref2 = reqVO.ref2,
 
                 DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                EventStatus = AutoEventStatusDoc,
+                EventStatus = reqVO.eventStatus,
 
                 Remark = reqVO.remark,
                 Options = null,
@@ -107,12 +105,6 @@ namespace AWMSEngine.Engine.Business.Received
             foreach (var recItem in reqVO.receiveItems)
             {
 
-                DocumentEventStatus AutoEventStatusDocItems = DocumentEventStatus.IDEL;
-                string autoDocItems = this.StaticValue.GetConfig("AUTO_RECEIVE");
-                if (autoDocItems == "AUTO")
-                {
-                    AutoEventStatusDocItems = DocumentEventStatus.WORKING;
-                }
                 ams_PackMaster packMst = null;
                 ams_SKUMaster skuMst = null;
 
@@ -120,12 +112,15 @@ namespace AWMSEngine.Engine.Business.Received
                     packMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(recItem.packCode, this.BuVO);
                     skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
                 }
-                else if(!string.IsNullOrWhiteSpace(recItem.skuCode) && recItem.packItemQty.HasValue)
+                else if(!string.IsNullOrWhiteSpace(recItem.skuCode) && (recItem.packItemQty.HasValue || recItem.packItemUnit != null))
                 {
                     skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(recItem.skuCode, this.BuVO);
                     if (skuMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบรหัส SKU '" + recItem.skuCode + "'");
-                    packMst = ADO.MasterADO.GetInstant().GetPackMaster(skuMst.ID.Value, recItem.packItemQty.Value, this.BuVO);
+                    if (recItem.packItemQty != null)
+                        packMst = ADO.MasterADO.GetInstant().GetPackMaster(skuMst.ID.Value, recItem.packItemQty.Value, this.BuVO);
+                    else if (recItem.packItemUnit != null)
+                        packMst = ADO.MasterADO.GetInstant().GetPackMaster(skuMst.ID.Value, recItem.packItemUnit, this.BuVO);
                     if (packMst == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลแพ็คของ SKU '" + recItem.skuCode + "' ที่มีจำนวน '"+ recItem.packItemQty + " ชิ้น/แพ็ค");
                 }
@@ -141,15 +136,15 @@ namespace AWMSEngine.Engine.Business.Received
                     SKUMaster_ID = skuMst.ID.Value,
                     PackMaster_ID = packMst.ID.Value,
                     Quantity = recItem.quantity,
-                    
-                    EventStatus = AutoEventStatusDocItems,
 
-                    Options = AMWUtil.Common.ObjectUtil.ListKeyToQueryString(recItem.options),
+                    Options = recItem.options,
                     ExpireDate = recItem.expireDate,
                     ProductionDate = recItem.productionDate,
                     Ref1 = recItem.ref1,
                     Ref2 = recItem.ref2,
-                    Ref3 = recItem.ref3,
+                    RefID = recItem.refID,
+
+                    EventStatus = recItem.eventStatus,
                     StorageObjectIDs = new List<long>()
                 });
             }

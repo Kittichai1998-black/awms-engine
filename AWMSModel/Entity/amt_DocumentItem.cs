@@ -16,9 +16,11 @@ namespace AWMSModel.Entity
         public string Options;
         public DateTime? ProductionDate;
         public DateTime? ExpireDate;
+        public string Batch;
+        public string Lot;
+        public string RefID;
         public string Ref1;
         public string Ref2;
-        public string Ref3;
         public DocumentEventStatus EventStatus;
 
         public List<long> StorageObjectIDs;

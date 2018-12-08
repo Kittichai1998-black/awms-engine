@@ -1,4 +1,6 @@
 ﻿using AMWUtil.Exception;
+using AWMSEngine.ADO.StaticValue;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -16,6 +18,19 @@ namespace AWMSEngine.ADO
             {
                 new KeyValuePair<string, object>("SKUMaster_ID",skuID),
                 new KeyValuePair<string, object>("ItemQty",itemQty),
+                new KeyValuePair<string, object>("Status",1)
+            }, buVO).FirstOrDefault();
+            return packMst;
+        }
+        public AWMSModel.Entity.ams_PackMaster GetPackMaster(long skuID, string unitTypeCode, VOCriteria buVO)
+        {
+            var unitType = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK && x.Code == unitTypeCode);
+            if (unitType == null)
+                return null;
+            var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("SKUMaster_ID",skuID),
+                new KeyValuePair<string, object>("UnitType_ID",unitType.ID.Value),
                 new KeyValuePair<string, object>("Status",1)
             }, buVO).FirstOrDefault();
             return packMst;
