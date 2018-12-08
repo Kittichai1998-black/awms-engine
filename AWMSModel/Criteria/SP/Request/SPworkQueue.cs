@@ -35,6 +35,8 @@ namespace AWMSModel.Criteria.SP.Request
         public WorkQueueEventStatus EventStatus;
         public DateTime? TargetStartTime;
         public DateTime? ActualTime;
+        public DateTime? StartTime;
+        public DateTime? EndTime;
         public EntityStatus Status;
 
     }

@@ -20,6 +20,8 @@ namespace AWMSModel.Entity
         public long Des_Warehouse_ID;
         public long Des_Area_ID;
         public long? Des_AreaLocation_ID;
+        public DateTime? StartTime;
+        public DateTime? EndTime;
         public int Priority;
         public string RefID;
         public WorkQueueEventStatus EventStatus;
