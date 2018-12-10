@@ -265,6 +265,15 @@ const ReceiveManage = Loadable({
   loading: Loading,
 });
 
+const TaskList = Loadable({
+  loader: () => import('./views/Warehouse/TaskList/TaskList'),
+  loading: Loading,
+});
+const QueueView = Loadable({
+  loader: () => import('./views/Warehouse/Queue/QueueView'),
+  loading: Loading,
+});
+
 const CreateQueue = Loadable({
   loader: () => import('./views/Warehouse/Queue/CreateQueue'),
   loading: Loading,
@@ -299,6 +308,7 @@ const routes = [
   { path: '/mst/objectsize/manage', exact: true, name: 'Object Size', component: ObjectSize },
   { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Job Schedule Module', component: JobScheduleModule },
   { path: '/mst/unittype/manage', exact: true, name: 'Unit Type', component: UnitType },
+  { path: '/mst/webcontrol/manage', exact: true, name: 'Web Page', component: WebControl },
   { path: '/mst/webpage/manage', exact: true, name: 'Web Page', component: WebPage },
   { path: '/mst/webpagegroup/manage', exact: true, name: 'Web Page Group', component: WebPageGroup },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
@@ -331,6 +341,9 @@ const routes = [
   { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
   { path: '/wm/issue/manage', exact: true, name: 'Create Queue by DO', component:CreateQueue},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
+  { path: '/wm/sto/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
+
+  { path: '/wm/queue/manage', exact: true, name: 'QueueView', component:QueueView},
 ];
 
 export default routes;

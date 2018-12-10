@@ -49,7 +49,7 @@ class Config  extends Component{
       {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
       {accessor: 'DataValue', Header: 'DataValue', editable:true,Filter:"text"},
       {accessor: 'DataStyle', Header: 'DataStyle', editable:true,Filter:"text"},
-      {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
+      //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
       {accessor: 'Created', Header: 'Create',filterable:false},
       {accessor: 'Modified', Header: 'Modify',filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},

@@ -72,52 +72,65 @@ namespace AWMSEngine.ADO
 
         public amt_Document Create(amt_Document doc, VOCriteria buVO)
         {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@parentDocument_ID", doc.ParentDocument_ID);
-            param.Add("@documentType_ID", doc.DocumentType_ID);
-            
-            param.Add("@sou_customer_ID", doc.Sou_Customer_ID);
-            param.Add("@sou_supplier_ID", doc.Sou_Supplier_ID);
-            param.Add("@sou_branch_ID", doc.Sou_Branch_ID);
-            param.Add("@sou_warehouse_ID", doc.Sou_Warehouse_ID);
-            param.Add("@sou_areaMaster_ID", doc.Sou_AreaMaster_ID);
-
-            param.Add("@des_customer_ID", doc.Des_Customer_ID);
-            param.Add("@des_supplier_ID", doc.Des_Supplier_ID);
-            param.Add("@des_branch_ID", doc.Des_Branch_ID);
-            param.Add("@des_warehouse_ID", doc.Des_Warehouse_ID);
-            param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID);
-
-            param.Add("@transport_ID", doc.Transport_ID);
-
-            param.Add("@actionTime", doc.ActionTime);
-            param.Add("@documentDate", doc.DocumentDate);
-            param.Add("@options", doc.Options);
-            param.Add("@refID", doc.RefID);
-            param.Add("@ref1", doc.Ref1);
-            param.Add("@ref2", doc.Ref2);
-
-            param.Add("@for_customer_ID", doc.For_Customer_ID);
-            param.Add("@batch", doc.Batch);
-            param.Add("@lot", doc.Lot);
-
-            param.Add("@remark", doc.Remark);
-            param.Add("@eventStatus", doc.EventStatus);
-            param.Add("@actionBy", buVO.ActionBy);
             var docItems = doc.DocumentItems;
 
-            doc = this.Query<amt_Document>("SP_DOC_CREATE",
-                                System.Data.CommandType.StoredProcedure,
-                                param,
-                                buVO.Logger, buVO.SqlTransaction)
-                                .FirstOrDefault();
+            if (!doc.ID.HasValue)
+            {
+
+                Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+                param.Add("@parentDocument_ID", doc.ParentDocument_ID);
+                param.Add("@documentType_ID", doc.DocumentType_ID);
+
+                param.Add("@sou_customer_ID", doc.Sou_Customer_ID);
+                param.Add("@sou_supplier_ID", doc.Sou_Supplier_ID);
+                param.Add("@sou_branch_ID", doc.Sou_Branch_ID);
+                param.Add("@sou_warehouse_ID", doc.Sou_Warehouse_ID);
+                param.Add("@sou_areaMaster_ID", doc.Sou_AreaMaster_ID);
+
+                param.Add("@des_customer_ID", doc.Des_Customer_ID);
+                param.Add("@des_supplier_ID", doc.Des_Supplier_ID);
+                param.Add("@des_branch_ID", doc.Des_Branch_ID);
+                param.Add("@des_warehouse_ID", doc.Des_Warehouse_ID);
+                param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID);
+
+                param.Add("@transport_ID", doc.Transport_ID);
+
+                param.Add("@actionTime", doc.ActionTime);
+                param.Add("@documentDate", doc.DocumentDate);
+                param.Add("@options", doc.Options);
+                param.Add("@refID", doc.RefID);
+                param.Add("@ref1", doc.Ref1);
+                param.Add("@ref2", doc.Ref2);
+
+                param.Add("@for_customer_ID", doc.For_Customer_ID);
+                param.Add("@batch", doc.Batch);
+                param.Add("@lot", doc.Lot);
+
+                param.Add("@remark", doc.Remark);
+                param.Add("@eventStatus", doc.EventStatus);
+                param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
+                param.Add("@actionBy", buVO.ActionBy);
+
+                doc = this.Query<amt_Document>("SP_DOC_CREATE",
+                                    System.Data.CommandType.StoredProcedure,
+                                    param,
+                                    buVO.Logger, buVO.SqlTransaction)
+                                    .FirstOrDefault();
+            }
             doc.DocumentItems = new List<amt_DocumentItem>();
 
             docItems.ForEach(x =>
             {
-                x.Document_ID = doc.ID.Value;
-                var docItem = this.CreateItem(x, buVO);
-                doc.DocumentItems.Add(docItem);
+                if (!x.ID.HasValue)
+                {
+                    x.Document_ID = doc.ID.Value;
+                    var docItem = this.CreateItem(x, buVO);
+                    doc.DocumentItems.Add(docItem);
+                }
+                else
+                {
+                    doc.DocumentItems.Add(x);
+                }
             });
 
             return doc;
@@ -137,24 +150,30 @@ namespace AWMSEngine.ADO
             param.Add("@productionDate", docItem.ProductionDate);
             param.Add("@ref1", docItem.Ref1);
             param.Add("@ref2", docItem.Ref2);
-            param.Add("@ref3", docItem.Ref3);
+            param.Add("@refID", docItem.RefID);
+            param.Add("@batch", docItem.Batch);
+            param.Add("@lot", docItem.Lot);
             param.Add("@eventStatus", docItem.EventStatus);
-            param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));
+            param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
+            //param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));
             param.Add("@actionBy", buVO.ActionBy);
 
+            var tmp = docItem.StorageObjectIDs;
             docItem = this.Query<amt_DocumentItem>("SP_DOCITEM_CREATE",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction)
                                 .FirstOrDefault();
 
-            
+            if (tmp != null && tmp.Count() > 0)
+                this.MappingSTO(docItem.ID.Value, tmp, buVO);
+            docItem.StorageObjectIDs = tmp;
 
-            docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
+            /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
                 .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
                 .Select(x=>x.StorageObject_ID)
-                .ToList();
-            
+                .ToList();*/
+
             return docItem;
         }
         public int Close(long documentID, bool needClose, VOCriteria buVO)

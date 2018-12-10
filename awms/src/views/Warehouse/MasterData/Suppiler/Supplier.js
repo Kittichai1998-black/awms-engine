@@ -88,7 +88,7 @@ displayButtonByPermission(perID){
       { accessor: 'Code', Header: 'Code', editable: true,Filter:"text", fixed:"left"},
       { accessor: 'Name', Header: 'Name', editable: true,Filter:"text", fixed:"left"},
       //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
-      { accessor: 'Status', Header: 'Status', editable: true, Type:"checkbox" ,Filter:"dropdown"},
+      //{ accessor: 'Status', Header: 'Status', editable: true, Type:"checkbox" ,Filter:"dropdown"},
       /* {accessor: 'Revision', Header: 'Revision', editable:false}, */
       { accessor: 'Created', Header: 'Create', editable: false, filterable: false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false}, */

@@ -5,9 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="APIService\Mst\Ers\**" />
+    <Content Remove="APIService\Mst\Ers\**" />
+    <EmbeddedResource Remove="APIService\Mst\Ers\**" />
+    <None Remove="APIService\Mst\Ers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="APIService\Mst\PutCustomerFromFileServerCsvAPI.cs" />
     <Compile Remove="APIService\Mst\PutSKUMasterFromFileServerCsvAPI.cs" />
     <Compile Remove="APIService\Mst\PutSupplierFromFileServerCsvAPI.cs" />
+    <Compile Remove="Controllers\PublicDataMasterController.cs" />
     <Compile Remove="Controllers\SqlDataController.cs" />
     <Compile Remove="Controllers\WM\MasterSTOController.cs" />
     <Compile Remove="Controllers\WM\VRMapSTOReceiveController.cs" />

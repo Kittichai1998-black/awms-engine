@@ -100,7 +100,7 @@ namespace AWMSEngine.Engine.Business.Received
                     ProductionDate = null,
                     Ref1 = null,
                     Ref2 = null,
-                    Ref3 = null,
+                    RefID = null,
                     StorageObjectIDs = p.stoIDs
                 });
             }

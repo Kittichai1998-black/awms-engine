@@ -121,7 +121,7 @@ class Area extends Component{
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
       {accessor: 'Warehouse_Code', Header: 'Warehouse',updateable:false,Filter:"text", Type:"autocomplete"},
       {accessor: 'AreaMasterType_Code', Header: 'AreaMasterType',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'Status', Header: 'Status',Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+      //{accessor: 'Status', Header: 'Status',Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       {accessor: 'Created', Header: 'Create',filterable:false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

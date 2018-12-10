@@ -24,7 +24,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             public decimal? height;//สูง M.
             public string warehouseCode;//รหัสคลังสินค้า
             public string areaCode;//รหัสโซน
-            public string loactionCode;//รหัสเกต
+            public string locationCode;//รหัสเกต
+            public List<PalletDataCriteria> mappingPallets;
             public DateTime actualTime;
         }
         
@@ -38,30 +39,35 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + reqVO.areaCode + "'");
             var alm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Code",reqVO.loactionCode),
+                    new KeyValuePair<string,object>("Code",reqVO.locationCode),
                     new KeyValuePair<string,object>("AreaMaster_ID",am.ID.Value),
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
             if (alm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.loactionCode + "'");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.locationCode + "'");
+
+            this.MappingPallet(reqVO);
 
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, wm.ID, null, false, true, this.BuVO);
             if (mapsto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Base Code '" + reqVO.baseCode + "'");
 
-
             List<amt_DocumentItem> docItemsInSto = null;
             if (mapsto.eventStatus == StorageObjectEventStatus.IDEL)
             {
                 docItemsInSto = this.GetReceiveDocumentItem(mapsto, reqVO);
-                if(docItemsInSto == null)
+
+                var doc = this.CreateDocument(reqVO, wm.ID.Value, mapsto);
+                foreach (var docItem in doc.DocumentItems)
                 {
-                    if(this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == mapsto.options) != null)
-                        new CreateGRDocumentBySTO().Execute(this.Logger, this.BuVO, new CreateGRDocumentBySTO.TReq { stomap = mapsto });
-                    else
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่มีข้อมูล Warehouse ในระบบ");
+                    var treeSto = mapsto.ToTreeList();
+                    var getStoID = treeSto.Where(x => x.mstID == docItem.PackMaster_ID).Select(x => x.id.Value).ToList();
+                    ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, getStoID, this.BuVO);
                 }
+
                 mapsto.eventStatus = StorageObjectEventStatus.RECEIVING;
+
+
             }
             else if (mapsto.eventStatus == StorageObjectEventStatus.AUDITING || mapsto.eventStatus == StorageObjectEventStatus.AUDITED)
             {
@@ -77,10 +83,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }
             else
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากมีสถานะ '" + mapsto.eventStatus + "'");
-
-
-
-
+            
             var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(mapsto.areaID, alm.ID, this.BuVO);
             var desAreaDefault = desAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
             SPworkQueue workQ = new SPworkQueue()
@@ -110,6 +113,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 EventStatus = WorkQueueEventStatus.WORKING,
                 Status = EntityStatus.ACTIVE,
+                StartTime = DateTime.Now,
                 
             };
             ADO.QueueADO.GetInstant().PUT(workQ, this.BuVO);
@@ -256,5 +260,108 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             return res;
         }
 
+        private StorageObjectCriteria MappingPallet(TReq reqVO)
+        {
+            var getSTO = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
+                ADO.StaticValue.StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode).ID,
+                null, false, true, this.BuVO);
+
+            if (getSTO == null)
+            {
+                var palletList = new List<PalletDataCriteria>();
+                foreach (var row in reqVO.mappingPallets)
+                {
+                    palletList.Add(new PalletDataCriteria()
+                    {
+                        source = "Sou_Warehouse_ID=" + row.source,
+                        code = row.code,
+                        batch = row.batch,
+                        qty = row.qty,
+                        baseUnit = row.baseUnit,
+                        stampDate = row.stampDate,
+                        warehouseCode = reqVO.warehouseCode,
+                        areaCode = reqVO.areaCode,
+                        movingType = row.movingType
+                    });
+                }
+
+                var reqMapping = new WCSMappingPallet.TReq()
+                {
+                    palletData = palletList
+                };
+
+                var resMapping = new WCSMappingPallet().Execute(this.Logger, this.BuVO, reqMapping);
+                return resMapping;
+            }
+            else
+            {
+                return getSTO;
+            }
+        }
+
+        private amt_Document CreateDocument(TReq reqVO, long wmID, StorageObjectCriteria mapsto)
+        {   
+            if (this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.mappingPallets[0].source) != null)
+            {
+                var getItemDoc = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                    new KeyValuePair<string, object>[] {
+                                new KeyValuePair<string,object>("Ref1", reqVO.mappingPallets[1].source),
+                                new KeyValuePair<string,object>("Ref2", reqVO.mappingPallets[1].movingType),
+                                new KeyValuePair<string,object>("Ref3", reqVO.mappingPallets[1].batch),
+                                new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                    }, this.BuVO).FirstOrDefault();
+
+                var getDoc = new amt_Document();
+                if (getItemDoc == null)
+                {
+                    getDoc = new CreateGRDocumentBySTO().Execute(this.Logger, this.BuVO, new CreateGRDocumentBySTO.TReq { stomap = mapsto });
+                }
+                else
+                {
+                    getDoc = ADO.DataADO.GetInstant().SelectBy<amt_Document>(
+                        new KeyValuePair<string, object>[] {
+                                        new KeyValuePair<string,object>("Document_ID", getItemDoc.Document_ID),
+                                        new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                        }, this.BuVO).FirstOrDefault();
+                    var treelist = mapsto.ToTreeList();
+
+                    var resx = treelist.Where(x => x.objectSizeID == 2).GroupBy(x => new { code = x.code, mstID = x.mstID, options = x.options, productDate = x.productDate })
+                        .Select(x => new { key = x.Key, count = x.Count(), stoIDs = x.Select(y => y.id.Value).ToList() });
+
+                    foreach (var x in resx)
+                    {
+                        var packmst = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(x.key.mstID, this.BuVO);
+
+                        getDoc.DocumentItems.Add(new amt_DocumentItem()
+                        {
+                            SKUMaster_ID = packmst.SKUMaster_ID,
+                            PackMaster_ID = x.key.mstID,
+                            Code = packmst.Code,
+                            ID = null,
+                            EventStatus = DocumentEventStatus.WORKING,
+                            Options = x.key.options,
+                            Quantity = null,
+                            ExpireDate = null,
+                            ProductionDate = x.key.productDate,
+                            Ref1 = null,
+                            Ref2 = null,
+                            RefID = null,
+                            StorageObjectIDs = x.stoIDs
+                        });
+                    };
+
+                    if (resx.Count() > 0)
+                    {
+                        getDoc = ADO.DocumentADO.GetInstant().Create(getDoc, BuVO);
+                    }
+                }
+
+                return getDoc;
+
+
+            }
+            else
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่มีข้อมูล Warehouse ในระบบ");
+        }
     }
 }

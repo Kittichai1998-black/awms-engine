@@ -55,3 +55,29 @@
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
+
+.rmv .rt-td {
+  background: rgba(248, 108, 107, 0.78) !important;
+}
+
+.editrow .rt-td {
+  background: rgba(255, 193, 7, 0.78) !important;
+}
+
+.inqueue .rt-td {
+  background: white !important;
+}
+.working .rt-td {
+  background: rgba(255, 193, 7, 0.78) !important;
+}
+.success .rt-td {
+  background: rgba(77, 189, 116, 0.78) !important;
+}
+.error .rt-td {
+  background: rgba(248, 108, 107, 0.78) !important;
+}
+.cancel .rt-td {
+  background: rgba(200, 206, 211, 0.78) !important;
+}
+
+

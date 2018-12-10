@@ -52,7 +52,7 @@ class BaseType extends Component{
     filterList(){
         const UnitTypeSelect = {queryString:window.apipath + "/api/mst",
             t:"UnitType",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}",
+            q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
             f:"ID,concat(Code,' : ',Name) as Code",
             g:"",
             s:"[{'f':'ID','od':'asc'}]",
@@ -83,7 +83,7 @@ class BaseType extends Component{
           //{accessor: 'GroupType', Header: 'Group Type', editable:true,Filter:"text"},
           //{accessor: 'SizeLevel', Header: 'Size Level', editable:true,Filter:"text"},
           //{accessor: 'InnerSizeLevels', Header: 'Inner Size Levels', editable:true,Filter:"text"},
-          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+          //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
           {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
           /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

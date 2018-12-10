@@ -213,30 +213,32 @@ namespace AWMSEngine.ADO
             string commOrderBy = string.Empty;
 
             int iField = 0;
-            foreach (var w in wheres)
-            {
-                commWhere += string.Format("{3} {0} {1} {2} ",
-                                        w.field,
-                                        w.operatorType.Attribute<ValueAttribute>().Value,
-                                        w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL ? "" : "@" + w.field + iField,
-                                        w.conditionLeft != SQLConditionType.NONE && !string.IsNullOrEmpty(commWhere) ? w.conditionLeft.Attribute<ValueAttribute>().Value :
-                                            string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
+            if(wheres!=null)
+                foreach (var w in wheres)
+                {
+                    commWhere += string.Format("{3} {0} {1} {2} ",
+                                            w.field,
+                                            w.operatorType.Attribute<ValueAttribute>().Value,
+                                            w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL ? "" : "@" + w.field + iField,
+                                            w.conditionLeft != SQLConditionType.NONE && !string.IsNullOrEmpty(commWhere) ? w.conditionLeft.Attribute<ValueAttribute>().Value :
+                                                string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
 
-                object v = null;
-                if (w.value == null) v = null;
-                else if (w.value is string && w.operatorType == SQLOperatorType.LIKE) v = w.value.ToString().Replace('*', '%');
-                else if (w.value is string && w.operatorType == SQLOperatorType.IN) v = w.value.ToString().Split(",");
-                else v = w.value;
-                param.Add(w.field + iField, v);
-                iField++;
-            }
-            foreach (var o in orderBys)
-            {
-                commOrderBy += string.Format("{2}{0} {1}",
-                                        o.field,
-                                        o.orderBy.Attribute<ValueAttribute>().Value,
-                                        string.IsNullOrEmpty(commOrderBy) ? string.Empty : ",");
-            }
+                    object v = null;
+                    if (w.value == null) v = null;
+                    else if (w.value is string && w.operatorType == SQLOperatorType.LIKE) v = w.value.ToString().Replace('*', '%');
+                    else if (w.value is string && w.operatorType == SQLOperatorType.IN) v = w.value.ToString().Split(",");
+                    else v = w.value;
+                    param.Add(w.field + iField, v);
+                    iField++;
+                }
+            if (orderBys != null)
+                foreach (var o in orderBys)
+                {
+                    commOrderBy += string.Format("{2}{0} {1}",
+                                            o.field,
+                                            o.orderBy.Attribute<ValueAttribute>().Value,
+                                            string.IsNullOrEmpty(commOrderBy) ? string.Empty : ",");
+                }
             string commTxt = string.Empty;
             if (skip.HasValue)
             {

@@ -88,7 +88,7 @@ displayButtonByPermission(perID){
   getAutocomplete(){
     const unitselect = {queryString:window.apipath + "/api/mst",
       t:"UnitType",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
+      q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
       f:"ID,concat(Code,' : ',Name) as Code",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
@@ -161,7 +161,7 @@ displayButtonByPermission(perID){
       { accessor: 'ObjectSize_Code', Header: 'Object Size', Filter: "text", Type: "autocomplete" },
       { accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
       { accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
-      { accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
+      //{ accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
       { accessor: 'Created', Header: 'Create', filterable:false},
       /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

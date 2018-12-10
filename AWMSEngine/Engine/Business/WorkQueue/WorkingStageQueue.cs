@@ -119,7 +119,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 Status = workqueueID.Status,
                 Warehouse_ID  = wm,
                 AreaMaster_ID = am,
-                AreaLocationMaster_ID = lm
+                AreaLocationMaster_ID = lm,
+                EndTime = eventStatus == WorkQueueEventStatus.WORKED ? DateTime.Now : (DateTime?)null,
             };
 
             var resQueue = QueueADO.GetInstant().PUT(workQueue, this.BuVO);

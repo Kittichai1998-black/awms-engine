@@ -28,6 +28,6 @@ namespace AWMSModel.Criteria.SP.Response
         //public int? sizeLevel;
         //public string innerSizeLevels;
         public string options;
-        
+        public DateTime? productDate;
     }
 }
