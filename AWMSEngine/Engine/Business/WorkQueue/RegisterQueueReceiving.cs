@@ -307,7 +307,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     new KeyValuePair<string, object>[] {
                                 new KeyValuePair<string,object>("Ref1", reqVO.mappingPallets[1].source),
                                 new KeyValuePair<string,object>("Ref2", reqVO.mappingPallets[1].movingType),
-                                new KeyValuePair<string,object>("Ref3", reqVO.mappingPallets[1].batch),
+                                new KeyValuePair<string,object>("RefID", reqVO.mappingPallets[1].batch),
                                 new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                     }, this.BuVO).FirstOrDefault();
 
