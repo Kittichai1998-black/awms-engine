@@ -604,7 +604,7 @@ class TableGen extends Component {
             }
           })
           if (e.target.value !== "") {
-            //if (this.props.enumfield !== undefined) {
+            if (this.state.autocomplete != undefined) {
             //เช็คfilter แบบ autocomplete ของฟิลด์ objecttype, grouptype  
             const getdata = this.state.autocomplete.filter(row => {
               return row.field === name
@@ -641,9 +641,9 @@ class TableGen extends Component {
             } else {
               filter.push({ id: name, value: e.target.value })
             } //-end-//
-            //} else {
-            //  filter.push({ id: name, value: e.target.value })
-            //}
+            } else {
+              filter.push({ id: name, value: e.target.value })
+            }
           }
           this.onCheckFliter(filter, this.state.dataselect)
 
