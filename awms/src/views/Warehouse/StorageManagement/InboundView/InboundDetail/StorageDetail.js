@@ -17,6 +17,7 @@ class IssuedDoc extends Component {
     this.state = {
       data : [],
       data2:[]
+      
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.dateTimePicker = this.dateTimePicker.bind(this)

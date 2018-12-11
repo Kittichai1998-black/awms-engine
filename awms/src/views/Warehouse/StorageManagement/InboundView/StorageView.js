@@ -42,9 +42,9 @@ class IssuedDoc extends Component {
       acceptstatus: false,
       select: {
         queryString: window.apipath + "/api/viw",
-        t: "Document",
-        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-        f: "ID,Code,SouBranchName,DesBranchName,Status,SouWarehouseName,DesWarehouseName,DesAreaName,Batch,Lot,DocumentDate,EventStatus,RefID,Created,ModifyBy,Ref1,Ref2",
+        t: "LinkDocument",
+        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': '1001'},{'f':'Status','c':'!=','v':2}]",
+        f: "ID,Super,Code,SouBranchName,DesBranchName,Status,SouWarehouseName,DesWarehouseName,DocumentDate,EventStatus,RefID,Created,Ref1,Ref2,DocumentType_ID",
         g: "",
         s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
@@ -67,6 +67,13 @@ class IssuedDoc extends Component {
     this.displayButtonByPermission(data)
     //permission
 
+    // Axios.get(createQueryString(this.state.select)).then((res) => {
+    //   res.data.datas.forEach(row1 =>{
+    //     console.log(row1.LinkDocument_ID)
+
+    //   })
+
+    // })
   }
 
 //permission
@@ -111,7 +118,9 @@ displayButtonByPermission(perID){
   render() 
   {
     const cols = [
-      {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
+      {accessor: 'Super', Header: 'LinkDocument', editable:false, Filter:"text",},
+      {accessor: 'Code', Header: 'Code', editable:false, Filter:"text", Cell: (e) => <span>{e.original.DocumentType_ID === 1101 ?e.original.CodeDocItem:e.original.Code}</span>},
+      //{accessor: 'CodeDocItem', Header: 'CodeDocItem', editable:false, Filter:"text",},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:""},
       {accessor: 'SouWarehouseName', Header: 'DestinationWarehouse', editable:false, Filter:"text",},
       {accessor: 'SouBranchName', Header: 'SourceBranch', editable:false, Filter:"text",},
@@ -120,6 +129,7 @@ displayButtonByPermission(perID){
       {accessor: 'RefID', Header: 'MaterialDocNo', editable:false, Filter:"text",},
       {accessor: 'Ref1', Header: 'MaterialDocYears', editable:false, Filter:"text",},
       {accessor: 'Ref2', Header: 'MovementType', editable:false, Filter:"text",},
+      //{accessor: 'Link', Header: 'Link', editable:false, Filter:"text",},
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
       {accessor: 'Created', Header: 'Created', editable:false, filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
