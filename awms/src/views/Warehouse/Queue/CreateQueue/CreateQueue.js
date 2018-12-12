@@ -11,11 +11,6 @@ function isInt(value) {
   return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
 }
 
-class DocumentInput extends React.Component {
-  render() {
-    return <div style={{"border-radius": "15px", "border": "1px solid gray", "padding": "20px", background:"white"}}> </div>
-  }
-}
 const Axios = new apicall()
 
 class CreateQueue extends Component{
@@ -23,21 +18,27 @@ class CreateQueue extends Component{
     super(props);
     
     this.state = {
-      documents: [],
-      data : [],
-      docID:"",
-      SAPdoc:"",
-      docresult:"",
-      MMType:"",
-      ForCus:"",
-      StampDate:"",
-      selective:"",
-      branch:[],
+      DocumentData:[],
       auto_doc:[],
-      branch:"",
-      customer:"",
-      warehouse:"",
+      Card: [],
+      data : [],
+      dataAdd:[],
+      docID:null,
+      docresult:"",
+      SAPdoc:"",
+      StampDate:"",
+      MMType:"",
       Batch:"",
+      ForCus:"",
+      PickOrderID:null,
+      PickOrderby:"",
+      PickbyFieldID:null,
+      PickbyField:"",
+      SelectiveFieldValue:"",
+      SelectiveFieldLabel:"",
+      SelectiveValue:"",
+      PriorityID:null,
+      Priority:"",
       refID:"",
       ref1:"",
       ref2:"",
@@ -69,6 +70,10 @@ class CreateQueue extends Component{
     this.addNewCard = this.addNewCard.bind(this)
     this.viewDetail = this.viewDetail.bind(this)
     this.genBtnDetail = this.genBtnDetail.bind(this)
+    this.genBtnRemoveCard = this.genBtnRemoveCard.bind(this)
+    this.createCardsList = this.createCardsList.bind(this)
+    this.removeCard = this.removeCard.bind(this)
+    this.createAutoDocList = this.createAutoDocList.bind(this)
 
 
     this.docselect = {queryString:window.apipath + "/api/viw",
@@ -82,11 +87,11 @@ class CreateQueue extends Component{
   }
     
   initialData(){
-    Axios.get(createQueryString(this.docselect)).then(branchresult => {
-      this.setState({auto_doc : branchresult.data.datas, addstatus:true }, () => {
-        const auto_doc = []
-        this.state.auto_doc.forEach(row => {
-          auto_doc.push({value:row.ID
+    Axios.get(createQueryString(this.docselect)).then(Docresult => {
+      this.setState({DocumentData : Docresult.data.datas, addstatus:true }, () => {
+        const DocumentData = []
+        this.state.DocumentData.forEach(row => {
+          DocumentData.push({value:row.ID
                         ,SAPdoc:row.RefID
                         ,MMType:row.Ref2
                         ,StampDate:row.ref1
@@ -95,13 +100,14 @@ class CreateQueue extends Component{
                         ,label:row.Code + ' : ' + row.DesWarehouse 
           })
         })
-        this.setState({auto_doc})
+        this.setState({ DocumentData }, () => this.createAutoDocList())
       })
     })
   }
     
   componentDidMount(){
     this.initialData()
+    
   }
       
   onHandleClickCancel(event){
@@ -109,23 +115,23 @@ class CreateQueue extends Component{
     event.preventDefault();
   }
 
-  addNewCard(){
+  addNewCard(datarow){
     return <div style={{"border-radius": "15px", "border": "1px solid white", "padding": "20px", background:"white", "margin":"5px"}}>
       <Row>
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Document : </label></Col>
         <Col md="9">
-          <span>{this.state.docresult?this.state.docresult:""}</span>
+          <span>{datarow.docDetail?datarow.docDetail:""}</span>
         </Col>
         <Col md="1">
           <div className="clearfix">
-            {this.genBtnDetail(this.state.docID)}
+            {this.genBtnDetail(datarow.ID)}
           </div>
         </Col>
       </Row>
       <Row>
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>SAP Document : </label></Col>
         <Col md="5">
-          <span>{this.state.SAPdoc?this.state.SAPdoc:""}</span>
+          <span>{datarow.RefID?datarow.RefID:""}</span>
         </Col>
         <Col md="5"></Col>
       </Row>
@@ -133,7 +139,7 @@ class CreateQueue extends Component{
       <Row>
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Movement Type : </label></Col>
         <Col md="5">
-          <span>{this.state.MMType?this.state.MMType:""}</span>
+          <span>{datarow.Ref2?datarow.Ref2:""}</span>
         </Col>
         <Col md="5"></Col>
       </Row>
@@ -141,7 +147,7 @@ class CreateQueue extends Component{
       <Row>
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>For Customer : </label></Col>
         <Col md="5">
-            <span>{this.state.ForCus?this.state.ForCus:""}</span>
+            <span>{datarow.DesCustomer?datarow.DesCustomer:""}</span>
         </Col>
         <Col md="5"></Col>
       </Row>
@@ -150,12 +156,12 @@ class CreateQueue extends Component{
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Pick by : </label></Col>
         <Col md="5">
           <div>
-            <span>{this.state.ForCus?this.state.ForCus:""}</span>
+            <span>{datarow.PickOrderby?datarow.PickOrderby:""}</span>
           </div>
         </Col>
         <Col md="5">
           <div>
-            <span>{this.state.ForCus?this.state.ForCus:""}</span>
+            <span>{datarow.PickbyField?datarow.PickbyField:""}</span>
           </div>
         </Col>
       </Row>
@@ -164,13 +170,12 @@ class CreateQueue extends Component{
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Selective : </label></Col>
         <Col md="5">
           <div>
-            <span>{this.state.ForCus?this.state.ForCus:""}</span>
+            <span>{datarow.SelectiveFieldLabel?datarow.SelectiveFieldLabel:""}</span>
           </div>
         </Col>
         <Col md="5">
-          <div style={{display:this.state.selective==="null"?"none":"inline"}}>
-            <Input onChange={(e) => this.setState({refID:e.target.value})} style={{display:"inline-block"}}
-            value={this.state.refID === undefined ? "" : this.state.refID}/>
+          <div>
+            <span>{datarow.SelectiveValue?datarow.SelectiveValue:""}</span>
           </div>
         </Col>
       </Row>
@@ -179,37 +184,80 @@ class CreateQueue extends Component{
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Priority : </label></Col>
         <Col md="5">
           <div>
-            <span>{this.state.ForCus?this.state.ForCus:""}</span>
+            <span>{datarow.Priority?datarow.Priority:""}</span>
           </div>
         </Col>
       </Row>
       <div className="clearfix">
-        <Button id="per_button_doc" 
-        style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px',display:this.state.showbutton }}
-        color="primary" 
-        className="float-right" 
-        onClick={() => this.addData()}>Remove</Button>
+        {this.genBtnRemoveCard(datarow.ID)}
       </div>
     </div>
   }
 
   addData(){
-    const documents = this.state.documents.concat(this.addNewCard());
-    //documents.push({ "ID": this.state.docID})
-    const auto_doc = this.state.auto_doc; 
-    auto_doc.forEach((datarow, index) => {
-      if (datarow.value === this.state.docID) {
-        auto_doc.splice(index, 1);
-      }
+    const dataAdd = this.state.dataAdd;
+      if(this.state.docresult===""){
+        alert("กรุณาเลือก Document ที่ต้องการสร้างคิวงาน")
+      }else{
+        dataAdd.push({ID:this.state.docID
+          ,docDetail:this.state.docresult
+          ,RefID:this.state.SAPdoc
+          ,Ref1:this.state.StampDate
+          ,Ref2:this.state.MMType
+          ,Batch:this.state.Batch
+          ,DesCustomer:this.state.ForCus
+          ,PickOrderID:this.state.PickOrderID
+          ,PickOrderby:this.state.PickOrderby
+          ,PickbyFieldID:this.state.PickbyFieldID
+          ,PickbyField:this.state.PickbyField
+          ,SelectiveFieldValue:this.state.SelectiveFieldValue
+          ,SelectiveFieldLabel:this.state.SelectiveFieldLabel
+          ,SelectiveValue:this.state.SelectiveValue
+          ,PriorityID:this.state.PriorityID
+          ,Priority:this.state.Priority
+        });    
+        this.setState({dataAdd,"docID":"","SAPdoc":"","MMType":"","ForCus":"","StampDate":"","Batch":"","docresult":""})  
+        this.createAutoDocList();
+        this.createCardsList();
+    }
+  }
+  createAutoDocList(){
+    const auto_doc = [...this.state.DocumentData]
+    this.state.dataAdd.forEach((datarowadd) => {
+      auto_doc.forEach((datarow, index) => {
+        if (datarow.value === datarowadd.ID) {
+          auto_doc.splice(index, 1);
+        }
+      })
     })
-    this.setState({ documents });
     this.setState({ auto_doc });
+  }
+  
+  createCardsList(){
+    console.log(this.state.dataAdd)
+    const dataAdd = this.state.dataAdd
+    let Card = []
+    dataAdd.forEach((datarow, index) => {
+      Card = Card.concat(this.addNewCard(datarow));
+    })
+    this.setState({ Card });
   }
 
   viewDetail(docID){
     if(docID){
       window.open('/doc/gi/manage?ID=' + docID)
     }
+  }
+  removeCard(docID){
+    const dataAdd = this.state.dataAdd
+    dataAdd.forEach((datarow, index) => {
+      if (datarow.ID === docID) {
+        dataAdd.splice(index, 1);
+      }
+    })
+    this.setState({ dataAdd })
+    this.createCardsList()
+    this.createAutoDocList()
   }
 
   genBtnDetail(docID){
@@ -220,16 +268,28 @@ class CreateQueue extends Component{
     }
   }
 
+  genBtnRemoveCard(docID){
+    if(docID===""){
+      return {}
+    }else{
+      return <Button id="per_button_doc" 
+      style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px',display:this.state.showbutton }}
+      color="primary" 
+      className="float-right" 
+      onClick={() => this.removeCard(docID)}>Remove</Button>
+    }
+  }
+
   render(){
-    const documents = this.state.documents
+    const Cards = this.state.Card
 
     return(
       <div>
         <Row>
           <Col lg="6"> 
-            <Card style={documents.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"#8080804f"}:{"display":"none"}}>
+            <Card style={Cards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"#8080804f"}:{"display":"none"}}>
               <span style={{"padding-left":"15px", fontWeight:"bold", fontSize:"1.1em"}}>รายการ Document Issue</span>
-              { documents }
+              { Cards }
             </Card>
           </Col> 
 
@@ -239,7 +299,7 @@ class CreateQueue extends Component{
                 <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Document : </label></Col>
                 <Col md="9">
                   <div style={{}}>
-                    <AutoSelect data={this.state.auto_doc} 
+                    <AutoSelect selectfirst={false} data={this.state.auto_doc}
                     result={(e) => this.setState({"docID":e.value,"SAPdoc":e.SAPdoc,"MMType":e.MMType,"ForCus":e.ForCus,"StampDate":e.StampDate,"Batch":e.Batch,"docresult":e.label})}/>
                   </div>
                 </Col>
@@ -278,14 +338,14 @@ class CreateQueue extends Component{
                 <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Pick by : </label></Col>
                 <Col md="5">
                   <div style={{}}>
-                    <AutoSelect data={this.state.orderlist} 
-                    result={(e) => this.setState({"customer":e.value, "customerresult":e.label})}/>
+                    <AutoSelect selectfirst={false} data={this.state.orderlist} 
+                    result={(e) => this.setState({"PickOrderID":e.value, "PickOrderby":e.label})}/>
                   </div>
                 </Col>
                 <Col md="5">
                   <div style={{}}>
-                    <AutoSelect data={this.state.orderfieldlist} 
-                    result={(e) => this.setState({"customer":e.value, "customerresult":e.label})}/>
+                    <AutoSelect selectfirst={false} data={this.state.orderfieldlist} 
+                    result={(e) => this.setState({"PickbyFieldID":e.value, "PickbyField":e.label})}/>
                   </div>
                 </Col>
               </Row>
@@ -294,14 +354,16 @@ class CreateQueue extends Component{
                 <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Selective : </label></Col>
                 <Col md="5">
                   <div style={{}}>
-                    <AutoSelect data={this.state.selectivelist} 
-                    result={(e) => this.setState({"selective":e.value, "docresult":e.label})}/>
+                    <AutoSelect selectfirst={false} data={this.state.selectivelist} 
+                    result={(e) => this.setState({"SelectiveFieldValue":e.value,"SelectiveFieldLabel":e.label})}/>
                   </div>
                 </Col>
                 <Col md="5">
-                  <div style={{display:this.state.selective==="null" ?"none":"inline"}}>
-                    <Input style={{display:"inline-block"}}
-                    value={this.state.selective === "Ref1" ? this.state.ref1 : (this.state.selective === "Batch" ? this.state.Batch : "")}/>
+                  <div style={{display:this.state.SelectiveFieldValue==="null"||this.state.SelectiveFieldValue==="" ?"none":"inline"}}>
+                    <Input style={{display:"inline"}}
+                    onChange={(e) => this.setState({"SelectiveValue":e.target.value})}
+                    Value={(this.state.SelectiveFieldValue === "Batch" ? this.state.Batch : "")}
+                    />
                   </div>
                 </Col>
               </Row>
@@ -310,8 +372,8 @@ class CreateQueue extends Component{
                 <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Priority : </label></Col>
                 <Col md="5">
                   <div style={{}}>
-                    <AutoSelect data={this.state.prioritylist} 
-                    result={(e) => this.setState({"branch":e.value, "branchresult":e.label})}/>
+                    <AutoSelect selectfirst={false} data={this.state.prioritylist} 
+                    result={(e) => this.setState({"PriorityID":e.value, "Priority":e.label})}/>
                   </div>
                 </Col>
               </Row>
