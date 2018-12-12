@@ -38,15 +38,26 @@ class TaskList extends Component{
         l: 100,
         all: "",
       },
+      TaskListselect: {
+        queryString: window.apipath + "/api/viw",
+        t: "TaskList",
+        q: "[{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' }]",
+        f: "DocCode,DocumentTypeID,TaskName,Product,Amount,EventStatus,WorkStatus",
+        g: "",
+        s: "[{'f':'EventStatus','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+      },
       data1: [{ Time: "John", Gate: "G25", Pallet: "001001007", Product: "ถุงพลาสติก1", MoveTo: null, WorkStatus: 1},
         { Time: "Anna", Gate: "G22", Pallet: "001001006", Product: "ถุงพลาสติก2", MoveTo: null, WorkStatus: 2 },
         { Time: "Frank", Gate: "G23", Pallet: "001001009", Product: "ถุงพลาสติก3", MoveTo: null, WorkStatus: 3},
         { Time: "Estur", Gate: "G24", Pallet: "001001008", Product: "ถุงพลาสติก4", MoveTo: null, WorkStatus: 4 },
         { Time: "Estur", Gate: "G24", Pallet: "001001008", Product: "ถุงพลาสติก4", MoveTo: null, WorkStatus: 5 }],
-      data2: [{ Document: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", "Product": "ถุงพลาสติก1", Amount: "10/100", WorkStatus: 1 },
-        { Document: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", "Product": "ถุงพลาสติก1", Amount: "20/100", WorkStatus: 2},
-        { Document: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", "Product": "ถุงพลาสติก1", Amount: "30/100", WorkStatus: 3 },
-        { Document: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", "Product": "ถุงพลาสติก1", Amount: "40/100", WorkStatus: 4 }]
+      data2: [{ DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "10/100", WorkStatus: 1 },
+        { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "20/100", WorkStatus: 2},
+        { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "30/100", WorkStatus: 3 },
+        { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "40/100", WorkStatus: 4 }]
     }
      
     this.GetQueueData = this.GetQueueData.bind(this)
@@ -65,8 +76,8 @@ class TaskList extends Component{
     API.get(createQueryString(this.state.WorkingOutselect)).then(res => {
       this.setState({ dataworkingout: res.data.datas, loading: false }, () => console.log("load work"));
     })
-    API.get(createQueryString(this.state.WorkingOutselect)).then(res => {
-      this.setState({ datatasklist: this.state.data2, loading: false }, () => console.log("load task"));
+    API.get(createQueryString(this.state.TaskListselect)).then(res => {
+      this.setState({ datatasklist: res.data.datas, loading: false }, () => console.log("load task"));
     })
   }
   goFull = () => {
@@ -91,24 +102,24 @@ class TaskList extends Component{
     API.get(createQueryString(this.state.WorkingOutselect)).then(res => {
       this.setState({ dataworkingout: res.data.datas, loading: false }, () => console.log("load working out filter"));
     })
-    API.get(createQueryString(this.state.WorkingOutselect)).then(res => {
+    API.get(createQueryString(this.state.TaskListselect)).then(res => {
       this.setState({ datatasklist: res.data.datas, loading: false }, () => console.log("load task filter"));
     })
   }
   render() {
     const cols1 = [
-      { accessor: "Time", Header: "Time", minWidth: 60 },
+      { accessor: "Time", Header: "Time", minWidth: 65 },
       { accessor: "Gate", Header: "Gate", minWidth: 70 },
       { accessor: "Pallet", Header: "Pallet", minWidth: 80 },
       { accessor: "Product", Header: "Product", minWidth: 150},
       { accessor: "MoveTo", Header: "Move To", minWidth: 120 },
     ]
     const cols2 = [
-      { accessor: "Document", Header: "Document" },
-      { accessor: "TaskName", Header: "Task Name" },
-      { accessor: "Location", Header: "Location" },
-      { accessor: "Product", Header: "Product" },
-      { accessor: "Amount", Header: "Amount" },
+      { accessor: "DocCode", Header: "Document", minWidth: 80  },
+      { accessor: "TaskName", Header: "Task Name", minWidth: 100  },
+      { accessor: "Location", Header: "Location", minWidth: 60  },
+      { accessor: "Product", Header: "Product", minWidth: 70  },
+      { accessor: "Amount", Header: "Amount", minWidth: 70  },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
@@ -143,12 +154,11 @@ class TaskList extends Component{
                     minRows={15}
                     data={this.state.dataworkingout}
                     sortable={false}
-                    style={{ background: 'white', textAlign: 'center' }}
+                    style={{ background: 'white', textAlign: 'center', height: '42em' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
-                    loading={this.state.loading}
-                    defaultPageSize={15}
+                    loading={this.state.loading} 
                     getTrProps={(state, rowInfo, column) => {
                       let result = false
                       let rmv = false
@@ -188,12 +198,12 @@ class TaskList extends Component{
                     minRows={15}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white' }}
+                    style={{ background: 'white', textAlign: 'center', height: '42em' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
                     loading={this.state.loading}
-                    defaultPageSize={15}
+                    //defaultPageSize={15}
                     getTrProps={(state, rowInfo, column) => {
                       let result = false
                       let rmv = false
