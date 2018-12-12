@@ -87,7 +87,7 @@ class IssuedDoc extends Component {
   render() {
     const cols = [
       {accessor: 'packMaster_Code', Header: 'PackItem', editable:false, Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>,},
-      {accessor: 'sumQty', Header: 'Quantity',editable:false, Cell: (e) => <span>{e.original.sumQty === undefined ? '-'+ ' / ' + e.original.quantity : e.original.sumQty + ' / ' + e.original.quantity === undefined ? '-' : e.original.quantity}</span>,},
+      {accessor: 'sumQty', Header: 'Quantity',editable:false, Cell: (e) => <span>{e.original.sumQty === undefined ? '0'+ ' / ' + e.original.quantity : e.original.sumQty + ' / ' + e.original.quantity === undefined ? '-' : e.original.quantity}</span>,},
       {accessor: 'unitType_Name', Header: 'UnitType', editable:false,},
     ];
     const colsdetail = [
