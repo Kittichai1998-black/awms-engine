@@ -154,8 +154,7 @@ class ReceiveManage extends Component{
         this.setState({auto_movementType})
       })
     })
-
-
+ 
   }
 
   genWarehouseData(data){ 
