@@ -114,7 +114,7 @@ class StockCard extends Component{
                 dateThrow.forEach(row=>{
                   sum+= row.Quantity         
                 })
-            arrdata.push({DocumentType_ID:'Bring Forward',Total:sum})
+            arrdata.push({DocumentDate:'',DocumentType_ID:'Bring Forward',Total:sum})
 
             let sumDebit =0
             let sumCredit=0
@@ -194,13 +194,14 @@ class StockCard extends Component{
                 <div style={{display:"inline-block"}}>
                   {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
                 </div>{' '}
-                <Button color="primary" id="off" onClick={() => {this.onGetDocument()}}>OK</Button>
+                <Button color="primary" id="off" onClick={() => {this.onGetDocument()}}>Select</Button>
             </div>          
           </Col>
         </Row>
         </div>
          <br></br>
         <ReactTable pageSize="10000" NoDataComponent={()=><div style={{textAlign:"center",height:"100px",color:"rgb(200,206,211)"}}>No row found</div>} sortable={false} style={{background:"white",marginBottom:"50px"}} filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
+      
       </div>
 
 
