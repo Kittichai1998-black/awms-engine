@@ -1138,7 +1138,7 @@ class TableGen extends Component {
       const datatable = [...this.state.data];
       return (
         <div>
-          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
+          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
         </div>
         )
     } else {

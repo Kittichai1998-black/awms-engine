@@ -133,7 +133,7 @@ class CurrentInv extends Component{
 
         <TableGen column={cols}
           data={this.CurrentItem}
-          filterable={true} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData}
+          filterable={true} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} exportfilebtn={true} expFilename={"CurrentInventory"}
           table="CurrentInv" />
           <div>
           
