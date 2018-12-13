@@ -114,6 +114,20 @@ class StockCard extends Component{
                 dateThrow.forEach(row=>{
                   sum+= row.Quantity         
                 })
+              // let sum = 0
+              // let del = 0
+              // let plus = 0
+              // var arrdata =[]
+              // console.log(dateThrow)
+              //   dateThrow.forEach(row=>{
+              //     console.log(row)
+              //     if(row.DocumentType_ID === 1001){
+              //       plus+= row.Quantity
+              //     }else{
+              //       del+= row.Quantity 
+              //     }                       
+              //   })
+              //   sum = (plus-del)  
             arrdata.push({DocumentDate:'',DocumentType_ID:'Bring Forward',Total:sum})
 
             let sumDebit =0
