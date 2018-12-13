@@ -44,7 +44,7 @@ class ClientSecret extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left"},
+      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left", minWidth: 90, maxWidth: 90},
       {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed:"left"},
       {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
       {accessor: 'SecretKey', Header: 'SecretKey', editable:true,Filter:"text"},

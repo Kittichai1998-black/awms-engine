@@ -76,10 +76,10 @@ class BaseType extends Component{
 
     render(){
         const cols = [
-          {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
-          {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
+          { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90},
+          { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 140},
           //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-          {accessor: 'UnitType_Code', Header: 'Unit Type',updateable:false,Filter:"text", Type:"autocomplete"},
+          { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete", maxWidth: 130},
           //{accessor: 'GroupType', Header: 'Group Type', editable:true,Filter:"text"},
           //{accessor: 'SizeLevel', Header: 'Size Level', editable:true,Filter:"text"},
           //{accessor: 'InnerSizeLevels', Header: 'Inner Size Levels', editable:true,Filter:"text"},

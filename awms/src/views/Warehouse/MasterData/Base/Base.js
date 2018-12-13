@@ -150,7 +150,7 @@ class Area extends Component{
 
     render(){
         const cols = [
-            {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
+          { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
             {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text", fixed: "left"},
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
