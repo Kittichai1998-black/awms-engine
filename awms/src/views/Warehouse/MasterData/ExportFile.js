@@ -25,7 +25,6 @@ class ExportExcel extends Component {
     this.queryInitialDataStatus = this.queryInitialDataStatus.bind(this)
   }
   componentDidMount() {
-    //console.log(this.props.data);
     //console.log(this.props.column);
     if (this.props.dataxls) {
       this.setState({ dataxls: Clone(this.props.dataxls) }, () => {
@@ -51,6 +50,7 @@ class ExportExcel extends Component {
   }
   queryInitialDataStatus() {
     //console.log("CheckStatus");
+    console.log(this.state.dataxls);
     const datas = [...this.state.dataxls];
     if (datas.length > 0) {
       datas.forEach((datarow) => {
@@ -61,6 +61,13 @@ class ExportExcel extends Component {
             else
               datarow[xfield] = "Inactive";
           }
+          if (xfield !== "Status") {
+            if (!isNaN(datarow[xfield])) {
+              if (datarow[xfield] != null)
+                datarow[xfield] = datarow[xfield].toString();
+            }
+          }
+          
         }
       })
       this.setState({ dataxls: datas })
@@ -82,6 +89,12 @@ class ExportExcel extends Component {
             else
               datarow[xfield] = "Inactive";
           }
+          if (xfield !== "Status"){
+            if (!isNaN(datarow[xfield])) {
+              if (datarow[xfield] != null)
+                datarow[xfield] = datarow[xfield].toString();
+            }
+          }
           if (enums.length > 0) {
             enums.map((item) => {
               if (xfield === item) {
@@ -99,6 +112,7 @@ class ExportExcel extends Component {
       this.setState({ dataxls: datas })
     }
   }
+
   exportExcelBook() {
     return (
       <div>
