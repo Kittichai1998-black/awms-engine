@@ -72,8 +72,8 @@ class UnitType extends Component{
 
     render(){
         const cols = [
-            {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
-            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
+          { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 90},
+          { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 150},
           { accessor: 'ObjectType', Header: 'Object Type', updateable: false, Filter: "text", Type: "autocomplete" },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             

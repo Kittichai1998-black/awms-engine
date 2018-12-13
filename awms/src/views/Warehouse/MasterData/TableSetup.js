@@ -911,12 +911,12 @@ class TableGen extends Component {
       borderRadius: '3px',
       boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
       background: 'rgba(255, 255, 255, 0.9)',
-      padding: '2px 0',
+      padding: '2px 1px',
       fontSize: '90%',
-      position: 'fixed',
+      //position: 'absolute',
       overflow: 'auto',
-      maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
-      zIndex: '998',
+      maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
+      zIndex: '998'
     }
     if (this.state.autocomplete.length > 0) {
       const getdata = this.state.autocomplete.filter(row => {
@@ -944,7 +944,8 @@ class TableGen extends Component {
               backgroundPosition: "8px 8px",
               backgroundSize: "10px",
               backgroundRepeat: "no-repeat",
-              paddingLeft: "25px"
+              paddingLeft: "25px",
+              position: 'relative',
             }
           }}
           wrapperStyle={{ width: "100%" }}
@@ -1133,6 +1134,13 @@ class TableGen extends Component {
          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
         </div>
       )
+    } else if (this.props.exportfilebtn === true) {
+      const datatable = [...this.state.data];
+      return (
+        <div>
+          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
+        </div>
+        )
     } else {
       return null;
     }

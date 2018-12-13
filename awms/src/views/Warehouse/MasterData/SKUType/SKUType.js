@@ -136,9 +136,9 @@ displayButtonByPermission(perID){
     
       render(){
         const cols = [
-          {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
-          {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
-          {accessor: 'ObjectSize_Code', Header: 'Default ObjectSize Code',updateable:false,Filter:"text", Type:"autocomplete"},
+          { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120},
+          { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 180},
+          { accessor: 'ObjectSize_Code', Header: 'Default ObjectSize Code', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 100},
           //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
           {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
           /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */

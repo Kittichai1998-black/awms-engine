@@ -309,10 +309,10 @@ class ObjectSize extends Component{
 
     render(){
         const cols = [
-          {accessor: 'Code', Header: 'Code', editable:true, Filter:"text", fixed: "left"},
-          {accessor: 'Name', Header: 'Name', editable:true, Filter:"text", fixed: "left"},
+          { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90},
+          { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 180 },
           //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-          {accessor: 'ObjectType', Header: 'Object Type',updateable:false,Filter:"text", Type:"autocomplete"},
+          { accessor: 'ObjectType', Header: 'Object Type', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 110},
           {accessor: 'MinWeigthKG', Header: 'Minimun Weigth(Kg.)', editable:true,Filter:"text",datatype:"int"},
           {accessor: 'MaxWeigthKG', Header: 'Maximun Weigth(Kg.)', editable:true,Filter:"text",datatype:"int"},
           //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},

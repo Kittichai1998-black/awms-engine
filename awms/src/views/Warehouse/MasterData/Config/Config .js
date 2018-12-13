@@ -44,15 +44,15 @@ class Config  extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left"},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed:"left"},
-      {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
-      {accessor: 'DataValue', Header: 'DataValue', editable:true,Filter:"text"},
-      {accessor: 'DataStyle', Header: 'DataStyle', editable:true,Filter:"text"},
+      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left", minWidth:220},
+      { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 220},
+      { accessor: 'Description', Header: 'Description', editable: true, sortable: false, Filter: "text"},
+      { accessor: 'DataValue', Header: 'DataValue', editable: true, Filter: "text", minWidth: 160},
+      { accessor: 'DataStyle', Header: 'DataStyle', editable: true, Filter: "text", minWidth: 70},
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
-      {accessor: 'Created', Header: 'Create',filterable:false},
-      {accessor: 'Modified', Header: 'Modify',filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      { accessor: 'Created', Header: 'Create', filterable: false, minWidth: 80},
+      { accessor: 'Modified', Header: 'Modify', filterable: false, minWidth: 80},
+      { Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove", minWidth: 90},
 
      
     ];

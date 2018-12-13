@@ -44,9 +44,9 @@ class DocumentType extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left"},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed:"left"},
-      {accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
+      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left", minWidth: 80, maxWidth: 90},
+      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed:"left", minWidth: 170},
+      { accessor: 'Description', Header: 'Description', editable: true, sortable: false, Filter: "text", minWidth: 170},
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
       {accessor: 'Created', Header: 'Create',filterable:false},
       {accessor: 'Modified', Header: 'Modify',filterable:false},
