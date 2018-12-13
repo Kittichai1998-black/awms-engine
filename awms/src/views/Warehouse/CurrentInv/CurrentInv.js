@@ -125,6 +125,7 @@ class CurrentInv extends Component{
     const dataEcel= this.state.dataExcel
 
     return (
+      
       <div>
      <div className="clearfix" id="per_button_dowload" style={{display:this.state.showbutton}}>
           

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Button} from 'reactstrap';
+import { Card, CardBody,Button} from 'reactstrap';
 import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
@@ -19,7 +19,7 @@ const createQueryString = (select) => {
   return queryS
 }
 
-const Axios = new apicall()
+const axois = new apicall()
 
 class IssuedDoc extends Component {
   constructor(props) {
@@ -114,10 +114,30 @@ displayButtonByPermission(perID){
   onClickToDesc(data) {
     return <Button style={{color:"white"}} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
+  
+  getSelectionData(data){
+    this.setState({selectiondata:data})
+  }
+
+  workingData(data,status){
+    let postdata = {docIDs:[]}
+    if(data.length > 0){
+      data.forEach(rowdata => {
+        postdata["docIDs"].push(rowdata.ID)
+      })
+      if(status==="accept"){
+        axois.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+      }
+      else{
+        axois.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+      }
+    }
+  }
 
   render() 
   {
     const cols = [
+      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
       {accessor: 'Super', Header: 'LinkDocument', editable:false, Filter:"text",},
       {accessor: 'Code', Header: 'Code', editable:false, Filter:"text", Cell: (e) => <span>{e.original.DocumentType_ID === 1101 ?e.original.CodeDocItem:e.original.Code}</span>},
       //{accessor: 'CodeDocItem', Header: 'CodeDocItem', editable:false, Filter:"text",},
@@ -158,7 +178,14 @@ displayButtonByPermission(perID){
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc} defaultPageSize={100000} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
-        accept={false}/>    
+        accept={false}/>
+        <Card>
+          <CardBody>
+            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} 
+            onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            {this.state.resp}
+          </CardBody>
+        </Card>    
       </div>
     )
   }
