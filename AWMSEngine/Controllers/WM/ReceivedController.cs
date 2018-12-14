@@ -36,5 +36,12 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(data);
             return res;
         }
+        [HttpPost("doc/rejected")]
+        public dynamic ActionDocReject([FromBody] dynamic req)
+        {
+            RejectedGRDocAPI exec = new RejectedGRDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
     }
 }
