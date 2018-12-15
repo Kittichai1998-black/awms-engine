@@ -14,8 +14,8 @@ namespace AWMSModel.Criteria.SP.Request
         public int Seq;
         public string RefID;
         public long? Parent_WorkQueue_ID;
-        public long? Document_ID;
-        public long? DocumentItem_ID;
+
+
         public long? StorageObject_ID;
         public string StorageObject_Code;
 
@@ -39,5 +39,39 @@ namespace AWMSModel.Criteria.SP.Request
         public DateTime? EndTime;
         public EntityStatus Status;
 
+        public List<amt_WorkQueueDocumentItem> DocumentItemWorkQueues;
+
+        public static SPworkQueue Generate(amt_WorkQueue queue)
+        {
+            var res = new SPworkQueue()
+            {
+                ID = queue.ID,
+                IOType = queue.IOType,
+                Parent_WorkQueue_ID = queue.Parent_WorkQueue_ID,
+                StorageObject_ID = queue.StorageObject_ID,
+                StorageObject_Code = queue.StorageObject_Code,
+                Sou_Warehouse_ID = queue.Sou_Warehouse_ID,
+                Sou_AreaMaster_ID = queue.Sou_Area_ID,
+                Sou_AreaLocationMaster_ID = queue.Sou_AreaLocation_ID,
+                Des_Warehouse_ID = queue.Des_Warehouse_ID,
+                Des_AreaMaster_ID = queue.Des_Area_ID,
+                Des_AreaLocationMaster_ID = queue.Des_AreaLocation_ID,
+                Priority = queue.Priority,
+
+                EventStatus = queue.EventStatus,
+                Status = queue.Status,
+                Warehouse_ID = queue.Warehouse_ID,
+                AreaMaster_ID = queue.Area_ID,
+                AreaLocationMaster_ID = queue.AreaLocation_ID,
+                ActualTime = queue.ActualTime,
+                EndTime = queue.EndTime,
+                Seq = queue.Seq,
+                RefID = queue.RefID,
+                StartTime = queue.StartTime,
+                TargetStartTime = queue.TargetStartTime,
+                DocumentItemWorkQueues = null,
+            };
+            return res;
+        }
     }
 }

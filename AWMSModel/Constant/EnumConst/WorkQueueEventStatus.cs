@@ -15,7 +15,7 @@ namespace AWMSModel.Constant.EnumConst
         REMOVED = 22,
         
         COMPLETING = 31,//เสร็จ
-        COMPLETIED = 32,
+        CLOSED = 32,
 
         WARNING = 90,//ผิดพลาด
     }

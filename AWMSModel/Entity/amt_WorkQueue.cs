@@ -25,8 +25,10 @@ namespace AWMSModel.Entity
         public long Area_ID;
         public long? AreaLocation_ID;
 
+        public DateTime? TargetStartTime;
         public DateTime? StartTime;
         public DateTime? EndTime;
+        public DateTime? ActualTime;
         public int Priority;
         public string RefID;
         public WorkQueueEventStatus EventStatus;

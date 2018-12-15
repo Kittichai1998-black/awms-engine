@@ -4,10 +4,10 @@ using System.Text;
 
 namespace AWMSModel.Entity
 {
-    public class amt_DocumentItemStorageObject : BaseEntityID
+    public class amt_WorkQueueDocumentItem : BaseEntityID
     {
         public long DocumentItem_ID;
-        public long StorageObject_ID;
+        public long WorkQueue_ID;
         public decimal Quantity;
         public decimal BaseQuantity;
         public long UnitType_ID;
