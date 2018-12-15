@@ -409,5 +409,30 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
+        public List<SPOutDocItemCanMap> ListItemCanMap(string packCode, DocumentTypeID docTypeID, long? docID, string eventStatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("packCode", packCode);
+            param.Add("docTypeID", docTypeID);
+            param.Add("docID", docID);
+            param.Add("eventStatus", eventStatus);
+            var res = this.Query<SPOutDocItemCanMap>("SP_DOCITEM_LIST_CANMAP",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<amt_Document> ListDocumentCanMap(string palletCode, DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("packCode", palletCode);
+            param.Add("eventStatus", docTypeID);
+            var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_PICKING",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
     }
 }
