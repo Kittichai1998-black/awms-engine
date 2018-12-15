@@ -79,8 +79,8 @@ displayButtonByPermission(perID){
 
   render(){
     const cols = [
-      { accessor: 'Code', Header: 'Code', editable: true,Filter:"text", fixed: "left"},
-      { accessor: 'Name', Header: 'Name', editable: true,Filter:"text", fixed: "left"},
+      { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100 },
+      { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 150},
       //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       //{ accessor: 'Status', Header: 'Status', editable: true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
       { accessor: 'Created', Header: 'Create', editable: false,filterable:false},

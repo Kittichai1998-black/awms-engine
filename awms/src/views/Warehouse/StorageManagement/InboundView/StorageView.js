@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Button} from 'reactstrap';
+import { Card, CardBody,Button} from 'reactstrap';
 import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
@@ -19,7 +19,7 @@ const createQueryString = (select) => {
   return queryS
 }
 
-const Axios = new apicall()
+const axois = new apicall()
 
 class IssuedDoc extends Component {
   constructor(props) {
@@ -42,9 +42,9 @@ class IssuedDoc extends Component {
       acceptstatus: false,
       select: {
         queryString: window.apipath + "/api/viw",
-        t: "Document",
-        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001},{'f':'Status','c':'!=','v':2}]",
-        f: "ID,Code,SouBranchName,DesBranchName,Status,SouWarehouseName,DesWarehouseName,DesAreaName,Batch,Lot,DocumentDate,EventStatus,RefID,Created,ModifyBy,Ref1,Ref2",
+        t: "LinkDocument",
+        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': '1001'}]",
+        f: "ID,Super,Code,SouBranchName,DesBranchName,Status,SouWarehouseName,DesWarehouseName,DocumentDate,EventStatus,RefID,Created,Ref1,Ref2,DocumentType_ID",
         g: "",
         s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
@@ -67,6 +67,13 @@ class IssuedDoc extends Component {
     this.displayButtonByPermission(data)
     //permission
 
+    // Axios.get(createQueryString(this.state.select)).then((res) => {
+    //   res.data.datas.forEach(row1 =>{
+    //     console.log(row1.LinkDocument_ID)
+
+    //   })
+
+    // })
   }
 
 //permission
@@ -107,11 +114,30 @@ displayButtonByPermission(perID){
   onClickToDesc(data) {
     return <Button style={{color:"white"}} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
+  
+  getSelectionData(data){
+    this.setState({selectiondata:data})
+  }
+
+  workingData(data,status){
+    let postdata = {docIDs:[]}
+    if(data.length > 0){
+      data.forEach(rowdata => {
+        postdata["docIDs"].push(rowdata.ID)
+      })
+     
+        axois.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+      
+    }
+  }
 
   render() 
   {
     const cols = [
-      {accessor: 'Code', Header: 'Code',editable:false, Filter:"text"},
+      {Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
+      {accessor: 'Super', Header: 'LinkDocument', editable:false, Filter:"text",},
+      {accessor: 'Code', Header: 'Code', editable:false, Filter:"text", Cell: (e) => <span>{e.original.DocumentType_ID === 1101 ?e.original.CodeDocItem:e.original.Code}</span>},
+      //{accessor: 'CodeDocItem', Header: 'CodeDocItem', editable:false, Filter:"text",},
       {accessor: 'DocumentDate', Header: 'Document Date', editable:false, Type:"datetime", dateformat:"date",filterable:""},
       {accessor: 'SouWarehouseName', Header: 'DestinationWarehouse', editable:false, Filter:"text",},
       {accessor: 'SouBranchName', Header: 'SourceBranch', editable:false, Filter:"text",},
@@ -120,6 +146,7 @@ displayButtonByPermission(perID){
       {accessor: 'RefID', Header: 'MaterialDocNo', editable:false, Filter:"text",},
       {accessor: 'Ref1', Header: 'MaterialDocYears', editable:false, Filter:"text",},
       {accessor: 'Ref2', Header: 'MovementType', editable:false, Filter:"text",},
+      //{accessor: 'Link', Header: 'Link', editable:false, Filter:"text",},
       {accessor: 'EventStatus', Header: 'Event Status', editable:false ,Filter:"dropdown", Type:"DocumentEvent"},
       {accessor: 'Created', Header: 'Created', editable:false, filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Link"},
@@ -148,7 +175,14 @@ displayButtonByPermission(perID){
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc} defaultPageSize={100000} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
-        accept={false}/>    
+        accept={false}/>
+        <Card>
+          <CardBody>
+            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} 
+            onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            {this.state.resp}
+          </CardBody>
+        </Card>    
       </div>
     )
   }
