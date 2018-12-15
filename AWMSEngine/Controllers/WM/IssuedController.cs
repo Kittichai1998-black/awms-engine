@@ -38,6 +38,13 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
+        [HttpPost("queue")]
+        public dynamic ProcessQueue([FromBody] dynamic req)
+        {
+            ProcessQueueIssueAPI exec = new ProcessQueueIssueAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
         [HttpPost("doc/rejected")]
         public dynamic ActionDocReject([FromBody] dynamic req)
         {

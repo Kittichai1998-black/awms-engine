@@ -294,7 +294,7 @@ class CreateQueue extends Component{
           </Col> 
 
           <Col lg="6"> 
-            <div style={{"border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background:"white"}}>
+            <div style={{"border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background:"#FFFFFF"}}>
               <Row style={{"padding-top":"10px"}}>
                 <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Document : </label></Col>
                 <Col md="9">

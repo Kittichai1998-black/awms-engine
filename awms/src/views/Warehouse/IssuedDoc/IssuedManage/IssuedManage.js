@@ -191,8 +191,13 @@ class IssuedManage extends Component{
       let qty = row.PackQty === "" ? 0 : row.PackQty;
       if (row.id > 0 && qty > 0) 
       acceptdata.push({
-        packID: row.id,
-        packQty: row.PackQty,
+          packID: row.id
+        , packQty: row.PackQty
+        , refID:this.state.refID
+        , ref1:this.state.ref1
+        , ref2:this.state.ref2
+        , batch:this.state.Batch
+        , lot:null
       })
     })
     let postdata = {

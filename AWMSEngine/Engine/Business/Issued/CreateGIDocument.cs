@@ -55,6 +55,11 @@ namespace AWMSEngine.Engine.Business.Issued
                 //public string baseTypeCode;
                 public string packTypeCode;
                 public int packQty;
+                public string batch;
+                public string lot;
+                public string refID;
+                public string ref1;
+                public string ref2;
             }
         }
 
@@ -273,6 +278,11 @@ namespace AWMSEngine.Engine.Business.Issued
                     SKUMaster_ID = skuMst.ID.Value,
                     PackMaster_ID = packMst.ID.Value,
                     Quantity = issueItem.packQty,
+                    Ref1 = issueItem.ref1,
+                    Ref2 = issueItem.ref2,
+                    RefID = issueItem.refID,
+                    Batch = issueItem.batch,
+                    Lot = issueItem.lot,
                     EventStatus = DocumentEventStatus.IDEL
                 };
                 newDocItems.Add(newDocItem);
