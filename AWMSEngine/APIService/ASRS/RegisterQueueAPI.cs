@@ -18,6 +18,7 @@ namespace AWMSEngine.APIService.ASRS
 
         protected override dynamic ExecuteEngineManual()
         {
+            this.BeginTransaction();
             //validate น้ำหนัก
             //เพิ่ม Mapping
             var req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterQueueReceiving.TReq>(this.RequestVO);

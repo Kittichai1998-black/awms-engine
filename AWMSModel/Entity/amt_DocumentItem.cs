@@ -12,10 +12,14 @@ namespace AWMSModel.Entity
         public string Code;
         public long? SKUMaster_ID;
         public long? PackMaster_ID;
-        public int? Quantity;
+        public decimal? Quantity;
+        public long? UnitType_ID;
+        public decimal? BaseQuantity;
+        public long? BaseUnitType_ID;
         public string Options;
         public DateTime? ProductionDate;
         public DateTime? ExpireDate;
+        public string OrderNo;
         public string Batch;
         public string Lot;
         public string RefID;
@@ -23,6 +27,7 @@ namespace AWMSModel.Entity
         public string Ref2;
         public DocumentEventStatus EventStatus;
 
-        public List<long> StorageObjectIDs;
+        //public List<long> StorageObjectIDs;
+        public List<amt_DocumentItemStorageObject> DocItemStos;
     }
 }

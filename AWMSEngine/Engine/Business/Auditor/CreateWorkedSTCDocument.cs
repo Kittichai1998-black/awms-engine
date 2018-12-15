@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
+using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -123,7 +124,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                     PackMaster_ID = packAdjInfo.mstID,
                     SKUMaster_ID = packMst.SKUMaster_ID,
                     Quantity = adjQty,
-                    StorageObjectIDs = packAdjs.Select(x => x.id.Value).ToList(),
+                    //TODO
+                    //StorageObjectIDs = ConverterModel.ToDocumentItemStorageObject(packAdjs),
                     EventStatus = DocumentEventStatus.CLOSED
                 };
                 newDocItems.Add(newDocItem);

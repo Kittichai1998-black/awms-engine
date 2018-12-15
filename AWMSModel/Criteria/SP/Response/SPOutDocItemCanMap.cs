@@ -11,10 +11,11 @@ namespace AWMSModel.Criteria.SP.Response
         public long DocumentItem_ID;
         public string DocumentItemCode;
         public long DocumentType_ID;
-        public string PackCode;
+        public long PackMaster_ID;
+        public string PackMaster_Code;
         public string Batch;
         public string Lot;
-        public long Qty;
-        public long MaxQty;
+        public int Qty;
+        public int MaxQty;
     }
 }

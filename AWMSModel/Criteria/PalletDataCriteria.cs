@@ -10,9 +10,9 @@ namespace AWMSModel.Criteria
         public string code;
         public string batch;
         public string qty;
-        public string baseUnit;
-        public string movingType;
-        public DateTime? stampDate;
+        public string unit;
+        //public string movingType;
+        public string stampDate;
         public string warehouseCode;//รหัสคลังสินค้า
         public string areaCode;//รหัสโซน
     }
