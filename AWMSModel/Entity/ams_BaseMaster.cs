@@ -8,5 +8,6 @@ namespace AWMSModel.Entity
     {
         public int BaseMasterType_ID;
         public int ObjectSize_ID;
+        public int UnitType_ID;
     }
 }

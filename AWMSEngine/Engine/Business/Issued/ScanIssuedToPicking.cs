@@ -100,15 +100,16 @@ namespace AWMSEngine.Engine.Business.Issued
                 ADO.StorageObjectADO.GetInstant()
                     .UpdateStatusToChild(firstMapSto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.CONSOLIDATED, this.BuVO);
 
-                docItems.ForEach(x =>
-                {
-                    var mapStoToDocItem = mapStoTree.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID).Select(y => y.id.Value).ToList();
-                    if (mapStoToDocItem.Count() > 0)
-                        ADO.DocumentADO.GetInstant().MappingSTO(
-                            x.ID.Value,
-                            mapStoToDocItem,
-                            this.BuVO);
-                });
+                //TODO
+                //docItems.ForEach(x =>
+                //{
+                //    var mapStoToDocItem = mapStoTree.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.PackMaster_ID).Select(y => y.id.Value).ToList();
+                //    if (mapStoToDocItem.Count() > 0)
+                //        ADO.DocumentADO.GetInstant().MappingSTO(
+                //            x.ID.Value,
+                //            mapStoToDocItem,
+                //            this.BuVO);
+                //});
             }
             //Pick สินค้าใน Base
             else if (firstMapSto.code != reqVO.scanCode)
@@ -177,11 +178,12 @@ namespace AWMSEngine.Engine.Business.Issued
                         var v = y.ToTreeList().FindAll(z => z.type == StorageObjectType.PACK).Select(z => z.id.Value);
                         stoPackIDs.AddRange(v);
                     });
-                    ADO.DocumentADO.GetInstant()
-                        .MappingSTO(
-                            docItems.First(y => y.PackMaster_ID == x.Key.mstID).ID.Value,
-                            stoPackIDs,
-                            this.BuVO);
+                    //TODO
+                    //ADO.DocumentADO.GetInstant()
+                    //    .MappingSTO(
+                    //        docItems.First(y => y.PackMaster_ID == x.Key.mstID).ID.Value,
+                    //        stoPackIDs,
+                    //        this.BuVO);
                 });
             }
 

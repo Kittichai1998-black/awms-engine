@@ -154,8 +154,7 @@ class ReceiveManage extends Component{
         this.setState({auto_movementType})
       })
     })
-
-
+ 
   }
 
   genWarehouseData(data){ 
@@ -304,9 +303,10 @@ class ReceiveManage extends Component{
         padding: '2px 0',
         fontSize: '90%',
         //position: 'fixed',
-        height:'200px',
+        //maxHeight:'50px',
+        //min:'20px',
         overflow: 'auto',
-        maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
+        maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
         zIndex: '998',
       }
 

@@ -274,6 +274,11 @@ const QueueView = Loadable({
   loading: Loading,
 });
 
+const CreateQueue = Loadable({
+  loader: () => import('./views/Warehouse/Queue/CreateQueue'),
+  loading: Loading,
+});
+
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -334,6 +339,7 @@ const routes = [
   { path: '/mst/jobs/manage', exact: true, name: 'JobSchedule', component:JobSchedule},
   { path: '/mst/role/manage', exact: true, name: 'Role', component:Role},
   { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
+  { path: '/wm/issue/manage', exact: true, name: 'Create Queue by DO', component:CreateQueue},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
   { path: '/wm/sto/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
 

@@ -116,11 +116,11 @@ class Area extends Component{
 
   render(){
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
+      { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
+      { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 160},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-      {accessor: 'Warehouse_Code', Header: 'Warehouse',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'AreaMasterType_Code', Header: 'AreaMasterType',updateable:false,Filter:"text", Type:"autocomplete"},
+      { accessor: 'Warehouse_Code', Header: 'Warehouse', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 100},
+      { accessor: 'AreaMasterType_Code', Header: 'AreaMasterType', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 100},
       //{accessor: 'Status', Header: 'Status',Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       {accessor: 'Created', Header: 'Create',filterable:false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */

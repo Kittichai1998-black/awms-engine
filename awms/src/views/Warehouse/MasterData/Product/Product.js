@@ -5,8 +5,8 @@ import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, Nodisplay } from '../../../ComponentCore/Permission';
-const api = new apicall()
 
+const api = new apicall()
 class ListProduct extends Component{
   constructor(props) {
     super(props);
@@ -32,7 +32,7 @@ class ListProduct extends Component{
       l:100,
       all:"",},
       sortstatus:0,
-      selectiondata:[],
+      selectiondata: [] 
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -149,16 +149,16 @@ displayButtonByPermission(perID){
   render(){
     const cols = [
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
-      { accessor: 'SKUMasterType_Code', Header: 'SKU Type', updateable: false, Filter: "text", Type: "autocomplete" },
+      { accessor: 'SKUMasterType_Code', Header: 'SKU Type', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 130 },
       { accessor: 'Code', Header: 'Code', editable: true,Filter:"text",},
-      { accessor: 'Name', Header: 'Name', editable: true,Filter:"text",},
+      { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", minWidth: 200},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
-      { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
+      { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 90 },
       { accessor: 'WeightKG', Header: 'Weight (Kg.)', editable: true, datatype: "int" },
       { accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
       { accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
       { accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},
-      { accessor: 'ObjectSize_Code', Header: 'Object Size', Filter: "text", Type: "autocomplete" },
+      { accessor: 'ObjectSize_Code', Header: 'Object Size', Filter: "text", Type: "autocomplete", minWidth: 90 },
       { accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
       { accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
       //{ accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
@@ -188,7 +188,7 @@ displayButtonByPermission(perID){
         getselection = เก็บค่าที่เลือก
     
       */}
-         
+
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} expFilename={"SKU"}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}

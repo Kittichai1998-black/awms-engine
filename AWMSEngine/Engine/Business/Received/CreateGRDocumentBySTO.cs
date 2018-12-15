@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -22,7 +23,7 @@ namespace AWMSEngine.Engine.Business.Received
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
             var stopacks = this.ListPackSTOIDs(reqVO.stomap);
-            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoIDInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
 
             stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.StorageObject_ID == x.id));
 
@@ -81,7 +82,7 @@ namespace AWMSEngine.Engine.Business.Received
             };
             var packs = stopacks
                 .GroupBy(x => new { code = x.code, mstID = x.mstID, options = x.options })
-                .Select(x => new { key = x.Key, count = x.Count(), stoIDs = x.Select(y => y.id.Value).ToList() });
+                .Select(x => new { key = x.Key, count = x.Count(), stoIDs = x.Select(y => y).ToList() });
             //if (packs.Count() == 0)
             //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบสินค้ารอรับเข้า");
             foreach (var p in packs)
@@ -100,8 +101,9 @@ namespace AWMSEngine.Engine.Business.Received
                     ProductionDate = null,
                     Ref1 = null,
                     Ref2 = null,
-                    Ref3 = null,
-                    StorageObjectIDs = p.stoIDs
+                    RefID = null,
+                    //TODO
+                    DocItemStos = ConverterModel.ToDocumentItemStorageObject(p.stoIDs)
                 });
             }
 

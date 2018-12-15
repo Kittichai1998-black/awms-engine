@@ -74,8 +74,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     if(stoConsos.Any(x=>x.type == StorageObjectType.PACK))
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สินค้ารายการที่เลือก จำเป็นต้องเลือก กล่อง/ถาด/พาเลท เพื่อใช้ Consolidate");
-
-                    ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, packConsos.Select(x => x.id.Value).ToList(), this.BuVO);
+                    //TODO
+                    //ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, packConsos.Select(x => x.id.Value).ToList(), this.BuVO);
                     res.mapstoConsos = stoConsos;
                 }
                 else
@@ -94,7 +94,8 @@ namespace AWMSEngine.Engine.Business.Issued
                         ms.parentID = bstoConso.id;
                         ADO.StorageObjectADO.GetInstant().Update(ms, ms.areaID, this.BuVO);
                     }
-                    ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, packConsos.Select(x => x.id.Value).ToList(), this.BuVO);
+                    //TODO
+                    //ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, packConsos.Select(x => x.id.Value).ToList(), this.BuVO);
                     res.mapstoConsos = new List<StorageObjectCriteria>() { bstoConso };
                 }
 

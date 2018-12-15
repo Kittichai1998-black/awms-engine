@@ -35,6 +35,7 @@ namespace AWMSModel.Entity
         public string Ref2;
 
         public long? For_Customer_ID;
+        public string OrderNo;
         public string Batch;
         public string Lot;
 
