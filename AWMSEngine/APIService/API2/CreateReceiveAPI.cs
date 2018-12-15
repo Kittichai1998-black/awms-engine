@@ -27,6 +27,7 @@ namespace AWMSEngine.APIService.Api2
                     public int qty;
                     public string unit;
                     public string souWarehouse;
+                    public string desWarehouse;
                     public string movementType;//ref2
                     public string batch;
                 }
@@ -56,9 +57,10 @@ namespace AWMSEngine.APIService.Api2
                     {
                         skuCode = x.code,
                         quantity = x.qty,
-                        packItemUnit = x.unit,
+                        unitType = x.unit,
                         batch = x.batch,
                         souWarehouseCode = x.souWarehouse,
+                        desWarehouseCode = x.desWarehouse,
                         refID = doc.matDocNo,
                         ref1 = doc.matDocYear,
                         ref2 = x.movementType,

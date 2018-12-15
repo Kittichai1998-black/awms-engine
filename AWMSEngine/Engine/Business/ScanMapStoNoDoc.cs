@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
+using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -18,9 +19,11 @@ namespace AWMSEngine.Engine.Business
         public class TReq
         {
             public string scanCode;
+            public string orderNo;
             public string batch;
             public string lot;
-            public int amount;
+            public decimal amount;
+            public string unitCode;
             public DateTime? productDate;
             public long? warehouseID;
             public long? areaID;
@@ -46,24 +49,56 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, TReq reqVO)
+        private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parrentMapsto, TReq reqVO)
         {
+
             var objSize = this.StaticValue.ObjectSizes.Find(x => x.ID == ObjectSize_ID);
+            var objType = obj is ams_BaseMaster ? StorageObjectType.BASE : obj is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK;
+
+            ams_UnitType trueUnit = null;
+
+            if (objType == StorageObjectType.PACK)
+                trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.Code == reqVO.unitCode && x.ObjectType == objType);
+            else if (objType == StorageObjectType.BASE)
+                trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_BaseMaster)obj).UnitType_ID);
+            else if (objType == StorageObjectType.LOCATION)
+                trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_AreaLocationMaster)obj).UnitType_ID);
+
+            if (trueUnit == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "UnitType ไม่ถูกต้อง");
+            
+
+            var baseUnit = objType == StorageObjectType.PACK ?
+                this.StaticValue.ConvertToBaseUnitByPack(reqVO.scanCode, reqVO.amount, trueUnit.ID.Value) : null;
+            StorageObjectType? parrentType = null;
+            if (parrentMapsto != null)
+                parrentType = parrentMapsto.type;
+
             var res = new StorageObjectCriteria()
             {
                 id = null,
                 mstID = obj.ID,
                 code = obj.Code,
                 name = obj.Name,
-                type = obj is ams_BaseMaster ? StorageObjectType.BASE : obj is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK,
+                type = objType,
 
-                parentID = null,
-                parentType = null,
+                parentID = parrentMapsto != null ? parrentMapsto.id : null,
+                parentType = parrentType,
 
-                areaID = reqVO.areaID.Value,
-                warehouseID = reqVO.warehouseID.Value,
+                areaID = parrentMapsto != null ? parrentMapsto.areaID : reqVO.areaID.Value,
+                warehouseID = parrentMapsto != null ? parrentMapsto.warehouseID : reqVO.warehouseID.Value,
+                orderNo = reqVO.orderNo,
                 lot = reqVO.lot,
                 batch = reqVO.batch,
+
+                qty = reqVO.amount,
+                unitID = trueUnit.ID.Value,
+                unitCode = trueUnit.Code,
+
+                baseQty = baseUnit != null ? baseUnit.baseQty : 1,
+                baseUnitID = baseUnit != null ? baseUnit.baseUnitType_ID : trueUnit.ID.Value,
+                baseUnitCode = baseUnit != null ?
+                                    this.StaticValue.UnitTypes.First(x => x.ID == baseUnit.baseUnitType_ID).Code : trueUnit.Code,
 
                 weiKG = null,
                 widthM = null,
@@ -91,6 +126,7 @@ namespace AWMSEngine.Engine.Business
                 isFocus = obj is ams_PackMaster ? false : true,
 
             };
+            res.groupSum = StorageObjectCriteria.CreateGroupSum(res);
             return res;
         }
         private StorageObjectCriteria ExecFirstScan(TReq reqVO)
@@ -104,12 +140,12 @@ namespace AWMSEngine.Engine.Business
                 ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
                 if (bm != null)
                 {
-                    mapsto = this.GenerateStoCrit(bm, bm.ObjectSize_ID, reqVO);
+                    mapsto = this.GenerateStoCrit(bm, bm.ObjectSize_ID, null, reqVO);
                     this.ADOSto.PutV2(mapsto, this.BuVO);
                 }
                 else if (alm != null)
                 {
-                    mapsto = this.GenerateStoCrit(alm, bm.ObjectSize_ID, reqVO);
+                    mapsto = this.GenerateStoCrit(alm, bm.ObjectSize_ID, null, reqVO);
                 }
                 else if (pm != null)
                 {
@@ -204,36 +240,23 @@ namespace AWMSEngine.Engine.Business
 
             if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
             {
-                //StorageObjectCriteria registMapSto = null;
                 if (pm != null)
                 {
-                    long? docItemID = null;
-                    //if (this.StaticValue.IsFeature(FeatureCode.IB0100))
-                    //{
-                    //    var docItemCanMaps = ADO.DocumentADO.GetInstant().ListItemCanMap(pm.Code, DocumentTypeID.GOODS_RECEIVED, reqVO.batch, reqVO.lot, this.BuVO);
-                    //    if (docItemCanMaps == null || docItemCanMaps.Count == 0)
-                    //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Goods Recevie");
-                    //    var docItemCanMap = docItemCanMaps.FirstOrDefault(x => reqVO.amount <= (x.MaxQty - x.Qty));
-                    //    if (docItemCanMap == null)
-                    //        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "จำนวนรับเข้าคงเหลือจาก Goods Recevie ไม่ถูกต้อง");
-                    //    docItemID = docItemCanMap.DocumentItem_ID;
-                    //}
-                    List<long> mapDocByStoIDs = new List<long>();
-                    for (int i = 0; i < reqVO.amount; i++)
+                    //List<amt_DocumentItemStorageObject> mapDocByStos = new List<amt_DocumentItemStorageObject>();
+                    var regisMap = this.GenerateStoCrit(pm, pm.ObjectSize_ID, firstMapSto, reqVO);
+                    
+                    var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.groupSum == regisMap.groupSum);
+                    if(matchStomap == null)
                     {
-                        var regisMap = this.GenerateStoCrit(pm, pm.ObjectSize_ID, reqVO);
-
-                        regisMap.parentID = firstMapSto.id;
-                        regisMap.parentType = firstMapSto.type;
-                        regisMap.areaID = firstMapSto.areaID;
-                        regisMap.warehouseID = firstMapSto.warehouseID;
                         this.ADOSto.PutV2(regisMap, this.BuVO);
-
                         firstMapSto.mapstos.Add(regisMap);
-                        mapDocByStoIDs.Add(regisMap.id.Value);
                     }
-                    if (docItemID.HasValue)
-                        ADO.DocumentADO.GetInstant().MappingSTO(docItemID.Value, mapDocByStoIDs, this.BuVO);
+                    else
+                    {
+                        matchStomap.qty += regisMap.qty;
+                        matchStomap.baseQty += regisMap.baseQty;
+                        this.ADOSto.PutV2(matchStomap, this.BuVO);
+                    }
                 }
                 else if (bm != null)
                 {
@@ -241,12 +264,8 @@ namespace AWMSEngine.Engine.Business
                         .Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, false, false, this.BuVO);
 
                     if (regisMap == null)
-                        regisMap = this.GenerateStoCrit(bm, bm.ObjectSize_ID, reqVO);
+                        regisMap = this.GenerateStoCrit(bm, bm.ObjectSize_ID, firstMapSto, reqVO);
 
-                    regisMap.parentID = firstMapSto.id;
-                    regisMap.parentType = firstMapSto.type;
-                    regisMap.areaID = firstMapSto.areaID;
-                    regisMap.warehouseID = firstMapSto.warehouseID;
                     this.ADOSto.PutV2(regisMap, this.BuVO);
 
                     firstMapSto.mapstos.Add(regisMap);
@@ -255,7 +274,7 @@ namespace AWMSEngine.Engine.Business
             }
             else if (reqVO.mode == VirtualMapSTOModeType.TRANSFER)
             {
-
+                throw new Exception("ปิด Module Transfer");
                 var countStoFree = ADO.StorageObjectADO.GetInstant()
                                     .GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, this.BuVO);
 

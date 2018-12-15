@@ -205,6 +205,11 @@ namespace AWMSEngine.ADO
             param.Add("batch", sto.batch);
             param.Add("lot", sto.lot);
 
+            param.Add("qty", sto.qty);
+            param.Add("unitID", sto.unitID);
+            param.Add("baseQty", sto.baseQty);
+            param.Add("baseUnitID", sto.baseUnitID);
+
             param.Add("weiKG", sto.weiKG);
             param.Add("widthM", sto.widthM);
             param.Add("heightM", sto.heightM);

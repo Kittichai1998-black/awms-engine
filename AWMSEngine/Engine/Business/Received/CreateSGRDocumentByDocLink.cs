@@ -31,6 +31,7 @@ namespace AWMSEngine.Engine.Business.Received
                 public string desWarehouseCode;
                 public string desAreaMasterCode;
 
+                public string orderNo;
                 public string batch;
                 public string lot;
                 public string refID;
@@ -38,8 +39,8 @@ namespace AWMSEngine.Engine.Business.Received
                 public string ref2;
 
                 public string skuCode;
-                public int quantity;
-                public string packItemUnit;
+                public decimal? quantity;
+                public string unitType;
             }
         }
 
@@ -108,7 +109,15 @@ namespace AWMSEngine.Engine.Business.Received
                                                  {
                                                      skuCode = x.skuCode,
                                                      quantity = x.quantity,
-                                                     packItemUnit = x.packItemUnit,
+                                                     unitType = x.unitType,
+
+                                                     refID = reqVO.refID,
+                                                     ref1 = reqVO.ref1,
+                                                     ref2 = reqVO.ref2,
+
+                                                     lot = x.lot,
+                                                     batch = x.batch,
+                                                     orderNo = x.orderNo
                                                  }).ToList()
                 };
                 var docGR = new CreateGRDocument().Execute(

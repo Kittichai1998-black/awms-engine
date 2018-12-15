@@ -172,22 +172,22 @@ namespace AMWUtil.Common
             if (!int.TryParse(s, out ascii)) return (char)0;
             return ((char)ascii);
         }
-        public static string ListKeyToQueryString(params KeyValuePair<string, string>[] param)
+        public static string ListKeyToQryStr(params KeyValuePair<string, string>[] param)
         {
             if (param == null) return string.Empty;
-            return ListKeyToQueryString(Enumerable.ToList(param));
+            return ListKeyToQryStr(Enumerable.ToList(param));
         }
-        public static string ListKeyToQueryString(params KeyValuePair<string, object>[] param)
+        public static string ListKeyToQryStr(params KeyValuePair<string, object>[] param)
         {
             if (param == null) return string.Empty;
-            return ListKeyToQueryString(Enumerable.ToList(param.Select((KeyValuePair<string, object> x) => new KeyValuePair<string, string>(x.Key, (string)x.Value))));
+            return ListKeyToQryStr(Enumerable.ToList(param.Select((KeyValuePair<string, object> x) => new KeyValuePair<string, string>(x.Key, (string)x.Value))));
         }
-        public static string ListKeyToQueryString(List<KeyValuePair<string, object>> param)
+        public static string ListKeyToQryStr(List<KeyValuePair<string, object>> param)
         {
             if (param == null) return string.Empty;
-            return ListKeyToQueryString(Enumerable.ToList(param.Select((KeyValuePair<string, object> x) => new KeyValuePair<string, string>(x.Key, (string)x.Value))));
+            return ListKeyToQryStr(Enumerable.ToList(param.Select((KeyValuePair<string, object> x) => new KeyValuePair<string, string>(x.Key, (string)x.Value))));
         }
-        public static string ListKeyToQueryString(List<KeyValuePair<string, string>> param)
+        public static string ListKeyToQryStr(List<KeyValuePair<string, string>> param)
         {
             if (param == null) return string.Empty;
             StringBuilder res = new StringBuilder();
@@ -200,10 +200,10 @@ namespace AMWUtil.Common
             }
             return res.ToString();
         }
-        public static Dictionary<string, string> QueryStringToDictionary(string param)
+        public static Dictionary<string, string> QryStrToDictionary(string param)
         {
             Dictionary<string, string> res = new Dictionary<string, string>();
-            var values = QueryStringToKeyValues(param);
+            var values = QryStrToKeyValues(param);
 
             foreach (KeyValuePair<string, string> v in values)
             {
@@ -213,7 +213,7 @@ namespace AMWUtil.Common
             return res;
         }
 
-        public static List<KeyValuePair<string, string>> QueryStringToKeyValues(string param)
+        public static List<KeyValuePair<string, string>> QryStrToKeyValues(string param)
         {
             List<KeyValuePair<string, string>> res = new List<KeyValuePair<string, string>>();
             try
@@ -234,12 +234,26 @@ namespace AMWUtil.Common
             }
             return res;
         }
-        public static List<string> QueryStringToKeys(string param)
+        public static List<string> QryStrToListKeys(string param)
         {
             List<string> res = new List<string>();
-            QueryStringToKeyValues(param).ForEach(x => res.Add(x.Key));
+            QryStrToKeyValues(param).ForEach(x => res.Add(x.Key));
             return res;
         }
+        public static string QryStrGetValue(string param, string key)
+        {
+            var match = Regex.Match("?" + param + "&", "[&?]" + key + "=([^&]*)");
+            string res = Regex.Replace(match.Value, "^[?&]*"+ key + "=|[&]*$", "");
+            return res;
+        }
+        public static bool QryStrContainsKey(string param, string key)
+        {
+            var match = Regex.IsMatch("?" + param + "&", "[&?]" + param + "=([^&]*)");
+            //string res = Regex.Replace(match.Value, "^[?&]*|[&]*$", "");
+            return match;
+        }
+
+        
         public static T KeyValueToObject<T>(List<KeyValuePair<string, object>> values)
             where T : new()
         {

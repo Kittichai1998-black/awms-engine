@@ -22,15 +22,17 @@ namespace AWMSEngine.Engine.Business.Received
             StorageObjectCriteria mapsto = null;
             foreach (var row in reqVO.palletData)
             {
+                //long unitID = this.StaticValue.UnitTypes.First(x => x.Code == row.unit).ID;
                 mapsto = scanmapsto.Execute(this.Logger, this.BuVO, new ScanMapStoNoDoc.TReq()
                 {
                     scanCode = row.code,
                     batch = row.batch,
-                    amount = Convert.ToInt32(Convert.ToDouble(row.qty)),
+                    lot = row.stampDate,
+                    unitCode = row.unit,
+                    amount = row.qty.Get<decimal>(),
                     mode = VirtualMapSTOModeType.REGISTER,
                     action = VirtualMapSTOActionType.ADD,
                     options = row.source,
-                    productDate = row.stampDate,
                     mapsto = mapsto,
                     warehouseID = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == row.warehouseCode).ID,
                     areaID = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == row.areaCode).ID,

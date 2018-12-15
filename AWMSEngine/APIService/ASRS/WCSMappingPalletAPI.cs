@@ -26,7 +26,7 @@ namespace AWMSEngine.APIService.ASRS
                     code = row.code,
                     batch = row.batch,
                     qty = row.qty,
-                    baseUnit = row.baseunit,
+                    unit = row.baseunit,
                     warehouseCode = this.RequestVO.warehouseCode,
                     areaCode = this.RequestVO.areaCode,
                 });

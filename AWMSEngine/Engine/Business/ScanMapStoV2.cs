@@ -232,8 +232,9 @@ namespace AWMSEngine.Engine.Business
                         firstMapSto.mapstos.Add(regisMap);
                         mapDocByStoIDs.Add(regisMap.id.Value);
                     }
-                    if (docItemID.HasValue)
-                        ADO.DocumentADO.GetInstant().MappingSTO(docItemID.Value, mapDocByStoIDs, this.BuVO);
+                    //TODO
+                    //if (docItemID.HasValue)
+                        //ADO.DocumentADO.GetInstant().MappingSTO(docItemID.Value, mapDocByStoIDs, this.BuVO);
                 }
                 else if(bm != null)
                 {
