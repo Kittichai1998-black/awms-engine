@@ -9,9 +9,10 @@ using AWMSModel.Entity;
 
 namespace AWMSModel.Criteria
 {
-    public class StorageObjectCriteria : ITreeObject
+    public partial class StorageObjectCriteria : ITreeObject
     {
         public long? id;
+        public string groupSum;
         public StorageObjectType type;
         public long? mstID;
         public long? parentID;
@@ -20,10 +21,15 @@ namespace AWMSModel.Criteria
         public StorageObjectType? parentType;
         public string code;
         public string name;
+        public string orderNo;
         public string lot;
         public string batch;
-        public int unitID;
+        public decimal qty;
+        public long unitID;
         public string unitCode;
+        public decimal baseQty;
+        public long baseUnitID;
+        public string baseUnitCode;
 
         public long? objectSizeID;
         public string objectSizeName;
@@ -83,11 +89,11 @@ namespace AWMSModel.Criteria
             if (stos.Count() == 0) return null;
             bool isFucus = false;
 
-            List<dynamic> findStoRoots = stos.GroupBy(x => new { id = x.id, parentID = x.parentID, objectSizeID = x.objectSizeID , parentType = x.parentType }).Select(x => x.Key).ToList<dynamic>();
+            List<dynamic> findStoRoots = stos.GroupBy(x => new { id = x.id, parentID = x.parentID, objectSizeID = x.objectSizeID, parentType = x.parentType }).Select(x => x.Key).ToList<dynamic>();
             dynamic stoRoot = findStoRoots.FirstOrDefault(x => !findStoRoots.Any(y => y.id == x.parentID && y.id != null));
             var sos = staticObjectSizes.FirstOrDefault(x => x.ID == stoRoot.objectSizeID);
             var res = generateMapstos(stoRoot.parentID, stoRoot.parentType, out isFucus).FirstOrDefault();
-            
+
             List<StorageObjectCriteria> generateMapstos(long? parentID, StorageObjectType? parentType, out bool outParentIsFocus)
             {
                 List<StorageObjectCriteria> r =
@@ -99,8 +105,12 @@ namespace AWMSModel.Criteria
                         {
                             id = x.id,
                             type = x.type,
+                            qty = x.qty,
                             unitID = x.unitID,
                             unitCode = staticUnitTypes.First(y => y.ID == x.unitID).Code,
+                            baseQty = x.baseQty,
+                            baseUnitID = x.baseUnitID,
+                            baseUnitCode = staticUnitTypes.First(y => y.ID == x.baseUnitID).Code,
                             parentID = x.parentID,
                             parentType = x.parentType,
                             warehouseID = x.warehouseID,
@@ -121,11 +131,13 @@ namespace AWMSModel.Criteria
                             objectSizeID = x.objectSizeID,
                             objectSizeName = sos2.Name,
                             eventStatus = x.eventStatus,
+                            orderNo = x.orderNo,
                             lot = x.lot,
                             batch = x.batch,
                             minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
                             maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
                         };
+                        s.groupSum = CreateGroupSum(s);
                         s.objectSizeMaps = sos2 != null ?
                                 sos2.ObjectSizeInners
                                 .Select(y => new ObjectSizeMap()
@@ -153,6 +165,14 @@ namespace AWMSModel.Criteria
 
             return res;
         }
-        
+
+        public static string CreateGroupSum(StorageObjectCriteria s)
+        {
+            return EncryptUtil.GenerateMD5(
+                        string.Format("{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}",
+                            s.mstID, s.type, s.unitID, s.baseUnitID, s.parentID,
+                            s.objectSizeID, s.eventStatus, s.orderNo, s.lot, s.batch, s.code, s.options));
+        }
+
     }
 }

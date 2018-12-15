@@ -8,6 +8,7 @@ namespace AWMSModel.Entity
     {
         public long SKUMaster_ID;
         public long PackMasterType_ID;
+        public long UnitType_ID;
         public decimal? WeightKG;
         public decimal? WidthM;
         public decimal? LengthM;

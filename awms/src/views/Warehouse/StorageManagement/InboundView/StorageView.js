@@ -43,7 +43,7 @@ class IssuedDoc extends Component {
       select: {
         queryString: window.apipath + "/api/viw",
         t: "LinkDocument",
-        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': '1001'},{'f':'Status','c':'!=','v':2}]",
+        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': '1001'}]",
         f: "ID,Super,Code,SouBranchName,DesBranchName,Status,SouWarehouseName,DesWarehouseName,DocumentDate,EventStatus,RefID,Created,Ref1,Ref2,DocumentType_ID",
         g: "",
         s: "[{'f':'Code','od':'desc'}]",
@@ -125,12 +125,9 @@ displayButtonByPermission(perID){
       data.forEach(rowdata => {
         postdata["docIDs"].push(rowdata.ID)
       })
-      if(status==="accept"){
-        axois.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {this.setState({resp:res.data._result.message})})
-      }
-      else{
-        axois.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
-      }
+     
+        axois.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+      
     }
   }
 

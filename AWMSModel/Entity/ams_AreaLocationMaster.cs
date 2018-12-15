@@ -12,5 +12,6 @@ namespace AWMSModel.Entity
         public int? Bay;
         public int? Lavel;
         public int ObjectSize_ID;
+        public int UnitType_ID;
     }
 }

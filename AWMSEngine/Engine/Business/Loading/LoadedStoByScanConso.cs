@@ -45,10 +45,11 @@ namespace AWMSEngine.Engine.Business.Loading
 
             var stoLoads = stoLoadTmp.ToTreeList();
 
-            ADO.DocumentADO.GetInstant().MappingSTO(
-                willLoad.docItemID,
-                stoLoads.Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList(),
-                this.BuVO);
+            //TODO
+            //ADO.DocumentADO.GetInstant().MappingSTO(
+            //    willLoad.docItemID,
+            //    stoLoads.Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList(),
+            //    this.BuVO);
 
             if (baseCanLoads.datas.TrueForAll(x => x.isLoaded))
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(

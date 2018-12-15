@@ -7,6 +7,7 @@ import { apicall,AutoSelect, DatePicker } from '../ComponentCore';
 //import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
+import ExportFile from '../MasterData/ExportFile';
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -93,15 +94,18 @@ class StockCard extends Component{
       if (formatDateFrom > formatDateTo ){
         alert("Choose the wrong information")
       } else {
+        let namefileDateFrom = formatDateFrom.toString();
+        let namefileDateTo = formatDateTo.toString();
+        let nameFlie = "STC :"+this.state.CodePack+" "+namefileDateTo+" to "+namefileDateFrom
+        this.setState({name:nameFlie.toString()})
 
         let QueryDoc = this.state.selectdata
         let JSONDoc = []
         JSONDoc.push({"f": "DocumentDate", "c":"<=", "v":formatDateTo},
-          {"f": "Code", "c":"=", "v":this.state.CodePack},{"f": "Status", "c":"=", "v":"3"})
+          {"f": "Code", "c":"=", "v":this.state.CodePack},{ "f": "Status", "c":"=", "v": 1})
           QueryDoc.q = JSON.stringify(JSONDoc)
             Axios.get(createQueryString(QueryDoc)).then((res) => { 
             this.setState({data:res.data.datas},()=>{
-            //console.log(this.state.data)
             if(this.state.data.length > 0){
               let dateDoc = this.state.data.filter(row=>{
               return row.DocumentDate >= formatDateFrom
@@ -109,25 +113,29 @@ class StockCard extends Component{
               let dateThrow = this.state.data.filter(row2=>{
               return row2.DocumentDate <= formatDateFrom           
               })
+              // let sum = 0
+              // var arrdata =[]
+              //   dateThrow.forEach(row=>{
+              //     sum+= row.Quantity         
+              //   })
               let sum = 0
+              let del = 0
+              let plus = 0
               var arrdata =[]
                 dateThrow.forEach(row=>{
-                  sum+= row.Quantity         
+                  if(row.DocumentType_ID === 1001){
+                    plus+= row.Quantity
+                  }else if (row.DocumentType_ID === 1002){
+                    del+= row.Quantity 
+                  } else{
+                    if (row.Quantity>=0){
+                      plus+=row.Quantity
+                    } else {
+                      del+=(row.Quantity*(-1))
+                    }
+                  }                       
                 })
-              // let sum = 0
-              // let del = 0
-              // let plus = 0
-              // var arrdata =[]
-              // console.log(dateThrow)
-              //   dateThrow.forEach(row=>{
-              //     console.log(row)
-              //     if(row.DocumentType_ID === 1001){
-              //       plus+= row.Quantity
-              //     }else{
-              //       del+= row.Quantity 
-              //     }                       
-              //   })
-              //   sum = (plus-del)  
+                sum = (plus-del)  
             arrdata.push({DocumentDate:'',DocumentType_ID:'Bring Forward',Total:sum})
 
             let sumDebit =0
@@ -154,7 +162,7 @@ class StockCard extends Component{
               }
             })
             arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
-            this.setState({data1:arrdata},()=>{console.log(this.state.data1)})
+            this.setState({data1:arrdata})
 
           }else{
             this.setState({data1:[]})
@@ -209,17 +217,14 @@ class StockCard extends Component{
                   {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
                 </div>{' '}
                 <Button color="primary" id="off" onClick={() => {this.onGetDocument()}}>Select</Button>
-            </div>          
+            </div><br/>   
+            <ExportFile column={cols} dataexp={this.state.data1} filename={this.state.name} />       
           </Col>
         </Row>
         </div>
-         <br></br>
-        <ReactTable pageSize="10000" NoDataComponent={()=><div style={{textAlign:"center",height:"100px",color:"rgb(200,206,211)"}}>No row found</div>} sortable={false} style={{background:"white",marginBottom:"50px"}} filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
-      
-      </div>
-
-
-
+          <ReactTable  pageSize="10000" NoDataComponent={()=><div style={{textAlign:"center",height:"100px",color:"rgb(200,206,211)"}}>No row found</div>} sortable={false} style={{background:"white",marginBottom:"50px"}}
+          filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1}/>                  
+         </div>
     )
   }
 }
