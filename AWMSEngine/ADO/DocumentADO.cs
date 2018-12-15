@@ -162,17 +162,17 @@ namespace AWMSEngine.ADO
             //param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));
             param.Add("@actionBy", buVO.ActionBy);
 
-            var docItemStos = docItem.DocItemStos;
-            docItem = this.Query<amt_DocumentItem>("SP_DOCITEM_CREATE",
+            //var docItemStos = docItem.DocItemStos;
+            var docItemTmp = this.Query<amt_DocumentItem>("SP_DOCITEM_CREATE",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction)
                                 .FirstOrDefault();
 
-            if (docItemStos != null && docItemStos.Count() > 0)
-                docItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; this.MappingSTO(x, buVO); });
-            docItem.DocItemStos = docItemStos;
-
+            docItem.ID = docItemTmp.ID;
+            if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
+                docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; this.MappingSTO(x, buVO); });
+            
             /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
                 .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
                 .Select(x=>x.StorageObject_ID)
@@ -192,7 +192,7 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
-        public int MappingSTOActive(long id, EntityStatus status, VOCriteria buVO)
+        public int UpdateStatusMappingSTO(long id, EntityStatus status, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@id", id);
@@ -292,10 +292,10 @@ namespace AWMSEngine.ADO
             });
             return res;
         }
-        public List<SPOutCountStoInDocItem> CountStoInDocItems(List<long> docItemIDs, VOCriteria buVO)
+        public List<SPOutCountStoInDocItem> CountStoInDocItems(IEnumerable<long> docItemIDs, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
-            whares.Add(new SQLConditionCriteria("DocumentItem_ID", string.Join(',', docItemIDs), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("DocumentItem_ID", string.Join(',', docItemIDs.ToArray()), SQLOperatorType.IN));
             whares.Add(new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS));
 
             var res = ADO.DataADO.GetInstant().SelectBy<SPOutCountStoInDocItem>(
@@ -367,6 +367,19 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public List<amt_DocumentItem> ListItemByWorkQueue(long workQueueID, VOCriteria buVO)
+        {
+            return this.ListItemByWorkQueue(new List<long> { workQueueID }, buVO);
+        }
+        public List<amt_DocumentItem> ListItemByWorkQueue(List<long> workQueueIDs, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("workQueueIDs", string.Join(",", workQueueIDs));
+            return this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYQUEUEID",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+        }
         public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, VOCriteria buVO)
         {
             return ListItemBySTO(storageObjectIDs, null, buVO);
@@ -409,5 +422,30 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
+        public List<SPOutDocItemCanMap> ListItemCanMap(string packCode, DocumentTypeID docTypeID, long? docID, string eventStatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("packCode", packCode);
+            param.Add("docTypeID", docTypeID);
+            param.Add("docID", docID);
+            param.Add("eventStatus", eventStatus);
+            var res = this.Query<SPOutDocItemCanMap>("SP_DOCITEM_LIST_CANMAP",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<amt_Document> ListDocumentCanMap(string palletCode, DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("packCode", palletCode);
+            param.Add("eventStatus", docTypeID);
+            var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_PICKING",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
     }
 }

@@ -6,6 +6,7 @@ import { TableGen } from '../../MasterData/TableSetup';
 import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
 import moment from 'moment';
 import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+import Axios from 'axios';
 
 const createQueryString = (select) => {
   let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
@@ -125,9 +126,11 @@ displayButtonByPermission(perID){
       data.forEach(rowdata => {
         postdata["docIDs"].push(rowdata.ID)
       })
-     
+      if(status==="reject"){
         axois.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
-      
+      } else {
+
+      }
     }
   }
 
@@ -179,7 +182,9 @@ displayButtonByPermission(perID){
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} 
-            onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} 
+              onClick={() => this.workingData(this.state.selectiondata, "Close")} color="danger" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>
         </Card>    

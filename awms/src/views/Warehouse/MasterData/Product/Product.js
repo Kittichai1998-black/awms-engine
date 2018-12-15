@@ -5,8 +5,8 @@ import {apicall, createQueryString} from '../../ComponentCore'
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, Nodisplay } from '../../../ComponentCore/Permission';
-const api = new apicall()
 
+const api = new apicall()
 class ListProduct extends Component{
   constructor(props) {
     super(props);
@@ -32,7 +32,7 @@ class ListProduct extends Component{
       l:100,
       all:"",},
       sortstatus:0,
-      selectiondata:[],
+      selectiondata: [] 
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -188,7 +188,7 @@ displayButtonByPermission(perID){
         getselection = เก็บค่าที่เลือก
     
       */}
-         
+
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} expFilename={"SKU"}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}

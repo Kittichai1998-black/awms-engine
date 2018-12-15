@@ -22,20 +22,20 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             public string warehouseCode;
             public string areaCode;
             public string locationCode;
-            public string actualTime;
+            public DateTime actualTime;
         }
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var queueTrx = this.GetWorkQueue(reqVO);
-            this.UpdateDocument(queueTrx, reqVO);
-            this.UpdateStorageObject(queueTrx, reqVO);
-            var res = this.UpdateWorkQueue(queueTrx, reqVO);
-
+            this.UpdateDocumentWorked(queueTrx, reqVO);
+            this.UpdateStorageObjectReceived(queueTrx, reqVO);
+            this.UpdateWorkQueueClosed(queueTrx, reqVO);
+            var res = this.GenerateResponse(queueTrx, reqVO);
             return res;
         }
-        private amt_WorkQueue GetWorkQueue( TReq reqVO)
+        private SPworkQueue GetWorkQueue( TReq reqVO)
         {
-            var queueTrx = DataADO.GetInstant().SelectByID<amt_WorkQueue>(reqVO.queueID, this.BuVO);
+            var queueTrx = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
             var wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (wm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + reqVO.warehouseCode + "'");
@@ -53,13 +53,13 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
             var eventStatus = queueTrx.EventStatus;
             if (wm.ID.Value == queueTrx.Des_Warehouse_ID
-                && am.ID.Value == queueTrx.Des_Area_ID
-                && lm.ID.Value == (queueTrx.Des_AreaLocation_ID ?? lm.ID.Value)
+                && am.ID.Value == queueTrx.Des_AreaMaster_ID
+                && lm.ID.Value == (queueTrx.Des_AreaLocationMaster_ID ?? lm.ID.Value)
                 )
             {
                 if (eventStatus == WorkQueueEventStatus.WORKED || eventStatus == WorkQueueEventStatus.WORKING)
                 {
-                    eventStatus = WorkQueueEventStatus.COMPLETIED;
+                    eventStatus = WorkQueueEventStatus.CLOSED;
                 }
                 else
                 {
@@ -73,99 +73,77 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             return queueTrx;
         }
 
-        private void UpdateStorageObject(amt_WorkQueue queueTrx, TReq reqVO)
+        private void UpdateStorageObjectReceived(SPworkQueue queueTrx, TReq reqVO)
         {
             ADO.StorageObjectADO.GetInstant()
-                .UpdateStatusToChild(queueTrx.StorageObject_ID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                .UpdateStatusToChild(queueTrx.StorageObject_ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
         }
-        private void UpdateDocument(amt_WorkQueue queueTrx, TReq reqVO)
+
+        private void UpdateDocumentWorked(SPworkQueue queueTrx, TReq reqVO)
         {
-            if(queueTrx.DocumentItem_ID.HasValue && queueTrx.Document_ID.HasValue)
-            {
-                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(queueTrx.DocumentItem_ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                var docItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("Document_ID", queueTrx.Document_ID, this.BuVO);
-                if (docItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED ||
-                 x.EventStatus == DocumentEventStatus.CLOSED ||
-                 x.EventStatus == DocumentEventStatus.CLOSING))
+            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(queueTrx.ID.Value, this.BuVO);
+            List<long> docIDs = new List<long>();
+            var countDocItems = ADO.DocumentADO.GetInstant().CountStoInDocItems(
+                    docItems.Where(x => x.BaseQuantity.HasValue).GroupBy(x => x.ID.Value).Select(x => x.Key), this.BuVO);
+            countDocItems.ForEach(cdi => {
+                if(cdi.BaseQuantity == docItems.Where(x => x.ID == cdi.DocumentItem_ID).Sum(x => x.BaseQuantity))
                 {
-                    ADO.DocumentADO.GetInstant().UpdateEventStatus(queueTrx.Document_ID.Value, docItems.First().EventStatus, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(cdi.DocumentItem_ID, DocumentEventStatus.WORKED, this.BuVO);
+                    docIDs.AddRange(docItems.Where(x => x.ID == cdi.DocumentItem_ID).Select(x=>x.Document_ID));
                 }
-            }
-            else
+            });
+            docIDs = docIDs.Distinct().ToList();
+            docIDs.ForEach(docID =>
             {
-                
-                /*var mapsto = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID, StorageObjectType.PACK, false, true, this.BuVO);
-                var mapstoTree = mapsto.ToTreeList();
-                var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(
-                    mapstoTree.Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList(),
-                    this.BuVO);
-                ADO.DocumentADO.GetInstant().Target(
-                    docItems.Select(x => x.Document_ID).ToList(),
-                    
-                    );*/
-            }
+                var checkDocItems = ADO.DocumentADO.GetInstant().ListItem(docID, this.BuVO);
+                if (checkDocItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(docID, DocumentEventStatus.WORKED, this.BuVO);
+            });
         }
 
-
-        private WorkQueueCriteria UpdateWorkQueue(amt_WorkQueue queueTrx,TReq reqVO)
+        
+        private void UpdateWorkQueueClosed(SPworkQueue queueTrx, TReq reqVO)
         {
+            queueTrx.ActualTime = reqVO.actualTime;
+            queueTrx.EndTime = reqVO.actualTime;
+            queueTrx.EventStatus = WorkQueueEventStatus.CLOSED;
 
-            SPworkQueue workQueue = new SPworkQueue()
-            {
-                ID = queueTrx.ID,
-                IOType = queueTrx.IOType,
-                Parent_WorkQueue_ID = queueTrx.Parent_WorkQueue_ID,
-                Document_ID = queueTrx.Document_ID,
-                DocumentItem_ID = queueTrx.DocumentItem_ID,
-                StorageObject_ID = queueTrx.StorageObject_ID,
-                StorageObject_Code = queueTrx.StorageObject_Code,
-                Sou_Warehouse_ID = queueTrx.Sou_Warehouse_ID,
-                Sou_AreaMaster_ID = queueTrx.Sou_Area_ID,
-                Sou_AreaLocationMaster_ID = queueTrx.Sou_AreaLocation_ID,
-                Des_Warehouse_ID = queueTrx.Des_Warehouse_ID,
-                Des_AreaMaster_ID = queueTrx.Des_Area_ID,
-                Des_AreaLocationMaster_ID = queueTrx.Des_AreaLocation_ID,
-                Priority = queueTrx.Priority,
+            WorkQueueADO.GetInstant().PUT(queueTrx, this.BuVO);
+        }
 
-                EventStatus = queueTrx.EventStatus,
-                Status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WorkQueueEventStatus>(queueTrx.EventStatus).Value,
-                Warehouse_ID = queueTrx.Warehouse_ID,
-                AreaMaster_ID = queueTrx.Area_ID,
-                AreaLocationMaster_ID = queueTrx.AreaLocation_ID
-            };
-            var resQueue = QueueADO.GetInstant().PUT(workQueue, this.BuVO);
-
+        private WorkQueueCriteria GenerateResponse(SPworkQueue queueTrx, TReq reqVO)
+        {
             var sou_lm = ADO.DataADO.GetInstant()
-                .SelectByID<ams_AreaLocationMaster>(resQueue.Sou_AreaLocationMaster_ID, this.BuVO);
+                .SelectByID<ams_AreaLocationMaster>(queueTrx.Sou_AreaLocationMaster_ID, this.BuVO);
 
             var des_lm = ADO.DataADO.GetInstant()
-                .SelectByID<ams_AreaLocationMaster>(resQueue.Des_AreaLocationMaster_ID, this.BuVO);
+                .SelectByID<ams_AreaLocationMaster>(queueTrx.Des_AreaLocationMaster_ID, this.BuVO);
 
             var pre_lm = ADO.DataADO.GetInstant()
-                .SelectByID<ams_AreaLocationMaster>(resQueue.AreaLocationMaster_ID, this.BuVO);
+                .SelectByID<ams_AreaLocationMaster>(queueTrx.AreaLocationMaster_ID, this.BuVO);
 
             var res = new WorkQueueCriteria()
             {
                 souWarehouseCode =
-                this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Sou_Warehouse_ID).Code,
+                this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == queueTrx.Sou_Warehouse_ID).Code,
                 souAreaCode =
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == resQueue.Sou_AreaMaster_ID).Code,
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == queueTrx.Sou_AreaMaster_ID).Code,
                 souLocationCode = sou_lm == null ? null : sou_lm.Code,
 
-                desWarehouseCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Des_Warehouse_ID).Code,
-                desAreaCode = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == resQueue.Des_AreaMaster_ID).Code,
+                desWarehouseCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == queueTrx.Des_Warehouse_ID).Code,
+                desAreaCode = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == queueTrx.Des_AreaMaster_ID).Code,
                 desLocationCode = des_lm == null ? null : des_lm.Code,
 
-                queueID = resQueue.ID,
+                queueID = queueTrx.ID,
                 baseInfo = null, //send null to wcs
-                warehouseCode = resQueue.Warehouse_ID == 0 ? "" :
-                this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == resQueue.Warehouse_ID).Code,
-                areaCode = resQueue.AreaMaster_ID == 0 ? "" :
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == resQueue.AreaMaster_ID).Code,
+                warehouseCode = queueTrx.Warehouse_ID == 0 ? "" :
+                this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == queueTrx.Warehouse_ID).Code,
+                areaCode = queueTrx.AreaMaster_ID == 0 ? "" :
+                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == queueTrx.AreaMaster_ID).Code,
                 locationCode = pre_lm == null ? null : pre_lm.Code,
-                queueParentID = resQueue.Parent_WorkQueue_ID == null ? null : resQueue.Parent_WorkQueue_ID,
+                queueParentID = queueTrx.Parent_WorkQueue_ID == null ? null : queueTrx.Parent_WorkQueue_ID,
                 queueRefID = queueTrx.RefID == null ? null : queueTrx.RefID,
-                queueStatus = resQueue.EventStatus,
+                queueStatus = queueTrx.EventStatus,
                 seq = queueTrx.Seq
             };
 
