@@ -17,7 +17,7 @@ namespace AWMSEngine.APIService.Doc
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var reqDoc = ObjectUtil.DynamicToModel<ProcessQueueIssue.TDocReq>(this.RequestVO);
+            var reqDoc = ObjectUtil.DynamicToModel<ProcessQueueIssue.TReq>(this.RequestVO);
             var res = new ProcessQueueIssue().Execute(
                 this.Logger,
                 this.BuVO,

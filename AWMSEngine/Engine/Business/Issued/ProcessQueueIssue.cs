@@ -11,24 +11,20 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Issued
 {
-    public class ProcessQueueIssue : BaseEngine<ProcessQueueIssue.TDocReq, ProcessQueueIssue.TRes>
+    public class ProcessQueueIssue : BaseEngine<ProcessQueueIssue.TReq, ProcessQueueIssue.TRes>
     {
 
-        public class TDocReq
+        public class TReq
         {
-            public int? docID;
+            public long docID;
             public DocumentTypeID docTypeID;
             public string refID;
-            public List<IssueItem> issueItems;
-            public class IssueItem
-            {
-                public int? packID;
-                public string skuCode;
-                //public PickingType pickingType;
-                //public string baseTypeCode;
-                public string packTypeCode;
-                public int packQty;
-            }
+            public int pickOrderType;//0=FIFO,1=LIFO
+            public string orderBy;//ชื่อ Field สำหรับ order by
+            public string ref2;
+            public string batch;
+            public string orderNo;
+            public int priority;
         }
       
         public class TRes
@@ -41,7 +37,7 @@ namespace AWMSEngine.Engine.Business.Issued
             public List<SPOutSTORootCanUseCriteria> bstos;
         }
 
-        protected override TRes ExecuteEngine(TDocReq reqVO)
+        protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
             var doc = ADO.DataADO.GetInstant().SelectBy<TRes.ViewDocument>("amv_Document", "*", null,
@@ -61,7 +57,17 @@ namespace AWMSEngine.Engine.Business.Issued
                     new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
                 },
                 this.BuVO);
-            doc.documentItems = docItems;
+
+            ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,DocumentEventStatus.IDEL,
+                    EntityStatus.INACTIVE,
+                    DocumentEventStatus.WORKING,
+                    this.BuVO);
+
+            doc.EventStatus = DocumentEventStatus.WORKING;
+            doc.Status = EntityStatus.ACTIVE;
+            //res.documents.Add(doc);
+
+            //doc.documentItems = docItems;
             res.document = doc;
 
             return res;
