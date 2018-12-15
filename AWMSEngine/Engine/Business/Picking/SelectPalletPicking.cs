@@ -40,7 +40,7 @@ namespace AWMSEngine.Engine.Business.Picking
         {
             var selectPallet = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
 
-            var selectPack = selectPallet.ToTreeList().Where(x => x.objectSizeID == 2).Distinct().ToList();
+            var selectPack = selectPallet.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Distinct().ToList();
             
             List<amt_Document> docList = new List<amt_Document>();
             List<palletItem> palletItem = new List<palletItem>();
@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.Business.Picking
                 {
                     itemCanMap.ForEach(x =>
                     {
-                        docList.Add(ADO.DataADO.GetInstant().SelectByID<amt_Document>(x.Document_ID, this.BuVO));
+                        docList.AddRange(ADO.DocumentADO.GetInstant().ListDocumentCanMap(reqVO.palletCode, DocumentTypeID.PICKING, this.BuVO));
                     });
                 }
                 else
