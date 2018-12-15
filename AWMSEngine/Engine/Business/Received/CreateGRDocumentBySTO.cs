@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.Business.Received
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
             var stopacks = this.ListPackSTOIDs(reqVO.stomap);
-            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoIDInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+            var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
 
             stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.StorageObject_ID == x.id));
 

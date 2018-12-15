@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.Business.Received
 
                 if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL && doc.EventStatus != DocumentEventStatus.WORKING)
                 {
-                    var stos = ADO.DocumentADO.GetInstant().ListStoIDInDocs(doc.ID.Value, this.BuVO);
+                    var stos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
                     if (stos.Count > 0)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
                 }
@@ -69,7 +69,7 @@ namespace AWMSEngine.Engine.Business.Received
                 }
 
 
-                var stoToReceives = ADO.DocumentADO.GetInstant().ListStoIDInDocs(doc.ID.Value, this.BuVO);
+                var stoToReceives = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
                 var stoLasters = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                         new SQLConditionCriteria[] {
                             new SQLConditionCriteria("ID",string.Join(",",stoToReceives.Select(x=>x.StorageObject_ID).ToArray()), SQLOperatorType.IN)

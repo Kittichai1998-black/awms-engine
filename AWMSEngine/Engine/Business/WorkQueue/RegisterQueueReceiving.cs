@@ -55,7 +55,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             else if (mapsto.eventStatus == StorageObjectEventStatus.PICKING)
             {
                 List<long> itemList = mapsto.ToTreeList().Select(x => x.id.Value).ToList();
-                var stoList = ADO.DocumentADO.GetInstant().ListStoIDInDocs(itemList, DocumentTypeID.PICKING, this.BuVO);
+                var stoList = ADO.DocumentADO.GetInstant().ListStoInDocs(itemList, DocumentTypeID.PICKING, this.BuVO);
                 if(stoList.Count > 0)
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากงาน Picking ยังไม่เรียบร้อย");
                 //this.ValidateWarehouseMoving(mapsto, reqVO);

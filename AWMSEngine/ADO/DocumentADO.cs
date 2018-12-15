@@ -15,15 +15,15 @@ namespace AWMSEngine.ADO
     {
 
 
-        public List<amt_DocumentItemStorageObject> ListStoIDInDocs(List<long> stoids, DocumentTypeID docTypeID, VOCriteria buVO)
+        public List<amt_DocumentItemStorageObject> ListStoInDocs(List<long> stoids, DocumentTypeID docTypeID, VOCriteria buVO)
         {
-            return ListStoIDInDocs(null, stoids, docTypeID, buVO);
+            return ListStoInDocs(null, stoids, docTypeID, buVO);
         }
         public List<amt_DocumentItemStorageObject> ListStoInDocs(long docID, VOCriteria buVO)
         {
-            return ListStoIDInDocs(docID, null, null, buVO);
+            return ListStoInDocs(docID, null, null, buVO);
         }
-        public List<amt_DocumentItemStorageObject> ListStoIDInDocs(long? docID, List<long> stoids, DocumentTypeID? docTypeID, VOCriteria buVO)
+        public List<amt_DocumentItemStorageObject> ListStoInDocs(long? docID, List<long> stoids, DocumentTypeID? docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("documentID", docID);
