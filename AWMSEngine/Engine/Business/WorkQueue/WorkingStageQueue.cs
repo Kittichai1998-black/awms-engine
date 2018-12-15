@@ -104,8 +104,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 ID = workqueueID.ID,
                 IOType = workqueueID.IOType,
                 Parent_WorkQueue_ID = workqueueID.Parent_WorkQueue_ID,   
-                Document_ID = workqueueID.Document_ID,
-                DocumentItem_ID = workqueueID.DocumentItem_ID,
+
                 StorageObject_ID = workqueueID.StorageObject_ID,
                 StorageObject_Code = workqueueID.StorageObject_Code,
                 Sou_Warehouse_ID = workqueueID.Sou_Warehouse_ID,
@@ -121,9 +120,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 AreaMaster_ID = am,
                 AreaLocationMaster_ID = lm,
                 EndTime = eventStatus == WorkQueueEventStatus.WORKED ? DateTime.Now : (DateTime?)null,
+                DocumentItemWorkQueues = null,
             };
 
-            var resQueue = QueueADO.GetInstant().PUT(workQueue, this.BuVO);
+            var resQueue = WorkQueueADO.GetInstant().PUT(workQueue, this.BuVO);
 
             var sou_lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
