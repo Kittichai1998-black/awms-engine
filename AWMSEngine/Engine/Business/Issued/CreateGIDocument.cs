@@ -51,10 +51,13 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 public int? packID;
                 public string skuCode;
-                //public PickingType pickingType;
-                //public string baseTypeCode;
                 public string packTypeCode;
-                public int packQty;
+                public decimal? packQty;
+                public string batch;
+                public string lot;
+                public string refID;
+                public string ref1;
+                public string ref2;
             }
         }
 
@@ -247,10 +250,10 @@ namespace AWMSEngine.Engine.Business.Issued
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pack ประเภท " + packMstType.Code + " ของสินค้า " + skuMst.Code);
                 }
 
-
-
-
-
+                var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, issueItem.packQty ?? 1, packMst.UnitType_ID);
+                decimal? baseQuantity = null;
+                if (issueItem.packQty.HasValue)
+                    baseQuantity = baseUnitTypeConvt.baseQty;
 
                 if (!this.StaticValue.IsFeature(FeatureCode.OB0200)) {
 
@@ -273,6 +276,14 @@ namespace AWMSEngine.Engine.Business.Issued
                     SKUMaster_ID = skuMst.ID.Value,
                     PackMaster_ID = packMst.ID.Value,
                     Quantity = issueItem.packQty,
+                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    BaseQuantity = baseQuantity,
+                    BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
+                    Ref1 = issueItem.ref1,
+                    Ref2 = issueItem.ref2,
+                    RefID = issueItem.refID,
+                    Batch = issueItem.batch,
+                    Lot = issueItem.lot,
                     EventStatus = DocumentEventStatus.IDEL
                 };
                 newDocItems.Add(newDocItem);

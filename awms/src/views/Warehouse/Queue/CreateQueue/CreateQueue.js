@@ -7,10 +7,6 @@ import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListT
 import ReactAutocomplete from 'react-autocomplete'
 import arrimg from '../../../../img/arrowhead.svg'
 
-function isInt(value) {
-  return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
-}
-
 const Axios = new apicall()
 
 class CreateQueue extends Component{
@@ -56,7 +52,8 @@ class CreateQueue extends Component{
                       {'value' : 'Batch','label' : 'Batch'}],
       selectivelist:[ {'value' : 'null','label' : 'None'},
                       {'value' : 'Ref1','label' : 'Stamp Date'},
-                      {'value' : 'Batch','label' : 'Batch'}],
+                      {'value' : 'Batch','label' : 'Batch'},
+                      {'value' : 'OrderNo','label' : 'Order No'}],
       prioritylist:[{'value' : 0,'label' : 'Low'},
                     {'value' : 1,'label' : 'Normal'},
                     {'value' : 2,'label' : 'High'},
@@ -294,7 +291,7 @@ class CreateQueue extends Component{
           </Col> 
 
           <Col lg="6"> 
-            <div style={{"border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background:"white"}}>
+            <div style={{"border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background:"#FFFFFF"}}>
               <Row style={{"padding-top":"10px"}}>
                 <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Document : </label></Col>
                 <Col md="9">
