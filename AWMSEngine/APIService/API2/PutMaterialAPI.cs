@@ -25,6 +25,13 @@ namespace AWMSEngine.APIService.Api2
                 public string type;
                 public string unit;
                 public EntityStatus status;
+                public List<ConvertUnit> converts;
+                public class ConvertUnit
+                {
+                    public decimal qtyNum;
+                    public decimal qtyDen;
+                    public string unit;
+                }
             }
         }
 
@@ -34,40 +41,99 @@ namespace AWMSEngine.APIService.Api2
 
         protected override dynamic ExecuteEngineManual()
         {
-            this.BeginTransaction();
-
             TModel req = ObjectUtil.DynamicToModel<TModel>(this.RequestVO);
+
             var dataReqs = req.datas;
-            List<string> unitReqs = dataReqs.GroupBy(x => x.unit).Select(x => x.Key).ToList();
-            List<string> typeReqs = dataReqs.GroupBy(x => x.type).Select(x => x.Key).ToList();
-            unitReqs.RemoveAll(x => StaticValueManager.GetInstant().UnitTypes.Any(y => y.Code == x));
-            typeReqs.RemoveAll(x => StaticValueManager.GetInstant().SKUMasterTypes.Any(y => y.Code == x));
+
+            this.PutUnitType(dataReqs);
+            this.PutSKUMasterType(dataReqs);
+            //this.PutPackMasterType(dataReqs);
+
+            this.BeginTransaction();
+            this.PutSKUMaster(dataReqs);
+            this.PutPackMaster(dataReqs);
+
+            return dataReqs;
+        }
+
+        private void PutUnitType(List<TModel.TData> dataReqs)
+        {
+            List<string> unitReqs = new List<string>();
+            dataReqs.ForEach(x => { unitReqs.Add(x.unit); x.converts.ForEach(y => unitReqs.Add(y.unit)); });
+            unitReqs = unitReqs.Distinct().Where(x => !StaticValueManager.GetInstant().UnitTypes.Any(y => y.Code == x)).ToList();
+            
             if (unitReqs.Count() > 0)
             {
-                var unitParams = unitReqs.Select(x => new ams_UnitType()
+                this.BeginTransaction();
+                var putDatas = unitReqs.Select(x => new ams_UnitType()
                 {
                     Code = x,
                     Name = x,
                     Status = EntityStatus.ACTIVE
                 }).ToList();
-                new MasterPut<ams_UnitType>().Execute(this.Logger, this.BuVO, unitParams);
-                StaticValueManager.GetInstant().LoadUnitType();
+                new MasterPut<ams_UnitType>().Execute(
+                    this.Logger,
+                    this.BuVO,
+                    new MasterPut<ams_UnitType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
+                StaticValueManager.GetInstant().LoadUnitType(this.BuVO);
+                this.CommitTransaction();
             }
+        }
+
+        private void PutSKUMasterType(List<TModel.TData> dataReqs)
+        {
+            List<string> typeReqs = dataReqs.GroupBy(x => x.type).Select(x => x.Key).ToList();
+            typeReqs.RemoveAll(x => StaticValueManager.GetInstant().SKUMasterTypes.Any(y => y.Code == x));
+
             if (typeReqs.Count() > 0)
             {
-                var typeParams = typeReqs.Select(x => new ams_SKUMasterType()
+                this.BeginTransaction();
+                var putDatas = typeReqs.Select(x => new ams_SKUMasterType()
                 {
                     Code = x,
                     Name = x,
-                    ObjectSize_ID = 5,//Normal Pack
+                    ObjectSize_ID = StaticValueManager.GetInstant().ObjectSizes.First(y => y.ObjectType == StorageObjectType.PACK).ID,//Normal Pack
                     UnitType_ID = null,
                     Status = EntityStatus.ACTIVE
                 }).ToList();
-                new MasterPut<ams_SKUMasterType>().Execute(this.Logger, this.BuVO, typeParams);
-                StaticValueManager.GetInstant().LoadSKUMasterType();
+                new MasterPut<ams_SKUMasterType>().Execute(
+                    this.Logger,
+                    this.BuVO,
+                    new MasterPut<ams_SKUMasterType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
+                StaticValueManager.GetInstant().LoadSKUMasterType(this.BuVO);
+                this.CommitTransaction();
             }
+        }
+
+        private void PutPackMasterType(List<TModel.TData> dataReqs)
+        {
+            List<string> typeReqs = dataReqs.GroupBy(x => x.type).Select(x => x.Key).ToList();
+            typeReqs.RemoveAll(x => StaticValueManager.GetInstant().PackMasterTypes.Any(y => y.Code == x));
+
+            if (typeReqs.Count() > 0)
+            {
+                this.BeginTransaction();
+                var putDatas = typeReqs.Select(x => new ams_PackMasterType()
+                {
+                    Code = x,
+                    Name = x,
+                    ObjectSize_ID = StaticValueManager.GetInstant().ObjectSizes.First(y=>y.ObjectType == StorageObjectType.PACK).ID,//Normal Pack
+                    UnitType_ID = null,
+                    Status = EntityStatus.ACTIVE
+                }).ToList();
+                new MasterPut<ams_PackMasterType>().Execute(
+                    this.Logger,
+                    this.BuVO,
+                    new MasterPut<ams_PackMasterType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
+                StaticValueManager.GetInstant().LoadPackMasterType(this.BuVO);
+                this.CommitTransaction();
+            }
+        }
+
+        private void PutSKUMaster(List<TModel.TData> dataReqs)
+        {
             //------------------
-            var skuParams = dataReqs.Select(x => new ams_SKUMaster()
+            var putDatas = dataReqs.Select(x => new ams_SKUMaster()
             {
                 Code = x.code,
                 Name = x.name,
@@ -78,9 +144,47 @@ namespace AWMSEngine.APIService.Api2
                 UnitType_ID = StaticValueManager.GetInstant().UnitTypes.First(y => y.Code == x.unit).ID.Value,
                 Status = x.status
             }).ToList();
-            new MasterPut<ams_SKUMaster>().Execute(this.Logger, this.BuVO, skuParams);
+            
+            new MasterPut<ams_SKUMaster>().Execute(
+                this.Logger,
+                this.BuVO,
+                new MasterPut<ams_SKUMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
 
-            return dataReqs;
+
+        }
+
+        private void PutPackMaster(List<TModel.TData> dataReqs)
+        {
+            dataReqs.ForEach(sku =>
+            {
+                List<ams_PackMaster> putDatas = new List<ams_PackMaster>();
+                sku.converts.ForEach(pack =>
+                {
+                    decimal itemQty = pack.qtyNum / pack.qtyDen;
+                    var putData = new ams_PackMaster()
+                    {
+                        Code = sku.code,
+                        Name = sku.name,
+                        SKUMaster_ID = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(sku.code, this.BuVO).ID.Value,
+                        Description = sku.description,
+                        WeightKG = sku.weight * itemQty,
+                        ItemQty = itemQty,
+                        Revision = 1,
+                        PackMasterType_ID = null,
+                        ObjectSize_ID = StaticValueManager.GetInstant().SKUMasterTypes.First(y => y.Code == sku.type).ObjectSize_ID.Value,
+                        UnitType_ID = StaticValueManager.GetInstant().UnitTypes.First(y => y.Code == pack.unit).ID.Value,
+                        Status = EntityStatus.ACTIVE
+                    };
+                    putDatas.Add(putData);
+                });
+
+                new MasterPut<ams_PackMaster>().Execute(
+                    this.Logger,
+                    this.BuVO,
+                    new MasterPut<ams_PackMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code", "UnitType_ID" } });
+                StaticValueManager.GetInstant().LoadPackMaster(this.BuVO);
+            });
+
         }
     }
 }

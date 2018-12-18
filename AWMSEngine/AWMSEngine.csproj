@@ -14,7 +14,10 @@
   <ItemGroup>
     <Compile Remove="APIService\Mst\PutCustomerFromFileServerCsvAPI.cs" />
     <Compile Remove="APIService\Mst\PutSKUMasterFromFileServerCsvAPI.cs" />
+    <Compile Remove="APIService\Mst\PutSKUMaster_UnitTypeAPI.cs" />
     <Compile Remove="APIService\Mst\PutSupplierFromFileServerCsvAPI.cs" />
+    <Compile Remove="Common\RefVO.cs" />
+    <Compile Remove="Common\VOManage.cs" />
     <Compile Remove="Controllers\PublicDataMasterController.cs" />
     <Compile Remove="Controllers\SqlDataController.cs" />
     <Compile Remove="Controllers\WM\MasterSTOController.cs" />

@@ -35,7 +35,7 @@ namespace AWMSModel.Criteria.SP.Response
         public int packQty;
         public DateTime? prodDate;
         public DateTime? expDate;
-        public DateTime creatTime;
+        public DateTime createTime;
         
     }
 }
