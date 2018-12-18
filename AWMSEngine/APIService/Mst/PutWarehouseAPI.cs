@@ -20,7 +20,7 @@ namespace AWMSEngine.APIService.Mst
         {
             List<ams_Warehouse> req = ObjectUtil.DynamicToModel<ams_Warehouse>(this.RequestVO.data);
             this.BeginTransaction();
-            var res = new MasterPut<ams_Warehouse>().Execute(this.Logger, this.BuVO, req);
+            var res = new MasterPut<ams_Warehouse>().Execute(this.Logger, this.BuVO, new MasterPut<ams_Warehouse>.TReq { datas = req, whereFields = new List<string> { "ID" } });
 
             return res;
         }
