@@ -43,5 +43,12 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
+        [HttpPost("doc/close")]
+        public dynamic ActionDocColse([FromBody] dynamic req)
+        {
+            CloseGRDocAPI exec = new CloseGRDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
     }
 }

@@ -45,7 +45,7 @@ class IssuedDoc extends Component {
         queryString: window.apipath + "/api/viw",
         t: "LinkDocument",
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': '1001'}]",
-        f: "ID,Super,Code,SouBranchName,DesBranchName,Status,SouWarehouseName,DesWarehouseName,DocumentDate,EventStatus,RefID,Created,Ref1,Ref2,DocumentType_ID",
+        f: "*",
         g: "",
         s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
@@ -68,13 +68,15 @@ class IssuedDoc extends Component {
     this.displayButtonByPermission(data)
     //permission
 
-    // Axios.get(createQueryString(this.state.select)).then((res) => {
-    //   res.data.datas.forEach(row1 =>{
-    //     console.log(row1.LinkDocument_ID)
+    Axios.get(createQueryString(this.state.select)).then((res) => {
+      res.data.datas.forEach(row1 =>{
+        console.log(row1)
+        this.setState({Batch:row1.Batch})
 
-    //   })
+      })
+      
+    })
 
-    // })
   }
 
 //permission
@@ -129,7 +131,7 @@ displayButtonByPermission(perID){
       if(status==="reject"){
         axois.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       } else {
-
+        axois.post(window.apipath + "/api/wm/received/doc/close", postdata)
       }
     }
   }
