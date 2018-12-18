@@ -5,7 +5,6 @@ import { Button, DropdownItem } from 'reactstrap';
 import * as jsPDF from 'jspdf';
 import './stylepdf.css';
 import moment from 'moment';
-//import jQuery from 'jquery'
 import html2canvas from 'html2canvas';
 //var pdfFonts = require('../../node_modules/jspdf-customfonts/dist/default_vfs.js');
 
@@ -42,10 +41,10 @@ class ExportPDF extends Component {
           //}
         //}
         
-        //pdf.setFontSize(12);
-        //pdf.text(470, 35, "สวัสดี");
+        pdf.setFontSize(12);
+        pdf.text(470, 35, "Hello");
         pdf.addImage(imgData, 'JPEG', 0, 0);
-        pdf.save("file.pdf");
+        pdf.save(this.props.filename+".pdf");
       }).then(() => this.props.clearpdf());
   }
 

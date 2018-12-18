@@ -25,8 +25,8 @@ class ExportFile extends Component {
     });
   }
   clearpdf = () => {
-    this.setState({ isClick: false });
-    this.setState({ divpdf: null });
+     this.setState({ isClick: false });
+     this.setState({ divpdf: null });
   }
   onLoadPDF() {
     this.setState({ isClick: !this.state.isClick }, () => {
@@ -44,7 +44,7 @@ class ExportFile extends Component {
           <DropdownToggle caret color="warning">{iconprint} Export File</DropdownToggle>
           <DropdownMenu>
             <ExportXSL column={this.props.column} dataxls={this.props.dataexp} filename={this.props.filename} autocomp={this.props.autocomp} enum={this.props.enum} />
-            {/* <DropdownItem onClick={() => {
+            {/*<DropdownItem onClick={() => {
               this.onLoadPDF()
             }}>{iconpdf} PDF</DropdownItem>*/}
           </DropdownMenu>

@@ -5,8 +5,8 @@
 }
 #parent4 {
   position: fixed;
-  width: auto;
-  height: auto;
+  /*width: auto;
+  height: auto;*/
   bottom: 0;
   left: 0;
   right: 0;
@@ -34,7 +34,6 @@ table.showitems {
 .showitems td {
   width: auto;
 }
-
 
 #showtable th {
   height: 30px;

@@ -42,7 +42,7 @@ class TaskList extends Component{
         queryString: window.apipath + "/api/viw",
         t: "TaskList",
         q: "[{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' }]",
-        f: "DocCode,DocumentTypeID,TaskName,Product,Amount,EventStatus,WorkStatus",
+        f: "DocCode,DocumentTypeID,TaskName,Product,Location,Amount,EventStatus,WorkStatus",
         g: "",
         s: "[{'f':'EventStatus','od':'asc'}]",
         sk: 0,
@@ -116,10 +116,23 @@ class TaskList extends Component{
     ]
     const cols2 = [
       { accessor: "DocCode", Header: "Document", minWidth: 80  },
-      { accessor: "TaskName", Header: "Task Name", minWidth: 100  },
-      { accessor: "Location", Header: "Location", minWidth: 60  },
-      { accessor: "Product", Header: "Product", minWidth: 70  },
-      { accessor: "Amount", Header: "Amount", minWidth: 70  },
+      {
+        accessor: "TaskName", Header: "Task Name", minWidth: 80,
+        Cell: row => (<p className="p_wrap">{row.value}</p>)},      
+      { accessor: "Product", Header: "Product", minWidth: 70 },
+      {
+        accessor: "Location", Header: "Location", minWidth: 100,
+        Cell: row => (
+          <div
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.18)",
+              borderRadius: "2px"
+            }}
+          >
+            <p className="p_wrap">{row.value}</p>
+          </div>
+        )},
+      { accessor: "Amount", Header: "Amount", minWidth: 60  },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
@@ -206,7 +219,7 @@ class TaskList extends Component{
                     //defaultPageSize={15}
                     getTrProps={(state, rowInfo, column) => {
                       let result = false
-                      let rmv = false
+                      let rmv = false 
                       let classStatus = ""
                       if (rowInfo && rowInfo.row) {
                         result = true
@@ -230,7 +243,7 @@ class TaskList extends Component{
                       if (result && rmv)
                         return { className: classStatus }
                       else
-                        return {}
+                        return {}                      
                     }}
                   />
         </Card>
