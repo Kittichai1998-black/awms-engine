@@ -81,48 +81,67 @@ namespace AWMSEngine.Engine.Business.Received
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
+            long? Sou_Customer_ID =
+                    reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
+                    string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
+            long? Sou_Supplier_ID =
+                    reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
+                    string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
+            var Sou_AreaMaster_ID = this.StaticValue.GetAreaMaster(
+                                                    reqVO.souAreaMasterID,
+                                                    reqVO.souAreaMasterCode);
+            var Sou_Warehouse_ID = this.StaticValue.GetWarehouse(
+                                                    reqVO.souWarehouseID,
+                                                    reqVO.souAreaMasterID,
+                                                    reqVO.souWarehouseCode,
+                                                    reqVO.souAreaMasterCode);
+            var Sou_Branch_ID = this.StaticValue.GetBranch(
+                                                    reqVO.souBranchID,
+                                                    reqVO.souWarehouseID,
+                                                    reqVO.souAreaMasterID,
+                                                    reqVO.souBranchCode,
+                                                    reqVO.souWarehouseCode,
+                                                    reqVO.souAreaMasterCode);
 
+            var Des_AreaMaster_ID = this.StaticValue.GetAreaMaster(
+                                                    reqVO.desAreaMasterID,
+                                                    reqVO.desAreaMasterCode);
+            var Des_Warehouse_ID = this.StaticValue.GetWarehouse(
+                                                    reqVO.desWarehouseID,
+                                                    reqVO.desAreaMasterID,
+                                                    reqVO.desWarehouseCode,
+                                                    reqVO.desAreaMasterCode);
+            var Des_Branch_ID = this.StaticValue.GetBranch(
+                                                    reqVO.desBranchID,
+                                                    reqVO.desWarehouseID,
+                                                    reqVO.desAreaMasterID,
+                                                    reqVO.desBranchCode,
+                                                    reqVO.desWarehouseCode,
+                                                    reqVO.desAreaMasterCode);
             amt_Document doc = new amt_Document()
             {
                 ID = null,
                 Code = null,
                 ParentDocument_ID = null,
-                OrderNo = reqVO.orderNo,
                 Lot = reqVO.lot,
                 Batch = reqVO.batch,
                 For_Customer_ID =
                     reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                     string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
 
-                Sou_Customer_ID =
-                    reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID,
-                Sou_Supplier_ID =
-                    reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID,
-                Sou_Branch_ID =
-                    reqVO.souBranchID.HasValue ? reqVO.souBranchID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souBranchCode) ? null : this.StaticValue.Branchs.First(x => x.Code == reqVO.souBranchCode).ID,
-                Sou_Warehouse_ID =
-                    reqVO.souWarehouseID.HasValue ? reqVO.souWarehouseID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.souWarehouseCode).ID,
-                Sou_AreaMaster_ID =
-                    reqVO.souAreaMasterID.HasValue ? reqVO.souAreaMasterID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.souAreaMasterCode).ID,
+                Sou_Customer_ID = Sou_Customer_ID,
+                Sou_Supplier_ID = Sou_Supplier_ID,
+                Sou_Branch_ID = Sou_Branch_ID == null ? null : Sou_Branch_ID.ID,
+                Sou_Warehouse_ID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
+                Sou_AreaMaster_ID = Sou_AreaMaster_ID == null ? null: Sou_AreaMaster_ID.ID,
 
                 Des_Customer_ID = null,
                 Des_Supplier_ID = null,
-                Des_Branch_ID =
-                    reqVO.desBranchID.HasValue ? reqVO.desBranchID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.desBranchCode) ? null : this.StaticValue.Branchs.First(x => x.Code == reqVO.desBranchCode).ID,
-                Des_Warehouse_ID =
-                    reqVO.desWarehouseID.HasValue ? reqVO.desWarehouseID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.desWarehouseCode) ? null : this.StaticValue.Warehouses.First(x => x.Code == reqVO.desWarehouseCode).ID,
-                Des_AreaMaster_ID =
-                    reqVO.desAreaMasterID.HasValue ? reqVO.desAreaMasterID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.desAreaMasterCode) ? null : this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desAreaMasterCode).ID,
+                Des_Branch_ID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
+                Des_Warehouse_ID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
+                Des_AreaMaster_ID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
                 DocumentDate = reqVO.documentDate,
-                ActionTime = reqVO.actionTime,
+                ActionTime = reqVO.actionTime ?? reqVO.documentDate,
 
                 RefID = reqVO.refID,
                 Ref1 = reqVO.ref1,

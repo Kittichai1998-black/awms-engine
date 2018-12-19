@@ -26,14 +26,14 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         }
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-            var queueTrx = this.GetWorkQueue(reqVO);
+            var queueTrx = this.UpdateWorkQueueClosed(reqVO);
+            //this.UpdateWorkQueueClosed(queueTrx, reqVO);
             this.UpdateDocumentWorked(queueTrx, reqVO);
-            this.UpdateStorageObjectReceived(queueTrx, reqVO);
-            this.UpdateWorkQueueClosed(queueTrx, reqVO);
+            this.UpdateStorageObject(queueTrx, reqVO);
             var res = this.GenerateResponse(queueTrx, reqVO);
             return res;
         }
-        private SPworkQueue GetWorkQueue( TReq reqVO)
+        private SPworkQueue UpdateWorkQueueClosed( TReq reqVO)
         {
             var queueTrx = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
             var wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
@@ -51,15 +51,22 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
 
-            var eventStatus = queueTrx.EventStatus;
             if (wm.ID.Value == queueTrx.Des_Warehouse_ID
                 && am.ID.Value == queueTrx.Des_AreaMaster_ID
                 && lm.ID.Value == (queueTrx.Des_AreaLocationMaster_ID ?? lm.ID.Value)
                 )
             {
-                if (eventStatus == WorkQueueEventStatus.WORKED || eventStatus == WorkQueueEventStatus.WORKING)
+                if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED || queueTrx.EventStatus == WorkQueueEventStatus.WORKING)
                 {
-                    eventStatus = WorkQueueEventStatus.CLOSED;
+                    queueTrx.AreaLocationMaster_ID = lm.ID;
+                    queueTrx.AreaMaster_ID = am.ID.Value;
+                    queueTrx.Warehouse_ID = am.Warehouse_ID.Value;
+
+                    queueTrx.ActualTime = reqVO.actualTime;
+                    queueTrx.EndTime = reqVO.actualTime;
+                    queueTrx.EventStatus = WorkQueueEventStatus.CLOSED;
+
+                    WorkQueueADO.GetInstant().PUT(queueTrx, this.BuVO);
                 }
                 else
                 {
@@ -73,10 +80,24 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             return queueTrx;
         }
 
-        private void UpdateStorageObjectReceived(SPworkQueue queueTrx, TReq reqVO)
+        private void UpdateStorageObject(SPworkQueue queueTrx, TReq reqVO)
         {
-            ADO.StorageObjectADO.GetInstant()
-                .UpdateStatusToChild(queueTrx.StorageObject_ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
+            var mapsto = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, false, this.BuVO);
+            if (mapsto.parentType != StorageObjectType.LOCATION)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ข้อมูลพาเลทไม่ถูกต้อง");
+
+            mapsto.areaID = queueTrx.AreaMaster_ID;
+            mapsto.parentID = queueTrx.AreaLocationMaster_ID;
+            mapsto.parentType = StorageObjectType.LOCATION;
+
+            ADO.StorageObjectADO.GetInstant().PutV2(mapsto, this.BuVO);
+
+            if (queueTrx.IOType == IOType.INPUT)
+            {
+                if (mapsto.eventStatus == StorageObjectEventStatus.RECEIVING)
+                    ADO.StorageObjectADO.GetInstant()
+                        .UpdateStatusToChild(queueTrx.StorageObject_ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
+            }
         }
 
         private void UpdateDocumentWorked(SPworkQueue queueTrx, TReq reqVO)
@@ -102,14 +123,6 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         }
 
         
-        private void UpdateWorkQueueClosed(SPworkQueue queueTrx, TReq reqVO)
-        {
-            queueTrx.ActualTime = reqVO.actualTime;
-            queueTrx.EndTime = reqVO.actualTime;
-            queueTrx.EventStatus = WorkQueueEventStatus.CLOSED;
-
-            WorkQueueADO.GetInstant().PUT(queueTrx, this.BuVO);
-        }
 
         private WorkQueueCriteria GenerateResponse(SPworkQueue queueTrx, TReq reqVO)
         {

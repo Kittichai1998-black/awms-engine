@@ -202,6 +202,7 @@ namespace AWMSEngine.ADO
             param.Add("parentID", sto.parentID);
             param.Add("parentType", sto.parentType);
             param.Add("options", sto.options);
+            param.Add("orderNo", sto.orderNo);
             param.Add("batch", sto.batch);
             param.Add("lot", sto.lot);
 

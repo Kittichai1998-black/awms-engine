@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.Business
             public string batch;
             public string lot;
             public int amount;
+            public string unitCode;
             public DateTime? productDate;
             public long? warehouseID;
             public long? areaID;
@@ -99,7 +100,7 @@ namespace AWMSEngine.Engine.Business
 
             if (mapsto == null)
             {
-                ams_PackMaster pm = ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.scanCode, this.BuVO);
+                ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, reqVO.unitCode, this.BuVO);
                 ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
                 ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
                 if (bm != null)
@@ -192,7 +193,7 @@ namespace AWMSEngine.Engine.Business
             StorageObjectCriteria mapsto)
         {
             var firstMapSto = this.GetMapStoLastFocus(mapsto);
-            ams_PackMaster pm = ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.scanCode, this.BuVO);
+            ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, reqVO.unitCode, this.BuVO);
             ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
 
