@@ -24,7 +24,7 @@ namespace AWMSEngine.APIService.Mst
         {
             List<ams_SKUMaster> req1 = ObjectUtil.DynamicToModel<ams_SKUMaster>(this.RequestVO.data);
             this.BeginTransaction();
-            var res = new MasterPut<ams_SKUMaster>().Execute(this.Logger, this.BuVO, req1);
+            var res = new MasterPut<ams_SKUMaster>().Execute(this.Logger, this.BuVO, new MasterPut<ams_SKUMaster>.TReq { datas = req1, whereFields = new List<string> { "ID" } });
 
             return res;
         }

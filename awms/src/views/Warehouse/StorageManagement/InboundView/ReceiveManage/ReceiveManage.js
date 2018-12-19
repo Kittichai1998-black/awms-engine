@@ -37,7 +37,7 @@ class ReceiveManage extends Component{
       select2:{queryString:window.apipath + "/api/viw",
       t:"PackMaster",
       q:'[{ "f": "Status", "c":"=", "v": 1}]',
-      f:"id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType",
+      f:"id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType,UnitTypeCode",
       g:"",
       s:"[{'f':'Code','od':'asc'}]",
       sk:0,
@@ -117,7 +117,6 @@ class ReceiveManage extends Component{
         else{
           this.setState({data:[rowselect1.data.document]})
           this.state.data.forEach(row => {
-            console.log(row.desWarehouseName)
             this.setState({souBranchName:row.souBranchName,desBranchName:row.desBranchName,
             souWareName:row.souWarehouseName,desWareName:row.desWarehouseName,batchName:row.batch,
             lotName:row.lot,remarkName:row.remark,MatDocYear:row.ref1,Movement:row.ref2,codeDoc:row.code,
@@ -160,17 +159,14 @@ class ReceiveManage extends Component{
   genWarehouseData(data){ 
     if(data){
       const warehouse = this.warehouseselect
-      console.log(this.state.branch)
       warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Branch_ID", "c":"=", "v": '+ this.state.branch +'}]'
       Axios.get(createQueryString(warehouse)).then((res) => {
         const auto_warehouse = []
         res.data.datas.forEach(row => {
           console.log(row)
           auto_warehouse.push({value:row.ID, label:row.Code + ' : ' + row.Name,Warecode:row.Code })
-          console.log(row.Code )
         })
         this.setState({auto_warehouse}) 
-        console.log(this.state.auto_warehouse)
       })
     }
   }
@@ -205,16 +201,20 @@ class ReceiveManage extends Component{
         alert("Quantity is null")
       }else{
     this.state.data.forEach(row => {  
-      console.log(this.state.WareCode)
+      console.log(row)
       let qty = row.PackQty === "" ? 0 : row.PackQty;
       if (row.id > 0 && qty > 0)
       acceptdata.push({
         skuCode: null,
-        packItemQty:null,
+        //packItemQty:null,
+        unitType:row.UnitTypeCode,
         packCode:row.PackItem,
         quantity: row.PackQty,
         expireDate:null,
         productionDate:null,
+        orderNo:null,
+        batch:null,
+        lot:null,
         ref1:null,
         ref2:null,
         ref3:null,
@@ -223,18 +223,18 @@ class ReceiveManage extends Component{
     }) 
       let postdata = {
         refID:this.state.refID, forCustomerCode:null, batch:this.state.batch, lot:this.state.lot,
-        souSupplierCode:null,souCustomerCode:null,
+        souSupplierCode:null,souCustomerCode:null,orderNo:null,
+        souSupplierID:null,souCustomerID:null,souBranchID:null,souWarehouseID:null,souAreaMasterID:null,
         souBranchCode:this.state.branchCode,souWarehouseCode:this.state.WareCode,souAreaMasterCode:null,
+        desBranchID:null,desWarehouseID:null,desAreaMasterID:null,
         desBranchCode:this.state.DesbranchCode,desWarehouseCode:this.state.DesWareCode,desAreaMasterCode:null,
         actionTime:null,documentDate:this.DateNow.format("YYYY/MM/DD"),
         remark:this.state.remark,ref1:this.state.ref1,ref2:this.state.movementTypeCode,
         receiveItems:acceptdata
       }
       if (acceptdata.length > 0) {
-        console.log(postdata)
         Axios.post(window.apipath + "/api/wm/received/doc", postdata).then((res) => {
           if (res.data._result.status === 1) {
-            console.log(res.data.ID)
             this.props.history.push('/doc/gr/manage?ID=' + res.data.ID)
             window.location.reload()
           }
@@ -249,7 +249,8 @@ class ReceiveManage extends Component{
   
   addData(){
     const data = this.state.data
-    data.push({id:this.addIndex,PackItem:"",PackQty:1,UnitType:""})
+    console.log(data)
+    data.push({id:this.addIndex,PackItem:"",PackQty:1,UnitType:"",UnitTypeCode:""})
     this.addIndex -= 1
     this.setState({data})
   }
@@ -266,6 +267,7 @@ class ReceiveManage extends Component{
         data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitType"] = value.UnitType;
         data[rowdata.index]["id"] = value.id;
+        data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
       }
       this.setState({ data });
 

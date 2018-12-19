@@ -33,5 +33,9 @@ namespace AWMSModel.Entity
         public long? UnitType_ID;
         public string UnitType_Code;
         public string UnitType_Name;
+        public string Batch;
+
+
+
     }
 }

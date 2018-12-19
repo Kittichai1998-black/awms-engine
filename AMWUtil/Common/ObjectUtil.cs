@@ -333,6 +333,13 @@ namespace AMWUtil.Common
             }
             return res;
         }
+        public static Dictionary<string,object> FieldDictionary<T>(this T obj)
+            where T : class
+        {
+            Dictionary<string, object> res = new Dictionary<string, object>();
+            obj.FieldKeyValuePairs().ForEach(x=> { res.Add(x.Key, x.Value); });
+            return res;
+        }
         public static List<KeyValuePair<string, object>> PropertieKeyValuePairs<T>(this T obj)
             where T : class
         {

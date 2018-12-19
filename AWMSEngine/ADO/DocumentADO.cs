@@ -49,7 +49,7 @@ namespace AWMSEngine.ADO
             var res = this.Query<STOCountDocLockCriteria>("SP_STO_COUNT_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
             return res;
         }
-        public int UpdateEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
+        public long? UpdateEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
         {
             var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(eventStatus);
             var res = DataADO.GetInstant().UpdateByID<amt_Document>(id, buVO,
@@ -59,7 +59,7 @@ namespace AWMSEngine.ADO
                 });
             return res;
         }
-        public int UpdateItemEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
+        public long? UpdateItemEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
         {
             var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(eventStatus);
             var res = DataADO.GetInstant().UpdateByID<amt_DocumentItem>(id, buVO,
