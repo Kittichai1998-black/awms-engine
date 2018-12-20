@@ -10,6 +10,7 @@ namespace AWMSModel.Criteria.SP.Response
         public long? id;
         public StorageObjectType type;
         public int? mstID;
+        public int? skuID;
         public long? parentID;
         public StorageObjectType? parentType;
         public string code;
