@@ -115,7 +115,7 @@ namespace AWMSModel.Criteria
         {
             get
             {
-                var tokenInfo = this.Get<amt_Token>(BusinessVOConst.KEY_TOKEN);
+                var tokenInfo = this.Get<amt_Token>(BusinessVOConst.KEY_TOKEN_INFO);
                 if (tokenInfo != null) return tokenInfo.User_ID;
                 return 0;
             }
