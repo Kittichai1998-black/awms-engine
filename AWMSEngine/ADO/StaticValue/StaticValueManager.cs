@@ -23,12 +23,57 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_Branch> _Branchs;
         public List<ams_Branch> Branchs { get => this._Branchs; }
+        public ams_Branch GetBranch(long? branchID, long? warehouseID, long? areaID,
+            string branchCode, string warehouseCode, string areaCode)
+        {
+            ams_Branch b = null;
+            ams_Warehouse w = GetWarehouse(warehouseID, areaID, warehouseCode, areaCode);
+            if (branchID.HasValue || !string.IsNullOrEmpty(branchCode) || w != null)
+            {
+                b = this.Branchs.FirstOrDefault(x => x.ID == branchID || x.Code == branchCode || (w != null && x.ID == w.Branch_ID));
+                if (b == null)
+                    throw new Exception("รหัส branch ไม่ถูกต้อง");
+                else if (w != null && w.Branch_ID != b.ID)
+                    throw new Exception("รหัส Warehouses ไม่สัมพันธ์กับ Branch");
+            }
+
+            return b;
+        }
 
         private List<ams_Warehouse> _Warehouses;
         public List<ams_Warehouse> Warehouses { get => this._Warehouses; }
+        public ams_Warehouse GetWarehouse(long? warehouseID, long? areaID,
+            string warehouseCode, string areaCode)
+        {
+            ams_Warehouse w = null;
+            ams_AreaMaster a = GetAreaMaster(areaID, areaCode);
+            if (warehouseID.HasValue || !string.IsNullOrEmpty(warehouseCode) || a != null)
+            {
+                w = this.Warehouses.FirstOrDefault(x => x.ID == warehouseID || x.Code == warehouseCode || (a != null && x.ID == a.Warehouse_ID));
+                if (w == null)
+                    throw new Exception("รหัส Warehouses ไม่ถูกต้อง");
+                else if (a != null && a.Warehouse_ID != w.ID)
+                    throw new Exception("รหัส Area ไม่สัมพันธ์กับ Warehouses");
+            }
+
+            return w;
+        }
 
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
+        public ams_AreaMaster GetAreaMaster(long? areaID, string areaCode)
+        {
+            ams_AreaMaster a = null;
+            if (areaID.HasValue || !string.IsNullOrEmpty(areaCode))
+            {
+                a = this.AreaMasters.FirstOrDefault(x => x.ID == areaID || x.Code == areaCode);
+                if (a == null)
+                    throw new Exception("รหัส Area ไม่ถูกต้อง");
+            }
+
+            return a;
+        }
+
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
         private List<ams_AreaRoute> _AreaMasterLines;
@@ -48,7 +93,7 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
-        
+
         private List<ams_Transport> _Transports;
         public List<ams_Transport> Transports { get => this._Transports; }
 
@@ -130,87 +175,87 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public void LoadAll()
         {
-            foreach(var md in this.GetType().GetMethods())
+            foreach (var md in this.GetType().GetMethods())
             {
                 if (md.Name.StartsWith("Load") && md.Name != "LoadAll")
                 {
-                    md.Invoke(this, null);
+                    md.Invoke(this, new object[] { null });
                 }
             }
         }
-        public void LoadFeature()
+        public void LoadFeature(VOCriteria buVO = null)
         {
             this._Features = new Dictionary<string, ams_Feature>();
-            ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, new VOCriteria()).ForEach(x => this._Features.Add(x.Code, x));
+            ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, buVO ?? new VOCriteria()).ForEach(x => this._Features.Add(x.Code, x));
         }
-        public void LoadConfig()
+        public void LoadConfig(VOCriteria buVO = null)
         {
             this._Configs = new Dictionary<string, ams_Config>();
-            ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, new VOCriteria()).ForEach(x => this._Configs.Add(x.Code, x));
+            ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, buVO ?? new VOCriteria()).ForEach(x => this._Configs.Add(x.Code, x));
         }
-        public void LoadObjectSize()
+        public void LoadObjectSize(VOCriteria buVO = null)
         {
-            this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, new VOCriteria()));
-            var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, new VOCriteria()));
+            this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, buVO ?? new VOCriteria()));
+            var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, buVO ?? new VOCriteria()));
             this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
         }
-        public void LoadPackMaster()
+        public void LoadPackMaster(VOCriteria buVO = null)
         {
-            this._PackUnitConverts = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<amv_PackUnitConvert>(new SQLConditionCriteria[] { },new VOCriteria()));
+            this._PackUnitConverts = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<amv_PackUnitConvert>(new SQLConditionCriteria[] { }, buVO ?? new VOCriteria()));
         }
-        public void LoadUnitType()
+        public void LoadUnitType(VOCriteria buVO = null)
         {
-            this._UnitTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_UnitType>("status", 1, new VOCriteria()));
+            this._UnitTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_UnitType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAreaMaster()
+        public void LoadAreaMaster(VOCriteria buVO = null)
         {
-            this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, new VOCriteria()));
+            this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAreaRoute()
+        public void LoadAreaRoute(VOCriteria buVO = null)
         {
-            this._AreaMasterLines = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, new VOCriteria()));
+            this._AreaMasterLines = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAreaMasterType()
+        public void LoadAreaMasterType(VOCriteria buVO = null)
         {
-            this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, new VOCriteria()));
+            this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadWarehouse()
+        public void LoadWarehouse(VOCriteria buVO = null)
         {
-            this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, new VOCriteria()));
+            this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadBranch()
+        public void LoadBranch(VOCriteria buVO = null)
         {
-            this._Branchs = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, new VOCriteria()));
+            this._Branchs = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadCustomer()
+        public void LoadCustomer(VOCriteria buVO = null)
         {
-            this._Customers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, new VOCriteria()));
+            this._Customers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadSupplier()
+        public void LoadSupplier(VOCriteria buVO = null)
         {
-            this._Suppliers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, new VOCriteria()));
+            this._Suppliers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadPackMasterType()
+        public void LoadPackMasterType(VOCriteria buVO = null)
         {
-            this._PackMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, new VOCriteria()));
+            this._PackMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAPIService()
+        public void LoadAPIService(VOCriteria buVO = null)
         {
-            this._APIServices = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, new VOCriteria()));
+            this._APIServices = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadSKUMasterType()
+        public void LoadSKUMasterType(VOCriteria buVO = null)
         {
-            this._SKUMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, new VOCriteria()));
+            this._SKUMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadTransport()
+        public void LoadTransport(VOCriteria buVO = null)
         {
-            this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, new VOCriteria()));
+            this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
         }
 
         public bool IsFeature(FeatureCode code)
         {
             string c = code.ToString();
-            return this._Features.ContainsKey(c) ? 
+            return this._Features.ContainsKey(c) ?
                 this._Features[c].DataValue != AWMSModel.Constant.StringConst.YesNoConst.NO : false;
         }
         public string GetFeatureValue(FeatureCode code)

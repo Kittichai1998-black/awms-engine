@@ -279,7 +279,15 @@ const CreateQueue = Loadable({
   loading: Loading,
 });
 
+const ChangePass = Loadable({
+  loader: () => import('./views/Pages/ChangePass/ChangePass'),
+  loading: Loading,
+});
 
+const Profile = Loadable({
+  loader: () => import('./views/Pages/Profile/Profile'),
+  loading: Loading,
+});
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -342,8 +350,9 @@ const routes = [
   { path: '/wm/issue/manage', exact: true, name: 'Create Queue by DO', component:CreateQueue},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
   { path: '/wm/sto/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
-
-  { path: '/wm/queue/manage', exact: true, name: 'QueueView', component:QueueView},
+  { path: '/wm/queue/manage', exact: true, name: 'QueueView', component: QueueView },
+  { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
+  { path: '/profile', exact: true, name: 'Profile', component: Profile },
 ];
 
 export default routes;

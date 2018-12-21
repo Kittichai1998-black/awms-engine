@@ -54,8 +54,8 @@ namespace AWMSEngine.Engine.Business.Received
                                                 desWarehouseCode = x.desWarehouseCode,
                                                 desAreaMasterCode = x.desAreaMasterCode,
                                                 forCustomerCode = x.forCustomerCode,
-                                                batch = x.batch,
-                                                lot = x.lot
+                                                //batch = x.batch,
+                                                //lot = x.lot
                                             }).Select(x=>x.Key);
 
             amt_Document docSGR = new amt_Document()
@@ -76,8 +76,8 @@ namespace AWMSEngine.Engine.Business.Received
             {
                 CreateGRDocument.TReq docGRReq = new CreateGRDocument.TReq()
                 {
-                    batch = ig.batch,
-                    lot = ig.lot,
+                    //batch = ig.batch,
+                    //lot = ig.lot,
                     refID = reqVO.refID,
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
@@ -102,18 +102,20 @@ namespace AWMSEngine.Engine.Business.Received
                                                      ig.souSupplierCode == x.souSupplierCode &&
                                                      ig.desWarehouseCode == x.desWarehouseCode &&
                                                      ig.desAreaMasterCode == x.desAreaMasterCode &&
-                                                     ig.forCustomerCode == x.forCustomerCode &&
-                                                     ig.lot == x.lot &&
-                                                     ig.batch == x.batch)
+                                                     ig.forCustomerCode == x.forCustomerCode
+                                                     //&&
+                                                     //ig.lot == x.lot &&
+                                                     //ig.batch == x.batch
+                                                     )
                                                  .Select(x => new CreateGRDocument.TReq.ReceiveItem()
                                                  {
                                                      skuCode = x.skuCode,
                                                      quantity = x.quantity,
                                                      unitType = x.unitType,
 
-                                                     refID = reqVO.refID,
-                                                     ref1 = reqVO.ref1,
-                                                     ref2 = reqVO.ref2,
+                                                     refID = x.refID,
+                                                     ref1 = x.ref1,
+                                                     ref2 = x.ref2,
 
                                                      lot = x.lot,
                                                      batch = x.batch,

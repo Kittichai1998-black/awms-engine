@@ -55,7 +55,8 @@ class Login extends Component {
           this.savetoSession("ClientSecret_SecretKey",res.data.ClientSecret_SecretKey);
           this.savetoSession("ExtendKey",res.data.ExtendKey);
           this.savetoSession("User_ID",res.data.User_ID);
-          this.savetoSession("ExpireTime",res.data.ExpireTime);
+          this.savetoSession("ExpireTime", res.data.ExpireTime);
+          this.savetoSession("Username", this.state.username);
           this.GetMenu(res.data.Token);
         }
         else if(res.data._result.status === 0){
