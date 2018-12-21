@@ -38,7 +38,9 @@ class WebPageGroup extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-  
+  componentDidMount(){
+    document.title = "Web Page Group : AWMS";
+  }
   componentWillUnmount(){
     Axios.isCancel(true);
   }

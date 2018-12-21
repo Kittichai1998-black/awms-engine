@@ -39,9 +39,9 @@ class Transport extends Component{
     this.uneditcolumn = ["Created","Modified"]
   }
 
- 
-  //permission
-
+  componentDidMount(){
+    document.title = "Transport : AWMS";
+  }
   render(){
     const cols = [
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left"},

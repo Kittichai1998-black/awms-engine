@@ -70,7 +70,9 @@ class Role extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
+  componentDidMount(){
+    document.title = "Role : AWMS";
+  }
   getData(Root_ID){
     const selectdata = []
     const selectMapdata = []

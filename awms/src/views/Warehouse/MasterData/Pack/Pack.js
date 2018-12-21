@@ -37,7 +37,9 @@ class Pack extends Component{
       this.filterList = this.filterList.bind(this)
       this.uneditcolumn = ["SKUCode","SKUName","PackCode","PackName","UnitTypeCode","UnitTypeName","ObjCode","ObjectSizeName","Created","Modified"]
     }
-
+    componentDidMount(){
+        document.title = "Pack - AWMS"
+    }
     onHandleClickCancel(event){
         this.forceUpdate();
         event.preventDefault();

@@ -39,7 +39,9 @@ class WebControl extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
+  componentDidMount(){
+    document.title = "Web Control : AWMS";
+  }
   componentWillMount(){
     this.filterList();
   }
