@@ -40,7 +40,9 @@ class AreaRoute extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
+  componentDidMount(){
+    document.title = "Area Route : AWMS";
+  }
   componentWillMount(){
     this.filterList();
   }

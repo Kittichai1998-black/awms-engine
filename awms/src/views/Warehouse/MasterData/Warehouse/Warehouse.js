@@ -36,7 +36,9 @@ class Warehouse extends Component{
       this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
       this.uneditcolumn = ["Branch_Code","Created","Modified"]  
     }
-
+    componentDidMount(){
+        document.title = "Warehouse - AWMS"
+    }
     onHandleClickCancel(event){
         this.forceUpdate();
         event.preventDefault();

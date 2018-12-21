@@ -131,7 +131,8 @@ displayButtonByPermission(perID){
       if(status==="reject"){
         axois.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       } else {
-        axois.post(window.apipath + "/api/wm/received/doc/close", postdata)
+        axois.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+
       }
     }
   }
@@ -180,7 +181,8 @@ displayButtonByPermission(perID){
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
         dropdownfilter = {this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
         btn={btnfunc} defaultPageSize={100000} defaultCondition={[{ 'f': 'DocumentType_ID', c:'=', 'v': 1001}]}
-        accept={false}/>
+        accept={false} sapBtn={true}/>
+
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} 

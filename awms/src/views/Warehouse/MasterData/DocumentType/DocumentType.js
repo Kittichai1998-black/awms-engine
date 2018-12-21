@@ -39,7 +39,9 @@ class DocumentType extends Component{
     this.uneditcolumn = ["Created","Modified"]
   }
 
- 
+  componentDidMount(){
+    document.title = "Document Type : AWMS";
+  }
   //permission
 
   render(){

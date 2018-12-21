@@ -438,12 +438,23 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<amt_Document> ListDocumentCanMap(string palletCode, DocumentTypeID docTypeID, VOCriteria buVO)
+        public List<amt_Document> ListDocumentCanMap(string palletCode, StorageObjectEventStatus docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("packCode", palletCode);
+            param.Add("palletCode", palletCode);
             param.Add("eventStatus", docTypeID);
             var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_PICKING",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<amv_LinkDocument> ListDocRelation(long documentID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("documentID", documentID);
+            var res = this.Query<amv_LinkDocument>("SP_RELATION_DOC_GR",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();

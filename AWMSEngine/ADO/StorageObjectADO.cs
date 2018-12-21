@@ -293,6 +293,17 @@ namespace AWMSEngine.ADO
             return res;
         }
         
+        public void UpdatePicking(string palletCode, long docItemID, string packCode, string batch, string lot, decimal pickQty, decimal basePickQty)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("palletCode", palletCode);
+            param.Add("docItemID", docItemID);
+            param.Add("packCode", packCode);
+            param.Add("batch", batch);
+            param.Add("pickQty", pickQty);
+            param.Add("basepickQty", basePickQty);
+            //var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STOID_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+        }
     }
 
 }

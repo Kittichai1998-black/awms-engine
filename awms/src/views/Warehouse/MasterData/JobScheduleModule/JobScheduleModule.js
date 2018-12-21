@@ -39,7 +39,9 @@ class JobScheduleModule extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
+  componentDidMount(){
+    document.title = "Job Schedule Module : AWMS";
+  }
   componentWillMount(){
     this.filterList();
   }

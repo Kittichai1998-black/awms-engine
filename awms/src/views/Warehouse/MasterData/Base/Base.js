@@ -44,7 +44,9 @@ class Area extends Component{
         this.forceUpdate();
         event.preventDefault();
     }
-
+    componentDidMount(){
+        document.title = "Pallet - AWMS"
+    }
     async componentWillMount(){
         this.filterList();
         //permission

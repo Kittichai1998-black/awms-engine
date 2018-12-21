@@ -38,6 +38,9 @@ class Customer extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Created","Modified"]
   }
+  componentDidMount(){
+    document.title = "Customer - AWMS"
+  }
   async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
