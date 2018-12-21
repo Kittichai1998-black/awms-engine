@@ -17,11 +17,16 @@ namespace AWMSEngine.APIService.Doc
 
         protected override dynamic ExecuteEngineManual()
         {
-            this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<CloseGRDocument.TDocReq>(this.RequestVO);
-            var res = new CloseGRDocument().Execute(this.Logger, this.BuVO, req);
 
-            return res;
+            this.BeginTransaction();
+            var req = ObjectUtil.DynamicToModel<ClosingGRDocSAP.TDocReq>(this.RequestVO);
+            var res = new ClosingGRDocSAP().Execute(this.Logger, this.BuVO, req);
+            this.CommitTransaction();
+
+            this.BeginTransaction();
+            var reqSAP = ObjectUtil.DynamicToModel<CloseGRDocument.TDocReq>(this.RequestVO);
+            var resSAP = new CloseGRDocument().Execute(this.Logger, this.BuVO, reqSAP);
+            return resSAP;
         }
     }
 }
