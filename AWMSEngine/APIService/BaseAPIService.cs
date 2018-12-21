@@ -122,6 +122,8 @@ namespace AWMSEngine.APIService
                 if(this.Logger == null)
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
 
+                //this.Permission(token, apiKey);
+
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 this.Logger.LogBegin();
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
@@ -192,6 +194,34 @@ namespace AWMSEngine.APIService
                 ADO.LogingADO.GetInstant().EndAPIService(dbLogID, _status, _code, _message, _stacktrace, this.BuVO);
             }
             return response;
+        }
+
+        private void Permission(string token, string apikey)
+        {
+            //var restoken = ADO.DataADO.GetInstant().SelectBy<amt_Token>(new KeyValuePair<string, object>[] {
+            //    new KeyValuePair<string, object>("Token", token),
+            //    new KeyValuePair<string, object>("Status", 1)
+            //}, this.BuVO).FirstOrDefault();
+
+            //if (restoken != null)
+            //{
+            //    if (restoken.ExpireTime > new DateTime())
+            //    {
+            //        throw new AMWException(this.Logger, AMWExceptionCode.A0003, "Token หมดอายุ กรุณา Login ใหม่อีกครั้ง");
+            //    }
+            //}
+            //else
+            //{
+            //    throw new AMWException(this.Logger, AMWExceptionCode.A0003, "Token นี้ไม่สามารถใช้งานได้");
+            //}
+                
+            var resapi = ADO.DataADO.GetInstant().SelectBy<ams_APIKey>(new KeyValuePair<string, object>[] {
+                new KeyValuePair<string, object>("APIKey", apikey),
+                new KeyValuePair<string, object>("Status", 1)
+            }, this.BuVO).FirstOrDefault();
+
+            if (resapi == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key นี้ไม่สามารถใช้งานได้");
         }
     }
 }
