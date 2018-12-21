@@ -15,7 +15,7 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-       
+          <label>COPYRIGHT  ©  2018 <span style={{fontStyle: "bold"}}>| Auto Motion Works Co., Ltd. |</span> ALL RIGHTS RESERVED.</label>
       </React.Fragment>
     );
   }

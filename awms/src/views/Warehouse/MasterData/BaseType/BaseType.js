@@ -44,7 +44,9 @@ class BaseType extends Component{
     componentWillMount(){
         this.filterList();
     }
-    
+    componentDidMount(){
+        document.title = "Pallet Type - AWMS"
+      }
     componentWillUnmount(){
         Axios.isCancel(true);
     }

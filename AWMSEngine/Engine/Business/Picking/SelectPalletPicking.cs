@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Response;
@@ -23,59 +24,164 @@ namespace AWMSEngine.Engine.Business.Picking
         public class TRes
         {
             public string palletCode;
-            public List<amt_Document> docList;
-            public List<palletItem> sto;
+            //public List<amt_Document> docList;
+            public List<docItem> docItems;
+            public List<docItem.palletItem> stos;
         }
 
-        public class palletItem
+        public class docItem
         {
-            public string packCode;
-            public int qty;
-            public string unittype;
-            public int willPick;
-            public int maxPick;
+            public long docID;
+            public string docCode;
+            public string matDoc;
+            public string destination;
+            public List<pickItem> pickItems;
+
+            public class pickItem
+            {
+                public string itemCode;
+                public decimal picked;
+                public decimal willPick;
+            }
+
+            public class palletItem
+            {
+                public long? docItemID;
+                public string packCode;
+                public bool pick;
+                public string batch;
+                public string lot;
+                public decimal palletQty;
+                public decimal shouldPick;
+                public decimal canPick;
+                public string unitType;
+            }
         }
+
+        
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var selectPallet = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
-
-            var selectPack = selectPallet.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Distinct().ToList();
-            
-            List<amt_Document> docList = new List<amt_Document>();
-            List<palletItem> palletItem = new List<palletItem>();
-
-            foreach (var row in selectPack)
+            //List<amt_Document> docList = new List<amt_Document>();
+            List<docItem> docItemList = new List<docItem>();
+            List<docItem.palletItem> palletItem = new List<docItem.palletItem>();
+            docItemList = getDocmentPickingList(reqVO);
+            if (reqVO.docID == null)
             {
-                var itemCanMap = (ADO.DocumentADO.GetInstant().ListItemCanMap(row.code, DocumentTypeID.GOODS_ISSUED, (long?)null, String.Empty, this.BuVO));
+            }
+            else
+            {
+                docItemList = docItemList.Where(x => x.docID == reqVO.docID.Value).ToList();
 
-                if (reqVO.docID == null)
+                var selectPallet = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
+
+                var selectPack = selectPallet.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Distinct().ToList();
+
+                foreach (var row in selectPack)
                 {
-                    itemCanMap.ForEach(x =>
+                    var itemCanMap = (ADO.DocumentADO.GetInstant().ListItemCanMap(row.code, DocumentTypeID.GOODS_ISSUED, reqVO.docID, "11", this.BuVO));
+                    var unitType = this.StaticValue.UnitTypes.FirstOrDefault(y => y.ID == row.baseUnitID).Name;
+
+                    if (itemCanMap.Count > 0)
                     {
-                        docList.AddRange(ADO.DocumentADO.GetInstant().ListDocumentCanMap(reqVO.palletCode, DocumentTypeID.PICKING, this.BuVO));
-                    });
-                }
-                else
-                {
+                        itemCanMap.ForEach(x =>
+                        {
+
+                            palletItem.Add(new docItem.palletItem()
+                            {
+                                docItemID = x.DocumentItem_ID,
+                                packCode = row.code,
+                                batch = row.batch,
+                                lot = row.lot,
+                                palletQty = row.baseQty,
+                                canPick = x.MaxQty,
+                                pick = true,
+                                shouldPick = (x.MaxQty - x.Qty) > row.baseQty ? row.baseQty : (x.MaxQty - x.Qty),
+                                unitType = unitType
+                            });
+                        });
+                    }
+                    else
+                    {
+                        palletItem.Add(new docItem.palletItem()
+                        {
+                            packCode = row.code,
+                            batch = row.batch,
+                            palletQty = row.baseQty,
+                            lot = row.lot,
+                            canPick = 0,
+                            pick = false,
+                            shouldPick = 0,
+                            unitType = unitType
+                        });
+                    }
+
                     var docItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Document_ID",reqVO.docID),
-                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
-                }, this.BuVO);
-
-                    docItem.ForEach(x =>
-                    {
-                        var packCode = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(x.PackMaster_ID, this.BuVO).Code;
-                    });
+                            new KeyValuePair<string,object>("Document_ID",reqVO.docID),
+                            new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                        }, this.BuVO);
                 }
             }
-
+            
             var res = new TRes()
             {
                 palletCode = reqVO.palletCode,
-                docList = docList
+                docItems = docItemList,
+                stos = palletItem
             };
             return res;
+        }
+
+        private List<docItem> getDocmentPickingList(TReq reqVO)
+        {
+            List<docItem> docItemList = new List<docItem>();
+            var docCanMap = ADO.DocumentADO.GetInstant().ListDocumentCanMap(reqVO.palletCode, StorageObjectEventStatus.PICKING, this.BuVO);
+            if (docCanMap.Count == 0)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีงานสำหรับ Picking");
+
+            var pickItemList = new List<docItem.pickItem>();
+            docCanMap.ForEach(x =>
+            {
+                var listitem = ADO.DocumentADO.GetInstant().ListItem(x.ID.Value, this.BuVO);
+                pickItemList = listitem.Select(y =>
+                {
+                    var g = ADO.DataADO.GetInstant().SelectBy<dynamic>(
+                        "amt_DocumentItemStorageObject",
+                        "sum(baseQuantity) s",
+                        "DocumentItem_ID",
+                        new SQLConditionCriteria[] { new SQLConditionCriteria("DocumentItem_ID", y.ID, SQLOperatorType.EQUALS) },
+                        null,
+                        null,
+                        null,
+                        this.BuVO).FirstOrDefault();
+                    long sumData = g == null ? 0 : (long)g.s;
+
+                    return new docItem.pickItem()
+                    {
+                        itemCode = y.Code,
+                        picked = sumData,
+                        willPick = y.BaseQuantity.Value
+                    };
+                }).ToList();
+
+                string des_warehouse = "", des_customer = "", des_suplier = "";
+                if (x.Des_Warehouse_ID != null)
+                    des_warehouse = this.StaticValue.Warehouses.FirstOrDefault(y => y.ID == x.Des_Warehouse_ID).Code;
+                if (x.Des_Customer_ID != null)
+                    des_customer = this.StaticValue.Customers.FirstOrDefault(y => y.ID == x.Des_Customer_ID).Code;
+                if (x.Des_Supplier_ID != null)
+                    des_suplier = this.StaticValue.Suppliers.FirstOrDefault(y => y.ID == x.Des_Supplier_ID).Code;
+
+                docItemList.Add(new docItem()
+                {
+                    docID = x.ID.Value,
+                    docCode = x.Code,
+                    matDoc = x.RefID,
+                    destination = des_warehouse != "" ? des_warehouse : des_customer != "" ? des_customer : des_suplier == "" ? des_suplier : null,
+                    pickItems = pickItemList
+                });
+            });
+            return docItemList;
         }
     }
 }

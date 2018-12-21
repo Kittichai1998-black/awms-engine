@@ -82,6 +82,9 @@ class User extends Component{
       this.updateRole = this.updateRole.bind(this)
       
     }
+    componentDidMount(){
+        document.title = "User - AWMS"
+    }
     async componentWillMount(){
         //permission
         let data = await GetPermission()
@@ -112,10 +115,7 @@ class User extends Component{
         this.forceUpdate();
         event.preventDefault();
     }
-
-    componentDidMount(){
-    }
-
+ 
   getData(user_id) {
        
         const selectroledata = []
@@ -258,10 +258,10 @@ class User extends Component{
           { accessor: 'Password', Header: 'Password', editable: true, filterable: false, Type: "password", minWidth: 100, maxWidth: 100},
           { accessor: 'Name', Header: 'Name', editable: true, minWidth: 160, maxWidth: 200 },
           { accessor: 'EmailAddress', Header: 'Email Address', editable: true, minWidth: 170, maxWidth: 200},
-          { accessor: 'LineID', Header: 'Line ID', editable: true, minWidth: 90},
-          { accessor: 'FacebookID', Header: 'Facebook ID', editable: true, minWidth:90},
-          { accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
-          { accessor: 'TelMobile', Header: 'Mobile', editable: true, minWidth:90},
+          //{ accessor: 'LineID', Header: 'Line ID', editable: true, minWidth: 90},
+          //{ accessor: 'FacebookID', Header: 'Facebook ID', editable: true, minWidth:90},
+          //{ accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
+          { accessor: 'TelMobile', Header: 'Mobile', editable: true, minWidth:100},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},

@@ -26,8 +26,9 @@ namespace AWMSEngine.Engine.Business.Received
                 mapsto = scanmapsto.Execute(this.Logger, this.BuVO, new ScanMapStoNoDoc.TReq()
                 {
                     scanCode = row.code,
+                    orderNo = row.orderNo,
                     batch = row.batch,
-                    lot = row.stampDate,
+                    lot = row.lot,
                     unitCode = row.unit,
                     amount = row.qty.Get<decimal>(),
                     mode = VirtualMapSTOModeType.REGISTER,

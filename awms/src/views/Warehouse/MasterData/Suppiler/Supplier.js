@@ -40,6 +40,9 @@ class Supplier extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Created","Modified"]
   }
+  componentDidMount(){
+    document.title = "Supplier - AWMS"
+}
   async componentWillMount(){
    //permission
     this.setState({showbutton:"none"})

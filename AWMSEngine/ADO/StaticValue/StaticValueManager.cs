@@ -23,12 +23,57 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<ams_Branch> _Branchs;
         public List<ams_Branch> Branchs { get => this._Branchs; }
+        public ams_Branch GetBranch(long? branchID, long? warehouseID, long? areaID,
+            string branchCode, string warehouseCode, string areaCode)
+        {
+            ams_Branch b = null;
+            ams_Warehouse w = GetWarehouse(warehouseID, areaID, warehouseCode, areaCode);
+            if (branchID.HasValue || !string.IsNullOrEmpty(branchCode) || w != null)
+            {
+                b = this.Branchs.FirstOrDefault(x => x.ID == branchID || x.Code == branchCode || (w != null && x.ID == w.Branch_ID));
+                if (b == null)
+                    throw new Exception("รหัส branch ไม่ถูกต้อง");
+                else if (w != null && w.Branch_ID != b.ID)
+                    throw new Exception("รหัส Warehouses ไม่สัมพันธ์กับ Branch");
+            }
+
+            return b;
+        }
 
         private List<ams_Warehouse> _Warehouses;
         public List<ams_Warehouse> Warehouses { get => this._Warehouses; }
+        public ams_Warehouse GetWarehouse(long? warehouseID, long? areaID,
+            string warehouseCode, string areaCode)
+        {
+            ams_Warehouse w = null;
+            ams_AreaMaster a = GetAreaMaster(areaID, areaCode);
+            if (warehouseID.HasValue || !string.IsNullOrEmpty(warehouseCode) || a != null)
+            {
+                w = this.Warehouses.FirstOrDefault(x => x.ID == warehouseID || x.Code == warehouseCode || (a != null && x.ID == a.Warehouse_ID));
+                if (w == null)
+                    throw new Exception("รหัส Warehouses ไม่ถูกต้อง");
+                else if (a != null && a.Warehouse_ID != w.ID)
+                    throw new Exception("รหัส Area ไม่สัมพันธ์กับ Warehouses");
+            }
+
+            return w;
+        }
 
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
+        public ams_AreaMaster GetAreaMaster(long? areaID, string areaCode)
+        {
+            ams_AreaMaster a = null;
+            if (areaID.HasValue || !string.IsNullOrEmpty(areaCode))
+            {
+                a = this.AreaMasters.FirstOrDefault(x => x.ID == areaID || x.Code == areaCode);
+                if (a == null)
+                    throw new Exception("รหัส Area ไม่ถูกต้อง");
+            }
+
+            return a;
+        }
+
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
         private List<ams_AreaRoute> _AreaMasterLines;

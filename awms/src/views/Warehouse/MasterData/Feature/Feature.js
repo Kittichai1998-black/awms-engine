@@ -39,7 +39,9 @@ class Feature  extends Component{
     this.uneditcolumn = ["Created","Modified"]
   }
 
- 
+  componentDidMount(){
+    document.title = "Feature : AWMS";
+  }
   //permission
 
   render(){

@@ -231,7 +231,7 @@ namespace AWMSEngine.ADO
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
-            whares.Add(new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.NOTEQUALS));
             if (souWarehouseID.HasValue)
                 whares.Add(new SQLConditionCriteria("Sou_Warehouse_ID", souWarehouseID, SQLOperatorType.EQUALS));
             if (!string.IsNullOrWhiteSpace(orderNo))
@@ -252,7 +252,7 @@ namespace AWMSEngine.ADO
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
-            whares.Add(new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.IN));
             if (souWarehouseID.HasValue)
                 whares.Add(new SQLConditionCriteria("Sou_Warehouse_ID", souWarehouseID, SQLOperatorType.EQUALS));
             if (desWarehouseID.HasValue)
@@ -277,7 +277,7 @@ namespace AWMSEngine.ADO
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("Document_ID", docID, SQLOperatorType.EQUALS));
-            whares.Add(new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.IN));
 
             var res = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(whares.ToArray(), buVO);
             return res;
@@ -296,7 +296,7 @@ namespace AWMSEngine.ADO
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentItem_ID", string.Join(',', docItemIDs.ToArray()), SQLOperatorType.IN));
-            whares.Add(new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.IN));
 
             var res = ADO.DataADO.GetInstant().SelectBy<SPOutCountStoInDocItem>(
                 "amt_DocumentItemStorageObject",
@@ -336,11 +336,12 @@ namespace AWMSEngine.ADO
             var countStoInDocItems = ADO.DocumentADO.GetInstant().CountStoInDocItems(docItems.Select(x => x.ID.Value).ToList(), buVO);
             foreach (var di in docItems)
             {
+                var countInDoc = countStoInDocItems.FirstOrDefault(x => x.DocumentItem_ID == di.ID);
                 if (!di.BaseQuantity.HasValue)
                 {
                     res.Add(di);
                 }
-                else if (countStoInDocItems.First(x => x.DocumentItem_ID == di.ID).BaseQuantity + addBaseQty <= di.BaseQuantity.Value)
+                else if ((countInDoc == null ? 0 : countInDoc.BaseQuantity) + addBaseQty <= di.BaseQuantity.Value)
                 {
                     res.Add(di);
                 }
@@ -375,10 +376,11 @@ namespace AWMSEngine.ADO
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("workQueueIDs", string.Join(",", workQueueIDs));
-            return this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYQUEUEID",
+            var res = this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYQUEUEID",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
         }
         public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, VOCriteria buVO)
         {
@@ -436,10 +438,10 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<amt_Document> ListDocumentCanMap(string palletCode, DocumentTypeID docTypeID, VOCriteria buVO)
+        public List<amt_Document> ListDocumentCanMap(string palletCode, StorageObjectEventStatus docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("packCode", palletCode);
+            param.Add("palletCode", palletCode);
             param.Add("eventStatus", docTypeID);
             var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_PICKING",
                                 System.Data.CommandType.StoredProcedure,
