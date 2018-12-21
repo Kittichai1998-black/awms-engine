@@ -272,6 +272,24 @@ namespace AWMSEngine.ADO.StaticValue
             string c = code;
             return this._Configs.ContainsKey(c) ? this._Configs[c].DataValue : null;
         }
+        public T GetEntity<T>(long? id, string code)
+            where T : BaseEntitySTD
+        {
+            string propName = typeof(T).Name.Split('.').Last().Substring(4)+"s";
+            var lis = (List<T>)this.GetType().GetProperty(propName).GetValue(this, null);
+            var e = lis.FindAll(x => x.ID == id || x.Code == code);
+            var e1 = e.FirstOrDefault();
+            if (e1 == null)
+                return null;
+            if (e.Count() > 1)
+                throw new Exception("ข้อมูล" + propName + "ซ้ำซ้อน");
+            if (!string.IsNullOrWhiteSpace(code) && e1.Code != code)
+                throw new Exception("รหัสของ " + propName + " ไม่ถูกต้อง");
+            if (id.HasValue && e1.ID != id)
+                throw new Exception("ID ของ " + propName + " ไม่ถูกต้อง");
+            return e1;
+
+        }
         public bool IsMatchConfigArray(string code, object value)
         {
             string v = value.ToString();

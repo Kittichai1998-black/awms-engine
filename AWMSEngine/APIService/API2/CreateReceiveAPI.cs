@@ -47,8 +47,8 @@ namespace AWMSEngine.APIService.Api2
             this.BeginTransaction();
             List<string> otherWarehouses = new List<string>();
 
-            TModel model = AMWUtil.Common.ObjectUtil.DynamicToModel<TModel>(this.RequestVO);
-            model.documents.ForEach(doc => doc.items.ForEach(x => otherWarehouses.Add(x.souWarehouse)));
+            TModel reqData = AMWUtil.Common.ObjectUtil.DynamicToModel<TModel>(this.RequestVO);
+            reqData.documents.ForEach(doc => doc.items.FindAll(x => !string.IsNullOrEmpty(x.souWarehouse)).ForEach(x => otherWarehouses.Add(x.souWarehouse)));
             otherWarehouses = otherWarehouses
                 .Distinct()
                 .Where(x => !ADO.StaticValue.StaticValueManager.GetInstant().Warehouses.Any(y => y.Code == x))
@@ -56,8 +56,8 @@ namespace AWMSEngine.APIService.Api2
 
             if (otherWarehouses.Count > 0)
             {
-                new MasterPut<ams_Warehouse>().Execute(this.Logger, this.BuVO,
-                    new MasterPut<ams_Warehouse>.TReq()
+                new PutMaster<ams_Warehouse>().Execute(this.Logger, this.BuVO,
+                    new PutMaster<ams_Warehouse>.TReq()
                     {
                         datas = otherWarehouses.Select(x =>
                                                         new ams_Warehouse()
@@ -73,7 +73,7 @@ namespace AWMSEngine.APIService.Api2
             }
 
             /////////////////////////////////////////////////
-            foreach (var doc in model.documents)
+            foreach (var doc in reqData.documents)
             {
                 var reqDoc = new CreateSGRDocumentByDocLink.TReq()
                 {
@@ -104,7 +104,7 @@ namespace AWMSEngine.APIService.Api2
 
                 doc.code = res.Code;
             }
-            return model;
+            return reqData;
 
         }
     }

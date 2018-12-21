@@ -71,10 +71,10 @@ namespace AWMSEngine.APIService.Api2
                     Name = x,
                     Status = EntityStatus.ACTIVE
                 }).ToList();
-                new MasterPut<ams_UnitType>().Execute(
+                new PutMaster<ams_UnitType>().Execute(
                     this.Logger,
                     this.BuVO,
-                    new MasterPut<ams_UnitType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
+                    new PutMaster<ams_UnitType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
                 StaticValueManager.GetInstant().LoadUnitType(this.BuVO);
                 this.CommitTransaction();
             }
@@ -96,10 +96,10 @@ namespace AWMSEngine.APIService.Api2
                     UnitType_ID = null,
                     Status = EntityStatus.ACTIVE
                 }).ToList();
-                new MasterPut<ams_SKUMasterType>().Execute(
+                new PutMaster<ams_SKUMasterType>().Execute(
                     this.Logger,
                     this.BuVO,
-                    new MasterPut<ams_SKUMasterType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
+                    new PutMaster<ams_SKUMasterType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
                 StaticValueManager.GetInstant().LoadSKUMasterType(this.BuVO);
                 this.CommitTransaction();
             }
@@ -121,10 +121,10 @@ namespace AWMSEngine.APIService.Api2
                     UnitType_ID = null,
                     Status = EntityStatus.ACTIVE
                 }).ToList();
-                new MasterPut<ams_PackMasterType>().Execute(
+                new PutMaster<ams_PackMasterType>().Execute(
                     this.Logger,
                     this.BuVO,
-                    new MasterPut<ams_PackMasterType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
+                    new PutMaster<ams_PackMasterType>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
                 StaticValueManager.GetInstant().LoadPackMasterType(this.BuVO);
                 this.CommitTransaction();
             }
@@ -145,10 +145,10 @@ namespace AWMSEngine.APIService.Api2
                 Status = x.status
             }).ToList();
             
-            new MasterPut<ams_SKUMaster>().Execute(
+            new PutMaster<ams_SKUMaster>().Execute(
                 this.Logger,
                 this.BuVO,
-                new MasterPut<ams_SKUMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
+                new PutMaster<ams_SKUMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code" } });
 
 
         }
@@ -178,10 +178,10 @@ namespace AWMSEngine.APIService.Api2
                     putDatas.Add(putData);
                 });
 
-                new MasterPut<ams_PackMaster>().Execute(
+                new PutMaster<ams_PackMaster>().Execute(
                     this.Logger,
                     this.BuVO,
-                    new MasterPut<ams_PackMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code", "UnitType_ID" } });
+                    new PutMaster<ams_PackMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code", "UnitType_ID" } });
                 StaticValueManager.GetInstant().LoadPackMaster(this.BuVO);
             });
 
