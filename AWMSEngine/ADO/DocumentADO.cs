@@ -227,11 +227,22 @@ namespace AWMSEngine.ADO
             return docItemSto;
         }
 
+        public List<amt_Document> List(List<DocumentTypeID> docIDs, VOCriteria buVO)
+        {
+            var whares = new List<SQLConditionCriteria>();
+            
+            whares.Add(new SQLConditionCriteria("", string.Join(',', docIDs), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
+
+            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            return res;
+        }
+
         public List<amt_Document> List(DocumentTypeID docTypeID, long? souWarehouseID, string orderNo, string batch, string lot, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
-            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.NOTEQUALS));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
             if (souWarehouseID.HasValue)
                 whares.Add(new SQLConditionCriteria("Sou_Warehouse_ID", souWarehouseID, SQLOperatorType.EQUALS));
             if (!string.IsNullOrWhiteSpace(orderNo))
@@ -252,7 +263,7 @@ namespace AWMSEngine.ADO
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
-            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
             if (souWarehouseID.HasValue)
                 whares.Add(new SQLConditionCriteria("Sou_Warehouse_ID", souWarehouseID, SQLOperatorType.EQUALS));
             if (desWarehouseID.HasValue)
@@ -277,7 +288,7 @@ namespace AWMSEngine.ADO
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("Document_ID", docID, SQLOperatorType.EQUALS));
-            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
 
             var res = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(whares.ToArray(), buVO);
             return res;
@@ -296,7 +307,7 @@ namespace AWMSEngine.ADO
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentItem_ID", string.Join(',', docItemIDs.ToArray()), SQLOperatorType.IN));
-            whares.Add(new SQLConditionCriteria("Status", EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
 
             var res = ADO.DataADO.GetInstant().SelectBy<SPOutCountStoInDocItem>(
                 "amt_DocumentItemStorageObject",
