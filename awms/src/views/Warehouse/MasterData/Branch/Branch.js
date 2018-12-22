@@ -72,15 +72,15 @@ class Branch extends Component{
 
     render(){
         const cols = [ 
-          { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 100},
-          { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 120},
+          { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 100},
+          { accessor: 'Name', Header: 'Name', editable: false, Filter: "text", fixed: "left", minWidth: 120},
           //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text",},
           //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-          { accessor: 'Created', Header: 'Create', editable: false, filterable: false},
+          { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth:170},
           /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth:170},
           //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+          {show:false,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];
         const btnfunc = [{
           history:this.props.history,
@@ -95,8 +95,8 @@ class Branch extends Component{
             data = json ข้อมูลสำหรับ select ผ่าน url
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"Branch"}
-            filterable={true} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Branch"}
+            filterable={true}  btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={false} exportbtn={false} exportfilebtn={view} 
           table="ams_Branch"/>
           </div>
         )

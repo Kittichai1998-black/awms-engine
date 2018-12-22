@@ -138,15 +138,15 @@ displayButtonByPermission(perID){
     
       render(){
         const cols = [
-          { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120},
-          { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 180},
-          { accessor: 'ObjectSize_Code', Header: 'Default ObjectSize Code', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 100},
+          { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120},
+          { accessor: 'Name', Header: 'Name', editable: false, Filter: "text", fixed: "left", minWidth: 120},
+          { accessor: 'ObjectSize_Code', Header: 'Default Object Size', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 140},
           //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-          {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+          {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
           /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
           //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          { show: this.state.permissionView, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
+          { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
         
         const btnfunc = [{
@@ -168,8 +168,8 @@ displayButtonByPermission(perID){
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"SKUType"}
-            filterable={true} autocomplete={this.state.autocomplete} accept={view}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Catagory"}
+            filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} exportfilebtn={view}
             btn={btnfunc} uneditcolumn={this.uneditcolumn}
              table="ams_SKUMasterType"/>
           </div>

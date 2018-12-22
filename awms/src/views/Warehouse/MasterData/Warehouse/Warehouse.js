@@ -107,9 +107,9 @@ class Warehouse extends Component{
             //{accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
           { accessor: 'Branch_Code', Header: 'Branch', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 120, maxWidth: 130},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
-            {accessor: 'Created', Header: 'Create', editable:false, filterable:false},
+            {accessor: 'Created', Header: 'Create', editable:false, filterable:false, minWidth: 170},
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            {accessor: 'Modified', Header: 'Modify', editable:false, filterable:false},
+            {accessor: 'Modified', Header: 'Modify', editable:false, filterable:false, minWidth: 170},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ];
