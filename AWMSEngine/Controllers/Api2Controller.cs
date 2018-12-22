@@ -24,5 +24,12 @@ namespace AWMSEngine.Controllers
             APIService.Api2.CreateReceiveAPI exec = new APIService.Api2.CreateReceiveAPI(this);
             return exec.Execute(request);
         }
+
+        [HttpPost("wm/issue/doc")]
+        public dynamic CreateIssueDoc([FromBody]dynamic request)
+        {
+            APIService.Api2.CreateIssueAPI exec = new APIService.Api2.CreateIssueAPI(this);
+            return exec.Execute(request);
+        }
     }
 }

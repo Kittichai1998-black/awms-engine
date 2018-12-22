@@ -23,7 +23,7 @@ class Area extends Component{
             select:{queryString:window.apipath + "/api/viw",
             t:"BaseMaster",
             q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-              f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Status,Created,Modified",
+              f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Weight,Status,Created,Modified",
             g:"",
             s:"[{'f':'Code','od':'asc'}]",
             sk:0,
@@ -152,19 +152,20 @@ class Area extends Component{
 
     render(){
         const cols = [
-          { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
-            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text", fixed: "left"},
-            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
+          //{ Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
+            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text", fixed: "left", minWidth: 100},
+            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left", minWidth: 100},
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
-            {accessor: 'BaseMasterType_Code', Header: 'Base Type',updateable:false,Filter:"text", Type:"autocomplete"},
-          { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
-          { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
-            //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+            {accessor: 'BaseMasterType_Code', Header: 'Type',updateable:true,Filter:"text", Type:"autocomplete", minWidth: 150},
+            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: false, Filter: "text",datatype:"int", Type: "autocomplete", minWidth: 90, className: "center"},
+            { accessor: 'ObjectSize_Code', Header: 'Size', updateable: true, Filter: "text", Type: "autocomplete", minWidth: 250 },
+          { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", Type: "autocomplete", minWidth: 140 },
+          //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+            {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
+            //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
             {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
         
@@ -188,7 +189,7 @@ class Area extends Component{
         
           */}
             <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"Base"}
-            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} printbtn={view}
+            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={view}
               btn={btnfunc} uneditcolumn={this.uneditcolumn} 
               table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
 

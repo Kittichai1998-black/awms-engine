@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business.Issued
+namespace AWMSEngine.Engine.General
 {
     public class CreateDocument : BaseEngine<CreateDocument.TReq, amt_Document>
     {
@@ -45,9 +45,6 @@ namespace AWMSEngine.Engine.Business.Issued
             public DateTime? actionTime;//วันที่ส่ง
             public DateTime documentDate;
             public string remark;
-            public string options;
-
-            public DocumentEventStatus eventStatus = DocumentEventStatus.IDEL;
 
             public List<IssueItem> issueItems;
             public class IssueItem
@@ -146,9 +143,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
 
                 Remark = reqVO.remark,
-                Options = reqVO.options,
 
-                EventStatus = reqVO.eventStatus,
+                EventStatus = DocumentEventStatus.IDEL,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };
@@ -198,7 +194,6 @@ namespace AWMSEngine.Engine.Business.Issued
                     Options = recItem.options,
                     ExpireDate = recItem.expireDate,
                     ProductionDate = recItem.productionDate,
-
                     Ref1 = recItem.ref1,
                     Ref2 = recItem.ref2,
                     RefID = recItem.refID,

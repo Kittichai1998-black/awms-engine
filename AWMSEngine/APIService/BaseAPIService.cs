@@ -23,13 +23,15 @@ namespace AWMSEngine.APIService
         public VOCriteria BuVO { get; set; }
         public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
+        private bool IsAuthenAuthorize { get; set; }
 
         public AMWLogger Logger { get; set; }
 
         protected abstract dynamic ExecuteEngineManual();
 
-        public BaseAPIService(ControllerBase controllerAPI)
+        public BaseAPIService(ControllerBase controllerAPI, bool isAuthenAuthorize = true)
         {
+            this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;
         }
 
@@ -122,10 +124,15 @@ namespace AWMSEngine.APIService
                 if(this.Logger == null)
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
 
-                //this.Permission(token, apiKey);
+
+                this.Logger.LogBegin();
+                this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
+
+                this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
+                this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
+                this.Permission(token, apiKey);
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
-                this.Logger.LogBegin();
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
                     this.APIServiceID(),
                     this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
@@ -135,17 +142,7 @@ namespace AWMSEngine.APIService
                     this.RequestVO,
                     this.BuVO);
                 this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
-                this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
 
-                this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
-                this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
-
-                var tokenInfo = ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault();
-                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, tokenInfo);
-                this.Logger.LogInfo("token : " + token);
-
-                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
-                this.Logger.LogInfo("apikey : " + apiKey);
 
                 this.Logger.LogInfo("[BeginExecuteEngineManual]");
                 var res = this.ExecuteEngineManual();
@@ -196,32 +193,35 @@ namespace AWMSEngine.APIService
             return response;
         }
 
-        private void Permission(string token, string apikey)
+        private void Permission(string token, string apiKey)
         {
-            //var restoken = ADO.DataADO.GetInstant().SelectBy<amt_Token>(new KeyValuePair<string, object>[] {
-            //    new KeyValuePair<string, object>("Token", token),
-            //    new KeyValuePair<string, object>("Status", 1)
-            //}, this.BuVO).FirstOrDefault();
+            var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
+            this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
+            this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
+            this.Logger.LogInfo("token : " + token);
 
-            //if (restoken != null)
-            //{
-            //    if (restoken.ExpireTime > new DateTime())
-            //    {
-            //        throw new AMWException(this.Logger, AMWExceptionCode.A0003, "Token หมดอายุ กรุณา Login ใหม่อีกครั้ง");
-            //    }
-            //}
-            //else
-            //{
-            //    throw new AMWException(this.Logger, AMWExceptionCode.A0003, "Token นี้ไม่สามารถใช้งานได้");
-            //}
+            var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("code", apiKey, this.BuVO).FirstOrDefault() : null;
+            this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
+            this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKeyInfo);
+            this.Logger.LogInfo("apikey : " + apiKey);
+
+            if (!this.IsAuthenAuthorize)
+                return;
+
+            if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");
+            if (!string.IsNullOrEmpty(token) && tokenInfo == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Token Not Found");
+            if (tokenInfo == null && apiKeyInfo == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Key Not Found");
+
+            if (tokenInfo != null)
+            {
+                if (DateTime.Now > tokenInfo.ExpireTime)
+                    throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Token Expire");
                 
-            var resapi = ADO.DataADO.GetInstant().SelectBy<ams_APIKey>(new KeyValuePair<string, object>[] {
-                new KeyValuePair<string, object>("APIKey", apikey),
-                new KeyValuePair<string, object>("Status", 1)
-            }, this.BuVO).FirstOrDefault();
 
-            if (resapi == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key นี้ไม่สามารถใช้งานได้");
+            }
         }
     }
 }

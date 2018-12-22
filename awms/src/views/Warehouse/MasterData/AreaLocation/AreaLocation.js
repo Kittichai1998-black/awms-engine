@@ -273,8 +273,8 @@ displayButtonByPermission(perID){
         { accessor: 'Bank', Header: 'Bank', editable: true, Filter: "text", Type: "autolocationcode"},
         { accessor: 'Bay', Header: 'Bay', editable: true, Filter: "text", Type: "autolocationcode"},
         { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", Type: "autolocationcode"},
-        { accessor: 'ObjectSize_Code', Header: 'Object Size', updateable: false, Filter: "text", Type: "autocomplete" },
-        { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete" },
+        { accessor: 'ObjectSize_Code', Header: 'Size', updateable: false, Filter: "text", Type: "autocomplete" },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: false, Filter: "text", Type: "autocomplete" },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */

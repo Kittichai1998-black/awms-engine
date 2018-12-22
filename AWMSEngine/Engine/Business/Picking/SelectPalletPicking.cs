@@ -24,6 +24,7 @@ namespace AWMSEngine.Engine.Business.Picking
         public class TRes
         {
             public string palletCode;
+            public long palletID;
             //public List<amt_Document> docList;
             public List<docItem> docItems;
             public List<docItem.palletItem> stos;
@@ -47,6 +48,7 @@ namespace AWMSEngine.Engine.Business.Picking
             public class palletItem
             {
                 public long? docItemID;
+                public long? STOID;
                 public string packCode;
                 public bool pick;
                 public string batch;
@@ -63,6 +65,7 @@ namespace AWMSEngine.Engine.Business.Picking
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             //List<amt_Document> docList = new List<amt_Document>();
+            long palletID = 0;
             List<docItem> docItemList = new List<docItem>();
             List<docItem.palletItem> palletItem = new List<docItem.palletItem>();
             docItemList = getDocmentPickingList(reqVO);
@@ -74,13 +77,13 @@ namespace AWMSEngine.Engine.Business.Picking
                 docItemList = docItemList.Where(x => x.docID == reqVO.docID.Value).ToList();
 
                 var selectPallet = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
-
+                palletID = selectPallet.id.Value;
                 var selectPack = selectPallet.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Distinct().ToList();
 
                 foreach (var row in selectPack)
                 {
                     var itemCanMap = (ADO.DocumentADO.GetInstant().ListItemCanMap(row.code, DocumentTypeID.GOODS_ISSUED, reqVO.docID, "11", this.BuVO));
-                    var unitType = this.StaticValue.UnitTypes.FirstOrDefault(y => y.ID == row.baseUnitID).Name;
+                    var unitType = this.StaticValue.UnitTypes.FirstOrDefault(y => y.ID == row.unitID).Name;
 
                     if (itemCanMap.Count > 0)
                     {
@@ -90,13 +93,14 @@ namespace AWMSEngine.Engine.Business.Picking
                             palletItem.Add(new docItem.palletItem()
                             {
                                 docItemID = x.DocumentItem_ID,
+                                STOID = row.id,
                                 packCode = row.code,
                                 batch = row.batch,
                                 lot = row.lot,
-                                palletQty = row.baseQty,
+                                palletQty = row.qty,
                                 canPick = x.MaxQty,
                                 pick = true,
-                                shouldPick = (x.MaxQty - x.Qty) > row.baseQty ? row.baseQty : (x.MaxQty - x.Qty),
+                                shouldPick = (x.MaxQty - x.Qty) > row.qty ? row.qty : (x.MaxQty - x.Qty),
                                 unitType = unitType
                             });
                         });
@@ -106,8 +110,9 @@ namespace AWMSEngine.Engine.Business.Picking
                         palletItem.Add(new docItem.palletItem()
                         {
                             packCode = row.code,
+                            STOID = row.id,
                             batch = row.batch,
-                            palletQty = row.baseQty,
+                            palletQty = row.qty,
                             lot = row.lot,
                             canPick = 0,
                             pick = false,
@@ -125,6 +130,7 @@ namespace AWMSEngine.Engine.Business.Picking
             
             var res = new TRes()
             {
+                palletID = palletID,
                 palletCode = reqVO.palletCode,
                 docItems = docItemList,
                 stos = palletItem
@@ -160,7 +166,7 @@ namespace AWMSEngine.Engine.Business.Picking
                     {
                         itemCode = y.Code,
                         picked = sumData,
-                        willPick = y.BaseQuantity.Value
+                        willPick = y.Quantity.Value
                     };
                 }).ToList();
 

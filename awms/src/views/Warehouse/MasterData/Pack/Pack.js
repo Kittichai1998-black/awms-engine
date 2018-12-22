@@ -147,7 +147,7 @@ class Pack extends Component{
           /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
           //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+          {show: false, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ]; 
       
         const btnfunc = [{
@@ -162,9 +162,9 @@ class Pack extends Component{
             data = json ข้อมูลสำหรับ select ผ่าน url
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
-          <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-                  filterable={true} autocomplete={this.state.autocomplete} accept={true}
-                  btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+                  filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} addbtn={true} 
+                  btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"Pack"}
             table="ams_PackMaster"/>
           </div>
         )
