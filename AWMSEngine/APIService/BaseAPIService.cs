@@ -23,13 +23,15 @@ namespace AWMSEngine.APIService
         public VOCriteria BuVO { get; set; }
         public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
+        private bool IsAuthenAuthorize { get; set; }
 
         public AMWLogger Logger { get; set; }
 
         protected abstract dynamic ExecuteEngineManual();
 
-        public BaseAPIService(ControllerBase controllerAPI)
+        public BaseAPIService(ControllerBase controllerAPI, bool isAuthenAuthorize = true)
         {
+            this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;
         }
 
@@ -203,6 +205,8 @@ namespace AWMSEngine.APIService
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKeyInfo);
             this.Logger.LogInfo("apikey : " + apiKey);
 
+            if (!this.IsAuthenAuthorize)
+                return;
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");
