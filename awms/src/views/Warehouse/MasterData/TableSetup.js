@@ -790,7 +790,7 @@ class TableGen extends Component {
   }
 
   inputPassword(rowdata) {
-    return <Input type="password" maxLength="8" value={rowdata.value === null ? "" : rowdata.value}
+    return <Input type="password" minLength="6" value={rowdata.value === null ? "" : rowdata.value}
       onChange={(e) => { this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id) }} />
   }
 
@@ -1223,7 +1223,17 @@ class TableGen extends Component {
       }
       else if (row.Type === "autocomplete") {
         //row.Cell = (e) => this.createAutoCompleteDownshift(e)
-        row.Cell = (e) => this.createAutoComplete(e)
+        if (row.updateable && row.insertable) {
+          row.Cell = (e) => {
+            if (e.original.ID < 1)
+              return this.createAutoComplete(e)
+            else
+              return <span>{e.value}</span>
+          }
+        }
+        else if (row.updateable && (row.body === undefined || !row.body)) {
+          row.Cell = (e) => this.createAutoComplete(e)
+        }
       }
       else if (row.Type === "selection") {
         row.Cell = (e) => this.createSelection(e, "checkbox")

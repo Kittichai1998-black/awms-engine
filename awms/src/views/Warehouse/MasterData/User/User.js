@@ -263,8 +263,8 @@ class User extends Component{
           //{ accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
           { accessor: 'TelMobile', Header: 'Mobile', editable: true, minWidth:100},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
-            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+            {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
+            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"},
             {show: this.state.permissionView, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
@@ -296,8 +296,8 @@ class User extends Component{
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"User"}
-                      filterable={true} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"User"}
+                      filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} exportbtn={view}
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
