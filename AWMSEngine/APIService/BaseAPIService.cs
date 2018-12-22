@@ -85,43 +85,33 @@ namespace AWMSEngine.APIService
                 var getKey = ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
                 string token = null;
                 string apiKey = null;
-                try
+                if (getKey.token != null)
+                    token = getKey.token;
+                else if (getKey._token != null)
+                    token = getKey._token;
+                if (getKey.apiKey != null)
+                    apiKey = getKey.apiKey;
+                else if (getKey._apiKey != null)
+                    apiKey = getKey._apiKey;
+
+
+                if (request != null)
                 {
-                    if (getKey._apiKey != null)
-                        apiKey = getKey._apiKey;
-                    if(request != null)
-                    {
-                        if (request._apiKey != null)
-                            apiKey = request._apiKey;
-                    }
-                    if (!string.IsNullOrWhiteSpace(apiKey))
-                    {
-                        this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
-                    }
-                    else
-                    {
-                        apiKey = null;
-                    }
-                    if (getKey._token != null)
-                        token = getKey._token;
-                    if (request != null)
-                    {
-                        if (request._token != null)
-                            token = request._token;
-                    }
-                    if (!string.IsNullOrWhiteSpace(token))
-                    {
-                        this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
-                    }
-                    else
-                    {
-                        token = null;
-                    }
+                    if (request.token != null)
+                        token = request.token;
+                    else if (request._token != null)
+                        token = request._token;
+                    if (request.apiKey != null)
+                        apiKey = request.apiKey;
+                    else if (request._apiKey != null)
+                        apiKey = request._apiKey;
                 }
-                catch{
-                    this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
-                }
-                if(this.Logger == null)
+
+                if (string.IsNullOrWhiteSpace(token))
+                    this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
+                else if (string.IsNullOrWhiteSpace(apiKey))
+                    this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
+                else if (this.Logger == null)
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
 
 
