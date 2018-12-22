@@ -227,11 +227,11 @@ namespace AWMSEngine.ADO
             return docItemSto;
         }
 
-        public List<amt_Document> List(List<DocumentTypeID> docIDs, VOCriteria buVO)
+        public List<amt_Document> List(List<long> docIDs, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             
-            whares.Add(new SQLConditionCriteria("", string.Join(',', docIDs), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("ID", string.Join(',', docIDs), SQLOperatorType.IN));
             whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
 
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
