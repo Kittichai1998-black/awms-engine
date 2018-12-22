@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -14,12 +15,14 @@ namespace AWMSEngine.Engine.Business.Picking
         public class TReq
         {
             public string palletCode;
+            public long palletID;
             public long docID;
             public List<UpdateQty> pickedList;
 
             public class UpdateQty
             {
                 public long? docItemID;
+                public long STOID;
                 public string packCode;
                 public string batch;
                 public string lot;
@@ -38,34 +41,36 @@ namespace AWMSEngine.Engine.Business.Picking
         protected override string ExecuteEngine(TReq reqVO)
         {
             var itemList = ADO.DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO);
+            var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletID, StorageObjectType.BASE, false, false, this.BuVO);
+            var listSto = sto.ToTreeList().Where(y => y.type == StorageObjectType.PACK).Distinct().ToList();
+
             reqVO.pickedList.ForEach(x =>
             {
-                var getItemID = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
-                    new SQLConditionCriteria("ID", reqVO.docID, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Batch", x.batch, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Lot", x.lot, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.PICKING, SQLOperatorType.EQUALS)}, this.BuVO).FirstOrDefault().ID;
-
                 if (x.picked > x.palletQty)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนในพาเลทได้");
                 else if(x.picked > x.canPick)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนที่ต้องหยิบได้");
+                
+                var basePicked = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(sto.id.Value, x.picked, sto.unitID);
 
-                var getList = ADO.DocumentADO.GetInstant().ListItemCanMap(x.packCode, DocumentTypeID.GOODS_ISSUED, x.batch, x.lot, this.BuVO).Where(y=>y.DocumentItem_ID == x.docItemID).FirstOrDefault();
+                var setSTO = listSto.Where(y => y.id == x.STOID).First();
 
-                if(x.palletQty == x.picked)
+                setSTO.qty = sto.qty - x.picked;
+                setSTO.baseQty = sto.baseQty - basePicked.baseQty;
+                setSTO.eventStatus = sto.qty - x.picked == 0 ? StorageObjectEventStatus.PICKED : StorageObjectEventStatus.PICKING;
+
+                ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
+
+                var docTarget = ADO.DocumentADO.GetInstant().Target(reqVO.docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                var res = docTarget.Any(z => z.needPackQty == 0);
+                if(res == true)
                 {
-                    ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(getItemID.Value, this.BuVO, new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string, object>("BaseQur", StorageObjectEventStatus.PICKED)
-                    });
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
                 }
-
-
-                ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, 0, x.picked );
-
             });
 
-            throw new NotImplementedException();
+            return "yep";
         }
     }
 }
