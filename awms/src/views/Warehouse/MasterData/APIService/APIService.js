@@ -39,7 +39,9 @@ class APIService extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
+  componentDidMount(){
+    document.title = "API Service : AWMS";
+  }
   componentWillMount(){
     this.filterList();
   }

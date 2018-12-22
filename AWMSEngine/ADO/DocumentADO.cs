@@ -456,5 +456,16 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+
+        public List<amv_LinkDocument> ListDocRelation(long documentID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("documentID", documentID);
+            var res = this.Query<amv_LinkDocument>("SP_RELATION_DOC_GR",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
     }
 }

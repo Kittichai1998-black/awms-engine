@@ -87,7 +87,9 @@ class ObjectSize extends Component{
         this.forceUpdate();
         event.preventDefault();
     }
-
+    componentDidMount(){
+        document.title = "Object Size : AWMS";
+      }
      componentWillMount(){
          this.filterList()
     }

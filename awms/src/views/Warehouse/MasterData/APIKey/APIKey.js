@@ -39,7 +39,9 @@ class APIKey extends Component{
     this.uneditcolumn = ["Created","Modified"]
   }
 
- 
+  componentDidMount(){
+    document.title = "API Key : AWMS";
+  }
   //permission
 
   render(){

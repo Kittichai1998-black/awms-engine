@@ -9,7 +9,7 @@ using AWMSModel.Constant.EnumConst;
 
 namespace AWMSEngine.Engine.General
 {
-    public class MasterPut<T> : BaseEngine<MasterPut<T>.TReq, List<T>>
+    public class PutMaster<T> : BaseEngine<PutMaster<T>.TReq, List<T>>
         where T : BaseEntityID
     {
         public class TReq

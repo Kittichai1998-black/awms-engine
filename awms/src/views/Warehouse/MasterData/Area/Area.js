@@ -36,6 +36,9 @@ class Area extends Component{
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["Warehouse_Code","AreaMasterType_Code","Created","Modified"]
   }
+  componentDidMount(){
+    document.title = "Area - AWMS"
+  }
   async componentWillMount(){
     this.filterList()
     //permission

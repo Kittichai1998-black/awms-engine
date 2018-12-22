@@ -33,7 +33,9 @@ class Branch extends Component{
       this.uneditcolumn = ["Created","Modified"]
       this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     }
-  
+    componentDidMount(){
+      document.title = "Branch - AWMS"
+    }
     async componentWillMount(){
       //permission
       let data =await GetPermission()

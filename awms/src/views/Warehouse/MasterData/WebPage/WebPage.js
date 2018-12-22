@@ -39,7 +39,9 @@ class WebPage extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
+  componentDidMount(){
+    document.title = "Web Page : AWMS";
+  }
   componentWillMount(){
     this.filterList();
   }

@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.Permission
 {
     public class ExtendTokenAPI : BaseAPIService
     {
-        public ExtendTokenAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ExtendTokenAPI(ControllerBase controllerAPI) : base(controllerAPI, false)
         {
         }
 

@@ -45,7 +45,9 @@ class SKUMasterType extends Component{
         this.forceUpdate();
         event.preventDefault();
       }
-    
+      componentDidMount(){
+        document.title = "Catagory - AWMS"
+    }
       async componentWillMount(){
         this.getAutocomplete();
         //permission

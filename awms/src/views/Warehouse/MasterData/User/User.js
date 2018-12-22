@@ -82,6 +82,9 @@ class User extends Component{
       this.updateRole = this.updateRole.bind(this)
       
     }
+    componentDidMount(){
+        document.title = "User - AWMS"
+    }
     async componentWillMount(){
         //permission
         let data = await GetPermission()
@@ -112,10 +115,7 @@ class User extends Component{
         this.forceUpdate();
         event.preventDefault();
     }
-
-    componentDidMount(){
-    }
-
+ 
   getData(user_id) {
        
         const selectroledata = []

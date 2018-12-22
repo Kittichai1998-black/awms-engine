@@ -41,7 +41,9 @@ class AreaType extends Component{
         this.forceUpdate();
         event.preventDefault();
     }
-
+    componentDidMount(){
+      document.title = "Area Type : AWMS";
+    }
     componentWillMount(){
         this.filterList();
     }

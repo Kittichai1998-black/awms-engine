@@ -121,8 +121,9 @@ displayButtonByPermission(perID){
   componentWillUnmount(){
     Axios.isCancel(true);
   }
-
+  
   componentDidMount(){
+    document.title = "Location - AWMS"
     Axios.all([Axios.get(createQueryString(this.state.supplier)),
       Axios.get(createQueryString(this.state.warehouse))]).then(
       (Axios.spread((supplierresult, warehouseresult) => 
