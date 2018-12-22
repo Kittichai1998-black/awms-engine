@@ -407,6 +407,13 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
         }
 
+        public List<SPOutDocTargetCriteria> Target(long docID, DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            List<long> docIDs = new List<long>();
+            docIDs.Add(docID);
+            return this.Target(docIDs, docTypeID, buVO);
+        }
+
         public int UpdateStatusToChild(long docID,
             DocumentEventStatus? fromEventStatus, EntityStatus? fromStatus, DocumentEventStatus? toEventStatus, VOCriteria buVO)
         {

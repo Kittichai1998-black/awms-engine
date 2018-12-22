@@ -293,7 +293,7 @@ namespace AWMSEngine.ADO
             return res;
         }
         
-        public void UpdatePicking(string palletCode, long docItemID, string packCode, string batch, string lot, decimal pickQty, decimal basePickQty)
+        public void UpdatePicking(string palletCode, long docItemID, string packCode, string batch, string lot, decimal pickQty, decimal basePickQty, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("palletCode", palletCode);
