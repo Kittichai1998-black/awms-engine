@@ -1,20 +1,8 @@
 import React, { Component } from 'react';
 import { Tooltip, Button, Card, CardBody, CardFooter, Col, Container, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
-import guid from 'guid';
-import API from "axios";
+import { apicall, createQueryString } from '../../ComponentCore/CoreFunction'
 
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    + ("&_token=" + sessionStorage.Token)
-  return queryS
-}
+const API = new apicall();
 
 class Profile extends Component {
   constructor(props) {
@@ -48,13 +36,13 @@ class Profile extends Component {
   }
 
   componentDidMount() {
-    //console.log(localStorage.getItem("User_ID"))
+    document.title = "Profile - AWMS"
     this.selectprofile();
   }
   Reload(){
-    //sessionStorage.clear();
-    //localStorage.clear();
-    window.location.reload();
+    setTimeout(function() {
+      window.location.reload();
+    }.bind(this), 1000);
   }
   savetoSession(name,data){
     localStorage.setItem(name, data);
@@ -101,8 +89,8 @@ class Profile extends Component {
   }
   
   handleSubmit(event) {
-    console.log("handleSubmit")
-    console.log(this.state.dataedit)
+    //console.log("handleSubmit")
+    //console.log(this.state.dataedit)
     const datainsert = {...this.state.dataedit};
     if (datainsert["CurPass"] && datainsert["NewPass"] && datainsert["ConfPass"]) {
       var NewPass = datainsert["NewPass"];
@@ -110,12 +98,11 @@ class Profile extends Component {
 
       if (datainsert["NewPass"] === datainsert["ConfPass"]) {
         let updateNewPass ={
-          "_token": localStorage.getItem("Token"),
           "_apikey": null,
            "CurPass": CurPass,
            "NewPass": NewPass
         };
-         console.log(updateNewPass);
+         //console.log(updateNewPass);
          this.ChangePass(updateNewPass);
       } else {
         this.setState({status : false});
@@ -128,30 +115,31 @@ class Profile extends Component {
     event.preventDefault();
   }
   async changeProfile(){
-    console.log("changeProfile")
+    //console.log("changeProfile")
     const datainsert = {...this.state.dataedit};
-    console.log(datainsert)
+    //console.log(datainsert)
     for (let col of this.state.uneditcolumn) {
       delete datainsert[col]
     }
     if(this.state.status){
       let updjson = {
-        "_token": localStorage.getItem("Token"),
         "_apikey": null,
         "t": "ams_User",
         "pk": "ID",
         "datas": [datainsert],
         "nr": false
       }
-    console.log(updjson)
-
-      await API.put(window.apipath + "/api/mst", updjson).then((res) => {
+    await API.put(window.apipath + "/api/mst", updjson).then((res) => {
         if (res.data._result !== undefined) {
           if (res.data._result.status === 1) {
             if(this.state.statusPass){
+              alert("อัพเดทข้อมูลผู้ใช้ และเปลี่ยนรหัสผ่านสำเร็จ");
+              if(datainsert["Code"] !== localStorage.getItem("Username")){
+                this.savetoSession("Username", datainsert["Code"]);
+              }
               this.Reload();
             }else{
-              alert("อัพเดทข้อมูลเสร็จเรียบร้อย");
+              alert("อัพเดทข้อมูลผู้ใช้สำเร็จ");
               if(datainsert["Code"] !== localStorage.getItem("Username")){
                 this.savetoSession("Username", datainsert["Code"]);
                 this.Reload();
@@ -169,10 +157,10 @@ class Profile extends Component {
     }
   }
   async ChangePass(data){
-    console.log("ChangePass")
+    //console.log("ChangePass")
     await API.post(window.apipath + '/api/mst/changePass', data)
     .then((res) => {
-      console.log(res)
+      //console.log(res)
       if(res.data._result !== undefined)
        {
         if(res.data._result.status === 1){
@@ -242,24 +230,23 @@ class Profile extends Component {
                       <InputGroupText id="CurrentPassword">Current Password
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="password" maxLength="8" name="CurPass" value={this.state.dataprofile.CurPass} onChange={this.handleInputChange} />
+                      <Input type="password" minLength="6" name="CurPass" value={this.state.dataprofile.CurPass} onChange={this.handleInputChange} />
                   </InputGroup>
                   <InputGroup className="mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText id="NewPassword" >New Password
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="password" maxLength="8" name="NewPass" value={this.state.dataprofile.NewPass} onChange={this.handleInputChange} />
+                      <Input type="password" minLength="6" name="NewPass" value={this.state.dataprofile.NewPass} onChange={this.handleInputChange} />
                   </InputGroup>
                   <InputGroup className="mb-4">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText id="ConfirmPass">Confirm password
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="password" maxLength="8" name="ConfPass" value={this.state.dataprofile.ConfPass} onChange={this.handleInputChange} />
+                      <Input type="password" minLength="6" name="ConfPass" value={this.state.dataprofile.ConfPass} onChange={this.handleInputChange} />
                   </InputGroup>
                    <Button color="primary" type="submit" block>Save</Button>
-                    {/*<input type="submit" color="primary" value="Save" />*/}
                 </CardBody>
               </Card>
             </Col>
