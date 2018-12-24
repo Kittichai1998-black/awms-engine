@@ -150,7 +150,7 @@ class ChangePass extends Component {
       <form onSubmit={this.handleSubmit}>
       <Container>
         <Row>
-          <Col md="6">
+          <Col lg="6" md="8" sm="12">
             <Card className="mx-6">
               <CardBody className="p-4">
                 <p className="text-muted">Change your password</p>
