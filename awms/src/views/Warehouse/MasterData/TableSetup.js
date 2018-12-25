@@ -365,7 +365,7 @@ class TableGen extends Component {
 
             }
             row[col.accessor] = "@@sql_gen_password," + row[col.accessor] + "," + guidstr
-            row["SoftPassword"] = guidstr
+            row["SaltPassword"] = guidstr
           }
           if (col.accessor === "ObjectType") {
             if (row[col.accessor] === "") {
