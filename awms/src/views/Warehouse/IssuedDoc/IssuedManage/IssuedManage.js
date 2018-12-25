@@ -125,7 +125,6 @@ class IssuedManage extends Component{
             ref1:rowselect1.data.document.ref1,
             ref2:rowselect1.data.document.ref2
           })
-
         }
       })
     }
@@ -499,7 +498,7 @@ class IssuedManage extends Component{
               </div>
               <div className=""><label style={style}>Movement Type : </label>
               {this.state.pageID ? <span> {this.state.ref2}</span> :
-              <Input onChange={(e) => this.setState({ref2:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              <Input onChange={(e) => this.setState({ref2:(e.target.value===""?null:e.target.value)})} style={{display:"inline-block", width:"300px"}}
               
               value={this.state.ref2 === undefined ? "" : this.state.ref2}/>}
               </div>
@@ -509,19 +508,19 @@ class IssuedManage extends Component{
                 <div style={{width:"300px", display:"inline-block"}}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({"warehouse":e.value, "warehouseresult":e.label})}/></div>}</div>
                 <div className=""><label style={style}>Materials Document : </label>
               {this.state.pageID ? <span> {this.state.refID}</span> :
-              <Input onChange={(e) => this.setState({refID:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              <Input onChange={(e) => this.setState({refID:(e.target.value===""?null:e.target.value)})} style={{display:"inline-block", width:"300px"}}
               
               value={this.state.refID === undefined ? "" : this.state.refID}/>}
               </div>
               <div className=""><label style={style}>Materials Document Year: </label>
               {this.state.pageID ? <span> {this.state.ref1}</span> :
-              <Input onChange={(e) => this.setState({ref1:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              <Input onChange={(e) => this.setState({ref1:(e.target.value===""?null:e.target.value)})} style={{display:"inline-block", width:"300px"}}
               
               value={this.state.ref1 === undefined ? "" : this.state.ref1}/>}
               </div>
               <div className=""><label style={style}>Remark : </label>
               {this.state.pageID ? <span> {this.state.remark}</span> :
-              <Input onChange={(e) => this.setState({remark:e.target.value})} style={{display:"inline-block", width:"300px"}}
+              <Input onChange={(e) => this.setState({remark:(e.target.value===""?null:e.target.value)})} style={{display:"inline-block", width:"300px"}}
               
               value={this.state.remark === undefined ? "" : this.state.remark}/>}
               </div>
