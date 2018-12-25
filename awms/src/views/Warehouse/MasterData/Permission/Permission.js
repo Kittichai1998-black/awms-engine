@@ -41,7 +41,9 @@ class Permission extends Component{
         this.forceUpdate();
         event.preventDefault();
       }
-      
+      componentDidMount(){
+        document.title = "Permission : AWMS";
+      }
       componentWillUnmount(){
         Axios.isCancel(true);
       }

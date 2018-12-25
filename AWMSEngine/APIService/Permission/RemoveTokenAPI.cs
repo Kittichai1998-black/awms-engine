@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.Permission
 {
     public class RemoveTokenAPI : BaseAPIService
     {
-        public RemoveTokenAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public RemoveTokenAPI(ControllerBase controllerAPI) : base(controllerAPI, false)
         {
         }
 

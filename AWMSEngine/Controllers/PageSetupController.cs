@@ -15,10 +15,10 @@ namespace AWMSEngine.Controllers
     public class PageSetupController : ControllerBase
     {
         // GET: api/PageSetup
-        [HttpGet("menu/{token}")]
-        public dynamic Get(string token)
+        [HttpGet("menu")]
+        public dynamic Get()
         {
-            var jsond = ObjectUtil.QueryStringToObject(token);
+            var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             var api = new ListMenuAPI(this);
             var res = api.Execute(jsond);
             return res;

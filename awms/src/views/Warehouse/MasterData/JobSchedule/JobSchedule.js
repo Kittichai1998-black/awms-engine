@@ -39,7 +39,9 @@ class JobSchedule extends Component{
     this.uneditcolumn = ["Created","Modified"]
   }
 
- 
+  componentDidMount(){
+    document.title = "Job Schedule : AWMS";
+  }
   //permission
 
   render(){

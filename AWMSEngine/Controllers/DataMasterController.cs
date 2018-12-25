@@ -65,10 +65,10 @@ namespace AWMSEngine.Controllers
             return api.Execute(request);
         }
 
-        [HttpPost("SAP/SKUMaster")]
-        public dynamic SAP_SKUMaster([FromBody]dynamic request)
+        [HttpPost("changePass")]
+        public dynamic ChangePassword([FromBody]dynamic request)
         {
-            PutSKUMasterAPI api = new PutSKUMasterAPI(this);
+            AWMSEngine.APIService.Mst.ChangeUserPasswordAPI api = new AWMSEngine.APIService.Mst.ChangeUserPasswordAPI(this);
             return api.Execute(request);
         }
 

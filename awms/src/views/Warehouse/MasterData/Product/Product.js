@@ -45,7 +45,9 @@ class ListProduct extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-
+  componentDidMount(){
+    document.title = "SKU - AWMS"
+}
   async componentWillMount(){
     this.getAutocomplete();
     //permission
@@ -61,6 +63,7 @@ displayButtonByPermission(perID){
   this.setState({perID:perID})
   let check = false
   perID.forEach(row => {
+    
       if(row === 42){
         check = true
       }if(row === 43){
@@ -149,24 +152,24 @@ displayButtonByPermission(perID){
   render(){
     const cols = [
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
-      { accessor: 'SKUMasterType_Code', Header: 'SKU Type', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 130 },
-      { accessor: 'Code', Header: 'Code', editable: true,Filter:"text",},
-      { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", minWidth: 200},
+      { accessor: 'Code', Header: 'Code', editable: false,Filter:"text", minWidth: 100},
+      { accessor: 'SKUMasterType_Code', Header: 'Catagory', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 130 },
+      { accessor: 'Name', Header: 'Name', editable: false, Filter: "text", minWidth: 230},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
-      { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 90 },
-      { accessor: 'WeightKG', Header: 'Weight (Kg.)', editable: true, datatype: "int" },
-      { accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
-      { accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
-      { accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},
-      { accessor: 'ObjectSize_Code', Header: 'Object Size', Filter: "text", Type: "autocomplete", minWidth: 90 },
-      { accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
-      { accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
+      { accessor: 'UnitType_Code', Header: 'Base Unit', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80 },
+      { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, datatype: "int" , minWidth: 100, className: "center"},
+      //{ accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
+      //{ accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
+      //{ accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},
+      //{ accessor: 'ObjectSize_Code', Header: 'Object Size', Filter: "text", Type: "autocomplete", minWidth: 90 },
+      //{ accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
+      //{ accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
       //{ accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
-      { accessor: 'Created', Header: 'Create', filterable:false},
+      { accessor: 'Created', Header: 'Create', filterable:false, minWidth: 170, maxWidth: 170},
       /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170, maxWidth: 170},
       //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      { show: this.state.permissionView, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
+      { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
     ];
     
     const btnfunc = [{
@@ -189,8 +192,8 @@ displayButtonByPermission(perID){
     
       */}
 
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view}
-          filterable={true} autocomplete={this.state.autocomplete} accept={view} expFilename={"SKU"}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+          filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} exportfilebtn={view} expFilename={"SKU"}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}
           table="ams_SKUMaster" />
         

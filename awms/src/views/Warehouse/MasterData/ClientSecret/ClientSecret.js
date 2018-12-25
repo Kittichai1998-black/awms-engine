@@ -39,9 +39,9 @@ class ClientSecret extends Component{
     this.uneditcolumn = ["Created","Modified"]
   }
 
- 
-  //permission
-
+  componentDidMount(){
+    document.title = "Client Secret : AWMS";
+  }
   render(){
     const cols = [
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left", minWidth: 90, maxWidth: 90},

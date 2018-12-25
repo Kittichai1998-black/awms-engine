@@ -38,7 +38,6 @@ namespace AWMSEngine.ADO
             param.Add("@baseQty", queueDocItem.BaseQuantity);
             param.Add("@baseUnitID", queueDocItem.BaseUnitType_ID);
             param.Add("@actionBy", buVO.ActionBy);
-            param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
 
             var data = this.Query<dynamic>("SP_QUEUE_MAP_DOCITEM", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).First();
             queueDocItem.ID = (long)data.resID;
@@ -48,13 +47,28 @@ namespace AWMSEngine.ADO
         }
         public SPworkQueue PUT(SPworkQueue obj, VOCriteria buVO)
         {
-            var param = this.CreateDynamicParameters(obj, "Seq", "RefID");
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("ID", obj.ID);
+            param.Add("IOType", obj.IOType);
+            param.Add("Parent_WorkQueue_ID", obj.Parent_WorkQueue_ID);
+            param.Add("StorageObject_ID", obj.StorageObject_ID);
+            param.Add("Sou_Warehouse_ID", obj.Sou_Warehouse_ID);
+            param.Add("Sou_AreaMaster_ID", obj.Sou_AreaMaster_ID);
+            param.Add("Sou_AreaLocationMaster_ID", obj.Sou_AreaLocationMaster_ID);
+            param.Add("Warehouse_ID", obj.Warehouse_ID);
+            param.Add("AreaMaster_ID", obj.AreaMaster_ID);
+            param.Add("AreaLocationMaster_ID", obj.AreaLocationMaster_ID);
+            param.Add("Des_Warehouse_ID", obj.Des_Warehouse_ID);
+            param.Add("Des_AreaMaster_ID", obj.Des_AreaMaster_ID);
+            param.Add("Des_AreaLocationMaster_ID", obj.Des_AreaLocationMaster_ID);
+            param.Add("TargetStartTime", obj.TargetStartTime);
+            param.Add("ActualTime", obj.ActualTime);
+            param.Add("StartTime", obj.StartTime);
+            param.Add("EndTime ", obj.EndTime);
+            param.Add("EventStatus", obj.EventStatus);
+            param.Add("Status", obj.Status);
+            param.Add("Priority", obj.Priority);
             param.Add("ActionBy", buVO.ActionBy);
-
-            /*param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
-            param.Add("resSeq", null, System.Data.DbType.Int32, System.Data.ParameterDirection.Output);
-            param.Add("resRefID", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            param.Add("resStoCode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);*/
 
             var data = this.Query<dynamic>("SP_QUEUE_PUT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).First();
             obj.ID = (long)data.resID;

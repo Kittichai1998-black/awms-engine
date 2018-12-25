@@ -5,6 +5,7 @@ using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -23,8 +24,12 @@ namespace AWMSEngine.Engine
         protected VOCriteria BuVO { get; set; }
         protected StaticValueManager StaticValue { get; set; }
         protected AMWLogger Logger { get; set; }
-        protected string Token => this.BuVO.GetString(BusinessVOConst.KEY_TOKEN);
+
+        protected string Token => this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN);
+        protected amt_Token TokenInfo => this.BuVO.Get<amt_Token>(BusinessVOConst.KEY_TOKEN_INFO);
         protected string APIKey => this.BuVO.GetString(BusinessVOConst.KEY_APIKEY);
+        protected ams_APIKey APIKeyInfo => this.BuVO.Get<ams_APIKey>(BusinessVOConst.KEY_APIKEY_INFO);
+
         protected SqlTransaction Transaction => this.BuVO.Get<SqlTransaction>(BusinessVOConst.KEY_DB_TRANSACTION);
         protected dynamic RequestParam => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST);
         protected LanguageType LanguageCode => this.BuVO.Get<LanguageType>(BusinessVOConst.KEY_LANGUAGE_CODE, LanguageType.TH);

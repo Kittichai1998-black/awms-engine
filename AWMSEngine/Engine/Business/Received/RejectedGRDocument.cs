@@ -37,12 +37,11 @@ namespace AWMSEngine.Engine.Business.Received
 
                 if ( doc.EventStatus == DocumentEventStatus.WORKED)
                 {
-
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้าถูกรับเข้าเรียบร้อยแล้ว");
                 }
 
-                //if (doc.Status == EntityStatus.DONE)
-                //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is Done");
+                if (doc.EventStatus == DocumentEventStatus.CLOSING || doc.EventStatus == DocumentEventStatus.CLOSED)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารอยู่ในสถานะ " + doc.EventStatus);
 
                 if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL && doc.EventStatus != DocumentEventStatus.WORKING)
                 {

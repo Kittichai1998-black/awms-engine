@@ -32,7 +32,7 @@ class User extends Component{
             select:{queryString:window.apipath + "/api/viw",
                 t:"User",
                 q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f:"ID,Code,Name,Password,SoftPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified",
+                f:"ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified",
                 g:"",
                 s:"[{'f':'Code','od':'asc'}]",
                 sk:0,
@@ -82,6 +82,9 @@ class User extends Component{
       this.updateRole = this.updateRole.bind(this)
       
     }
+    componentDidMount(){
+        document.title = "User - AWMS"
+    }
     async componentWillMount(){
         //permission
         let data = await GetPermission()
@@ -112,10 +115,7 @@ class User extends Component{
         this.forceUpdate();
         event.preventDefault();
     }
-
-    componentDidMount(){
-    }
-
+ 
   getData(user_id) {
        
         const selectroledata = []
@@ -258,13 +258,13 @@ class User extends Component{
           { accessor: 'Password', Header: 'Password', editable: true, filterable: false, Type: "password", minWidth: 100, maxWidth: 100},
           { accessor: 'Name', Header: 'Name', editable: true, minWidth: 160, maxWidth: 200 },
           { accessor: 'EmailAddress', Header: 'Email Address', editable: true, minWidth: 170, maxWidth: 200},
-          { accessor: 'LineID', Header: 'Line ID', editable: true, minWidth: 90},
-          { accessor: 'FacebookID', Header: 'Facebook ID', editable: true, minWidth:90},
-          { accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
-          { accessor: 'TelMobile', Header: 'Mobile', editable: true, minWidth:90},
+          //{ accessor: 'LineID', Header: 'Line ID', editable: true, minWidth: 90},
+          //{ accessor: 'FacebookID', Header: 'Facebook ID', editable: true, minWidth:90},
+          //{ accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
+          { accessor: 'TelMobile', Header: 'Mobile', editable: true, minWidth:100},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
-            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+            {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
+            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
             {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Role", btntext:"Role"},
             {show: this.state.permissionView, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
           ]; 
@@ -296,8 +296,8 @@ class User extends Component{
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"User"}
-                      filterable={true} accept={view} btn={btnfunc} uneditcolumn={this.uneditcolumn}
+            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"User"}
+                      filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} exportbtn={view}
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>

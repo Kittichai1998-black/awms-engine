@@ -56,7 +56,7 @@ namespace AMWUtil.Exception
 
         
         /// <summary>Authentication Error</summary>
-        [AMWExceptionDescription(TH = "Authentication Error", EN = "Authentication Error")]
+        [AMWExceptionDescription(TH = "Authentication Error : {0}", EN = "Authentication Error : {0}")]
         A0001,
         /// <summary>Authorization Error</summary>
         [AMWExceptionDescription(TH = "Authorization Error", EN = "Authorization Error")]

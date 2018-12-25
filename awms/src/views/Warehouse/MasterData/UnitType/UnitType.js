@@ -41,7 +41,9 @@ class UnitType extends Component{
         this.forceUpdate();
         event.preventDefault();
     }
-
+    componentDidMount(){
+      document.title = "Unit Type : AWMS";
+    }
   componentWillMount() {
     this.filterList()
   }

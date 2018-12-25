@@ -124,10 +124,11 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     {
                         source = "Sou_Warehouse_Code=" + row.source,
                         code = row.code,
-                        batch = row.batch,
                         qty = row.qty,
                         unit = row.unit,
-                        stampDate = row.stampDate,
+                        orderNo = row.orderNo,
+                        batch = row.batch,
+                        lot = row.lot,
                         warehouseCode = reqVO.warehouseCode,
                         areaCode = reqVO.areaCode,
                         //movingType = row.movingType
@@ -203,6 +204,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                     .GroupBy(x=>new {
                                         packID = x.mstID,
                                         packCode = x.code,
+                                        orderNo = x.orderNo,
                                         batch = x.batch,
                                         lot = x.lot
                                     })
@@ -214,6 +216,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                             packQty = x.Count(),
                                             skuCode = pkViw.SKUCode,
                                             skuQty = pkViw.ItemQty * x.Count(),
+                                            
+                                            orderNo = x.Key.orderNo,
                                             batch = x.Key.batch,
                                             lot = x.Key.lot
                                         };
@@ -241,7 +245,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 var dis = this.ProcessReceiving_CreateDocumentItems(
                                 reqVO,
-                                _warehouseASRS.ID.Value,
+                                wm.ID.Value,
                                 mapstoTree.Where(x => souWarehouse.stoIDs.Any(y => y == x.id.Value)).ToList(),
                                 bh.Code == "1100");
                 docItems.AddRange(dis);
@@ -258,7 +262,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             foreach (var packH in packs)
             {
                 var docItem = ADO.DocumentADO.GetInstant()
-                    .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, packH.warehouseID, null, packH.unitID, packH.baseUnitID, packH.orderNo, packH.batch, packH.lot, this.BuVO)
+                    .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souWarehouseID, null, packH.unitID, packH.baseUnitID, null, packH.batch,null, this.BuVO)
                     .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDEL);
 
 
@@ -299,8 +303,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                                         unitType = packH.unitCode,
 
                                                         batch = packH.batch,
-                                                        lot = packH.lot,
-                                                        orderNo = packH.orderNo,
+                                                        lot = null,//packH.lot,
+                                                        orderNo = null,//packH.orderNo,
 
 
                                                         ref2 = this.StaticValue.Warehouses.First(y => y.ID == souWarehouseID).Code == "5005" ? "311" : "321",//TODO FIX SAPCODE

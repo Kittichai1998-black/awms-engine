@@ -36,6 +36,7 @@ namespace AWMSModel.Criteria.SP.Response
         public DateTime? prodDate;
         public DateTime? expDate;
         public DateTime createTime;
+        public DateTime createTime;
 
         public string lot;
         public string batch;

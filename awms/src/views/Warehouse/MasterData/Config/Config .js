@@ -39,9 +39,10 @@ class Config  extends Component{
     this.uneditcolumn = ["Created","Modified"]
   }
 
- 
-  //permission
-
+  componentDidMount(){
+    document.title = "Config : AWMS";
+  }
+   
   render(){
     const cols = [
       {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed:"left", minWidth:220},

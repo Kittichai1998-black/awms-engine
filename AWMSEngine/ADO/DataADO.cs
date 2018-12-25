@@ -286,62 +286,35 @@ namespace AWMSEngine.ADO
 
             return comm;
         }
-        public int UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
+        public long? UpdateByID<T>(int id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
              where T : IEntityModel
         {
             return UpdateByID<T>((long)id, buVO, values);
         }
-        public int UpdateByID<T>(long id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
+        public long? UpdateByID<T>(long id, VOCriteria buVO, params KeyValuePair<string, object>[] values)
              where T : IEntityModel
         {
-            string commSets = string.Empty;
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            foreach (var x in Enumerable.ToList(values))
-            {
-                if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
-                    continue;
-
-                if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
-                {
-                    commSets +=
-                        string.Format("{0}{1}={1}",
-                            string.IsNullOrEmpty(commSets) ? string.Empty : ",",
-                            x.Key,
-                            this.CommandByConfig(x.Value.ToString()));
-                }
-                else
-                {
-                    commSets +=
-                        string.Format("{0}{1}=@{1}",
-                            string.IsNullOrEmpty(commSets) ? string.Empty : ",",
-                            x.Key);
-                    param.Add(x.Key, x.Value);
-                }
-            }
-            if (typeof(BaseEntityCreateModify).IsAssignableFrom(typeof(T)))
-            {
-                commSets += ",ModifyBy=@actionBy,ModifyTime=getdate()";
-                param.Add("actionBy", buVO.ActionBy);
-            }
-            param.Add("id", id);
-
-            var res = this.Execute(
-                    string.Format("update {0} set {1} where id=@id",
-                        typeof(T).Name.Split('.').Last(), commSets),
-                    CommandType.Text,
-                    param,
-                    buVO.Logger, buVO.SqlTransaction);
-            return res;
+            return this.UpdateBy<T>(
+                new SQLConditionCriteria[] { new SQLConditionCriteria("ID", id, SQLOperatorType.EQUALS) },
+                values,
+                buVO);
         }
-
-        public int UpdateByCode<T>(string code, VOCriteria buVO, params KeyValuePair<string, object>[] values)
+        public long? UpdateByCode<T>(string code, KeyValuePair<string, object>[] values, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            return this.UpdateBy<T>(
+                new SQLConditionCriteria[] { new SQLConditionCriteria("Code", code, SQLOperatorType.EQUALS) }, 
+                values,
+                buVO);
+        }
+        public long? UpdateBy<T>(SQLConditionCriteria[] wheres, KeyValuePair<string, object>[] values, VOCriteria buVO)
              where T : IEntityModel
         {
             string commSets = string.Empty;
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             foreach (var x in Enumerable.ToList(values))
             {
-                if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
+                if (x.Key.Equals("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
                     continue;
 
                 if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
@@ -366,11 +339,31 @@ namespace AWMSEngine.ADO
                 commSets += ",ModifyBy=@actionBy,ModifyTime=getdate()";
                 param.Add("actionBy", buVO.ActionBy);
             }
-            param.Add("code", code);
 
-            var res = this.Execute(
-                    string.Format("update {0} set {1} where code=@code",
-                        typeof(T).Name.Split('.').Last(), commSets),
+            string commWhere = string.Empty;
+            int iField = 0;
+            if (wheres != null)
+                foreach (var w in wheres)
+                {
+                    commWhere += string.Format("{3} {0} {1} {2} ",
+                                            w.field,
+                                            w.operatorType.Attribute<ValueAttribute>().Value,
+                                            w.operatorType == SQLOperatorType.ISNULL || w.operatorType == SQLOperatorType.ISNOTNULL ? "" : "@" + w.field + iField,
+                                            w.conditionLeft != SQLConditionType.NONE && !string.IsNullOrEmpty(commWhere) ? w.conditionLeft.Attribute<ValueAttribute>().Value :
+                                                string.IsNullOrEmpty(commWhere) ? string.Empty : "AND");
+
+                    object v = null;
+                    if (w.value == null) v = null;
+                    else if (w.value is string && w.operatorType == SQLOperatorType.LIKE) v = w.value.ToString().Replace('*', '%');
+                    else if (w.value is string && w.operatorType == SQLOperatorType.IN) v = w.value.ToString().Split(",");
+                    else v = w.value;
+                    param.Add(w.field + iField, v);
+                    iField++;
+                }
+
+            var res = this.ExecuteScalar<long?>(
+                    string.Format("update {0} set {1} where {2};SELECT SCOPE_IDENTITY();",
+                        typeof(T).Name.Split('.').Last(), commSets, commWhere),
                     CommandType.Text,
                     param,
                     buVO.Logger, buVO.SqlTransaction);
@@ -391,40 +384,42 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             foreach (var x in Enumerable.ToList(values))
             {
-                if (x.Key.Equals("CreateBy", "CreateDate", "ModifyBy", "ModifyTime"))
+                if (x.Key.Equals("ID", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime"))
                     continue;
 
                 commFields +=
                     string.Format("{0}{1}",
-                        x.Key,
-                        string.IsNullOrEmpty(commFields) ? string.Empty : ",");
+                        string.IsNullOrEmpty(commFields) ? string.Empty : ",",
+                        x.Key);
 
                 if (x.Value != null && x.Value.ToString().ToLower().StartsWith("@@sql"))
                 {
                     commVals +=
                         string.Format("{0}{1}",
-                            this.CommandByConfig(x.Value.ToString()),
-                            string.IsNullOrEmpty(commFields) ? string.Empty : ",");
+                            string.IsNullOrEmpty(commVals) ? string.Empty : ",",
+                            this.CommandByConfig(x.Value.ToString()));
                 }
                 else
                 {
                     commVals +=
-                    string.Format("@{0}{1}",
-                        x.Key,
-                        string.IsNullOrEmpty(commFields) ? string.Empty : ",");
+                    string.Format("{0}@{1}",
+                        string.IsNullOrEmpty(commVals) ? string.Empty : ",",
+                        x.Key);
                     param.Add(x.Key, x.Value);
                 }
             };
             if (typeof(BaseEntityCreateOnly).IsAssignableFrom(typeof(T)))
             {
-                commFields = ",CreateBy,CreateTime";
-                commVals += ",'@actionBy',getdate()";
+                commFields += ",CreateBy,CreateTime";
+                commVals += ",@actionBy,getdate()";
                 param.Add("actionBy", buVO.ActionBy);
             }
 
-            var res = this.ExecuteScalar<long?>(
+            var commTxt =
                     string.Format("insert into {0} ({1}) values ({2});SELECT SCOPE_IDENTITY();",
-                        typeof(T).Name.Split('.').Last(), commFields, commVals),
+                        typeof(T).Name.Split('.').Last(), commFields, commVals);
+            var res = this.ExecuteScalar<long?>(
+                    commTxt,
                     CommandType.Text,
                     param,
                     buVO.Logger, buVO.SqlTransaction);

@@ -15,6 +15,7 @@ namespace AWMSModel.Criteria
         public string groupSum;
         public StorageObjectType type;
         public long? mstID;
+        public long? skuID;
         public long? parentID;
         public long warehouseID;
         public long areaID;
@@ -118,6 +119,7 @@ namespace AWMSModel.Criteria
                             code = x.code,
                             name = x.name,
                             mstID = x.mstID,
+                            skuID = x.skuID,
                             weiKG = x.weiKG,
 
                             lengthM = x.lengthM,

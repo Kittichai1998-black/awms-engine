@@ -38,7 +38,9 @@ class APIServiceGroup extends Component{
     this.forceUpdate();
     event.preventDefault();
   }
-  
+  componentDidMount(){
+    document.title = "API Service Group : AWMS";
+  }
   componentWillUnmount(){
     Axios.isCancel(true);
   }

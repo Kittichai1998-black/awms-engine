@@ -36,6 +36,7 @@ namespace AWMSModel.Criteria
                 public int packQty;//จำนวน Packet
                 public string skuCode;//รหัส SKU
                 public int skuQty;//จำนวนสินค้านับจาก SKU
+                public string orderNo;
                 public string lot;
                 public string batch;
 

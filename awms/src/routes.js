@@ -279,12 +279,21 @@ const CreateQueue = Loadable({
   loading: Loading,
 });
 
+const ChangePass = Loadable({
+  loader: () => import('./views/Pages/ChangePass/ChangePass'),
+  loading: Loading,
+});
 
+const Profile = Loadable({
+  loader: () => import('./views/Pages/Profile/Profile'),
+  loading: Loading,
+});
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/mst/sku/manage', exact: true, name: 'SKU', component: Products },
+  { path: '/mst/catagory/manage', exact: true, name: 'Catagory', component: SKUType },
   { path: '/mst/pack/manage', exact: true, name: 'Pack', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
@@ -292,19 +301,18 @@ const routes = [
   { path: '/mst/supplier/manage', exact: true, name: 'Supplier', component: Supplier },
   { path: '/mst/area/manage', exact: true, name: 'Area', component: Area },
   { path: '/mst/areatype/manage', exact: true, name: 'Area Type', component: AreaType },
-  { path: '/mst/arealocation/manage', exact: true, name: 'Area Location', component: AreaLocation },
+  { path: '/mst/location/manage', exact: true, name: 'Location', component: AreaLocation },
   { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/arearoute/manage', exact: true, name: 'Area Route', component: AreaRoute },
-  { path: '/mst/base/manage', exact: true, name: 'Base', component: Base },
-  { path: '/mst/basetype/manage', exact: true, name: 'Base Type', component: BaseType },
-  { path: '/mst/base/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
+  { path: '/mst/pallet/manage', exact: true, name: 'Pallet', component: Base },
+  { path: '/mst/pallettype/manage', exact: true, name: 'Pallet Type', component: BaseType },
+  { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/branch/manage', exact: true, name: 'Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'User', component: User },
   { path: '/mst/warehouse/manage', exact: true, name: 'Warehouse', component: Warehouse },
   { path: '/mst/permission/manage', exact: true, name: 'Permission', component: Permission },
   { path: '/mst/apiservicegroup/manage', exact: true, name: 'API Service Group', component: APIServiceGroup },
   { path: '/mst/apiservice/manage', exact: true, name: 'API Service', component: APIService },
-  { path: '/mst/skutype/manage', exact: true, name: 'SKU Type', component: SKUType },
   { path: '/mst/objectsize/manage', exact: true, name: 'Object Size', component: ObjectSize },
   { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Job Schedule Module', component: JobScheduleModule },
   { path: '/mst/unittype/manage', exact: true, name: 'Unit Type', component: UnitType },
@@ -336,14 +344,15 @@ const routes = [
   { path: '/mst/conf/manage', exact: true, name: 'Config', component: Config},
   { path: '/mst/doctype/manage', exact: true, name: 'DocumentType', component:DocumentType},
   { path: '/mst/ft/manage', exact: true, name: 'Feature', component:Feature},
-  { path: '/mst/jobs/manage', exact: true, name: 'JobSchedule', component:JobSchedule},
+  { path: '/mst/jobs/manage', exact: true, name: 'Job Schedule', component:JobSchedule},
   { path: '/mst/role/manage', exact: true, name: 'Role', component:Role},
   { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
   { path: '/wm/issue/manage', exact: true, name: 'Create Queue by DO', component:CreateQueue},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
-  { path: '/wm/sto/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
-
-  { path: '/wm/queue/manage', exact: true, name: 'QueueView', component:QueueView},
+  { path: '/doc/dash/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
+  { path: '/wm/queue/manage', exact: true, name: 'QueueView', component: QueueView },
+  { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
+  { path: '/profile', exact: true, name: 'Profile', component: Profile },
 ];
 
 export default routes;

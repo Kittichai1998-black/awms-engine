@@ -21,7 +21,7 @@ class BaseType extends Component{
         select:{queryString:window.apipath + "/api/viw",
         t:"BaseMasterType",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f:"ID,Code,Name,Description,UnitType_ID,UnitType_Code,Status,Created,Modified",
+        f:"ID,Code,Name,Description,UnitType_ID,UnitType_Code,Weight,Status,Created,Modified",
         g:"",
         s:"[{'f':'Code','od':'asc'}]",
         sk:0,
@@ -44,7 +44,9 @@ class BaseType extends Component{
     componentWillMount(){
         this.filterList();
     }
-    
+    componentDidMount(){
+        document.title = "Pallet Type - AWMS"
+      }
     componentWillUnmount(){
         Axios.isCancel(true);
     }
@@ -79,14 +81,15 @@ class BaseType extends Component{
           { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90},
           { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 140},
           //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-          { accessor: 'UnitType_Code', Header: 'Unit Type', updateable: false, Filter: "text", Type: "autocomplete", maxWidth: 130},
+          { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", Type: "autocomplete", maxWidth: 130},
+          { accessor: 'Weight', Header: 'Weight (Kg.)', editable: false, Filter: "text",datatype:"int", Type: "autocomplete", minWidth: 90, className: "center"},
           //{accessor: 'GroupType', Header: 'Group Type', editable:true,Filter:"text"},
           //{accessor: 'SizeLevel', Header: 'Size Level', editable:true,Filter:"text"},
           //{accessor: 'InnerSizeLevels', Header: 'Inner Size Levels', editable:true,Filter:"text"},
           //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-          {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+          {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
           /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
           //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ]; 

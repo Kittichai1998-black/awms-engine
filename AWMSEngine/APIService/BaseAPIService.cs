@@ -23,13 +23,15 @@ namespace AWMSEngine.APIService
         public VOCriteria BuVO { get; set; }
         public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
+        private bool IsAuthenAuthorize { get; set; }
 
         public AMWLogger Logger { get; set; }
 
         protected abstract dynamic ExecuteEngineManual();
 
-        public BaseAPIService(ControllerBase controllerAPI)
+        public BaseAPIService(ControllerBase controllerAPI, bool isAuthenAuthorize = true)
         {
+            this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;
         }
 
@@ -83,47 +85,44 @@ namespace AWMSEngine.APIService
                 var getKey = ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
                 string token = null;
                 string apiKey = null;
-                try
+                if (getKey.token != null)
+                    token = getKey.token;
+                else if (getKey._token != null)
+                    token = getKey._token;
+                if (getKey.apiKey != null)
+                    apiKey = getKey.apiKey;
+                else if (getKey._apiKey != null)
+                    apiKey = getKey._apiKey;
+
+
+                if (request != null)
                 {
-                    if (getKey._apiKey != null)
-                        apiKey = getKey._apiKey;
-                    if(request != null)
-                    {
-                        if (request._apiKey != null)
-                            apiKey = request._apiKey;
-                    }
-                    if (!string.IsNullOrWhiteSpace(apiKey))
-                    {
-                        this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
-                    }
-                    else
-                    {
-                        apiKey = null;
-                    }
-                    if (getKey._token != null)
-                        token = getKey._token;
-                    if (request != null)
-                    {
-                        if (request._token != null)
-                            token = request._token;
-                    }
-                    if (!string.IsNullOrWhiteSpace(token))
-                    {
-                        this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
-                    }
-                    else
-                    {
-                        token = null;
-                    }
+                    if (request.token != null)
+                        token = request.token;
+                    else if (request._token != null)
+                        token = request._token;
+                    if (request.apiKey != null)
+                        apiKey = request.apiKey;
+                    else if (request._apiKey != null)
+                        apiKey = request._apiKey;
                 }
-                catch{
-                    this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
-                }
-                if(this.Logger == null)
+
+                if (string.IsNullOrWhiteSpace(token))
+                    this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
+                else if (string.IsNullOrWhiteSpace(apiKey))
+                    this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
+                else if (this.Logger == null)
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
 
-                this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
+
                 this.Logger.LogBegin();
+                this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
+
+                this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
+                this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
+                this.Permission(token, apiKey);
+
+                this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
                     this.APIServiceID(),
                     this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
@@ -133,17 +132,7 @@ namespace AWMSEngine.APIService
                     this.RequestVO,
                     this.BuVO);
                 this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
-                this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
 
-                this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
-                this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
-
-                var tokenInfo = ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault();
-                this.BuVO.Set(BusinessVOConst.KEY_TOKEN, tokenInfo);
-                this.Logger.LogInfo("token : " + token);
-
-                this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
-                this.Logger.LogInfo("apikey : " + apiKey);
 
                 this.Logger.LogInfo("[BeginExecuteEngineManual]");
                 var res = this.ExecuteEngineManual();
@@ -192,6 +181,37 @@ namespace AWMSEngine.APIService
                 ADO.LogingADO.GetInstant().EndAPIService(dbLogID, _status, _code, _message, _stacktrace, this.BuVO);
             }
             return response;
+        }
+
+        private void Permission(string token, string apiKey)
+        {
+            var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
+            this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
+            this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
+            this.Logger.LogInfo("token : " + token);
+
+            var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("code", apiKey, this.BuVO).FirstOrDefault() : null;
+            this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
+            this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKeyInfo);
+            this.Logger.LogInfo("apikey : " + apiKey);
+
+            if (!this.IsAuthenAuthorize)
+                return;
+
+            if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");
+            if (!string.IsNullOrEmpty(token) && tokenInfo == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Token Not Found");
+            if (tokenInfo == null && apiKeyInfo == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Key Not Found");
+
+            if (tokenInfo != null)
+            {
+                if (DateTime.Now > tokenInfo.ExpireTime)
+                    throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Token Expire");
+                
+
+            }
         }
     }
 }

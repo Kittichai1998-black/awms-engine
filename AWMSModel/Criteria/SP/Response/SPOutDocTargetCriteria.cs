@@ -19,8 +19,8 @@ namespace AWMSModel.Criteria.SP.Response
         public string packUnitTypeCode;
 
         public int lockedPackQty;
-        public int needPackQty;
-        public int targetPackQty;
+        public int? needPackQty;
+        public int? targetPackQty;
 
         public DocumentEventStatus eventStatus;
         public EntityStatus status;
