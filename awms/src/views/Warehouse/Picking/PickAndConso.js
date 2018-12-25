@@ -21,11 +21,12 @@ class Picking extends Component{
   }
 
   onHandleSetPalletCode(){
-    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode).then(res => {
+    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&_token=" + localStorage.getItem("Token")).then(res => {
       if(res.data._result.status == 0)
         alert("ไม่สามารถใช้งาน Pallet นี้ได้")
       else
-        this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true})
+        this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true,
+        palletID:res.data.palletID})
     }).catch(res => console.log(res))
   }
 
@@ -57,7 +58,7 @@ class Picking extends Component{
 
   createIssuedList(){
     let issuedlist = this.state.docItems.map((list,index) => {
-      return <Button color="danger" key={index} style={this.style} onClick={() => this.setState({issuedComponent:true, issuedSelect:list}, () => {this.onHandleClickSelectDocument(list)})}>
+      return <Button color="danger" key={index} style={this.style} onClick={() => this.setState({issuedComponent:true, issuedSelect:list}, () => {this.onHandleClickSelectDocument(list.docID)})}>
         <div>Document : {list.docCode}</div>
         <div>Material No : {list.matDoc}</div>
         <div>Destination : {list.destination}</div>
@@ -67,12 +68,12 @@ class Picking extends Component{
     return <Card style={this.style}><CardBody>{issuedlist}</CardBody></Card>;
   }
 
-  onHandleClickSelectDocument(listData){
-    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&docID=" + listData.docID).then(res => {
+  onHandleClickSelectDocument(docID){
+    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&docID=" + docID + "&_token=" + localStorage.getItem("Token")).then(res => {
       if(res.data._result.status == 0)
         alert("ไม่สามารถใช้งาน Pallet นี้ได้")
       else
-        this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true})
+        this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true, palletID:res.data.palletID, docID:docID})
     }).catch(res => console.log(res))
   }
 
@@ -147,6 +148,37 @@ class Picking extends Component{
     }}/>
   }
 
+  onHandleClickPicking(){
+    const pickedItemList = this.state.stos.filter(x => x.pick);
+    let pickedList = pickedItemList.map(x => {
+      return {docItemID:x.docItemID,
+        STOID:x.stoid,
+        packCode:x.packCode,
+        batch:x.batch,
+        lot:x.lot,
+        palletQty:x.palletQty,
+        picked:x.shouldPick,
+        canPick:x.canPick}
+    });
+    
+    const data = {palletCode:this.state.palletCode,
+      palletID:this.state.palletID,
+      docID:this.state.issuedSelect.docID,
+      pickedList:pickedList
+    }
+
+    Axios.post(window.apipath + "/api/picking", data).then((res) => {
+      console.log(res.data)
+      if(res.data.status === 12)
+        this.setState({palletComponent:false,
+          issuedComponent:false,
+          toggle:false,
+          pickItemList:[]})
+      else
+        this.onHandleClickSelectDocument(this.state.docID);
+    })
+  }
+
   render(){
     return(
       <div>
@@ -157,7 +189,12 @@ class Picking extends Component{
           {this.state.palletComponent && !this.state.issuedComponent ? this.createIssuedList() : this.state.palletComponent && this.state.issuedComponent ? this.issuedSelect() : null }
         </Row>
         <Row>
-          {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}><CardBody>{this.createPickItem()}</CardBody></Card> : null}
+          {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}>
+            <CardBody>
+              {this.createPickItem()}
+              {<Button onClick={() => {this.onHandleClickPicking()}}>Picking</Button>}
+            </CardBody>
+          </Card> : null}
         </Row>
       </div>
     )

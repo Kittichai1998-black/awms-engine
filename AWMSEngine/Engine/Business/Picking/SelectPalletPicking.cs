@@ -98,7 +98,7 @@ namespace AWMSEngine.Engine.Business.Picking
                                 batch = row.batch,
                                 lot = row.lot,
                                 palletQty = row.qty,
-                                canPick = x.MaxQty,
+                                canPick = (x.MaxQty - x.Qty),
                                 pick = true,
                                 shouldPick = (x.MaxQty - x.Qty) > row.qty ? row.qty : (x.MaxQty - x.Qty),
                                 unitType = unitType
@@ -143,7 +143,7 @@ namespace AWMSEngine.Engine.Business.Picking
             List<docItem> docItemList = new List<docItem>();
             var docCanMap = ADO.DocumentADO.GetInstant().ListDocumentCanMap(reqVO.palletCode, StorageObjectEventStatus.PICKING, this.BuVO);
             if (docCanMap.Count == 0)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีงานสำหรับ Picking");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีเอกสารสำหรับ Picking");
 
             var pickItemList = new List<docItem.pickItem>();
             docCanMap.ForEach(x =>
