@@ -300,9 +300,11 @@ namespace AWMSEngine.ADO
             param.Add("docItemID", docItemID);
             param.Add("packCode", packCode);
             param.Add("batch", batch);
+            param.Add("lot", lot);
             param.Add("pickQty", pickQty);
             param.Add("basepickQty", basePickQty);
-            //var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STOID_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            param.Add("userID", buVO.ActionBy);
+            var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STO_UPDATE_PICKING", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
         }
     }
 
