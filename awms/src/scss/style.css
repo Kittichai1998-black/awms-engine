@@ -9944,5 +9944,8 @@ body {
   background: #23282c;
   border-top: 1px solid #23282c !important; }
 
+.input-group-text {
+  min-width: 140px; }
+
 html body .app.flex-row.align-items-center {
   height: 100vh; }

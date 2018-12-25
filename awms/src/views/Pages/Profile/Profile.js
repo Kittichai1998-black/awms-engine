@@ -12,7 +12,7 @@ class Profile extends Component {
       datacurrent: [],
       status: true,
       statusPass: false,
-      uneditcolumn: ["CurPass", "NewPass", "ConfPass","Password","SaltPassword"],
+      uneditcolumn: ["Code","CurPass", "NewPass", "ConfPass","Password","SaltPassword"],
       selectuser: {
         queryString: window.apipath + "/api/mst",
         t: "User",
@@ -32,17 +32,22 @@ class Profile extends Component {
     this.ChangePass = this.ChangePass.bind(this);
     this.savetoSession = this.savetoSession.bind(this);
     this.changeProfile = this.changeProfile.bind(this);
-    this.Reload = this.Reload.bind(this);
+    this.Reset = this.Reset.bind(this);
   }
 
   componentDidMount() {
     document.title = "Profile - AWMS"
     this.selectprofile();
   }
-  Reload(){
-    setTimeout(function() {
-      window.location.reload();
-    }.bind(this), 1000);
+  Reset(){
+    this.setState({
+      dataprofile: {
+        CurPass: "",
+        NewPass: "",
+        ConfPass: ""
+      }
+    })
+    this.selectprofile();
   }
   savetoSession(name,data){
     localStorage.setItem(name, data);
@@ -94,7 +99,7 @@ class Profile extends Component {
     const datainsert = {...this.state.dataedit};
     if (datainsert["CurPass"] && datainsert["NewPass"] && datainsert["ConfPass"]) {
       var NewPass = datainsert["NewPass"];
-      var CurPass = datainsert["CurPass"]
+      var CurPass = datainsert["CurPass"];
 
       if (datainsert["NewPass"] === datainsert["ConfPass"]) {
         let updateNewPass ={
@@ -133,18 +138,11 @@ class Profile extends Component {
         if (res.data._result !== undefined) {
           if (res.data._result.status === 1) {
             if(this.state.statusPass){
-              alert("อัพเดทข้อมูลผู้ใช้ และเปลี่ยนรหัสผ่านสำเร็จ");
-              if(datainsert["Code"] !== localStorage.getItem("Username")){
-                this.savetoSession("Username", datainsert["Code"]);
-              }
-              this.Reload();
+              window.success("อัพเดทข้อมูลผู้ใช้ และเปลี่ยนรหัสผ่านสำเร็จ");
             }else{
-              alert("อัพเดทข้อมูลผู้ใช้สำเร็จ");
-              if(datainsert["Code"] !== localStorage.getItem("Username")){
-                this.savetoSession("Username", datainsert["Code"]);
-                this.Reload();
-              }
+              window.success("อัพเดทข้อมูลผู้ใช้สำเร็จ");
             }
+            this.Reset();
           } else if(res.data._result.status === 0) {
             alert("ไม่สามารถแก้ไขข้อมูลได้")
           }
@@ -198,7 +196,7 @@ class Profile extends Component {
                         Username
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="text" name="Code" value={this.state.dataprofile.Code} onChange={this.handleInputChange}/>
+                      <Input type="text" name="Code" value={this.state.dataprofile.Code} disabled />
                   </InputGroup>
                   <InputGroup className="mb-3">
                     <InputGroupAddon addonType="prepend">

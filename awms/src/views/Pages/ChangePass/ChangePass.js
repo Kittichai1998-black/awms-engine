@@ -56,10 +56,15 @@ class ChangePass extends Component {
   }
   
   Reset(){
-    setTimeout(function() {
-      window.location.reload();
-    }.bind(this), 1000);
+    this.setState({
+      dataprofile: {
+        CurPass: "",
+        NewPass: "",
+        ConfPass: ""
+      }
+    })
   }
+  
   savetoSession(name,data){
     localStorage.setItem(name, data);
     sessionStorage.setItem(name, localStorage.getItem([name]));
@@ -128,7 +133,7 @@ class ChangePass extends Component {
         this.savetoSession("Token",res.data.token);
         this.savetoSession("ExtendKey",res.data.extendKey);
         this.savetoSession("ExpireTime", res.data.expireTime);
-        alert("เปลี่ยนรหัสผ่านสำเร็จ");
+        window.success("เปลี่ยนรหัสผ่านสำเร็จ");
         this.Reset();
         }
         else if(res.data._result.status === 0){
