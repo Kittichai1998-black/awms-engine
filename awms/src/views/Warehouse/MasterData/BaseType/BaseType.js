@@ -82,7 +82,7 @@ class BaseType extends Component{
           { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 140},
           //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
           { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", Type: "autocomplete", maxWidth: 130},
-          { accessor: 'Weight', Header: 'Weight (Kg.)', editable: false, Filter: "text",datatype:"int", Type: "autocomplete", minWidth: 90, className: "center"},
+          { accessor: 'Weight', Header: 'Weight (Kg.)', editable: true, Filter: "text",datatype:"int", Type: "autocomplete", minWidth: 90, className: "center"},
           //{accessor: 'GroupType', Header: 'Group Type', editable:true,Filter:"text"},
           //{accessor: 'SizeLevel', Header: 'Size Level', editable:true,Filter:"text"},
           //{accessor: 'InnerSizeLevels', Header: 'Inner Size Levels', editable:true,Filter:"text"},

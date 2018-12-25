@@ -6,7 +6,7 @@ import Popup from 'reactjs-popup'
 import {apicall, createQueryString} from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { timingSafeEqual } from 'crypto';
-import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+import {GetPermission,Nodisplay,CheckWebPermission} from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -91,9 +91,13 @@ class User extends Component{
         Nodisplay(data,14,this.props.history)
         this.displayButtonByPermission(data)
         //permission
-      }
+        let webper = await CheckWebPermission("User");
+        console.log(webper)
+
+    }
       //permission
     displayButtonByPermission(perID){
+        console.log(perID)
         this.setState({perID:perID})
         let check = false
         perID.forEach(row => {
@@ -188,7 +192,7 @@ class User extends Component{
     }
 
   createRoleBtn(rowdata) {
-    return <div class="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+    return <div className="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
       onClick={() => this.getData(rowdata.ID)}>Role</Button></div>
         }
     
@@ -261,7 +265,7 @@ class User extends Component{
           //{ accessor: 'LineID', Header: 'Line ID', editable: true, minWidth: 90},
           //{ accessor: 'FacebookID', Header: 'Facebook ID', editable: true, minWidth:90},
           //{ accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
-          { accessor: 'TelMobile', Header: 'Mobile', editable: true, minWidth:100},
+          { accessor: 'TelMobile', Header: 'Mobile', editable: true, minWidth:120},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
             {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
             {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
@@ -301,7 +305,7 @@ class User extends Component{
                       table="ams_User"/>
             <Popup open={this.state.open} onClose={this.closeModal}>
                 <div>
-                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white','max-height': '400px'}} 
+                    <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{background:'white'}} 
                     getselection={this.getSelectionData} showPagination={false}/>
                     <Card>
                         <CardBody>
