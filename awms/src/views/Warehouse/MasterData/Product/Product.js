@@ -153,11 +153,11 @@ displayButtonByPermission(perID){
     const cols = [
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
       { accessor: 'Code', Header: 'Code', editable: false,Filter:"text", minWidth: 100},
-      { accessor: 'SKUMasterType_Code', Header: 'Catagory', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 130 },
+      { accessor: 'SKUMasterType_Code', Header: 'Catagory', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 100 },
       { accessor: 'Name', Header: 'Name', editable: false, Filter: "text", minWidth: 230},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
       { accessor: 'UnitType_Code', Header: 'Base Unit', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80 },
-      { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, datatype: "int" , minWidth: 100, className: "center"},
+      { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter:"text", datatype: "int" , minWidth: 100, className: "right"},
       //{ accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
       //{ accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
       //{ accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},

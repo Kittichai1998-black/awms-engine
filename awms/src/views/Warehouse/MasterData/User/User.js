@@ -133,7 +133,7 @@ class User extends Component{
                 responset.data.datas.forEach(row => {
                     selectuserroledata.push({ID:row.ID,User_ID:row.User_ID,Role_ID:row.Role_ID,Status:row.Status})
                 })
-                this.setState({selectuserroledata},() => this.setUserRole("user_id"))
+                this.setState({selectuserroledata},() => this.setUserRole(user_id))
             })
         })
     }
