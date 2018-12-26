@@ -99,13 +99,13 @@ class WebPage extends Component{
       {accessor: 'PathLV1', Header: 'Path Level1', sortable:false,Filter:"text",editable:true},
       {accessor: 'PathLV2', Header: 'Path Level2', sortable:false,Filter:"text",editable:true},
       {accessor: 'PathLV3', Header: 'Path Level3', sortable:false,Filter:"text",editable:true},
-      {accessor: 'WebPageGroup_Code', Header: 'Web Page Group',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'Permission_Code', Header: 'Permission',updateable:false,Filter:"text", Type:"autocomplete"},
+      {accessor: 'WebPageGroup_Code', Header: 'Web Page Group',updateable:true,Filter:"text", Type:"autocomplete", minWidth: 160},
+      {accessor: 'Permission_Code', Header: 'Permission',updateable:true,Filter:"text", Type:"autocomplete", minWidth: 160},
       {accessor: 'Icon', Header: 'Icon', sortable:false,Filter:"text",editable:true},
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-      {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+      {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+      {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ]; 

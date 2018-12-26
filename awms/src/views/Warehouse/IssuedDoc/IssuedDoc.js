@@ -121,16 +121,19 @@ displayButtonByPermission(perID){
   }
 
   workingData(data,status){
-    let postdata = {docIDs:[]}
+    let postdata = {docIDs:[],auto:1}
     if(data.length > 0){
       data.forEach(rowdata => {
         postdata["docIDs"].push(rowdata.ID)
       })
-      if(status==="accept"){
+      if(status === "accept"){
         axois.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       }
-      else{
+      if(status === "reject"){
         axois.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
+      }
+      if(status === "Close"){
+        axois.post(window.apipath + "/api/wm/issued/doc/Closing", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       }
     }
   }
@@ -207,6 +210,7 @@ displayButtonByPermission(perID){
           <CardBody>
             <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_working" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', display:this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
+            <Button id="per_button_working" style={{ background: "primary", borderColor: "primary", width: '130px', display:this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="primary" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>
         </Card>

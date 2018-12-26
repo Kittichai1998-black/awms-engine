@@ -109,7 +109,7 @@ class Login extends Component {
                     <InputGroup className="mb-3">
                       <InputGroupAddon addonType="prepend">
                         <InputGroupText>
-                          <i className="icon-user"></i>
+                          <i className="icon-user"></i>&nbsp;&nbsp;Username
                         </InputGroupText>
                       </InputGroupAddon>
                       <Input type="text" placeholder="Username" onChange={this.handleUsernameChange}/>
@@ -117,7 +117,7 @@ class Login extends Component {
                     <InputGroup className="mb-4">
                       <InputGroupAddon addonType="prepend">
                         <InputGroupText>
-                          <i className="icon-lock"></i>
+                          <i className="icon-lock"></i>&nbsp;&nbsp;Password
                         </InputGroupText>
                       </InputGroupAddon>
                       <Input type="password" placeholder="Password" onChange={this.handlePasswordChange} onKeyPress={e =>{

@@ -13,7 +13,7 @@ namespace AMWUtil.Common
 {
     public static class ObjectUtil
     {
-        private static object GenUniqID_Lock = 0;
+        private static object GenUniqID_Lock = new object();
         private static int GenUniqID_Run = 0;
         public static string GenUniqID()
         {

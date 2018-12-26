@@ -316,7 +316,7 @@ const routes = [
   { path: '/mst/objectsize/manage', exact: true, name: 'Object Size', component: ObjectSize },
   { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Job Schedule Module', component: JobScheduleModule },
   { path: '/mst/unittype/manage', exact: true, name: 'Unit Type', component: UnitType },
-  { path: '/mst/webcontrol/manage', exact: true, name: 'Web Page', component: WebControl },
+  { path: '/mst/webcontrol/manage', exact: true, name: 'Web Control', component: WebControl },
   { path: '/mst/webpage/manage', exact: true, name: 'Web Page', component: WebPage },
   { path: '/mst/webpagegroup/manage', exact: true, name: 'Web Page Group', component: WebPageGroup },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },

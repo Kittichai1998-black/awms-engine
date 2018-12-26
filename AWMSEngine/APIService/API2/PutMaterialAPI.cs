@@ -22,6 +22,7 @@ namespace AWMSEngine.APIService.Api2
                 public string name;
                 public string description;
                 public decimal weight;
+                public string weightUnit;
                 public string type;
                 public string unit;
                 public EntityStatus status;
@@ -60,7 +61,7 @@ namespace AWMSEngine.APIService.Api2
         {
             List<string> unitReqs = new List<string>();
             dataReqs.ForEach(x => { unitReqs.Add(x.unit); x.converts.ForEach(y => unitReqs.Add(y.unit)); });
-            unitReqs = unitReqs.Distinct().Where(x => !StaticValueManager.GetInstant().UnitTypes.Any(y => y.Code == x)).ToList();
+            unitReqs = unitReqs.Distinct().Where(x => !StaticValueManager.GetInstant().UnitTypes.Any(y => y.Code == x && y.ObjectType == StorageObjectType.PACK)).ToList();
             
             if (unitReqs.Count() > 0)
             {
@@ -69,6 +70,7 @@ namespace AWMSEngine.APIService.Api2
                 {
                     Code = x,
                     Name = x,
+                    ObjectType = StorageObjectType.PACK,
                     Status = EntityStatus.ACTIVE
                 }).ToList();
                 new PutMaster<ams_UnitType>().Execute(
@@ -138,7 +140,7 @@ namespace AWMSEngine.APIService.Api2
                 Code = x.code,
                 Name = x.name,
                 Description = x.description,
-                WeightKG = x.weight,
+                WeightKG = WeightUtil.ConvertToKG(x.weight, x.weightUnit),
                 SKUMasterType_ID = StaticValueManager.GetInstant().SKUMasterTypes.First(y => y.Code == x.type).ID.Value,
                 ObjectSize_ID = StaticValueManager.GetInstant().SKUMasterTypes.First(y => y.Code == x.type).ObjectSize_ID.Value,
                 UnitType_ID = StaticValueManager.GetInstant().UnitTypes.First(y => y.Code == x.unit).ID.Value,
