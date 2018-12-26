@@ -3,22 +3,11 @@ import "react-table/react-table.css";
 import { Card, CardBody,Button} from 'reactstrap';
 import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
-import {apicall, DatePicker, GenerateDropDownStatus} from '../../ComponentCore'
+import {apicall, DatePicker, GenerateDropDownStatus,createQueryString} from '../../ComponentCore'
 import moment from 'moment';
 import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
 import Axios from 'axios';
 
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 
 const axois = new apicall()
 
@@ -68,14 +57,14 @@ class IssuedDoc extends Component {
     this.displayButtonByPermission(data)
     //permission
 
-    Axios.get(createQueryString(this.state.select)).then((res) => {
-      res.data.datas.forEach(row1 =>{
-        console.log(row1)
-        this.setState({Batch:row1.Batch})
+    // Axios.get(createQueryString(this.state.select)).then((res) => {
+    //   res.data.datas.forEach(row1 =>{
+    //     console.log(row1)
+    //     this.setState({Batch:row1.Batch})
 
-      })
+    //   })
       
-    })
+    //})
 
   }
 
@@ -128,7 +117,7 @@ displayButtonByPermission(perID){
       data.forEach(rowdata => {
         postdata["docIDs"].push(rowdata.ID)
       })
-      if(status==="reject"){
+      if(status === "reject"){
         axois.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {this.setState({resp:res.data._result.message})})
       } else {
         axois.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => {this.setState({resp:res.data._result.message})})
@@ -185,8 +174,8 @@ displayButtonByPermission(perID){
 
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} 
-              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            <Button id="per_button_reject" style={{ background: "primary", borderColor: "primary", width: '130px', display:this.state.showbutton }} 
+              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="primary" className="float-right">Reject</Button>
             <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display:this.state.showbutton }} 
               onClick={() => this.workingData(this.state.selectiondata, "Close")} color="danger" className="float-right">Close</Button>
             {this.state.resp}

@@ -21,9 +21,7 @@ class Pack extends Component{
         select:{queryString:window.apipath + "/api/viw",
         t:"PackMaster",
         q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f:"ID,SKUMaster_ID,SKUCode,SKUName,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode"+
-        ",UnitTypeName,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,PickSizeQty,ItemQty,ObjectSize_ID,ObjCode,ObjectSizeName"+
-        ",Revision,Status,Created,Modified",
+        f:"ID,SKUMaster_ID,SKUCode,SKUName,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified",
         g:"",
         s:"[{'f':'Code','od':'asc'}]",
         sk:0,
@@ -129,23 +127,23 @@ class Pack extends Component{
 
     render(){
         const cols = [
-          {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
-          {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
+          //{accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+          //{accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
           //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-          {accessor: 'SKUCode', Header: 'SKU',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'UnitTypeCode', Header: 'Unit Type',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'ObjCode', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'WeightKG', Header: 'Weight', editable:true,Filter:"text"},
-          {accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
-          {accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
-          {accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
-          {accessor: 'PickSizeQty', Header: 'Pick Size Qty', editable:true,Filter:"text",datatype:"int"},
-          {accessor: 'ItemQty', Header: 'Item Qty', editable:true,Filter:"text",datatype:"int"},
-          {accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-          {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
+          {accessor: 'SKUCode', Header: 'SKU',updateable:false,Filter:"text", Type:"autocomplete", minWidth: 100},
+          //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
+          {accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable:false, Filter:"text", datatype: "int", className: "right", minWidth: 90},
+          {accessor: 'UnitTypeCode', Header: 'Unit',updateable:false,Filter:"text", Type:"autocomplete", minWidth: 60, className: "left"},
+          //{accessor: 'ObjCode', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+          //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
+          //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
+          //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
+          ///{accessor: 'PickSizeQty', Header: 'Pick Size Qty', editable:true,Filter:"text",datatype:"int"},
+          {accessor: 'ItemQty', Header: 'Base Unit', editable:false,Filter:"text",datatype:"int", className: "right", minWidth: 60},
+          //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+          {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 180},
           /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
+          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 180},
           //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
           {show: false, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ]; 
@@ -163,7 +161,7 @@ class Pack extends Component{
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
           <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
-                  filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} addbtn={true} 
+                  filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} exportfilebtn={true} addbtn={false} 
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"Pack"}
             table="ams_PackMaster"/>
           </div>

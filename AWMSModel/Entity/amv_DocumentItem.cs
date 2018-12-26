@@ -34,6 +34,11 @@ namespace AWMSModel.Entity
         public string UnitType_Code;
         public string UnitType_Name;
         public string Batch;
+        public string DesCustomer;
+        public string DesCustomerName;
+        public long? BaseQuantity;
+        public string BaseUnitType_Code;
+       
 
 
 
