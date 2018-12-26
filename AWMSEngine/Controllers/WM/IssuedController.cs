@@ -59,6 +59,15 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
+
+        [HttpPost("doc/Closing")]
+        public dynamic ActionDocClosing([FromBody] dynamic req)
+        {
+            CloseGIDocAPI exec = new CloseGIDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+
         [HttpGet("bsto/canConso")]
         public dynamic GetBSTOCanConso()
         {

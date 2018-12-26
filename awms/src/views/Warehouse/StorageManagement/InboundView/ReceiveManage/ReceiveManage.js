@@ -110,7 +110,7 @@ class ReceiveManage extends Component{
     this.setState({check:values.ID})
     if(values.ID !== undefined){
       this.setState({pageID:values.ID,addstatus:true,})
-        Axios.get(window.apipath + "/api/wm/received/doc?docID=" + values.ID).then((rowselect1) => {
+        Axios.get(window.apipath + "/api/wm/received/doc?docID=" + values.ID ).then((rowselect1) => {
         if(rowselect1.data._result.status === 0){
           this.setState({data:[]})
         }

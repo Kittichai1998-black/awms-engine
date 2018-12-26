@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Received
 {
-    public class ClosingGRDocSAP : BaseEngine<ClosingGRDocSAP.TDocReq, SAPInterfaceReturnvalues>
+    public class ClosingGRDocSAP : BaseEngine<ClosingGRDocSAP.TDocReq, SAPInterfaceReturnvaluesDOPick>
     {
         public class TDocReq
         {
@@ -19,10 +19,10 @@ namespace AWMSEngine.Engine.Business.Received
         }
         public class TDocRes
         {
-            public SAPInterfaceReturnvalues dataSAP;
+            public SAPInterfaceReturnvaluesDOPick dataSAP;
         }
 
-        protected override SAPInterfaceReturnvalues ExecuteEngine(TDocReq reqVO)
+        protected override SAPInterfaceReturnvaluesDOPick ExecuteEngine(TDocReq reqVO)
         {
             foreach (var num in reqVO.docIDs)
             {
