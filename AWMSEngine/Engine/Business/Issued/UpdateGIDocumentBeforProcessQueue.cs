@@ -26,14 +26,14 @@ namespace AWMSEngine.Engine.Business.Issued
             dbDocs.ForEach(x => x.DocumentItems = ADO.DocumentADO.GetInstant().ListItem(x.ID.Value, this.BuVO));
             foreach (long docID in reqVO.docIDs)
             {
-                ADO.SAPApi.SAPInterfaceADO.TREQ_MMI0008_1 tReq =
+                /*ADO.SAPApi.SAPInterfaceADO.TREQ_MMI0008_1 tReq =
                     new ADO.SAPApi.SAPInterfaceADO.TREQ_MMI0008_1()
                     {
                         HEADER_DATA = new ADO.SAPApi.SAPInterfaceADO.TREQ_MMI0008_1.THeader()
                         {
 
                         }
-                    };
+                    };*/
                 //ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0008_1_DO_INFO()
             }
 
