@@ -157,7 +157,7 @@ class Area extends Component{
             {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left", minWidth: 100},
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             {accessor: 'BaseMasterType_Code', Header: 'Type',updateable:true,Filter:"text", Type:"autocomplete", minWidth: 150},
-            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: false, Filter: "text",datatype:"int", Type: "autocomplete", minWidth: 90, className: "center"},
+            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: true, Filter: "text",datatype:"int", Type: "autocomplete", minWidth: 90, className: "center"},
             { accessor: 'ObjectSize_Code', Header: 'Size', updateable: true, Filter: "text", Type: "autocomplete", minWidth: 250 },
           { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", Type: "autocomplete", minWidth: 140 },
           //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},

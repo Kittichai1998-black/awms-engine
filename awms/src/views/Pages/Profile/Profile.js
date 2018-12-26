@@ -1,20 +1,8 @@
 import React, { Component } from 'react';
 import { Tooltip, Button, Card, CardBody, CardFooter, Col, Container, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
-import guid from 'guid';
-import API from "axios";
+import { apicall, createQueryString } from '../../ComponentCore/CoreFunction'
 
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-    + ("&_token=" + sessionStorage.Token)
-  return queryS
-}
+const API = new apicall();
 
 class Profile extends Component {
   constructor(props) {
@@ -22,12 +10,14 @@ class Profile extends Component {
     this.state = {
       dataprofile: [],
       datacurrent: [],
-      uneditcolumn: ["CurPass", "ConfPass", "NowPass", "Password","SoftPassword"],
+      status: true,
+      statusPass: false,
+      uneditcolumn: ["Code","CurPass", "NewPass", "ConfPass","Password","SaltPassword"],
       selectuser: {
         queryString: window.apipath + "/api/mst",
         t: "User",
         q: "",
-        f: "ID,Code,Name,Password,SoftPassword,EmailAddress,TelMobile",
+        f: "ID,Code,Name,Password,SaltPassword,EmailAddress,TelMobile",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -39,11 +29,29 @@ class Profile extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.updateDataProfile = this.updateDataProfile.bind(this);
+    this.ChangePass = this.ChangePass.bind(this);
+    this.savetoSession = this.savetoSession.bind(this);
+    this.changeProfile = this.changeProfile.bind(this);
+    this.Reset = this.Reset.bind(this);
   }
 
   componentDidMount() {
-    //console.log(localStorage.getItem("User_ID"))
+    document.title = "Profile - AWMS"
     this.selectprofile();
+  }
+  Reset(){
+    this.setState({
+      dataprofile: {
+        CurPass: "",
+        NewPass: "",
+        ConfPass: ""
+      }
+    })
+    this.selectprofile();
+  }
+  savetoSession(name,data){
+    localStorage.setItem(name, data);
+    sessionStorage.setItem(name, localStorage.getItem([name]));
   }
 
   selectprofile() {
@@ -71,51 +79,6 @@ class Profile extends Component {
     }, () => this.updateDataProfile(name, value) );
   }
 
-  handleSubmit(event) {
-    console.log(this.state.dataedit)
-    const datainsert = this.state.dataedit;
-    if (datainsert["CurPass"] && datainsert["NewPass"] && datainsert["ConfPass"]) {
-      var Password = datainsert["Password"];
-      var SoftPassword = datainsert["SoftPassword"];
-      var CurPass = datainsert["CurPass"]
-
-      if (datainsert["NewPass"] === datainsert["ConfPass"]) {
-
-      } else {
-        alert('กรุณากรอก "Confirm Password" และ "New Password" ให้ตรงกัน');
-      }
-
-    }
-    //for (var prop in datainsert) {
-    //  console.log(prop)
-    //  if (prop === "N") {
-    //  }
-    //}
-      for (let col of this.state.uneditcolumn) {
-        delete datainsert[col]
-      }
-    let updjson = {
-      "_token": sessionStorage.getItem("Token"),
-      "_apikey": null,
-      "t": "ams_User",
-      "pk": "ID",
-      "datas": [datainsert],
-      "nr": false
-    }
-    API.put(window.apipath + "/api/mst", updjson).then((res) => {
-      if (res.data._result !== undefined) {
-        if (res.data._result.status === 1) {
-          alert("อัพเดทข้อมูลเสร็จเรียบร้อย");
-        } else if(res.data._result.status === 0) {
-          alert("ไม่สามารถแก้ไขข้อมูลได้")
-        }
-      } else {
-        alert("ไม่สามารถแก้ไขข้อมูลได้")
-      }
-    })
-    event.preventDefault();
-  }
-
   updateDataProfile(name, value) {
     //console.log(this.state.dataedit);
     const dataedit = this.state.dataedit;
@@ -129,13 +92,101 @@ class Profile extends Component {
     }
     this.setState({ dataedit });
   }
+  
+  handleSubmit(event) {
+    //console.log("handleSubmit")
+    //console.log(this.state.dataedit)
+    const datainsert = {...this.state.dataedit};
+    if (datainsert["CurPass"] && datainsert["NewPass"] && datainsert["ConfPass"]) {
+      var NewPass = datainsert["NewPass"];
+      var CurPass = datainsert["CurPass"];
+
+      if (datainsert["NewPass"] === datainsert["ConfPass"]) {
+        let updateNewPass ={
+          "_apikey": null,
+           "CurPass": CurPass,
+           "NewPass": NewPass
+        };
+         //console.log(updateNewPass);
+         this.ChangePass(updateNewPass);
+      } else {
+        this.setState({status : false});
+        alert('กรุณากรอก "Confirm Password" และ "New Password" ให้ตรงกัน');
+      }
+    }else{
+      this.setState({status : true}, ()=> this.changeProfile());
+    }
+      
+    event.preventDefault();
+  }
+  async changeProfile(){
+    //console.log("changeProfile")
+    const datainsert = {...this.state.dataedit};
+    //console.log(datainsert)
+    for (let col of this.state.uneditcolumn) {
+      delete datainsert[col]
+    }
+    if(this.state.status){
+      let updjson = {
+        "_apikey": null,
+        "t": "ams_User",
+        "pk": "ID",
+        "datas": [datainsert],
+        "nr": false
+      }
+    await API.put(window.apipath + "/api/mst", updjson).then((res) => {
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            if(this.state.statusPass){
+              window.success("อัพเดทข้อมูลผู้ใช้ และเปลี่ยนรหัสผ่านสำเร็จ");
+            }else{
+              window.success("อัพเดทข้อมูลผู้ใช้สำเร็จ");
+            }
+            this.Reset();
+          } else if(res.data._result.status === 0) {
+            alert("ไม่สามารถแก้ไขข้อมูลได้")
+          }
+        } else {
+          alert("ไม่สามารถแก้ไขข้อมูลได้")
+        }
+      }).catch((error) => {
+        console.log(error)
+      });
+    }
+  }
+  async ChangePass(data){
+    //console.log("ChangePass")
+    await API.post(window.apipath + '/api/mst/changePass', data)
+    .then((res) => {
+      //console.log(res)
+      if(res.data._result !== undefined)
+       {
+        if(res.data._result.status === 1){
+        this.savetoSession("Token",res.data.token);
+        this.savetoSession("ExtendKey",res.data.extendKey);
+        this.savetoSession("ExpireTime", res.data.expireTime);
+        this.setState({status : true, statusPass : true}, ()=> this.changeProfile());
+        //alert("แก้ไข ข้อมูลผู้ใช้สำเร็จ");
+        }
+        else if(res.data._result.status === 0){
+          this.setState({status : false});
+          alert(res.data._result.message); //
+        }
+      }else{
+        this.setState({status : false});
+        alert("ไม่สามารถแก้ไขรหัสผ่านได้");
+      }
+    }).catch((error) => {
+      console.log(error)
+    });
+  }
   render() {
     return (
       <div className="app">
         <form onSubmit={this.handleSubmit}>
         <Container>
           <Row>
-            <Col md="6">
+            <Col lg="6" md="8" sm="12">
               <Card className="mx-6">
                 <CardBody className="p-4">
                   <p className="text-muted">Edit your profile</p>
@@ -145,7 +196,7 @@ class Profile extends Component {
                         Username
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="text" name="Code" value={this.state.dataprofile.Code} onChange={this.handleInputChange}/>
+                      <Input type="text" name="Code" value={this.state.dataprofile.Code} disabled />
                   </InputGroup>
                   <InputGroup className="mb-3">
                     <InputGroupAddon addonType="prepend">
@@ -177,24 +228,23 @@ class Profile extends Component {
                       <InputGroupText id="CurrentPassword">Current Password
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="password" maxLength="8" name="CurPass" value={this.state.dataprofile.CurPass} onChange={this.handleInputChange} />
+                      <Input type="password" minLength="6" name="CurPass" value={this.state.dataprofile.CurPass} onChange={this.handleInputChange} />
                   </InputGroup>
                   <InputGroup className="mb-3">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText id="NewPassword" >New Password
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="password" maxLength="8" name="NewPass" value={this.state.dataprofile.NewPass} onChange={this.handleInputChange} />
+                      <Input type="password" minLength="6" name="NewPass" value={this.state.dataprofile.NewPass} onChange={this.handleInputChange} />
                   </InputGroup>
                   <InputGroup className="mb-4">
                     <InputGroupAddon addonType="prepend">
                       <InputGroupText id="ConfirmPass">Confirm password
                       </InputGroupText>
                     </InputGroupAddon>
-                      <Input type="password" maxLength="8" name="ConfPass" value={this.state.dataprofile.ConfPass} onChange={this.handleInputChange} />
+                      <Input type="password" minLength="6" name="ConfPass" value={this.state.dataprofile.ConfPass} onChange={this.handleInputChange} />
                   </InputGroup>
                    <Button color="primary" type="submit" block>Save</Button>
-                    {/*<input type="submit" color="primary" value="Save" />*/}
                 </CardBody>
               </Card>
             </Col>

@@ -105,7 +105,7 @@ class Warehouse extends Component{
           { accessor: 'Code', Header: 'Code', editable: true, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100},
           { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", fixed: "left", minWidth: 120},
             //{accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
-          { accessor: 'Branch_Code', Header: 'Branch', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 120, maxWidth: 130},
+          { accessor: 'Branch_Code', Header: 'Branch', updateable: true, Filter: "text", Type: "autocomplete", minWidth: 120, maxWidth: 130},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
             {accessor: 'Created', Header: 'Create', editable:false, filterable:false, minWidth: 170},
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
