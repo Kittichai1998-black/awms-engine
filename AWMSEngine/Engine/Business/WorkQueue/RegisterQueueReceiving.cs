@@ -319,7 +319,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     //Pack Info พบ Document แต่ไม่พบ DocumentItem
                     else
                     {
-                        var packConvert = this.StaticValue.ConvertToBaseUnitByPack(packH.id.Value, 1, packH.unitID);
+                        var packConvert = this.StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
                         docItem = new amt_DocumentItem()
                         {
                             Document_ID = doc.ID.Value,
