@@ -136,6 +136,11 @@ namespace AMWUtil.Common
             object e = Enum.ToObject(typeof(T), v);
             return (T)e;
         }
+        public static T GetValueEnum<T>(string name)
+             where T : struct, IComparable, IFormattable, IConvertible
+        {
+            return (T)Enum.Parse(typeof(T), name);
+        }
         public static List<int> ListValueInt<T>(params T[] enumVals)
              where T : struct, IComparable, IFormattable, IConvertible
         {

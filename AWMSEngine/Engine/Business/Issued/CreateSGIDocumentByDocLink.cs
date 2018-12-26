@@ -35,6 +35,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 public string orderNo;
                 public string batch;
                 public string lot;
+                public string options;
+
                 public string refID;
                 public string ref1;
                 public string ref2;
@@ -124,7 +126,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
                                                      lot = x.lot,
                                                      batch = x.batch,
-                                                     orderNo = x.orderNo
+                                                     orderNo = x.orderNo,
+                                                     options = x.options,
                                                  }).ToList()
                 };
                 var docGR = new CreateDocument().Execute(

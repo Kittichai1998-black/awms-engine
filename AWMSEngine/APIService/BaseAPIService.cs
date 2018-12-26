@@ -89,10 +89,15 @@ namespace AWMSEngine.APIService
                     token = getKey.token;
                 else if (getKey._token != null)
                     token = getKey._token;
+
                 if (getKey.apiKey != null)
                     apiKey = getKey.apiKey;
                 else if (getKey._apiKey != null)
                     apiKey = getKey._apiKey;
+                else if (getKey.apikey != null)
+                    apiKey = getKey.apikey;
+                else if (getKey._apikey != null)
+                    apiKey = getKey._apikey;
 
 
                 if (request != null)
@@ -101,21 +106,25 @@ namespace AWMSEngine.APIService
                         token = request.token;
                     else if (request._token != null)
                         token = request._token;
+
                     if (request.apiKey != null)
                         apiKey = request.apiKey;
                     else if (request._apiKey != null)
                         apiKey = request._apiKey;
+                    else if (request.apikey != null)
+                        apiKey = request.apikey;
+                    else if (request._apikey != null)
+                        apiKey = request._apikey;
                 }
 
-                if (string.IsNullOrWhiteSpace(token))
+                if (!string.IsNullOrWhiteSpace(token))
                     this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
-                else if (string.IsNullOrWhiteSpace(apiKey))
+                else if (!string.IsNullOrWhiteSpace(apiKey))
                     this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
                 else if (this.Logger == null)
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
 
-
-                this.Logger.LogBegin();
+                this.Logger.LogBeginTransaction();
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
 
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
@@ -173,7 +182,7 @@ namespace AWMSEngine.APIService
                     response = new { _result = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESULT_API) };
                 }
                 this.Logger.LogInfo("API Response : " + ObjectUtil.Json(response));
-                this.Logger.LogEnd();
+                this.Logger.LogEndTransaction();
                 int _status = result.status;
                 string _code = result.code;
                 string _message = result.message;
@@ -192,9 +201,9 @@ namespace AWMSEngine.APIService
 
             var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("code", apiKey, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
-            this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKeyInfo);
+            this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
             this.Logger.LogInfo("apikey : " + apiKey);
-
+            
             if (!this.IsAuthenAuthorize)
                 return;
 

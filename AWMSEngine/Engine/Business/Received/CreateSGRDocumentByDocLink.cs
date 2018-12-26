@@ -25,9 +25,11 @@ namespace AWMSEngine.Engine.Business.Received
 
                 public string souCustomerCode;
                 public string souSupplierCode;
+                public string souBranch;
                 public string souWarehouseCode;
                 public string souAreaMasterCode;
 
+                public string desBranch;
                 public string desWarehouseCode;
                 public string desAreaMasterCode;
 
@@ -48,15 +50,17 @@ namespace AWMSEngine.Engine.Business.Received
         {
             List<CreateGRDocument> createDocs = new List<CreateGRDocument>();
             var itemGroups = reqVO.docLinks.GroupBy(x => new {
-                                                souWarehouseCode = x.souWarehouseCode,
-                                                souCustomerCode = x.souCustomerCode,
-                                                souSupplierCode = x.souSupplierCode,
-                                                desWarehouseCode = x.desWarehouseCode,
-                                                desAreaMasterCode = x.desAreaMasterCode,
-                                                forCustomerCode = x.forCustomerCode,
-                                                //batch = x.batch,
-                                                //lot = x.lot
-                                            }).Select(x=>x.Key);
+                souBranch = x.souBranch,
+                souWarehouseCode = x.souWarehouseCode,
+                souCustomerCode = x.souCustomerCode,
+                souSupplierCode = x.souSupplierCode,
+                desBranch = x.desBranch,
+                desWarehouseCode = x.desWarehouseCode,
+                desAreaMasterCode = x.desAreaMasterCode,
+                forCustomerCode = x.forCustomerCode,
+                //batch = x.batch,
+                //lot = x.lot
+            }).Select(x=>x.Key);
 
             amt_Document docSGR = new amt_Document()
             {
@@ -88,11 +92,11 @@ namespace AWMSEngine.Engine.Business.Received
 
                     souCustomerCode = ig.souCustomerCode,
                     souSupplierCode = ig.souSupplierCode,
-                    souBranchCode = null,
+                    souBranchCode = ig.souBranch,
                     souWarehouseCode = ig.souWarehouseCode,
                     souAreaMasterCode = null,
 
-                    desBranchCode = null,
+                    desBranchCode = ig.desBranch,
                     desWarehouseCode = ig.desWarehouseCode,
                     desAreaMasterCode = ig.desAreaMasterCode,
                     
