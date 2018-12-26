@@ -161,7 +161,7 @@ class Pack extends Component{
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
           <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
-                  filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} addbtn={false} 
+                  filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} exportfilebtn={true} addbtn={false} 
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"Pack"}
             table="ams_PackMaster"/>
           </div>
