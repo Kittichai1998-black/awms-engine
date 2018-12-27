@@ -34,7 +34,7 @@ namespace AMWUtil.DataAccess
             SqlTransaction transaction = null)
         {
             IEnumerable<T> res = null;
-            if (logger != null) logger.LogInfo("Query = " + spName + " | " + this.DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("START_EXEC_QUERY " + spName + " | " + this.DynamicParametersToString(parameter));
             if (transaction == null)
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
@@ -46,7 +46,7 @@ namespace AMWUtil.DataAccess
             {
                 res = transaction.Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
             }
-            if (logger != null) logger.LogInfo("Query OK = " + spName);
+            if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
             return res;
         }
 
@@ -58,7 +58,7 @@ namespace AMWUtil.DataAccess
             SqlTransaction transaction = null)
         {
             T res;
-            if (logger != null) logger.LogInfo("ExecuteScalar = " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("START_EXEC_SCALAR " + cmdTxt + " " + this.DynamicParametersToString(parameter));
             if (transaction == null)
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
@@ -70,7 +70,7 @@ namespace AMWUtil.DataAccess
             {
                 res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
             }
-            if (logger != null) logger.LogInfo("ExecuteScalar OK = " + cmdTxt);
+            if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
             return res;
         }
 
@@ -82,7 +82,7 @@ namespace AMWUtil.DataAccess
             SqlTransaction transaction = null)
         {
             int res;
-            if (logger != null) logger.LogInfo("Execute = " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("START_EXEC_NONE " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
             if (transaction == null)
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
@@ -94,7 +94,7 @@ namespace AMWUtil.DataAccess
             {
                 res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
             }
-            if (logger != null) logger.LogInfo("Execute OK = " + cmdTxt);
+            if (logger != null) logger.LogDebug("END_EXEC_NONE " + cmdTxt);
             return res;
         }
 

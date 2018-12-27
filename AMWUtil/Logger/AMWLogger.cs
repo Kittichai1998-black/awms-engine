@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,104 +19,86 @@ namespace AMWUtil.Logger
         public string LogRefID { get { return this._LogRefID; } }
         private string _RefID;
         public string ServiceRefID { get { return _RefID; } }
-        private string ServiceName { get; set; }
-        private string FileName { get; set; }
-        private StackTrace STrace;
-        private object lockthis = new object();
+        public string SubServiceName { get; set; }
+        private string _ServiceName { get; set; }
+        private string _FileName { get; set; }
+        private StackTrace _StackTrace;
 
         
         public AMWLogger(string fileName, string refID, string serviceName)
         {
             this._LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
             this._RefID = refID;
-            this.ServiceName = serviceName;
-            this.FileName = fileName;
+            this._ServiceName = serviceName;
+            this._FileName = fileName;
+            this._StackTrace = new StackTrace();
             //this.FileLogger = File.Open(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
             //this.UpdateLastUse();
             //this.LogBeginTransaction();
         }
         
 
-        public void LogBeginTransaction()
+
+
+        public void LogWrite(string logLV, string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "")
         {
-            this.LogWrite("[TRANSACTION BEGIN] #############################################", 0);
-        }
-        public void LogEndTransaction()
-        {
-            this.LogWrite("[TRANSACTION END] #############################################", 0);
-        }
-        public void LogWrite(string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "")
-        {
-            this.STrace = new StackTrace();
-            message = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [{4}] {1}.{2}({3}) {6}",
-            DateTime.Now,
-            string.IsNullOrWhiteSpace(className) ? STrace.GetFrame(2).GetMethod().DeclaringType.FullName : className,
-            string.IsNullOrWhiteSpace(methodName) ? STrace.GetFrame(2).GetMethod().Name : methodName,
-            lineNumber,
-            this.LogRefID,
-            this._RefID,
-            message);
+            className = string.IsNullOrWhiteSpace(className) ? _StackTrace.GetFrame(2).GetMethod().DeclaringType.FullName : className;
+            methodName = string.IsNullOrWhiteSpace(methodName) ? _StackTrace.GetFrame(2).GetMethod().Name : methodName;
+
+            message = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [{4}] [{8}] {5}({3}) {9}",
+                                        DateTime.Now,
+                                        className,
+                                        methodName,
+                                        lineNumber,
+                                        this.LogRefID,
+                                        this._ServiceName + (string.IsNullOrWhiteSpace(this.SubServiceName) ? string.Empty : "/" + this.SubServiceName),
+                                        this.ServiceRefID,
+                                        this._RefID,
+                                        logLV,
+                                        message.Replace("\r", string.Empty).Replace("\n", "_$$$_"));
             lock (AMWLoggerManager.LogMessagesTMPLock)
             {
-                AMWLoggerManager.LogMessagesTMP.Add(new KeyValuePair<string, string>(this.FileName, message));
+                AMWLoggerManager.LogMessagesTMP.Add(new KeyValuePair<string, string>(this._FileName, message));
             }
 
             
         }
+
+        public void LogAll(string message, [CallerLineNumber]int lineNumber = 0)
+        {
+            this.LogWrite("ALL" , message, lineNumber);
+        }
         public void LogInfo(string message, [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("[INFO] " + message, lineNumber);
+            this.LogWrite("INF" ,message, lineNumber);
         }
         public void LogDebug(string message, [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("[DEBUG] " + message, lineNumber);
+            this.LogWrite("DEB", message, lineNumber);
         }
         public void LogError(string message, [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("[ERROR] " + message, lineNumber);
-        }
-        public void LogSuccess(string message, [CallerLineNumber]int lineNumber = 0)
-        {
-            this.LogWrite("[SUCCESS] " + message, lineNumber);
+            this.LogWrite("ERR", message, lineNumber);
         }
         public void LogWarning(string message, [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("[WARNING] " + message, lineNumber);
+            this.LogWrite("WAR", message, lineNumber);
         }
-        public void LogExecBegin(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogFatal(string message, [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("[EXEC BEGIN] " + message, lineNumber);
+            this.LogWrite("FAT", message, lineNumber);
         }
-        public void LogExecEnd(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogTrace(string message, [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("[EXEC END] " + message, lineNumber);
+            this.LogWrite("TRA", message, lineNumber);
         }
-        public void LogBegin([CallerLineNumber]int lineNumber = 0)
+        public void LogOff(string message, [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("[BEGIN] -------------------------------------------", lineNumber);
+            this.LogWrite("OFF", message, lineNumber);
         }
-        public void LogEnd([CallerLineNumber]int lineNumber = 0)
-        {
-            this.LogWrite("[END] -------------------------------------------", lineNumber);
-        }
-
-        private void Close()
-        {
-            /*lock (this.FileLogger)
-            {
-                if (this.FileLogger != null && this.FileLogger.CanWrite)
-                {
-                    this.FileLogger.Close();
-                    this.FileLogger.Dispose();
-                }
-            }*/
-            this.LogEndTransaction();
-        }
-
 
         public void Dispose()
         {
-            this.Close();
         }
     }
 }

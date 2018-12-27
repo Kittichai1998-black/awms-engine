@@ -35,6 +35,8 @@ namespace AMWUtil.DataAccess.Http
             });
             var content = new FormUrlEncodedContent(values);
 
+            logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
+
             do
             {
                 try
@@ -42,21 +44,24 @@ namespace AMWUtil.DataAccess.Http
                     retry--;
                     using (HttpClient client = new HttpClient())
                     {
-
                         if (authen != null)
                         {
                             if (authen is BasicAuthentication)
                             {
                                 var a = (BasicAuthentication)authen;
+                                logger.LogInfo("API_REQUEST_AUTHEN(" + (retry + 1) + "):: USER=" + a.Username + " | PASS=" + a.Password);
                                 var byteArray = Encoding.ASCII.GetBytes(a.Username + ":" + a.Password);
                                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                             }
                         }
 
                         client.Timeout = new TimeSpan(timeout);
+                        logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + datas.Json());
                         var response = client.PostAsync(apiUrl, content);
+                        logger.LogInfo("API_RESPONSE_STATUS(" + (retry + 1) + "):: " + response.Result.StatusCode);
                         var responseString = response.Result.Content.ReadAsStringAsync();
                         string body = responseString.Result;
+                        logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
                         result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
                     }
                 }
@@ -74,6 +79,7 @@ namespace AMWUtil.DataAccess.Http
             where T : class, new()
         {
             T result = null;
+            logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
             do
             {
                 try
@@ -89,6 +95,7 @@ namespace AMWUtil.DataAccess.Http
                         if (authen is BasicAuthentication)
                         {
                             var a = (BasicAuthentication)authen;
+                            logger.LogInfo("API_REQUEST_AUTHEN(" + (retry + 1) + "):: USER=" + a.Username + " | PASS=" + a.Password);
                             CookieContainer myContainer = new CookieContainer();
                             httpWebRequest.Credentials = new NetworkCredential(a.Username, a.Password);
                             httpWebRequest.CookieContainer = myContainer;
@@ -96,6 +103,7 @@ namespace AMWUtil.DataAccess.Http
                         }
                     }
 
+                    logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + datas.Json());
                     using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {
                         string json = Newtonsoft.Json.JsonConvert.SerializeObject(datas);
@@ -105,12 +113,13 @@ namespace AMWUtil.DataAccess.Http
                         streamWriter.Close();
                     }
 
-
-
                     var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    logger.LogInfo("API_RESPONSE_STATUS(" + (retry + 1) + "):: " + httpResponse.StatusCode);
                     using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
                     {
-                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(streamReader.ReadToEnd());
+                        string body = streamReader.ReadToEnd();
+                        logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
+                        result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
                     }
                 }
                 catch (System.Exception ex)

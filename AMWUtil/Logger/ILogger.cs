@@ -11,14 +11,15 @@ namespace AMWUtil.Logger
     {
         string LogRefID { get; }
         string ServiceRefID { get; }
-        
-        void LogWrite(string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "");
+        void LogWrite(string logLV, string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "");
+
+        void LogAll(string message, [CallerLineNumber]int lineNumber = 0);
         void LogInfo(string message, [CallerLineNumber]int lineNumber = 0);
         void LogDebug(string message, [CallerLineNumber]int lineNumber = 0);
         void LogError(string message, [CallerLineNumber]int lineNumber = 0);
-        void LogSuccess(string message, [CallerLineNumber]int lineNumber = 0);
         void LogWarning(string message, [CallerLineNumber]int lineNumber = 0);
-        void LogBegin([CallerLineNumber]int lineNumber = 0);
-        void LogEnd([CallerLineNumber]int lineNumber = 0);
+        void LogFatal(string message, [CallerLineNumber]int lineNumber = 0);
+        void LogTrace(string message, [CallerLineNumber]int lineNumber = 0);
+        void LogOff(string message, [CallerLineNumber]int lineNumber = 0);
     }
 }
