@@ -30,7 +30,10 @@ namespace AWMSEngine.ADO.StaticValue
             ams_Warehouse w = GetWarehouse(warehouseID, areaID, warehouseCode, areaCode);
             if (branchID.HasValue || !string.IsNullOrEmpty(branchCode) || w != null)
             {
-                b = this.Branchs.FirstOrDefault(x => x.ID == branchID || x.Code == branchCode || (w != null && x.ID == w.Branch_ID));
+                b = this.Branchs.FirstOrDefault(x => 
+                x.ID == branchID || 
+                (!branchID.HasValue && x.Code == branchCode) ||
+                (!branchID.HasValue && string.IsNullOrWhiteSpace(branchCode) && w != null && x.ID == w.Branch_ID));
                 if (b == null)
                     throw new Exception("รหัส branch ไม่ถูกต้อง");
                 else if (w != null && w.Branch_ID != b.ID)
@@ -49,7 +52,10 @@ namespace AWMSEngine.ADO.StaticValue
             ams_AreaMaster a = GetAreaMaster(areaID, areaCode);
             if (warehouseID.HasValue || !string.IsNullOrEmpty(warehouseCode) || a != null)
             {
-                w = this.Warehouses.FirstOrDefault(x => x.ID == warehouseID || x.Code == warehouseCode || (a != null && x.ID == a.Warehouse_ID));
+                w = this.Warehouses.FirstOrDefault(x =>
+                x.ID == warehouseID ||
+                (!warehouseID.HasValue && x.Code == warehouseCode) ||
+                (!warehouseID.HasValue && string.IsNullOrWhiteSpace(warehouseCode) && w != null && x.ID == a.Warehouse_ID));
                 if (w == null)
                     throw new Exception("รหัส Warehouses ไม่ถูกต้อง");
                 else if (a != null && a.Warehouse_ID != w.ID)
@@ -66,7 +72,9 @@ namespace AWMSEngine.ADO.StaticValue
             ams_AreaMaster a = null;
             if (areaID.HasValue || !string.IsNullOrEmpty(areaCode))
             {
-                a = this.AreaMasters.FirstOrDefault(x => x.ID == areaID || x.Code == areaCode);
+                a = this.AreaMasters.FirstOrDefault(x => 
+                x.ID == areaID ||
+                (!areaID.HasValue && x.Code == areaCode));
                 if (a == null)
                     throw new Exception("รหัส Area ไม่ถูกต้อง");
             }

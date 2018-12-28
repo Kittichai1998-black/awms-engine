@@ -56,9 +56,12 @@ namespace AWMSEngine.Engine.Business
             var objType = obj is ams_BaseMaster ? StorageObjectType.BASE : obj is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK;
 
             ams_UnitType trueUnit = null;
-
+            long? skuID = null;
             if (objType == StorageObjectType.PACK)
+            {
                 trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.Code == reqVO.unitCode && x.ObjectType == objType);
+                skuID = ((ams_PackMaster)obj).SKUMaster_ID;
+            }
             else if (objType == StorageObjectType.BASE)
                 trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_BaseMaster)obj).UnitType_ID);
             else if (objType == StorageObjectType.LOCATION)
@@ -81,7 +84,9 @@ namespace AWMSEngine.Engine.Business
                 code = obj.Code,
                 name = obj.Name,
                 type = objType,
-
+                skuID = skuID,
+                productDate = reqVO.productDate,
+                
                 parentID = parrentMapsto != null ? parrentMapsto.id : null,
                 parentType = parrentType,
 

@@ -27,9 +27,11 @@ namespace AWMSEngine.APIService.Api2
                 public class TItem
                 {
                     public string code;
-                    public int qty;
+                    public decimal qty;
                     public string unit;
+                    public string souBranch;
                     public string souWarehouse;
+                    public string desBranch;
                     public string desWarehouse;
                     public string movementType;//ref2
                     public string batch;
@@ -45,13 +47,18 @@ namespace AWMSEngine.APIService.Api2
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            List<string> otherWarehouses = new List<string>();
+            List<KeyValuePair<string,string>> otherWarehousesTmp = new List<KeyValuePair<string, string>>();
 
             TModel reqData = AMWUtil.Common.ObjectUtil.DynamicToModel<TModel>(this.RequestVO);
-            reqData.documents.ForEach(doc => doc.items.FindAll(x => !string.IsNullOrEmpty(x.souWarehouse)).ForEach(x => otherWarehouses.Add(x.souWarehouse)));
-            otherWarehouses = otherWarehouses
-                .Distinct()
-                .Where(x => !ADO.StaticValue.StaticValueManager.GetInstant().Warehouses.Any(y => y.Code == x))
+            reqData.documents
+                .ForEach(doc => doc.items.FindAll(x => !string.IsNullOrEmpty(x.souWarehouse))
+                .ForEach(x => {
+                    otherWarehousesTmp.Add(new KeyValuePair<string, string>(x.souBranch, x.souWarehouse));
+                    otherWarehousesTmp.Add(new KeyValuePair<string, string>(x.desBranch, x.desWarehouse));
+                }));
+            var otherWarehouses = otherWarehousesTmp
+                .GroupBy(x => new { warehouse = x.Value, branch = x.Key })
+                .Where(x => !ADO.StaticValue.StaticValueManager.GetInstant().Warehouses.Any(y => y.Code == x.Key.warehouse))
                 .ToList();
 
             if (otherWarehouses.Count > 0)
@@ -62,9 +69,9 @@ namespace AWMSEngine.APIService.Api2
                         datas = otherWarehouses.Select(x =>
                                                         new ams_Warehouse()
                                                         {
-                                                            Code = x,
-                                                            Name = x,
-                                                            Branch_ID = 2,
+                                                            Code = x.Key.warehouse,
+                                                            Name = x.Key.warehouse,
+                                                            Branch_ID = ADO.StaticValue.StaticValueManager.GetInstant().Branchs.First(y => y.Code == x.Key.branch).ID,
                                                             Status = EntityStatus.ACTIVE
                                                         }).ToList(),
                         whereFields = new List<string>() { "Code" }
@@ -89,7 +96,9 @@ namespace AWMSEngine.APIService.Api2
                         quantity = x.qty,
                         unitType = x.unit,
                         batch = x.batch,
+                        souBranch = x.souBranch,
                         souWarehouseCode = x.souWarehouse,
+                        desBranch = x.desBranch,
                         desWarehouseCode = x.desWarehouse,
                         refID = doc.docNo,
                         ref1 = doc.docYear,

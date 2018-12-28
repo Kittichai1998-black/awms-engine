@@ -28,7 +28,8 @@ namespace AWMSEngine.APIService.Api2
                 public class TItem
                 {
                     public string code;
-                    public int qty;
+                    public string item;
+                    public decimal qty;
                     public string unit;
                     public string batch;
                     public string souWarehouse;
@@ -76,6 +77,7 @@ namespace AWMSEngine.APIService.Api2
                         refID = doc.docNo,
                         ref1 = doc.docYear,
                         ref2 = x.movementType,
+                        options = "DocItem=" + x.item
                     }).ToList()
                 };
 

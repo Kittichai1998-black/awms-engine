@@ -32,6 +32,11 @@ namespace AWMSEngine.Engine.Business.Picking
             }
         }
 
+        public class TRes
+        {
+            public amt_Document doc;
+        }
+
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
             var itemList = ADO.DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO);
@@ -49,9 +54,9 @@ namespace AWMSEngine.Engine.Business.Picking
                 //var setSTO = listSto.Where(y => y.id == x.STOID).First();
                 var basePicked = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(setSTO.skuID.Value, x.picked, setSTO.unitID);
 
+                setSTO.eventStatus = setSTO.qty - x.picked == 0 ? StorageObjectEventStatus.PICKED : StorageObjectEventStatus.PICKING;
                 setSTO.qty = setSTO.qty - x.picked;
                 setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
-                setSTO.eventStatus = setSTO.qty - x.picked == 0 ? StorageObjectEventStatus.PICKED : StorageObjectEventStatus.PICKING;
 
                 ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, this.BuVO);
                 ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
