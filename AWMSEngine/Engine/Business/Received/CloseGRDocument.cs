@@ -109,7 +109,7 @@ namespace AWMSEngine.Engine.Business.Received
                 }
                 else
                 {
-                    var flag = relation.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSING);
+                    var flag = relation.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSING || check.EventStatus == DocumentEventStatus.CLOSED);
                     if (flag)
                     {
                         var groupBySGR = new List<SAPInterfaceReturnvalues>();

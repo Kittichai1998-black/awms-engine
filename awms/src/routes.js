@@ -288,6 +288,12 @@ const Profile = Loadable({
   loader: () => import('./views/Pages/Profile/Profile'),
   loading: Loading,
 });
+
+const Return = Loadable({
+  loader: () => import('./views/Warehouse/Return/Return'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -326,6 +332,7 @@ const routes = [
   { path: '/doc/gi/list', exact: true, name: 'Goods Issue Document', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Goods Issue Manage', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
+  { path: '/wm/sto/return', exact: true, name: 'Retrun', component: Return },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/sys/storage/list', exact: true, name: 'Storage', component: Storage },
