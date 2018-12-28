@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 import {createQueryString} from '../../ComponentCore'
 
 class Pack extends Component{
@@ -32,8 +33,9 @@ class Pack extends Component{
        
       };
       this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-      this.filterList = this.filterList.bind(this)
-      this.uneditcolumn = ["SKUCode","SKUName","PackCode","PackName","UnitTypeCode","UnitTypeName","ObjCode","ObjectSizeName","Created","Modified"]
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
+    this.filterList = this.filterList.bind(this)
+    this.uneditcolumn = ["SKUCode","SKUName","PackCode","PackName","UnitTypeCode","UnitTypeName","ObjCode","ObjectSizeName","Created","Modified"]
     }
     componentDidMount(){
         document.title = "Pack - AWMS"
@@ -43,10 +45,30 @@ class Pack extends Component{
         event.preventDefault();
     }
 
-    componentWillMount(){
+    async componentWillMount(){
         this.filterList();
+        //permission
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Pack", dataGetPer, this.props.history);
+    this.displayButtonByPermission(dataGetPer)
     }
     
+    //permission
+    displayButtonByPermission(dataGetPer) {
+      let checkview = true
+      if (CheckViewCreatePermission("SKU_view", dataGetPer)) {
+          checkview = true //แสดงข้อมูลเฉยๆ
+      }
+      if (CheckViewCreatePermission("SKU_create&modify", dataGetPer)) {
+          checkview = false //แก้ไข
+      }
+      if (checkview === true) {
+          this.setState({ permissionView: false })
+      } else if (checkview === false) {
+          this.setState({ permissionView: true })
+      }
+  }
+
     componentWillUnmount(){
         Axios.isCancel(true);
     }
@@ -126,26 +148,27 @@ class Pack extends Component{
     }
 
     render(){
-        const cols = [
+    const view = this.state.permissionView
+    const cols = [
           //{accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
           //{accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
           //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-          {accessor: 'SKUCode', Header: 'SKU',updateable:false,Filter:"text", Type:"autocomplete", minWidth: 100},
+          {accessor: 'SKUCode', Header: 'SKU',updateable:view,Filter:"text", Type:"autocomplete", minWidth: 130},
           //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
-          {accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable:false, Filter:"text", datatype: "int", className: "right", minWidth: 90},
-          {accessor: 'UnitTypeCode', Header: 'Unit',updateable:false,Filter:"text", Type:"autocomplete", minWidth: 60, className: "left"},
+          {accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable:view, Filter:"text", datatype: "int", className: "right", minWidth: 90},
+          {accessor: 'UnitTypeCode', Header: 'Unit',updateable:view,Filter:"text", Type:"autocomplete", minWidth: 60, className: "left"},
           //{accessor: 'ObjCode', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
           //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
           //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
           //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
           ///{accessor: 'PickSizeQty', Header: 'Pick Size Qty', editable:true,Filter:"text",datatype:"int"},
-          {accessor: 'ItemQty', Header: 'Base Unit', editable:false,Filter:"text",datatype:"int", className: "right", minWidth: 60},
+          {accessor: 'ItemQty', Header: 'Base Unit', editable:view,Filter:"text",datatype:"int", className: "right", minWidth: 60},
           //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
           {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 180},
           /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
           {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 180},
           //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          {show: false, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+          {show: view, Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
         ]; 
       
         const btnfunc = [{
@@ -161,7 +184,7 @@ class Pack extends Component{
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
           <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
-                  filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} exportfilebtn={true} addbtn={false} 
+                  filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"Pack"}
             table="ams_PackMaster"/>
           </div>

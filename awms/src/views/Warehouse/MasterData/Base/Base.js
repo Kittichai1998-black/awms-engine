@@ -1,183 +1,180 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Button } from 'reactstrap';
-import {TableGen} from '../TableSetup';
+import { Button } from 'reactstrap';
+import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import {createQueryString} from '../../ComponentCore'
-import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+import { createQueryString } from '../../ComponentCore'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
-class Area extends Component{
+class Area extends Component {
     constructor(props) {
-      super(props);
+        super(props);
 
         this.state = {
-            data : [],
-            autocomplete:[],
-            statuslist:[{
-            'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
-            'header' : 'Status',
-            'field' : 'Status',
-            'mode' : 'check',
+            data: [],
+            autocomplete: [],
+            statuslist: [{
+                'status': [{ 'value': '*', 'label': 'All' }, { 'value': '1', 'label': 'Active' }, { 'value': '0', 'label': 'Inactive' }],
+                'header': 'Status',
+                'field': 'Status',
+                'mode': 'check',
             }],
-            acceptstatus : false,
-            select:{queryString:window.apipath + "/api/viw",
-            t:"BaseMaster",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-              f:"ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Weight,Status,Created,Modified",
-            g:"",
-            s:"[{'f':'Code','od':'asc'}]",
-            sk:0,
-            l:100,
-            all:"",},
-            sortstatus:0,
-            selectiondata:[]
+            acceptstatus: false,
+            select: {
+                queryString: window.apipath + "/api/viw",
+                t: "BaseMaster",
+                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+                f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Weight,Status,Created,Modified",
+                g: "",
+                s: "[{'f':'Code','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            },
+            sortstatus: 0,
+            selectiondata: []
         };
         this.getSelectionData = this.getSelectionData.bind(this)
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code", "ObjectSize_Code","UnitType_Code","Created","Modified"]
+        this.uneditcolumn = ["BaseMasterType_Code", "ObjectSize_Code", "UnitType_Code", "Created", "Modified"]
     }
 
-    onHandleClickCancel(event){
+    onHandleClickCancel(event) {
         this.forceUpdate();
         event.preventDefault();
     }
-    componentDidMount(){
+    componentDidMount() {
         document.title = "Pallet - AWMS"
     }
-    async componentWillMount(){
+    async componentWillMount() {
         this.filterList();
         //permission
-        let data =await GetPermission()
-        Nodisplay(data,12,this.props.history)
-        this.displayButtonByPermission(data)
-        //permission
+        let dataGetPer = await GetPermission()
+        CheckWebPermission("Pallet", dataGetPer, this.props.history);
+        this.displayButtonByPermission(dataGetPer)
     }
-    //permission
-    displayButtonByPermission(perID){
-        this.setState({perID:perID})
-        let check = false
-        perID.forEach(row => {
-            if(row === 12){
-            check = true
-            }if(row === 13){
-            check = false
-            }
-        })
-            if(check === true){  
-                this.setState({permissionView:false})
-            }else if(check === false){
-                this.setState({permissionView:true})
-            }
+    displayButtonByPermission(dataGetPer) {
+        let checkview = true
+        if (CheckViewCreatePermission("Base_view", dataGetPer)) {
+            checkview = true //แสดงข้อมูลเฉยๆ
         }
-        //permission
-
-    componentWillUnmount(){
-    Axios.isCancel(true);
+        if (CheckViewCreatePermission("Base_create&modify", dataGetPer)) {
+            checkview = false //แก้ไข
+        }
+        if (checkview === true) {
+            this.setState({ permissionView: false })
+        } else if (checkview === false) {
+            this.setState({ permissionView: true })
+        }
+    }
+    componentWillUnmount() {
+        Axios.isCancel(true);
     }
 
-    filterList(){
-        const objselect = {queryString:window.apipath + "/api/mst",
-            t:"ObjectSize",
-            q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
-            f:"ID,concat(Code,' : ',Name) as Code",
-            g:"",
-            s:"[{'f':'ID','od':'asc'}]",
-            sk:0,
-            all:"",}
+    filterList() {
+        const objselect = {
+            queryString: window.apipath + "/api/mst",
+            t: "ObjectSize",
+            q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
+            f: "ID,concat(Code,' : ',Name) as Code",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            all: "",
+        }
         const basetypeselect = {
-          queryString: window.apipath + "/api/viw",
-          t: "BaseMasterType",
-          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
-          f: "ID,concat(Code,' : ',Name) as Code",
-          g: "",
-          s: "[{'f':'ID','od':'asc'}]",
-          sk: 0,
-          all: "",
+            queryString: window.apipath + "/api/viw",
+            t: "BaseMasterType",
+            q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}",
+            f: "ID,concat(Code,' : ',Name) as Code",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            all: "",
         }
         const unitselect = {
-          queryString: window.apipath + "/api/mst",
-          t: "UnitType",
-          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
-          f: "ID,concat(Code,' : ',Name) as Code",
-          g: "",
-          s: "[{'f':'ID','od':'asc'}]",
-          sk: 0,
-          all: "",
+            queryString: window.apipath + "/api/mst",
+            t: "UnitType",
+            q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
+            f: "ID,concat(Code,' : ',Name) as Code",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            all: "",
         }
-      Axios.all([Axios.get(createQueryString(objselect)), Axios.get(createQueryString(basetypeselect)), Axios.get(createQueryString(unitselect))]).then(
-        (Axios.spread((objresult, basetyperesult, unitresult) => 
-        {
-            let ddl = [...this.state.autocomplete]
-            let objList = {}
-            let unitList = {}
-            let basetypelist = {}
-            objList["data"] = objresult.data.datas
-            objList["field"] = "ObjectSize_Code"
-            objList["pair"] = "ObjectSize_ID"
-            objList["mode"] = "Dropdown"
+        Axios.all([Axios.get(createQueryString(objselect)), Axios.get(createQueryString(basetypeselect)), Axios.get(createQueryString(unitselect))]).then(
+            (Axios.spread((objresult, basetyperesult, unitresult) => {
+                let ddl = [...this.state.autocomplete]
+                let objList = {}
+                let unitList = {}
+                let basetypelist = {}
+                objList["data"] = objresult.data.datas
+                objList["field"] = "ObjectSize_Code"
+                objList["pair"] = "ObjectSize_ID"
+                objList["mode"] = "Dropdown"
 
-            basetypelist["data"] = basetyperesult.data.datas
-            basetypelist["field"] = "BaseMasterType_Code"
-            basetypelist["pair"] = "BaseMasterType_ID"
-            basetypelist["mode"] = "Dropdown"
+                basetypelist["data"] = basetyperesult.data.datas
+                basetypelist["field"] = "BaseMasterType_Code"
+                basetypelist["pair"] = "BaseMasterType_ID"
+                basetypelist["mode"] = "Dropdown"
 
-            unitList["data"] = unitresult.data.datas
-            unitList["field"] = "UnitType_Code"
-            unitList["pair"] = "UnitType_ID"
-            unitList["mode"] = "Dropdown"
-          ddl = ddl.concat(objList).concat(basetypelist).concat(unitList)
-            this.setState({autocomplete:ddl})
-        })))
+                unitList["data"] = unitresult.data.datas
+                unitList["field"] = "UnitType_Code"
+                unitList["pair"] = "UnitType_ID"
+                unitList["mode"] = "Dropdown"
+                ddl = ddl.concat(objList).concat(basetypelist).concat(unitList)
+                this.setState({ autocomplete: ddl })
+            })))
     }
-    getSelectionData(data){
+    getSelectionData(data) {
         let obj = []
-        data.forEach((datarow,index) => {
-            obj.push({"barcode":datarow.Code,"Name":datarow.Name});
+        data.forEach((datarow, index) => {
+            obj.push({ "barcode": datarow.Code, "Name": datarow.Name });
         })
         const ObjStr = JSON.stringify(obj)
-        this.setState({barcodeObj:ObjStr}, () => console.log(this.state.barcodeObj))
+        this.setState({ barcodeObj: ObjStr }, () => console.log(this.state.barcodeObj))
     }
 
-    createBarcodeBtn(rowdata){
-      return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-        onClick={() => {
-            let barcode=[{"barcode":rowdata["Code"],"Name":rowdata["Name"]}]
-            let barcodestr = JSON.stringify(barcode)
-            window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode='+barcodestr, "_blank")
+    createBarcodeBtn(rowdata) {
+        return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+            onClick={() => {
+                let barcode = [{ "barcode": rowdata["Code"], "Name": rowdata["Name"] }]
+                let barcodestr = JSON.stringify(barcode)
+                window.open('/mst/base/manage/barcode?barcodesize=1&barcodetype=qr&barcode=' + barcodestr, "_blank")
             }}>Print</Button>
-      }
+    }
 
-    render(){
+    render() {
+        const view = this.state.permissionView
         const cols = [
-          //{ Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
-            {accessor: 'Code', Header: 'Code', Type:"autobasecode", editable:false, Filter:"text", fixed: "left", minWidth: 100},
-            {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left", minWidth: 100},
+            //{ Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
+            { accessor: 'Code', Header: 'Code', Type: "autobasecode", editable: false, Filter: "text", fixed: "left", minWidth: 100 },
+            { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 100 },
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
-            {accessor: 'BaseMasterType_Code', Header: 'Type',updateable:true,Filter:"text", Type:"autocomplete", minWidth: 150},
-            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: true, Filter: "text",datatype:"int", Type: "autocomplete", minWidth: 90, className: "center"},
-            { accessor: 'ObjectSize_Code', Header: 'Size', updateable: true, Filter: "text", Type: "autocomplete", minWidth: 250 },
-          { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", Type: "autocomplete", minWidth: 140 },
-          //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
+            { accessor: 'BaseMasterType_Code', Header: 'Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 150 },
+            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: view, Filter: "text", datatype: "int", Type: "autocomplete", minWidth: 90, className: "center" },
+            { accessor: 'ObjectSize_Code', Header: 'Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 250 },
+            { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
+            //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
+            { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
+            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
-            {show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
-          ]; 
-        
+            { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
+        ];
+
         const btnfunc = [{
-            history:this.props.history,
-            btntype:"Barcode",
-            func:this.createBarcodeBtn
+            history: this.props.history,
+            btntype: "Barcode",
+            func: this.createBarcodeBtn
         }]
-        const view  = this.state.permissionView
-        return(
-          <div>
-          {/*
+        return (
+            <div>
+                {/*
             column = คอลัมที่ต้องการแสดง
             data = json ข้อมูลสำหรับ select ผ่าน url
             ddlfilter = json dropdown สำหรับทำ dropdown filter
@@ -188,14 +185,14 @@ class Area extends Component{
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportbtn={view} expFilename={"Base"}
-            filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={view}
-              btn={btnfunc} uneditcolumn={this.uneditcolumn} 
-              table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"Pallet"}
+                    filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={view} exportfilebtn={view}
+                    btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                    table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
 
-            
-          </div>
+
+            </div>
         )
-      }
+    }
 }
 export default Area;

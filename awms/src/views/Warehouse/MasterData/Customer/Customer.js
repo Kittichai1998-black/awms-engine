@@ -1,106 +1,100 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
-import {TableGen} from '../TableSetup';
-import {apicall} from '../../ComponentCore'
-import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+import { TableGen } from '../TableSetup';
+import { apicall } from '../../ComponentCore'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
-class Customer extends Component{
+class Customer extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      data : [],
-      autocomplete:[],
-      statuslist:[{
-        'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
-        'header' : 'Status',
-        'field' : 'Status',
-        'mode' : 'check',
+      data: [],
+      autocomplete: [],
+      statuslist: [{
+        'status': [{ 'value': '*', 'label': 'All' }, { 'value': '1', 'label': 'Active' }, { 'value': '0', 'label': 'Inactive' }],
+        'header': 'Status',
+        'field': 'Status',
+        'mode': 'check',
       }],
-      acceptstatus : false,
-      select:{queryString:window.apipath + "/api/viw",
-      t:"CustomerMaster",
-      q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f:"ID,Code,Name,Description,Status,Created,Modified",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:"",
-      l:100,
-      all:"",},
-      sortstatus:0,
-      selectiondata:[],
+      acceptstatus: false,
+      select: {
+        queryString: window.apipath + "/api/viw",
+        t: "CustomerMaster",
+        q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+        f: "ID,Code,Name,Description,Status,Created,Modified",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: "",
+        l: 100,
+        all: "",
+      },
+      sortstatus: 0,
+      selectiondata: [],
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["Created","Modified"]
+    this.uneditcolumn = ["Created", "Modified"]
   }
-  componentDidMount(){
+  componentDidMount() {
     document.title = "Customer - AWMS"
   }
-  async componentWillMount(){
+  async componentWillMount() {
     //permission
-    this.setState({showbutton:"none"})
-    let data = await GetPermission()
-    Nodisplay(data,5,this.props.history)
-    this.displayButtonByPermission(data)
-    //permission
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Customer", dataGetPer, this.props.history);
+    this.displayButtonByPermission(dataGetPer)
   }
-  //permission
-displayButtonByPermission(perID){
-  this.setState({perID:perID})
-  let check = false
-  perID.forEach(row => {
-    if(row === 5){
-      check = true
-    }if(row === 6){
-      check = false
-    }if(row === 7){
-      check = false
+  displayButtonByPermission(dataGetPer) {
+    let checkview = true
+    if (CheckViewCreatePermission("Customer_view", dataGetPer)) {
+      checkview = true //แสดงข้อมูลเฉยๆ
     }
-    })
-  if (check === true) {
-    this.setState({ permissionView: false })
-  } else if (check === false) {
-    this.setState({ permissionView: true })
+    if (CheckViewCreatePermission("Customer_create&modify", dataGetPer)) {
+      checkview = false //แก้ไข
+    }
+    if (checkview === true) {
+      this.setState({ permissionView: false })
+    } else if (checkview === false) {
+      this.setState({ permissionView: true })
+    }
   }
-  }
-  //permission
 
-  onHandleClickCancel(event){
+  onHandleClickCancel(event) {
     this.forceUpdate();
     event.preventDefault();
   }
-  
-  onHandleClickLoad(event){
-    Axios.post(window.apipath + "/api/mst/TransferFileServer/CustomerMst",{})
+
+  onHandleClickLoad(event) {
+    Axios.post(window.apipath + "/api/mst/TransferFileServer/CustomerMst", {})
     this.forceUpdate();
   }
 
-  render(){
+  render() {
+    const view = this.state.permissionView
     const cols = [
-      { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100 },
-      { accessor: 'Name', Header: 'Name', editable: false, Filter: "text", fixed: "left", minWidth: 150},
+      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
       //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       //{ accessor: 'Status', Header: 'Status', editable: true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
-      { accessor: 'Created', Header: 'Create', editable: false,filterable:false},
+      { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false}, */
-      { accessor: 'Modified', Header: 'Modify', editable: false,filterable:false},
+      { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
-      { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" }
+      { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" }
     ];
     const btnfunc = [{
-      btntype:"Barcode",
-      func:this.createBarcodeBtn
+      btntype: "Barcode",
+      func: this.createBarcodeBtn
     }]
-    const view = this.state.permissionView
 
-    return(
+    return (
       <div>
-      {/*
+        {/*
         column = คอลัมที่ต้องการแสดง
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
@@ -110,8 +104,8 @@ displayButtonByPermission(perID){
             onClick={this.onHandleClickLoad} color="danger" className="float-right">Load ข้อมูล Customer</Button>
       </div>*/}
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Customer"}
-          filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={false} exportbtn={false} exportfilebtn={view} 
-          table="ams_Customer"/> 
+          filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} addExportbtn={view} exportfilebtn={view}
+          table="ams_Customer" />
       </div>
     )
   }

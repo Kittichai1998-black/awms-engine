@@ -76,6 +76,7 @@ class Login extends Component {
   async GetMenu(token){
     await Axios.get(window.apipath + '/api/PageSetup/menu/?token=' + token)
      .then((res) => {
+      //  console.log(res)
        localStorage.setItem('MenuItems',JSON.stringify(res.data.webGroups));
      }).then(() => {
       this.setState({status : true});

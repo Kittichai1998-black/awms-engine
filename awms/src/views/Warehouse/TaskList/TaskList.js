@@ -6,10 +6,10 @@ import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' 
 import _ from 'lodash'
 import '../componentstyle.css'
-import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
 import Clock from 'react-live-clock';
 import Fullscreen from "react-full-screen";
 import moment from 'moment';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const API = new apicall()
 
@@ -63,8 +63,13 @@ class TaskList extends Component{
     this.GetQueueData = this.GetQueueData.bind(this)
     this.updateQueueData = this.updateQueueData.bind(this)
   }
-
+  async componentWillMount() {
+    //permission
+    let dataGetPer = await GetPermission()
+    //CheckWebPermission("TaskList", dataGetPer, this.props.history);
+}
   componentDidMount() {
+    document.title = "Dashboard Task List : AWMS";
     this.GetQueueData()
     let interval = setInterval(this.GetQueueData, 2000);
     this.setState({ interval: interval })

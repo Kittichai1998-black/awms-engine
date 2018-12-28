@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import {createQueryString} from '../../ComponentCore'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 class APIService extends Component{
   constructor(props) {
@@ -32,6 +33,7 @@ class APIService extends Component{
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.uneditcolumn = ["APIServiceGroup_Code","Permission_Code","Created","Modified"]
   }
 
@@ -42,14 +44,28 @@ class APIService extends Component{
   componentDidMount(){
     document.title = "API Service : AWMS";
   }
-  componentWillMount(){
+  async componentWillMount(){
     this.filterList();
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("APIService", dataGetPer, this.props.history);
+    this.displayButtonByPermission(dataGetPer)
   }
   
   componentWillUnmount(){
     Axios.isCancel(true);
   }
+  displayButtonByPermission(dataGetPer) {
+    let checkview = true
+      if (CheckViewCreatePermission("Administrator", dataGetPer)) {
+          checkview = false //แก้ไข
+      }
 
+    if (checkview === true) {
+      this.setState({ permissionView: false })
+    } else if (checkview === false) {
+      this.setState({ permissionView: true })
+    }
+  }
   filterList(){
     const Permissionselect = {queryString:window.apipath + "/api/mst",
       t:"Permission",
@@ -91,19 +107,20 @@ class APIService extends Component{
   }
 
   render(){
-    const cols = [
-      {accessor: 'Code', Header: 'Code', editable:true,Filter:"text", fixed: "left"},
-      {accessor: 'Name', Header: 'Name', editable:true,Filter:"text", fixed: "left"},
+        const view = this.state.permissionView
+        const cols = [
+      {accessor: 'Code', Header: 'Code', editable:view,Filter:"text", fixed: "left"},
+      {accessor: 'Name', Header: 'Name', editable:view,Filter:"text", fixed: "left"},
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-      {accessor: 'ActionCommand', Header: 'Action Command', sortable:false,Filter:"text",editable:true,},
-      {accessor: 'Permission_Code', Header: 'Permission',updateable:false,Filter:"text", Type:"autocomplete"},
-      {accessor: 'APIServiceGroup_Code', Header: 'API Service Group',updateable:false,Filter:"text", Type:"autocomplete"},
+      {accessor: 'ActionCommand', Header: 'Action Command', sortable:false,Filter:"text",editable:view,},
+      {accessor: 'Permission_Code', Header: 'Permission',updateable:view,Filter:"text", Type:"autocomplete"},
+      {accessor: 'APIServiceGroup_Code', Header: 'API Service Group',updateable:view,Filter:"text", Type:"autocomplete"},
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       {accessor: 'Created', Header: 'Create', editable:false,filterable:false},
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
       {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false},
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-      {Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
+      {Show:view,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Remove", btntext:"Remove"},
     ]; 
   
     const btnfunc = [{
@@ -118,8 +135,8 @@ class APIService extends Component{
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addbtn={true}
-              filterable={true} autocomplete={this.state.autocomplete} accept={true}
+      <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} exportfilebtn={view} addExportbtn={view}
+              filterable={true} autocomplete={this.state.autocomplete} accept={view} expFilename={"APIService"}
               btn={btnfunc} uneditcolumn={this.uneditcolumn}
         table="ams_APIService"/>
       </div>
