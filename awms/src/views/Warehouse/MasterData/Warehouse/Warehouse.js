@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { createQueryString } from '../../ComponentCore'
+import { apicall,createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+const api = new apicall()
 
 class Warehouse extends Component {
     constructor(props) {
@@ -84,7 +85,7 @@ class Warehouse extends Component {
             all: "",
         }
 
-        Axios.all([Axios.get(createQueryString(whselect))]).then(
+        Axios.all([api.get(createQueryString(whselect))]).then(
             (Axios.spread((whresult) => {
                 let ddl = [...this.state.autocomplete]
                 let whList = {}

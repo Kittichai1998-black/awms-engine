@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
-import {createQueryString} from '../../ComponentCore'
+import {apicall,createQueryString} from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+const api = new apicall()
 
 class APIService extends Component{
   constructor(props) {
@@ -85,7 +86,7 @@ class APIService extends Component{
       sk:0,
       all:"",}
 
-    Axios.all([Axios.get(createQueryString(Permissionselect)),Axios.get(createQueryString(APIServiceGroupselect))]).then(
+    Axios.all([api.get(createQueryString(Permissionselect)),api.get(createQueryString(APIServiceGroupselect))]).then(
       (Axios.spread((Permissionresult, APIServiceGroupresult) => 
     {
       let ddl = [...this.state.autocomplete]

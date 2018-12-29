@@ -74,7 +74,7 @@ class UnitType extends Component {
   filterList() {
     const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
     const objType = []
-    Axios.all([Axios.get(createQueryString(objTypeSelect))]).then(
+    Axios.all([Axios.get(createQueryString(objTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
       (Axios.spread((result) => {
         result.data.forEach(row => {
           objType.push({ ID: row.value, Code: row.name })

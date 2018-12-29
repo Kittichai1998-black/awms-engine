@@ -3,8 +3,9 @@ import "react-table/react-table.css";
 import { Button, Row, Col } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { AutoSelect, createQueryString } from '../../ComponentCore'
+import { apicall, AutoSelect, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+const api = new apicall()
 
 class AreaLocation extends Component {
   constructor(props) {
@@ -125,8 +126,8 @@ class AreaLocation extends Component {
 
   componentDidMount() {
     document.title = "Location - AWMS"
-    Axios.all([Axios.get(createQueryString(this.state.supplier)),
-    Axios.get(createQueryString(this.state.warehouse))]).then(
+    Axios.all([api.get(createQueryString(this.state.supplier)),
+      api.get(createQueryString(this.state.warehouse))]).then(
       (Axios.spread((supplierresult, warehouseresult) => {
         this.setState({
           supplierdata: supplierresult.data.datas,
@@ -161,7 +162,7 @@ class AreaLocation extends Component {
         }
         area.q = JSON.stringify(areawhere)
 
-        Axios.get(createQueryString(this.state.area)).then((res) => {
+        api.get(createQueryString(this.state.area)).then((res) => {
           const areadata = []
           res.data.datas.forEach(row => {
             areadata.push({ value: row.ID, label: row.Code + ' : ' + row.Name, grouptype: row.GroupType })
@@ -226,7 +227,7 @@ class AreaLocation extends Component {
       sk: 0,
       all: "",
     }
-    Axios.all([Axios.get(createQueryString(objselect)), Axios.get(createQueryString(areatypeselect)), Axios.get(createQueryString(unitselect))]).then(
+    Axios.all([api.get(createQueryString(objselect)), api.get(createQueryString(areatypeselect)), api.get(createQueryString(unitselect))]).then(
       (Axios.spread((objresult, areatyperesult, unitresult) => {
         let ddl = [...this.state.autocomplete]
         let objList = {}

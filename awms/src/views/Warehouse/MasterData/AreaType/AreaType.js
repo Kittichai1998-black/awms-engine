@@ -77,7 +77,7 @@ class AreaType extends Component {
   filterList() {
     const groupTypeSelect = { queryString: window.apipath + "/api/enum/AreaMasterGroupType" }
     const groupType = []
-    Axios.all([Axios.get(createQueryString(groupTypeSelect))]).then(
+    Axios.all([Axios.get(createQueryString(groupTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
       (Axios.spread((result) => {
         result.data.forEach(row => {
           groupType.push({ ID: row.value, Code: row.name })

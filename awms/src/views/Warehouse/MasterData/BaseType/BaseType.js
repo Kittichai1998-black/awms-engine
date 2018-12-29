@@ -85,7 +85,7 @@ class BaseType extends Component {
             all: "",
         }
 
-        Axios.all([Axios.get(createQueryString(UnitTypeSelect))]).then(
+        Axios.all([Axios.get(createQueryString(UnitTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
             (Axios.spread((UnitTypeResult) => {
                 let ddl = [...this.state.autocomplete]
                 let UnitTypeList = {}

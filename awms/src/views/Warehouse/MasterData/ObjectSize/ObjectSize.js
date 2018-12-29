@@ -4,9 +4,10 @@ import { Card, Button, CardBody, Input } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import Popup from 'reactjs-popup'
-import { createQueryString } from '../../ComponentCore'
+import {apicall, createQueryString } from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+const api = new apicall()
 
 function isInt(value) {
     return !isNaN(value) &&
@@ -103,7 +104,7 @@ class ObjectSize extends Component {
     displayButtonByPermission(dataGetPer) {
         let checkview = true
         if (CheckViewCreatePermission("Administrator", dataGetPer)) {
-            checkview = true //แก้ไข
+            checkview = false //แก้ไข
         }
 
         if (checkview === true) {
@@ -115,7 +116,7 @@ class ObjectSize extends Component {
     filterList() {
         const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
         const objType = []
-        Axios.all([Axios.get(createQueryString(objTypeSelect))]).then(
+        Axios.all([Axios.get(createQueryString(objTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
             (Axios.spread((result) => {
                 result.data.forEach(row => {
                     objType.push({ ID: row.value, Code: row.name })
@@ -136,7 +137,7 @@ class ObjectSize extends Component {
     getData(Root_ID) {
         const selectdata = []
         const selectMapdata = []
-        Axios.get(createQueryString(this.state.select)).then((response) => {
+        Axios.get(createQueryString(this.state.select)+"&_token="+localStorage.getItem("Token")).then((response) => {
             response.data.datas.forEach(row => {
                 selectdata.push({
                     ID: row.ID
@@ -149,7 +150,7 @@ class ObjectSize extends Component {
                 })
             })
             this.setState({ selectdata })
-            Axios.get(createQueryString(this.state.selectMapChild)).then((responset) => {
+            Axios.get(createQueryString(this.state.selectMapChild)+"&_token="+localStorage.getItem("Token")).then((responset) => {
                 responset.data.datas.forEach(row => {
                     selectMapdata.push({
                         ID: row.ID
@@ -228,15 +229,13 @@ class ObjectSize extends Component {
             dataUpdate.forEach((row) => {
                 row["ID"] = row["ID"] <= 0 ? null : row["ID"]
             })
-            let updjson = {
-                "_token": sessionStorage.getItem("Token"),
-                "_apikey": null,
+            let updjson = {  
                 "t": "ams_ObjectSizeMap",
                 "pk": "ID",
                 "datas": dataUpdate,
                 "nr": false
             }
-            Axios.put(window.apipath + "/api/mst", updjson).then((result) => {
+            api.put(window.apipath + "/api/mst", updjson).then((result) => {
             })
             this.setState({ dataUpdate: [] })
             this.closeModal()
