@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {  Button, Row, Col } from 'reactstrap';
+import { Button, Row, Col } from 'reactstrap';
 import ReactTable from 'react-table';
 //import Axios from 'axios';
-import { apicall,AutoSelect, DatePicker } from '../ComponentCore';
+import { apicall, AutoSelect, DatePicker } from '../ComponentCore';
 //import DatePicker from 'react-datepicker';
 import moment from 'moment';
-import {GetPermission,Nodisplay} from '../../ComponentCore/Permission';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 import ExportFile from '../MasterData/ExportFile';
 
 const createQueryString = (select) => {
@@ -23,95 +23,103 @@ const createQueryString = (select) => {
 const Axios = new apicall()
 
 
-class StockCard extends Component{
+class StockCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data1:[],
-      data:[],
-      PackMaster:{queryString:window.apipath + "/api/viw",
-      t:"PackMaster",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
-      f:"concat(Code,' : ',Name) as PackName , Code",
-      g:"",
-      s:"[{'f':'Code','od':'asc'}]",
-      sk:0,
-      l:0,
-      all:"",},
-      Document:{queryString:window.apipath + "/api/trx",
-      t:"Document",
-      q:'[{ "f": "Status", "c":"=", "v": 1}]',
-      f:"*",
-      g:"",
-      s:"[{'f':'Code','od':'asc'}]",
-      sk:0,
-      l:0,
-      all:"",},
-      PackMasterdata:[],
-      selectdata:{queryString:window.apipath + "/api/viw",
-      t:"StockCard",
-      q:'[{ "f": "Status", "c":"=", "v": 4}]',
-      f:"*",
-      g:"",
-      s:"[{'f':'Code','od':'asc'}]",
-      sk:0,
-      l:0,
-      all:"",},
-      PackMasterdata:[],
-    
+      data1: [],
+      data: [],
+      PackMaster: {
+        queryString: window.apipath + "/api/viw",
+        t: "PackMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "concat(Code,' : ',Name) as PackName , Code",
+        g: "",
+        s: "[{'f':'Code','od':'asc'}]",
+        sk: 0,
+        l: 0,
+        all: "",
+      },
+      Document: {
+        queryString: window.apipath + "/api/trx",
+        t: "Document",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'Code','od':'asc'}]",
+        sk: 0,
+        l: 0,
+        all: "",
+      },
+      PackMasterdata: [],
+      selectdata: {
+        queryString: window.apipath + "/api/viw",
+        t: "StockCard",
+        q: '[{ "f": "Status", "c":"=", "v": 4}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'Code','od':'asc'}]",
+        sk: 0,
+        l: 0,
+        all: "",
+      },
+      PackMasterdata: [],
+
     }
     this.onCalculate = this.onCalculate.bind(this)
   }
- async componentWillMount(){
-       Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
-         const PackMasterdata = []
-         response.data.datas.forEach(row => {
-          var PackData= row.PackName
-          PackMasterdata.push({label:PackData,value:row.Code})
-         })
-           this.setState({PackMasterdata})    
-         })
-      //permission
-      let data = await GetPermission()
-      Nodisplay(data,38,this.props.history)
-      //permission
+  async componentWillMount() {
+    document.title = "Stock Card : AWMS";
+    Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
+      const PackMasterdata = []
+      response.data.datas.forEach(row => {
+        var PackData = row.PackName
+        PackMasterdata.push({ label: PackData, value: row.Code })
+      })
+      this.setState({ PackMasterdata })
+    })
+    //permission
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
+    //     38	WarehouseSC_view
+    // 39	WarehouseSC_create&modify
   }
 
-  dateTimePickerFrom(){
-    return <DatePicker defaultDate={moment()} onChange={(e) => {this.setState({dateFrom:e})}} dateFormat="DD/MM/YYYY"/>
+  dateTimePickerFrom() {
+    return <DatePicker defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" />
   }
-  dateTimePickerTo(){
-    return <DatePicker defaultDate={moment()} onChange={(e) => {this.setState({dateTo:e})}} dateFormat="DD/MM/YYYY"/>
+  dateTimePickerTo() {
+    return <DatePicker defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
-  onGetDocument(){
-    if(this.state.dateFrom===undefined ||this.state.dateTo === undefined || this.state.CodePack === undefined ) {
+  onGetDocument() {
+    if (this.state.dateFrom === undefined || this.state.dateTo === undefined || this.state.CodePack === undefined) {
       alert("Please select data")
     } else {
-    let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
-    let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
-    
-      if (formatDateFrom > formatDateTo ){
+      let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
+      let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
+
+      if (formatDateFrom > formatDateTo) {
         alert("Choose the wrong information")
       } else {
         let namefileDateFrom = formatDateFrom.toString();
         let namefileDateTo = formatDateTo.toString();
-        let nameFlie = "STC :"+this.state.CodePack+" "+namefileDateTo+" to "+namefileDateFrom
-        this.setState({name:nameFlie.toString()})
+        let nameFlie = "STC :" + this.state.CodePack + " " + namefileDateTo + " to " + namefileDateFrom
+        this.setState({ name: nameFlie.toString() })
 
         let QueryDoc = this.state.selectdata
         let JSONDoc = []
-        JSONDoc.push({"f": "DocumentDate", "c":"<=", "v":formatDateTo},
-          {"f": "Code", "c":"=", "v":this.state.CodePack},{ "f": "Status", "c":"=", "v": 1})
-          QueryDoc.q = JSON.stringify(JSONDoc)
-            Axios.get(createQueryString(QueryDoc)).then((res) => { 
-            this.setState({data:res.data.datas},()=>{
-            if(this.state.data.length > 0){
-              let dateDoc = this.state.data.filter(row=>{
-              return row.DocumentDate >= formatDateFrom
+        JSONDoc.push({ "f": "DocumentDate", "c": "<=", "v": formatDateTo },
+          { "f": "Code", "c": "=", "v": this.state.CodePack }, { "f": "Status", "c": "=", "v": 1 })
+        QueryDoc.q = JSON.stringify(JSONDoc)
+        Axios.get(createQueryString(QueryDoc)).then((res) => {
+          this.setState({ data: res.data.datas }, () => {
+            if (this.state.data.length > 0) {
+              let dateDoc = this.state.data.filter(row => {
+                return row.DocumentDate >= formatDateFrom
               })
-              let dateThrow = this.state.data.filter(row2=>{
-              return row2.DocumentDate <= formatDateFrom           
+              let dateThrow = this.state.data.filter(row2 => {
+                return row2.DocumentDate <= formatDateFrom
               })
               // let sum = 0
               // var arrdata =[]
@@ -121,110 +129,112 @@ class StockCard extends Component{
               let sum = 0
               let del = 0
               let plus = 0
-              var arrdata =[]
-                dateThrow.forEach(row=>{
-                  if(row.DocumentType_ID === 1001){
-                    plus+= row.Quantity
-                  }else if (row.DocumentType_ID === 1002){
-                    del+= row.Quantity 
-                  } else{
-                    if (row.Quantity>=0){
-                      plus+=row.Quantity
-                    } else {
-                      del+=(row.Quantity*(-1))
-                    }
-                  }                       
-                })
-                sum = (plus-del)  
-            arrdata.push({DocumentDate:'',DocumentType_ID:'Bring Forward',Total:sum})
-
-            let sumDebit =0
-            let sumCredit=0
-            dateDoc.forEach(row=>{
-              if(row.DocumentType_ID===1001){
-                sum=row.Quantity+sum              
-                arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
-                sumDebit+=row.Quantity
-              } else if (row.DocumentType_ID===1002){
-                sum = Math.abs(row.Quantity-sum)
-                arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Credit:Math.abs(row.Quantity),Total:sum})
-                sumCredit+=row.Quantity
-              } else {
-                if (row.Quantity>=0){              
-                  sum=row.Quantity+sum
-                  arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Debit:row.Quantity,Total:sum})
-                  sumDebit+=row.Quantity
+              var arrdata = []
+              dateThrow.forEach(row => {
+                if (row.DocumentType_ID === 1001) {
+                  plus += row.Quantity
+                } else if (row.DocumentType_ID === 1002) {
+                  del += row.Quantity
                 } else {
-                  sum=row.Quantity+(sum)
-                  arrdata.push({DocumentType_ID:row.Name,DocumentDate:row.DocumentDate,DocCode:row.DocCode,Credit:Math.abs(row.Quantity),Total:sum})
-                  sumCredit+=(row.Quantity*(-1))
+                  if (row.Quantity >= 0) {
+                    plus += row.Quantity
+                  } else {
+                    del += (row.Quantity * (-1))
+                  }
                 }
-              }
-            })
-            arrdata.push({Total:sum,Debit:sumDebit,Credit:sumCredit,DocumentDate:'Total'})
-            this.setState({data1:arrdata})
+              })
+              sum = (plus - del)
+              arrdata.push({ DocumentDate: '', DocumentType_ID: 'Bring Forward', Total: sum })
 
-          }else{
-            this.setState({data1:[]})
-          }
-          })       
+              let sumDebit = 0
+              let sumCredit = 0
+              dateDoc.forEach(row => {
+                if (row.DocumentType_ID === 1001) {
+                  sum = row.Quantity + sum
+                  arrdata.push({ DocumentType_ID: row.Name, DocumentDate: row.DocumentDate, DocCode: row.DocCode, Debit: row.Quantity, Total: sum })
+                  sumDebit += row.Quantity
+                } else if (row.DocumentType_ID === 1002) {
+                  sum = Math.abs(row.Quantity - sum)
+                  arrdata.push({ DocumentType_ID: row.Name, DocumentDate: row.DocumentDate, DocCode: row.DocCode, Credit: Math.abs(row.Quantity), Total: sum })
+                  sumCredit += row.Quantity
+                } else {
+                  if (row.Quantity >= 0) {
+                    sum = row.Quantity + sum
+                    arrdata.push({ DocumentType_ID: row.Name, DocumentDate: row.DocumentDate, DocCode: row.DocCode, Debit: row.Quantity, Total: sum })
+                    sumDebit += row.Quantity
+                  } else {
+                    sum = row.Quantity + (sum)
+                    arrdata.push({ DocumentType_ID: row.Name, DocumentDate: row.DocumentDate, DocCode: row.DocCode, Credit: Math.abs(row.Quantity), Total: sum })
+                    sumCredit += (row.Quantity * (-1))
+                  }
+                }
+              })
+              arrdata.push({ Total: sum, Debit: sumDebit, Credit: sumCredit, DocumentDate: 'Total' })
+              this.setState({ data1: arrdata })
+
+            } else {
+              this.setState({ data1: [] })
+            }
+          })
         })
       }
     }
   }
 
-  onCalculate(){
+  onCalculate() {
 
-    
+
   }
 
-  render(){
+  render() {
     const cols = [
-      {accessor: 'DocumentDate', Header: 'Date',editable:false,Cell: (e) => {
-        if(moment(e.value).isValid()){
-          let dataDate = moment(e.value).format("DD-MM-YYYY")
-          return <span>{dataDate}</span>
-        }else{
-          return <span>{e.value}</span>
+      {
+        accessor: 'DocumentDate', Header: 'Date', editable: false, Cell: (e) => {
+          if (moment(e.value).isValid()) {
+            let dataDate = moment(e.value).format("DD-MM-YYYY")
+            return <span>{dataDate}</span>
+          } else {
+            return <span>{e.value}</span>
+          }
         }
-      }},
-      {accessor: 'DocCode', Header: 'Document',editable:false,},
-      {accessor: 'DocumentType_ID', Header: 'Title',editable:false,},
-      {accessor: 'Debit', Header: 'Debit', editable:false,},
-      {accessor: 'Credit', Header: 'Credit', editable:false,},
-      {accessor: 'Total', Header: 'Total', editable:false},
+      },
+      { accessor: 'DocCode', Header: 'Document', editable: false, },
+      { accessor: 'DocumentType_ID', Header: 'Title', editable: false, },
+      { accessor: 'Debit', Header: 'Debit', editable: false, },
+      { accessor: 'Credit', Header: 'Credit', editable: false, },
+      { accessor: 'Total', Header: 'Total', editable: false },
     ];
-    return(
+    return (
       <div>
         <div>
-        <Row>
-          <Col xs="6">
-          <div>
-            <label style={{marginRight:"10px"}} >SKU : </label>{' '}
-              <div style={{display:"inline-block",width:"300px"}}>
-                <AutoSelect data={this.state.PackMasterdata} result={e=>this.setState({CodePack:e.value}) }/>             
-               </div>
-          </div>
-          </Col>
-          <Col  xs="6"> 
-            <div style={{textAlign:"right"}}>
-              <label style={{width:"50px",marginRight:"10px"}}>Date : </label>
-                <div style={{display:"inline-block"}}>
+          <Row>
+            <Col xs="6">
+              <div>
+                <label style={{ marginRight: "10px" }} >SKU : </label>{' '}
+                <div style={{ display: "inline-block", width: "300px" }}>
+                  <AutoSelect data={this.state.PackMasterdata} result={e => this.setState({ CodePack: e.value })} />
+                </div>
+              </div>
+            </Col>
+            <Col xs="6">
+              <div style={{ textAlign: "right" }}>
+                <label style={{ width: "50px", marginRight: "10px" }}>Date : </label>
+                <div style={{ display: "inline-block" }}>
                   {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
                 </div>
-                <label style={{width:"50px",textAlign:"center"}}>To</label>
-                <div style={{display:"inline-block"}}>
+                <label style={{ width: "50px", textAlign: "center" }}>To</label>
+                <div style={{ display: "inline-block" }}>
                   {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
                 </div>{' '}
-                <Button color="primary" id="off" onClick={() => {this.onGetDocument()}}>Select</Button>
-            </div><br/>   
-            <ExportFile column={cols} dataexp={this.state.data1} filename={this.state.name} />       
-          </Col>
-        </Row>
+                <Button color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+              </div><br />
+              <ExportFile column={cols} dataexp={this.state.data1} filename={this.state.name} />
+            </Col>
+          </Row>
         </div>
-          <ReactTable  pageSize="10000" NoDataComponent={()=><div style={{textAlign:"center",height:"100px",color:"rgb(200,206,211)"}}>No row found</div>} sortable={false} style={{background:"white",marginBottom:"50px"}}
-          filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1}/>                  
-         </div>
+        <ReactTable pageSize="10000" NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} sortable={false} style={{ background: "white", marginBottom: "50px" }}
+          filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data1} />
+      </div>
     )
   }
 }
