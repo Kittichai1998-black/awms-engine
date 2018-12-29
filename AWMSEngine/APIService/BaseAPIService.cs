@@ -128,7 +128,7 @@ namespace AWMSEngine.APIService
                 this.Logger.LogInfo("REQUEST_DATA:: " + ObjectUtil.Json(request));
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
-                this.Permission(token, apiKey);
+                this.Permission(token,apiKey, APIServiceID);
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
@@ -187,6 +187,16 @@ namespace AWMSEngine.APIService
                 this.Logger.LogInfo("####### END TRANSACTION #######");
             }
             return response;
+        }
+
+        private void Permission(string token, string apiKey, Func<int> aPIServiceID)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Permission(string token, string apiKey, object apiserviceID)
+        {
+            throw new NotImplementedException();
         }
 
         private void Permission(string token, string apiKey,string serviceID)
