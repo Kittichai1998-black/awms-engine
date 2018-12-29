@@ -24,6 +24,7 @@ class IssuedDoc extends Component {
   }
 
   componentDidMount(){
+    document.title = "Storage Detail : AWMS";
     const values = queryString.parse(this.props.location.search)
     var ID = values.docID.toString()
     if(values.docID){

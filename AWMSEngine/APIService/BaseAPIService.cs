@@ -189,7 +189,7 @@ namespace AWMSEngine.APIService
             return response;
         }
 
-        private void Permission(string token, string apiKey)
+        private void Permission(string token, string apiKey,string serviceID)
         {
             var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
@@ -200,9 +200,14 @@ namespace AWMSEngine.APIService
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
             this.Logger.LogInfo("APIKEY:: " + apiKey);
-            
+
             if (!this.IsAuthenAuthorize)
                 return;
+
+            ADO.TokenADO.GetInstant().Authen(token, apiKey, serviceID, this.BuVO);
+             
+            
+          
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");

@@ -114,9 +114,9 @@ class ListProduct extends Component {
       all: "",
     }
 
-    Axios.all([Axios.get(createQueryString(packselect) + "&_token=" + localStorage.getItem("Token")),
-    Axios.get(createQueryString(unitselect) + "&_token=" + localStorage.getItem("Token")),
-    Axios.get(createQueryString(objectsizeselect) + "&_token=" + localStorage.getItem("Token"))]).then(
+    Axios.all([api.get(createQueryString(packselect)),
+    api.get(createQueryString(unitselect)),
+    api.get(createQueryString(objectsizeselect))]).then(
       (Axios.spread((packresult, unitresult, objectsizeresult) => {
         let ddl = this.state.autocomplete
         let packList = {}

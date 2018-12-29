@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+const api = new apicall()
 
 class Area extends Component {
   constructor(props) {
@@ -96,7 +97,7 @@ class Area extends Component {
       all: "",
     }
 
-    Axios.all([Axios.get(createQueryString(whselect)), Axios.get(createQueryString(areatypeselect))]).then(
+    Axios.all([api.get(createQueryString(whselect)), api.get(createQueryString(areatypeselect))]).then(
       (Axios.spread((whresult, areatyperesult) => {
         let ddl = [...this.state.autocomplete]
         let whList = {}
