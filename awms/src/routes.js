@@ -345,7 +345,7 @@ const routes = [
   { path: '/sys/sto/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'CurrentInv', component: CurrentInv},
-  { path: '/doc/gr/view', exact: true, name: 'StorageDetail', component: StorageDetail},
+  { path: '/doc/gr/view', exact: true, name: 'Storage Detail', component: StorageDetail},
   { path: '/mst/APIKey/manage', exact: true, name: 'APIKey', component: APIKey},
   { path: '/mst/cs/manage', exact: true, name: 'ClientSecret', component: ClientSecret},
   { path: '/mst/conf/manage', exact: true, name: 'Config', component: Config},
