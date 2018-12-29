@@ -58,8 +58,8 @@ namespace AWMSEngine.Engine.Business.Received
                         {
                             GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
                             {
-                                PSTNG_DATE = doc.ActionTime.Value,
-                                DOC_DATE = doc.DocumentDate,
+                                PSTNG_DATE = doc.ActionTime.Value.ToString("yyyyMMdd"),
+                                DOC_DATE = doc.DocumentDate.ToString("yyyyMMdd"),
                                 REF_DOC_NO = doc.ID.ToString(),
                                 HEADER_TXT = "ASRS RECEIVED",
                                 GOODSMVT_CODE = "04"
@@ -142,8 +142,8 @@ namespace AWMSEngine.Engine.Business.Received
                             {
                                 GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
                                 {
-                                    PSTNG_DATE = root.ActionTimes.Value,
-                                    DOC_DATE = root.DocumentDates,
+                                    PSTNG_DATE = root.ActionTimes.Value.ToString("yyyyMMdd"),
+                                    DOC_DATE = root.DocumentDates.ToString("yyyyMMdd"),
                                     REF_DOC_NO = root.Supers,
                                     HEADER_TXT = "ASRS RECEIVED",
                                     GOODSMVT_CODE = "04"

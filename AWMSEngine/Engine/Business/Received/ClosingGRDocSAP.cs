@@ -32,8 +32,12 @@ namespace AWMSEngine.Engine.Business.Received
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + doc.ID);
 
+                if (doc.EventStatus == DocumentEventStatus.CLOSED )
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารถูก Close แล้ว");
+                }
 
-                if (doc.EventStatus != DocumentEventStatus.WORKING && doc.EventStatus != DocumentEventStatus.WORKED)
+                if (doc.EventStatus != DocumentEventStatus.WORKING && doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKING และ WORKED ไม่สามารถ Close เอกสารได้ ");
                 }
