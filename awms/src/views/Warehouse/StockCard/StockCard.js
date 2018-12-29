@@ -81,8 +81,7 @@ class StockCard extends Component {
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //     38	WarehouseSC_view
-    // 39	WarehouseSC_create&modify
+    //41	WarehouseCI_execute
   }
 
   dateTimePickerFrom() {

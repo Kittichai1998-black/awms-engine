@@ -47,13 +47,23 @@ class CurrentInv extends Component {
   //permission
   //   40	WarehouseCI_view
   // 41	WarehouseCI_execute
+  // อันเก่า  
+  // let i = [42]
+  //   i.forEach(row => {
+  //     if (row === 41) { //WarehouseCI_execute
+  //       check = true
+  //     } else if (row === 42) {//SKU_view
+
+  //       check = false
+  //     }
+  //   })
   displayButtonByPermission(dataGetPer) {
     let check = true
     if (CheckViewCreatePermission("WarehouseCI_view", dataGetPer)) {
-      check = true //แสดงข้อมูล
+      check = true 
     }
     if (CheckViewCreatePermission("WarehouseCI_execute", dataGetPer)) {
-      check = false //แก้ไข
+      check = false 
     }
     if (check === true) {
       var PerButtonDate = document.getElementById("per_button_date")
@@ -115,7 +125,7 @@ class CurrentInv extends Component {
 
   render() {
     const cols = [
-      { accessor: 'Pack', Header: 'Pack Code/Name', Filter: "text" },
+      { accessor: 'Pack', Header: 'Pack Code/Name', Filter: "text", minWidth: 250 },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text" },
       { accessor: 'Total', Header: 'Total Qty', Filter: "text" },
 
