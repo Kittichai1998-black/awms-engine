@@ -128,7 +128,7 @@ namespace AWMSEngine.APIService
                 this.Logger.LogInfo("REQUEST_DATA:: " + ObjectUtil.Json(request));
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
-                this.Permission(token,apiKey, APIServiceID);
+                this.Permission(token,apiKey, APIServiceID());
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
@@ -189,17 +189,13 @@ namespace AWMSEngine.APIService
             return response;
         }
 
-        private void Permission(string token, string apiKey, Func<int> aPIServiceID)
-        {
-            throw new NotImplementedException();
-        }
+        //private void Permission(string token, string apiKey, int APIServiceID)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        private void Permission(string token, string apiKey, object apiserviceID)
-        {
-            throw new NotImplementedException();
-        }
 
-        private void Permission(string token, string apiKey,string serviceID)
+        private void Permission(string token, string apiKey,int APIServiceID)
         {
             var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
@@ -214,7 +210,8 @@ namespace AWMSEngine.APIService
             if (!this.IsAuthenAuthorize)
                 return;
 
-            ADO.TokenADO.GetInstant().Authen(token, apiKey, serviceID, this.BuVO);
+
+            ADO.TokenADO.GetInstant().Authen(token, apiKey,APIServiceID, this.BuVO);
              
             
           
