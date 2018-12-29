@@ -79,5 +79,20 @@ namespace AWMSEngine.ADO
                             .FirstOrDefault();
             return res;
         }
+
+        public string  Authen(string Token, string APIKey,string ServiceID,
+           VOCriteria buVO)
+        {
+            var param = new Dapper.DynamicParameters();
+            param.Add("@Token", Token);
+            param.Add("@APIKey", APIKey);
+            param.Add("@ServiceID", ServiceID);
+            var res = this.Query<string>(
+                                "SP_AUTHEN",
+                                CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
+                            .FirstOrDefault();
+            return res;
+        }
+
     }
 }
