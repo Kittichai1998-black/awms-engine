@@ -3,8 +3,9 @@ import "react-table/react-table.css";
 import { Button } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { createQueryString } from '../../ComponentCore'
+import { apicall,createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+const api = new apicall()
 
 class Area extends Component {
     constructor(props) {
@@ -105,7 +106,9 @@ class Area extends Component {
             sk: 0,
             all: "",
         }
-        Axios.all([Axios.get(createQueryString(objselect)), Axios.get(createQueryString(basetypeselect)), Axios.get(createQueryString(unitselect))]).then(
+        Axios.all([api.get(createQueryString(objselect)),
+        api.get(createQueryString(basetypeselect)),
+        api.get(createQueryString(unitselect))]).then(
             (Axios.spread((objresult, basetyperesult, unitresult) => {
                 let ddl = [...this.state.autocomplete]
                 let objList = {}
@@ -155,7 +158,7 @@ class Area extends Component {
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 100 },
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             { accessor: 'BaseMasterType_Code', Header: 'Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 150 },
-            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: view, Filter: "text", datatype: "int", Type: "autocomplete", minWidth: 90, className: "center" },
+            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: view, Filter: "text", datatype: "int", minWidth: 90, className: "center" },
             { accessor: 'ObjectSize_Code', Header: 'Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 250 },
             { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},

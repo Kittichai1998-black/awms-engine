@@ -10,6 +10,7 @@ class WebPage extends Component {
     super(props);
 
     this.state = {
+      permissionView: false,
       data: [],
       autocomplete: [],
       statuslist: [{
@@ -47,10 +48,10 @@ class WebPage extends Component {
     document.title = "Web Page : AWMS";
   }
   async componentWillMount() {
-    this.filterList();
     let dataGetPer = await GetPermission()
     CheckWebPermission("WebPage", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
+    this.filterList();
   }
   displayButtonByPermission(dataGetPer) {
     let checkview = true
@@ -91,7 +92,7 @@ class WebPage extends Component {
       all: "",
     }
 
-    Axios.all([Axios.get(createQueryString(WebPageGroupselect)), Axios.get(createQueryString(Permissionselect))]).then(
+    Axios.all([Axios.get(createQueryString(WebPageGroupselect) + "&_token=" + localStorage.getItem("Token")), Axios.get(createQueryString(Permissionselect) + "&_token=" + localStorage.getItem("Token"))]).then(
       (Axios.spread((WebPageGroupresult, Permissionresult) => {
         let ddl = [...this.state.autocomplete]
         let WebPageGroupList = {}
@@ -144,9 +145,9 @@ class WebPage extends Component {
         data = json ข้อมูลสำหรับ select ผ่าน url
         ddlfilter = json dropdown สำหรับทำ dropdown filter
       */}
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} 
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
           filterable={true} autocomplete={this.state.autocomplete} accept={true} expFilename={"WebPage"}
-          btn={btnfunc} uneditcolumn={this.uneditcolumn}  exportfilebtn={view} addExportbtn={view} 
+          btn={btnfunc} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
           table="ams_WebPage" />
       </div>
     )

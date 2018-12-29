@@ -3,7 +3,9 @@ import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
-import {createQueryString} from '../../ComponentCore'
+import {apicall, createQueryString} from '../../ComponentCore'
+
+const api = new apicall()
 
 class Pack extends Component{
     constructor(props) {
@@ -110,10 +112,10 @@ class Pack extends Component{
             sk:0,
             all:"",}
 
-    Axios.all([ Axios.get(createQueryString(SKUSelect))
-                ,Axios.get(createQueryString(PackTypeSelect))
-                ,Axios.get(createQueryString(UnitTypeSelect))
-                ,Axios.get(createQueryString(ObjSizeSelect))
+    Axios.all([ api.get(createQueryString(SKUSelect))
+                ,api.get(createQueryString(PackTypeSelect))
+                ,api.get(createQueryString(UnitTypeSelect))
+                ,api.get(createQueryString(ObjSizeSelect))
             ]).then(
       (Axios.spread((SKUResult, PackTypeResult, UnitTypeResult, ObjSizeResult) => 
     {

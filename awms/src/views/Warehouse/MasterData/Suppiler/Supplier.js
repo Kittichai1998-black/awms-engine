@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import { TableGen } from '../TableSetup';
-//import Axios from 'axios';
 import { apicall } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 

@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {TableGen} from '../TableSetup';
 import Axios from 'axios';
-import {createQueryString} from '../../ComponentCore'
+import {apicall, createQueryString} from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+const api = new apicall()
 
 class JobScheduleModule extends Component{
   constructor(props) {
@@ -85,7 +86,7 @@ class JobScheduleModule extends Component{
       sk:0,
       all:"",}
 
-    Axios.all([Axios.get(createQueryString(JobScheduleselect)),Axios.get(createQueryString(APIServiceselect))]).then(
+    Axios.all([api.get(createQueryString(JobScheduleselect)),api.get(createQueryString(APIServiceselect))]).then(
       (Axios.spread((JobScheduleresult, APIServiceresult) => 
     {
       let ddl = [...this.state.autocomplete]
