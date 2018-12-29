@@ -48,23 +48,14 @@ class IssuedDoc extends Component {
     this.getSelectionData = this.getSelectionData.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
-  componentDidMount() {
-    document.title = "Goods Receive Document : AWMS";
-  }
+   
   async componentWillMount() {
+    document.title = "Goods Receive Document : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
     CheckWebPermission("GRDoc", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
-    // Axios.get(createQueryString(this.state.select)).then((res) => {
-    //   res.data.datas.forEach(row1 =>{
-    //     console.log(row1)
-    //     this.setState({Batch:row1.Batch})
-
-    //   })
-
-    //})
   }
 
   //permission 21-TransGRD_view 20-TransGRD_execute

@@ -177,10 +177,10 @@ class IssuedManage extends Component {
     })
 
   }
-
-  componentDidMount() {
+  componentWillMount() {
     document.title = "Goods Issue Manage : AWMS";
-
+  }
+  componentDidMount() {
     this.initialData()
     Axios.get(createQueryString(this.state.StorageObject)).then((response) => {
       const storageObjectdata = []

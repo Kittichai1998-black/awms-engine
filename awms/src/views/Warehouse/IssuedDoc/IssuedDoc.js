@@ -47,6 +47,7 @@ class IssuedDoc extends Component {
   }
 
   async componentWillMount() {
+    document.title = "Goods Issue Document : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
@@ -110,7 +111,6 @@ class IssuedDoc extends Component {
   }
 
   componentDidMount() {
-    document.title = "Goods Issue Document : AWMS";
     GenerateDropDownStatus("Status")
   }
 
