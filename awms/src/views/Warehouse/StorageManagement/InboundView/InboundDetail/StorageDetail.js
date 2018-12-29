@@ -29,19 +29,19 @@ class IssuedDoc extends Component {
     if(values.docID){
       console.log(ID)   
       Axios.get(window.apipath + "/api/wm/received/doc/?docID="+ID+"&getMapSto=true").then(res => {  
-
+      console.log(res)
         if (res.data._result.status === 1) {
           this.setState({
             DocumentCode: res.data.document.code,
             Remark: res.data.document.remark
           })
-          var groupPack = _.groupBy(res.data.bstos,"packCode")        
+          var groupPack = _.groupBy(res.data.bstos,"code")        
           let sumArr =[]
           
           for (let res1 in groupPack){     
               let sum = 0
               groupPack[res1].forEach(res2 => {
-                sum += res2.packQty
+                sum += res2.packBaseQty
                 res2.sumQty = sum
                 sumArr.forEach(response => {
                   if(response.code === res2.code){
@@ -51,18 +51,21 @@ class IssuedDoc extends Component {
               })
           sumArr.push(groupPack[res1][groupPack[res1].length -1])
           }
-              
+          var sumQTYPack =0    
           var result = res.data.document.documentItems
             this.setState({data2:sumArr}, () => {
               result.forEach(row1 =>{
                 this.state.data2.forEach(row2 =>{
                   if(row1.packMaster_Code === row2.packCode){
-                    row1.sumQty = row2.sumQty
+ 
+                    sumQTYPack += row2.sumQty
+                    row1.sumQty = sumQTYPack
                   }
                 })
               })
             })
             this.setState({data:result})
+            
         }
         
           
@@ -87,7 +90,7 @@ class IssuedDoc extends Component {
   render() {
     const cols = [
       {accessor: 'packMaster_Code', Header: 'PackItem', editable:false, Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>,},
-      {accessor: 'sumQty', Header: 'Quantity',editable:false, Cell: (e) => <span>{e.original.sumQty === undefined ? '0'+ ' / ' + e.original.quantity : e.original.sumQty + ' / ' + e.original.quantity === undefined ? '-' : e.original.quantity}</span>,},
+      {accessor: 'sumQty', Header: 'Quantity',editable:false,Cell: (e) => <span>{e.original.sumQty === undefined ? '0'+ ' / ' + e.original.quantity : e.original.sumQty +' / '+ (e.original.quantity === null?'-':e.original.quantity === null)}</span>,},
       {accessor: 'unitType_Name', Header: 'UnitType', editable:false,},
     ];
     const colsdetail = [
@@ -113,7 +116,7 @@ class IssuedDoc extends Component {
           sortable={false} filterable={false} editable={false} minRows={5} showPagination={false}/><br/>
 
         <ReactTable columns={colsdetail} data={this.state.data2} NoDataComponent={()=>null} style={{background:"white"}}
-          sortable={false} filterable={false} editable={false} minRows={5} showPagination={false}/>
+          sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false}/>
         <div className="clearfix">
           <Button color="danger" style={{margin:"10px 0"}} className="float-right" onClick={this.onHandleClickCancel}>Back</Button>
         </div>

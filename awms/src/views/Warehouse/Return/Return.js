@@ -69,7 +69,7 @@ console.log(this.state.Issue)
       QueryDoc.q = JSON.stringify(JSONDoc)
         Axios.get(createQueryString(QueryDoc)).then((res) => { 
         res.data.datas.forEach(row => {
-          arrdata.push({Code:row.Code,Qty:row.Quantity,UnitTypeName:row.UnitTypeName})
+          arrdata.push({Code:row.Code,Qty:row.Quantity,UnitTypeName:row.UnitTypeName,QtySto:row.QtySto})
         })       
         this.setState({dataTable:arrdata},()=>console.log(this.state.dataTable))
       })    
@@ -77,8 +77,8 @@ console.log(this.state.Issue)
   
   render() {
     const cols = [
-      {accessor: 'Code', Header: 'Doc Item',editable:false,},
-      {accessor: 'Qty', Header: 'Qty',editable:false,},
+      {accessor: 'Code', Header: 'Doc Item',editable:false},
+      {accessor: 'Qty', Header: 'Qty',editable:false,Cell: (e) => <span>{e.original.QtySto + ' : ' + e.original.Qty}</span>,},
       {accessor: 'UnitTypeName', Header: 'Unit Type', editable:false,},
 
     ];

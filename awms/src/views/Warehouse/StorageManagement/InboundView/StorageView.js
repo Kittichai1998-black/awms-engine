@@ -5,7 +5,7 @@ import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
 import {apicall, DatePicker, GenerateDropDownStatus,createQueryString} from '../../ComponentCore'
 import moment from 'moment';
-import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 import Axios from 'axios';
 
 
@@ -52,45 +52,61 @@ class IssuedDoc extends Component {
   async componentWillMount(){
     //permission
     this.setState({showbutton:"none"})
-    let data =await GetPermission()
-    Nodisplay(data,21,this.props.history)
-    this.displayButtonByPermission(data)
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Goods Receive", dataGetPer, this.props.history);
+    this.displayButtonByPermission(dataGetPer)
     //permission
 
-    // Axios.get(createQueryString(this.state.select)).then((res) => {
-    //   res.data.datas.forEach(row1 =>{
-    //     console.log(row1)
-    //     this.setState({Batch:row1.Batch})
-
-    //   })
-      
-    //})
-
   }
 
-//permission
-displayButtonByPermission(perID){
-
-  this.setState({perID:perID})
-  let check = false
- for(let i = 0;i < perID.length; i++){
-   let data = perID[i]
-   if(data === 20){
-      check = false
-      break
-    }if(data === 21){
-      check = true
+  displayButtonByPermission(dataGetPer) {
+    let checkview = false
+    let dataCheckView = CheckViewCreatePermission(this.pagePerCode, dataGetPer);
+    for (let filed in dataCheckView) {
+      if (filed === "TransGRD_view") {
+        if (dataCheckView[filed]) {
+          checkview = true //แสดงข้อมูลเฉยๆ
+        }
+      }
+      if (filed === "TransGRD_execute") {
+        if (dataCheckView[filed]) {
+          checkview = false //เเก้ไขได้
+        }
+      }
     }
- }
-       if(check === true){  
-          var PerButtonExport = document.getElementById("per_button_export")
+
+    if (checkview === true) {
+      var PerButtonExport = document.getElementById("per_button_export")
           PerButtonExport.remove()     
-          var PerButtonDate = document.getElementById("per_button_date")
-          PerButtonDate.remove()    
-       }else if(check === false){
-          this.setState({showbutton:"block"})
-       }
+      var PerButtonDate = document.getElementById("per_button_date")
+          PerButtonDate.remove()   
+    } else if (checkview === false) {
+      this.setState({showbutton:"block"})
+    }
   }
+// //permission
+// displayButtonByPermission(perID){
+
+//   this.setState({perID:perID})
+//   let check = false
+//  for(let i = 0;i < perID.length; i++){
+//    let data = perID[i]
+//    if(data === 20){
+//       check = false
+//       break
+//     }if(data === 21){
+//       check = true
+//     }
+//  }
+//        if(check === true){  
+//           var PerButtonExport = document.getElementById("per_button_export")
+//           PerButtonExport.remove()     
+//           var PerButtonDate = document.getElementById("per_button_date")
+//           PerButtonDate.remove()    
+//        }else if(check === false){
+//           this.setState({showbutton:"block"})
+//        }
+//   }
   //permission
 
   onHandleClickCancel(event) {
