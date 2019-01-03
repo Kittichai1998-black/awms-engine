@@ -69,7 +69,7 @@ class TaskList extends Component{
     //CheckWebPermission("TaskList", dataGetPer, this.props.history);
 }
   componentDidMount() {
-    document.title = "Dashboard Task List : AWMS";
+    document.title = "Picking Progress : AWMS";
     this.GetQueueData()
     let interval = setInterval(this.GetQueueData, 2000);
     this.setState({ interval: interval })
