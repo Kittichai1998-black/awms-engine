@@ -4,7 +4,7 @@ import * as Status from '../Warehouse/Status';
 
 class apicall{
     get(url){
-        return Axios.get(url+"&_token="+localStorage.Token).then((res) => {
+        return Axios.get(url+"&_token="+localStorage.getItem("Token")).then((res) => {
             if(res.data._result.status === 0){
                 alert(res.data._result.message)
             }

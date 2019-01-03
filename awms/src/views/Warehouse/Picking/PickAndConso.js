@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import {Input, Button, Nav, NavItem, NavLink, Row,Col, Card, CardBody } from 'reactstrap';
 import ReactTable from 'react-table'
 import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -19,6 +20,14 @@ class Picking extends Component{
     this.onHandlePalletChange = this.onHandlePalletChange.bind(this)
     this.onHandleSetPalletCode = this.onHandleSetPalletCode.bind(this)
     this.style = {width:"100%", overflow:"hidden", marginBottom: "10px", textAlign:"left"}
+  }
+  async componentWillMount() {
+    document.title = "Picking : AWMS";
+    //permission
+    this.setState({ showbutton: "none" })
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Picking", dataGetPer, this.props.history);
+    //this.displayButtonByPermission(dataGetPer)
   }
 
   onHandleSetPalletCode(){
@@ -38,7 +47,7 @@ class Picking extends Component{
   palletScan(){
     return <Card style={this.style}>
       <CardBody>
-        <div><label>Pallet Code : </label><input type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
+        <div><label>Pallet Code : </label><input id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
           if(e.key === "Enter"){
             this.onHandleSetPalletCode();
           }
@@ -130,7 +139,6 @@ class Picking extends Component{
     let no_style = {background:"gray", color:"white"};
 
     return this.state.stos.map((list,index) => {
-      console.log(list)
       return <Card key={index} style={
           Object.assign(list.shouldPick == (list.canPick > list.palletQty ? list.palletQty : list.canPick) ? full_style : list.shouldPick == 0 ? no_style : som_style
             , this.style)}>
@@ -194,6 +202,11 @@ class Picking extends Component{
           pickItemList:[],
           palletCode:"",})
       }
+
+      this.setState({palletCode:""}, () =>{
+        let eleBarcode = document.getElementById("txtBarcode")
+        eleBarcode.focus();
+      });
     })
   }
 
