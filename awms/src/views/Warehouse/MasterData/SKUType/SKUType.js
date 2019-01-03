@@ -1,163 +1,170 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Card, CardBody, Button } from 'reactstrap';
-import {apicall, createQueryString} from '../../ComponentCore'
-import {TableGen} from '../TableSetup';
+import { Card, CardBody, Button } from 'reactstrap';
+import { apicall, createQueryString } from '../../ComponentCore'
+import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import {GetPermission,Nodisplay} from '../../../ComponentCore/Permission';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 const api = new apicall()
 
-class SKUMasterType extends Component{
-    constructor(props) {
-        super(props);
-    
-        this.state = {
-          data : [],
-          autocomplete:[],
-          statuslist:[{
-            'status' : [{'value':'*','label':'All'},{'value':'1','label':'Active'},{'value':'0','label':'Inactive'}],
-            'header' : 'Status',
-            'field' : 'Status',
-            'mode' : 'check',
-          }],
-          acceptstatus : false,
-          select:{queryString:window.apipath + "/api/viw",
-          t:"SKUMasterType",
-          q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-          f:"ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified",
-          g:"",
-          s:"[{'f':'ID','od':'asc'}]",
-          sk:0,
-          l:100,
-          all:"",},
-          sortstatus:0,
-          selectiondata:[],
-        };
-        this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
-        this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.getAutocompletee = this.getAutocomplete.bind(this);
-        this.getSelectionData = this.getSelectionData.bind(this);
-        this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["ObjectSize_Code","Modified","Created"]
-      }
-      onHandleClickCancel(event){
-        this.forceUpdate();
-        event.preventDefault();
-      }
-      componentDidMount(){
-        document.title = "Catagory - AWMS"
-    }
-      async componentWillMount(){
-        this.getAutocomplete();
-        //permission
-        let data = await GetPermission()
-        Nodisplay(data,45,this.props.history)
-        this.displayButtonByPermission(data)
-        //permission
-      }
-    //permission
-displayButtonByPermission(perID){
+class SKUMasterType extends Component {
+  constructor(props) {
+    super(props);
 
-  this.setState({perID:perID})
-  let check = false
-  perID.forEach(row => {
-      if(row === 45 ){
-        check = true
-      }if(row === 46 ){
-        check = false
-      }if(row === 47 ){
-        check = false
-      }
-    })
-       if(check === true){  
-        this.setState({permissionView:false})
-       }else if(check === false){
-        this.setState({permissionView:true})
-       }
+    this.state = {
+      data: [],
+      autocomplete: [],
+      statuslist: [{
+        'status': [{ 'value': '*', 'label': 'All' }, { 'value': '1', 'label': 'Active' }, { 'value': '0', 'label': 'Inactive' }],
+        'header': 'Status',
+        'field': 'Status',
+        'mode': 'check',
+      }],
+      acceptstatus: false,
+      select: {
+        queryString: window.apipath + "/api/viw",
+        t: "SKUMasterType",
+        q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+        f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+      },
+      sortstatus: 0,
+      selectiondata: [],
+    };
+    this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
+    this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
+    this.getAutocompletee = this.getAutocomplete.bind(this);
+    this.getSelectionData = this.getSelectionData.bind(this);
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
+    this.uneditcolumn = ["ObjectSize_Code", "Modified", "Created"]
+  }
+  onHandleClickCancel(event) {
+    this.forceUpdate();
+    event.preventDefault();
+  }
+  componentDidMount() {
+    document.title = "Catagory - AWMS"
+  }
+  async componentWillMount() {
+    this.getAutocomplete();
+    //permission
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Catagory", dataGetPer, this.props.history);
+    this.displayButtonByPermission(dataGetPer)
   }
   //permission
+  displayButtonByPermission(dataGetPer) {
+    let checkview = false
+    let dataCheckView = CheckViewCreatePermission(this.pagePerCode, dataGetPer);
+    for (let filed in dataCheckView) {
+      if (filed === "SKUtype_view") {
+        if (dataCheckView[filed]) {
+          checkview = true //แสดงข้อมูลเฉยๆ
+        }
+      }
+      if (filed === "SKUtype_create&modify") {
+        if (dataCheckView[filed]) {
+          checkview = false //เเก้ไขได้
+        }
+      }
+    }
 
-      componentWillUnmount(){
-        
-      }
-    
-      onHandleClickLoad(event){
-        api.post(window.apipath + "/api/mst/TransferFileServer/SKUMstType",{})
-        this.forceUpdate();
-      }
+    if (checkview === true) {
+      this.setState({ permissionView: false })
+    } else if (checkview === false) {
+      this.setState({ permissionView: true })
+    }
+  }
 
-      getAutocomplete(){
-        const objectsizeselect = {queryString:window.apipath + "/api/mst",
-          t:"ObjectSize",
-          q:"[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
-          f:"ID,concat(Code,' : ',Name) as Code",
-          g:"",
-          s:"[{'f':'ID','od':'asc'}]",
-          sk:0,
-          all:"",}
-    
-        const packselect = {queryString:window.apipath + "/api/mst",
-          t:"SKUMasterType",
-          q:"[{ 'f': 'Status', c:'<', 'v': 2}]",
-          f:"ID,Code",
-          g:"",
-          s:"[{'f':'ID','od':'asc'}]",
-          sk:0,
-          all:"",}
-    
-        Axios.all([Axios.get(createQueryString(packselect)),Axios.get(createQueryString(objectsizeselect))]).then(
-          (Axios.spread((packresult, objectsizeresult) => 
-        {
-          let ddl = this.state.autocomplete
-          let packList = {}
-          let objectsizeList = {}
-          packList["data"] = packresult.data.datas
-          packList["field"] = "SKUMasterType_Code"
-          packList["pair"] = "SKUMasterType_ID"
-          packList["mode"] = "Dropdown"
-    
-          objectsizeList["data"] = objectsizeresult.data.datas
-          objectsizeList["field"] = "ObjectSize_Code"
-          objectsizeList["pair"] = "ObjectSize_ID"
-          objectsizeList["mode"] = "Dropdown"
-    
-          ddl = ddl.concat(packList).concat(objectsizeList)
-          this.setState({autocomplete:ddl})
-        })))
-      }
-    
-      getSelectionData(data){
-        this.setState({selectiondata:data}, () => console.log(this.state.selectiondata))
-      }
-    
-      createBarcodeBtn(data){
-        return <Button type="button" color="info" 
-        onClick={() => this.history.push('/mst/sku/manage/barcode?barcodesize=4&barcode='+data.Code+'&Name='+data.Name)}>Print</Button>
-      }
-    
-      render(){
-        const cols = [
-          { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120},
-          { accessor: 'Name', Header: 'Name', editable: false, Filter: "text", fixed: "left", minWidth: 120},
-          { accessor: 'ObjectSize_Code', Header: 'Default Object Size', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 140},
-          //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-          {accessor: 'Created', Header: 'Create', editable:false,filterable:false, minWidth: 170},
-          /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-          {accessor: 'Modified', Header: 'Modify', editable:false,filterable:false, minWidth: 170},
-          //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-          { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
-        ];
-        
-        const btnfunc = [{
-          history:this.props.history,
-          btntype:"Barcode",
-          func:this.createBarcodeBtn
-        }]
-        const view  = this.state.permissionView
-        return(
-          <div>
-          {/*
+  componentWillUnmount() {
+
+  }
+
+  onHandleClickLoad(event) {
+    api.post(window.apipath + "/api/mst/TransferFileServer/SKUMstType", {})
+    this.forceUpdate();
+  }
+
+  getAutocomplete() {
+    const objectsizeselect = {
+      queryString: window.apipath + "/api/mst",
+      t: "ObjectSize",
+      q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+      f: "ID,concat(Code,' : ',Name) as Code",
+      g: "",
+      s: "[{'f':'ID','od':'asc'}]",
+      sk: 0,
+      all: "",
+    }
+
+    const packselect = {
+      queryString: window.apipath + "/api/mst",
+      t: "SKUMasterType",
+      q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+      f: "ID,Code",
+      g: "",
+      s: "[{'f':'ID','od':'asc'}]",
+      sk: 0,
+      all: "",
+    }
+
+    Axios.all([api.get(createQueryString(packselect)), 
+    api.get(createQueryString(objectsizeselect))]).then(
+      (Axios.spread((packresult, objectsizeresult) => {
+        let ddl = this.state.autocomplete
+        let packList = {}
+        let objectsizeList = {}
+        packList["data"] = packresult.data.datas
+        packList["field"] = "SKUMasterType_Code"
+        packList["pair"] = "SKUMasterType_ID"
+        packList["mode"] = "Dropdown"
+
+        objectsizeList["data"] = objectsizeresult.data.datas
+        objectsizeList["field"] = "ObjectSize_Code"
+        objectsizeList["pair"] = "ObjectSize_ID"
+        objectsizeList["mode"] = "Dropdown"
+
+        ddl = ddl.concat(packList).concat(objectsizeList)
+        this.setState({ autocomplete: ddl })
+      })))
+  }
+
+  getSelectionData(data) {
+    this.setState({ selectiondata: data }, () => console.log(this.state.selectiondata))
+  }
+
+  createBarcodeBtn(data) {
+    return <Button type="button" color="info"
+      onClick={() => this.history.push('/mst/sku/manage/barcode?barcodesize=4&barcode=' + data.Code + '&Name=' + data.Name)}>Print</Button>
+  }
+
+  render() {
+    const view = this.state.permissionView
+    const cols = [
+      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 120 },
+      { accessor: 'ObjectSize_Code', Header: 'Default Object Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
+      //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+      /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
+      { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+      //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
+      { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
+    ];
+
+    const btnfunc = [{
+      history: this.props.history,
+      btntype: "Barcode",
+      func: this.createBarcodeBtn
+    }]
+    return (
+      <div>
+        {/*
             column = คอลัมที่ต้องการแสดง
             data = json ข้อมูลสำหรับ select ผ่าน url
             ddlfilter = json dropdown สำหรับทำ dropdown filter
@@ -168,14 +175,14 @@ displayButtonByPermission(perID){
             getselection = เก็บค่าที่เลือก
         
           */}
-            <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Catagory"}
-            filterable={true} autocomplete={this.state.autocomplete} accept={false} exportbtn={false} exportfilebtn={view}
-            btn={btnfunc} uneditcolumn={this.uneditcolumn}
-             table="ams_SKUMasterType"/>
-          </div>
-        )
-      }
-      
-      
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Catagory"}
+          filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          table="ams_SKUMasterType" />
+      </div>
+    )
+  }
+
+
 }
 export default SKUMasterType;

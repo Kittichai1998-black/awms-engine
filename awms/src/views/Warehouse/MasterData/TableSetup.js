@@ -196,7 +196,7 @@ class TableGen extends Component {
       }
     })
     this.setState({ data });
-    this.setState({ dataedit }, () => this.setState({statusUpdateData: "remove"}));
+    this.setState({ dataedit }, () => this.setState({ statusUpdateData: "remove" }));
   }
 
   onCheckFliter(filter, dataselect) {
@@ -280,7 +280,7 @@ class TableGen extends Component {
         this.setState({ currentPage: 1 })
         select["q"] = JSON.stringify(filterlist)
         let queryString = createQueryString(select)
-        console.log(queryString)
+        //console.log(queryString)
         Axios.get(queryString).then(
           (res) => {
             this.setState({ data: res.data.datas, loading: false });
@@ -441,8 +441,6 @@ class TableGen extends Component {
         }
       })
       let updjson = {
-        "_token": sessionStorage.getItem("Token"),
-        "_apikey": null,
         "t": this.props.table,
         "pk": "ID",
         "datas": dataedit,
@@ -597,49 +595,49 @@ class TableGen extends Component {
           })
           if (e.target.value !== "") {
             if (this.state.autocomplete != undefined) {
-            //เช็คfilter แบบ autocomplete ของฟิลด์ objecttype, grouptype  
-            const getdata = this.state.autocomplete.filter(row => {
-              return row.field === name
-            })
-            //const enumvalue = [...this.props.enumfield]
-            if (this.state.enumvalue.length > 0) {
-              this.state.enumvalue.forEach((row, index) => {
-                if (name === row) {
-                  var valueFilter = e.target.value;
-                  if (valueFilter.includes("*")) {
-                    valueFilter = valueFilter.replace("*", "");
-                  }
-                  if (valueFilter.includes("%")) {
-                    valueFilter = valueFilter.replace("%", "");
-                  }
-                  if ((getdata[0].data.find(x => x.Code === valueFilter.toUpperCase())) !== undefined) {
-                    filter.push({ id: name, value: String(getdata[0].data.find(x => x.Code === valueFilter.toUpperCase()).ID) })
-                  } else {
-                    if (isNaN(valueFilter)) {
-                      getdata[0].data.forEach((row, index) => {
-                        var result = row.Code.search(new RegExp(valueFilter, "i"));
-                        if (result >= 0) {
-                          filter.push({ id: name, value: String(row.ID) })
-                        }
-                      })
-                    } else {
-                      filter.push({ id: name, value: String(e.target.value) })
-                    }
-                  }
-                } else {
-                  filter.push({ id: name, value: e.target.value })
-                }
+              //เช็คfilter แบบ autocomplete ของฟิลด์ objecttype, grouptype  
+              const getdata = this.state.autocomplete.filter(row => {
+                return row.field === name
               })
-            } else {
-              filter.push({ id: name, value: e.target.value })
-            } //-end-//
+              //const enumvalue = [...this.props.enumfield]
+              if (this.state.enumvalue.length > 0) {
+                this.state.enumvalue.forEach((row, index) => {
+                  if (name === row) {
+                    var valueFilter = e.target.value;
+                    if (valueFilter.includes("*")) {
+                      valueFilter = valueFilter.replace("*", "");
+                    }
+                    if (valueFilter.includes("%")) {
+                      valueFilter = valueFilter.replace("%", "");
+                    }
+                    if ((getdata[0].data.find(x => x.Code === valueFilter.toUpperCase())) !== undefined) {
+                      filter.push({ id: name, value: String(getdata[0].data.find(x => x.Code === valueFilter.toUpperCase()).ID) })
+                    } else {
+                      if (isNaN(valueFilter)) {
+                        getdata[0].data.forEach((row, index) => {
+                          var result = row.Code.search(new RegExp(valueFilter, "i"));
+                          if (result >= 0) {
+                            filter.push({ id: name, value: String(row.ID) })
+                          }
+                        })
+                      } else {
+                        filter.push({ id: name, value: String(e.target.value) })
+                      }
+                    }
+                  } else {
+                    filter.push({ id: name, value: e.target.value })
+                  }
+                })
+              } else {
+                filter.push({ id: name, value: e.target.value })
+              } //-end-//
             } else {
               filter.push({ id: name, value: e.target.value })
             }
           }
           this.onCheckFliter(filter, this.state.dataselect)
 
-          this.setState({ datafilter: filter }, () => console.log(this.state.datafilter))
+          this.setState({ datafilter: filter })
         }
       }
       } />
@@ -782,7 +780,7 @@ class TableGen extends Component {
       if (rowBaseCode != null || rowBaseCode != undefined) {
         if (!rowBaseCode.includes(this.props.autocode)) {
           return <span>{rowdata.row["Code"] === null ? "" : rowdata.row["Code"]}</span>;
-        } 
+        }
       } else {
         return null;
       }
@@ -905,7 +903,30 @@ class TableGen extends Component {
           )}
       </Downshift></div>
   }
-
+  createSpanAutoComplete(rowdata) {
+    let code = "";
+    if (this.state.autocomplete.length > 0) {
+      const autocomps = [...this.state.autocomplete];
+      if (this.props.enumfield !== undefined) {
+        const enums = [...this.props.enumfield]
+        if (enums.length > 0) {
+          enums.map((item) => {
+            if (rowdata.column.id === item) {
+              const getdatas = autocomps.filter(row => {
+                return row.field === rowdata.column.id
+              })
+              if ((getdatas[0].data.find(x => x.ID === rowdata.value)) !== undefined) {
+                code = getdatas[0].data.find(x => x.ID === rowdata.value).Code
+              }
+            }
+          })
+        }
+      }
+      return <span>{code}</span>
+    } else {
+      return <span></span>
+    }
+  }
   createAutoComplete(rowdata) {
     const style = {
       borderRadius: '3px',
@@ -1125,37 +1146,37 @@ class TableGen extends Component {
 
   AddGenerate() {
     if (this.props.addbtn === true) {
-      return <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a"}} type="button" color="success" className="float-right">Add</Button>
-    } else if (this.props.exportbtn === true) {
+      return <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
+    } else if (this.props.addExportbtn === true) {
       const datatable = [...this.state.data];
       return (
         <div>
-         <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a", marginLeft: '5px'  }} type="button" color="success" className="float-right">Add</Button>
-         <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
+          <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a", marginLeft: '5px' }} type="button" color="success" className="float-right">Add</Button>
+          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
         </div>
       )
-    } else if (this.props.exportfilebtn === true) {
+    } else if (this.props.exportfilebtn === false) {
       const datatable = [...this.state.data];
       return (
         <div>
-          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right"/>
+          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
         </div>
-        )
+      )
     } else {
       return null;
     }
   }
 
   Notification(state) {
-  switch (state) {
-    case 'edit':
-      return alert("เพิ่ม/แก้ไข ข้อมูลสำเร็จ");
-    case 'remove':
-      return alert("ลบข้อมูลสำเร็จ");
-    default:
-      return null;
+    switch (state) {
+      case 'edit':
+        return alert("เพิ่ม/แก้ไข ข้อมูลสำเร็จ");
+      case 'remove':
+        return alert("ลบข้อมูลสำเร็จ");
+      default:
+        return null;
+    }
   }
-}
   render() {
     const col = this.props.column
     col.forEach((row) => {
@@ -1233,6 +1254,10 @@ class TableGen extends Component {
         }
         else if (row.updateable && (row.body === undefined || !row.body)) {
           row.Cell = (e) => this.createAutoComplete(e)
+        } else {
+          row.Cell = (e) => {
+            return this.createSpanAutoComplete(e)
+          }
         }
       }
       else if (row.Type === "selection") {
@@ -1271,7 +1296,7 @@ class TableGen extends Component {
     })
     return (
       <div style={{ overflowX: 'auto' }}>
-        {this.AddGenerate()} 
+        {this.AddGenerate()}
         <div className="clearfix"></div>
         <ReactTableFixedColumns
           className="-striped"
@@ -1301,10 +1326,11 @@ class TableGen extends Component {
               }
             })
             if (result && !rmv)
-              return { className: "editrow"  }
+              return { className: "editrow" }
             else if (rmv)
               return {
-                className: "rmv" }
+                className: "rmv"
+              }
             else
               return {}
           }}

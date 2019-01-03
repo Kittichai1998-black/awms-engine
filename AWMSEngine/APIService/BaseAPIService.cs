@@ -124,12 +124,11 @@ namespace AWMSEngine.APIService
                 else if (this.Logger == null)
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
 
-                this.Logger.LogBeginTransaction();
+                this.Logger.LogInfo("####### START TRANSACTION #######");
+                this.Logger.LogInfo("REQUEST_DATA:: " + ObjectUtil.Json(request));
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
-
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
-                this.Logger.LogInfo("request : " + ObjectUtil.Json(request));
-                this.Permission(token, apiKey);
+                this.Permission(token,apiKey, APIServiceID());
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
@@ -142,12 +141,9 @@ namespace AWMSEngine.APIService
                     this.BuVO);
                 this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
 
-
-                this.Logger.LogInfo("[BeginExecuteEngineManual]");
+                
                 var res = this.ExecuteEngineManual();
-                this.Logger.LogInfo("[EndExecuteEngineManual]");
-                //if (res == null)
-                //    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Response API");
+
                 var resAPI = new ResponseObject().Execute(this.Logger, this.BuVO, res);
                 result.status = 1;
                 result.code = AMWExceptionCode.I0000.ToString();
@@ -181,31 +177,44 @@ namespace AWMSEngine.APIService
                 {
                     response = new { _result = this.BuVO.GetDynamic(BusinessVOConst.KEY_RESULT_API) };
                 }
-                this.Logger.LogInfo("API Response : " + ObjectUtil.Json(response));
-                this.Logger.LogEndTransaction();
+
                 int _status = result.status;
                 string _code = result.code;
                 string _message = result.message;
                 string _stacktrace = result.stacktrace;
                 ADO.LogingADO.GetInstant().EndAPIService(dbLogID, _status, _code, _message, _stacktrace, this.BuVO);
+                this.Logger.LogInfo("RESPONSE_DATA:: " + ObjectUtil.Json(response));
+                this.Logger.LogInfo("####### END TRANSACTION #######");
             }
             return response;
         }
 
-        private void Permission(string token, string apiKey)
+        //private void Permission(string token, string apiKey, int APIServiceID)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+
+        private void Permission(string token, string apiKey,int APIServiceID)
         {
             var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
-            this.Logger.LogInfo("token : " + token);
+            this.Logger.LogInfo("TOKEN:: " + token);
 
             var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("code", apiKey, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
-            this.Logger.LogInfo("apikey : " + apiKey);
-            
+            this.Logger.LogInfo("APIKEY:: " + apiKey);
+
             if (!this.IsAuthenAuthorize)
                 return;
+
+
+            ADO.TokenADO.GetInstant().Authen(token, apiKey,APIServiceID, this.BuVO);
+             
+            
+          
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");

@@ -10,8 +10,8 @@ namespace AWMSModel.Criteria
             public List<items> GOODSMVT_ITEM;
             public class header
             {
-                public DateTime PSTNG_DATE;
-                public DateTime DOC_DATE;
+                public string PSTNG_DATE;
+                public string DOC_DATE;
                 public string REF_DOC_NO;
                 public string HEADER_TXT;
                 public string GOODSMVT_CODE;

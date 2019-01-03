@@ -288,6 +288,12 @@ const Profile = Loadable({
   loader: () => import('./views/Pages/Profile/Profile'),
   loading: Loading,
 });
+
+const Return = Loadable({
+  loader: () => import('./views/Warehouse/Return/Return'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -326,6 +332,7 @@ const routes = [
   { path: '/doc/gi/list', exact: true, name: 'Goods Issue Document', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Goods Issue Manage', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
+  { path: '/wm/sto/return', exact: true, name: 'Retrun', component: Return },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/sys/storage/list', exact: true, name: 'Storage', component: Storage },
@@ -337,8 +344,8 @@ const routes = [
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
   { path: '/sys/sto/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
-  { path: '/sys/sto/curinv', exact: true, name: 'CurrentInv', component: CurrentInv},
-  { path: '/doc/gr/view', exact: true, name: 'StorageDetail', component: StorageDetail},
+  { path: '/sys/sto/curinv', exact: true, name: 'Current Inventory', component: CurrentInv},
+  { path: '/doc/gr/view', exact: true, name: 'Storage Detail', component: StorageDetail},
   { path: '/mst/APIKey/manage', exact: true, name: 'APIKey', component: APIKey},
   { path: '/mst/cs/manage', exact: true, name: 'ClientSecret', component: ClientSecret},
   { path: '/mst/conf/manage', exact: true, name: 'Config', component: Config},

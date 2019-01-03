@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import {Input, Button, Nav, NavItem, NavLink, Row,Col, Card, CardBody } from 'reactstrap';
 import ReactTable from 'react-table'
 import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -19,6 +20,14 @@ class Picking extends Component{
     this.onHandlePalletChange = this.onHandlePalletChange.bind(this)
     this.onHandleSetPalletCode = this.onHandleSetPalletCode.bind(this)
     this.style = {width:"100%", overflow:"hidden", marginBottom: "10px", textAlign:"left"}
+  }
+  async componentWillMount() {
+    document.title = "Picking : AWMS";
+    //permission
+    this.setState({ showbutton: "none" })
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Picking", dataGetPer, this.props.history);
+    //this.displayButtonByPermission(dataGetPer)
   }
 
   onHandleSetPalletCode(){
