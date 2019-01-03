@@ -16,9 +16,9 @@ class User extends Component {
 
         this.state = {
             colsRole: [
-                { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center" },
-                { accessor: 'Code', Header: 'Code', editable: false, filterable: false },
-                { accessor: 'Name', Header: 'Name', editable: false, filterable: false },
+                { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", minWidth: 50 },
+                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 140  },
+                { accessor: 'Name', Header: 'Name', editable: false, filterable: false, minWidth: 140 },
                 { accessor: 'Description', Header: 'Description', editable: false, filterable: false },
             ],
             data: [],
@@ -64,10 +64,8 @@ class User extends Component {
             },
             sortstatus: 0,
             User_id: 0,
-            selectiondata: [],
             open: false,
             selectiondata: [],
-            selectroledata: [],
             selectroledata: [],
             dataUpdate: [],
             rowselect: [],
@@ -85,10 +83,9 @@ class User extends Component {
         this.updateRole = this.updateRole.bind(this)
 
     }
-    componentDidMount() {
-        document.title = "User - AWMS"
-    }
+   
     async componentWillMount() {
+        document.title = "User - AWMS"
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("User", dataGetPer, this.props.history);
@@ -197,8 +194,6 @@ class User extends Component {
                 row["ID"] = row["ID"] <= 0 ? null : row["ID"]
             })
             let updjson = {
-                "_token": sessionStorage.getItem("Token"),
-                "_apikey": null,
                 "t": "ams_User_Role",
                 "pk": "ID",
                 "datas": dataUpdate,
