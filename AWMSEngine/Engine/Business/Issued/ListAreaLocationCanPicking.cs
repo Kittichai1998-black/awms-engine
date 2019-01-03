@@ -27,7 +27,10 @@ namespace AWMSEngine.Engine.Business.Issued
                 public string warehouseCode;
                 public int branchID;
                 public string branchCode;
-                public int packQty;
+                public decimal packQty;
+                public string packUnitCode;
+                public decimal packBaseQty;
+                public string packBaseUnitCode;
             }
 
         }
@@ -49,7 +52,9 @@ namespace AWMSEngine.Engine.Business.Issued
                         branchID = x.branchID,
                         branchCode = x.branchCode,
                         warehouseID = x.warehouseID,
-                        warehouseCode = x.warehouseCode
+                        warehouseCode = x.warehouseCode,
+                        packBaseUnitCode = x.packBaseUnitCode,
+                        packUnitCode = x.packUnitCode
                     })
                     .Select(x => new TRes.TData()
                     {
@@ -63,7 +68,10 @@ namespace AWMSEngine.Engine.Business.Issued
                         branchCode = x.Key.branchCode,
                         warehouseID = x.Key.warehouseID,
                         warehouseCode = x.Key.warehouseCode,
-                        packQty = x.Sum(y => y.packQty)
+                        packQty = x.Sum(y => y.packQty),
+                        packBaseQty = x.Sum(y => y.packBaseQty),
+                        packBaseUnitCode = x.Key.packBaseUnitCode,
+                        packUnitCode = x.Key.packUnitCode
                     }).ToList();
                 res.datas.AddRange(datas);
             }

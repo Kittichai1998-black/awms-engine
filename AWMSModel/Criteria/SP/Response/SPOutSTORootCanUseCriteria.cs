@@ -11,16 +11,25 @@ namespace AWMSModel.Criteria.SP.Response
         public string code;
         public string name;
         public StorageObjectType objectType;
+
+        public long docItemID;
+
         public long rootID;
         public string rootCode;
         public string rootName;
 
         public long mstID;
         public long packID;
-        public long packUnitID;
         public string packCode;
         public string packName;
+
+        public decimal packQty;
+        public long packUnitID;
         public string packUnitCode;
+
+        public decimal packBaseQty;
+        public long packBaseUnitID;
+        public string packBaseUnitCode;
 
         public int areaID;
         public string areaCode;
@@ -32,10 +41,9 @@ namespace AWMSModel.Criteria.SP.Response
         public string branchCode;
 
         public int? forCustomerID;
-        public int packQty;
         public DateTime? prodDate;
         public DateTime? expDate;
-        public DateTime createTime;
+        //public DateTime createTime;
         
     }
 }
