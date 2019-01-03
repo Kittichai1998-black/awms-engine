@@ -478,5 +478,38 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public amt_DocumentItem DocItemPut(amt_DocumentItem docItem, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("@ID", docItem.ID);
+            param.Add("@document_ID", docItem.Document_ID);
+            param.Add("@linkDocumentID", docItem.LinkDocument_ID);
+            param.Add("@packMaster_ID", docItem.PackMaster_ID);
+            param.Add("@sku_ID", docItem.SKUMaster_ID);
+            param.Add("@code", docItem.Code);
+            param.Add("@quantity", docItem.Quantity);
+            param.Add("@baseQuantity", docItem.BaseQuantity);
+            param.Add("@unitTypeID", docItem.UnitType_ID);
+            param.Add("@baseUnitTypeID", docItem.BaseUnitType_ID);
+            param.Add("@expireDate", docItem.ExpireDate);
+            param.Add("@options", docItem.Options);
+            param.Add("@productionDate", docItem.ProductionDate);
+            param.Add("@ref1", docItem.Ref1);
+            param.Add("@ref2", docItem.Ref2);
+            param.Add("@refID", docItem.RefID);
+            param.Add("@orderNo", docItem.OrderNo);
+            param.Add("@batch", docItem.Batch);
+            param.Add("@lot", docItem.Lot);
+            param.Add("@eventStatus", docItem.EventStatus);
+            param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));           
+            param.Add("@actionBy", buVO.ActionBy);
+
+
+            var res = this.Query<amt_DocumentItem>("SP_DOCITEM_PUT",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            return res;
+        }
     }
 }
