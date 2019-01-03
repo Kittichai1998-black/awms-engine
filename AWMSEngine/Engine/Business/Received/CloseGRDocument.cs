@@ -50,7 +50,7 @@ namespace AWMSEngine.Engine.Business.Received
                             STGE_LOC = doc.SouWarehouse,
                             BATCH = dataDocItem.Batch,
                             MOVE_TYPE = doc.Ref2,
-                            ENTRY_QNT = dataDocItem.Quantity,
+                            ENTRY_QNT = dataDocItem.Quantity.Value,
                             ENTRY_UOM = dataDocItem.UnitType_Code,
                             MOVE_STLOC = doc.DesWarehouse,
                         });

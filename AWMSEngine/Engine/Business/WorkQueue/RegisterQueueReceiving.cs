@@ -314,6 +314,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                                                     }}
                             });
+                        docItems.AddRange(doc.DocumentItems);
                         //ADO.DocumentADO.GetInstant().Create(doc, this.BuVO);
                     }
                     //Pack Info พบ Document แต่ไม่พบ DocumentItem
@@ -340,6 +341,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                             DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
                         };
                         ADO.DocumentADO.GetInstant().CreateItem(docItem, this.BuVO);
+                        docItems.Add(docItem);
                     }
                 }
                 else
@@ -347,7 +349,6 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับเข้ารายการ '" + string.Join(',', packs.Select(x => x.code).ToArray()) + "' เนื่องจากไม่มีเอกสาร Goods Receive");
                 }
                 packH.eventStatus = StorageObjectEventStatus.RECEIVED;
-                docItems.Add(docItem);
             }
             return docItems;
         }

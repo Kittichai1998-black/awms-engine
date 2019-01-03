@@ -15,9 +15,10 @@ class Role extends Component {
 
         this.state = {
             colsMap: [
-                { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center" },
-                { accessor: 'Role_ID', Header: 'Code', editable: false, filterable: false },
-                { accessor: 'Permission_ID', Header: 'Name', editable: false, filterable: false },
+                { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", minWidth: 50 },
+                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 160 },
+                { accessor: 'Name', Header: 'Name', editable: false, filterable: false },
+                { accessor: 'Description', Header: 'Description', editable: false, filterable: false },
             ],
             data: [],
             autocomplete: [],
@@ -39,6 +40,17 @@ class Role extends Component {
                 l: 100,
                 all: "",
             },
+            selectPermission: {
+                queryString: window.apipath + "/api/mst",
+                t: "Permission",
+                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+                f: "ID,Code,Name,Description,Status",
+                g: "",
+                s: "[{'f':'ID','od':'asc'}]",
+                sk: 0,
+                l: 1000,
+                all: "",
+            },
             selectMapChild: {
                 queryString: window.apipath + "/api/mst",
                 t: "role_permission",
@@ -47,7 +59,7 @@ class Role extends Component {
                 g: "",
                 s: "[{'f':'ID','od':'asc'}]",
                 sk: 0,
-                l: 100,
+                l: 1000,
                 all: "",
             },
             sortstatus: 0,
@@ -71,14 +83,8 @@ class Role extends Component {
         this.updateRolePermission = this.updateRolePermission.bind(this)
     }
 
-    onHandleClickCancel(event) {
-        this.forceUpdate();
-        event.preventDefault();
-    }
-    componentDidMount() {
-        document.title = "Role : AWMS";
-    }
     async componentWillMount() {
+        document.title = "Role : AWMS";
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Role", dataGetPer, this.props.history);
@@ -96,10 +102,15 @@ class Role extends Component {
             this.setState({ permissionView: true })
         }
     }
+    onHandleClickCancel(event) {
+        this.forceUpdate();
+        event.preventDefault();
+    }
     getData(Root_ID) {
+        console.log(Root_ID)
         const selectdata = []
         const selectMapdata = []
-        Axios.get(createQueryString(this.state.select)).then((response) => {
+        Axios.get(createQueryString(this.state.selectPermission)).then((response) => {
             response.data.datas.forEach(row => {
                 selectdata.push({
                     ID: row.ID
@@ -107,10 +118,11 @@ class Role extends Component {
                     , Name: row.Name
                     , Description: row.Description
                     , Check: false
-                    , Permission_ID: null
+                    , Role_ID: null  //*
                     , RolePermission_ID: 0
                 })
             })
+            //console.log(selectdata)
             this.setState({ selectdata })
             Axios.get(createQueryString(this.state.selectMapChild)).then((responset) => {
                 responset.data.datas.forEach(row => {
@@ -121,6 +133,7 @@ class Role extends Component {
                         , Status: row.Status
                     })
                 })
+                //console.log(selectMapdata)
                 this.setState({ selectMapdata }, () => this.setRolePermission(Root_ID))
             })
         })
@@ -265,8 +278,8 @@ class Role extends Component {
         const view = this.state.permissionView
         const cols = [
             { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 160 },
-            { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 200 },
-            { accessor: 'Description', Header: 'Description', editable: view, sortable: false, Filter: "text", },
+            { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 170 },
+            { accessor: 'Description', Header: 'Description', editable: view, sortable: false, Filter: "text" },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
             { accessor: 'Created', Header: 'Create', filterable: false },
             { accessor: 'Modified', Header: 'Modify', filterable: false },
@@ -300,8 +313,8 @@ class Role extends Component {
 
                 <Popup open={this.state.open} onClose={this.closeModal}>
                     <div>
-                        <ReactTable columns={this.state.colsMap} minRows={3} data={this.state.selectMapdata} sortable={false} style={{ background: 'white', 'max-height': '400px' }}
-                            getselection={this.getSelectionData} showPagination={false} />
+                        <ReactTable columns={this.state.colsMap} data={this.state.selectdata} sortable={false} style={{ background: 'white', 'max-height': '400px' }}
+                            getselection={this.getSelectionData} showPagination={false} defaultPageSize={this.state.selectdata.length} />
                         <Card>
                             <CardBody>
                                 <Button onClick={() => this.updateRolePermission()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>

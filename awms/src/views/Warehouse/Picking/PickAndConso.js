@@ -47,7 +47,7 @@ class Picking extends Component{
   palletScan(){
     return <Card style={this.style}>
       <CardBody>
-        <div><label>Pallet Code : </label><input type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
+        <div><label>Pallet Code : </label><input id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
           if(e.key === "Enter"){
             this.onHandleSetPalletCode();
           }
@@ -139,7 +139,6 @@ class Picking extends Component{
     let no_style = {background:"gray", color:"white"};
 
     return this.state.stos.map((list,index) => {
-      console.log(list)
       return <Card key={index} style={
           Object.assign(list.shouldPick == (list.canPick > list.palletQty ? list.palletQty : list.canPick) ? full_style : list.shouldPick == 0 ? no_style : som_style
             , this.style)}>
@@ -203,6 +202,11 @@ class Picking extends Component{
           pickItemList:[],
           palletCode:"",})
       }
+
+      this.setState({palletCode:""}, () =>{
+        let eleBarcode = document.getElementById("txtBarcode")
+        eleBarcode.focus();
+      });
     })
   }
 

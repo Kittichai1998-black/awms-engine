@@ -55,7 +55,21 @@ namespace AWMSEngine.Engine.Business
 
             /*--------------------------*/
             if (reqVO.getMapSto)
+            {
                 res.bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
+                res.bstos.ForEach(bs =>
+                {
+                    var di = doc.documentItems.FirstOrDefault(x => x.ID == bs.docItemID);
+                    if(bs.packUnitID != di.UnitType_ID)
+                    {
+                        var newUnit = this.StaticValue.ConvertToNewUnitBySKU(di.SKUMaster_ID.Value, bs.packQty, bs.packUnitID, di.UnitType_ID.Value);
+                        
+                        bs.packQty = newUnit.qty;
+                        bs.packUnitID = newUnit.unitType_ID;
+                        bs.packUnitCode = this.StaticValue.UnitTypes.First(x => x.ID == newUnit.unitType_ID).Code;
+                    }
+                });
+            }
 
 
             return res;
