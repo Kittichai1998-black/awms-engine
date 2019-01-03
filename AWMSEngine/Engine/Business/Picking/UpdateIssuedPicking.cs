@@ -1,6 +1,10 @@
 ﻿using AMWUtil.Common;
+using AMWUtil.DataAccess.Http;
 using AMWUtil.Exception;
+using AWMSEngine.APIService.Doc;
+using AWMSEngine.Engine.Business.Issued;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -10,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Picking
 {
-    public class UpdateIssuedPicking : BaseEngine<UpdateIssuedPicking.TReq, amt_Document>
+    public class UpdateIssuedPicking : BaseEngine<UpdateIssuedPicking.TReq, UpdateIssuedPicking.TRes>
     {
         public class TReq
         {
@@ -35,19 +39,20 @@ namespace AWMSEngine.Engine.Business.Picking
         public class TRes
         {
             public amt_Document doc;
+            public object closeDoc;
         }
 
-        protected override amt_Document ExecuteEngine(TReq reqVO)
+        protected override TRes ExecuteEngine(TReq reqVO)
         {
             var itemList = ADO.DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO);
             //var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletID, StorageObjectType.PACK, false, false, this.BuVO);
             //var listSto = sto.ToTreeList().Where(y => y.type == StorageObjectType.PACK).ToList();
-
+            object close = null;
             reqVO.pickedList.ForEach(x =>
             {
                 if (x.picked > x.palletQty)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนในพาเลทได้");
-                else if(x.picked > x.canPick)
+                else if (x.picked > x.canPick)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนที่ต้องหยิบได้");
 
                 var setSTO = ADO.StorageObjectADO.GetInstant().Get(x.STOID, StorageObjectType.PACK, false, false, this.BuVO);
@@ -63,15 +68,16 @@ namespace AWMSEngine.Engine.Business.Picking
 
                 var docTarget = ADO.DocumentADO.GetInstant().Target(reqVO.docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
                 var target = docTarget.Any(z => z.needPackQty <= 0);
-                if(target == true)
+                if (target == true)
                 {
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
+                    close = new { docIDs = new long[] { reqVO.docID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
                 }
             });
 
             var res = ADO.DataADO.GetInstant().SelectByID<amt_Document>(reqVO.docID, this.BuVO);
 
-            return res;
+            return new TRes { doc = res, closeDoc = close };
         }
     }
 }
