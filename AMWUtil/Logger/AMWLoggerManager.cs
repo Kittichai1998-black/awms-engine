@@ -115,7 +115,6 @@ namespace AMWUtil.Logger
                 {
                     while (true)
                     {
-
                         for (KeyValuePair<string, string>? msg = LogMessages.FirstOrDefault();
                                 msg.HasValue && msg.Value.Key != null;)
                         {
