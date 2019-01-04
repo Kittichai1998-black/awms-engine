@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     new KeyValuePair<string, object> ("Document_ID",num)
                 }, this.BuVO);
 
-                var relation = ADO.DocumentADO.GetInstant().ListLinkDocument(doc.ID.Value, this.BuVO);
+                var relation = ADO.DocumentADO.GetInstant().ListParentLink(doc.ID.Value, this.BuVO);
                 if (relation.Count == 0)
                 {
                     var group = new List<SAPInterfaceReturnvaluesDOPick>();
@@ -153,7 +153,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     DocumentEventStatus.CLOSED,
                                     this.BuVO);
 
-                                    ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.SuperID, this.BuVO,
+                                    ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
                                     new KeyValuePair<string, object>[]
                                     {
                                         new KeyValuePair<string, object>("EventStatus",DocumentEventStatus.CLOSED)
