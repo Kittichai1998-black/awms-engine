@@ -118,6 +118,19 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                 var palletList = new List<PalletDataCriteria>();
+                palletList.Add(new PalletDataCriteria()
+                {
+                    source = "Sou_Warehouse_Code=" + reqVO.mappingPallets[0].source,
+                    code = reqVO.baseCode,
+                    qty = "1",
+                    unit = null,
+                    orderNo = null,
+                    batch = null,
+                    lot = null,
+                    warehouseCode = reqVO.warehouseCode,
+                    areaCode = reqVO.areaCode,
+                });
+
                 foreach (var row in reqVO.mappingPallets)
                 {
                     palletList.Add(new PalletDataCriteria()

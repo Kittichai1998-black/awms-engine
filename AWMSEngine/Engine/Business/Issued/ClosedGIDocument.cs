@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     new KeyValuePair<string, object> ("Document_ID",num)
                 }, this.BuVO);
 
-                var relation = ADO.DocumentADO.GetInstant().ListDocRelation(doc.ID.Value, this.BuVO);
+                var relation = ADO.DocumentADO.GetInstant().ListLinkDocument(doc.ID.Value, this.BuVO);
                 if (relation.Count == 0)
                 {
                     var group = new List<SAPInterfaceReturnvaluesDOPick>();

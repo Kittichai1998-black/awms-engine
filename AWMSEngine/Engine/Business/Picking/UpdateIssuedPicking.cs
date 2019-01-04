@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.Business.Picking
             public string palletCode;
             public long palletID;
             public long docID;
+            public PickingModeType pickMode;
             public List<UpdateQty> pickedList;
 
             public class UpdateQty
@@ -63,7 +64,8 @@ namespace AWMSEngine.Engine.Business.Picking
                 setSTO.qty = setSTO.qty - x.picked;
                 setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
 
-                ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, reqVO.pickMode,  this.BuVO);
+
                 ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
 
                 var docTarget = ADO.DocumentADO.GetInstant().Target(reqVO.docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);

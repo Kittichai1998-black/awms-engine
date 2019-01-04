@@ -456,11 +456,12 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<amt_Document> ListDocumentCanMap(string palletCode, StorageObjectEventStatus docTypeID, VOCriteria buVO)
+        public List<amt_Document> ListDocumentCanMap(string palletCode, StorageObjectEventStatus docTypeID, PickingModeType pickMode, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("palletCode", palletCode);
             param.Add("eventStatus", docTypeID);
+            param.Add("modePick", pickMode);
             var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_PICKING",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
@@ -468,11 +469,21 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<amv_LinkDocument> ListDocRelation(long documentID, VOCriteria buVO)
+        public List<amt_Document> ListParentLink(long documentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("documentID", documentID);
-            var res = this.Query<amv_LinkDocument>("SP_RELATION_DOC_GR",
+            var res = this.Query<amt_Document>("SP_DOC_LIST_PARENTLINK",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+        public List<amt_DocumentItem> ListItemParentLink(long documentID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("documentID", documentID);
+            var res = this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_PARENTLINK",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
