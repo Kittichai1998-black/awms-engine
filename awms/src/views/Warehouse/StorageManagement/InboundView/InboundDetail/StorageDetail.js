@@ -7,6 +7,7 @@ import {apicall, DatePicker, createQueryString} from '../../../ComponentCore'
 import moment from 'moment';
 import queryString from 'query-string'
 import _ from 'lodash'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -20,11 +21,21 @@ class IssuedDoc extends Component {
       
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     this.dateTimePicker = this.dateTimePicker.bind(this)
   }
-
-  componentDidMount(){
+  async componentWillMount() {
     document.title = "Storage Detail : AWMS";
+    let dataGetPer = await GetPermission()
+    this.displayButtonByPermission(dataGetPer)
+  }
+  displayButtonByPermission(dataGetPer) {
+    // 20 TransGRD_execute
+    if (!CheckViewCreatePermission("TransGRD_execute", dataGetPer)) {
+      this.props.history.push("/404")
+    }
+  }
+  componentDidMount(){
     const values = queryString.parse(this.props.location.search)
     var ID = values.docID.toString()
     if(values.docID){

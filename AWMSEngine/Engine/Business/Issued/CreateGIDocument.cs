@@ -162,12 +162,20 @@ namespace AWMSEngine.Engine.Business.Issued
                 if (!string.IsNullOrWhiteSpace(recItem.packCode))
                 {
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterByPack(recItem.packCode, recItem.unitType, this.BuVO);
+                    if (packMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Pack:" + recItem.packCode + " / Unit:" + recItem.unitType + " ในระบบ");
                     skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
+                    if (skuMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Pack:" + recItem.packCode + " ในระบบ");
                 }
                 else if (!string.IsNullOrWhiteSpace(recItem.skuCode))
                 {
                     skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(recItem.skuCode, this.BuVO);
+                    if(skuMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ SKU:" + recItem.skuCode + " ในระบบ");
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, recItem.unitType, this.BuVO);
+                    if (packMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ SKU:" + recItem.skuCode + " / Unit:" + recItem.unitType + " ในระบบ");
                 }
                 else
                 {
