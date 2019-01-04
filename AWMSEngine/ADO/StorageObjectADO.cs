@@ -306,6 +306,15 @@ namespace AWMSEngine.ADO
             param.Add("userID", buVO.ActionBy);
             var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STO_UPDATE_PICKING", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
         }
+
+        public List<amt_StorageObject> ListPallet(string palletCode, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("palletCode", palletCode);
+            var res = this.Query<amt_StorageObject>("SP_STO_PALLET", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
     }
 
 }

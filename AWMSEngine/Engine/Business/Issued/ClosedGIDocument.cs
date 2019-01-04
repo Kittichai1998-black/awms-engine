@@ -135,16 +135,16 @@ namespace AWMSEngine.Engine.Business.Issued
                         }
 
                         //send to SAP
-                        var typeApi1 = "";
+                        var typeApi9 = "";
 
-                        var resultAPI1 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(groupBySGI, this.BuVO);
-                        resultAPI1.@return.ForEach(x =>
+                        var resultAPI9 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0009_FG_GOOD_ISSUE(groupBySGI, this.BuVO);
+                        resultAPI9.@return.ForEach(x =>
                         {
-                            typeApi1 = x.type;
+                            typeApi9 = x.type;
                         });
 
 
-                        if (typeApi1 == "E")
+                        if (typeApi9 == "S")
                         {
                             relation.ForEach(x =>
                                 {

@@ -22,5 +22,8 @@ namespace AWMSModel.Entity
         public int HoleStatus;
         public int LockStatus;
         public int EventStatus;
+        public string Batch;
+        public string Lot;
+        
     }
 }

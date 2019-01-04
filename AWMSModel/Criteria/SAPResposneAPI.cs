@@ -10,7 +10,6 @@ namespace AWMSModel.Criteria
         public string docstatus;
         public string doc_year;
         public string mat_doc;
-
         public class items
         {
             public string type;
@@ -26,6 +25,8 @@ namespace AWMSModel.Criteria
             public string parameter;
             public string row;
             public string field;
+            public string system;
+
         }
 
 
