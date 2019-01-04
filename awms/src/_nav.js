@@ -50,7 +50,7 @@ function getmenu(data){
   else{
     let items =[]
       jsonresult.forEach((row) => {
-        //console.log(row)
+        console.log(row)
         items.push({   
               name: row.name,
               icon: row.icon,

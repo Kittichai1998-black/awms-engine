@@ -9,6 +9,7 @@ import { AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToList
 import Downshift from 'downshift'
 import ReactAutocomplete from 'react-autocomplete'
 import arrimg from '../../../../img/arrowhead.svg'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 function isInt(value) {
   return !isNaN(value) &&
@@ -77,6 +78,7 @@ class IssuedManage extends Component {
     this.addIndex = 0
     //this.autoSelectData = this.autoSelectData.bind(this)
     this.toggle = this.toggle.bind(this)
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
 
     this.branchselect = {
       queryString: window.apipath + "/api/mst",
@@ -177,8 +179,16 @@ class IssuedManage extends Component {
     })
 
   }
-  componentWillMount() {
+  async componentWillMount() {
     document.title = "Goods Issue Manage : AWMS";
+    let dataGetPer = await GetPermission()
+    this.displayButtonByPermission(dataGetPer)
+  }
+  displayButtonByPermission(dataGetPer) {
+    // 27	TransGID_create&modify
+    if (!CheckViewCreatePermission("TransGID_create&modify", dataGetPer)) {
+      this.props.history.push("/404")
+    }
   }
   componentDidMount() {
     this.initialData()

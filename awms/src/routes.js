@@ -356,7 +356,7 @@ const routes = [
   { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
   { path: '/wm/issue/manage', exact: true, name: 'Create Queue by DO', component:CreateQueue},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
-  { path: '/doc/dash/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
+  { path: '/sys/sto/progress', exact: true, name: 'Picking Progress', component: TaskList },
   { path: '/wm/queue/manage', exact: true, name: 'QueueView', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },

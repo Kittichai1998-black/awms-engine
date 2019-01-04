@@ -64,12 +64,12 @@ class TaskList extends Component{
     this.updateQueueData = this.updateQueueData.bind(this)
   }
   async componentWillMount() {
+    document.title = "Picking Progress : AWMS";
     //permission
     let dataGetPer = await GetPermission()
-    //CheckWebPermission("TaskList", dataGetPer, this.props.history);
+    CheckWebPermission("PickPro", dataGetPer, this.props.history);
 }
   componentDidMount() {
-    document.title = "Dashboard Task List : AWMS";
     this.GetQueueData()
     let interval = setInterval(this.GetQueueData, 2000);
     this.setState({ interval: interval })
