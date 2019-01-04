@@ -47,6 +47,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
 
+            if (lm == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.locationCode + "'");
 
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED ||
                 queueTrx.EventStatus == WorkQueueEventStatus.WORKING)

@@ -26,17 +26,16 @@ namespace AWMSEngine.Engine.Business.Received
         {
             
            
-            foreach (var num in reqVO.docIDs)
+            foreach (var docId in reqVO.docIDs)
             {
-                var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(num, this.BuVO);
+                var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(docId, this.BuVO);
                 
 
-                var docItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object> ("Document_ID",num)
-                }, this.BuVO);
+
+                var docItem = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
 
 
-                var relation =   ADO.DocumentADO.GetInstant().ListDocRelation(doc.ID.Value,this.BuVO);
+                var relation =   ADO.DocumentADO.GetInstant().ListParentLink(doc.ID.Value,this.BuVO);
                 if (relation.Count == 0)
                 {
                     var group = new List<SAPInterfaceReturnvalues>();
@@ -50,8 +49,8 @@ namespace AWMSEngine.Engine.Business.Received
                             STGE_LOC = doc.SouWarehouse,
                             BATCH = dataDocItem.Batch,
                             MOVE_TYPE = doc.Ref2,
-                            ENTRY_QNT = dataDocItem.Quantity.Value,
-                            ENTRY_UOM = dataDocItem.UnitType_Code,
+                            ENTRY_QNT = dataDocItem.DocItemStos.Sum(x => x.Quantity),
+                            ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
                             MOVE_STLOC = doc.DesWarehouse,
                         });
                         var data = new SAPInterfaceReturnvalues()
@@ -115,12 +114,12 @@ namespace AWMSEngine.Engine.Business.Received
                         var groupBySGR = new List<SAPInterfaceReturnvalues>();
                         //start groupDoc
                         var rootReceives = relation
-                            .GroupBy(x => new { ActionTime = x.ActionTime, DocumentDate = x.DocumentDate,Super = x.Super})
+                            .GroupBy(x => new { ActionTime = x.ActionTime, DocumentDate = x.DocumentDate,Super = x.Code})
                             .Select(x => new {
                                 ActionTimes = x.Key.ActionTime,
                                 DocumentDates = x.Key.DocumentDate,
                                 Supers = x.Key.Super,
-                                SuperIDs = x.Select(y1 => y1.SuperID).ToList(),
+                                SuperIDs = x.Select(y1 => y1.ID.Value).ToList(),
                                 IDs = x.Select(y => y.ID).ToList()
                         })
                         .ToList();
