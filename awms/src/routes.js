@@ -299,7 +299,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/mst/sku/manage', exact: true, name: 'SKU', component: Products },
-  { path: '/mst/catagory/manage', exact: true, name: 'Catagory', component: SKUType },
+  { path: '/mst/catagory/manage', exact: true, name: 'SKU Collection', component: SKUType },
   { path: '/mst/pack/manage', exact: true, name: 'Pack', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },

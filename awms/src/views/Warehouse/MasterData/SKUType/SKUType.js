@@ -48,7 +48,7 @@ class SKUMasterType extends Component {
     event.preventDefault();
   }
   componentDidMount() {
-    document.title = "Catagory - AWMS"
+    document.title = "SKU Collection - AWMS"
   }
   async componentWillMount() {
     this.getAutocomplete();
@@ -59,21 +59,14 @@ class SKUMasterType extends Component {
   }
   //permission
   displayButtonByPermission(dataGetPer) {
-    let checkview = false
-    let dataCheckView = CheckViewCreatePermission(this.pagePerCode, dataGetPer);
-    for (let filed in dataCheckView) {
-      if (filed === "SKUtype_view") {
-        if (dataCheckView[filed]) {
-          checkview = true //แสดงข้อมูลเฉยๆ
-        }
-      }
-      if (filed === "SKUtype_create&modify") {
-        if (dataCheckView[filed]) {
-          checkview = false //เเก้ไขได้
-        }
-      }
-    }
+    let checkview = true
 
+    if (CheckViewCreatePermission("SKUtype_view", dataGetPer)) {
+      checkview = true //แสดงข้อมูลเฉยๆ
+    }
+    if (CheckViewCreatePermission("SKUtype_create&modify", dataGetPer)) {
+      checkview = false //แก้ไข
+    }
     if (checkview === true) {
       this.setState({ permissionView: false })
     } else if (checkview === false) {
@@ -113,7 +106,7 @@ class SKUMasterType extends Component {
       all: "",
     }
 
-    Axios.all([api.get(createQueryString(packselect)), 
+    Axios.all([api.get(createQueryString(packselect)),
     api.get(createQueryString(objectsizeselect))]).then(
       (Axios.spread((packresult, objectsizeresult) => {
         let ddl = this.state.autocomplete

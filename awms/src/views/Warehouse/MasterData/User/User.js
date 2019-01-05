@@ -17,7 +17,7 @@ class User extends Component {
         this.state = {
             colsRole: [
                 { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", minWidth: 50 },
-                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 140  },
+                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 140 },
                 { accessor: 'Name', Header: 'Name', editable: false, filterable: false, minWidth: 140 },
                 { accessor: 'Description', Header: 'Description', editable: false, filterable: false },
             ],
@@ -83,7 +83,7 @@ class User extends Component {
         this.updateRole = this.updateRole.bind(this)
 
     }
-   
+
     async componentWillMount() {
         document.title = "User - AWMS"
         //permission

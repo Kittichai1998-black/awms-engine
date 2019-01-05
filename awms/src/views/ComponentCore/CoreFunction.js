@@ -12,7 +12,6 @@ class apicall{
         });
     }
 
-
     post(url, data){
         
         if(data !== undefined){ 
@@ -43,6 +42,12 @@ class apicall{
             }
             return res
         });
+    }
+
+    all(utlArray){
+        return Axios.all(utlArray).then(res => {
+            return res
+        })
     }
 }
 

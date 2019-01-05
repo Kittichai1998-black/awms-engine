@@ -918,13 +918,17 @@ class TableGen extends Component {
               if ((getdatas[0].data.find(x => x.ID === rowdata.value)) !== undefined) {
                 code = getdatas[0].data.find(x => x.ID === rowdata.value).Code
               }
+            } else {
+              code = rowdata.value;
             }
           })
         }
+      } else {
+        code = rowdata.value;
       }
       return <span>{code}</span>
     } else {
-      return <span></span>
+      return <span>{rowdata.value}</span>
     }
   }
   createAutoComplete(rowdata) {
@@ -1218,9 +1222,19 @@ class TableGen extends Component {
         row.Cell = (e) => this.checkboxBody(e)
         row.className = "text-center"
       }
+      // else if (row.Type === "autolocationcode" && (row.body === undefined || !row.body)) {
+      //   row.Cell = (e) => (this.autoGenLocationCode(e))
+      //   row.className = "text-center"
+      // }
       else if (row.Type === "autolocationcode" && (row.body === undefined || !row.body)) {
-        row.Cell = (e) => (this.autoGenLocationCode(e))
-        row.className = "text-center"
+        if (row.editable) {
+          row.Cell = (e) => (this.autoGenLocationCode(e))          
+        }
+        else {
+          row.Cell = (e) => {
+            return <span>{e.value}</span>
+          }
+        }
       }
       else if (row.Type === "autobasecode" && (row.body === undefined || !row.body)) {
         row.Cell = (e) => (this.autoGenBaseCode(e))
