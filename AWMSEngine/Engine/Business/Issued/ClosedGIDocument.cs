@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     //send to SAP
                     var typeApi1 = "";
 
-                    var resultAPI1 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(group, this.BuVO);
+                    var resultAPI1 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(null, this.BuVO);
                     resultAPI1.@return.ForEach(x =>
                     {
                         typeApi1 = x.type;

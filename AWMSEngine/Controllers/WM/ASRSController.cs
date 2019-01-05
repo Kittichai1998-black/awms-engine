@@ -33,6 +33,13 @@ namespace AWMSEngine.Controllers.WM
             return res;
         }
 
+        [HttpPost("queue/enquiry")]
+        public dynamic EnquiryQueue([FromBody] dynamic value)
+        {
+            var res = new APIService.ASRS.EnquiryQueueAPI(this).Execute(value);
+            return res;
+        }
+
         [HttpPost("queue/working")]
         public dynamic UpldateQueue([FromBody] dynamic value)
         {
