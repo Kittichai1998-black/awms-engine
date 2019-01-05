@@ -118,6 +118,19 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                 var palletList = new List<PalletDataCriteria>();
+                palletList.Add(new PalletDataCriteria()
+                {
+                    source = "Sou_Warehouse_Code=" + reqVO.mappingPallets[0].source,
+                    code = reqVO.baseCode,
+                    qty = "1",
+                    unit = null,
+                    orderNo = null,
+                    batch = null,
+                    lot = null,
+                    warehouseCode = reqVO.warehouseCode,
+                    areaCode = reqVO.areaCode,
+                });
+
                 foreach (var row in reqVO.mappingPallets)
                 {
                     palletList.Add(new PalletDataCriteria()
@@ -314,12 +327,13 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                                                     }}
                             });
+                        docItems.AddRange(doc.DocumentItems);
                         //ADO.DocumentADO.GetInstant().Create(doc, this.BuVO);
                     }
                     //Pack Info พบ Document แต่ไม่พบ DocumentItem
                     else
                     {
-                        var packConvert = this.StaticValue.ConvertToBaseUnitByPack(packH.id.Value, 1, packH.unitID);
+                        var packConvert = this.StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
                         docItem = new amt_DocumentItem()
                         {
                             Document_ID = doc.ID.Value,
@@ -340,6 +354,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                             DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
                         };
                         ADO.DocumentADO.GetInstant().CreateItem(docItem, this.BuVO);
+                        docItems.Add(docItem);
                     }
                 }
                 else
@@ -347,7 +362,6 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับเข้ารายการ '" + string.Join(',', packs.Select(x => x.code).ToArray()) + "' เนื่องจากไม่มีเอกสาร Goods Receive");
                 }
                 packH.eventStatus = StorageObjectEventStatus.RECEIVED;
-                docItems.Add(docItem);
             }
             return docItems;
         }

@@ -303,16 +303,28 @@ namespace AWMSEngine.ADO
             return res;
         }
         
-        public void UpdatePicking(string palletCode, long docItemID, string packCode, string batch, string lot, decimal pickQty, decimal basePickQty, VOCriteria buVO)
+        public void UpdatePicking(string palletCode, long docItemID, string packCode, string batch, string lot, decimal pickQty, decimal basePickQty, PickingModeType pickMode, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("palletCode", palletCode);
             param.Add("docItemID", docItemID);
             param.Add("packCode", packCode);
             param.Add("batch", batch);
+            param.Add("lot", lot);
             param.Add("pickQty", pickQty);
             param.Add("basepickQty", basePickQty);
-            //var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STOID_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            param.Add("pickMode", pickMode);
+            param.Add("userID", buVO.ActionBy);
+            var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STO_UPDATE_PICKING", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+        }
+
+        public List<amt_StorageObject> ListPallet(string palletCode, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("palletCode", palletCode);
+            var res = this.Query<amt_StorageObject>("SP_STO_PALLET", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
         }
     }
 

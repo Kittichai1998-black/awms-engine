@@ -1,4 +1,5 @@
 ﻿using AMWUtil.DataAccess.Http;
+using AWMSEngine.APIService.Api2;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,40 @@ namespace AWMSEngine.ADO.SAPApi
             string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
             string password = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
             var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
+            return res;
+        }
+        public SAPResposneAPI MMI0008_PLANT_STOCK_TRANSFER(dynamic datas, VOCriteria buVO)
+        {
+            string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0008_URL");
+            string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
+            string password = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
+            var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
+            return res;
+        }
+        public SAPResposneAPI MMI0009_FG_GOOD_ISSUE(dynamic datas, VOCriteria buVO)
+        {
+            string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0009_URL");
+            string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
+            string password = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
+            var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
+            return res;
+        }
+
+        public class MMI0008_1
+        {
+            public THeader HEADER_DATA;
+            public class THeader
+            {
+                public string DELIV_NUMB;
+                public string DELIV_ITEM;
+            }
+        }
+        public CreateIssueAPI.TModel.TDocument MMI0008_1_DO_INFO(MMI0008_1 datas, VOCriteria buVO)
+        {
+            string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0008_1_URL");
+            string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
+            string password = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
+            var res = RESTFulAccess.SendJson<CreateIssueAPI.TModel.TDocument>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
             return res;
         }
     }

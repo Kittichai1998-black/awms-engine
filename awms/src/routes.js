@@ -288,12 +288,18 @@ const Profile = Loadable({
   loader: () => import('./views/Pages/Profile/Profile'),
   loading: Loading,
 });
+
+const Return = Loadable({
+  loader: () => import('./views/Warehouse/Return/Return'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/mst/sku/manage', exact: true, name: 'SKU', component: Products },
-  { path: '/mst/catagory/manage', exact: true, name: 'Catagory', component: SKUType },
+  { path: '/mst/catagory/manage', exact: true, name: 'SKU Collection', component: SKUType },
   { path: '/mst/pack/manage', exact: true, name: 'Pack', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
@@ -316,7 +322,7 @@ const routes = [
   { path: '/mst/objectsize/manage', exact: true, name: 'Object Size', component: ObjectSize },
   { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Job Schedule Module', component: JobScheduleModule },
   { path: '/mst/unittype/manage', exact: true, name: 'Unit Type', component: UnitType },
-  { path: '/mst/webcontrol/manage', exact: true, name: 'Web Page', component: WebControl },
+  { path: '/mst/webcontrol/manage', exact: true, name: 'Web Control', component: WebControl },
   { path: '/mst/webpage/manage', exact: true, name: 'Web Page', component: WebPage },
   { path: '/mst/webpagegroup/manage', exact: true, name: 'Web Page Group', component: WebPageGroup },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
@@ -326,6 +332,7 @@ const routes = [
   { path: '/doc/gi/list', exact: true, name: 'Goods Issue Document', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Goods Issue Manage', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Picking', component: PickConso },
+  { path: '/wm/sto/return', exact: true, name: 'Retrun', component: Return },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/sys/storage/list', exact: true, name: 'Storage', component: Storage },
@@ -337,8 +344,8 @@ const routes = [
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
   { path: '/sys/sto/stccard', exact: true, name: 'Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
-  { path: '/sys/sto/curinv', exact: true, name: 'CurrentInv', component: CurrentInv},
-  { path: '/doc/gr/view', exact: true, name: 'StorageDetail', component: StorageDetail},
+  { path: '/sys/sto/curinv', exact: true, name: 'Current Inventory', component: CurrentInv},
+  { path: '/doc/gr/view', exact: true, name: 'Storage Detail', component: StorageDetail},
   { path: '/mst/APIKey/manage', exact: true, name: 'APIKey', component: APIKey},
   { path: '/mst/cs/manage', exact: true, name: 'ClientSecret', component: ClientSecret},
   { path: '/mst/conf/manage', exact: true, name: 'Config', component: Config},
@@ -349,7 +356,7 @@ const routes = [
   { path: '/mst/tp/manage', exact: true, name: 'Transport', component:Transport},
   { path: '/wm/issue/manage', exact: true, name: 'Create Queue by DO', component:CreateQueue},
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
-  { path: '/doc/dash/tasklist', exact: true, name: 'Dashboard Task List', component: TaskList },
+  { path: '/sys/sto/progress', exact: true, name: 'Picking Progress', component: TaskList },
   { path: '/wm/queue/manage', exact: true, name: 'QueueView', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },

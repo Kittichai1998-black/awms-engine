@@ -47,7 +47,7 @@ namespace AMWUtil.Exception
             this.ClassName = stackTrace.GetFrame(extendLv).GetMethod().DeclaringType.FullName;
             this.MethodName = stackTrace.GetFrame(extendLv).GetMethod().Name;
             if (logger != null)
-                logger.LogWrite("[ERROR] " + this.Message, lineNumber, this.ClassName, this.MethodName);
+                logger.LogWrite("ERR", this.Message, lineNumber, this.ClassName, this.MethodName);
             else
                 Console.Error.WriteLine("[ERROR] " + this.Message);
         }

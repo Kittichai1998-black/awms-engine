@@ -4,7 +4,7 @@ import * as Status from '../Warehouse/Status';
 
 class apicall{
     get(url){
-        return Axios.get(url).then((res) => {
+        return Axios.get(url+"&_token="+localStorage.getItem("Token")).then((res) => {
             if(res.data._result.status === 0){
                 alert(res.data._result.message)
             }
@@ -55,7 +55,7 @@ const createQueryString = (select) => {
     + (select.sk === "" ? "" : "&sk=" + select.sk)
     + (select.l === 0 ? "" : "&l=" + select.l)
     + (select.all === "" ? "" : "&all=" + select.all)
-    + ("&_token=" + sessionStorage.Token)
+    
     return queryS
   }
 

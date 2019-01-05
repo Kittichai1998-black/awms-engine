@@ -59,6 +59,15 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
+
+        [HttpPost("doc/Closing")]
+        public dynamic ActionDocClosing([FromBody] dynamic req)
+        {
+            CloseGIDocAPI exec = new CloseGIDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+
         [HttpGet("bsto/canConso")]
         public dynamic GetBSTOCanConso()
         {
@@ -77,6 +86,14 @@ namespace AWMSEngine.Controllers.WM
         }
         [HttpPost("sto/pickConso")]
         public dynamic StoPick([FromBody] dynamic req)
+        {
+            ScanPickingAndConsoAPI exec = new ScanPickingAndConsoAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+
+        [HttpPost("doc/return")]
+        public dynamic DocReturn([FromBody] dynamic req)
         {
             ScanPickingAndConsoAPI exec = new ScanPickingAndConsoAPI(this);
             var res = exec.Execute(req);

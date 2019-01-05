@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import {Input, Button, Nav, NavItem, NavLink, Row,Col, Card, CardBody } from 'reactstrap';
 import ReactTable from 'react-table'
 import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
@@ -12,20 +13,31 @@ class Picking extends Component{
     this.state = {
       palletComponent:false,
       issuedComponent:false,
+      palletEdit:false,
       toggle:false,
+      pickMode:1,
       pickItemList:[]
     }
     this.onHandlePalletChange = this.onHandlePalletChange.bind(this)
     this.onHandleSetPalletCode = this.onHandleSetPalletCode.bind(this)
     this.style = {width:"100%", overflow:"hidden", marginBottom: "10px", textAlign:"left"}
   }
+  async componentWillMount() {
+    document.title = "Picking : AWMS";
+    //permission
+    this.setState({ showbutton: "none" })
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Picking", dataGetPer, this.props.history);
+    //this.displayButtonByPermission(dataGetPer)
+  }
 
   onHandleSetPalletCode(){
-    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode).then(res => {
-      if(res.data._result.status == 0)
-        alert("ไม่สามารถใช้งาน Pallet นี้ได้")
+    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&pickMode=" + this.state.pickMode).then(res => {
+      if(res.data._result.status == 0){
+      }
       else
-        this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true})
+        this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true,
+        palletID:res.data.palletID,issuedComponent:false})
     }).catch(res => console.log(res))
   }
 
@@ -36,12 +48,12 @@ class Picking extends Component{
   palletScan(){
     return <Card style={this.style}>
       <CardBody>
-        <div><label>Pallet Code : </label><input type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
+        <div><label>Pallet Code : </label><input id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
           if(e.key === "Enter"){
             this.onHandleSetPalletCode();
           }
         }}/></div>
-        <div><span onClick={() => {this.setState({palletComponent:true})}}>Cancel</span></div>
+        {this.state.palletEdit ? <div><span onClick={() => {this.setState({palletComponent:true})}}>Cancel</span></div> : null}
       </CardBody>
     </Card>
   }
@@ -50,14 +62,14 @@ class Picking extends Component{
     return <Card style={this.style}>
       <CardBody>
         <div><label>Pallet Code : </label><span>{this.state.palletCode}</span></div>
-        <div><span onClick={() => {this.setState({palletComponent:false})}}>Edit</span></div>
+        <div><span onClick={() => {this.setState({palletComponent:false, palletEdit:true})}}>Edit</span></div>
       </CardBody>
     </Card>
   }
 
   createIssuedList(){
     let issuedlist = this.state.docItems.map((list,index) => {
-      return <Button color="danger" key={index} style={this.style} onClick={() => this.setState({issuedComponent:true, issuedSelect:list}, () => {this.onHandleClickSelectDocument(list)})}>
+      return <Button color="danger" key={index} style={this.style} onClick={() => this.setState({issuedComponent:true, issuedSelect:list}, () => {this.onHandleClickSelectDocument(list.docID)})}>
         <div>Document : {list.docCode}</div>
         <div>Material No : {list.matDoc}</div>
         <div>Destination : {list.destination}</div>
@@ -67,13 +79,22 @@ class Picking extends Component{
     return <Card style={this.style}><CardBody>{issuedlist}</CardBody></Card>;
   }
 
-  onHandleClickSelectDocument(listData){
-    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&docID=" + listData.docID).then(res => {
+  onHandleClickSelectDocument(docID){
+    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&docID=" + docID + "&pickMode=" + this.state.pickMode).then(res => {
       if(res.data._result.status == 0)
         alert("ไม่สามารถใช้งาน Pallet นี้ได้")
-      else
-        this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true})
-    }).catch(res => console.log(res))
+      else{
+        if(res.data.stos.length === 0){
+          this.setState({palletComponent:false,
+            issuedComponent:false,
+            toggle:false,
+            pickItemList:[]})
+        }
+        else{
+          this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true, palletID:res.data.palletID, docID:docID})
+        }
+      }
+        }).catch(res => console.log(res))
   }
 
   issuedSelect(){
@@ -120,31 +141,78 @@ class Picking extends Component{
 
     return this.state.stos.map((list,index) => {
       return <Card key={index} style={
-          Object.assign(list.shouldPick == list.canPick ? full_style : list.shouldPick == 0 ? no_style : som_style
+          Object.assign(list.shouldPick == (list.canPick > list.palletQty ? list.palletQty : list.canPick) ? full_style : list.shouldPick == 0 ? no_style : som_style
             , this.style)}>
         <CardBody>
           <div>Pack Code : {list.packCode}</div>
           <div>Batch : {list.batch}</div>
-          <div>Quantity : {list.palletQty} {list.unitName}</div>
-          <div>Pick : {list.pick ? this.createPickEdit(list) : <span>0</span>} / {list.canPick} {list.unitName}</div>
+          <div>Pallet Quantity : {list.palletQty} {list.unitType}</div>
+          <div>Pick : {list.pick ? this.createPickEdit(list) : <span>0</span>} / {list.canPick > list.palletQty ? list.palletQty : list.canPick} {list.unitType}</div>
         </CardBody>
       </Card>
     })
   }
 
   createPickEdit(list){
-    return <Input style={{width:"100px", display:"inline"}} value={list.shouldPick} onChange={(e) => {
-      let pickItemList = this.state.stos;
-      let item = pickItemList.filter(row => {
-        return row.packCode === list.packCode && row.batch == list.batch
+    if(this.state.pickMode == 0)
+      return <Input style={{width:"100px", display:"inline"}} value={list.shouldPick} onChange={(e) => {
+        let pickItemList = this.state.stos;
+        let item = pickItemList.filter(row => {
+          return row.packCode === list.packCode && row.batch == list.batch
+        })
+        if(e.target.value > list.canPick){
+          alert("เกินจำนวนที่ต้องหยิบสินค้า")
+        }
+        else
+          item[0].shouldPick = e.target.value
+        this.forceUpdate();
+      }}/>
+    else
+      return <span>{list.shouldPick}</span>
+  }
+
+  onHandleClickPicking(){
+    const pickedItemList = this.state.stos.filter(x => x.pick);
+    let pickedList = pickedItemList.map(x => {
+      return {docItemID:x.docItemID,
+        STOID:x.stoid,
+        packCode:x.packCode,
+        batch:x.batch,
+        lot:x.lot,
+        palletQty:x.palletQty,
+        picked:x.shouldPick,
+        canPick:x.canPick}
+    });
+    
+    const data = {palletCode:this.state.palletCode,
+      palletID:this.state.palletID,
+      docID:this.state.issuedSelect.docID,
+      pickMode:this.state.pickMode,
+      pickedList:pickedList
+    }
+
+    Axios.post(window.apipath + "/api/picking", data).then((res) => {
+      let mm = pickedList.every(x => {
+        return x.picked === (x.canPick > x.palletQty ? x.palletQty : x.canPick)
       })
-      if(e.target.value > list.canPick){
-        alert("เกินจำนวนที่ต้องหยิบสินค้า")
+      if(!mm){
+        this.onHandleClickSelectDocument(this.state.docID);
       }
-      else
-        item[0].shouldPick = e.target.value
-      this.forceUpdate();
-    }}/>
+      else{
+        this.setState({issuedSelect:{},
+          palletComponent:false,
+          issuedComponent:false,
+          palletEdit:false,
+          toggle:false,
+          pickItemList:[],
+          palletCode:"",})
+      }
+
+      this.setState({palletCode:""}, () =>{
+        let eleBarcode = document.getElementById("txtBarcode")
+        eleBarcode.focus();
+      });
+    })
   }
 
   render(){
@@ -157,7 +225,12 @@ class Picking extends Component{
           {this.state.palletComponent && !this.state.issuedComponent ? this.createIssuedList() : this.state.palletComponent && this.state.issuedComponent ? this.issuedSelect() : null }
         </Row>
         <Row>
-          {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}><CardBody>{this.createPickItem()}</CardBody></Card> : null}
+          {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}>
+            <CardBody>
+              {this.createPickItem()}
+              {<Button onClick={() => {this.onHandleClickPicking()}}>Picking</Button>}
+            </CardBody>
+          </Card> : null}
         </Row>
       </div>
     )

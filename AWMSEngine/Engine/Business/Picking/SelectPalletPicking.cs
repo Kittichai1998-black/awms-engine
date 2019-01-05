@@ -19,6 +19,7 @@ namespace AWMSEngine.Engine.Business.Picking
             public long? warehouseID;
             public long? areaID;
             public long? docID;
+            public PickingModeType pickMode;//0 หรือ null = auto , 1=จองสินค้า
         }
 
         public class TRes
@@ -60,19 +61,14 @@ namespace AWMSEngine.Engine.Business.Picking
             }
         }
 
-        
-
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            //List<amt_Document> docList = new List<amt_Document>();
             long palletID = 0;
             List<docItem> docItemList = new List<docItem>();
             List<docItem.palletItem> palletItem = new List<docItem.palletItem>();
-            docItemList = getDocmentPickingList(reqVO);
-            if (reqVO.docID == null)
-            {
-            }
-            else
+            docItemList = getDocumentPickingList(reqVO);
+
+            if (reqVO.docID != null)
             {
                 docItemList = docItemList.Where(x => x.docID == reqVO.docID.Value).ToList();
 
@@ -89,7 +85,6 @@ namespace AWMSEngine.Engine.Business.Picking
                     {
                         itemCanMap.ForEach(x =>
                         {
-
                             palletItem.Add(new docItem.palletItem()
                             {
                                 docItemID = x.DocumentItem_ID,
@@ -98,7 +93,7 @@ namespace AWMSEngine.Engine.Business.Picking
                                 batch = row.batch,
                                 lot = row.lot,
                                 palletQty = row.qty,
-                                canPick = x.MaxQty,
+                                canPick = (x.MaxQty - x.Qty),
                                 pick = true,
                                 shouldPick = (x.MaxQty - x.Qty) > row.qty ? row.qty : (x.MaxQty - x.Qty),
                                 unitType = unitType
@@ -127,7 +122,7 @@ namespace AWMSEngine.Engine.Business.Picking
                         }, this.BuVO);
                 }
             }
-            
+
             var res = new TRes()
             {
                 palletID = palletID,
@@ -138,12 +133,12 @@ namespace AWMSEngine.Engine.Business.Picking
             return res;
         }
 
-        private List<docItem> getDocmentPickingList(TReq reqVO)
+        private List<docItem> getDocumentPickingList(TReq reqVO)
         {
             List<docItem> docItemList = new List<docItem>();
-            var docCanMap = ADO.DocumentADO.GetInstant().ListDocumentCanMap(reqVO.palletCode, StorageObjectEventStatus.PICKING, this.BuVO);
+            var docCanMap = ADO.DocumentADO.GetInstant().ListDocumentCanMap(reqVO.palletCode, StorageObjectEventStatus.PICKING, reqVO.pickMode, this.BuVO);
             if (docCanMap.Count == 0)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีงานสำหรับ Picking");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีเอกสารสำหรับ Picking");
 
             var pickItemList = new List<docItem.pickItem>();
             docCanMap.ForEach(x =>
@@ -155,7 +150,8 @@ namespace AWMSEngine.Engine.Business.Picking
                         "amt_DocumentItemStorageObject",
                         "sum(baseQuantity) s",
                         "DocumentItem_ID",
-                        new SQLConditionCriteria[] { new SQLConditionCriteria("DocumentItem_ID", y.ID, SQLOperatorType.EQUALS) },
+                        new SQLConditionCriteria[] { new SQLConditionCriteria("DocumentItem_ID", y.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS) },
                         null,
                         null,
                         null,

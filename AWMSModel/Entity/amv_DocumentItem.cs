@@ -12,7 +12,8 @@ namespace AWMSModel.Entity
         public long? SKUMaster_ID;
         public long? PackMaster_ID;
         public string Code;
-        public int Quantity;
+        public decimal? Quantity;
+        public decimal? BaseQuantity;
         public string Options;
         public DateTime? ProductionDate;
         public DateTime? ExpireDate;
@@ -30,10 +31,18 @@ namespace AWMSModel.Entity
         public string SKUMaster_Name;
         public string PackMaster_Code;
         public string PackMaster_Name;
+
         public long? UnitType_ID;
         public string UnitType_Code;
         public string UnitType_Name;
+        public long? BaseUnitType_ID;
+        public string BaseUnitType_Code;
+        public string BaseUnitType_Name;
+
         public string Batch;
+        public string DesCustomer;
+        public string DesCustomerName;
+       
 
 
 

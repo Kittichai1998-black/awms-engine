@@ -108,7 +108,6 @@ class ChangePass extends Component {
 
       if (datainsert["NewPass"] === datainsert["ConfPass"]) {
         let updateNewPass ={
-          "_apikey": null,
            "CurPass": CurPass,
            "NewPass": NewPass
         };
@@ -180,7 +179,7 @@ class ChangePass extends Component {
                   </InputGroupAddon>
                     <Input type="password" minLength="6" name="ConfPass" value={this.state.dataprofile.ConfPass} onChange={this.handleInputChange} />
                 </InputGroup>
-                 <Button color="success" type="submit" block>Save</Button>
+                 <Button color="primary" type="submit" block>Save</Button>
               </CardBody>
             </Card>
           </Col>
