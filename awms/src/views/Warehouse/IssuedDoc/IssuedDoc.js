@@ -47,7 +47,7 @@ class IssuedDoc extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Goods Issue Document : AWMS";
+    document.title = "Search Issue : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()

@@ -50,7 +50,7 @@ class IssuedDoc extends Component {
   }
    
   async componentWillMount() {
-    document.title = "Goods Receive Document : AWMS";
+    document.title = "Search Receive : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
@@ -146,9 +146,9 @@ class IssuedDoc extends Component {
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <div className="clearfix" style={{ display: this.state.showbutton }} >
+        {/* <div className="clearfix" style={{ display: this.state.showbutton }} >
           <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gr/manage')}>Create Document</Button>
-        </div>
+        </div> */}
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
           dropdownfilter={this.state.statuslist} getselection={this.getSelectionData} addbtn={false}

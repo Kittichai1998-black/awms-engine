@@ -62,7 +62,7 @@ class Storage extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Storage : AWMS";
+    document.title = "Storage Object : AWMS";
     this.getUserList();
     //permission
     let dataGetPer = await GetPermission()
