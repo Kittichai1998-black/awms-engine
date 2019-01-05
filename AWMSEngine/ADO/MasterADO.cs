@@ -12,6 +12,15 @@ namespace AWMSEngine.ADO
 {
     public class MasterADO : BaseMSSQLAccess<MasterADO>
     {
+        public AWMSModel.Entity.ams_PackMaster GetAreaLocationMaster(long locationID, VOCriteria buVO)
+        {
+            var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("ID", locationID),
+                new KeyValuePair<string, object>("Status",1)
+            }, buVO).FirstOrDefault();
+            return packMst;
+        }
         public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, int itemQty, VOCriteria buVO)
         {
             var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
