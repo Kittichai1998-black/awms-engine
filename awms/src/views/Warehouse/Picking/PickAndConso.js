@@ -15,6 +15,7 @@ class Picking extends Component{
       issuedComponent:false,
       palletEdit:false,
       toggle:false,
+      pickMode:1,
       pickItemList:[]
     }
     this.onHandlePalletChange = this.onHandlePalletChange.bind(this)
@@ -31,7 +32,7 @@ class Picking extends Component{
   }
 
   onHandleSetPalletCode(){
-    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode).then(res => {
+    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&pickMode=" + this.state.pickMode).then(res => {
       if(res.data._result.status == 0){
       }
       else
@@ -79,7 +80,7 @@ class Picking extends Component{
   }
 
   onHandleClickSelectDocument(docID){
-    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&docID=" + docID).then(res => {
+    Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&docID=" + docID + "&pickMode=" + this.state.pickMode).then(res => {
       if(res.data._result.status == 0)
         alert("ไม่สามารถใช้งาน Pallet นี้ได้")
       else{
@@ -153,18 +154,21 @@ class Picking extends Component{
   }
 
   createPickEdit(list){
-    return <Input style={{width:"100px", display:"inline"}} value={list.shouldPick} onChange={(e) => {
-      let pickItemList = this.state.stos;
-      let item = pickItemList.filter(row => {
-        return row.packCode === list.packCode && row.batch == list.batch
-      })
-      if(e.target.value > list.canPick){
-        alert("เกินจำนวนที่ต้องหยิบสินค้า")
-      }
-      else
-        item[0].shouldPick = e.target.value
-      this.forceUpdate();
-    }}/>
+    if(this.state.pickMode == 0)
+      return <Input style={{width:"100px", display:"inline"}} value={list.shouldPick} onChange={(e) => {
+        let pickItemList = this.state.stos;
+        let item = pickItemList.filter(row => {
+          return row.packCode === list.packCode && row.batch == list.batch
+        })
+        if(e.target.value > list.canPick){
+          alert("เกินจำนวนที่ต้องหยิบสินค้า")
+        }
+        else
+          item[0].shouldPick = e.target.value
+        this.forceUpdate();
+      }}/>
+    else
+      return <span>{list.shouldPick}</span>
   }
 
   onHandleClickPicking(){
@@ -183,6 +187,7 @@ class Picking extends Component{
     const data = {palletCode:this.state.palletCode,
       palletID:this.state.palletID,
       docID:this.state.issuedSelect.docID,
+      pickMode:this.state.pickMode,
       pickedList:pickedList
     }
 

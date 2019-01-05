@@ -1,22 +1,54 @@
-﻿using System;
+﻿using AWMSModel.Criteria.SP.Request;
+using AWMSModel.Criteria.SP.Response;
+using AWMSModel.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Auditor
 {
-    public class CreateWorkQueueAudit : BaseEngine<CreateWorkQueueAudit.Treq, string>
+    public class CreateWorkQueueAudit : BaseEngine<CreateWorkQueueAudit.TReq, CreateWorkQueueAudit.TRes>
     {
-        public class Treq
+        public class TReq
         {
-            public string code;
-            public long? warehouseID;
-            public long? areaID;
+            public long docID;
+            public string palletCode;
+            public string locationCode;
+            public string refID;
+            public int pickOrderType;//0=FIFO,1=LIFO
+            public string orderBy;//ชื่อ Field สำหรับ order by
+            public string ref2;
+            public string batch;
+            public string orderNo;
+            public int priority;
         }
 
-        protected override string ExecuteEngine(Treq reqVO)
+        public class TRes
         {
-            var getPallet = ADO.StorageObjectADO.GetInstant().Get("Code", 0, 0, false, false, this.BuVO);
+            public ViewDocument document;
+            public class ViewDocument : amv_Document
+            {
+                public List<amv_DocumentItem> documentItems;
+            }
+            public List<SPOutSTORootCanUseCriteria> bstos;
+        }
+
+        protected override TRes ExecuteEngine(TReq reqVO)
+        {
+            if (reqVO.palletCode != "")
+            {
+                var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, false, this.BuVO);
+                var getLocation = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(res.parentID, this.BuVO);
+
+                var xx = SPworkQueue.Generate(new amt_WorkQueue(){
+                    
+                });
+            }
+            else if(reqVO.locationCode != "")
+            {
+
+            }
 
 
 
@@ -24,7 +56,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
 
 
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

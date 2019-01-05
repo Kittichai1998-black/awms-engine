@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     new KeyValuePair<string, object> ("Document_ID",num)
                 }, this.BuVO);
 
-                var relation = ADO.DocumentADO.GetInstant().ListDocRelation(doc.ID.Value, this.BuVO);
+                var relation = ADO.DocumentADO.GetInstant().ListParentLink(doc.ID.Value, this.BuVO);
                 if (relation.Count == 0)
                 {
                     var group = new List<SAPInterfaceReturnvaluesDOPick>();
@@ -135,16 +135,16 @@ namespace AWMSEngine.Engine.Business.Issued
                         }
 
                         //send to SAP
-                        var typeApi1 = "";
+                        var typeApi9 = "";
 
-                        var resultAPI1 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(groupBySGI, this.BuVO);
-                        resultAPI1.@return.ForEach(x =>
+                        var resultAPI9 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0009_FG_GOOD_ISSUE(groupBySGI, this.BuVO);
+                        resultAPI9.@return.ForEach(x =>
                         {
-                            typeApi1 = x.type;
+                            typeApi9 = x.type;
                         });
 
 
-                        if (typeApi1 == "E")
+                        if (typeApi9 == "S")
                         {
                             relation.ForEach(x =>
                                 {
@@ -153,7 +153,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     DocumentEventStatus.CLOSED,
                                     this.BuVO);
 
-                                    ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.SuperID, this.BuVO,
+                                    ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
                                     new KeyValuePair<string, object>[]
                                     {
                                         new KeyValuePair<string, object>("EventStatus",DocumentEventStatus.CLOSED)

@@ -33,7 +33,7 @@ namespace AWMSEngine.Controllers.WM
             return res;
         }
 
-        [HttpPost("queue/workStage")]
+        [HttpPost("queue/working")]
         public dynamic UpldateQueue([FromBody] dynamic value)
         {
             var res = new APIService.ASRS.WorkingStageQueueAPI(this).Execute(value);
