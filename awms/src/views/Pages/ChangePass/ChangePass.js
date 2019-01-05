@@ -108,7 +108,6 @@ class ChangePass extends Component {
 
       if (datainsert["NewPass"] === datainsert["ConfPass"]) {
         let updateNewPass ={
-          "_apikey": null,
            "CurPass": CurPass,
            "NewPass": NewPass
         };

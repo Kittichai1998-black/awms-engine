@@ -103,7 +103,6 @@ class Profile extends Component {
 
       if (datainsert["NewPass"] === datainsert["ConfPass"]) {
         let updateNewPass ={
-          "_apikey": null,
            "CurPass": CurPass,
            "NewPass": NewPass
         };
@@ -128,7 +127,6 @@ class Profile extends Component {
     }
     if(this.state.status){
       let updjson = {
-        "_apikey": null,
         "t": "ams_User",
         "pk": "ID",
         "datas": [datainsert],
