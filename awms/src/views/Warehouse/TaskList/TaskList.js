@@ -113,7 +113,7 @@ class TaskList extends Component {
       }
     }
     API.get(createQueryString(this.state.WorkingOutselect)).then((res) => {
-      this.setState({ dataworkingout: res.data.datas, loading: false }, () => console.log("load working out filter"));
+      this.setState({ dataworkingout: res.data.datas, loading: false }, () => console.log("load working"));
     })
     API.get(createQueryString(this.state.TaskListselect)).then((resp) => {
       this.setState({ datatasklist: resp.data.datas, loading: false }, () => console.log("load task"));
