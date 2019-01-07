@@ -446,9 +446,13 @@ class TableGen extends Component {
         "datas": dataedit,
         "nr": false
       }
-      Axios.put(window.apipath + "/api/mst", updjson).then((result) => {
-        //alert("อัพเดทข้อมูลเสร็จเรียบร้อย");
-        this.Notification(this.state.statusUpdateData)
+      Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
+        //console.log(res)
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            this.Notification(this.state.statusUpdateData)
+          }
+        }
         this.queryInitialData(this.state.dataselect);
       })
 
@@ -933,11 +937,12 @@ class TableGen extends Component {
   }
   createAutoComplete(rowdata) {
     const style = {
-      borderRadius: '3px',
-      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-      background: 'rgba(255, 255, 255, 0.9)',
-      padding: '2px 1px',
-      fontSize: '90%',
+      borderRadius: '0px 0px 3px 3px',
+      border: '0.5px solid #63c2de',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+      background: 'white',
+      padding: '0px 2px 3px 2px',
+      fontSize: '90%', 
       //position: 'absolute',
       overflow: 'auto',
       maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
@@ -965,12 +970,14 @@ class TableGen extends Component {
         return <ReactAutocomplete
           inputProps={{
             style: {
-              width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
-              backgroundPosition: "8px 8px",
+              width: "100%", borderRadius: "3px", backgroundImage: 'url(' + arrimg + ')',
+              backgroundPosition: "8px 50%",
               backgroundSize: "10px",
               backgroundRepeat: "no-repeat",
-              paddingLeft: "25px",
+              padding: "0.375rem 0.1875rem 0.375rem 1.5625em",
+              alignItems: 'center',
               position: 'relative',
+              height: 'auto'
             }
           }}
           wrapperStyle={{ width: "100%" }}
@@ -979,7 +986,7 @@ class TableGen extends Component {
           items={getdata[0].data}
           shouldItemRender={(item, value) => value === null ? "" : item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
           renderItem={(item, isHighlighted) =>
-            <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+            <div key={item.Code} style={{ background: isHighlighted ? '#63c2de' : 'white' }}>
               {item.Code}
             </div>
           }
