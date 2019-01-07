@@ -127,7 +127,7 @@ namespace AWMSEngine.Engine.Business
                     quantity = 0
                 }).ToList(),
                 mapstos = new List<StorageObjectCriteria>(),
-                eventStatus = StorageObjectEventStatus.IDEL,
+                eventStatus = StorageObjectEventStatus.IDLE,
                 isFocus = obj is ams_PackMaster ? false : true,
 
             };
@@ -177,14 +177,14 @@ namespace AWMSEngine.Engine.Business
             }
             else if (reqVO.action == VirtualMapSTOActionType.ADD)
             {
-                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDEL, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDLE, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ เพิ่ม สินค้าลงใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
 
                 this.ActionAdd(reqVO, mapsto);
             }
             else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
             {
-                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDEL, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.IDLE, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ ลบ สินค้าจากใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
 
                 this.ActionRemove(reqVO, mapsto);
@@ -317,7 +317,7 @@ namespace AWMSEngine.Engine.Business
         {
             var msf = GetMapStoLastFocus(mapsto);
 
-            if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.IDEL) < reqVo.amount)
+            if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.IDLE) < reqVo.amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             else if (msf.mapstos.Count(x => x.code == reqVo.scanCode) < reqVo.amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก");

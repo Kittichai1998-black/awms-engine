@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Badge, Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
@@ -1040,13 +1040,17 @@ class TableGen extends Component {
       </span>
     }
     else if (type === "DocumentEvent") {
-      return <span>
-        {
-          DocumentEventStatus.filter(row => {
-            return row.code === data
-          })[0].status
-        }
-      </span>
+      let strStatus
+      const results = DocumentEventStatus.filter(row => {
+        return row.code === data
+      })
+      if (results.length > 0) {
+        strStatus = results[0].status
+      }
+      else {
+        strStatus = ""
+      }
+      return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
     }
     else if (type === "Status") {
       return <span>
@@ -1228,7 +1232,7 @@ class TableGen extends Component {
       // }
       else if (row.Type === "autolocationcode" && (row.body === undefined || !row.body)) {
         if (row.editable) {
-          row.Cell = (e) => (this.autoGenLocationCode(e))          
+          row.Cell = (e) => (this.autoGenLocationCode(e))
         }
         else {
           row.Cell = (e) => {

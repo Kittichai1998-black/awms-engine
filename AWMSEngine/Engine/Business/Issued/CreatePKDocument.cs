@@ -201,7 +201,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     SKUMaster_ID = skuMst.ID.Value,
                     PackMaster_ID = packMst.ID.Value,
                     Quantity = issueItem.packQty,
-                    EventStatus = DocumentEventStatus.IDEL
+                    EventStatus = DocumentEventStatus.IDLE
                 };
                 newDocItems.Add(newDocItem);
 

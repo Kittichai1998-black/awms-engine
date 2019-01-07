@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 },
                 this.BuVO);
 
-            ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,DocumentEventStatus.IDEL,
+            ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,DocumentEventStatus.IDLE,
                     EntityStatus.INACTIVE,
                     DocumentEventStatus.WORKING,
                     this.BuVO);

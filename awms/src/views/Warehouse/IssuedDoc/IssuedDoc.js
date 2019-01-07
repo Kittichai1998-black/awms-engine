@@ -151,26 +151,26 @@ class IssuedDoc extends Component {
 
   render() {
     const cols = [
-      { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center" },
-      { accessor: 'Code', Header: 'Code', editable: false, Filter: "text" },
-      { accessor: 'DesCustomerName', Header: 'Destination Customer', editable: false, Filter: "text", },
+      { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50 },
+      { accessor: 'EventStatus', Header: 'Event Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120, className: 'center' },
+      { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gi/manage?ID=' + e.original.ID)} >{e.original.Code}</a> },
+      { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: false },
+      { accessor: 'DesCustomerName', Header: 'Des.Customer', editable: false, Filter: "text" },
       //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
-      { accessor: 'DesWarehouseName', Header: 'Destination Warehouse', editable: false, Filter: "text", },
+      { accessor: 'DesWarehouseName', Header: 'Des.Warehouse', editable: false, Filter: "text", },
       //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
       // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       { accessor: 'Batch', Header: 'Batch', editable: false, Filter: "text", },
-      { accessor: 'RefID', Header: 'Material Document', editable: false, Filter: "text", },
-      { accessor: 'Ref1', Header: 'Material Document Year', editable: false, Filter: "text", },
-      { accessor: 'Ref2', Header: 'Movement Type', editable: false, Filter: "text", },
+      { accessor: 'RefID', Header: 'Mat.Doc No.', editable: false, Filter: "text", },
+      { accessor: 'Ref1', Header: 'Mat.Doc Year', editable: false, Filter: "text", },
+      { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
       // {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
       { accessor: 'ActionTime', Header: 'Action Time', editable: false, Type: "datetime", dateformat: "datetime", filterable: false },
-      { accessor: 'DocumentDate', Header: 'Document Date', editable: false, Type: "datetime", dateformat: "date", filterable: false },
-      { accessor: 'EventStatus', Header: 'Event Status', editable: false, Filter: "dropdown", Type: "DocumentEvent" },
       //movementtype
       //{accessor: 'RefID', Header: 'RefID', editable:false,},
       { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
-      { Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
+      //{ Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
     ];
 
     const btnfunc = [{
@@ -192,9 +192,9 @@ class IssuedDoc extends Component {
       */}
         <div className="clearfix">
 
-          <Button id="per_button_doc" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+          <Button id="per_button_doc" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
 
-          <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => {
+          <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => {
             let data1 = { "exportName": "DocumentIssuedToShop", "whereValues": [this.state.date.format('YYYY-MM-DD')] }
             let data2 = { "exportName": "DocumentIssuedToCD", "whereValues": [this.state.date.format('YYYY-MM-DD')] }
             axois.post(window.apipath + "/api/report/export/fileServer", data1).then(res => {
@@ -214,8 +214,8 @@ class IssuedDoc extends Component {
           accept={false} />
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
-            <Button id="per_button_working" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
+            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            <Button id="per_button_working" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="primary" className="float-right">Working</Button>
             <Button id="per_button_working" style={{ background: "primary", borderColor: "primary", width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="primary" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>
