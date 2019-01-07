@@ -369,13 +369,13 @@ class TableGen extends Component {
           }
           if (col.accessor === "ObjectType") {
             if (row[col.accessor] === "") {
-              alert("กรุณาเลือก ObjectType");
+              window.warning("กรุณาเลือก ObjectType");
               row["ObjectType"] = null
             }
           }
           if (col.accessor === "GroupType") {
             if (row[col.accessor] === "") {
-              alert("กรุณาเลือก GroupType");
+              window.warning("กรุณาเลือก GroupType");
               row["GroupType"] = null
             }
           }
@@ -383,20 +383,20 @@ class TableGen extends Component {
           if (this.props.areagrouptype === 1) {
             if (col.accessor === "Bank") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bank");
+                window.warning("กรุณากรอกข้อมูล Bank");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Bay") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bay");
+                window.warning("กรุณากรอกข้อมูล Bay");
                 delete row["Code"]
 
               }
             }
             if (col.accessor === "Level") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Level");
+                window.warning("กรุณากรอกข้อมูล Level");
                 delete row["Code"]
 
               }
@@ -404,32 +404,32 @@ class TableGen extends Component {
           } else if (this.props.areagrouptype === 2) {
             if (col.accessor === "Gate") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Gate");
+                window.warning("กรุณากรอกข้อมูล Gate");
                 delete row["Code"]
               }
             }
           } else {
             if (col.accessor === "Bank") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bank");
+                window.warning("กรุณากรอกข้อมูล Bank");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Bay") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bay");
+                window.warning("กรุณากรอกข้อมูล Bay");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Level") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Level");
+                window.warning("กรุณากรอกข้อมูล Level");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Gate") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Gate");
+                window.warning("กรุณากรอกข้อมูล Gate");
                 delete row["Code"]
               }
             }
@@ -746,7 +746,7 @@ class TableGen extends Component {
         var codestr = (this.props.autocode) + "," + rowdata.row["Bank"] + "," + value + "," + rowdata.row["Level"]
       }
       else {
-        alert("เฉพาะตัวเลขเท่านั้น")
+        window.warning("เฉพาะตัวเลขเท่านั้น")
       }
     } else if (field === "Level") {
       let conv = value === '' ? 0 : value
@@ -755,7 +755,7 @@ class TableGen extends Component {
         var codestr = (this.props.autocode) + "," + rowdata.row["Bank"] + "," + rowdata.row["Bay"] + "," + value
       }
       else {
-        alert("เฉพาะตัวเลขเท่านั้น")
+        window.warning("เฉพาะตัวเลขเท่านั้น")
       }
     } else if (field === "Gate") {
       var codestr = (this.props.autocode) + "," + value
@@ -801,7 +801,7 @@ class TableGen extends Component {
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else {
-        alert("เฉพาะตัวเลขเท่านั้น")
+        window.warning("เฉพาะตัวเลขเท่านั้น")
       }
     }
     else {
@@ -1178,9 +1178,9 @@ class TableGen extends Component {
   Notification(state) {
     switch (state) {
       case 'edit':
-        return alert("เพิ่ม/แก้ไข ข้อมูลสำเร็จ");
+        return window.success("เพิ่ม/แก้ไข ข้อมูลสำเร็จ");
       case 'remove':
-        return alert("ลบข้อมูลสำเร็จ");
+        return window.success("ลบข้อมูลสำเร็จ");
       default:
         return null;
     }
