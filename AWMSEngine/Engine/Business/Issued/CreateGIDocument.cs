@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.Business.Issued
             public string remark;
             public string options;
 
-            public DocumentEventStatus eventStatus = DocumentEventStatus.IDEL;
+            public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
 
             public List<IssueItem> issueItems;
             public class IssueItem
@@ -69,7 +69,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 public DateTime? expireDate;
                 public DateTime? productionDate;
                 
-                public DocumentEventStatus eventStatus = DocumentEventStatus.IDEL;
+                public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
             }

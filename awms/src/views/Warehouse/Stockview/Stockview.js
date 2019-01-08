@@ -11,6 +11,7 @@ import queryString from 'query-string';
 import DatePicker from 'react-datepicker';
 import ReactAutocomplete from 'react-autocomplete';
 import { Tooltip } from 'reactstrap';
+import arrimg from '../../../../src/img/arrowhead.svg';
 //import { TableGen } from '../MasterData/TableSetup';
 
 
@@ -29,7 +30,7 @@ const createQueryString = (select) => {
 
 const API = new apicall()
 
-class Stockview extends Component{
+class Stockview extends Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
@@ -38,7 +39,7 @@ class Stockview extends Component{
       pagedocID: 0,
       tooltipOpen: false,
 
- 
+
     };
 
     this.getSelectionData = this.getSelectionData.bind(this)
@@ -48,12 +49,12 @@ class Stockview extends Component{
 
 
 
-  }   
-  
+  }
+
   initialData() {
     const values = queryString.parse(this.props.location.search)
     if (values.docID !== undefined) {
-    
+
       this.setState({
         pageID: values.docID,
       })
@@ -63,13 +64,13 @@ class Stockview extends Component{
         }
         else {
           this.setState({
-         
+
             documentStatus: rowselect1.data.document.eventStatus,
             code: rowselect1.data.document.code,
-            souWarehouse: rowselect1.data.document.souWarehouse,     
+            souWarehouse: rowselect1.data.document.souWarehouse,
             documentDate: moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
             //date: moment(rowselect1.data.document.documentItems.actionTime),
-            
+
           })
 
           rowselect1.data.document.documentItems.forEach(row => {
@@ -88,16 +89,16 @@ class Stockview extends Component{
                 }]
               })
             }
-            
+
           })
-         
+
         }
-       
+
       })
     }
-   
-   
- 
+
+
+
 
 
   }
@@ -125,7 +126,7 @@ class Stockview extends Component{
       return row.code === this.state.documentStatus
     })
     return res.map(row => {
-      return <span><img src={row.pathImg} width={row.width} style={{ marginRight: "10px"}} /></span>
+      return <span><img src={row.pathImg} width={row.width} style={{ marginRight: "10px" }} /></span>
     })
   }
 
@@ -153,29 +154,43 @@ class Stockview extends Component{
 
   createAutoCompleteCell(rowdata) {
     const style = {
-      borderRadius: '3px',
-      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-      background: 'rgba(255, 255, 255, 0.9)',
-      padding: '2px 0',
+      color: '#2f353a',
+      borderRadius: '0px 0px 3px 3px',
+      border: '0.5px solid #20a8d8',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+      background: 'white',
       fontSize: '90%',
-      position: 'fixed',
       overflow: 'auto',
-      maxHeight: '50%',
-      zIndex: '998',
+      maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
+      zIndex: '998'
     }
     if (this.state.autocomplete.length > 0) {
       return <ReactAutocomplete
+        inputProps={{
+          style: {
+            color: '#2f353a',
+            width: "100%", borderRadius: "3px", backgroundImage: 'url(' + arrimg + ')',
+            backgroundPosition: "8px 50%",
+            backgroundSize: "10px",
+            backgroundRepeat: "no-repeat",
+            padding: "0.37rem 0.1875rem 0.37rem 1.5625em",
+            alignItems: 'center',
+            position: 'relative',
+            height: 'auto'
+          }
+        }}
+        wrapperStyle={{ width: "100%" }}
         menuStyle={style}
         getItemValue={(item) => item.Code + ' : ' + item.Name}
         items={this.state.autocomplete}
         shouldItemRender={(item, value) => item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
         renderItem={(item, isHighlighted) =>
-          <div key={item.docID} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+          <div key={item.docID} style={{ padding: '0px 3px 0px 6px', background: isHighlighted ? '#20a8d8' : 'white', color: isHighlighted ? 'white' : '#2f353a' }}>
             {item.Code + ' : ' + item.Name}
           </div>
         }
         value={rowdata.value}
-  
+
         onSelect={(val, row) => {
           this.editData(rowdata, row, rowdata.column.id)
         }}
@@ -196,19 +211,19 @@ class Stockview extends Component{
   render() {
     const style = { width: "100px", textAlign: "right", paddingRight: "10px" }
     let cols
-  
-      cols = [
-        { accessor: "rootCode", Header: "Root Code", Cell: (e) => <span>{e.original.rootCode}</span> },
-        { accessor: "packCode", Header: "Item Code", Cell: (e) => <span>{e.original.packCode}</span> },
-        { accessor: "packName", Header: "Item Name", Cell: (e) => <span>{e.original.packName}</span> },
-        { accessor: "quantity", Header: "Adjust", Cell: (e) => <span>{e.original.quantity}</span> },
-        { accessor: "unitType_Code", Header: "Unit", Cell: (e) => <span>{e.original.unitType_Code}</span> },
-        {
-          Cell: (e) => <Button color="primary"  onClick={() => { this.props.history.push('' + e.original.id) }}>Detail</Button>
-        }
-       
-      ]
-    
+
+    cols = [
+      { accessor: "rootCode", Header: "Root Code", Cell: (e) => <span>{e.original.rootCode}</span> },
+      { accessor: "packCode", Header: "Item Code", Cell: (e) => <span>{e.original.packCode}</span> },
+      { accessor: "packName", Header: "Item Name", Cell: (e) => <span>{e.original.packName}</span> },
+      { accessor: "quantity", Header: "Adjust", Cell: (e) => <span>{e.original.quantity}</span> },
+      { accessor: "unitType_Code", Header: "Unit", Cell: (e) => <span>{e.original.unitType_Code}</span> },
+      {
+        Cell: (e) => <Button color="primary" onClick={() => { this.props.history.push('' + e.original.id) }}>Detail</Button>
+      }
+
+    ]
+
 
     return (
 
@@ -217,44 +232,44 @@ class Stockview extends Component{
           <div>
             <div className="float-right">
               <div>Document Date : <span>{this.state.documentDate}</span></div>
-              
+
               <div href="#" id="TooltipExample">Event Status :
               <span>
                   {this.renderDocumentStatus()}
-                  <Tooltip  isOpen={this.state.tooltipOpen} target="TooltipExample" toggle={this.toggle}>
-                  {this.renderStatus()}
+                  <Tooltip isOpen={this.state.tooltipOpen} target="TooltipExample" toggle={this.toggle}>
+                    {this.renderStatus()}
                   </Tooltip>
                 </span>
                 <span ></span></div>
-              
-              
-            
-          </div>
-          
-          <div className="d-block"><label >Stock Colection No : </label><span>{this.state.code}</span></div>
+
+
+
+            </div>
+
+            <div className="d-block"><label >Stock Colection No : </label><span>{this.state.code}</span></div>
             <div className="d-block"><label >Ware House : </label><span>{this.state.souWarehouse}</span></div>
           </div>
-          </div>
-       
+        </div>
+
         <div>
           <div className="d-block"><label> </label><span></span></div>
         </div>
         <div className="d-block"><label className="heading">Item list</label><span></span></div>
-        <ReactTable  columns={cols} minRows={10} data={this.state.data} sortable={false} style={{ background: 'white' }}
-          showPagination={false}   />
-          <Card>
+        <ReactTable columns={cols} minRows={10} data={this.state.data} sortable={false} style={{ background: 'white' }}
+          showPagination={false} />
+        <Card>
           <CardBody style={{ textAlign: 'right' }}>
             <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/stc/manage')}>Close</Button>
-            </CardBody>
+          </CardBody>
         </Card>
 
 
-        </div>
-   
+      </div>
+
     )
   }
-        }
-        
+}
+
 
 
 export default Stockview;

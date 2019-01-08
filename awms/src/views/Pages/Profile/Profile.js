@@ -110,7 +110,7 @@ class Profile extends Component {
          this.ChangePass(updateNewPass);
       } else {
         this.setState({status : false});
-        alert('กรุณากรอก "Confirm Password" และ "New Password" ให้ตรงกัน');
+        window.warning('กรุณากรอก "Confirm Password" และ "New Password" ให้ตรงกัน');
       }
     }else{
       this.setState({status : true}, ()=> this.changeProfile());

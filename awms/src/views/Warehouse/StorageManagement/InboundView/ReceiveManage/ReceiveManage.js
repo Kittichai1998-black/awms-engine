@@ -115,11 +115,12 @@ class ReceiveManage extends Component {
   async componentWillMount() {
     document.title = "Storage Detail : AWMS";
     let dataGetPer = await GetPermission()
+    //CheckWebPermission("CreateGR", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   displayButtonByPermission(dataGetPer) {
-    // 20 TransGRD_execute
-    if (!CheckViewCreatePermission("TransGRD_execute", dataGetPer)) {
+    // 63 CreateReceive_view
+    if (!CheckViewCreatePermission("CreateReceive_create&modify", dataGetPer)) {
       this.props.history.push("/404")
     }
   }
@@ -323,28 +324,28 @@ class ReceiveManage extends Component {
   createAutoComplete(rowdata) {
     if (!this.state.readonly) {
       const style = {
-        borderRadius: '3px',
-        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-        background: 'rgba(255, 255, 255, 0.9)',
-        padding: '2px 0',
+        color: '#2f353a',
+        borderRadius: '0px 0px 3px 3px',
+        border: '0.5px solid #20a8d8',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+        background: 'white',
         fontSize: '90%',
-        //position: 'fixed',
-        //maxHeight:'50px',
-        //min:'20px',
         overflow: 'auto',
         maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
-        zIndex: '998',
+        zIndex: '998'
       }
-
       return <ReactAutocomplete
         inputProps={{
           style: {
-            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
-            backgroundPosition: "8px 8px",
+            color: '#2f353a',
+            width: "100%", borderRadius: "3px", backgroundImage: 'url(' + arrimg + ')',
+            backgroundPosition: "8px 50%",
             backgroundSize: "10px",
             backgroundRepeat: "no-repeat",
-            paddingLeft: "25px",
+            padding: "0.37rem 0.1875rem 0.37rem 1.5625em",
+            alignItems: 'center',
             position: 'relative',
+            height: 'auto'
           }
         }}
         wrapperStyle={{ width: "100%" }}
@@ -353,7 +354,7 @@ class ReceiveManage extends Component {
         items={this.state.autocomplete}
         shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
         renderItem={(item, isHighlighted) =>
-          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+          <div key={item.Code} style={{ padding: '0px 3px 0px 6px', background: isHighlighted ? '#20a8d8' : 'white', color: isHighlighted ? 'white' : '#2f353a' }}>
             {item.SKU}
           </div>
         }
