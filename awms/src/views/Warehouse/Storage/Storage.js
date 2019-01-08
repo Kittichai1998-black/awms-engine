@@ -130,14 +130,14 @@ class Storage extends Component {
 
   render() {
     const cols = [
-      { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left" },
-      { accessor: 'viewChildPackMaster_Codes', Header: 'SKU Code', Filter: "text", fixed: "left", sortable: false },
+      { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50 },
+      { accessor: 'viewChildPackMaster_Codes', Header: 'SKU Code', Filter: "text", fixed: "left", sortable: false, minWidth: 110 },
       { accessor: 'viewChildPackMaster_Names', Header: 'SKU Name', Filter: "text", fixed: "left", sortable: false },
       { accessor: 'baseMaster_Code', Header: 'Pallet', Filter: "text", sortable: true },
       { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text", sortable: true },
       /* {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
        {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" }, */
-      { accessor: 'viewPackMaster_Qty', Header: 'Pack Qty', filterable: false, sortable: false },
+      { accessor: 'viewPackMaster_Qty', Header: 'Pack Qty', filterable: false, sortable: false , minWidth: 80, className: 'right'},
       /* {accessor: 'viewChildSKUMaster_Codes', Header: 'SKU Code', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Names', Header: 'SKU Name', Filter:"text"},
       {accessor: 'viewChildSKUMaster_Qty', Header: 'SKU Qty', filterable:false}, */

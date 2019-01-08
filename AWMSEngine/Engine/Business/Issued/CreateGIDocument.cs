@@ -54,6 +54,7 @@ namespace AWMSEngine.Engine.Business.Issued
             {
 
                 public string packCode;
+                public long? packID;
                 public string skuCode;
                 public decimal? quantity;
                 public string unitType;
@@ -103,15 +104,15 @@ namespace AWMSEngine.Engine.Business.Issued
                                                     reqVO.souWarehouseCode,
                                                     reqVO.souAreaMasterCode);
 
-            var desWarehouseModel = this.StaticValue.GetAreaMaster(
+            var desAreaMasterModel = this.StaticValue.GetAreaMaster(
                                                     reqVO.desAreaMasterID,
                                                     reqVO.desAreaMasterCode);
-            var desBranchModel = this.StaticValue.GetWarehouse(
+            var desWarehouseModel = this.StaticValue.GetWarehouse(
                                                     reqVO.desWarehouseID,
                                                     reqVO.desAreaMasterID,
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
-            var desAreaMasterModel = this.StaticValue.GetBranch(
+            var desBranchModel = this.StaticValue.GetBranch(
                                                     reqVO.desBranchID,
                                                     reqVO.desWarehouseID,
                                                     reqVO.desAreaMasterID,
@@ -155,11 +156,20 @@ namespace AWMSEngine.Engine.Business.Issued
 
             foreach (var recItem in reqVO.issueItems)
             {
-
+                
                 ams_PackMaster packMst = null;
                 ams_SKUMaster skuMst = null;
 
-                if (!string.IsNullOrWhiteSpace(recItem.packCode))
+                if (recItem.packID.HasValue)
+                {
+                    packMst = ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>(recItem.packID, this.BuVO);
+                    if (packMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Pack:" + recItem.packCode + " / Unit:" + recItem.unitType + " ในระบบ");
+                    skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
+                    if (skuMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Pack:" + recItem.packCode + " ในระบบ");
+                }
+                else if (!string.IsNullOrWhiteSpace(recItem.packCode))
                 {
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterByPack(recItem.packCode, recItem.unitType, this.BuVO);
                     if (packMst == null)

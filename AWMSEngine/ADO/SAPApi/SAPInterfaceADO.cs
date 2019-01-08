@@ -54,7 +54,7 @@ namespace AWMSEngine.ADO.SAPApi
             var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
             return res;
         }
-        public SAPResposneAPI MMI0009_FG_GOOD_ISSUE(dynamic datas, VOCriteria buVO)
+        public SAPResposneAPI MMI0009_CONFORM_DELIVERY_ORDER_PICK(dynamic datas, VOCriteria buVO)
         {
             string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0009_URL");
             string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");

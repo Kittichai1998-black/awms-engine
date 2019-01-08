@@ -54,7 +54,7 @@ namespace AWMSEngine.Engine.Business
             res.document = doc;
 
             /*--------------------------*/
-            if (reqVO.getMapSto)
+            if (reqVO.getMapSto && doc.documentItems.Count != 0)
             {
                 res.bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
                 res.bstos.ForEach(bs =>

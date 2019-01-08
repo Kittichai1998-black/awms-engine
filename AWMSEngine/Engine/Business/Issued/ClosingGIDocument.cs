@@ -30,12 +30,18 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(num, this.BuVO);
 
+                if (doc.Status == 0) {
+
+                    ADO.DocumentADO.GetInstant().updateStatus(num,EntityStatus.REMOVE,this.BuVO);
+                }
+               
+
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + doc.ID);
 
                 if (reqVO.auto == 0)
                 {
-                    if (doc.EventStatus != DocumentEventStatus.WORKED)
+                    if (doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING && doc.EventStatus != DocumentEventStatus.CLOSED)
                     {
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKED ไม่สามารถ Close เอกสารได้ ");
                     }
@@ -52,7 +58,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
                 else
                 {
-                    if (doc.EventStatus != DocumentEventStatus.WORKING && doc.EventStatus != DocumentEventStatus.WORKED)
+                    if (doc.EventStatus != DocumentEventStatus.WORKING && doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING && doc.EventStatus != DocumentEventStatus.CLOSED)
                     {
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKING และ WORKED ไม่สามารถ Close เอกสารได้ ");
                     }

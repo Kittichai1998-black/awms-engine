@@ -707,7 +707,7 @@ customSorting(data){
               <CardBody>
                 <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
                   onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
-                <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px' }}
+                <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }}
                   onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
               </CardBody>
             </Card>
