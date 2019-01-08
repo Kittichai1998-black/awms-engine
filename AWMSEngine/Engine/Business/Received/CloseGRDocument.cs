@@ -62,7 +62,7 @@ namespace AWMSEngine.Engine.Business.Received
                         STGE_LOC = this.StaticValue.Warehouses.First(y => y.ID == docHs.First(z => z.ID == x.Document_ID).Sou_Warehouse_ID).Code,
                         BATCH = x.Batch,
                         MOVE_TYPE = x.Ref2,
-                        ENTRY_QNT = x.DocItemStos.Sum(y=>y.Quantity),
+                        ENTRY_QNT = x.DocItemStos.Sum(y=>y.Quantity.Value),
                         ENTRY_UOM = this.StaticValue.UnitTypes.First(y=>y.ID== x.UnitType_ID).Code,
                         MOVE_PLANT = this.StaticValue.Branchs.First(y => y.ID == docHs.First(z => z.ID == x.Document_ID).Des_Branch_ID).Code,
                         MOVE_STLOC = this.StaticValue.Warehouses.First(y => y.ID == docHs.First(z => z.ID == x.Document_ID).Des_Warehouse_ID).Code                        

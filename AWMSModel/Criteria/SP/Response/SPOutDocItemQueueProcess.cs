@@ -6,14 +6,17 @@ namespace AWMSModel.Criteria.SP.Response
 {
     public class SPOutDocItemQueueProcess
     {
-        public long DocumentItem_ID;
-        public long sto_ID;
+        public long doci_id;
+        public long sto_id;
         public string sto_rootCode;
-        public string sto_code;
+        public string stoCode;
         public string lot;
         public string batch;
-        public string order_no;
-        public decimal? base_Qty;
-
+        public string orderNo;
+        public decimal? baseQuantity;
+        public decimal? sto_packQty; 
+        public DateTime? prodDate; 
+        public DateTime? createTime;
+        public long? areaID;
     }
 }
