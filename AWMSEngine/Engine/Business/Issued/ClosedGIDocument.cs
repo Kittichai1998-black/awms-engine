@@ -98,7 +98,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                 STGE_LOC = doc.SouWarehouse,
                                 BATCH = dataDocItem.Batch,
                                 MOVE_TYPE = doc.Ref2,
-                                ENTRY_QNT = dataDocItem.DocItemStos.Sum(x => x.Quantity),
+                                ENTRY_QNT = dataDocItem.DocItemStos.Sum(x => x.Quantity.Value),
                                 ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
                                 MOVE_STLOC = doc.DesWarehouse,
                             });
@@ -217,7 +217,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                         STGE_LOC = doc.SouWarehouse,
                                         BATCH = dataList.Batch,
                                         MOVE_TYPE = doc.Ref2,
-                                        ENTRY_QNT = dataList.DocItemStos.Sum(x => x.Quantity),
+                                        ENTRY_QNT = diSto.Sum(x => x.Quantity.Value),
                                         ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
                                         MOVE_STLOC = doc.DesWarehouse,
                                     });
