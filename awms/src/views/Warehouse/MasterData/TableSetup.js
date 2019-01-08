@@ -942,9 +942,7 @@ class TableGen extends Component {
       border: '0.5px solid #20a8d8',
       boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
       background: 'white',
-      // padding: '0px 2px 3px 2px',
       fontSize: '90%',
-      //position: 'absolute',
       overflow: 'auto',
       maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
       zIndex: '998'
