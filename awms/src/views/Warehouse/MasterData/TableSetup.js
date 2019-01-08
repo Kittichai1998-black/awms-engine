@@ -937,12 +937,13 @@ class TableGen extends Component {
   }
   createAutoComplete(rowdata) {
     const style = {
+      color: '#2f353a',
       borderRadius: '0px 0px 3px 3px',
-      border: '0.5px solid #63c2de',
+      border: '0.5px solid #20a8d8',
       boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
       background: 'white',
-      padding: '0px 2px 3px 2px',
-      fontSize: '90%', 
+      // padding: '0px 2px 3px 2px',
+      fontSize: '90%',
       //position: 'absolute',
       overflow: 'auto',
       maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
@@ -970,11 +971,12 @@ class TableGen extends Component {
         return <ReactAutocomplete
           inputProps={{
             style: {
+              color: '#2f353a',
               width: "100%", borderRadius: "3px", backgroundImage: 'url(' + arrimg + ')',
               backgroundPosition: "8px 50%",
               backgroundSize: "10px",
               backgroundRepeat: "no-repeat",
-              padding: "0.375rem 0.1875rem 0.375rem 1.5625em",
+              padding: "0.37rem 0.1875rem 0.37rem 1.5625em",
               alignItems: 'center',
               position: 'relative',
               height: 'auto'
@@ -986,7 +988,7 @@ class TableGen extends Component {
           items={getdata[0].data}
           shouldItemRender={(item, value) => value === null ? "" : item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
           renderItem={(item, isHighlighted) =>
-            <div key={item.Code} style={{ background: isHighlighted ? '#63c2de' : 'white' }}>
+            <div key={item.Code} style={{ padding: '0px 3px 0px 6px', background: isHighlighted ? '#20a8d8' : 'white', color: isHighlighted ? 'white' : '#2f353a' }}>
               {item.Code}
             </div>
           }
