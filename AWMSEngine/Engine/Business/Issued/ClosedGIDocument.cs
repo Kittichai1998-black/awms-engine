@@ -17,6 +17,7 @@ namespace AWMSEngine.Engine.Business.Issued
         public class TDocReq
         {
             public long[] docIDs;
+
             
         }
         public class TDocRes
@@ -38,6 +39,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 var docItem = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
 
+                var docHs = this.ListAllDocumentHeadID(reqVO);
 
 
                 var relation = ADO.DocumentADO.GetInstant().ListParentLink(doc.ID.Value, this.BuVO);
@@ -66,7 +68,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                     foreach (var dataDocItem in docItem)
                     {
-                        if (dataDocItem.DocItemStos.Sum(x => x.Quantity) == 0)
+                        if (dataDocItem.DocItemStos == null)
                         {
                             ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataDocItem.ID.Value,
                                 DocumentEventStatus.CLOSED, this.BuVO);
@@ -88,11 +90,6 @@ namespace AWMSEngine.Engine.Business.Issued
 
                             });
 
-                            //var data = new SAPInterfaceReturnvaluesDOPick()
-                            //{
-                            //    ITEM_DATA = itemData
-                            //};
-
                             var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
                             dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
                             {
@@ -108,8 +105,17 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         }
                     }
-                        //send to SAP
-                        var docStatus4 = "";
+                    var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+                    var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
+                    if (checkClosed)
+                    {
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
+                               null, null,
+                               DocumentEventStatus.CLOSED,
+                               this.BuVO);
+                    }
+                    //send to SAP
+                    var docStatus4 = "";
                         var docStatus9 = "";
 
                             if (doc.Ref2 != null)
@@ -134,12 +140,12 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
                 else
                 {
-                    var flag = relation.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSING );
+                    var flag = docHs.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSING );
                     if (flag)
                     {
                         //var groupBySGI = new List<SAPInterfaceReturnvaluesDOPick>();
                         //start groupDoc
-                        var rootIssue = relation
+                        var rootIssue = docHs
                             .GroupBy(x => new { RefID = x.RefID})
                             .Select(x => new {
                                 RefIDs = x.Key.RefID,
@@ -180,7 +186,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                             foreach (var dataList in rootDocItems)
                             {
-                                if (dataList.DocItemStos.Sum(x => x.Quantity).ToString() == "0")
+                                if (dataList.DocItemStos==null)
                                 {
                                     ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataList.ID.Value,
                                         DocumentEventStatus.CLOSED, this.BuVO);
@@ -216,7 +222,17 @@ namespace AWMSEngine.Engine.Business.Issued
                                 }
 
                             }
-                                var docStatus4 = "";
+                            var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+                            var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
+                            if (checkClosed)
+                            {
+                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
+                                       null, null,
+                                       DocumentEventStatus.CLOSED,
+                                       this.BuVO);
+                            }
+
+                            var docStatus4 = "";
                                 var docStatus9 = "";
 
                                     if (doc.Ref2 != null)
@@ -233,7 +249,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                
                                 if (docStatus4 == "0" || docStatus9 == "0")
                                 {
-                                    relation.ForEach(x =>
+                                docHs.ForEach(x =>
                                     {
                                         ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value,
                                         null, null,
@@ -247,6 +263,8 @@ namespace AWMSEngine.Engine.Business.Issued
                                         });
                                     });
                                 }
+
+                                
                         }
 
                     }
@@ -255,6 +273,33 @@ namespace AWMSEngine.Engine.Business.Issued
 
             }
             return null;
+        }
+
+        private List<amt_Document> ListAllDocumentHeadID(TDocReq reqVO)
+        {
+            var baseDocs = new List<amt_Document>();
+            reqVO.docIDs.ToList().ForEach(docID => {
+                var doc = ADO.DocumentADO.GetInstant().ListParentLink(docID, this.BuVO);
+                baseDocs.AddRange(doc);
+            });
+
+            List<long> docHIDs = new List<long>();
+            docHIDs.AddRange(reqVO.docIDs);
+            baseDocs.ForEach(x =>
+            {
+                var ids = ADO.DocumentADO.GetInstant().ListItem(x.ID.Value, this.BuVO).Select(y => y.LinkDocument_ID.Value).ToList();
+                docHIDs.AddRange(ids);
+            });
+            docHIDs = docHIDs.Distinct().ToList();
+
+            List<amt_Document> docHs = ADO.DocumentADO.GetInstant().List(docHIDs, this.BuVO);
+            docHs.ForEach(docH =>
+            {
+                docH.ParentDocument = baseDocs.FirstOrDefault(x => x.ID == docH.ParentDocument_ID);
+                docH.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docH.ID.Value, this.BuVO);
+            });
+
+            return docHs;
         }
 
     }
