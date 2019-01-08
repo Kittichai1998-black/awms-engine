@@ -540,6 +540,18 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public List<SPOutDocItemQueueProcess> ListAuditItem(long docItem, string lot, string batch, string order_no, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("DOCITEM_ID", docItem);
+            param.Add("STAMP_DATE", lot);
+            param.Add("BATCH", lot);
+            param.Add("ORDER_NO", order_no);
+            var res = this.Query<SPOutDocItemQueueProcess>("SP_DOCITEM_QUEUE_PROCESS_AUDIT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
+
         public void CreateDocItemSto (long docItemID, long stoID, decimal qty, int unitTypeID, decimal baseQty, int baseUnitTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -555,6 +567,19 @@ namespace AWMSEngine.ADO
                 param, 
                 buVO.Logger, 
                 buVO.SqlTransaction);
+        }
+
+        public List<amt_Document> updateStatus(long? ID,EntityStatus tostatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("ID", ID);
+            param.Add("tostatus", tostatus);
+
+            var res = this.Query<amt_Document>("SP_DOC_UPDATESTATUS",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
         }
     }
 }

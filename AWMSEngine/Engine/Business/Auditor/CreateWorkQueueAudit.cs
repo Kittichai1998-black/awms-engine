@@ -43,7 +43,8 @@ namespace AWMSEngine.Engine.Business.Auditor
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             List<SPworkQueue> listWorkQueue = new List<SPworkQueue>();
-            
+            var disto = new List<amt_DocumentItemStorageObject>();
+
             var desAreaID = this.StaticValue.AreaMasters.First(x => x.ID == reqVO.desAreaID.Value);
             var docItems = ADO.DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO);
 
@@ -83,6 +84,28 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                         DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, mapsto)
                     });
+                    
+                    docItems.ForEach(x =>
+                    {
+                        var packMapsto = ADO.StorageObjectADO.GetInstant().Get(x.PackMaster_ID.Value, StorageObjectType.PACK, false, false, this.BuVO);
+                        if(packMapsto != null)
+                        {
+                            disto.Add(new amt_DocumentItemStorageObject()
+                            {
+                                ID = (long?)null,
+                                DocumentItem_ID = x.ID.Value,
+                                StorageObject_ID = packMapsto.id.Value,
+                                BaseQuantity = (decimal?)null,
+                                Quantity = (decimal?)null,
+                                BaseUnitType_ID = x.BaseUnitType_ID.Value,
+                                UnitType_ID = x.UnitType_ID.Value
+                            });
+                        }
+                        else
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่มีสินค้าในระบบ");
+                        }
+                    });
                 }
                 else
                 {
@@ -96,10 +119,9 @@ namespace AWMSEngine.Engine.Business.Auditor
                 var getLocationID = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO).ID;
                 var mapstoLocation = ADO.StorageObjectADO.GetInstant().Get(reqVO.locationCode, (long?)null, (long?)null, false, true, this.BuVO);
 
-
                 mapstoLocation.mapstos.ForEach(x =>
                 {
-                    if(x.baseUnitID == 2)
+                    if(x.type == StorageObjectType.BASE)
                     {
                         var mapsto = ADO.StorageObjectADO.GetInstant().Get(x.code, (long?)null, (long?)null, false, true, this.BuVO);
                         listWorkQueue.Add(new SPworkQueue()
@@ -132,20 +154,97 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                             DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, x)
                         });
+
+                        docItems.ForEach(y =>
+                        {
+                            var packMapsto = ADO.StorageObjectADO.GetInstant().Get(y.PackMaster_ID.Value, StorageObjectType.PACK, false, false, this.BuVO);
+                            if (packMapsto != null)
+                            {
+                                disto.Add(new amt_DocumentItemStorageObject()
+                                {
+                                    ID = (long?)null,
+                                    DocumentItem_ID = y.ID.Value,
+                                    StorageObject_ID = packMapsto.id.Value,
+                                    BaseQuantity = (decimal?)null,
+                                    Quantity = (decimal?)null,
+                                    BaseUnitType_ID = y.BaseUnitType_ID.Value,
+                                    UnitType_ID = y.UnitType_ID.Value
+                                });
+                            }
+                            else
+                            {
+                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่มีสินค้าในระบบ");
+                            }
+                        });
                     }
                 });
             }
             else
             {
-                
+                docItems.ForEach(x =>
+                {
+                    var auditList = ADO.DocumentADO.GetInstant().ListAuditItem(x.ID.Value, reqVO.lot, reqVO.batch, reqVO.orderNo, this.BuVO).ToList();
+
+                    auditList.ForEach(y =>
+                    {
+                        var mapsto = ADO.StorageObjectADO.GetInstant().Get(y.sto_rootCode, (long?)null, (long?)null, false, true, this.BuVO);
+                        listWorkQueue.Add(new SPworkQueue()
+                        {
+                            ID = null,
+                            IOType = IOType.OUTPUT,
+                            ActualTime = DateTime.Now,
+                            Parent_WorkQueue_ID = null,
+                            Priority = reqVO.priority,
+                            TargetStartTime = null,
+
+                            StorageObject_ID = mapsto.id,
+                            StorageObject_Code = mapsto.code,
+
+                            Warehouse_ID = reqVO.warehouseID.Value,
+                            AreaMaster_ID = mapsto.areaID,
+                            AreaLocationMaster_ID = mapsto.parentID,
+
+                            Sou_Warehouse_ID = reqVO.warehouseID.Value,
+                            Sou_AreaMaster_ID = mapsto.areaID,
+                            Sou_AreaLocationMaster_ID = mapsto.parentID,
+
+                            Des_Warehouse_ID = desAreaID.Warehouse_ID.Value,
+                            Des_AreaMaster_ID = desAreaID.ID.Value,
+                            Des_AreaLocationMaster_ID = null,
+
+                            EventStatus = WorkQueueEventStatus.IDLE,
+                            Status = EntityStatus.ACTIVE,
+                            StartTime = DateTime.Now,
+
+                            DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, mapsto)
+                        });
+
+                        mapsto.ToTreeList().Where(z => z.type == StorageObjectType.PACK || z.code == x.Code).ToList().ForEach(z =>
+                        {
+                            disto.Add(new amt_DocumentItemStorageObject()
+                            {
+                                ID = (long?)null,
+                                DocumentItem_ID = x.ID.Value,
+                                StorageObject_ID = z.id.Value,
+                                BaseQuantity = (decimal?)null,
+                                Quantity = (decimal?)null,
+                                BaseUnitType_ID = z.baseUnitID,
+                                UnitType_ID = z.unitID
+                            });
+                        });
+                    });
+                    
+                });
             }
 
-
-
-
-
-
-
+            listWorkQueue.ForEach(x =>
+            {
+                var res = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
+            });
+            disto.ForEach(x =>
+            {
+                var res2 = ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO);
+            });
             return null;
         }
 
