@@ -522,5 +522,17 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
             return res;
         }
+
+        public amt_Document updateStatus(long ID, EntityStatus? tostatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("ID",ID);
+            param.Add("tostatus", tostatus);
+            var res = this.Query<amt_Document>("SP_DOC_UPDATESTATUS",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            return res;
+        }
     }
 }
