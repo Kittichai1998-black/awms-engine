@@ -94,8 +94,8 @@ class CreateQueue extends Component {
     this.displayButtonByPermission(dataGetPer)
   }
   displayButtonByPermission(dataGetPer) {
-    // 63 CreateReceive_view
-    if (!CheckViewCreatePermission("CreateQueue_create&modify", dataGetPer)) {
+    // 65 Queue_create&modify
+    if (!CheckViewCreatePermission("Queue_create&modify", dataGetPer)) {
       this.props.history.push("/404")
     }
   }
