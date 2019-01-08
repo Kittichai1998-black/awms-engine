@@ -131,49 +131,46 @@ class CreateQueue extends Component {
 
   addNewCard(datarow) {
     return <div style={{ "border-radius": "15px", "border": "1px solid white", "padding": "20px", background: "white", "margin": "5px" }}>
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Document : </label></Col>
-        <Col md="9">
-          <span>{datarow.docDetail ? datarow.docDetail : ""}</span>
-        </Col>
-        <Col md="1">
-          <div className="clearfix">
+      <div className="clearfix">
+        <Row>
+          <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Document : </label></Col>
+          <Col xs="6" sm="8" md="8" lg="8">
+            <span>{datarow.docDetail ? datarow.docDetail : ""}</span>
+          </Col>
+          <Col xs="3" sm="2" md="2" lg="2">
             {this.genBtnDetail(datarow.ID)}
-          </div>
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+      </div>
       <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>SAP Document : </label></Col>
-        <Col md="5">
+        <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>SAP Document : </label></Col>
+        <Col xs="9" sm="10" md="10" lg="10">
           <span>{datarow.RefID ? datarow.RefID : ""}</span>
         </Col>
-        <Col md="5"></Col>
       </Row>
 
       <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Movement Type : </label></Col>
-        <Col md="5">
+        <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Movement Type : </label></Col>
+        <Col xs="9" sm="10" md="10" lg="10">
           <span>{datarow.Ref2 ? datarow.Ref2 : ""}</span>
         </Col>
-        <Col md="5"></Col>
       </Row>
 
       <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>For Customer : </label></Col>
-        <Col md="5">
+        <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>For Customer : </label></Col>
+        <Col xs="9" sm="10" md="10" lg="10">
           <span>{datarow.DesCustomer ? datarow.DesCustomer : ""}</span>
         </Col>
-        <Col md="5"></Col>
       </Row>
 
       <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Pick by : </label></Col>
-        <Col md="5">
+        <Col xs="3" md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Pick by : </label></Col>
+        <Col xs="4" md="5">
           <div>
             <span>{datarow.PickOrderby ? datarow.PickOrderby : ""}</span>
           </div>
         </Col>
-        <Col md="5">
+        <Col xs="5" md="5">
           <div>
             <span>{datarow.PickbyField ? datarow.PickbyField : ""}</span>
           </div>
@@ -181,13 +178,13 @@ class CreateQueue extends Component {
       </Row>
 
       <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Selective : </label></Col>
-        <Col md="5">
+        <Col xs="3" md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Selective : </label></Col>
+        <Col xs="4" md="5">
           <div>
             <span>{datarow.SelectiveFieldLabel ? datarow.SelectiveFieldLabel : ""}</span>
           </div>
         </Col>
-        <Col md="5">
+        <Col xs="5" md="5">
           <div>
             <span>{datarow.SelectiveValue ? datarow.SelectiveValue : ""}</span>
           </div>
@@ -195,8 +192,8 @@ class CreateQueue extends Component {
       </Row>
 
       <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Priority : </label></Col>
-        <Col md="5">
+        <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Priority : </label></Col>
+        <Col xs="9" sm="10" md="10" lg="10">
           <div>
             <span>{datarow.Priority ? datarow.Priority : ""}</span>
           </div>
@@ -310,54 +307,51 @@ class CreateQueue extends Component {
 
           <Col lg="6">
             <div style={{ "border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background: "#FFFFFF" }}>
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Document : </label></Col>
-                <Col md="9">
-                  <div style={{}}>
-                    <AutoSelect selectfirst={false} data={this.state.auto_doc}
-                      result={(e) => this.setState({ "docID": e.value, "SAPdoc": e.SAPdoc, "MMType": e.MMType, "ForCus": e.ForCus, "StampDate": e.StampDate, "Batch": e.Batch, "docresult": e.label })} />
-                  </div>
-                </Col>
-                <Col md="1">
-                  <div className="clearfix">
-                    <Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button>
-                  </div>
-                </Col>
-              </Row>
+              <div className="clearfix">
+                <Row style={{ "padding-top": "10px" }}>
+                  <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Document : </label></Col>
+                  <Col xs="6" sm="8" md="8" lg="8">
+                    <div style={{}}>
+                      <AutoSelect selectfirst={false} data={this.state.auto_doc}
+                        result={(e) => this.setState({ "docID": e.value, "SAPdoc": e.SAPdoc, "MMType": e.MMType, "ForCus": e.ForCus, "StampDate": e.StampDate, "Batch": e.Batch, "docresult": e.label })} />
+                    </div>
+                  </Col>
+                  <Col xs="3" sm="2" md="2" lg="2">
+                    <Button className="float-right" style={{ marginLeft: "5px" }} onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button>
+                  </Col>
+                </Row>
+              </div>
 
               <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>SAP Document : </label></Col>
-                <Col md="5">
+                <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>SAP Document : </label></Col>
+                <Col xs="6" sm="10" md="10" lg="10">
                   <span>{this.state.SAPdoc ? this.state.SAPdoc : ""}</span>
                 </Col>
-                <Col md="5"></Col>
               </Row>
 
               <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Movement Type : </label></Col>
-                <Col md="5">
+                <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Movement Type : </label></Col>
+                <Col xs="6" sm="10" md="10" lg="10">
                   <span>{this.state.MMType ? this.state.MMType : ""}</span>
                 </Col>
-                <Col md="5"></Col>
               </Row>
 
               <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>For Customer : </label></Col>
-                <Col md="5">
+                <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>For Customer : </label></Col>
+                <Col xs="6" sm="10" md="10" lg="10">
                   <span>{this.state.ForCus ? this.state.ForCus : ""}</span>
                 </Col>
-                <Col md="5"></Col>
               </Row>
 
               <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Pick by : </label></Col>
-                <Col md="5">
+                <Col xs="3" sm="2" md="2" lg="2" className="float-left" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Pick by : </label></Col>
+                <Col xs="12" sm="5" md="5" lg="5">
                   <div style={{}}>
                     <AutoSelect selectfirst={false} data={this.state.orderlist}
                       result={(e) => this.setState({ "PickOrderID": e.value, "PickOrderby": e.label })} />
                   </div>
                 </Col>
-                <Col md="5">
+                <Col xs="12" sm="5" md="5" lg="5">
                   <div style={{}}>
                     <AutoSelect selectfirst={false} data={this.state.orderfieldlist}
                       result={(e) => this.setState({ "PickbyFieldID": e.value, "PickbyField": e.label })} />
@@ -366,14 +360,14 @@ class CreateQueue extends Component {
               </Row>
 
               <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Selective : </label></Col>
-                <Col md="5">
+                <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Selective : </label></Col>
+                <Col xs="12" sm="5" md="5" lg="5">
                   <div style={{}}>
                     <AutoSelect selectfirst={false} data={this.state.selectivelist}
                       result={(e) => this.setState({ "SelectiveFieldValue": e.value, "SelectiveFieldLabel": e.label })} />
                   </div>
                 </Col>
-                <Col md="5">
+                <Col xs="12" sm="5" md="5" lg="5">
                   <div style={{ display: this.state.SelectiveFieldValue === "null" || this.state.SelectiveFieldValue === "" ? "none" : "inline" }}>
                     <Input style={{ display: "inline" }}
                       onChange={(e) => this.setState({ "SelectiveValue": e.target.value })}
@@ -384,8 +378,8 @@ class CreateQueue extends Component {
               </Row>
 
               <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Priority : </label></Col>
-                <Col md="5">
+                <Col xs="3" sm="2" md="2" lg="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Priority : </label></Col>
+                <Col xs="12" sm="5" md="5" lg="5">
                   <div style={{}}>
                     <AutoSelect selectfirst={false} data={this.state.prioritylist}
                       result={(e) => this.setState({ "PriorityID": e.value, "Priority": e.label })} />

@@ -562,7 +562,7 @@ class IssuedManage extends Component {
         </div>
         <div className="clearfix">
 
-          <Button className="float-right" color="danger" style={{ display: this.state.adddisplay }} onClick={() => this.toggle()}>Select Base</Button>
+          <Button className="float-right" color="danger" style={{ display: this.state.adddisplay, marginLeft: '5px' }} onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay }}>Add</Button>
           {/* <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code}</span> */}
         </div>
