@@ -68,7 +68,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                     foreach (var dataDocItem in docItem)
                     {
-                        if (dataDocItem.DocItemStos == null)
+                        if (dataDocItem.DocItemStos.Sum(x => x.Quantity) == 0)
                         {
                             ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataDocItem.ID.Value,
                                 DocumentEventStatus.CLOSED, this.BuVO);
@@ -115,7 +115,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                this.BuVO);
                     }
                     //send to SAP
-                    var docStatus4 = "";
+                        var docStatus4 = "";
                         var docStatus9 = "";
 
                             if (doc.Ref2 != null)
@@ -186,7 +186,11 @@ namespace AWMSEngine.Engine.Business.Issued
 
                             foreach (var dataList in rootDocItems)
                             {
-                                if (dataList.DocItemStos==null)
+                               var diSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new KeyValuePair<string, object>[] {
+                                   new KeyValuePair<string, object> ("DocumentItem_ID",dataList.ID)
+                                   }, this.BuVO);
+
+                                if (diSto.Sum(x => x.Quantity) == 0)
                                 {
                                     ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataList.ID.Value,
                                         DocumentEventStatus.CLOSED, this.BuVO);
@@ -201,7 +205,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                         PLANT = doc.SouBranch,
                                         STGE_LOC = doc.SouWarehouse,
                                         BATCH = dataList.Batch,
-                                        DLV_QTY = dataList.DocItemStos.Sum(x => x.Quantity).ToString(),
+                                        DLV_QTY = diSto.Sum(x => x.Quantity).ToString(),
                                         SALES_UNIT = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
                                     });
 
