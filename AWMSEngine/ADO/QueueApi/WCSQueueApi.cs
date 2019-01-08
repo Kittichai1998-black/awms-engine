@@ -35,11 +35,22 @@ namespace AWMSEngine.ADO.QueueApi
                 public string batch;
             }
         }
+
+        public class TRes : TReq
+        {
+            public Result _result;
+
+            public class Result
+            {
+                public string resultmessage;
+                public string resultcheck;
+            }
+        }
         
-        public TReq SendQueue(TReq datas, VOCriteria buVO)
+        public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
             var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("WCS_SEND_QUEUE");
-            var res = RESTFulAccess.SendJson<TReq>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas);
+            var res = RESTFulAccess.SendJson<TRes>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas);
             return res;
         }
     }
