@@ -310,7 +310,7 @@ class AreaLocation extends Component {
     } else { // STAGING
       return [
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        { accessor: 'Code', Header: 'Code', Type: "autolocationcode", editable: false, Filter: "text", fixed: "left" },
+        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left" },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text" },
         { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text" },

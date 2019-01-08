@@ -105,7 +105,8 @@ class Role extends Component {
     onHandleClickCancel(event) {
         this.forceUpdate();
         event.preventDefault();
-    }
+    }    
+
     getData(Root_ID) {
         console.log(Root_ID)
         const selectdata = []

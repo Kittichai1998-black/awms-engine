@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table';
 import { apicall, createQueryString } from '../ComponentCore';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const API = new apicall()
 
@@ -27,6 +28,20 @@ class QueueView extends Component{
     }
 
     this.GetQueueData = this.GetQueueData.bind(this)
+  }
+
+  async componentWillMount() {
+    document.title = "Queue View : AWMS";
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("QueueView", dataGetPer, this.props.history);
+    this.displayButtonByPermission(dataGetPer)
+  }
+
+  displayButtonByPermission(dataGetPer) {
+    //70 Queue_view
+    if (!CheckViewCreatePermission("Queue_view", dataGetPer)) {
+      this.props.history.push("/404")
+    }
   }
 
   componentDidMount(){

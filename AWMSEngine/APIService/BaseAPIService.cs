@@ -80,11 +80,11 @@ namespace AWMSEngine.APIService
             dynamic response = new { };
             dynamic result = new ExpandoObject();
             long dbLogID = 0;
+            string token = null;
+            string apiKey = null;
             try
             {
                 var getKey = ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
-                string token = null;
-                string apiKey = null;
                 if (getKey.token != null)
                     token = getKey.token;
                 else if (getKey._token != null)
@@ -182,6 +182,9 @@ namespace AWMSEngine.APIService
                 string _code = result.code;
                 string _message = result.message;
                 string _stacktrace = result.stacktrace;
+                if (!string.IsNullOrEmpty(apiKey))
+                    result.stacktrace = null;
+
                 ADO.LogingADO.GetInstant().EndAPIService(dbLogID, _status, _code, _message, _stacktrace, this.BuVO);
                 this.Logger.LogInfo("RESPONSE_DATA:: " + ObjectUtil.Json(response));
                 this.Logger.LogInfo("####### END TRANSACTION #######");

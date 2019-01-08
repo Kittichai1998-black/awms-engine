@@ -254,6 +254,16 @@ namespace AWMSEngine.ADO
             return MatchDocLock(baseCode, null, docTypeID, desCustomerID, null, null, null, buVO);
         }
 
+        public List<SPOutSTORootCanUseCriteria> ListRootFree(VOCriteria buVO)
+        {
+
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            //param.Add("docItemID", docItemID);
+            var res = this.Query<SPOutSTORootCanUseCriteria>("SP_STOROOT_LISTFREE", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            return res.ToList();
+            //SP_STOROOT_FIND_ISSUED_BYDOCITEM
+        }
+
         public List<SPOutSTORootCanUseCriteria> ListRootCanPicking(long? docItemID, VOCriteria buVO)
         {
 
