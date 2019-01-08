@@ -58,10 +58,10 @@ namespace AWMSEngine.Engine.Business.Issued
                 },
                 this.BuVO);
 
-            ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,DocumentEventStatus.IDLE,
-                    EntityStatus.INACTIVE,
-                    DocumentEventStatus.WORKING,
-                    this.BuVO);
+            //ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,DocumentEventStatus.IDLE,
+            //        EntityStatus.INACTIVE,
+            //        DocumentEventStatus.WORKING,
+            //        this.BuVO);
 
             doc.EventStatus = DocumentEventStatus.WORKING;
             doc.Status = EntityStatus.ACTIVE;

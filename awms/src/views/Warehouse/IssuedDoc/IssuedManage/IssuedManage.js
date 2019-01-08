@@ -139,7 +139,6 @@ class IssuedManage extends Component {
             ref1: rowselect1.data.document.ref1,
             ref2: rowselect1.data.document.ref2
           })
-
         }
       })
     }
