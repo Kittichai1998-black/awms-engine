@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Card, CardBody, Button } from 'reactstrap';
+import { Badge, Card, CardBody, Button } from 'reactstrap';
 import { TableGen } from '../../MasterData/TableSetup';
 //import Axios from 'axios';
 import { apicall, DatePicker, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
@@ -48,9 +48,9 @@ class IssuedDoc extends Component {
     this.getSelectionData = this.getSelectionData.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
-   
+
   async componentWillMount() {
-    document.title = "Goods Receive Document : AWMS";
+    document.title = "Search Receive : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
@@ -86,7 +86,6 @@ class IssuedDoc extends Component {
     this.setState({ selectiondata: data })
   }
 
-
   onClickToDesc(data) {
     return <Button style={{ color: "white" }} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
   }
@@ -112,22 +111,22 @@ class IssuedDoc extends Component {
 
   render() {
     const cols = [
-      { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center" },
-      { accessor: 'Super', Header: 'LinkDocument', editable: false, Filter: "text", },
-      { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", Cell: (e) => <span>{e.original.DocumentType_ID === 1101 ? e.original.CodeDocItem : e.original.Code}</span> },
+      { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50 },
+      { accessor: 'EventStatus', Header: 'Event Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120, className: 'center' },
+      { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gr/view?docID=' + e.original.ID)} >{e.original.DocumentType_ID === 1101 ? e.original.CodeDocItem : e.original.Code}</a> },
+      { accessor: 'Super', Header: 'SAP Ref', editable: false, Filter: "text" },
       //{accessor: 'CodeDocItem', Header: 'CodeDocItem', editable:false, Filter:"text",},
-      { accessor: 'DocumentDate', Header: 'Document Date', editable: false, Type: "datetime", dateformat: "date", filterable: "" },
-      { accessor: 'SouWarehouseName', Header: 'DestinationWarehouse', editable: false, Filter: "text", },
-      { accessor: 'SouBranchName', Header: 'SourceBranch', editable: false, Filter: "text", },
-      { accessor: 'DesWarehouseName', Header: 'SourceWarehouse', editable: false, Filter: "text", },
-      { accessor: 'DesBranchName', Header: 'DestinationBranc', editable: false, Filter: "text", },
-      { accessor: 'RefID', Header: 'MaterialDocNo', editable: false, Filter: "text", },
-      { accessor: 'Ref1', Header: 'MaterialDocYears', editable: false, Filter: "text", },
-      { accessor: 'Ref2', Header: 'MovementType', editable: false, Filter: "text", },
+      { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: "" },
+      { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
+      { accessor: 'SouBranchName', Header: 'Sou.Branch', editable: false, Filter: "text", },
+      { accessor: 'DesWarehouseName', Header: 'Des.Warehouse', editable: false, Filter: "text", },
+      { accessor: 'DesBranchName', Header: 'Des.Branch', editable: false, Filter: "text", },
+      { accessor: 'RefID', Header: 'Mat.Doc No.', editable: false, Filter: "text", },
+      { accessor: 'Ref1', Header: 'Mat.Doc Years', editable: false, Filter: "text", },
+      { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
       //{accessor: 'Link', Header: 'Link', editable:false, Filter:"text",},
-      { accessor: 'EventStatus', Header: 'Event Status', editable: false, Filter: "dropdown", Type: "DocumentEvent" },
-      { accessor: 'Created', Header: 'Created', editable: false, filterable: false },
-      { Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
+      { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+      //{ Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
     ];
 
     const btnfunc = [{
@@ -146,9 +145,9 @@ class IssuedDoc extends Component {
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <div className="clearfix" style={{ display: this.state.showbutton }} >
+        {/* <div className="clearfix" style={{ display: this.state.showbutton }} >
           <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gr/manage')}>Create Document</Button>
-        </div>
+        </div> */}
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
           dropdownfilter={this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
@@ -157,7 +156,7 @@ class IssuedDoc extends Component {
 
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ background: "primary", borderColor: "primary", width: '130px', display: this.state.showbutton }}
+            <Button id="per_button_reject" style={{ background: "primary", borderColor: "primary", width: '130px', marginLeft: '5px', display: this.state.showbutton }}
               onClick={() => this.workingData(this.state.selectiondata, "reject")} color="primary" className="float-right">Reject</Button>
             <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display: this.state.showbutton }}
               onClick={() => this.workingData(this.state.selectiondata, "Close")} color="danger" className="float-right">Close</Button>

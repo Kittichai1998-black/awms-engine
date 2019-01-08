@@ -10,6 +10,7 @@ namespace AWMSModel.Entity
         public string Code;
         public DocumentTypeID DocumentType_ID;
 
+        public amt_Document ParentDocument;
         public long? ParentDocument_ID;
 
         public long? Sou_Customer_ID;

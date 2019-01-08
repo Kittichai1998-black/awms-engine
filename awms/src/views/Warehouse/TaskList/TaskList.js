@@ -10,7 +10,7 @@ import Clock from 'react-live-clock';
 import Fullscreen from "react-full-screen";
 import moment from 'moment';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
-
+import Axios from 'axios';
 const API = new apicall()
 
 const iconexpand = <img style={{ width: "auto", height: "auto" }} src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ4OS4zIDQ4OS4zIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0ODkuMyA0ODkuMzsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik00NzYuOTUsMEgxMi4zNWMtNi44LDAtMTIuMiw1LjUtMTIuMiwxMi4yVjIzNWMwLDYuOCw1LjUsMTIuMiwxMi4yLDEyLjJzMTIuMy01LjUsMTIuMy0xMi4yVjI0LjVoNDQwLjJ2NDQwLjJoLTIxMS45ICAgIGMtNi44LDAtMTIuMyw1LjUtMTIuMywxMi4zczUuNSwxMi4zLDEyLjMsMTIuM2gyMjRjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zVjEyLjNDNDg5LjI1LDUuNSw0ODMuNzUsMCw0NzYuOTUsMHoiIGZpbGw9IiMxMTU5OGMiLz4KCQk8cGF0aCBkPSJNMC4wNSw0NzYuOWMwLDYuOCw1LjUsMTIuMywxMi4yLDEyLjNoMTcwLjRjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zVjMwNi42YzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM0gxMi4zNSAgICBjLTYuOCwwLTEyLjIsNS41LTEyLjIsMTIuM3YxNzAuM0gwLjA1eiBNMjQuNTUsMzE4LjhoMTQ1Ljl2MTQ1LjlIMjQuNTVWMzE4Ljh6IiBmaWxsPSIjMTE1OThjIi8+CgkJPHBhdGggZD0iTTIyMi45NSwyNjYuM2MyLjQsMi40LDUuNSwzLjYsOC43LDMuNnM2LjMtMS4yLDguNy0zLjZsMTM4LjYtMTM4Ljd2NzkuOWMwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNzMTIuMy01LjUsMTIuMy0xMi4zICAgIFY5OC4xYzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM2gtMTA5LjVjLTYuOCwwLTEyLjMsNS41LTEyLjMsMTIuM3M1LjUsMTIuMywxMi4zLDEyLjNoNzkuOUwyMjIuOTUsMjQ5ICAgIEMyMTguMTUsMjUzLjgsMjE4LjE1LDI2MS41LDIyMi45NSwyNjYuM3oiIGZpbGw9IiMxMTU5OGMiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />;
@@ -23,7 +23,8 @@ class TaskList extends Component {
       icon: iconexpand,
       isFull: false,
       fullstyle: {},
-      loading: true,
+      loadingWorkingOut: true,
+      loadingTaskList: true,
       dataworkingout: [],
       datatasklist1: [],
       datatasklist: [],
@@ -42,6 +43,7 @@ class TaskList extends Component {
       TaskListselect: {
         queryString: window.apipath + "/api/viw",
         t: "TaskList",
+        q:"",
         q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' },{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' }]",
         //q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }]",
         f: "Pallet,DocCode,DocumentTypeID,TaskName,Product,AreaID,Location,Amount,Customer,DsoStatus,DocStatus,StoStatus",
@@ -62,8 +64,8 @@ class TaskList extends Component {
       // { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "40/100", WorkStatus: 4 }]
     }
 
-    this.GetQueueData = this.GetQueueData.bind(this)
     this.updateQueueData = this.updateQueueData.bind(this)
+    this.GetListData = this.GetListData.bind(this)
   }
   async componentWillMount() {
     document.title = "Picking Progress : AWMS";
@@ -72,20 +74,24 @@ class TaskList extends Component {
     CheckWebPermission("PickPro", dataGetPer, this.props.history);
   }
   componentDidMount() {
-    this.GetQueueData()
-    let interval = setInterval(this.GetQueueData, 2000);
-    this.setState({ interval: interval })
+    this.GetListData()
+    // this.GetQueueData()
+    // let interval = setInterval(this.GetListData, 3000);
+    // this.setState({ interval: interval })
   }
   componentWillUnmount() {
-    clearInterval(this.state.interval)
+    // clearInterval(this.state.interval)
   }
-  GetQueueData() {
-    API.get(createQueryString(this.state.WorkingOutselect)).then((res) => {
-      this.setState({ dataworkingout: res.data.datas, loading: false }, () => console.log("load work"));
-    })
-    API.get(createQueryString(this.state.TaskListselect)).then((resp) => {
-      this.setState({ datatasklist: resp.data.datas, loading: false }, () => console.log("load task"));
-    })
+ 
+  GetListData() {
+    console.log("loaddata")
+    API.all([API.get(createQueryString(this.state.WorkingOutselect)),
+    API.get(createQueryString(this.state.TaskListselect))]).then((res) => {
+      this.setState({
+        dataworkingout: res[0].data.datas, loadingWorkingOut: false,
+        datatasklist: res[1].data.datas, loadingTaskList: false
+      })
+    }).then(() => {setTimeout(this.GetListData,3000); })
   }
   goFull = () => {
     this.setState({ isFull: true });
@@ -102,22 +108,17 @@ class TaskList extends Component {
       if (selValue !== "") {
         console.log(selValue)
         areawhere.push({ 'f': 'AreaID', 'c': '=', 'v': selValue });
-        taskwhere.push({ 'f': 'AreaID', 'c': '=', 'v': selValue },{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
+        taskwhere.push({ 'f': 'AreaID', 'c': '=', 'v': selValue }, { 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       } else {
         areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' },{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
+        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }, { 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       }
     }
-    API.get(createQueryString(this.state.WorkingOutselect)).then((res) => {
-      this.setState({ dataworkingout: res.data.datas, loading: false }, () => console.log("load working"));
-    })
-    API.get(createQueryString(this.state.TaskListselect)).then((resp) => {
-      this.setState({ datatasklist: resp.data.datas, loading: false }, () => console.log("load task"));
-    })
+    this.setState({ WorkingOutselect: areaWorkingOut, TaskListselect: areaTaskList })
   }
   render() {
     const cols1 = [
@@ -199,7 +200,7 @@ class TaskList extends Component {
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
-                    loading={this.state.loading}
+                    loading={this.state.loadingWorkingOut}
                     getTrProps={(state, rowInfo, column) => {
                       let result = false
                       let rmv = false
@@ -245,7 +246,7 @@ class TaskList extends Component {
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
-                    loading={this.state.loading}
+                    loading={this.state.loadingTaskList}
                     //defaultPageSize={15}
                     getTrProps={(state, rowInfo, column) => {
                       let result = false

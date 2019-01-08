@@ -62,7 +62,7 @@ class Storage extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Storage : AWMS";
+    document.title = "Storage Object : AWMS";
     this.getUserList();
     //permission
     let dataGetPer = await GetPermission()
@@ -131,9 +131,9 @@ class Storage extends Component {
   render() {
     const cols = [
       { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left" },
-      { accessor: 'viewChildPackMaster_Codes', Header: 'Pack Code', Filter: "text", fixed: "left", sortable: false },
-      { accessor: 'viewChildPackMaster_Names', Header: 'Pack Name', Filter: "text", fixed: "left", sortable: false },
-      { accessor: 'baseMaster_Code', Header: 'Base Code', Filter: "text", sortable: true },
+      { accessor: 'viewChildPackMaster_Codes', Header: 'SKU Code', Filter: "text", fixed: "left", sortable: false },
+      { accessor: 'viewChildPackMaster_Names', Header: 'SKU Name', Filter: "text", fixed: "left", sortable: false },
+      { accessor: 'baseMaster_Code', Header: 'Pallet', Filter: "text", sortable: true },
       { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text", sortable: true },
       /* {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },
        {accessor: 'baseMaster_Name', Header: 'Base Type Name', Filter:"text" }, */

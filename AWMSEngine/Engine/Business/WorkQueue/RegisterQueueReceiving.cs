@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.WorkQueue
 {
-    public class RegisterQueueReceiving : BaseEngine<RegisterQueueReceiving.TReq, WorkQueueCriteria>
+    public class RegisterQueueReceiving : BaseQueue<RegisterQueueReceiving.TReq, WorkQueueCriteria>
     {
         public class TReq //ข้อมูล Request จาก WCS
         {
@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
             List<amt_DocumentItem> docItems = null;
             //รับสินค้าใหม่เข้าคลัง
-            if (mapsto.eventStatus == StorageObjectEventStatus.IDEL)
+            if (mapsto.eventStatus == StorageObjectEventStatus.IDLE)
             {
                 docItems = this.ProcessReceiving(mapsto, reqVO);               
             }
@@ -112,9 +112,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                 null, null, false, true, this.BuVO);
             
-            if (mapsto == null || mapsto.eventStatus == StorageObjectEventStatus.IDEL)
+            if (mapsto == null || mapsto.eventStatus == StorageObjectEventStatus.IDLE)
             {
-                if (mapsto != null && mapsto.eventStatus == StorageObjectEventStatus.IDEL)
+                if (mapsto != null && mapsto.eventStatus == StorageObjectEventStatus.IDLE)
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                 var palletList = new List<PalletDataCriteria>();
@@ -169,79 +169,12 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             ADO.StorageObjectADO.GetInstant()
                 .PutV2(mapsto, this.BuVO);
             ADO.StorageObjectADO.GetInstant()
-                .UpdateStatusToChild(mapsto.id.Value, StorageObjectEventStatus.IDEL, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                .UpdateStatusToChild(mapsto.id.Value, StorageObjectEventStatus.IDLE, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
 
             return mapsto;
         }
 
-
-        private WorkQueueCriteria GenerateResponse(
-            StorageObjectCriteria mapsto,
-            SPworkQueue workQ)
-        {
-            var areaLocationMasters = ADO.AreaADO.GetInstant().ListAreaLocationMaster(
-                new long[] { workQ.AreaLocationMaster_ID ?? 0, workQ.Des_AreaLocationMaster_ID ?? 0, workQ.Sou_AreaLocationMaster_ID ?? 00 },
-                this.BuVO);
-
-
-            var res = new WorkQueueCriteria()
-            {
-                queueID = workQ.ID,
-                seq = workQ.Seq,
-                queueParentID = workQ.Parent_WorkQueue_ID,
-                queueRefID = workQ.RefID,
-                queueStatus = workQ.EventStatus,
-                
-                souWarehouseCode = this.StaticValue.Warehouses.First(x => x.ID == workQ.Sou_Warehouse_ID).Code,
-                souAreaCode = this.StaticValue.AreaMasters.First(x => x.ID == workQ.Sou_AreaMaster_ID).Code,
-                souLocationCode = areaLocationMasters.Any(x=>x.ID==workQ.Sou_AreaLocationMaster_ID) ?
-                                        areaLocationMasters.First(x => x.ID == workQ.Sou_AreaLocationMaster_ID).Code :
-                                        null,
-
-                desWarehouseCode = this.StaticValue.Warehouses.First(x => x.ID == workQ.Des_Warehouse_ID).Code,
-                desAreaCode = this.StaticValue.AreaMasters.First(x => x.ID == workQ.Des_AreaMaster_ID).Code,
-                desLocationCode = areaLocationMasters.Any(x => x.ID == workQ.Des_AreaLocationMaster_ID) ?
-                                        areaLocationMasters.First(x => x.ID == workQ.Des_AreaLocationMaster_ID).Code :
-                                        null,
-
-                warehouseCode = this.StaticValue.Warehouses.First(x => x.ID == workQ.Warehouse_ID).Code,
-                areaCode = this.StaticValue.AreaMasters.First(x => x.ID == workQ.AreaMaster_ID).Code,
-                locationCode = areaLocationMasters.First(x => x.ID == workQ.AreaLocationMaster_ID).Code,
-
-                
-                baseInfo = new WorkQueueCriteria.BaseInfo()
-                {
-                    baseCode = mapsto.code,
-                    packInfos = mapsto.ToTreeList()
-                                    .Where(x=>x.type== StorageObjectType.PACK)
-                                    .GroupBy(x=>new {
-                                        packID = x.mstID,
-                                        packCode = x.code,
-                                        orderNo = x.orderNo,
-                                        batch = x.batch,
-                                        lot = x.lot
-                                    })
-                                    .Select(x=> {
-                                        amv_PackMaster pkViw = ADO.DataADO.GetInstant().SelectByID<amv_PackMaster>(x.Key.packID, this.BuVO);
-                                        var v = new WorkQueueCriteria.BaseInfo.PackInfo()
-                                        {
-                                            packCode = x.Key.packCode,
-                                            packQty = x.Count(),
-                                            skuCode = pkViw.SKUCode,
-                                            skuQty = pkViw.ItemQty * x.Count(),
-                                            
-                                            orderNo = x.Key.orderNo,
-                                            batch = x.Key.batch,
-                                            lot = x.Key.lot
-                                        };
-                                        return v;
-                                    })
-                                    .ToList()
-                }
-            };
-
-            return res;
-        }
+        
 
         //BEGIN*******************ProcessReceiving***********************
         private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, TReq reqVO)
@@ -249,7 +182,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             var mapstoTree = mapsto.ToTreeList();
             foreach (var souWarehouse in mapstoTree
-                                                    .Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.IDEL)
+                                                    .Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.IDLE)
                                                     .GroupBy(x => x.options)
                                                     .Select(x => new { code = ObjectUtil.QryStrGetValue(x.Key, "Sou_Warehouse_Code"), stoIDs = x.Select(y => y.id.Value) }))
             {
@@ -276,7 +209,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             {
                 var docItem = ADO.DocumentADO.GetInstant()
                     .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souWarehouseID, null, packH.unitID, packH.baseUnitID, null, packH.batch,null, this.BuVO)
-                    .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDEL);
+                    .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
 
 
                 //pack Info พบ Docitem ที่สามารถ Mapping ได้
@@ -287,7 +220,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 else if(isAutoCreate)
                 {
                     var doc = ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, souWarehouseID, null, null, null, this.BuVO)
-                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDEL);
+                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
                     //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                     if (doc == null)
                     {
@@ -297,7 +230,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                             {
                                 refID = null,
                                 ref1 = null,
-                                ref2 = this.StaticValue.Warehouses.First(x => x.ID == souWarehouseID).Code == "5005" ? "311" : "321",//TODO FIX SAPCODE
+                                ref2 = this.StaticValue.Warehouses.First(x => x.ID == souWarehouseID).Code == "5005" ? "321" : "311",//TODO FIX SAPCODE
                                 souBranchID = this.StaticValue.Warehouses.First(x => x.ID == souWarehouseID).Branch_ID,
                                 souWarehouseID = souWarehouseID,
                                 desBranchID = this.StaticValue.Warehouses.First(x => x.ID == _warehouseASRS.ID).Branch_ID,
@@ -320,7 +253,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                                         orderNo = null,//packH.orderNo,
 
 
-                                                        ref2 = this.StaticValue.Warehouses.First(y => y.ID == souWarehouseID).Code == "5005" ? "311" : "321",//TODO FIX SAPCODE
+                                                        ref2 = this.StaticValue.Warehouses.First(y => y.ID == souWarehouseID).Code == "5005" ? "321" : "311",//TODO FIX SAPCODE
 
                                                         eventStatus = DocumentEventStatus.WORKING,
                                                         docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
@@ -349,7 +282,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                             ProductionDate = packH.productDate,
                             SKUMaster_ID = packConvert.skuMaster_ID,
                             EventStatus = DocumentEventStatus.WORKING,
-                            Ref2 = this.StaticValue.Warehouses.First(y => y.ID == souWarehouseID).Code == "5005" ? "311" : "321",//TODO FIX SAPCODE
+                            Ref2 = this.StaticValue.Warehouses.First(y => y.ID == souWarehouseID).Code == "5005" ? "321" : "311",//TODO FIX SAPCODE
 
                             DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
                         };

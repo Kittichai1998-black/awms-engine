@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.Business.Received
                 if (doc.EventStatus == DocumentEventStatus.CLOSING || doc.EventStatus == DocumentEventStatus.CLOSED)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารอยู่ในสถานะ " + doc.EventStatus);
 
-                if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL && doc.EventStatus != DocumentEventStatus.WORKING)
+                if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDLE && doc.EventStatus != DocumentEventStatus.WORKING)
                 {
                     var stos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
                     if (stos.Count > 0)
