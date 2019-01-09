@@ -124,7 +124,7 @@ class Area extends Component {
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 160 },
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
       { accessor: 'Warehouse_Code', Header: 'Warehouse', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 100 },
-      { accessor: 'AreaMasterType_Code', Header: 'AreaMasterType', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 170 },
+      { accessor: 'AreaMasterType_Code', Header: 'Area Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 170 },
       //{accessor: 'Status', Header: 'Status',Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       { accessor: 'Created', Header: 'Create', filterable: false, minWidth: 170 },
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */

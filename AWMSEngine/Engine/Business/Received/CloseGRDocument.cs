@@ -44,6 +44,8 @@ namespace AWMSEngine.Engine.Business.Received
             {
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                 docHs.Where(x => groupDocH.docHIDs.Any(y => y == x.ID)).ToList().ForEach(x => docItems.AddRange(x.DocumentItems));
+                if (!docItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSING))
+                    continue;
 
                 SAPInterfaceReturnvalues sapReq = new SAPInterfaceReturnvalues()
                 {
@@ -70,26 +72,31 @@ namespace AWMSEngine.Engine.Business.Received
                 };
 
                 SAPResposneAPI sapRes = null;
-                if (sapReq.GOODSMVT_ITEM.First().STGE_LOC != "5005")
+                if ("311,321".In(sapReq.GOODSMVT_ITEM.First().MOVE_TYPE))
                 {
-                    sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(sapReq, this.BuVO);
-                }
-                else
-                {
-                    var skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docItems.First().SKUMaster_ID, this.BuVO);
-                    var skuTypeMst = this.StaticValue.SKUMasterTypes.First(x => x.ID == skuMst.SKUMasterType_ID);
-                    if(skuTypeMst.Code == "ZPAC")
-                        sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0002_PACKAGE_GOODS_RECEIPT(sapReq, this.BuVO);
-                    else
-                        sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0003_CUSTOMER_RETURN(sapReq, this.BuVO);
-                }
-                res.sapDatas.Add(sapRes);
 
-                if (sapRes.docstatus == "0")
-                {
-                    groupDocH.docHIDs.ForEach(x => {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
-                    });
+                    if (sapReq.GOODSMVT_ITEM.First().STGE_LOC != "5005")
+                    {
+                        sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(sapReq, this.BuVO);
+                    }
+                    else
+                    {
+                        var skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docItems.First().SKUMaster_ID, this.BuVO);
+                        var skuTypeMst = this.StaticValue.SKUMasterTypes.First(x => x.ID == skuMst.SKUMasterType_ID);
+                        if (skuTypeMst.Code == "ZPAC")
+                            sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0002_PACKAGE_GOODS_RECEIPT(sapReq, this.BuVO);
+                        else
+                            sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0003_CUSTOMER_RETURN(sapReq, this.BuVO);
+                    }
+
+                    res.sapDatas.Add(sapRes);
+
+                    if (sapRes.docstatus == "0")
+                    {
+                        groupDocH.docHIDs.ForEach(x => {
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                        });
+                    }
                 }
             }
             return res;

@@ -28,6 +28,7 @@ namespace AWMSModel.Criteria
         public BaseInfo baseInfo;//ข้อมูลพาเลทและสินค้าในพาเลท
         public class BaseInfo
         {
+            public long id;//รหัสพาเลท
             public string baseCode;//รหัสพาเลท
             public List<PackInfo> packInfos;//ข้อมูลสินค้าในพาเลท
             public class PackInfo

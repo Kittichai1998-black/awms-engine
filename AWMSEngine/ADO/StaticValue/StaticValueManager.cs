@@ -110,6 +110,24 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<amv_PackUnitConvert> _PackUnitConverts;
         public List<amv_PackUnitConvert> PackUnitConverts { get => this._PackUnitConverts; }
+        public ConvertUnitCriteria ConvertToBaseUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID)
+        {
+            var oldUnit = this._PackUnitConverts.FirstOrDefault(x => x.UnitType_ID == oldUnitTypeID && x.SKUMaster_Code == skuCode);
+            if (oldUnit == null)
+                throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config PackMaster");
+
+            return new ConvertUnitCriteria()
+            {
+                skuMaster_ID = oldUnit.SKUMaster_ID,
+                skuMaster_Code = oldUnit.SKUMaster_Code,
+                packMaster_ID = oldUnit.PackMaster_ID,
+                packMaster_Code = oldUnit.PackMaster_Code,
+                qty = qty * oldUnit.ItemQty,
+                unitType_ID = oldUnit.UnitType_ID,
+                baseQty = qty * oldUnit.ItemQty,
+                baseUnitType_ID = oldUnit.UnitType_ID
+            };
+        }
         public ConvertUnitCriteria ConvertToBaseUnitBySKU(long skuID, decimal qty, long oldUnitTypeID)
         {
             var oldUnit = this._PackUnitConverts.FirstOrDefault(x => x.UnitType_ID == oldUnitTypeID && x.SKUMaster_ID == skuID);
@@ -135,6 +153,25 @@ namespace AWMSEngine.ADO.StaticValue
                 throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config PackMaster");
 
             var baseUnit = this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
+            return new ConvertUnitCriteria()
+            {
+                skuMaster_ID = newUnit.SKUMaster_ID,
+                skuMaster_Code = newUnit.SKUMaster_Code,
+                packMaster_ID = newUnit.PackMaster_ID,
+                packMaster_Code = newUnit.PackMaster_Code,
+                qty = baseUnit.baseQty / newUnit.ItemQty,
+                unitType_ID = newUnit.UnitType_ID,
+                baseQty = baseUnit.baseQty,
+                baseUnitType_ID = baseUnit.baseUnitType_ID,
+            };
+        }
+        public ConvertUnitCriteria ConvertToNewUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            var newUnit = this._PackUnitConverts.Find(x => x.SKUMaster_Code == skuCode && x.UnitType_ID == newUnitTypeID);
+            if (newUnit == null)
+                throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config PackMaster");
+
+            var baseUnit = this.ConvertToBaseUnitBySKU(skuCode, qty, oldUnitTypeID);
             return new ConvertUnitCriteria()
             {
                 skuMaster_ID = newUnit.SKUMaster_ID,

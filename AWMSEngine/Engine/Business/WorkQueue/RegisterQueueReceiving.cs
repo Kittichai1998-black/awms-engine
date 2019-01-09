@@ -54,11 +54,11 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             //คืนเศษที่เหลือจากการ Picking
             else if (mapsto.eventStatus == StorageObjectEventStatus.PICKING)
             {
-                List<long> itemList = mapsto.ToTreeList().Select(x => x.id.Value).ToList();
-                var stoList = ADO.DocumentADO.GetInstant().ListStoInDocs(itemList, DocumentTypeID.PICKING, this.BuVO);
-                if(stoList.Count > 0)
+                List<long> packIDs = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList();
+                docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(packIDs, DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                if (docItems.Any(x => x.EventStatus == DocumentEventStatus.WORKING))
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากงาน Picking ยังไม่เรียบร้อย");
-                //this.ValidateWarehouseMoving(mapsto, reqVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVING, this.BuVO);
             }
             //คืนเศษที่เหลือจากการ Counting
             else if (mapsto.eventStatus == StorageObjectEventStatus.AUDITING || mapsto.eventStatus == StorageObjectEventStatus.AUDITED)
@@ -73,15 +73,6 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
 
             var workQ = this.ProcessRegisterWorkQueue(docItems,mapsto, reqVO);
-
-            /*docItemsInSto.GroupBy(x => new { docID = x.Document_ID }).ToList().ForEach(x =>
-            {
-                ADO.DocumentADO.GetInstant().UpdateEventStatus(x.Key.docID, DocumentEventStatus.WORKING, this.BuVO);
-            });
-            docItemsInSto.GroupBy(x => new { docItemID = x.ID }).ToList().ForEach(x =>
-            {
-                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(x.Key.docItemID.Value, DocumentEventStatus.WORKING, this.BuVO);
-            });*/
 
             var res = this.GenerateResponse(mapsto, workQ);
             return res;
@@ -240,6 +231,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                 lot = null,
                                 batch = null,
                                 documentDate = DateTime.Now,
+                                actionTime = DateTime.Now,
                                 eventStatus = DocumentEventStatus.WORKING,
                                 receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
                                                     new CreateGRDocument.TReq.ReceiveItem

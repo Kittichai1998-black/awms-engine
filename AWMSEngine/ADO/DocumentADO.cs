@@ -227,6 +227,16 @@ namespace AWMSEngine.ADO
             return docItemSto;
         }
 
+        public amt_Document Get(long docID, VOCriteria buVO)
+        {
+            var whares = new List<SQLConditionCriteria>();
+
+            whares.Add(new SQLConditionCriteria("ID", docID, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
+
+            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            return res.FirstOrDefault();
+        }
         public List<amt_Document> List(List<long> docIDs, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
@@ -469,6 +479,18 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public List<amt_Document> ListChildUnderParentLink(long childDocumentID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("childDocumentID", childDocumentID);
+            var res = this.Query<amt_Document>("SP_DOC_LISTCHILD_UNDER_PARENTLINK",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<amt_Document> ListParentLink(long childDocumentID, VOCriteria buVO)
         public List<amt_Document> ListDocumentCanAudit(string palletCode, StorageObjectEventStatus eventStatus, DocumentTypeID docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -485,17 +507,17 @@ namespace AWMSEngine.ADO
         public List<amt_Document> ListParentLink(long documentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("documentID", documentID);
+            param.Add("documentID", childDocumentID);
             var res = this.Query<amt_Document>("SP_DOC_LIST_PARENTLINK",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
-        public List<amt_DocumentItem> ListItemParentLink(long documentID, VOCriteria buVO)
+        public List<amt_DocumentItem> ListItemParentLink(long childDocumentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("documentID", documentID);
+            param.Add("documentID", childDocumentID);
             var res = this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_PARENTLINK",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
@@ -533,7 +555,9 @@ namespace AWMSEngine.ADO
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
-            return res;
+            docItem.ID = res.ID;
+            docItem.Status = res.Status;
+            return docItem;
         }
 
         public List<SPOutDocItemQueueProcess> ProcessQueueByDocItemID(long? docItemID, int pickOrderBy, string pickBy, string stampDate, string batch, string orderNo, VOCriteria buVO)
