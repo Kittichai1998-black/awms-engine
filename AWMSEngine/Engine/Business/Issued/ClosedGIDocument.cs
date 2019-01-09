@@ -32,7 +32,9 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(docId, this.BuVO);
 
+                var DesWareDoc = ADO.DataADO.GetInstant().SelectByID<ams_Warehouse>(doc.Des_Warehouse_ID, this.BuVO);
 
+                
                 //var docItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new KeyValuePair<string, object>[] {
                 //    new KeyValuePair<string, object> ("Document_ID",num)
                 //}, this.BuVO);
@@ -86,6 +88,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                 BATCH = dataDocItem.Batch,
                                 //DLV_QTY = dataDocItem.Quantity.ToString(),
                                 DLV_QTY = dataDocItem.DocItemStos.Sum(x => x.Quantity).ToString(),
+                                MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
                                 SALES_UNIT = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
 
                             });
@@ -101,6 +104,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                 ENTRY_QNT = dataDocItem.DocItemStos.Sum(x => x.Quantity.Value),
                                 ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
                                 MOVE_STLOC = doc.DesWarehouse,
+                                MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
                             });
 
                         }
@@ -206,6 +210,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                         STGE_LOC = doc.SouWarehouse,
                                         BATCH = dataList.Batch,
                                         DLV_QTY = diSto.Sum(x => x.Quantity).ToString(),
+                                        MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
                                         SALES_UNIT = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
                                     });
 
@@ -220,6 +225,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                         ENTRY_QNT = diSto.Sum(x => x.Quantity.Value),
                                         ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
                                         MOVE_STLOC = doc.DesWarehouse,
+                                        MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
                                     });
 
                                     //groupBySGI.Add(postData);
