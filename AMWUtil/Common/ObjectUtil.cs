@@ -366,5 +366,9 @@ namespace AMWUtil.Common
         {
             return (T)Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Newtonsoft.Json.JsonConvert.SerializeObject(obj));
         }
+        public static bool In(this string vals, string val)
+        {
+            return vals.Split(',').Any(x => x == val);
+        }
     }
 }

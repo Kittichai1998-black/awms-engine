@@ -97,7 +97,9 @@ namespace AMWUtil.DataAccess.Http
                             var a = (BasicAuthentication)authen;
                             logger.LogInfo("API_REQUEST_AUTHEN(" + (retry + 1) + "):: USER=" + a.Username + " | PASS=" + a.Password);
                             CookieContainer myContainer = new CookieContainer();
-                            httpWebRequest.Credentials = new NetworkCredential(a.Username, a.Password);
+                            //httpWebRequest.Credentials = new NetworkCredential(a.Username, a.Password);
+                            string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(a.Username + ":" + a.Password));
+                            httpWebRequest.Headers[HttpRequestHeader.Authorization] = string.Format("Basic {0}", credentials);
                             httpWebRequest.CookieContainer = myContainer;
                             httpWebRequest.PreAuthenticate = true;
                         }
