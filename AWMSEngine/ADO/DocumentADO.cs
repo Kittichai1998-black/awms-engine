@@ -469,6 +469,19 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public List<amt_Document> ListDocumentCanAudit(string palletCode, StorageObjectEventStatus eventStatus, DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("palletCode", palletCode);
+            param.Add("eventStatus", eventStatus);
+            param.Add("docTypeID", docTypeID);
+            var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_AUDIT",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
         public List<amt_Document> ListParentLink(long documentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
