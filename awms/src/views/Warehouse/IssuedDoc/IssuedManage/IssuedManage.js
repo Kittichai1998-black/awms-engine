@@ -29,6 +29,7 @@ class IssuedManage extends Component {
       auto_branch: [],
       auto_warehouse: [],
       auto_customer: [],
+      auto_movementType:[],
       branch: "",
       customer: "",
       warehouse: "",
@@ -112,6 +113,16 @@ class IssuedManage extends Component {
       sk: 0,
       all: "",
     }
+    this.movementTypeselect = {
+      queryString: window.apipath + "/api/ers",
+      t: "SAPMovementType",
+      q: '[{ "f": "Status", "c":"=", "v": 1}]',
+      f: "ID,Code, Name",
+      g: "",
+      s: "[{'f':'ID','od':'asc'}]",
+      sk: 0,
+      all: "",
+    }
   }
 
   initialData() {
@@ -126,6 +137,7 @@ class IssuedManage extends Component {
           this.setState({ data: [] })
         }
         else {
+          console.log(rowselect1)
           this.setState({
             data: rowselect1.data.document,
             remark: rowselect1.data.document.remark,
@@ -137,9 +149,9 @@ class IssuedManage extends Component {
             Batch: rowselect1.data.document.batch,
             refID: rowselect1.data.document.refID,
             ref1: rowselect1.data.document.ref1,
-            ref2: rowselect1.data.document.ref2
+            ref2: rowselect1.data.document.ref2,
+            desBranchName: rowselect1.data.document.desBranchName
           })
-
         }
       })
     }
@@ -178,9 +190,20 @@ class IssuedManage extends Component {
       })
     })
 
+    Axios.get(createQueryString(this.movementTypeselect)).then(movementTyperesult => {
+      this.setState({ auto_movementType: movementTyperesult.data.datas, addstatus: false }, () => {
+        const auto_movementType = []
+        console.log(this.state.auto_movementType)
+        this.state.auto_movementType.forEach(row => {
+          auto_movementType.push({ value: row.ID, label: row.Code + ' : ' + row.Name, code: row.Code })
+        })
+        this.setState({ auto_movementType })
+      })
+    })
+
   }
   async componentWillMount() {
-    document.title = "Goods Issue Manage : AWMS";
+    document.title = "Create Issue : AWMS";
     let dataGetPer = await GetPermission()
     this.displayButtonByPermission(dataGetPer)
   }
@@ -218,7 +241,7 @@ class IssuedManage extends Component {
       if (row.id > 0 && qty > 0)
         acceptdata.push({
           packID: row.id
-          , packQty: row.PackQty
+          , quantity: row.PackQty
           , refID: this.state.refID
           , ref1: this.state.ref1
           , ref2: this.state.ref2
@@ -230,14 +253,16 @@ class IssuedManage extends Component {
       forCustomerID: null
       , batch: this.state.Batch
       , lot: null
-      , souBranchID: this.state.branch
+      , souBranchID: 1
+      , desBranchID: this.state.branch
+      , souWarehouseID: 1
       , desWarehouseID: this.state.warehouse
       , souAreaMasterID: null
-      , desCustomerID: this.state.customer
+      , desCustomerID: null
       , desSupplierID: null
       , refID: this.state.refID
       , ref1: this.state.ref1
-      , ref2: this.state.ref2
+      , ref2: this.state.movementTypeCode
       , actionTime: this.state.date.format("YYYY/MM/DDTHH:mm:ss")
       , documentDate: this.DateNow.format("YYYY/MM/DD")
       , remark: this.state.remark
@@ -374,25 +399,29 @@ class IssuedManage extends Component {
   createAutoComplete(rowdata) {
     if (!this.state.readonly) {
       const style = {
-        borderRadius: '3px',
-        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-        background: 'rgba(255, 255, 255, 0.9)',
-        padding: '2px 0',
+        color: '#2f353a',
+        borderRadius: '0px 0px 3px 3px',
+        border: '0.5px solid #20a8d8',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+        background: 'white',
         fontSize: '90%',
-        position: 'fixed',
         overflow: 'auto',
-        maxHeight: '50%', // TODO: don't cheat, let it flow to the bottom
-        zIndex: '998',
+        maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
+        zIndex: '998'
       }
 
       return <ReactAutocomplete
         inputProps={{
           style: {
-            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
-            backgroundPosition: "8px 8px",
+            color: '#2f353a',
+            width: "100%", borderRadius: "3px", backgroundImage: 'url(' + arrimg + ')',
+            backgroundPosition: "8px 50%",
             backgroundSize: "10px",
             backgroundRepeat: "no-repeat",
-            paddingLeft: "25px"
+            padding: "0.37rem 0.1875rem 0.37rem 1.5625em",
+            alignItems: 'center',
+            position: 'relative',
+            height: 'auto'
           }
         }}
         wrapperStyle={{ width: "100%" }}
@@ -401,7 +430,7 @@ class IssuedManage extends Component {
         items={this.state.autocomplete}
         shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
         renderItem={(item, isHighlighted) =>
-          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+          <div key={item.Code} style={{ padding: '0px 3px 0px 6px', background: isHighlighted ? '#20a8d8' : 'white', color: isHighlighted ? 'white' : '#2f353a' }}>
             {item.SKU}
           </div>
         }
@@ -515,38 +544,24 @@ class IssuedManage extends Component {
         <div className="clearfix">
           <Row>
             <div className="col-6">
-              <div className=""><label style={style}>Branch : </label>{this.state.pageID ? this.createText(this.state.data.souBranchName) :
+              <div className=""><label style={style}>Source Branch : </label>{this.state.pageID ? this.createText("THIP") :
+                <div style={{ width: "300px", display: "inline-block" }}><label>1100 : THIP</label></div>}</div>
+              <div className=""><label style={style}>Destination Branch : </label>{this.state.pageID ? this.createText(this.state.data.desBranchName) :
                 <div style={{ width: "300px", display: "inline-block" }}><AutoSelect data={this.state.auto_branch} result={(e) => this.setState({ "branch": e.value, "branchresult": e.label }, () => { this.genWarehouseData(this.state.branch) })} /></div>}</div>
-              <div className=""><label style={style}>Destination Customer : </label>{this.state.pageID ? this.createText(this.state.data.desCustomerName) :
-                <div style={{ width: "300px", display: "inline-block" }}><AutoSelect data={this.state.auto_customer} result={(e) => this.setState({ "customer": e.value, "customerresult": e.label })} /></div>}</div>
               <div className=""><label style={style}>Batch : </label>
                 {this.state.pageID ? <span> {this.state.Batch}</span> :
                   <Input onChange={(e) => this.setState({ Batch: e.target.value })} style={{ display: "inline-block", width: "300px" }}
 
                     value={this.state.Batch === undefined ? "" : this.state.Batch} />}
               </div>
-              <div className=""><label style={style}>Movement Type : </label>
-                {this.state.pageID ? <span> {this.state.ref2}</span> :
-                  <Input onChange={(e) => this.setState({ ref2: e.target.value })} style={{ display: "inline-block", width: "300px" }}
-
-                    value={this.state.ref2 === undefined ? "" : this.state.ref2} />}
-              </div>
+              <div className=""><label style={style}>MovementType: </label>{this.state.pageID ? this.createText(this.state.ref2) :
+                <div style={{ width: "300px", display: "inline-block" }}><AutoSelect data={this.state.auto_movementType} result={(e) => this.setState({ "movementType": e.value, "movementTyperesult": e.label, "movementTypeCode": e.code })} /></div>}</div>
             </div>
             <div className="col-6">
-              <div className=""><label style={style}>Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.desWarehouseName) :
+              <div className=""><label style={style}>Source Warehouse : </label>{this.state.pageID ? this.createText("ASRS") :
+                <div style={{ width: "300px", display: "inline-block" }}><label>5005 : ASRS</label></div>}</div>
+              <div className=""><label style={style}>Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.desWarehouseName) :
                 <div style={{ width: "300px", display: "inline-block" }}><AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} /></div>}</div>
-              <div className=""><label style={style}>Materials Document : </label>
-                {this.state.pageID ? <span> {this.state.refID}</span> :
-                  <Input onChange={(e) => this.setState({ refID: e.target.value })} style={{ display: "inline-block", width: "300px" }}
-
-                    value={this.state.refID === undefined ? "" : this.state.refID} />}
-              </div>
-              <div className=""><label style={style}>Materials Document Year: </label>
-                {this.state.pageID ? <span> {this.state.ref1}</span> :
-                  <Input onChange={(e) => this.setState({ ref1: e.target.value })} style={{ display: "inline-block", width: "300px" }}
-
-                    value={this.state.ref1 === undefined ? "" : this.state.ref1} />}
-              </div>
               <div className=""><label style={style}>Remark : </label>
                 {this.state.pageID ? <span> {this.state.remark}</span> :
                   <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px" }}
@@ -558,7 +573,7 @@ class IssuedManage extends Component {
         </div>
         <div className="clearfix">
 
-          <Button className="float-right" color="danger" style={{ display: this.state.adddisplay }} onClick={() => this.toggle()}>Select Base</Button>
+          <Button className="float-right" color="danger" style={{ display: this.state.adddisplay, marginLeft: '5px' }} onClick={() => this.toggle()}>Select Base</Button>
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay }}>Add</Button>
           {/* <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code}</span> */}
         </div>

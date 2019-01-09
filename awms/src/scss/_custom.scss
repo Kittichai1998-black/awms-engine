@@ -8,3 +8,84 @@
 .input-group-text{
     min-width: 140px;
 }
+
+.badge-IDLE {
+    color: #23282c;
+    background-color: #fff;
+    border: 1px solid #c8ced3; 
+    width: 6.5em;}
+    .badge-light[href]:hover, .badge-light[href]:focus {
+      color: #23282c;
+      text-decoration: none;
+      background-color: #d1dbe1; }
+
+.badge-WORKING {
+        color: #ffc107;
+        background-color: #fff; 
+        border: 2px solid #ffc107;
+        width: 6.5em; }
+        .badge-success[href]:hover, .badge-success[href]:focus {
+            color: #fff;
+            text-decoration: none;
+            background-color: #ffc107; }
+.badge-WORKED {
+        color: #fff;
+        background-color: #ffc107; 
+        width: 6.5em;}
+        .badge-success[href]:hover, .badge-success[href]:focus {
+            color: #fff;
+            text-decoration: none;
+            background-color: #ffc107; }
+.badge-REMOVING {
+    color: #73818f;
+    background-color: #f0f3f5;
+    border: 2px solid #73818f; 
+    width: 6.5em;}
+    .badge-success[href]:hover, .badge-success[href]:focus {
+        color: #fff;
+        text-decoration: none;
+        background-color: #73818f; }
+.badge-REMOVED {
+    color: #fff;
+    background-color: #73818f; 
+    width: 6.5em;}
+    .badge-success[href]:hover, .badge-success[href]:focus {
+        color: #fff;
+        text-decoration: none;
+        background-color: #73818f; }
+.badge-REJECTING {
+    color: #f86c6b;
+    background-color: #fff; 
+    border: 2px solid #f86c6b;
+    width: 6.5em;}
+    .badge-success[href]:hover, .badge-success[href]:focus {
+        color: #fff;
+        text-decoration: none;
+        background-color: #f86c6b; }
+.badge-REJECTED {
+    color: #fff;
+    background-color: #f86c6b; 
+    width: 6.5em;}
+    .badge-success[href]:hover, .badge-success[href]:focus {
+        color: #fff;
+        text-decoration: none;
+        background-color: #f86c6b; }
+
+.badge-CLOSING {
+    color: #3a9d5d;
+    background-color: #fff;
+    border: 2px solid #3a9d5d; 
+    width: 6.5em;}
+    .badge-success[href]:hover, .badge-success[href]:focus {
+        color: #fff;
+        text-decoration: none;
+        background-color: #3a9d5d; }
+        
+.badge-CLOSED {
+    color: #fff;
+    background-color: #4dbd74; 
+    width: 6.5em;}
+    .badge-success[href]:hover, .badge-success[href]:focus {
+        color: #fff;
+        text-decoration: none;
+        background-color: #3a9d5d; }

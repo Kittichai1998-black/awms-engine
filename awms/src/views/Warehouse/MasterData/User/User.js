@@ -69,6 +69,7 @@ class User extends Component {
             selectroledata: [],
             dataUpdate: [],
             rowselect: [],
+            checkclick_add: false
         };
 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -112,7 +113,7 @@ class User extends Component {
     }
 
     getData(user_id) {
-
+        console.log(user_id)
         const selectroledata = []
         const selectuserroledata = []
         Axios.get(createQueryString(this.state.selectRole)).then((response) => {
@@ -183,8 +184,12 @@ class User extends Component {
     }
 
     createRoleBtn(rowdata) {
-        return <div className="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-            onClick={() => this.getData(rowdata.ID)}>Role</Button></div>
+        if (rowdata.ID <= 0) {
+            return null
+        } else {
+            return <div className="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+                onClick={() => this.getData(rowdata.ID)}>Role</Button></div>
+        }
     }
 
     updateRole() {
@@ -290,7 +295,7 @@ class User extends Component {
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"User"}
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"User"} checkClickAdd={this.onCheckClickAdd}
                     filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} addExportbtn={view} exportfilebtn={view}
                     table="ams_User" />
                 <Popup open={this.state.open} onClose={this.closeModal}>

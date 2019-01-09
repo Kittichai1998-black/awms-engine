@@ -6,7 +6,7 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum DocumentEventStatus
     {
-        IDEL = 10,
+        IDLE = 10,
         WORKING = 11,
         WORKED = 12,
 

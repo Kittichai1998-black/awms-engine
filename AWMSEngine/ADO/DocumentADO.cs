@@ -545,5 +545,64 @@ namespace AWMSEngine.ADO
             docItem.Status = res.Status;
             return docItem;
         }
+
+        public List<SPOutDocItemQueueProcess> ProcessQueueByDocItemID(long? docItemID, int pickOrderBy, string pickBy, string stampDate, string batch, string orderNo, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("DOCITEM_ID", docItemID);
+            param.Add("PICK_ORDER_BY", pickOrderBy);
+            param.Add("PICK_BY", pickBy);
+            param.Add("STAMP_DATE", stampDate);
+            param.Add("BATCH", batch);
+            param.Add("ORDER_NO", orderNo);
+
+            var res = this.Query<SPOutDocItemQueueProcess>("SP_DOCITEM_QUEUE_PROCESS",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<SPOutDocItemQueueProcess> ListAuditItem(long docItem, string lot, string batch, string order_no, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("DOCITEM_ID", docItem);
+            param.Add("STAMP_DATE", lot);
+            param.Add("BATCH", lot);
+            param.Add("ORDER_NO", order_no);
+            var res = this.Query<SPOutDocItemQueueProcess>("SP_DOCITEM_QUEUE_PROCESS_AUDIT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
+
+        public void CreateDocItemSto (long docItemID, long stoID, decimal qty, int unitTypeID, decimal baseQty, int baseUnitTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("DOCITEM_ID", docItemID);
+            param.Add("STO_ID", stoID);
+            param.Add("QUANTITY", qty);
+            param.Add("UNIT_TYPE_ID", unitTypeID);
+            param.Add("BASE_QUANTITY", baseQty);
+            param.Add("BASE_UNIT_TYPE_ID", baseUnitTypeID);
+            param.Add("USER_ID", buVO.ActionBy);
+            var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_DOCITEM_STO_CREATE", 
+                System.Data.CommandType.StoredProcedure, 
+                param, 
+                buVO.Logger, 
+                buVO.SqlTransaction);
+        }
+
+        public List<amt_Document> updateStatus(long? ID,EntityStatus tostatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("ID", ID);
+            param.Add("tostatus", tostatus);
+
+            var res = this.Query<amt_Document>("SP_DOC_UPDATESTATUS",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
     }
 }

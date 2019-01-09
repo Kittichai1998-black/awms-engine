@@ -105,7 +105,7 @@ class Role extends Component {
     onHandleClickCancel(event) {
         this.forceUpdate();
         event.preventDefault();
-    }    
+    }
 
     getData(Root_ID) {
         console.log(Root_ID)
@@ -193,8 +193,12 @@ class Role extends Component {
     }
 
     createMapBtn(rowdata) {
-        return <div class="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '100px' }}
-            onClick={() => this.getData(rowdata.ID)}>Permission</Button></div>
+        if (rowdata.ID <= 0) {
+            return null
+        } else {
+            return <div class="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '100px' }}
+                onClick={() => this.getData(rowdata.ID)}>Permission</Button></div>
+        }
     }
 
     updateRolePermission() {

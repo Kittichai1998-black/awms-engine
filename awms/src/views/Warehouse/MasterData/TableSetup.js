@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Badge, Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
@@ -369,13 +369,13 @@ class TableGen extends Component {
           }
           if (col.accessor === "ObjectType") {
             if (row[col.accessor] === "") {
-              alert("กรุณาเลือก ObjectType");
+              window.warning("กรุณาเลือก ObjectType");
               row["ObjectType"] = null
             }
           }
           if (col.accessor === "GroupType") {
             if (row[col.accessor] === "") {
-              alert("กรุณาเลือก GroupType");
+              window.warning("กรุณาเลือก GroupType");
               row["GroupType"] = null
             }
           }
@@ -383,20 +383,20 @@ class TableGen extends Component {
           if (this.props.areagrouptype === 1) {
             if (col.accessor === "Bank") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bank");
+                window.warning("กรุณากรอกข้อมูล Bank");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Bay") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bay");
+                window.warning("กรุณากรอกข้อมูล Bay");
                 delete row["Code"]
 
               }
             }
             if (col.accessor === "Level") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Level");
+                window.warning("กรุณากรอกข้อมูล Level");
                 delete row["Code"]
 
               }
@@ -404,32 +404,32 @@ class TableGen extends Component {
           } else if (this.props.areagrouptype === 2) {
             if (col.accessor === "Gate") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Gate");
+                window.warning("กรุณากรอกข้อมูล Gate");
                 delete row["Code"]
               }
             }
           } else {
             if (col.accessor === "Bank") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bank");
+                window.warning("กรุณากรอกข้อมูล Bank");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Bay") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Bay");
+                window.warning("กรุณากรอกข้อมูล Bay");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Level") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Level");
+                window.warning("กรุณากรอกข้อมูล Level");
                 delete row["Code"]
               }
             }
             if (col.accessor === "Gate") {
               if (row[col.accessor] === "") {
-                alert("กรุณากรอกข้อมูล Gate");
+                window.warning("กรุณากรอกข้อมูล Gate");
                 delete row["Code"]
               }
             }
@@ -446,9 +446,13 @@ class TableGen extends Component {
         "datas": dataedit,
         "nr": false
       }
-      Axios.put(window.apipath + "/api/mst", updjson).then((result) => {
-        //alert("อัพเดทข้อมูลเสร็จเรียบร้อย");
-        this.Notification(this.state.statusUpdateData)
+      Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
+        //console.log(res)
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            this.Notification(this.state.statusUpdateData)
+          }
+        }
         this.queryInitialData(this.state.dataselect);
       })
 
@@ -746,7 +750,7 @@ class TableGen extends Component {
         var codestr = (this.props.autocode) + "," + rowdata.row["Bank"] + "," + value + "," + rowdata.row["Level"]
       }
       else {
-        alert("เฉพาะตัวเลขเท่านั้น")
+        window.warning("เฉพาะตัวเลขเท่านั้น")
       }
     } else if (field === "Level") {
       let conv = value === '' ? 0 : value
@@ -755,7 +759,7 @@ class TableGen extends Component {
         var codestr = (this.props.autocode) + "," + rowdata.row["Bank"] + "," + rowdata.row["Bay"] + "," + value
       }
       else {
-        alert("เฉพาะตัวเลขเท่านั้น")
+        window.warning("เฉพาะตัวเลขเท่านั้น")
       }
     } else if (field === "Gate") {
       var codestr = (this.props.autocode) + "," + value
@@ -801,7 +805,7 @@ class TableGen extends Component {
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else {
-        alert("เฉพาะตัวเลขเท่านั้น")
+        window.warning("เฉพาะตัวเลขเท่านั้น")
       }
     }
     else {
@@ -933,12 +937,12 @@ class TableGen extends Component {
   }
   createAutoComplete(rowdata) {
     const style = {
-      borderRadius: '3px',
-      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-      background: 'rgba(255, 255, 255, 0.9)',
-      padding: '2px 1px',
+      color: '#2f353a',
+      borderRadius: '0px 0px 3px 3px',
+      border: '0.5px solid #20a8d8',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+      background: 'white',
       fontSize: '90%',
-      //position: 'absolute',
       overflow: 'auto',
       maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
       zIndex: '998'
@@ -965,12 +969,15 @@ class TableGen extends Component {
         return <ReactAutocomplete
           inputProps={{
             style: {
-              width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
-              backgroundPosition: "8px 8px",
+              color: '#2f353a',
+              width: "100%", borderRadius: "3px", backgroundImage: 'url(' + arrimg + ')',
+              backgroundPosition: "8px 50%",
               backgroundSize: "10px",
               backgroundRepeat: "no-repeat",
-              paddingLeft: "25px",
+              padding: "0.37rem 0.1875rem 0.37rem 1.5625em",
+              alignItems: 'center',
               position: 'relative',
+              height: 'auto'
             }
           }}
           wrapperStyle={{ width: "100%" }}
@@ -979,7 +986,7 @@ class TableGen extends Component {
           items={getdata[0].data}
           shouldItemRender={(item, value) => value === null ? "" : item.Code.toLowerCase().indexOf(value.toLowerCase()) > -1}
           renderItem={(item, isHighlighted) =>
-            <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+            <div key={item.Code} style={{ padding: '0px 3px 0px 6px', background: isHighlighted ? '#20a8d8' : 'white', color: isHighlighted ? 'white' : '#2f353a' }}>
               {item.Code}
             </div>
           }
@@ -1040,13 +1047,17 @@ class TableGen extends Component {
       </span>
     }
     else if (type === "DocumentEvent") {
-      return <span>
-        {
-          DocumentEventStatus.filter(row => {
-            return row.code === data
-          })[0].status
-        }
-      </span>
+      let strStatus
+      const results = DocumentEventStatus.filter(row => {
+        return row.code === data
+      })
+      if (results.length > 0) {
+        strStatus = results[0].status
+      }
+      else {
+        strStatus = ""
+      }
+      return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
     }
     else if (type === "Status") {
       return <span>
@@ -1174,9 +1185,9 @@ class TableGen extends Component {
   Notification(state) {
     switch (state) {
       case 'edit':
-        return alert("เพิ่ม/แก้ไข ข้อมูลสำเร็จ");
+        return window.success("เพิ่ม/แก้ไข ข้อมูลสำเร็จ");
       case 'remove':
-        return alert("ลบข้อมูลสำเร็จ");
+        return window.success("ลบข้อมูลสำเร็จ");
       default:
         return null;
     }
@@ -1228,7 +1239,7 @@ class TableGen extends Component {
       // }
       else if (row.Type === "autolocationcode" && (row.body === undefined || !row.body)) {
         if (row.editable) {
-          row.Cell = (e) => (this.autoGenLocationCode(e))          
+          row.Cell = (e) => (this.autoGenLocationCode(e))
         }
         else {
           row.Cell = (e) => {

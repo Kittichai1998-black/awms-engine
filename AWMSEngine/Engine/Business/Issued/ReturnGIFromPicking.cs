@@ -32,11 +32,10 @@ namespace AWMSEngine.Engine.Business.Issued
                     new KeyValuePair<string, object> ("Document_ID",doc.ID)
                 }, this.BuVO);
 
-            var StorageObject = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object> ("Code",reqVO.palletIDs)
-                }, this.BuVO);
 
-            if(StorageObject == null)
+            var skuPallet = ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.palletIDs, this.BuVO);
+
+            if (skuPallet == null)
             {
                 //พาเลทว่าง
             }
@@ -44,17 +43,11 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 //พาเลทมีของ
 
-                var skuPallet = ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.palletIDs, this.BuVO);
-
-                foreach( var sku in skuPallet)
-                {
                     foreach (var item in docItem)
                     {
-                        var Pallet = StorageObject.Where(x => x.Lot == doc.Lot && x.Batch == doc.Batch && x.Code == item.Code).First();
+                        var Pallet = skuPallet.Where(x => x.Lot == doc.Lot && x.Batch == doc.Batch && x.Code == item.Code).First();
                     }
-                       
-                }
-
+   
             }
 
             return null;

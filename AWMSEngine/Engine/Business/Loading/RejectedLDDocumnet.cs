@@ -33,7 +33,7 @@ namespace AWMSEngine.Engine.Business.Loading
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + id);
                 if (doc.Status == EntityStatus.DONE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is Done");
-                if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDEL)
+                if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDLE)
                 {
                     var stos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
                     if (stos.Count > 0)
