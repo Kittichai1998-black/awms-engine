@@ -38,13 +38,13 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     if(doc.docType == DocumentTypeID.SUPER_GOODS_ISSUED)
                     {
-                        var _docs = ADO.DataADO.GetInstant().SelectBy<amt_Document>("ParentDocument_ID", doc.docID, this.BuVO).FindAll(x => x.EventStatus == DocumentEventStatus.IDEL);
+                        var _docs = ADO.DataADO.GetInstant().SelectBy<amt_Document>("ParentDocument_ID", doc.docID, this.BuVO).FindAll(x => x.EventStatus == DocumentEventStatus.IDLE);
                         docs.AddRange(_docs);
                     }
                     else if(doc.docType == DocumentTypeID.GOODS_ISSUED)
                     {
                         var _doc = ADO.DocumentADO.GetInstant().Get(doc.docID, this.BuVO);
-                        if (_doc.EventStatus == DocumentEventStatus.IDEL)
+                        if (_doc.EventStatus == DocumentEventStatus.IDLE)
                             docs.Add(_doc);
                     }
                 }
@@ -110,7 +110,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             Des_Customer_ID = desCustomer.ID,
                             Sou_Warehouse_ID = souWarehouses.ID,
                             Sou_Branch_ID = souWarehouses.Branch_ID,
-                            EventStatus = DocumentEventStatus.IDEL,
+                            EventStatus = DocumentEventStatus.IDLE,
                             RefID = sapDOItem.DELIV_NUMB,
                             Options = "DocType=" + sapDOItem.DLV_TYPE,
                             ActionTime = DateTime.Now,
@@ -153,7 +153,9 @@ namespace AWMSEngine.Engine.Business.Issued
             else if(sapDO.DOCSTATUS == "8")
             {
                 docRefSAPs.ForEach(x => {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, null, null, DocumentEventStatus.REJECTED, this.BuVO);
+                    if(x.ParentDocument_ID.HasValue)
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ParentDocument_ID.Value, null, null, DocumentEventStatus.REJECTED, this.BuVO);
                 });                
             }
             else
