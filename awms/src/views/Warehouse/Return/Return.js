@@ -40,12 +40,36 @@ class Return extends Component {
         l: "",
         all: "",
       },
+      PalletSto: {
+        queryString: window.apipath + "/api/viw",
+        t: "PalletSto",
+        q: "[{ 'f': 'Status', c:'!=', 'v': 2}]",
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: "",
+        l: "",
+        all: "",
+      },
+      DocItem: {
+        queryString: window.apipath + "/api/trx",
+        t: "DocumentItem",
+        q: "[{ 'f': 'Status', c:'!=', 'v': 2}]",
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: "",
+        l: "",
+        all: "",
+      },
       qtyEdit: [],
       dataTable: []
 
     }
     this.createListTable = this.createListTable.bind(this)
+    this.checkPalletAndGI = this.checkPalletAndGI.bind(this)
   }
+
   async componentWillMount() {
     document.title = "Return : AWMS";
     let dataGetPer = await GetPermission()
@@ -53,11 +77,46 @@ class Return extends Component {
     Axios.get(createQueryString(this.state.Document)).then((response) => {
       const IssueDocdata = []
       response.data.datas.forEach(row => {
+        
         IssueDocdata.push({ value: row.ID, label: row.Code })
       })
       this.setState({ IssueDocdata })
+      this.setState({ IssueDocdata })
+    })
+
+    Axios.get(createQueryString(this.state.PalletSto)).then((res) => {
+      console.log(res)
+      if(res.data.datas.length === 0){
+  
+      }else{
+        res.data.datas.forEach(row =>{
+          console.log(row)
+        })
+      }
     })
   }
+
+  // checkPalletAndGI(checkPallet,checkGI){
+
+  //   var result = checkGI.filter(x=> {
+  //     return x.Batch === checkPallet.Batch &&  x.Lot === checkPallet.Lot 
+      
+  //   })
+  // }
+
+  // genDocItemData(data) {
+  //   if (data) {
+  //     const DocItem = this.DocItem
+  //     DocItem.q = '[{ "f": "Document_ID", "c":"=", "v": ' + this.state.branch + '}]'
+  //     Axios.get(createQueryString(DocItem)).then((res) => {
+  //       const auto_warehouse = []
+  //       res.data.datas.forEach(row => {
+  //         auto_warehouse.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
+  //       })
+  //       this.setState({ auto_warehouse })
+  //     })
+  //   }
+  // }
 
   dropdownAuto() {
     return <div>
