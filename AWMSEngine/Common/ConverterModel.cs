@@ -30,28 +30,29 @@ namespace AWMSEngine.Common
         {
             var mapstoTree = mapsto.ToTreeList();
             List<amt_WorkQueueDocumentItem> res = new List<amt_WorkQueueDocumentItem>();
-            foreach (var di in docItems)
-            {
-                decimal baseQty = mapstoTree
-                                            .Where(x => x.type == StorageObjectType.PACK &&
-                                                    x.mstID == di.PackMaster_ID &&
-                                                    x.baseUnitID == di.BaseUnitType_ID &&
-                                                    x.batch == di.Batch &&
-                                                    x.lot == di.Lot &&
-                                                    x.orderNo == di.OrderNo)
-                                            .Sum(x => x.baseQty);
-                var unitConvert = StaticValueManager.GetInstant().ConvertToNewUnitBySKU(di.SKUMaster_ID.Value, baseQty, di.BaseUnitType_ID.Value, di.UnitType_ID.Value);
-                amt_WorkQueueDocumentItem r = new amt_WorkQueueDocumentItem()
+            if (docItems != null)
+                foreach (var di in docItems)
                 {
-                    BaseQuantity = unitConvert.baseQty,
-                    BaseUnitType_ID = unitConvert.baseUnitType_ID,
-                    Quantity = unitConvert.qty,
-                    UnitType_ID = unitConvert.unitType_ID,
-                    DocumentItem_ID = di.ID.Value,
-                    WorkQueue_ID = workQueusID ?? 0
-                };
-                res.Add(r);
-            }
+                    decimal baseQty = mapstoTree
+                                                .Where(x => x.type == StorageObjectType.PACK &&
+                                                        x.mstID == di.PackMaster_ID &&
+                                                        x.baseUnitID == di.BaseUnitType_ID &&
+                                                        x.batch == di.Batch &&
+                                                        x.lot == di.Lot &&
+                                                        x.orderNo == di.OrderNo)
+                                                .Sum(x => x.baseQty);
+                    var unitConvert = StaticValueManager.GetInstant().ConvertToNewUnitBySKU(di.SKUMaster_ID.Value, baseQty, di.BaseUnitType_ID.Value, di.UnitType_ID.Value);
+                    amt_WorkQueueDocumentItem r = new amt_WorkQueueDocumentItem()
+                    {
+                        BaseQuantity = unitConvert.baseQty,
+                        BaseUnitType_ID = unitConvert.baseUnitType_ID,
+                        Quantity = unitConvert.qty,
+                        UnitType_ID = unitConvert.unitType_ID,
+                        DocumentItem_ID = di.ID.Value,
+                        WorkQueue_ID = workQueusID ?? 0
+                    };
+                    res.Add(r);
+                }
             return res;
         }
 

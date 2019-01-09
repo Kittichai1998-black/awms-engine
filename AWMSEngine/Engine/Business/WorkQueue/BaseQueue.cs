@@ -13,17 +13,16 @@ namespace AWMSEngine.Engine.Business.WorkQueue
     public abstract class BaseQueue<TReq, TRes> : BaseEngine<TReq, TRes>
         where TRes : class
     {
-        public void ValidateCanPutToLocation(StorageObjectCriteria mapsto)
+        private void ValidateFinalStorageObject(StorageObjectCriteria mapsto)
         {
-            if(mapsto.parentType == StorageObjectType.LOCATION)
-            {
-                var area = ADO.MasterADO.GetInstant().GetPackMasterBySKU (mapsto.parentID.Value, string.Empty, this.BuVO);
-
-            }
+            var validMapsto = ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, mapsto.type, true, true, this.BuVO);
+            new Engine.Validation.ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, validMapsto);
         }
 
         public WorkQueueCriteria GenerateResponse(StorageObjectCriteria mapsto, SPworkQueue queueTrx)
         {
+            this.ValidateFinalStorageObject(mapsto);
+
             var sou_lm = ADO.DataADO.GetInstant()
                 .SelectByID<ams_AreaLocationMaster>(queueTrx.Sou_AreaLocationMaster_ID, this.BuVO);
 
@@ -50,6 +49,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 queueID = queueTrx.ID,
                 baseInfo = new WorkQueueCriteria.BaseInfo()
                 {
+                    id = mapsto.id.Value,
                     baseCode = mapsto.code,
                     packInfos = mapsto.ToTreeList()
                     .Where(x => x.type == StorageObjectType.PACK)
