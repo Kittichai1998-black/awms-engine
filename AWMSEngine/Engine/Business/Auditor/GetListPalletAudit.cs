@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override TRes ExecuteEngine(string reqVO)
         {
-            var listItem = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO, StorageObjectEventStatus.AUDITING, DocumentTypeID.STOCK_AUDIT ,this.BuVO);
+            var listItem = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT,this.BuVO);
             if (listItem != null)
             {
                 var doc = listItem.First();

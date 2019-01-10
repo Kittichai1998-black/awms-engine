@@ -79,8 +79,8 @@ class IssuedDoc extends Component {
               sum += res2.packQty
               res2.sumQty1=sum
               res2.batch = this.state.batch
-              res2.lot = this.state.lot
-              res2.orderNo = this.state.orderNo
+              // res2.lot = this.state.lot
+              // res2.orderNo = this.state.orderNo
               res2.quantityDoc = this.state.quantityDoc
               
 
