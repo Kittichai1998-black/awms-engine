@@ -153,7 +153,9 @@ namespace AWMSEngine.Engine.Business.Issued
             else if(sapDO.DOCSTATUS == "8")
             {
                 docRefSAPs.ForEach(x => {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, null, null, DocumentEventStatus.REJECTED, this.BuVO);
+                    if(x.ParentDocument_ID.HasValue)
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ParentDocument_ID.Value, null, null, DocumentEventStatus.REJECTED, this.BuVO);
                 });                
             }
             else

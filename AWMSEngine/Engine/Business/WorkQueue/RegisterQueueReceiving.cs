@@ -231,6 +231,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                 lot = null,
                                 batch = null,
                                 documentDate = DateTime.Now,
+                                actionTime = DateTime.Now,
                                 eventStatus = DocumentEventStatus.WORKING,
                                 receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
                                                     new CreateGRDocument.TReq.ReceiveItem

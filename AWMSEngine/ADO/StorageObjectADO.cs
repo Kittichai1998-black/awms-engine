@@ -326,6 +326,18 @@ namespace AWMSEngine.ADO
 
             return res;
         }
+
+        public void UpdateAuditing(long stoID, long docItemID, string packCode, decimal auditQty, decimal auditBaseQty, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("stoID", stoID);
+            param.Add("docItemID", docItemID);
+            param.Add("packCode", packCode);
+            param.Add("auditQty", auditQty);
+            param.Add("auditBaseQty", auditBaseQty);
+            param.Add("userID", buVO.ActionBy);
+            var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STO_UPDATE_AUDIT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+        }
     }
 
 }

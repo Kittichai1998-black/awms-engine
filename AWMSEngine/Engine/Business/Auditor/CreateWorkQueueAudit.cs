@@ -245,6 +245,8 @@ namespace AWMSEngine.Engine.Business.Auditor
             {
                 var res2 = ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO);
             });
+
+            ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
             return null;
         }
 

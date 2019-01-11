@@ -31,229 +31,233 @@ namespace AWMSEngine.Engine.Business.Issued
             foreach (var docId in reqVO.docIDs)
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(docId, this.BuVO);
-
-
-                //var docItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new KeyValuePair<string, object>[] {
-                //    new KeyValuePair<string, object> ("Document_ID",num)
-                //}, this.BuVO);
-
-                var docItem = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
-
-                var docHs = this.ListAllDocumentHeadID(reqVO);
-
-
-                var relation = ADO.DocumentADO.GetInstant().ListParentLink(doc.ID.Value, this.BuVO);
-                if (relation.Count == 0)
+                if (doc.Ref2 == null || doc.Ref2 == "311")
                 {
 
-                    var dataAPI4 = new SAPInterfaceReturnvalues()
+                    var DesWareDoc = ADO.DataADO.GetInstant().SelectByID<ams_Warehouse>(doc.Des_Warehouse_ID, this.BuVO);
+
+                    var docItem = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+
+                    var docHs = this.ListAllDocumentHeadID(reqVO);
+
+
+                    var relation = ADO.DocumentADO.GetInstant().ListParentLink(doc.ID.Value, this.BuVO);
+                    if (relation.Count == 0)
                     {
-                        GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
+
+                        var dataAPI4 = new SAPInterfaceReturnvalues()
                         {
-                            PSTNG_DATE = doc.ActionTime.Value.ToString("yyyyMMdd", new CultureInfo("en-US")),
-                            DOC_DATE = doc.DocumentDate.ToString("yyyyMMdd", new CultureInfo("en-US")),
-                            REF_DOC_NO = doc.ID.ToString(),
-                            HEADER_TXT = "ASRS Trf within Plant",
-                            GOODSMVT_CODE = "04"
+                            GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
+                            {
+                                PSTNG_DATE = doc.ActionTime.Value.ToString("yyyyMMdd", new CultureInfo("en-US")),
+                                DOC_DATE = doc.DocumentDate.ToString("yyyyMMdd", new CultureInfo("en-US")),
+                                REF_DOC_NO = doc.ID.ToString(),
+                                HEADER_TXT = "ASRS Trf within Plant",
+                                GOODSMVT_CODE = "04"
 
-                        },
-                        GOODSMVT_ITEM = new List<SAPInterfaceReturnvalues.items>()
-                    };
+                            },
+                            GOODSMVT_ITEM = new List<SAPInterfaceReturnvalues.items>()
+                        };
 
-                    var data = new SAPInterfaceReturnvaluesDOPick()
-                    {
-                        ITEM_DATA = new List<SAPInterfaceReturnvaluesDOPick.items>()
-                    };
-
-
-                    foreach (var dataDocItem in docItem)
-                    {
-                        if (dataDocItem.DocItemStos.Sum(x => x.Quantity) == 0)
+                        var data = new SAPInterfaceReturnvaluesDOPick()
                         {
-                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataDocItem.ID.Value,
-                                DocumentEventStatus.CLOSED, this.BuVO);
-                        }
-                        else
+                            ITEM_DATA = new List<SAPInterfaceReturnvaluesDOPick.items>()
+                        };
+
+
+                        foreach (var dataDocItem in docItem)
                         {
-                            //var itemData = new List<SAPInterfaceReturnvaluesDOPick.items>();
-                            data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
+                            if (dataDocItem.DocItemStos.Sum(x => x.Quantity) == 0)
                             {
-                                DELIV_NUMB = doc.RefID,
-                                DELIV_ITEM = dataDocItem.Options == null ? (decimal?)null : decimal.Parse(ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem")),
-                                MATERIAL = dataDocItem.Code,
-                                PLANT = doc.SouBranch,
-                                STGE_LOC = doc.SouWarehouse,
-                                BATCH = dataDocItem.Batch,
-                                //DLV_QTY = dataDocItem.Quantity.ToString(),
-                                DLV_QTY = dataDocItem.DocItemStos.Sum(x => x.Quantity).ToString(),
-                                SALES_UNIT = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
-
-                            });
-
-                            var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
-                            dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
-                            {
-                                MATERIAL = dataDocItem.Code,
-                                PLANT = doc.SouBranch,
-                                STGE_LOC = doc.SouWarehouse,
-                                BATCH = dataDocItem.Batch,
-                                MOVE_TYPE = doc.Ref2,
-                                ENTRY_QNT = dataDocItem.DocItemStos.Sum(x => x.Quantity.Value),
-                                ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
-                                MOVE_STLOC = doc.DesWarehouse,
-                            });
-
-                        }
-                    }
-                    var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
-                    var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
-                    if (checkClosed)
-                    {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
-                               null, null,
-                               DocumentEventStatus.CLOSED,
-                               this.BuVO);
-                    }
-                    //send to SAP
-                        var docStatus4 = "";
-                        var docStatus9 = "";
-
-                            if (doc.Ref2 != null)
-                            {
-                                var resultAPI4 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0004_PLANT_STOCK_TRANSFER(dataAPI4, this.BuVO);
-                                docStatus4 = resultAPI4.docstatus;
+                                ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataDocItem.ID.Value,
+                                    DocumentEventStatus.CLOSED, this.BuVO);
                             }
                             else
                             {
-                                var resultAPI9 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0009_CONFORM_DELIVERY_ORDER_PICK(data, this.BuVO);
-                                docStatus9 = resultAPI9.docstatus;
+                                //var itemData = new List<SAPInterfaceReturnvaluesDOPick.items>();
+                                data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
+                                {
+                                    DELIV_NUMB = doc.RefID,
+                                    DELIV_ITEM = dataDocItem.Options == null ? (decimal?)null : decimal.Parse(ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem")),
+                                    MATERIAL = dataDocItem.Code,
+                                    PLANT = doc.SouBranch,
+                                    STGE_LOC = doc.SouWarehouse,
+                                    BATCH = dataDocItem.Batch,
+                                    //DLV_QTY = dataDocItem.Quantity.ToString(),
+                                    DLV_QTY = dataDocItem.DocItemStos.Sum(x => x.Quantity).ToString(),
+                                    MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
+                                    SALES_UNIT = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
+
+                                });
+
+                                var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
+                                dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
+                                {
+                                    MATERIAL = dataDocItem.Code,
+                                    PLANT = doc.SouBranch,
+                                    STGE_LOC = doc.SouWarehouse,
+                                    BATCH = dataDocItem.Batch,
+                                    MOVE_TYPE = doc.Ref2,
+                                    ENTRY_QNT = dataDocItem.DocItemStos.Sum(x => x.Quantity.Value),
+                                    ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
+                                    MOVE_STLOC = doc.DesWarehouse,
+                                    MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
+                                });
+
                             }
-             
-                        if( docStatus4 == "0" || docStatus9 == "0")
+                        }
+                        var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+                        var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
+                        if (checkClosed)
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
+                                   null, null,
+                                   DocumentEventStatus.CLOSED,
+                                   this.BuVO);
+                        }
+                        //send to SAP
+                        var docStatus4 = "";
+                        var docStatus9 = "";
+
+                        if (doc.Ref2 == "311")
+                        {
+                            var resultAPI4 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0004_PLANT_STOCK_TRANSFER(dataAPI4, this.BuVO);
+                            docStatus4 = resultAPI4.docstatus;
+                        }
+                        else if (doc.Ref2 == null)
+                        {
+                            var resultAPI9 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0009_CONFORM_DELIVERY_ORDER_PICK(data, this.BuVO);
+                            docStatus9 = resultAPI9.docstatus;
+                        }
+                        
+
+                        if (docStatus4 == "0" || docStatus9 == "0")
                         {
                             ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
                             null, null,
                             DocumentEventStatus.CLOSED,
                             this.BuVO);
                         }
-                    //send to SAP
-                }
-                else
-                {
-                    var flag = docHs.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSING );
-                    if (flag)
+                        //send to SAP
+                    }
+                    else
                     {
-                        //var groupBySGI = new List<SAPInterfaceReturnvaluesDOPick>();
-                        //start groupDoc
-                        var rootIssue = docHs
-                            .GroupBy(x => new { RefID = x.RefID})
-                            .Select(x => new {
-                                RefIDs = x.Key.RefID,
-                                IDs = x.Select(y => y.ID).ToList()
-                            })
-                        .ToList();
-                        //start groupDoc
-
-                        foreach (var root in rootIssue)
+                        var flag = docHs.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSING);
+                        if (flag)
                         {
-                          
-                            List<amt_DocumentItem> rootDocItems = new List<amt_DocumentItem>();
-                            root.IDs.ForEach(x =>
-                            {
-                                var diList = ADO.DocumentADO.GetInstant().ListItem(x.Value, this.BuVO);
-                                rootDocItems.AddRange(diList);
-
-                            });
-
-                            var postData = new SAPInterfaceReturnvaluesDOPick()
-                            {
-                                ITEM_DATA = new List<SAPInterfaceReturnvaluesDOPick.items>()
-                            };
-
-                            var dataAPI4 = new SAPInterfaceReturnvalues()
-                            {
-                                GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
+                            //var groupBySGI = new List<SAPInterfaceReturnvaluesDOPick>();
+                            //start groupDoc
+                            var rootIssue = docHs
+                                .GroupBy(x => new { RefID = x.RefID })
+                                .Select(x => new
                                 {
-                                    PSTNG_DATE = doc.ActionTime.Value.ToString("yyyyMMdd", new CultureInfo("en-US")),
-                                    DOC_DATE = doc.DocumentDate.ToString("yyyyMMdd", new CultureInfo("en-US")),
-                                    REF_DOC_NO = doc.ID.ToString(),
-                                    HEADER_TXT = "ASRS Trf within Plant",
-                                    GOODSMVT_CODE = "04"
+                                    RefIDs = x.Key.RefID,
+                                    IDs = x.Select(y => y.ID).ToList()
+                                })
+                            .ToList();
+                            //start groupDoc
 
-                                },
-                                GOODSMVT_ITEM = new List<SAPInterfaceReturnvalues.items>()
-                            };
-
-                            foreach (var dataList in rootDocItems)
+                            foreach (var root in rootIssue)
                             {
-                               var diSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new KeyValuePair<string, object>[] {
+
+                                List<amt_DocumentItem> rootDocItems = new List<amt_DocumentItem>();
+                                root.IDs.ForEach(x =>
+                                {
+                                    var diList = ADO.DocumentADO.GetInstant().ListItem(x.Value, this.BuVO);
+                                    rootDocItems.AddRange(diList);
+
+                                });
+
+                                var postData = new SAPInterfaceReturnvaluesDOPick()
+                                {
+                                    ITEM_DATA = new List<SAPInterfaceReturnvaluesDOPick.items>()
+                                };
+
+                                var dataAPI4 = new SAPInterfaceReturnvalues()
+                                {
+                                    GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
+                                    {
+                                        PSTNG_DATE = doc.ActionTime.Value.ToString("yyyyMMdd", new CultureInfo("en-US")),
+                                        DOC_DATE = doc.DocumentDate.ToString("yyyyMMdd", new CultureInfo("en-US")),
+                                        REF_DOC_NO = doc.ID.ToString(),
+                                        HEADER_TXT = "ASRS Trf within Plant",
+                                        GOODSMVT_CODE = "04"
+
+                                    },
+                                    GOODSMVT_ITEM = new List<SAPInterfaceReturnvalues.items>()
+                                };
+
+                                foreach (var dataList in rootDocItems)
+                                {
+                                    var diSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new KeyValuePair<string, object>[] {
                                    new KeyValuePair<string, object> ("DocumentItem_ID",dataList.ID)
                                    }, this.BuVO);
 
-                                if (diSto.Sum(x => x.Quantity) == 0)
-                                {
-                                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataList.ID.Value,
-                                        DocumentEventStatus.CLOSED, this.BuVO);
-                                }
-                                else
-                                {
-                                    postData.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
+                                    if (diSto.Sum(x => x.Quantity) == 0)
                                     {
-                                        DELIV_NUMB = doc.RefID,
-                                        DELIV_ITEM = dataList.Options == null ? (decimal?)null : long.Parse(ObjectUtil.QryStrGetValue(dataList.Options, "DocItem")),
-                                        MATERIAL = dataList.Code,
-                                        PLANT = doc.SouBranch,
-                                        STGE_LOC = doc.SouWarehouse,
-                                        BATCH = dataList.Batch,
-                                        DLV_QTY = diSto.Sum(x => x.Quantity).ToString(),
-                                        SALES_UNIT = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
-                                    });
-
-                                    var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
-                                    dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
-                                    {
-                                        MATERIAL = dataList.Code,
-                                        PLANT = doc.SouBranch,
-                                        STGE_LOC = doc.SouWarehouse,
-                                        BATCH = dataList.Batch,
-                                        MOVE_TYPE = doc.Ref2,
-                                        ENTRY_QNT = diSto.Sum(x => x.Quantity.Value),
-                                        ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
-                                        MOVE_STLOC = doc.DesWarehouse,
-                                    });
-
-                                    //groupBySGI.Add(postData);
-                                }
-
-                            }
-                            var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
-                            var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
-                            if (checkClosed)
-                            {
-                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
-                                       null, null,
-                                       DocumentEventStatus.CLOSED,
-                                       this.BuVO);
-                            }
-
-                            var docStatus4 = "";
-                                var docStatus9 = "";
-
-                                    if (doc.Ref2 != null)
-                                    {
-                                        var resultAPI4 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0004_PLANT_STOCK_TRANSFER(dataAPI4, this.BuVO);
-                                        docStatus4 = resultAPI4.docstatus;
+                                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataList.ID.Value,
+                                            DocumentEventStatus.CLOSED, this.BuVO);
                                     }
                                     else
                                     {
-                                        var resultAPI9 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0009_CONFORM_DELIVERY_ORDER_PICK(postData, this.BuVO);
-                                        docStatus9 = resultAPI9.docstatus;
+                                        postData.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
+                                        {
+                                            DELIV_NUMB = doc.RefID,
+                                            DELIV_ITEM = dataList.Options == null ? (decimal?)null : long.Parse(ObjectUtil.QryStrGetValue(dataList.Options, "DocItem")),
+                                            MATERIAL = dataList.Code,
+                                            PLANT = doc.SouBranch,
+                                            STGE_LOC = doc.SouWarehouse,
+                                            BATCH = dataList.Batch,
+                                            DLV_QTY = diSto.Sum(x => x.Quantity).ToString(),
+                                            MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
+                                            SALES_UNIT = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
+                                        });
 
+                                        var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
+                                        dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
+                                        {
+                                            MATERIAL = dataList.Code,
+                                            PLANT = doc.SouBranch,
+                                            STGE_LOC = doc.SouWarehouse,
+                                            BATCH = dataList.Batch,
+                                            MOVE_TYPE = doc.Ref2,
+                                            ENTRY_QNT = diSto.Sum(x => x.Quantity.Value),
+                                            ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataList.UnitType_ID.Value).Code,
+                                            MOVE_STLOC = doc.DesWarehouse,
+                                            MOVE_PLANT = this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
+                                        });
+
+                                        //groupBySGI.Add(postData);
                                     }
-                               
-                                if (docStatus4 == "0" || docStatus9 == "0")
+
+                                }
+                                var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+                                var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
+                                if (checkClosed)
                                 {
-                                docHs.ForEach(x =>
+                                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
+                                           null, null,
+                                           DocumentEventStatus.CLOSED,
+                                           this.BuVO);
+                                }
+
+                                var docStatus4 = "";
+                                var docStatus9 = "";
+
+                                if (doc.Ref2 == "311")
+                                {
+                                    var resultAPI4 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0004_PLANT_STOCK_TRANSFER(dataAPI4, this.BuVO);
+                                    docStatus4 = resultAPI4.docstatus;
+                                }
+                                else if (doc.Ref2 == null)
+                                {
+                                    var resultAPI9 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0009_CONFORM_DELIVERY_ORDER_PICK(postData, this.BuVO);
+                                    docStatus9 = resultAPI9.docstatus;
+
+                                }
+                                else
+                                {
+                                    docHs.ForEach(x =>
                                     {
                                         ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value,
                                         null, null,
@@ -263,18 +267,42 @@ namespace AWMSEngine.Engine.Business.Issued
                                         ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
                                         new KeyValuePair<string, object>[]
                                         {
-                                            new KeyValuePair<string, object>("EventStatus",DocumentEventStatus.CLOSED)
+                                                    new KeyValuePair<string, object>("EventStatus",DocumentEventStatus.CLOSED)
                                         });
                                     });
                                 }
 
-                                
+                                if (docStatus4 == "0" || docStatus9 == "0")
+                                {
+                                    docHs.ForEach(x =>
+                                        {
+                                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value,
+                                            null, null,
+                                            DocumentEventStatus.CLOSED,
+                                            this.BuVO);
+
+                                            ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
+                                            new KeyValuePair<string, object>[]
+                                            {
+                                            new KeyValuePair<string, object>("EventStatus",DocumentEventStatus.CLOSED)
+                                            });
+                                        });
+                                }
+
+
+                            }
+
                         }
 
                     }
-                    
                 }
-
+                else
+                {
+                   ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
+                     null, null,
+                     DocumentEventStatus.CLOSED,
+                     this.BuVO);
+                }
             }
             return null;
         }
