@@ -16,7 +16,8 @@ class Picking extends Component{
       palletEdit:false,
       toggle:false,
       pickMode:1,
-      pickItemList:[]
+      pickItemList:[],
+      palletAccept:true
     }
     this.onHandlePalletChange = this.onHandlePalletChange.bind(this)
     this.onHandleSetPalletCode = this.onHandleSetPalletCode.bind(this)
@@ -32,12 +33,13 @@ class Picking extends Component{
   }
 
   onHandleSetPalletCode(){
+    this.setState({palletAccept:false})
     Axios.get(window.apipath + "/api/picking?palletCode=" + this.state.palletCode + "&pickMode=" + this.state.pickMode).then(res => {
       if(res.data._result.status == 0){
       }
       else
         this.setState({palletCode:res.data.palletCode, docItems:res.data.docItems, stos:res.data.stos, palletComponent:true,
-        palletID:res.data.palletID,issuedComponent:false})
+        palletID:res.data.palletID,issuedComponent:false, palletAccept:true})
     }).catch(res => console.log(res))
   }
 
@@ -49,7 +51,7 @@ class Picking extends Component{
     return <Card style={this.style}>
       <CardBody>
         <div><label>Pallet Code : </label><input id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
-          if(e.key === "Enter"){
+          if(e.key === "Enter" && this.state.palletAccept === true){
             this.onHandleSetPalletCode();
           }
         }}/></div>

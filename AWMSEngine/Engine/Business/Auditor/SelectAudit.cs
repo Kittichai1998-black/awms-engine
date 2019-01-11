@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Auditor
 {
-    public class GetListPalletAudit : BaseEngine<string, GetListPalletAudit.TRes>
+    public class SelectAudit : BaseEngine<string, SelectAudit.TRes>
     {
         public class TRes
         {
@@ -30,8 +30,8 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override TRes ExecuteEngine(string reqVO)
         {
-            var listItem = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO, StorageObjectEventStatus.AUDITING, DocumentTypeID.STOCK_AUDIT ,this.BuVO);
-            if (listItem != null)
+            var listItem = ADO.DocumentADO.GetInstant().ListDocumentCanAudit(reqVO, StorageObjectEventStatus.AUDITING, DocumentTypeID.AUDIT ,this.BuVO);
+            if (listItem.Count > 0)
             {
                 var doc = listItem.First();
                 var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
