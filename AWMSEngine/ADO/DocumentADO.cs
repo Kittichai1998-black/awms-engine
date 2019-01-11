@@ -489,7 +489,8 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
-        
+
+        //public List<amt_Document> ListParentLink(long childDocumentID, VOCriteria buVO)
         public List<amt_Document> ListDocumentCanAudit(string palletCode, StorageObjectEventStatus eventStatus, DocumentTypeID docTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -503,7 +504,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<amt_Document> ListParentLink(long documentID, VOCriteria buVO)
+        public List<amt_Document> ListParentLink(long childDocumentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("documentID", documentID);
