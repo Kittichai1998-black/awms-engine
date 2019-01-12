@@ -43,10 +43,13 @@ class IssuedDoc extends Component {
         console.log(res)
         if (res.data._result.status === 1) {
           res.data.document.documentItems.forEach(x =>{
+            //console.log(x.unitType_Name)
             this.setState({
               batch : x.batch,
               lot : x.lot,
               orderNo : x.orderNo,
+              quantityDoc : x.quantity,
+              unitType_NameDoc : x.unitType_Name
       
             })
           })
@@ -70,20 +73,21 @@ class IssuedDoc extends Component {
           let sumArr =[]
           let sumArr1 =[]
           
-
-
         for (let res1 in groupdocItemID){     
             let sum = 0
             groupdocItemID[res1].forEach(res2 => {
               sum += res2.packQty
+              res2.sumQty1=sum
+              res2.batch = this.state.batch
+              // res2.lot = this.state.lot
+              // res2.orderNo = this.state.orderNo
+              res2.quantityDoc = this.state.quantityDoc
+              
+
             })
-            groupdocItemID[res1].sumQty=sum
+
           sumArr1.push(groupdocItemID[res1][groupdocItemID[res1].length -1])
         }
-        console.log(sumArr1)
-
-
-
 
 
           for (let res1 in groupPack){     
@@ -99,13 +103,15 @@ class IssuedDoc extends Component {
               })
           sumArr.push(groupPack[res1][groupPack[res1].length -1])
           }
-          
+
+                  
           var sumQTYPack =0    
           var result = res.data.document.documentItems
             this.setState({data2:sumArr}, () => {
               result.forEach(row1 =>{
                 sumQTYPack = 0 
                 row1.batch = this.state.batch
+
                 this.state.data2.forEach(row2 =>{
                  
                   if(row1.packMaster_Code === row2.packCode){
@@ -116,10 +122,11 @@ class IssuedDoc extends Component {
               })
             })
 
-            this.setState({data:result})
+            this.setState({data:sumArr1})
             
         }
         console.log(this.state.data)
+        
        })
     }
 
@@ -139,9 +146,9 @@ class IssuedDoc extends Component {
 
   render() {
     const cols = [
-      {accessor: 'packMaster_Code', Header: 'PackItem', editable:false, Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>,},
-      {accessor: 'sumQty', Header: 'Quantity',editable:false,Cell: (e) => <span>{e.original.sumQty === undefined ? '0'+ ' / ' + e.original.quantity : e.original.sumQty +' / '+ (e.original.quantity === null?'-':e.original.quantity === null)}</span>,},
-      {accessor: 'unitType_Name', Header: 'UnitType', editable:false,},
+      {accessor: 'packCode', Header: 'PackItem', editable:false, Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>,},
+      {accessor: 'sumQty1', Header: 'Quantity',editable:false,Cell: (e) => <span>{e.original.sumQty1 === undefined ? ('0'+ ' / ' + e.original.quantityDoc) : (e.original.sumQty1 +' / '+ (e.original.quantityDoc === null?'-':e.original.quantityDoc))}</span>,},
+      {accessor: 'packUnitCode', Header: 'UnitType', editable:false,},
       {accessor: 'batch', Header: 'Batch', editable:false,},
       {accessor: 'lot', Header: 'Lot', editable:false,},
       {accessor: 'orderNo', Header: 'Order No', editable:false,}
@@ -184,7 +191,7 @@ class IssuedDoc extends Component {
           <Col xs="6"><div><label>Remark : </label> {this.state.Remark}</div></Col>
       </Row>
         <ReactTable columns={cols} data={this.state.data} NoDataComponent={()=>null} style={{background:"white"}}
-          sortable={false} filterable={false} editable={false} minRows={5} showPagination={false}/><br/>
+          sortable={false} defaultPageSize={1000}  filterable={false} editable={false} minRows={5} showPagination={false}/><br/>
 
         <ReactTable columns={colsdetail} data={this.state.data2} NoDataComponent={()=>null} style={{background:"white"}}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false}/>

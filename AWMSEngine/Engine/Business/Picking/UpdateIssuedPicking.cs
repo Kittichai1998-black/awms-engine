@@ -64,7 +64,8 @@ namespace AWMSEngine.Engine.Business.Picking
                 setSTO.qty = setSTO.qty - x.picked;
                 setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
 
-                ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, reqVO.pickMode,  this.BuVO);
+                if(x.picked > 0)
+                    ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, reqVO.pickMode,  this.BuVO);
 
                 ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
 
