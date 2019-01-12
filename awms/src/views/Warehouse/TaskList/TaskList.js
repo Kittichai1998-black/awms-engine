@@ -43,7 +43,7 @@ class TaskList extends Component {
       TaskListselect: {
         queryString: window.apipath + "/api/viw",
         t: "TaskList",
-        q:"",
+        q: "",
         q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' },{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' }]",
         //q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }]",
         f: "Pallet,DocCode,DocumentTypeID,TaskName,Product,AreaID,Location,Amount,Customer,DsoStatus,DocStatus,StoStatus",
@@ -63,7 +63,7 @@ class TaskList extends Component {
       // { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "30/100", WorkStatus: 3 },
       // { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "40/100", WorkStatus: 4 }]
     }
-
+    this.timeout = null;
     this.updateQueueData = this.updateQueueData.bind(this)
     this.GetListData = this.GetListData.bind(this)
   }
@@ -74,6 +74,7 @@ class TaskList extends Component {
     CheckWebPermission("PickPro", dataGetPer, this.props.history);
   }
   componentDidMount() {
+    this._mounted = true;
     this.GetListData()
     // this.GetQueueData()
     // let interval = setInterval(this.GetListData, 3000);
@@ -81,18 +82,27 @@ class TaskList extends Component {
   }
   componentWillUnmount() {
     // clearInterval(this.state.interval)
+    this._mounted = false;
+    if (this.timeout) {
+      clearTimeout(this.timeout)
+    }
   }
- 
+
   GetListData() {
-    console.log("loaddata")
-    API.all([API.get(createQueryString(this.state.WorkingOutselect)),
-    API.get(createQueryString(this.state.TaskListselect))]).then((res) => {
-      this.setState({
-        dataworkingout: res[0].data.datas, loadingWorkingOut: false,
-        datatasklist: res[1].data.datas, loadingTaskList: false
+    if (this._mounted) {
+      console.log("loaddata")
+      API.all([API.get(createQueryString(this.state.WorkingOutselect)),
+      API.get(createQueryString(this.state.TaskListselect))]).then((res) => {
+        this.setState({
+          dataworkingout: res[0].data.datas, loadingWorkingOut: false,
+          datatasklist: res[1].data.datas, loadingTaskList: false
+        })
+      }).then(() => {
+        this.timeout = setTimeout(this.GetListData, 3000);
       })
-    }).then(() => {setTimeout(this.GetListData,3000); })
+    }
   }
+
   goFull = () => {
     this.setState({ isFull: true });
   }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Received
 {
-    public class CloseGRDocument : BaseEngine<CloseGRDocument.TDocReq, CloseGRDocument.TDocRes>
+    public class ClosedGRDocument : BaseEngine<ClosedGRDocument.TDocReq, ClosedGRDocument.TDocRes>
     {
         public class TDocReq
         {
@@ -94,7 +94,32 @@ namespace AWMSEngine.Engine.Business.Received
                     if (sapRes.docstatus == "0")
                     {
                         groupDocH.docHIDs.ForEach(x => {
-                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                            var docH = docHs.First(d => d.ID == x);
+                            docH.RefID = sapRes.mat_doc;
+                            docH.Ref1 = sapRes.doc_year;
+                            docH.EventStatus = DocumentEventStatus.CLOSED;
+                            docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
+                            ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
+                            docH.DocumentItems.ForEach(di => { di.RefID = sapRes.mat_doc; di.Ref1 = sapRes.doc_year;
+                                docH.EventStatus = DocumentEventStatus.CLOSED;
+                                ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
+                            });
+                            //ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                        });
+                    }
+                    else
+                    {
+                        groupDocH.docHIDs.ForEach(x => {
+                            var docH = docHs.First(d => d.ID == x);
+                            docH.RefID = sapRes.mat_doc;
+                            docH.Ref1 = sapRes.doc_year;
+                            docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
+                            ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
+                            docH.DocumentItems.ForEach(di => {
+                                di.RefID = sapRes.mat_doc;
+                                di.Ref1 = sapRes.doc_year;
+                                ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
+                            });
                         });
                     }
                 }

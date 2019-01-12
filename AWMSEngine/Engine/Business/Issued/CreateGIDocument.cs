@@ -82,8 +82,8 @@ namespace AWMSEngine.Engine.Business.Issued
                  this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.forCustomerID) :
                  this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.forCustomerCode);
             var desSupplierModel = reqVO.desSupplierID.HasValue ?
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == reqVO.desSupplierID) :
-                this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
+                this.StaticValue.Suppliers.FirstOrDefault(x => x.ID == reqVO.desSupplierID) :
+                this.StaticValue.Suppliers.FirstOrDefault(x => x.Code == reqVO.desSupplierCode);
             var desCustomerModel = reqVO.desCustomerID.HasValue ?
                 this.StaticValue.Customers.FirstOrDefault(x => x.ID == reqVO.desCustomerID) :
                 this.StaticValue.Customers.FirstOrDefault(x => x.Code == reqVO.desCustomerCode);

@@ -524,7 +524,21 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
-        public amt_DocumentItem DocItemPut(amt_DocumentItem docItem, VOCriteria buVO)
+        public amt_Document Put(amt_Document doc, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = this.CreateDynamicParameters(doc, "Status", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
+            param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
+            param.Add("@actionBy", buVO.ActionBy);
+            
+            var res = this.Query<amt_Document>("SP_DOC_PUT",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            doc.ID = res.ID;
+            doc.Status = param.Get<EntityStatus>("@status");
+            return doc;
+        }
+        public amt_DocumentItem PutItem(amt_DocumentItem docItem, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@ID", docItem.ID);
@@ -556,7 +570,7 @@ namespace AWMSEngine.ADO
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
             docItem.ID = res.ID;
-            docItem.Status = res.Status;
+            docItem.Status = param.Get<EntityStatus>("@status");
             return docItem;
         }
 

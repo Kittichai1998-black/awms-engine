@@ -22,10 +22,26 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
-        [HttpPost]
+        [HttpPost("create")]
         public dynamic CreateQueue([FromBody]dynamic req)
         {
             CreateWorkQueueAuditAPI exec = new CreateWorkQueueAuditAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+
+        [HttpPost("update")]
+        public dynamic UpdateAudit([FromBody]dynamic req)
+        {
+            UpdateAuditAPI exec = new UpdateAuditAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpGet]
+        public dynamic Get()
+        {
+            SelectAuditAPI exec = new SelectAuditAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             var res = exec.Execute(req);
             return res;
         }
