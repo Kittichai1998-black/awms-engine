@@ -526,11 +526,13 @@ namespace AWMSEngine.ADO
         }
         public amt_Document Put(amt_Document doc, VOCriteria buVO)
         {
-            Dapper.DynamicParameters param = this.CreateDynamicParameters(doc, "Status", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
+            Dapper.DynamicParameters param = this.CreateDynamicParameters(doc, 
+                "DocumentItems", "DocumetnChilds", "ParentDocument",
+                "Status", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
             param.Add("@actionBy", buVO.ActionBy);
             
-            var res = this.Query<amt_Document>("SP_DOC_PUT",
+            var res = this.Query<dynamic>("SP_DOC_PUT",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
@@ -565,7 +567,7 @@ namespace AWMSEngine.ADO
             param.Add("@actionBy", buVO.ActionBy);
 
 
-            var res = this.Query<amt_DocumentItem>("SP_DOCITEM_PUT",
+            var res = this.Query<dynamic>("SP_DOCITEM_PUT",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
