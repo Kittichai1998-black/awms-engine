@@ -138,7 +138,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     docItem.BaseQuantity = newUnit.baseQty;
                     docItem.BaseUnitType_ID = newUnit.baseUnitType_ID;
 
-                    ADO.DocumentADO.GetInstant().DocItemPut(docItem, BuVO);
+                    ADO.DocumentADO.GetInstant().PutItem(docItem, BuVO);
 
                     flagCheckDocItems.Add(docItem.ID.Value);
                 }
@@ -146,7 +146,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 docItemRefSAPs.FindAll(x => !flagCheckDocItems.Any(y => y == x.ID)).ForEach(di =>
                 {
                     di.EventStatus = DocumentEventStatus.REMOVED;
-                    ADO.DocumentADO.GetInstant().DocItemPut(di, BuVO);
+                    ADO.DocumentADO.GetInstant().PutItem(di, BuVO);
                 });
 
             }

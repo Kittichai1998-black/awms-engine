@@ -140,10 +140,10 @@ namespace AWMSEngine.ADO.StaticValue
                 skuMaster_Code = oldUnit.SKUMaster_Code,
                 packMaster_ID = oldUnit.PackMaster_ID,
                 packMaster_Code = oldUnit.PackMaster_Code,
-                qty = qty * oldUnit.ItemQty,
+                qty = qty,
                 unitType_ID = oldUnit.UnitType_ID,
                 baseQty = qty * oldUnit.ItemQty,
-                baseUnitType_ID = oldUnit.UnitType_ID
+                baseUnitType_ID = oldUnit.BaseUnitType_ID
             };
         }
         public ConvertUnitCriteria ConvertToNewUnitBySKU(long skuID, decimal qty, long oldUnitTypeID, long newUnitTypeID)

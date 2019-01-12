@@ -24,8 +24,8 @@ namespace AWMSEngine.APIService.Doc
             this.CommitTransaction();
 
             this.BeginTransaction();
-            var reqSAP = ObjectUtil.DynamicToModel<CloseGRDocument.TDocReq>(this.RequestVO);
-            var resSAP = new CloseGRDocument().Execute(this.Logger, this.BuVO, reqSAP);
+            var reqSAP = ObjectUtil.DynamicToModel<ClosedGRDocument.TDocReq>(this.RequestVO);
+            var resSAP = new ClosedGRDocument().Execute(this.Logger, this.BuVO, reqSAP);
             return resSAP;
         }
     }
