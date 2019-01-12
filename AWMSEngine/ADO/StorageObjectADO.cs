@@ -338,6 +338,16 @@ namespace AWMSEngine.ADO
             param.Add("userID", buVO.ActionBy);
             var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STO_UPDATE_AUDIT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
         }
+
+        public List<amt_DocumentItemStorageObject> ListStoBacth(string stoBatch,long docItemID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("stoBatch", stoBatch);
+            param.Add("docItemID", docItemID);
+            var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_BATCH_QTY", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
     }
 
 }

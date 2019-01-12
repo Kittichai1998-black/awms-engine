@@ -63,11 +63,13 @@ class Return extends Component {
         all: "",
       },
       qtyEdit: [],
-      dataTable: []
+      dataTable: [],
+
 
     }
     this.createListTable = this.createListTable.bind(this)
-    this.checkPalletAndGI = this.checkPalletAndGI.bind(this)
+    //this.checkPalletAndGI = this.checkPalletAndGI.bind(this)
+    //this.genDocItemData = this.genDocItemData.bind(this)
   }
 
   async componentWillMount() {
@@ -76,25 +78,31 @@ class Return extends Component {
     CheckWebPermission("Return", dataGetPer, this.props.history);
     Axios.get(createQueryString(this.state.Document)).then((response) => {
       const IssueDocdata = []
+      const IssueDocID = []
       response.data.datas.forEach(row => {
-        
+        IssueDocID.push({value:row.ID})
         IssueDocdata.push({ value: row.ID, label: row.Code })
+
       })
-      this.setState({ IssueDocdata })
-      this.setState({ IssueDocdata })
+      // this.setState({ IssueDocdata})
+      // this.setState({ IssueDocID})
     })
 
-    Axios.get(createQueryString(this.state.PalletSto)).then((res) => {
-      console.log(res)
-      if(res.data.datas.length === 0){
-  
-      }else{
-        res.data.datas.forEach(row =>{
-          console.log(row)
-        })
-      }
-    })
+    // let QueryDoc = this.state.DocItem
+    // let JSONDoc = []
+    // JSONDoc.push({ "f": "DocumentDate", "c": "<=", "v": this.state.IssueDocID })
+    // QueryDoc.q = JSON.stringify(JSONDoc)  
+    // Axios.get(createQueryString(this.state.Document)).then((response) => {
+    //   const IssueDocItem = []
+    //   response.data.datas.forEach( x => {
+    //     IssueDocItem.push({value: x.ID, label: x.Code})
+    //   })
+    //   this.setState({IssueDocItem})
+    // })
+
   }
+  
+  
 
   // checkPalletAndGI(checkPallet,checkGI){
 
@@ -127,6 +135,7 @@ class Return extends Component {
     </div>
   }
 
+
   createListTable() {
     console.log(this.state.Issue)
     let QueryDoc = this.state.DocumentItemSto
@@ -154,19 +163,11 @@ class Return extends Component {
 
         <Row>
           <Col sm="6">
-            {this.dropdownAuto()}
+            {/* {this.dropdownAuto()}
+             */}
           </Col>
           <Col sm="6">
-            <label style={{ width: '80px', display: "inline-block", textAlign: "right", marginRight: "10px" }}>Pallet : </label>
-            <Input id="Pallettext" style={{ width: '40%', display: 'inline-block' }} type="text"
-              value={this.state.Pallet} placeholder="Pallet"
-              onChange={e => { this.setState({ Pallet: e.target.value }) }}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && this.state.Pallet !== "") {
-                  this.createListTable()
-                }
-              }} />{' '}
-            <Button onClick={this.createListTable} color="primary" >Scan</Button>
+          <div style={{ width: "355px", display: "inline-block" }}><AutoSelect data={this.state.IssueDocID} result={(e) => this.setState({ "Deswarehouse": e.value, "Deswarehouseresult": e.label, "DesWareCode": e.DesWarecode })} /></div>
           </Col>
         </Row><br />
         <ReactTable NoDataComponent={() => null} columns={cols} minRows={10} data={this.state.dataTable} sortable={false} style={{ background: 'white' }}
