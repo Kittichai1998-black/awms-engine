@@ -507,7 +507,7 @@ namespace AWMSEngine.ADO
         public List<amt_Document> ListParentLink(long childDocumentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("documentID", documentID);
+            param.Add("documentID", childDocumentID);
             var res = this.Query<amt_Document>("SP_DOC_LIST_PARENTLINK",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
