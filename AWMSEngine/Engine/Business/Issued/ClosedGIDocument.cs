@@ -173,6 +173,13 @@ namespace AWMSEngine.Engine.Business.Issued
         }
 
 
+        //private void sandToSAPsuccess()
+        //{
+            
+        //}
+
+
+
         private void CloseDocAndDocItem(long docID)
         {
             ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID,
@@ -297,6 +304,11 @@ namespace AWMSEngine.Engine.Business.Issued
 
             }
             return dataAPI4;
+        }
+
+        private void upDateStatusCaseSucess()
+        {
+
         }
 
         private SAPInterfaceReturnvaluesDOPick DataSendToApi9(List<amt_DocumentItem> docItem, string RefID, string SouBranch,string SouWarehouse)
