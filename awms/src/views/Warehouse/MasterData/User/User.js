@@ -17,9 +17,9 @@ class User extends Component {
         this.state = {
             colsRole: [
                 { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", minWidth: 50 },
-                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 140 },
+                { accessor: 'Code', Header: 'Role', editable: false, filterable: false, minWidth: 140 },
                 { accessor: 'Name', Header: 'Name', editable: false, filterable: false, minWidth: 140 },
-                { accessor: 'Description', Header: 'Description', editable: false, filterable: false },
+                //{ accessor: 'Description', Header: 'Description', editable: false, filterable: false },
             ],
             data: [],
             statuslist: [{
@@ -33,7 +33,7 @@ class User extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "User",
                 q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified",
+                f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -73,7 +73,7 @@ class User extends Component {
         };
 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.uneditcolumn = ["Created", "Modified"]
+        this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
@@ -86,7 +86,7 @@ class User extends Component {
     }
 
     async componentWillMount() {
-        document.title = "User - AWMS"
+        document.title = "User Account - AWMS"
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("User", dataGetPer, this.props.history);
@@ -254,8 +254,9 @@ class User extends Component {
         const view = this.state.permissionView
 
         const cols = [
-            { accessor: 'Code', Header: 'Username', editable: view, filterable: true, Filter: "text", insertable: true, fixed: "left", minWidth: 90, maxWidth: 100 },
-            { show: view, accessor: 'Password', Header: 'Password', editable: view, filterable: false, Type: "password", minWidth: 100, maxWidth: 100 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
+            { accessor: 'Code', Header: 'Username', editable: view, filterable: true, Filter: "text", insertable: true, fixed: "left", minWidth: 100 },
+            { show: view, accessor: 'Password', Header: 'Password', editable: view, filterable: false, Type: "password", minWidth: 120 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 160, maxWidth: 200 },
             { accessor: 'EmailAddress', Header: 'Email Address', editable: view, Filter: "text", minWidth: 170, maxWidth: 200 },
             //{ accessor: 'LineID', Header: 'Line ID', editable: true, minWidth: 90},
@@ -263,8 +264,9 @@ class User extends Component {
             //{ accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
             { accessor: 'TelMobile', Header: 'Mobile', Filter: 'text', editable: view, minWidth: 120 },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+            { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+            // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+            // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Role", btntext: "Role" },
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
@@ -304,7 +306,7 @@ class User extends Component {
                             getselection={this.getSelectionData} showPagination={false} />
                         <Card>
                             <CardBody>
-                                <Button onClick={() => this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
+                                <Button onClick={() => this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-right">Save</Button>
                             </CardBody>
                         </Card>
                     </div>

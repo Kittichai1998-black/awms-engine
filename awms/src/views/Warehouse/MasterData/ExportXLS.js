@@ -46,10 +46,10 @@ class ExportXLS extends Component {
   }
   queryInitialDataStatus() {
     //console.log("CheckStatus");
-    //console.log(this.state.dataxls);
     const datas = [...this.state.dataxls];
+    //console.log(datas);
     if (datas.length > 0) {
-      datas.forEach((datarow) => {
+      datas.forEach((datarow, index) => {
         for (var xfield in datarow) {
           if (xfield === "Status") {
             if (datarow[xfield] === 1)
@@ -63,7 +63,7 @@ class ExportXLS extends Component {
                 datarow[xfield] = datarow[xfield].toString();
             }
           }
-
+          datarow["No."] = (index + 1).toString();
         }
       })
       this.setState({ dataxls: datas })
@@ -77,7 +77,7 @@ class ExportXLS extends Component {
     const enums = [...this.state.enum];
     const autocomps = [...this.state.autocomp];
     if (datas.length > 0) {
-      datas.forEach((datarow) => {
+      datas.forEach((datarow, index) => {
         for (var xfield in datarow) {
           if (xfield === "Status") {
             if (datarow[xfield] === 1)
@@ -103,6 +103,7 @@ class ExportXLS extends Component {
               }
             })
           }
+          datarow["No."] = (index + 1).toString();
         }
       })
       this.setState({ dataxls: datas })
@@ -115,7 +116,7 @@ class ExportXLS extends Component {
         <Workbook filename={this.state.filename} element={<DropdownItem>{iconxls} Excel</DropdownItem>}>
           <Workbook.Sheet data={this.state.dataxls} name="Sheet 1">
             {this.props.column.map((item) =>
-              <Workbook.Column label={item.Header} value={item.accessor} />
+              <Workbook.Column label={item.Header} value={item.accessor === undefined ? item.Header : item.accessor} />
             )}
           </Workbook.Sheet>
         </Workbook>

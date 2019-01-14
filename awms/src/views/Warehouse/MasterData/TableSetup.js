@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Badge, Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Badge, Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Row, Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
@@ -79,7 +79,9 @@ class TableGen extends Component {
       currentPage: 1,
       filename: "data",
       enumvalue: [],
-      statusUpdateData: null
+      statusUpdateData: null,
+      countpages: null,
+      defaultPageS: 100
     };
 
     this.customSorting = this.customSorting.bind(this);
@@ -146,7 +148,10 @@ class TableGen extends Component {
         let queryString = createQueryString(data)
         Axios.get(queryString).then(
           (res) => {
-            this.setState({ data: res.data.datas, loading: false })
+            let countpages = null;
+            let counts = res.data.counts;
+            countpages = Math.ceil(counts / 100);
+            this.setState({ data: res.data.datas, countpages: countpages, loading: false })
           })
       }
       else {
@@ -539,18 +544,32 @@ class TableGen extends Component {
   }
 
   paginationButton() {
+    const notPageactive = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+      color: 'black',
+      background: '#eceff1',
+      minWidth: '90px'
+    }
+    const pageactive = {
+      textDecoration: 'none',
+      color: 'black',
+      background: '#cfd8dc',
+      minWidth: '90px'
+    }
     return (
-      <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
-            <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages}</p>
+            <li className="page-item"><a className="page-link" style={this.state.currentPage === this.state.countpages ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("next")}>
               Next</a></li>
           </ul>
-          <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
         </nav>
       </div>
     )
@@ -1219,8 +1238,26 @@ class TableGen extends Component {
       else if (row.editable && (row.body === undefined || !row.body)) {
         row.Cell = (e) => (this.inputTextEditor(e))
       }
-
-      if (row.Type === "datetime") {
+      if (row.Type === "numrows") {
+        row.Cell = (e) => {
+          let numrow = 0;
+          if (this.state.currentPage !== undefined) {
+            if (this.state.currentPage > 1) {
+              // e.index + 1 + (2*100)  
+              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+            } else {
+              numrow = e.index + 1;
+            }
+          }
+          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        }
+        row.getProps = (state, rowInfo) => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        })
+      }
+      else if (row.Type === "datetime") {
         if (row.editable === true)
           row.Cell = (e) => this.datePickerBody(row.dateformat, e.value, e)
         else
@@ -1327,7 +1364,7 @@ class TableGen extends Component {
           className="-striped"
           data={this.state.data}
           ref={ref => this.tableComponent = ref}
-          style={{ backgroundColor: 'white', zIndex: 0 }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', boxShadow: '5px 5px 4px rgba(0, 0, 0, .5)', zIndex: 0 }}
           loading={this.state.loading}
           filterable={this.props.filterable}
           columns={col}
@@ -1335,8 +1372,9 @@ class TableGen extends Component {
           multiSort={false}
           showPagination={true}
           minRows={5}
-          defaultPageSize={100}
+          defaultPageSize={this.state.defaultPageS}
           SubComponent={this.subTable}
+
           getTrProps={(state, rowInfo) => {
             let result = false
             let rmv = false

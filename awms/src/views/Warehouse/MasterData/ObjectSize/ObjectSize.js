@@ -4,7 +4,7 @@ import { Card, Button, CardBody, Input } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import Popup from 'reactjs-popup'
-import {apicall, createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
@@ -116,7 +116,7 @@ class ObjectSize extends Component {
     filterList() {
         const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
         const objType = []
-        Axios.all([Axios.get(createQueryString(objTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
+        Axios.all([Axios.get(createQueryString(objTypeSelect) + "&_token=" + localStorage.getItem("Token"))]).then(
             (Axios.spread((result) => {
                 result.data.forEach(row => {
                     objType.push({ ID: row.value, Code: row.name })
@@ -137,7 +137,7 @@ class ObjectSize extends Component {
     getData(Root_ID) {
         const selectdata = []
         const selectMapdata = []
-        Axios.get(createQueryString(this.state.select)+"&_token="+localStorage.getItem("Token")).then((response) => {
+        Axios.get(createQueryString(this.state.select) + "&_token=" + localStorage.getItem("Token")).then((response) => {
             response.data.datas.forEach(row => {
                 selectdata.push({
                     ID: row.ID
@@ -150,7 +150,7 @@ class ObjectSize extends Component {
                 })
             })
             this.setState({ selectdata })
-            Axios.get(createQueryString(this.state.selectMapChild)+"&_token="+localStorage.getItem("Token")).then((responset) => {
+            Axios.get(createQueryString(this.state.selectMapChild) + "&_token=" + localStorage.getItem("Token")).then((responset) => {
                 responset.data.datas.forEach(row => {
                     selectMapdata.push({
                         ID: row.ID
@@ -219,8 +219,12 @@ class ObjectSize extends Component {
     }
 
     createMapBtn(rowdata) {
-        return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-            onClick={() => this.getData(rowdata.ID)}>Map Size</Button>
+        if (rowdata.ID <= 0) {
+            return null
+        } else {
+            return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+                onClick={() => this.getData(rowdata.ID)}>Map Size</Button>
+        }
     }
 
     updateObjSizeMap() {
@@ -229,7 +233,7 @@ class ObjectSize extends Component {
             dataUpdate.forEach((row) => {
                 row["ID"] = row["ID"] <= 0 ? null : row["ID"]
             })
-            let updjson = {  
+            let updjson = {
                 "t": "ams_ObjectSizeMap",
                 "pk": "ID",
                 "datas": dataUpdate,
@@ -334,6 +338,7 @@ class ObjectSize extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
             { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
@@ -383,7 +388,7 @@ class ObjectSize extends Component {
                             getselection={this.getSelectionData} showPagination={false} />
                         <Card>
                             <CardBody>
-                                <Button onClick={() => this.updateObjSizeMap()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
+                                <Button onClick={() => this.updateObjSizeMap()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-right">Save</Button>
                             </CardBody>
                         </Card>
                     </div>

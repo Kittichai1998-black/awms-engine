@@ -67,6 +67,7 @@ namespace AWMSEngine.Engine.Business
                         bs.packQty = newUnit.qty;
                         bs.packUnitID = newUnit.unitType_ID;
                         bs.packUnitCode = this.StaticValue.UnitTypes.First(x => x.ID == newUnit.unitType_ID).Code;
+                        
                     }
                 });
             }

@@ -43,7 +43,6 @@ class IssuedDoc extends Component {
         console.log(res)
         if (res.data._result.status === 1) {
           res.data.document.documentItems.forEach(x =>{
-            //console.log(x.unitType_Name)
             this.setState({
               batch : x.batch,
               lot : x.lot,
@@ -79,8 +78,8 @@ class IssuedDoc extends Component {
               sum += res2.packQty
               res2.sumQty1=sum
               res2.batch = this.state.batch
-              // res2.lot = this.state.lot
-              // res2.orderNo = this.state.orderNo
+              res2.lot = this.state.lot
+              res2.orderNo = this.state.orderNo
               res2.quantityDoc = this.state.quantityDoc
               
 
@@ -110,7 +109,6 @@ class IssuedDoc extends Component {
             this.setState({data2:sumArr}, () => {
               result.forEach(row1 =>{
                 sumQTYPack = 0 
-                row1.batch = this.state.batch
 
                 this.state.data2.forEach(row2 =>{
                  
