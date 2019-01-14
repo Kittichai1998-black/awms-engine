@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { apicall,createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
 
@@ -24,7 +24,7 @@ class Warehouse extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "WarehouseMaster",
                 q: "[{ 'f': 'Status', c:'!=', 'v': 2}]",
-                f: "ID,Code,Name,Description,Branch_ID,Branch_Code,Status,Created,Modified",
+                f: "ID,Code,Name,Description,Branch_ID,Branch_Code,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'ID','od':'asc'}]",
                 sk: "",
@@ -37,7 +37,7 @@ class Warehouse extends Component {
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["Branch_Code", "Created", "Modified"]
+        this.uneditcolumn = ["Branch_Code", "Created", "Modified", "LastUpdate"]
     }
     componentDidMount() {
         document.title = "Warehouse - AWMS"
@@ -102,14 +102,16 @@ class Warehouse extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
-            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100 },
-            { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 120 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
+            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 120},
+            { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 120 },
             //{accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
-            { accessor: 'Branch_Code', Header: 'Branch', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 120, maxWidth: 130 },
+            { accessor: 'Branch_Code', Header: 'Branch', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 120},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown",},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+            { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+            //   { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+            // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];

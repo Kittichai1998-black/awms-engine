@@ -23,7 +23,7 @@ class BaseType extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "BaseMasterType",
                 q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Description,UnitType_ID,UnitType_Code,Weight,Status,Created,Modified",
+                f: "ID,Code,Name,Description,UnitType_ID,UnitType_Code,Weight,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -37,7 +37,7 @@ class BaseType extends Component {
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["UnitType_Code", "Created", "Modified"]
+        this.uneditcolumn = ["UnitType_Code", "Created", "Modified", "LastUpdate"]
     }
 
     onHandleClickCancel(event) {
@@ -85,7 +85,7 @@ class BaseType extends Component {
             all: "",
         }
 
-        Axios.all([Axios.get(createQueryString(UnitTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
+        Axios.all([Axios.get(createQueryString(UnitTypeSelect) + "&_token=" + localStorage.getItem("Token"))]).then(
             (Axios.spread((UnitTypeResult) => {
                 let ddl = [...this.state.autocomplete]
                 let UnitTypeList = {}
@@ -102,18 +102,20 @@ class BaseType extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
             { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 140 },
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", maxWidth: 130 },
-            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: view, Filter: "text", datatype: "int", Type: "autocomplete", minWidth: 90, className: "center" },
+            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: view, Filter: "text", datatype: "int", minWidth: 90, className: "center" },
             //{accessor: 'GroupType', Header: 'Group Type', editable:true,Filter:"text"},
             //{accessor: 'SizeLevel', Header: 'Size Level', editable:true,Filter:"text"},
             //{accessor: 'InnerSizeLevels', Header: 'Inner Size Levels', editable:true,Filter:"text"},
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+            { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+            // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+            // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
@@ -131,7 +133,7 @@ class BaseType extends Component {
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"BaseType"}
-                    filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={view} 
+                    filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={view}
                     btn={btnfunc} uneditcolumn={this.uneditcolumn}
                     table="ams_BaseMasterType" />
             </div>

@@ -77,7 +77,7 @@ class AreaType extends Component {
   filterList() {
     const groupTypeSelect = { queryString: window.apipath + "/api/enum/AreaMasterGroupType" }
     const groupType = []
-    Axios.all([Axios.get(createQueryString(groupTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
+    Axios.all([Axios.get(createQueryString(groupTypeSelect) + "&_token=" + localStorage.getItem("Token"))]).then(
       (Axios.spread((result) => {
         result.data.forEach(row => {
           groupType.push({ ID: row.value, Code: row.name })
@@ -135,6 +135,7 @@ class AreaType extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 90 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
       { accessor: 'GroupType', Header: 'Group Type', updateable: view, Filter: "text", Type: "autocomplete" },

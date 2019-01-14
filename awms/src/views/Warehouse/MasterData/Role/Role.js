@@ -282,6 +282,7 @@ class Role extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
             { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 160 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 170 },
             { accessor: 'Description', Header: 'Description', editable: view, sortable: false, Filter: "text" },
@@ -322,7 +323,7 @@ class Role extends Component {
                             getselection={this.getSelectionData} showPagination={false} defaultPageSize={this.state.selectdata.length} />
                         <Card>
                             <CardBody>
-                                <Button onClick={() => this.updateRolePermission()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
+                                <Button onClick={() => this.updateRolePermission()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-right">Save</Button>
                             </CardBody>
                         </Card>
                     </div>

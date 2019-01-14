@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Button, Row, Col, Card, CardImg, CardText, CardBody, CardLink, CardTitle, CardSubtitle } from 'reactstrap';
+import { Badge, Input, Button, Row, Col, Card, CardImg, CardText, CardBody, CardLink, CardTitle, CardSubtitle } from 'reactstrap';
 import ReactTable from 'react-table'
 import { AutoSelect, Clone, apicall, createQueryString } from '../ComponentCore'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -32,7 +32,8 @@ class TaskList extends Component {
       WorkingOutselect: {
         queryString: window.apipath + "/api/viw",
         t: "WorkingOut",
-        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }]",
+        //q: "",
+        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
         f: "Time,Gate,AreaID,Pallet,Product,MoveTo,EventStatus,WorkStatus",
         g: "",
         s: "[{'f':'WorkStatus','od':'asc'}]",
@@ -43,12 +44,12 @@ class TaskList extends Component {
       TaskListselect: {
         queryString: window.apipath + "/api/viw",
         t: "TaskList",
-        q: "",
-        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' },{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' }]",
-        //q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }]",
-        f: "Pallet,DocCode,DocumentTypeID,TaskName,Product,AreaID,Location,Amount,Customer,DsoStatus,DocStatus,StoStatus",
+        //q: "",
+        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' },{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' }]",
+        //q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
+        f: "Pallet,DocCode,DocumentTypeID,TaskName,Product,PalletSKU,AreaID,Location,Amount,Customer,DsoStatus,DocStatus,StoStatus",
         g: "",
-        s: "[{'f':'DsoStatus','od':'asc'},{'f':'ModifyTime','od':'asc'}]",
+        s: "[{'f':'DsoStatus','od':'asc'},{'f':'ModifyTime','od':'desc'}]",
         sk: 0,
         l: 100,
         all: "",
@@ -67,6 +68,9 @@ class TaskList extends Component {
     this.updateQueueData = this.updateQueueData.bind(this)
     this.GetListData = this.GetListData.bind(this)
   }
+  //   ID	Code	Name
+  // 8	FF	พื้นที่ Staging ด้านหน้า
+  // 9	FR	พื้นที่ Staging ด้านหลัง
   async componentWillMount() {
     document.title = "Picking Progress : AWMS";
     //permission
@@ -76,12 +80,8 @@ class TaskList extends Component {
   componentDidMount() {
     this._mounted = true;
     this.GetListData()
-    // this.GetQueueData()
-    // let interval = setInterval(this.GetListData, 3000);
-    // this.setState({ interval: interval })
   }
   componentWillUnmount() {
-    // clearInterval(this.state.interval)
     this._mounted = false;
     if (this.timeout) {
       clearTimeout(this.timeout)
@@ -122,8 +122,8 @@ class TaskList extends Component {
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       } else {
-        areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }, { 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
+        areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' });
+        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }, { 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       }
@@ -132,11 +132,11 @@ class TaskList extends Component {
   }
   render() {
     const cols1 = [
-      { accessor: "Time", Header: "Time", minWidth: 65 },
-      { accessor: "Gate", Header: "Gate", minWidth: 70 },
-      { accessor: "Pallet", Header: "Pallet", minWidth: 80 },
-      { accessor: "Product", Header: "Product", minWidth: 150 },
-      { accessor: "MoveTo", Header: "Move To", minWidth: 120 },
+      { accessor: "Time", Header: "Time", minWidth: 65, className: 'center' },
+      { accessor: "Gate", Header: "Gate", minWidth: 90 },
+      { accessor: "Pallet", Header: "Pallet", minWidth: 100 },
+      // { accessor: "Product", Header: "Product", minWidth: 150 },
+      { accessor: "MoveTo", Header: "Move To", minWidth: 210 },
     ]
     // const cols2 = [
     //   { accessor: "DocCode", Header: "Document", minWidth: 80 },
@@ -161,22 +161,23 @@ class TaskList extends Component {
     //   { accessor: "Amount", Header: "Amount", minWidth: 60 },
     // ]
     const cols2 = [
-      { accessor: "DocCode", Header: "Doc", minWidth: 80 },
-      { accessor: "Pallet", Header: "Pallet", minWidth: 80 },
+      //{ accessor: "DocCode", Header: "Doc", minWidth: 80 },
       {
-        accessor: "TaskName", Header: "Task Name", minWidth: 80
+        accessor: "TaskName", Header: "Task Name", minWidth: 50, className: 'center',
+        Cell: row => (
+          <Badge color={row.value} style={{ fontSize: '1rem', fontWeight: '600' }}>{row.value}</Badge>
+        )
       },
-      { accessor: "Product", Header: "Product", minWidth: 70 },
-      {
-        accessor: "Location", Header: "Location", minWidth: 80
-      },
-      { accessor: "Amount", Header: "Amount", minWidth: 60, className: 'right' },
-      { accessor: "Customer", Header: "Customer", minWidth: 70 }
+      { accessor: "Customer", Header: "Destination", minWidth: 100 },
+      { accessor: "Location", Header: "Location", minWidth: 90 },
+      { accessor: "PalletSKU", Header: "Pallet", minWidth: 210 },
+      // { accessor: "Product", Header: "Product", minWidth: 70 },
+      //{ accessor: "Amount", Header: "Amount", minWidth: 60, className: 'right' },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
-      { value: '2', label: 'Front Area' },
-      { value: '3', label: 'Rear Area' }
+      { value: '8', label: 'Front Area' },
+      { value: '9', label: 'Rear Area' }
     ];
     return (
       <div>
@@ -206,7 +207,7 @@ class TaskList extends Component {
                     minRows={5}
                     data={this.state.dataworkingout}
                     sortable={false}
-                    style={{ background: 'white', textAlign: 'center', height: '13.75em' }}
+                    style={{ background: 'white', height: '10em', fontSize: '1rem', fontWeight: '400' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
@@ -252,7 +253,7 @@ class TaskList extends Component {
                     minRows={10}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white', textAlign: 'center', height: '21em' }}
+                    style={{ background: 'white', height: '21.75em', fontSize: '1rem', fontWeight: '400' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
