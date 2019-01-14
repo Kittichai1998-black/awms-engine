@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
-            if(reqVO.itemLists != null)
+            if(reqVO.itemLists.Count > 0)
             {
                 reqVO.itemLists.ForEach(x =>
                 {

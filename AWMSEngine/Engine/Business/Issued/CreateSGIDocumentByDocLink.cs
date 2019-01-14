@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     desWarehouseCode = x.desWarehouseCode,
                     desAreaMasterCode = x.desAreaMasterCode,
                     forCustomerCode = x.forCustomerCode,
-                    //batch = x.batch,
+                    batch = x.batch,
                     //lot = x.lot
                 }).Select(x => x.Key);
 
@@ -81,7 +81,7 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 CreateDocument.TReq docGRReq = new CreateDocument.TReq()
                 {
-                    //batch = ig.batch,
+                    batch = ig.batch,
                     //lot = ig.lot,
                     refID = reqVO.refID,
                     ref1 = reqVO.ref1,
