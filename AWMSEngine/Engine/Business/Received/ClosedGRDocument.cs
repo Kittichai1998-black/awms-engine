@@ -113,7 +113,7 @@ namespace AWMSEngine.Engine.Business.Received
                             var docH = docHs.First(d => d.ID == x);
                             docH.RefID = sapRes.mat_doc;
                             docH.Ref1 = sapRes.doc_year;
-                            docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
+                            docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(" |", sapRes.@return.Select(y => y.message).ToArray()));
                             ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
                             docH.DocumentItems.ForEach(di => {
                                 di.RefID = sapRes.mat_doc;
