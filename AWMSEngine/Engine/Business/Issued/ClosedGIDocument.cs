@@ -57,9 +57,14 @@ namespace AWMSEngine.Engine.Business.Issued
 
                             if(dataApi4 != null)
                             {
-                                if (this.sendToApi4(dataApi4) == "0")
+                                var dataReturn = this.sendToApi4(dataApi4);
+                                if (dataReturn.docstatus == "0")
                                 {
-                                    this.CloseDocAndDocItem(doc.ID.Value);
+                                    sandToSAPsuccess(docHs, docItem, dataReturn);
+                                }
+                                else
+                                {
+                                    sandToSAPfail(docHs, docItem, dataReturn);
                                 }
                             }
                         }
@@ -72,10 +77,17 @@ namespace AWMSEngine.Engine.Business.Issued
                             doc.SouWarehouse
                             );
 
-                            if (this.sendToApi9(dataApi9) == "0")
+
+                            var dataReturn = this.sendToApi9(dataApi9);
+                            if (dataReturn.docstatus == "0")
                             {
-                                this.CloseDocAndDocItem(doc.ID.Value);
+                                sandToSAPsuccess(docHs, docItem, dataReturn);
                             }
+                            else
+                            {
+                                sandToSAPfail(docHs, docItem, dataReturn);
+                            }
+
                         }
 
                         var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
@@ -126,10 +138,18 @@ namespace AWMSEngine.Engine.Business.Issued
 
                                     if (dataApi4 != null)
                                     {
-                                        if (this.sendToApi4(dataApi4) == "0")
+
+                                        var dataReturn = this.sendToApi4(dataApi4);
+                                        if (dataReturn.docstatus == "0")
                                         {
-                                            this.ClosedDocAndParent(docHs);
+                                            sandToSAPsuccess(docHs, docItem, dataReturn);
+                                            this.ClosedDocAndParent(relation);
                                         }
+                                        else
+                                        {
+                                            sandToSAPfail(docHs, docItem, dataReturn);
+                                        }
+
                                     }
                                 }
                                 else
@@ -141,10 +161,19 @@ namespace AWMSEngine.Engine.Business.Issued
                                     doc.SouWarehouse
                                     );
 
-                                    if (this.sendToApi9(dataApi9) == "0")
+
+                                    var dataReturn = this.sendToApi9(dataApi9);
+
+                                    if(dataReturn.docstatus == "0")
                                     {
-                                        this.ClosedDocAndParent(docHs);
+                                        sandToSAPsuccess(docHs, docItem, dataReturn);
+                                        this.ClosedDocAndParent(relation);
                                     }
+                                    else
+                                    {
+                                        sandToSAPfail(docHs, docItem, dataReturn);
+                                    }
+                                  
                                 }
                                 var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
                                 var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
@@ -172,13 +201,46 @@ namespace AWMSEngine.Engine.Business.Issued
             return null;
         }
 
+        private void sandToSAPfail(List<amt_Document> docHs, List<amt_DocumentItem> docItem, SAPResposneAPI sapRes)
+        {
 
-        //private void sandToSAPsuccess()
-        //{
             
-        //}
+            foreach (var d in docHs)
+            {
+                var docH = ADO.DataADO.GetInstant().SelectByID<amt_Document>(d.ID, this.BuVO);
+                docH.RefID = sapRes.mat_doc;
+                docH.Ref1 = sapRes.doc_year;
+                docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
+                ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
+                docItem.ForEach(di =>
+                {
+                    di.RefID = sapRes.mat_doc;
+                    di.Ref1 = sapRes.doc_year;
+                    ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
+                });
 
+            }
+        }
 
+        private void sandToSAPsuccess(List<amt_Document> docHs,List<amt_DocumentItem> docItem, SAPResposneAPI sapRes)
+        {
+            foreach (var d in docHs )
+            {
+                var docH = ADO.DataADO.GetInstant().SelectByID<amt_Document>(d.ID, this.BuVO);
+                docH.RefID = sapRes.mat_doc;
+                docH.Ref1 = sapRes.doc_year;
+                //docH.EventStatus = DocumentEventStatus.CLOSED;
+                docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
+                ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
+                docItem.ForEach(di =>
+                {
+                    di.RefID = sapRes.mat_doc; di.Ref1 = sapRes.doc_year;
+                    //docH.EventStatus = DocumentEventStatus.CLOSED;
+                    ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
+
+                });
+            }
+        }
 
         private void CloseDocAndDocItem(long docID)
         {
@@ -200,15 +262,10 @@ namespace AWMSEngine.Engine.Business.Issued
             });
         }
 
-        private void ClosedDocAndParent(List<amt_Document> docHs)
+        private void ClosedDocAndParent(List<amt_Document> Parent)
         {
-            docHs.ForEach(x =>
+            Parent.ForEach(x =>
             {
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value,
-                null, null,
-                DocumentEventStatus.CLOSED,
-                this.BuVO);
-
                 ADO.DataADO.GetInstant().UpdateByID<amt_Document>(x.ID.Value, this.BuVO,
                 new KeyValuePair<string, object>[]
                 {
@@ -217,18 +274,16 @@ namespace AWMSEngine.Engine.Business.Issued
             });
         }
 
-        private string sendToApi4(SAPInterfaceReturnvalues dataAPI4)
+        private SAPResposneAPI sendToApi4(SAPInterfaceReturnvalues dataAPI4)
         {
             var resultAPI4 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0004_PLANT_STOCK_TRANSFER(dataAPI4, this.BuVO);
-            var docStatus4 = resultAPI4.docstatus;
-            return docStatus4;
+            return resultAPI4;
         }
 
-        private string sendToApi9(SAPInterfaceReturnvaluesDOPick dataAPI9)
+        private SAPResposneAPI sendToApi9(SAPInterfaceReturnvaluesDOPick dataAPI9)
         {
             var resultAPI9 = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0009_CONFORM_DELIVERY_ORDER_PICK(dataAPI9, this.BuVO);
-            var docStatus9 = resultAPI9.docstatus;
-            return docStatus9;
+            return resultAPI9;
         }
 
         private SAPInterfaceReturnvalues DataSendToApi4(string actionTime,string docDate,string docID,List<amt_DocumentItem> docItem,string Ref2,string SouBranch,string SouWarehouse,string DesWarehouse,long relation,ams_Warehouse DesWareDoc)
@@ -301,14 +356,8 @@ namespace AWMSEngine.Engine.Business.Issued
                             });
                         }
                     }
-
             }
             return dataAPI4;
-        }
-
-        private void upDateStatusCaseSucess()
-        {
-
         }
 
         private SAPInterfaceReturnvaluesDOPick DataSendToApi9(List<amt_DocumentItem> docItem, string RefID, string SouBranch,string SouWarehouse)
@@ -345,8 +394,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         if (sto.Batch != null)
                         {
                             dataStoBranch.Add(sto.Batch);
-                        }
-                                             
+                        }                                            
                     }
 
                     var stoBatch = dataStoBranch.Distinct().ToList();
