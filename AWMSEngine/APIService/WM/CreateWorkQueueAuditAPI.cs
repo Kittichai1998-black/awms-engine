@@ -16,6 +16,7 @@ namespace AWMSEngine.APIService.WM
 
         protected override dynamic ExecuteEngineManual()
         {
+            this.BeginTransaction();
             var req = ObjectUtil.DynamicToModel<CreateWorkQueueAudit.TReq>(this.RequestVO);
             var res = new CreateWorkQueueAudit().Execute(this.Logger, this.BuVO, req);
 

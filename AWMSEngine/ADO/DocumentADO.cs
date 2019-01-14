@@ -507,7 +507,7 @@ namespace AWMSEngine.ADO
         public List<amt_Document> ListParentLink(long childDocumentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("documentID", documentID);
+            param.Add("documentID", childDocumentID);
             var res = this.Query<amt_Document>("SP_DOC_LIST_PARENTLINK",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
@@ -582,7 +582,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("DOCITEM_ID", docItem);
             param.Add("STAMP_DATE", lot);
-            param.Add("BATCH", lot);
+            param.Add("BATCH", batch);
             param.Add("ORDER_NO", order_no);
             var res = this.Query<SPOutDocItemQueueProcess>("SP_DOCITEM_QUEUE_PROCESS_AUDIT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
 

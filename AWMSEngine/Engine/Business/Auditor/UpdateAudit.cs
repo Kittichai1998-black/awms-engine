@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,8 @@ namespace AWMSEngine.Engine.Business.Auditor
             {
                 reqVO.itemLists.ForEach(x =>
                 {
-                    var baseAudited = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(x.stoID, x.auditQty.HasValue ? x.auditQty.Value : 0, x.unitID);
+                    var getPack = ADO.StorageObjectADO.GetInstant().Get(x.stoID, StorageObjectType.PACK, false, false, this.BuVO);
+                    var baseAudited = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(getPack.skuID.Value, x.auditQty.HasValue ? x.auditQty.Value : 0, x.unitID);
                     ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.baseQty, this.BuVO);
                 });
 

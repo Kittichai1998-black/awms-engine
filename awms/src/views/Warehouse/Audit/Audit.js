@@ -37,7 +37,7 @@ class Audit extends Component{
       }
       else
         this.setState({itemLists:res.data.itemLists, docID:res.data.docID, palletComponent:true,
-        palletID:res.data.palletID,issuedComponent:false})
+        palletID:res.data.palletID,issuedComponent:true})
     }).catch(res => console.log(res))
   }
 
@@ -72,65 +72,71 @@ class Audit extends Component{
     let full_style = {background:"green", color:"white"};
     let no_style = {background:"gray", color:"white"};
 
-    return this.state.stos.map((list,index) => {
+    return this.state.itemLists.map((list,index) => {
+      if(list.auditQty === undefined){
+        list.auditQty = list.qty;
+      }
       return <Card key={index} style={full_style}>
         <CardBody>
           <div>Pack Code : {list.packCode}</div>
           <div>Batch : {list.batch}</div>
-          <div>Pallet Quantity : {list.palletQty} {list.unitType}</div>
-          <div>Audit : {this.createAuditEdit(list)} / {list.palletQty} {list.unitType}</div>
+          <div>Pallet Quantity : {list.qty} {list.unitCode}</div>
+          <div>Audit : {this.createAuditEdit(list)} / {list.qty} {list.unitCode}</div>
         </CardBody>
       </Card>
     })
   }
 
   createAuditEdit(list){
-    return <Input style={{width:"100px", display:"inline"}} value={list.palletQty} onChange={(e) => {
+    return <Input style={{width:"100px", display:"inline"}} value={list.auditQty} onChange={(e) => {
       let itemLists = this.state.itemLists;
       let item = itemLists.filter(row => {
         return row.packCode === list.packCode && row.batch == list.batch
       })
-      item[0].shouldPick = e.target.value
+      if(e.target.value < 0){
+        alert("สินค้าน้อยกว่า 0 ไม่ได้")
+      }
+      else{
+        list.auditQty = Number(e.target.value)
+      }
+      try{
+        if(isNaN(e.target.value)){
+          item[0].auditQty = 0
+          throw "กรอกเฉพาะตัวเลขเท่านั้น"
+        }
+      }
+      catch(err){
+        alert(err)
+      }
       this.forceUpdate();
     }}/>
   }
 
   onHandleClickAudit(){
     let pickedList = this.state.itemLists.map(x => {
+      let auditQty = x.auditQty - x.qty
       return {stoID:x.stoID,
         docItemID:x.docItemID,
         packCode:x.packCode,
+        auditQty:auditQty,
         qty:x.qty,
         baseQty:x.baseQty,
         unitID:x.unitID,
-        unitCode:x.unitCode,
-        baseUnitID:x.baseUnitID,
-        baseUnitCode:x.baseUnitCode}
+        baseUnitID:x.baseUnitID}
     });
     
-    const data = {palletCode:this.state.palletCode,
-      palletID:this.state.palletID,
-      docID:this.state.issuedSelect.docID,
-      pickMode:this.state.pickMode,
-      pickedList:pickedList
+    const data = {docID:this.state.docID,
+      palletCode:this.state.palletCode,
+      itemLists:pickedList
     }
 
-    Axios.post(window.apipath + "/api/picking", data).then((res) => {
-      let mm = pickedList.every(x => {
-        return x.picked === (x.canPick > x.palletQty ? x.palletQty : x.canPick)
-      })
-      if(!mm){
-        this.onHandleClickSelectDocument(this.state.docID);
-      }
-      else{
-        this.setState({issuedSelect:{},
-          palletComponent:false,
-          issuedComponent:false,
-          palletEdit:false,
-          toggle:false,
-          pickItemList:[],
-          palletCode:"",})
-      }
+    Axios.post(window.apipath + "/api/wm/audit", data).then((res) => {
+      this.setState({
+        palletComponent:false,
+        palletEdit:false,
+        toggle:false,
+        pickItemList:[],
+        palletCode:"",})
 
       this.setState({palletCode:""}, () =>{
         let eleBarcode = document.getElementById("txtBarcode")
@@ -149,7 +155,7 @@ class Audit extends Component{
           {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}>
             <CardBody>
               {this.createAuditItem()}
-              {<Button onClick={() => {this.onHandleClickAudit()}}>Picking</Button>}
+              {<Button onClick={() => {this.onHandleClickAudit()}}>Accept</Button>}
             </CardBody>
           </Card> : null}
         </Row>
