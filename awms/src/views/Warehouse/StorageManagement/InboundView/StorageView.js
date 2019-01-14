@@ -156,9 +156,9 @@ class IssuedDoc extends Component {
 
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ background: "primary", borderColor: "primary", width: '130px', marginLeft: '5px', display: this.state.showbutton }}
+            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }}
               onClick={() => this.workingData(this.state.selectiondata, "reject")} color="primary" className="float-right">Reject</Button>
-            <Button id="per_button_reject" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display: this.state.showbutton }}
+            <Button id="per_button_reject" style={{ width: '130px', display: this.state.showbutton }}
               onClick={() => this.workingData(this.state.selectiondata, "Close")} color="danger" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>

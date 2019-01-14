@@ -196,7 +196,7 @@ class Role extends Component {
         if (rowdata.ID <= 0) {
             return null
         } else {
-            return <div class="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '100px' }}
+            return <div class="text-center"><Button type="button" color="info" style={{ width: '100px' }}
                 onClick={() => this.getData(rowdata.ID)}>Permission</Button></div>
         }
     }
@@ -323,7 +323,7 @@ class Role extends Component {
                             getselection={this.getSelectionData} showPagination={false} defaultPageSize={this.state.selectdata.length} />
                         <Card>
                             <CardBody>
-                                <Button onClick={() => this.updateRolePermission()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-right">Save</Button>
+                                <Button onClick={() => this.updateRolePermission()} color="primary" style={{ width: '130px' }} className="float-right">Save</Button>
                             </CardBody>
                         </Card>
                     </div>

@@ -131,8 +131,8 @@ class Storage extends Component {
   render() {
     const cols = [
       { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50 },
-      { accessor: 'viewChildPackMaster_Codes', Header: 'SKU Code', Filter: "text", fixed: "left", sortable: false, minWidth: 110 },
-      { accessor: 'viewChildPackMaster_Names', Header: 'SKU Name', Filter: "text", fixed: "left", sortable: false },
+      { accessor: 'viewChildPackMaster_Codes', Header: 'SKU Code', Filter: "text", fixed: "left", sortable: false, minWidth: 130 },
+      { accessor: 'viewChildPackMaster_Names', Header: 'SKU Name', Filter: "text", sortable: false, minWidth: 250 },
       { accessor: 'baseMaster_Code', Header: 'Pallet', Filter: "text", sortable: true },
       { accessor: 'areaLocationMaster_Code', Header: 'Location', Filter: "text", sortable: true },
       /* {accessor: 'baseMaster_Code', Header: 'Base Type Code', Filter:"text" },

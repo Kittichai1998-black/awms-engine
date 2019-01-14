@@ -142,7 +142,7 @@ class Area extends Component {
     }
 
     createBarcodeBtn(rowdata) {
-        return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+        return <Button type="button" color="info" style={{ width: '80px' }}
             onClick={() => {
                 let barcode = [{ "barcode": rowdata["Code"], "Name": rowdata["Name"] }]
                 let barcodestr = JSON.stringify(barcode)
