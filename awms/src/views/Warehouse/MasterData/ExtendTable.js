@@ -729,12 +729,12 @@ class ExtendTable extends Component {
 
   btnGenerate() {
     if (this.props.btnHold === true) {
-      return <Card style={{ display: 'inlne-block', textAlign: 'right' }}>
+      return <Card>
         <CardBody>
-          <Button style={{ background: "#0095a8", borderColor: "#0095a8", width: '130px' }}
-            onClick={() => this.updateHold("unhold")} color="primary" className="float-right" className="float-left">Unhold</Button>
-          <Button style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }}
-            onClick={() => this.updateHold("hold")} color="primary" className="float-right" className="float-left">Hold</Button>
+          <Button style={{ width: '130px', marginLeft: '5px' }}
+            onClick={() => this.updateHold("unhold")} color="primary" className="float-right">Unhold</Button>
+          <Button style={{ width: '130px' }}
+            onClick={() => this.updateHold("hold")} color="success" className="float-right">Hold</Button>
         </CardBody>
       </Card>
     }
@@ -769,7 +769,7 @@ class ExtendTable extends Component {
       } else if (row.Type === "button") {
         this.props.btn.find(btnrow => {
           if (row.btntype === "Remove" && btnrow.btntype) {
-            row.Cell = (e) => <Button type="button" style={{ background: "#ef5350", borderColor: "#ef5350" }} color="success" onClick={() => this.removedata(e.original)}>Remove</Button>
+            row.Cell = (e) => <Button type="button" color="danger" onClick={() => this.removedata(e.original)}>Remove</Button>
           }
           else {
             if (row.btntype === btnrow.btntype) {

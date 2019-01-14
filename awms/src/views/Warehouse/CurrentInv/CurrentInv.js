@@ -125,9 +125,10 @@ class CurrentInv extends Component {
 
   render() {
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
       { accessor: 'Pack', Header: 'Pack Code/Name', Filter: "text", minWidth: 250 },
-      { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text" },
-      { accessor: 'Total', Header: 'Total Qty', Filter: "text" },
+      { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text", minWidth: 120 },
+      { accessor: 'Total', Header: 'Total Qty', Filter: "text", className: 'right', minWidth: 90, maxWidth: 90 },
 
     ];
     const dataEcel = this.state.dataExcel

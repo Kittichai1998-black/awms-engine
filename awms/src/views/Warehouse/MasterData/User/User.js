@@ -187,7 +187,7 @@ class User extends Component {
         if (rowdata.ID <= 0) {
             return null
         } else {
-            return <div className="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+            return <div className="text-center"><Button type="button" color="info" style={{ width: '80px' }}
                 onClick={() => this.getData(rowdata.ID)}>Role</Button></div>
         }
     }
@@ -306,7 +306,7 @@ class User extends Component {
                             getselection={this.getSelectionData} showPagination={false} />
                         <Card>
                             <CardBody>
-                                <Button onClick={() => this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-right">Save</Button>
+                                <Button onClick={() => this.updateRole()} color="primary" style={{ width: '130px' }} className="float-right">Save</Button>
                             </CardBody>
                         </Card>
                     </div>

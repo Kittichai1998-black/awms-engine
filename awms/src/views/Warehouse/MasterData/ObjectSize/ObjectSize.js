@@ -222,7 +222,7 @@ class ObjectSize extends Component {
         if (rowdata.ID <= 0) {
             return null
         } else {
-            return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+            return <Button type="button" color="info" style={{ width: '80px' }}
                 onClick={() => this.getData(rowdata.ID)}>Map Size</Button>
         }
     }
@@ -388,7 +388,7 @@ class ObjectSize extends Component {
                             getselection={this.getSelectionData} showPagination={false} />
                         <Card>
                             <CardBody>
-                                <Button onClick={() => this.updateObjSizeMap()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-right">Save</Button>
+                                <Button onClick={() => this.updateObjSizeMap()} color="primary" style={{ width: '130px' }} className="float-right">Save</Button>
                             </CardBody>
                         </Card>
                     </div>

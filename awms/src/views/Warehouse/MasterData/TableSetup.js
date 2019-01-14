@@ -668,7 +668,7 @@ class TableGen extends Component {
 
   createCustomButton(type, text, data) {
     if (type === "Remove") {
-      return <Button type="button" color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '80px' }}
+      return <Button type="button" color="danger" style={{ width: '80px' }}
         onClick={() => this.removedata(data)}>Remove</Button>
     }
     else if (type === "Link") {
@@ -1159,17 +1159,17 @@ class TableGen extends Component {
     if (this.props.accept === true) {
       return <Card>
         <CardBody>
-          <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+          <Button onClick={() => this.updateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ width: '130px' }} className="float-right">Cancel</Button>
         </CardBody>
       </Card>
     }
     else if (this.props.printbtn === true) {
       return <Card>
         <CardBody>
-          <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
-          <Button onClick={() => this.printbarcodeall()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Print</Button>
+          <Button onClick={() => this.updateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ width: '130px' }} className="float-right">Cancel</Button>
+          <Button onClick={() => this.printbarcodeall()} color="info" style={{ width: '130px' }} className="float-left">Print</Button>
         </CardBody>
       </Card>
     }
@@ -1180,12 +1180,12 @@ class TableGen extends Component {
 
   AddGenerate() {
     if (this.props.addbtn === true) {
-      return <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
+      return <Button onClick={this.onHandleClickAdd} style={{ width: 130 }} type="button" color="success" className="float-right">Add</Button>
     } else if (this.props.addExportbtn === true) {
       const datatable = [...this.state.data];
       return (
         <div>
-          <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a", marginLeft: '5px' }} type="button" color="success" className="float-right">Add</Button>
+          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '5px' }} type="button" color="success" className="float-right">Add</Button>
           <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
         </div>
       )
@@ -1295,7 +1295,7 @@ class TableGen extends Component {
       else if (row.Type === "button") {
         this.props.btn.find(btnrow => {
           if (row.btntype === "Remove" && btnrow.btntype) {
-            row.Cell = (e) => <div className="text-center"><Button type="button" style={{ background: "#ef5350", borderColor: "#ef5350" }} color="success" onClick={() => this.removedata(e.original)}>Remove</Button></div>
+            row.Cell = (e) => <div className="text-center"><Button type="button" color="danger" onClick={() => this.removedata(e.original)}>Remove</Button></div>
           }
           else {
             if (row.btntype === btnrow.btntype) {
@@ -1364,7 +1364,7 @@ class TableGen extends Component {
           className="-striped"
           data={this.state.data}
           ref={ref => this.tableComponent = ref}
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', boxShadow: '5px 5px 4px rgba(0, 0, 0, .5)', zIndex: 0 }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
           loading={this.state.loading}
           filterable={this.props.filterable}
           columns={col}
@@ -1374,7 +1374,6 @@ class TableGen extends Component {
           minRows={5}
           defaultPageSize={this.state.defaultPageS}
           SubComponent={this.subTable}
-
           getTrProps={(state, rowInfo) => {
             let result = false
             let rmv = false
