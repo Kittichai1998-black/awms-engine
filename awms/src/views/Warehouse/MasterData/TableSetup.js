@@ -150,7 +150,7 @@ class TableGen extends Component {
           (res) => {
             let countpages = null;
             let counts = res.data.counts;
-            countpages = Math.ceil(counts / 100);
+            countpages = Math.ceil(counts / this.state.defaultPageS);
             this.setState({ data: res.data.datas, countpages: countpages, loading: false })
           })
       }
