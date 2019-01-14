@@ -17,6 +17,7 @@ namespace AWMSEngine.APIService.WM
 
         protected override dynamic ExecuteEngineManual()
         {
+            this.BeginTransaction();
             string palletCode = this.RequestVO.palletCode;
             var res = new SelectAudit().Execute(this.Logger, this.BuVO, palletCode);
 

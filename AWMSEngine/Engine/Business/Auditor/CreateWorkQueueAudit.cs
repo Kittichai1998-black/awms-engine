@@ -20,24 +20,18 @@ namespace AWMSEngine.Engine.Business.Auditor
             public long? warehouseID;
             public string palletCode;//เลือกจาก pallet
             public string locationCode;//เลือกจาก ตำแหน่งจัดวาง
-            public string packCode;
-            public string refID;
-            public string ref2;
-            public string batch;
-            public string lot;
-            public string orderNo;
             public int priority;
             public long? desAreaID;
         }
 
         public class TRes
         {
-            public ViewDocument document;
-            public class ViewDocument : amv_Document
+            public long docID;
+            public List<Queue> queues;
+            public class Queue
             {
-                public List<amv_DocumentItem> documentItems;
+                public string palletCode;
             }
-            public List<SPOutSTORootCanUseCriteria> bstos;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -183,7 +177,8 @@ namespace AWMSEngine.Engine.Business.Auditor
             {
                 docItems.ForEach(x =>
                 {
-                    var auditList = ADO.DocumentADO.GetInstant().ListAuditItem(x.ID.Value, reqVO.lot, reqVO.batch, reqVO.orderNo, this.BuVO).ToList();
+                    var auditList = ADO.DocumentADO.GetInstant().ListAuditItem(x.ID.Value, x.Lot == "" ? null : x.Lot,
+                        x.Batch == "" ? null : x.Batch, x.OrderNo == "" ? null : x.OrderNo, this.BuVO).ToList();
 
                     auditList.ForEach(y =>
                     {
@@ -237,9 +232,18 @@ namespace AWMSEngine.Engine.Business.Auditor
                 });
             }
 
+            TRes listQueue = new TRes();
             listWorkQueue.ForEach(x =>
             {
-                var res = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
+                SPworkQueue res = new SPworkQueue();
+                if(x.Sou_AreaMaster_ID == 5)
+                    res = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
+
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.StorageObject_ID.Value, null, null, StorageObjectEventStatus.AUDITING, this.BuVO);
+                listQueue.queues.Add(new TRes.Queue()
+                {
+                    palletCode = x.StorageObject_Code
+                });
             });
             disto.ForEach(x =>
             {
@@ -247,7 +251,8 @@ namespace AWMSEngine.Engine.Business.Auditor
             });
 
             ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
-            return null;
+            listQueue.docID = reqVO.docID;
+            return listQueue;
         }
 
     }

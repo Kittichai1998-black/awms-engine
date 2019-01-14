@@ -30,7 +30,7 @@ namespace AWMSEngine.Controllers.WM
             return res;
         }
 
-        [HttpPost("update")]
+        [HttpPost]
         public dynamic UpdateAudit([FromBody]dynamic req)
         {
             UpdateAuditAPI exec = new UpdateAuditAPI(this);
