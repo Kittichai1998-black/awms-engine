@@ -271,14 +271,15 @@ class IssuedManage extends Component {
 
     Axios.get(createQueryString(this.branchselect)).then(branchresult => {
       this.setState(
-        { auto_branch: branchresult.data.datas[0].Code + ' : ' + branchresult.data.datas[0].Name, addstatus: false })
-    //  this.setState({ auto_branch: branchresult.data.datas, addstatus: false }, () => {
-    //    const auto_branch = []
+        { auto_branch: branchresult.data.datas[0].Code + ' : ' + branchresult.data.datas[0].Name, addstatus: false, values: branchresult.data.datas[0].ID })
 
-       
+
+
+      //  this.setState({ auto_branch: branchresult.data.datas, addstatus: false }, () => {
+    //    const auto_branch = []    
     //    this.state.auto_branch.forEach(row => {
     //      auto_branch.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
-     
+     // })
     //    this.setState({ auto_branch })
     //  })
    })
@@ -325,6 +326,7 @@ class IssuedManage extends Component {
       })
       this.setState({ storageObjectdata })
     })
+    this.genWarehouseData();
   }
 
 
@@ -393,18 +395,21 @@ class IssuedManage extends Component {
     })
     return res.map(row => row.status)
   }
-  genWarehouseData(data) {
-    if (data) {
+  genWarehouseData() {
+    
       const warehouse = this.warehouseselect
-      warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"!=", "v": "5005"},{ "f": "Branch_ID", "c":"=", "v": ' + 1 + '}]' //*****************************
+      warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"!=", "v": "5005"},{ "f": "Branch_ID", "c":"=", "v": 1}]'
+      console.log(warehouse)
       Axios.get(createQueryString(warehouse)).then((res) => {
         const auto_warehouse = []
+        console.log(res)
         res.data.datas.forEach(row => {
+
           auto_warehouse.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
         })
         this.setState({ auto_warehouse })
       })
-    }
+    
   }
 
   inputCell(field, rowdata) {
