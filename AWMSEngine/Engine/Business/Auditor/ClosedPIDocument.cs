@@ -8,6 +8,7 @@ using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -54,8 +55,8 @@ namespace AWMSEngine.Engine.Business.Auditor
             sapReq.HEADER_DATA = new SAPReq.Header()
             {
                 PHYSINVENTORY = doc.Code,
-                COUNT_DATE = doc.ModifyTime.Value.ToString("yyyyMMdd"),
-                FISCALYEAR = doc.CreateTime.ToString("yyyy")
+                COUNT_DATE = doc.ModifyTime.Value.ToString("yyyyMMdd", new CultureInfo("en-US")),
+                FISCALYEAR = doc.CreateTime.ToString("yyyy", new CultureInfo("en-US"))
             };
             var docItems = ADO.DocumentADO.GetInstant().ListStoInDocs(reqVO.docID, this.BuVO)
                 .GroupBy(g => new { g.StorageObject_ID, g.DocumentItem_ID})
