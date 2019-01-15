@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.APIService.Doc;
 using AWMSEngine.APIService.Report;
 using AWMSEngine.APIService.WM;
 using Microsoft.AspNetCore.Http;
@@ -42,6 +43,13 @@ namespace AWMSEngine.Controllers.WM
         {
             SelectAuditAPI exec = new SelectAuditAPI(this);
             var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpPost("doc/Closing")]
+        public dynamic ActionDocClosing([FromBody] dynamic req)
+        {
+            ClosePIDocAPI exec = new ClosePIDocAPI(this);
             var res = exec.Execute(req);
             return res;
         }
