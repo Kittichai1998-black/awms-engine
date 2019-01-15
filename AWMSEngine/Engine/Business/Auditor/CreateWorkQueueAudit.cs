@@ -233,6 +233,7 @@ namespace AWMSEngine.Engine.Business.Auditor
             }
 
             TRes listQueue = new TRes();
+            var queues = new List<TRes.Queue>();
             listWorkQueue.ForEach(x =>
             {
                 SPworkQueue res = new SPworkQueue();
@@ -240,7 +241,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     res = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
 
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.StorageObject_ID.Value, null, null, StorageObjectEventStatus.AUDITING, this.BuVO);
-                listQueue.queues.Add(new TRes.Queue()
+                queues.Add(new TRes.Queue()
                 {
                     palletCode = x.StorageObject_Code
                 });
@@ -252,6 +253,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
             ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
             listQueue.docID = reqVO.docID;
+            listQueue.queues = queues;
             return listQueue;
         }
 
