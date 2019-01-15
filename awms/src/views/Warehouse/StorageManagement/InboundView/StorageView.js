@@ -134,18 +134,19 @@ class IssuedDoc extends Component {
       { Header: '', Type: "selectrow", sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50 },
       { accessor: 'EventStatus', Header: 'Event Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120, className: 'center' },
       { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gr/view?docID=' + e.original.ID)} >{e.original.DocumentType_ID === 1101 ? e.original.CodeDocItem : e.original.Code}</a> },
-      { accessor: 'Super', Header: 'SAP Ref', editable: false, Filter: "text" },
-      //{accessor: 'CodeDocItem', Header: 'CodeDocItem', editable:false, Filter:"text",},
-      { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: "" },
-      { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
-      { accessor: 'SouBranchName', Header: 'Sou.Branch', editable: false, Filter: "text", },
-      { accessor: 'DesWarehouseName', Header: 'Des.Warehouse', editable: false, Filter: "text", },
-      { accessor: 'DesBranchName', Header: 'Des.Branch', editable: false, Filter: "text", },
-      { accessor: 'RefID', Header: 'Mat.Doc No.', editable: false, Filter: "text", },
-      { accessor: 'Ref1', Header: 'Mat.Doc Years', editable: false, Filter: "text", },
+      { accessor: 'Super', Header: 'AMWS Ref.', editable: false, Filter: "text" },
+      { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
+      { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
       { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
-      //{accessor: 'Link', Header: 'Link', editable:false, Filter:"text",},
-      { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+      //{accessor: 'CodeDocItem', Header: 'CodeDocItem', editable:false, Filter:"text",},
+      { accessor: 'SouBranchName', Header: 'Branch Sou.', editable: false, Filter: "text", },
+      { accessor: 'SouWarehouseName', Header: 'Ware Sou.', editable: false, Filter: "text", },
+      { accessor: 'DesBranchName', Header: 'Branch Des.', editable: false, Filter: "text", },
+      { accessor: 'DesWarehouseName', Header: 'Ware Des.', editable: false, Filter: "text", },
+      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
+      { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: "" },
+      { accessor: 'ActionTime', Header: 'Action Time', editable: false, Type: "datetime", dateformat: "datetime", filterable: false, minWidth: 120 },
+      { accessor: 'Remark', Header: 'Remark', editable: false, Filter: "text", },
       //{ Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
     ];
 
@@ -166,20 +167,20 @@ class IssuedDoc extends Component {
     
       */}
         {/* <div className="clearfix" style={{ display: this.state.showbutton }} >
-          <Button style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gr/manage')}>Create Document</Button>
+          <Button style={{ width: '130px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gr/manage')}>Create Document</Button>
         </div> */}
 
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
           dropdownfilter={this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-          btn={btnfunc} defaultPageSize={100000} defaultCondition={[{ 'f': 'DocumentType_ID', c: '=', 'v': 1001 }]}
+          btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c: '=', 'v': 1001 }]}
           accept={false} sapBtn={true} />
 
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }}
-              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="primary" className="float-right">Reject</Button>
+              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_reject" style={{ width: '130px', display: this.state.showbutton }}
-              onClick={() => this.workingData(this.state.selectiondata, "Close")} color="danger" className="float-right">Close</Button>
+              onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>
         </Card>
