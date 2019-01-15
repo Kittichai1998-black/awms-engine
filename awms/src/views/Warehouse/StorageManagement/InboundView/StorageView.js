@@ -45,8 +45,9 @@ class IssuedDoc extends Component {
       selectiondata: []
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.getSelectionData = this.getSelectionData.bind(this)
-    this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
+    this.getSelectionData = this.getSelectionData.bind(this);
+    this.getOptionsData = this.getOptionsData.bind(this);
+    this.displayButtonByPermission = this.displayButtonByPermission.bind(this);
   }
 
   async componentWillMount() {
@@ -56,6 +57,19 @@ class IssuedDoc extends Component {
     let dataGetPer = await GetPermission()
     CheckWebPermission("GRDoc", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
+    this.getOptionsData();
+  }
+
+  getOptionsData() {
+
+    const doc = this.select
+   
+    console.log(doc)
+
+    //Axios.get(createQueryString(doc)).then((res) => {
+    
+    //})
+
   }
 
 
@@ -87,7 +101,10 @@ class IssuedDoc extends Component {
 
   getSelectionData(data) {
     this.setState({ selectiondata: data })
+
   }
+
+  
 
   onClickToDesc(data) {
     return <Button style={{ color: "white" }} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
