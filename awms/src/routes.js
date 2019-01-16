@@ -299,6 +299,16 @@ const Audit = Loadable({
   loading: Loading,
 });
 
+const AuditQueue = Loadable({
+  loader: () => import('./views/Warehouse/Audit/AuditQueue'),
+  loading: Loading,
+});
+
+const AuditDoc = Loadable({
+  loader: () => import('./views/Warehouse/Audit/AuditDoc'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -366,6 +376,8 @@ const routes = [
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
   { path: '/wm/audit', exact: true, name: 'Audit', component: Audit },
+  { path: '/wm/auditqueue', exact: true, name: 'Audit Queue Process', component: AuditQueue },
+  { path: '/doc/audit', exact: true, name: 'Audit Document', component: AuditDoc },
 ];
 
 export default routes;
