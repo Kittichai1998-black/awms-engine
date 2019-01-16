@@ -8,6 +8,7 @@ import ReactTable from 'react-table'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
+const imgClose = <img style={{ width: "28px", height: "auto" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANkSURBVGhD7ZlHyxRBEIYXI4aDYgDDP1Bvpr9hwqMR9ageFBN6ULwaPsNdFEU9iH9DDwZQ9GIGIwaMCPo+sA1lU7PT3Tu7sjAvPLisXdXVOz3V1fV1WrVq1YjGiZViv7gu7osP4lcXPvPdNbFPrBDY/HctFMfFC/Enk2cC2wVi6JolzoifwgsuB3yMCXwORevFW+EF0w/4XCcGpgninPAmh4/iotgilok5YmIXPvPdVnFJMNbzATyN8aJRTRU3hTfhA7FJTBGpYuxm8VB4Pm+IHH89xa+Bw3iSb2Kn4MmUCttd4ruI/TNnI0/ivIidk3WWiqbE9nop4nlOir7ECxs7vSXmi6aFz9sinm+NKBJp7Z2wzp6LQeZtXvbHws75RswU2TorrKOvgkftaVH33xxV2SwWzGXnPi2yxK8cH1K8sJ4Oi9+C7ZYqxmKDraeDws7NS561bTnirQNSpZdtCCCMSV1ECD7YeYsgbb8SYQwcE0miyGKvW+MNIhaP2gYCdYuIgw82+Iq1XdhxT0VSAUhVaQ0/iapDpSogbxE5YxFP4bOw46vewX9ESWyNLoheSgksN/igy8La7BW1op63RtQ2deoVYGnwaJuwdldFrbh4WKPlIkVVgZYGj+LtfFfUituTNcqp071FWHKCR7OFtedgrVWc/yeJHFUtIjd4NFlYH8RWq5FfQLyFeIypqgo+kLuIoi10T1ijkXuJRz6N0rexRtxheyklwNJFXBHWZo+olVdKcKx7ygksdxHTRFEp4RVzG0WsQRdzO4Qd90Qkd/PicprugVdOHxFhTF3wQfEi8BGLX7+4nEbehWa38EQAqcEHhUV4waNDws7NhWaeyBINJuuEax5NWU9NXimXCFo2du5TIlvUQFyorSPeDRq6g5J3qX8tZogi0au0zoC2ChM1LXziO55vlehLPL7Y6SPhZY5S4Quf8TwnRN+qai3yThwQZIxSTRf4GGhrEXEn9hYBpDuO/JxmLAcjeT5OlQHmaqy5G8Sv4W2nwBfBHZbFkK3Y05TiMLf7HZ0GygPGej6AORr75T2tFXF2agKyzWoxFJHWaPf9EF4wObD/6UIXp8p+RLuPI56mkxdcL7A5KrJP2EGIIouLD30banYuHu8F5Qjw+Y7g/xjD3xaSC7NWrVpVqdP5C8HnZiqeZ+ELAAAAAElFTkSuQmCC" />;
 
 class Role extends Component {
     constructor(props) {
@@ -304,7 +305,15 @@ class Role extends Component {
                 row.className = "text-center"
             }
         })
-
+        const styleclose = {
+            cursor: 'pointer',
+            position: 'absolute',
+            display: 'block',
+            right: '-10px',
+            top: '-10px',
+            background: '#ffffff',
+            borderRadius: '18px',
+        }
         return (
             <div>
                 {/*
@@ -318,14 +327,20 @@ class Role extends Component {
                     table="ams_Role_Permission" />
 
                 <Popup open={this.state.open} onClose={this.closeModal}>
-                    <div>
-                        <ReactTable columns={this.state.colsMap} data={this.state.selectdata} sortable={false} style={{ background: 'white', 'max-height': '400px' }}
-                            getselection={this.getSelectionData} showPagination={false} defaultPageSize={this.state.selectdata.length} />
-                        <Card>
-                            <CardBody>
-                                <Button onClick={() => this.updateRolePermission()} color="primary" style={{ width: '130px' }} className="float-right">Save</Button>
-                            </CardBody>
-                        </Card>
+                    <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
+                        <a style={styleclose} onClick={this.closeModal}>
+                            {imgClose}
+                        </a>
+                        <div id="header" style={{ width: '100%', borderBottom: '1px solid #007bff', fontSize: '18px', padding: '5px', color: '#007bff', fontWeight: 'bold' }}>Setting Permission</div>
+                        <div style={{ width: '100%', padding: '10px 5px' }}>
+                            <div className="clearfix">
+                                <ReactTable columns={this.state.colsMap} data={this.state.selectdata} sortable={false} style={{ background: 'white', 'max-height': '400px' }}
+                                    getselection={this.getSelectionData} showPagination={false} defaultPageSize={this.state.selectdata.length} />
+                            </div>
+                            <div className="clearfix">
+                                <Button onClick={() => this.updateRolePermission()} color="primary" style={{ width: '130px', marginTop: '5px' }} className="float-right">Save</Button>
+                            </div>
+                        </div>
                     </div>
                 </Popup>
             </div>
