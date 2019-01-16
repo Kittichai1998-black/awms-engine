@@ -62,11 +62,9 @@ class IssuedDoc extends Component {
 
   getOptionsData() {
 
-    const doc = this.select
-   
-    console.log(doc)
 
-    //Axios.get(createQueryString(doc)).then((res) => {
+    //Axios.get(createQueryString(select)).then((res) => {
+    //  console.log(res)
     
     //})
 
