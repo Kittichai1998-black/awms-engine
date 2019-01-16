@@ -38,7 +38,7 @@ class IssuedDoc extends Component {
         g: "",
         s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
-        l: 10,
+        l: 100,
         all: "",
       },
       sortstatus: 0,
@@ -63,11 +63,11 @@ class IssuedDoc extends Component {
   getOptionsData() {
 
     const doc = this.select
-   
+
     console.log(doc)
 
     //Axios.get(createQueryString(doc)).then((res) => {
-    
+
     //})
 
   }
@@ -104,7 +104,7 @@ class IssuedDoc extends Component {
 
   }
 
-  
+
 
   onClickToDesc(data) {
     return <Button style={{ color: "white" }} type="button" color="info" onClick={() => this.history.push('/doc/gr/view?docID=' + data.ID)}>Detail</Button>
@@ -132,7 +132,7 @@ class IssuedDoc extends Component {
   render() {
     const cols = [
       { Header: '', Type: "selectrow", sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50 },
-      { accessor: 'EventStatus', Header: 'Doc Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120, className: 'center' },
+      { accessor: 'EventStatus', Header: 'Doc Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120 },
       { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gr/view?docID=' + e.original.ID)} >{e.original.DocumentType_ID === 1101 ? e.original.CodeDocItem : e.original.Code}</a> },
       { accessor: 'Super', Header: 'AMWS Ref.', editable: false, Filter: "text" },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },

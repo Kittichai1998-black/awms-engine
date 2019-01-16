@@ -30,11 +30,11 @@ class IssuedDoc extends Component {
         queryString: window.apipath + "/api/viw",
         t: "Document",
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
-        f: "ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,DesBranchName,DesWarehouseName,DesSupplierName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Remark,Created,ModifyBy,LastUpdate",
+        f: "ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,DesBranchName,DesWarehouseName,DesSupplierName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Remark,Created,ModifyBy,LastUpdate,Options",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
         sk: 0,
-        l: 20,
+        l: 100,
         all: "",
       },
       sortstatus: 0,
@@ -152,7 +152,7 @@ class IssuedDoc extends Component {
   render() {
     const cols = [
       { Header: '', Type: "selectrow", sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50 },
-      { accessor: 'EventStatus', Header: 'Doc Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120, className: 'center' },
+      { accessor: 'EventStatus', Header: 'Doc Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120 },
       { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gi/manage?ID=' + e.original.ID)} >{e.original.Code}</a> },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
