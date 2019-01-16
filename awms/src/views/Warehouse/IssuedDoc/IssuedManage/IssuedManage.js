@@ -31,7 +31,9 @@ class IssuedManage extends Component {
       data: [],
       branch: [],
       auto_branch: [],
+      auto_supplier: [],
       auto_warehouse: [],
+      auto_bacth: [],
       auto_customer: [],
       auto_movementType: [],
       branch: "",
@@ -46,9 +48,9 @@ class IssuedManage extends Component {
       issuedNo: "-",
       select2: {
         queryString: window.apipath + "/api/viw",
-        t: "PackMaster",
+        t: "StorageObjectBatch",
         q: '[{ "f": "Status", "c":"=", "v": 1}]',
-        f: "id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType",
+        f: "PackMaster_ID as id, PackCode, PackName, concat(PackCode, ' : ', PackName) AS SKU, UnitTypeName AS UnitType,Batch",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -59,13 +61,17 @@ class IssuedManage extends Component {
         queryString: window.apipath + "/api/trx",
         t: "StorageObject",
         q: "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'ObjectType', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'in', 'v': '11,12'}]",
-        f: "Code",
+        f: "Code, Batch",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: "",
         l: "",
         all: "",
       },
+
+
+
+
       inputstatus: true,
       pageID: 0,
       addstatus: true,
@@ -79,6 +85,7 @@ class IssuedManage extends Component {
     this.getSelectionData = this.getSelectionData.bind(this)
     this.initialData = this.initialData.bind(this)
     this.genWarehouseData = this.genWarehouseData.bind(this)
+    this.genBatchData = this.genBatchData.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
     //this.autoSelectData = this.autoSelectData.bind(this)
@@ -107,6 +114,21 @@ class IssuedManage extends Component {
       all: "",
     }
 
+    this.bathselect = {
+      queryString: window.apipath + "/api/viw",
+      t: "DocumentItem",
+      q: '[{ "f": "Status", "c":"!=", "v": 1}]',
+      f: "ID,Code,Batch",
+      g: "",
+      s: "[{'f':'ID','od':'asc'}]",
+      sk: 0,
+      all: "",
+
+
+
+
+    }
+
     this.customerselect = {
       queryString: window.apipath + "/api/mst",
       t: "Customer",
@@ -126,6 +148,19 @@ class IssuedManage extends Component {
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
       all: "",
+    }
+
+    this.supplierselect = {
+      queryString: window.apipath + "/api/viw",
+      t: "SupplierMaster",
+      q: '[{ "f": "Status", "c":"=", "v": 1}]',
+      f: "id,Code,Name",
+      g: "",
+      s: "[{'f':'Code','od':'asc'}]",
+      sk: 0,
+      l: 0,
+      all: "",
+
     }
   }
 
@@ -294,6 +329,18 @@ class IssuedManage extends Component {
       })
     })
 
+    Axios.get(createQueryString(this.supplierselect)).then(supplierresult => {
+      this.setState({ auto_supplier: supplierresult.data.datas, addstatus: false }, () => {
+        const auto_supplier = []
+        this.state.auto_supplier.forEach(row => {
+          auto_supplier.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
+        })
+        this.setState({ auto_supplier })
+        console.log(this.state.auto_supplier)
+      })
+    })
+
+
     Axios.get(createQueryString(this.movementTypeselect)).then(movementTyperesult => {
       this.setState({ auto_movementType: movementTyperesult.data.datas, addstatus: false }, () => {
         const auto_movementType = []
@@ -327,6 +374,7 @@ class IssuedManage extends Component {
       this.setState({ storageObjectdata })
     })
     this.genWarehouseData();
+    this.genBatchData();
   }
 
 
@@ -399,7 +447,7 @@ class IssuedManage extends Component {
     
       const warehouse = this.warehouseselect
       warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"!=", "v": "5005"},{ "f": "Branch_ID", "c":"=", "v": 1}]'
-      console.log(warehouse)
+     // console.log(warehouse)
       Axios.get(createQueryString(warehouse)).then((res) => {
         const auto_warehouse = []
         console.log(res)
@@ -412,6 +460,22 @@ class IssuedManage extends Component {
     
   }
 
+  genBatchData() {
+    const batch = this.bathselect
+    batch.q = '[{ "f": "Status", "c":"=", "v": 1}]'
+    Axios.get(createQueryString(batch)).then((res) => {
+      const auto_bacth = []
+      console.log(batch)
+      res.data.datas.forEach(row => {
+
+        auto_bacth.push({ value: row.ID, label: row.Batch })
+      })
+      this.setState({ auto_bacth })
+      console.log(this.state.auto_bacth)
+    })
+  }
+
+
   inputCell(field, rowdata) {
     /* return  <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
     onChange={(e) => {this.editData(rowdata, e.target.value, "PackQty")}} />; */
@@ -421,7 +485,7 @@ class IssuedManage extends Component {
 
   addData() {
     const data = this.state.data
-    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", ID: "" })
+    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", Batch:"",ID: "" })
     this.addIndex -= 1
     this.setState({ data })
   }
@@ -441,9 +505,11 @@ class IssuedManage extends Component {
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else {
+        console.log(value)
         data[rowdata.index][field] = value.Code;
         data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitType"] = value.UnitType;
+        data[rowdata.index]["Batch"] = value.Batch;
         data[rowdata.index]["id"] = value.id;
       }
       this.setState({ data });
@@ -635,6 +701,7 @@ class IssuedManage extends Component {
 
         { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("qty", e), datatype: "int" },
         { accessor: "UnitType", Header: "Unit", },
+        { accessor: 'Batch', Header: 'Batch', editable: false, },
         {
           Cell: (e) => <Button onClick={() => {
             const data = this.state.data;
@@ -667,8 +734,13 @@ class IssuedManage extends Component {
             <Col xs="6"><div>Event Status :<span style={{ marginLeft: '5px'}}> {this.renderDocumentStatus()}</span></div></Col>
           </Row>
           <Row>
-            <Col xs="6"><div>SAP.Doc No : <span style={{ marginLeft: '5px' }}>{this.state.refID}</span></div></Col>
-            <Col xs="6"><div>SAP.Doc Years :<span style={{ marginLeft: '5px' }}> {this.state.ref1}</span></div></Col>
+            <Col xs="6"><div>SAP.Doc No : <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.refID) :
+              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.refID}</span>
+              </div>}</span></div></Col>
+              
+            <Col xs="6"><div>SAP.Doc Years  <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.ref1) :
+              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.ref1}</span>
+              </div>}</span></div></Col>
           </Row>
           <Row>
             <Col xs="6"><div className="d-block" >Issued No : <span style={{ marginLeft: '5px'}}>{this.state.issuedNo}</span></div></Col>
@@ -694,6 +766,10 @@ class IssuedManage extends Component {
                 <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
                   <AutoSelect data={this.state.auto_movementType}
                     result={(e) => this.setState({ "movementType": e.value, "movementTyperesult": e.label, "movementTypeCode": e.code })} /></div>}</div>
+
+              <div className=""><label >Supplier : </label>{this.state.pageID ? this.createText(this.state.suplier):
+                <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
+                  <AutoSelect data={this.state.auto_supplier} result={(e) => this.setState({ "suplier": e.value, "supplierresult": e.label})} /></div>}</div>
             </div>
 
             <div className="col-6">
@@ -704,13 +780,19 @@ class IssuedManage extends Component {
                 <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
                   <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} /></div>}</div>
 
+          
+          
+            
+
+          
               <div className=""><label>Remark : </label>
                 {this.state.pageID ? <span> {this.state.remark}</span> :
                   <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}
 
                     value={this.state.remark === undefined ? "" : this.state.remark} />}
+             
               </div>
-            </div>
+         </div>
           </Row>
         </div>
         <div className="clearfix">
@@ -727,7 +809,7 @@ class IssuedManage extends Component {
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
         <Card>
           <CardBody style={{ textAlign: 'right' }}>
-            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddispla, width: "130px"}} color="primary" className="mr-sm-1">Create</Button>
+            {this.state.pageID !== 0 ? null : <Button onClick={() => this.createDocument()} style={{ display: this.state.adddispla, width: "130px" }} color="primary" className="mr-sm-1">Create</Button>}
             <Button style={{ color: "#FFF", width: "130px" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>

@@ -19,7 +19,7 @@ import ExportFile from './ExportFile';
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
-
+const imgExclamation = <img style={{ width: "15px", height: "inherit" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALxSURBVGhD7VlLbhNBELUAsWDFd8HvAmxA2N02KNKgbiuwYAcGBAcJYcMGSLaABAiOAEGKInEPIBwgBDY4hOCZCQmboWpSWSBXj7tnum1Fmic9xVKmq95r1/Sn3KhRo0Z1ZL3e/rQrO4mSD4ALiRZfgOuxln+R+DnRcjlR4h38nU2vtNvZw8Y+Gj45bE63zoLA+ViJ7yAsc2GsxWqs5FwayTMUbnwYRM3jkPw1cJsT58I8hpIvMCaFDwuYubtQCj85MRXZj1X7DqXxj6x37iCUyxsmsVdCjpdZFB2gtH6QXW8egsAfuIQhCGW1hDkpfTXQzDuLz/rr/5F7pohQqou4upGM8ihbNlUNILGcSEY5wCzc4wLb0IcBZNwVt0iOGwbXLpyA5W2NC2pDXwZAw4/fWhwjWfaA2X/FBrSkNwM5xXOSZYd8h624Sfk0AFq2UtU5TfJGA16eeS6QC30aQMJx5QnJKwYesqB8vnFBXOjfgPxqdQDc1OISF8CVvg0gU9WUJNOM/EjMDHZlCANJV9wnmWZA/b9nBzsyiAEt3pJMM+DB5eGB7gxiQMnPJNMMuj3xARwYyMAayTSj6vq/yxAGUBvJNGPPG9jzJYQvCjvYkWEMiE8k0wwwsMAOdmQQA5bL6OzwQHcGMaDEDMk0I29QcYMdGcJAqluCZJpBh7lVLoALfRuAFWjFupsHD89xQSZJmNTHJG80sN3naz/wQRD/J+1ePkXy7IAdAS7YZOh4pUTgRRo3Dj7gaHp7B+BSvzE1dYRkuSHWrdtsUAv6MjDQ7RskpxzKdie8GFDyKckoD2y0golFNkEBqxrAnF5ai4i8uavkEpcoBHPxvpq7u9j5JsawMin5zNvMc4BvogeJ+kOJqxJWm4GSNylNWGxMd47i2gxmtlgxDsRNCmf9V3T+MIUfH7Ddhx0zMLLCiSsijoGSfJRcvXiSwk0OeMjCphP2bfDMjhcP/B0NRG4jd35TEx/pfzN4qrQ+mNWoUaMAjcY/hH7RYM9nkHQAAAAASUVORK5CYII=" />;
 /* const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
   const magicSpacing = 10
@@ -1026,7 +1026,7 @@ class TableGen extends Component {
     if (type === "EventStatus") {
       let strStatus
       const results = EventStatus.filter(row => {
-        return row.code === data
+        return row.code === data.value
       })
       if (results.length > 0) {
         strStatus = results[0].status
@@ -1042,7 +1042,7 @@ class TableGen extends Component {
     } else if (type === "StorageObjectEventStatus") {
       let strStatus
       const results = StorageObjectEventStatus.filter(row => {
-        return row.code === data
+        return row.code === data.value
       })
       if (results.length > 0) {
         strStatus = results[0].status
@@ -1060,35 +1060,50 @@ class TableGen extends Component {
       return <span>
         {
           DocumentStatus.filter(row => {
-            return row.code === data
+            return row.code === data.value
           })[0].status
         }
       </span>
     }
     else if (type === "DocumentEvent") {
-      let strStatus
+      let strStatus = ""
       const results = DocumentEventStatus.filter(row => {
-        return row.code === data
+        return row.code === data.value
       })
+
       if (results.length > 0) {
         strStatus = results[0].status
+        if (data.original.Options !== null) {
+          var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
+          if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
+            var strSapRes = decodeURIComponent(arrayRes["SapRes"])
+            var newSapRes = strSapRes.replace(/\+/g, ' ');
+            // console.log(newSapRes)
+            return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
+                  onClick={()=> this.props.createErrorSap(newSapRes) } ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation}</a></h5>
+          } else {
+            return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+          }
+        } else {
+          return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+        }
       }
       else {
-        strStatus = ""
+        return null
       }
-      return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+
     }
     else if (type === "Status") {
       return <span>
         {
           Status.filter(row => {
-            return row.code === data
+            return row.code === data.value
           })[0].status
         }
       </span>
     }
   }
-
+ 
   onHandleSelection(rowdata, value, type) {
     if (type === "checkbox") {
       let rowselect = this.state.rowselect;
@@ -1331,19 +1346,19 @@ class TableGen extends Component {
         row.className = "text-center"
       }
       else if (row.Type === "DocumentStatus") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "EventStatus") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "StorageObjectEventStatus") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "DocumentEvent") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "Status") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
 
       if (row.Aggregated === "blank") {
