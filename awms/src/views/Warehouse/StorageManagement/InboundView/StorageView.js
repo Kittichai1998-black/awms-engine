@@ -40,7 +40,7 @@ class IssuedDoc extends Component {
         g: "",
         s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
-        l: 100,
+        l: 20,
         all: "",
       },
       open: false,

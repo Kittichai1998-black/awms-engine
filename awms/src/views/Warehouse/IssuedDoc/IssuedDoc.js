@@ -36,7 +36,7 @@ class IssuedDoc extends Component {
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
         sk: 0,
-        l: 100,
+        l: 20,
         all: "",
       },
       sortstatus: 0,
