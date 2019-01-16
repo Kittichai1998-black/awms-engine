@@ -1077,10 +1077,10 @@ class TableGen extends Component {
           var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
           if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
             var strSapRes = decodeURIComponent(arrayRes["SapRes"])
-            var newSapRes = strSapRes.replace(/\+/g, ' ').replace(/,/g, '<br />');
+            var newSapRes = strSapRes.replace(/\+/g, ' ');
             // console.log(newSapRes)
             return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-                  onClick={() => alert(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation}</a></h5>
+                  onClick={()=> this.props.createErrorSap(newSapRes) } ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation}</a></h5>
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }
@@ -1103,7 +1103,7 @@ class TableGen extends Component {
       </span>
     }
   }
-
+ 
   onHandleSelection(rowdata, value, type) {
     if (type === "checkbox") {
       let rowselect = this.state.rowselect;
