@@ -24,7 +24,7 @@ namespace AWMSEngine.APIService.Doc
 
             this.BeginTransaction();
             var reqSAP = ObjectUtil.DynamicToModel<ClosedPIDocument.TDocReq>(this.RequestVO);
-            var resSAP = new ClosedPIDocument().Execute(this.Logger, this.BuVO, reqSAP);
+           var resSAP = new ClosedPIDocument().Execute(this.Logger, this.BuVO, reqSAP);
             return resSAP;
 
         }

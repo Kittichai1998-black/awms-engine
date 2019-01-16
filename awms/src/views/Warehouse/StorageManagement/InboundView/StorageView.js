@@ -38,7 +38,7 @@ class IssuedDoc extends Component {
         g: "",
         s: "[{'f':'Code','od':'desc'}]",
         sk: 0,
-        l: 100,
+        l: 10,
         all: "",
       },
       sortstatus: 0,
@@ -62,12 +62,10 @@ class IssuedDoc extends Component {
 
   getOptionsData() {
 
-    const doc = this.select
 
-    console.log(doc)
-
-    //Axios.get(createQueryString(doc)).then((res) => {
-
+    //Axios.get(createQueryString(select)).then((res) => {
+    //  console.log(res)
+    
     //})
 
   }
