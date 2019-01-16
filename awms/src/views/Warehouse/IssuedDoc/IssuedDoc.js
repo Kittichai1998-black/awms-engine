@@ -252,7 +252,7 @@ class IssuedDoc extends Component {
             <a style={styleclose} onClick={this.closeModal}>
               {imgClose}
             </a>
-            <div id="header" style={{ width: '100%', borderBottom: '1px solid red', fontSize: '18px', padding: '5px', color: 'red', fontStyle: 'bold' }}>{imgExclamation} Error SAP</div>
+            <div id="header" style={{ width: '100%', borderBottom: '1px solid red', fontSize: '18px', padding: '5px', color: 'red', fontStyle: 'bold' }}>{imgExclamation} Error Message from SAP</div>
             <div style={{ width: '100%', padding: '10px 5px' }}>
               {this.state.errorstr !== null ? this.state.errorstr.split(',').map((item, key) => {
                 return <span key={key}>{item}<br /></span>
