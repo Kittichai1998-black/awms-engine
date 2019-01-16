@@ -27,6 +27,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var queueTrx = this.UpdateWorkQueueWork(reqVO);
+            if (queueTrx.StorageObject_Code != reqVO.baseCode)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ตรงกับที่มีใน Work Queue '" + queueTrx.StorageObject_Code + "'");
+
 
             var baseInfo = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             var res = base.GenerateResponse(baseInfo, queueTrx);

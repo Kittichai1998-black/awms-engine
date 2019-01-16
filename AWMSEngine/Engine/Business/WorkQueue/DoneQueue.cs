@@ -27,6 +27,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var queueTrx = this.UpdateWorkQueueClosed(reqVO);
+            if(queueTrx.StorageObject_Code != reqVO.baseCode)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ตรงกับที่มีใน Work Queue '" + queueTrx.StorageObject_Code + "'");
+
             //this.UpdateWorkQueueClosed(queueTrx, reqVO);
             this.UpdateDocumentWorked(queueTrx, reqVO);
             var baseInfo = this.UpdateStorageObject(queueTrx, reqVO);
@@ -82,7 +85,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
         private StorageObjectCriteria UpdateStorageObject(SPworkQueue queueTrx, TReq reqVO)
         {
-            var mapsto = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, false, this.BuVO);
+            var mapsto = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             if (mapsto.parentType != StorageObjectType.LOCATION)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ข้อมูลพาเลทไม่ถูกต้อง");
 

@@ -79,7 +79,8 @@ namespace AMWUtil.DataAccess.Http
             where T : class, new()
         {
             T result = null;
-            logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
+            if(logger != null)
+                logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
             do
             {
                 try
@@ -95,7 +96,8 @@ namespace AMWUtil.DataAccess.Http
                         if (authen is BasicAuthentication)
                         {
                             var a = (BasicAuthentication)authen;
-                            logger.LogInfo("API_REQUEST_AUTHEN(" + (retry + 1) + "):: USER=" + a.Username + " | PASS=" + a.Password);
+                            if (logger != null)
+                                logger.LogInfo("API_REQUEST_AUTHEN(" + (retry + 1) + "):: USER=" + a.Username + " | PASS=" + a.Password);
                             CookieContainer myContainer = new CookieContainer();
                             //httpWebRequest.Credentials = new NetworkCredential(a.Username, a.Password);
                             string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(a.Username + ":" + a.Password));
@@ -105,10 +107,11 @@ namespace AMWUtil.DataAccess.Http
                         }
                     }
 
-                    logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + datas.Json());
-                    using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                    string json = datas.Json();
+                    if (logger != null)
+                        logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + json);
+                    using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream(), Encoding.UTF8))
                     {
-                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(datas);
 
                         streamWriter.Write(json);
                         streamWriter.Flush();
@@ -116,11 +119,13 @@ namespace AMWUtil.DataAccess.Http
                     }
 
                     var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                    logger.LogInfo("API_RESPONSE_STATUS(" + (retry + 1) + "):: " + httpResponse.StatusCode);
+                    if (logger != null)
+                        logger.LogInfo("API_RESPONSE_STATUS(" + (retry + 1) + "):: " + httpResponse.StatusCode);
                     using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
                     {
                         string body = streamReader.ReadToEnd();
-                        logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
+                        if (logger != null)
+                            logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
                         result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
                     }
                 }
