@@ -375,9 +375,9 @@ const routes = [
   { path: '/wm/queue/manage', exact: true, name: 'Queue View', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
-  { path: '/wm/audit', exact: true, name: 'Audit', component: Audit },
-  { path: '/wm/auditqueue', exact: true, name: 'Audit Queue Process', component: AuditQueue },
-  { path: '/doc/audit', exact: true, name: 'Audit Document', component: AuditDoc },
+  { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
+  { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
+  { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
 ];
 
 export default routes;

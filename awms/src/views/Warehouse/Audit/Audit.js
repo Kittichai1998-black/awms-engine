@@ -23,11 +23,11 @@ class Audit extends Component{
     this.style = {width:"100%", overflow:"hidden", marginBottom: "10px", textAlign:"left"}
   }
   async componentWillMount() {
-    document.title = "Picking : AWMS";
+    document.title = "Audit : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
-    CheckWebPermission("Picking", dataGetPer, this.props.history);
+    CheckWebPermission("Audit", dataGetPer, this.props.history);
     //this.displayButtonByPermission(dataGetPer)
   }
 

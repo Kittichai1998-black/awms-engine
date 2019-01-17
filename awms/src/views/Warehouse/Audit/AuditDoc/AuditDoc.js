@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
-import { TableGen } from '../MasterData/TableSetup';
-import { apicall, DatePicker, GenerateDropDownStatus } from '../ComponentCore'
-import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
+import { TableGen } from '../../MasterData/TableSetup';
+import { apicall, DatePicker, GenerateDropDownStatus } from '../../ComponentCore'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 const axois = new apicall()
 
@@ -47,11 +47,11 @@ class AuditDoc extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Search Issue : AWMS";
+    document.title = "Search Audit : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
-    CheckWebPermission("GID", dataGetPer, this.props.history);
+    CheckWebPermission("SAudit", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   //permission

@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import {Input, Button, Nav, NavItem, NavLink, Row,Col, Card, CardBody } from 'reactstrap';
 import ReactTable from 'react-table'
-import {AutoSelect, Clone, apicall,createQueryString} from '../ComponentCore';
-import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
+import {AutoSelect, Clone, apicall,createQueryString} from '../../ComponentCore';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
-const Axios = new apicall()
+const Axois = new apicall()
 
 class AuditQueue extends Component{
   constructor(){
@@ -46,7 +46,7 @@ class AuditQueue extends Component{
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
     //this.displayButtonByPermission(dataGetPer)
-    CheckWebPermission("Picking", dataGetPer, this.props.history);
+    CheckWebPermission("QueueAd", dataGetPer, this.props.history);
   }
 
   componentDidMount(){
