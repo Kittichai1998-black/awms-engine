@@ -5,7 +5,7 @@ import ReactTable from 'react-table'
 import {AutoSelect, Clone, apicall,createQueryString} from '../../ComponentCore';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
-const Axois = new apicall()
+const Axios = new apicall()
 
 class AuditQueue extends Component{
   constructor(){

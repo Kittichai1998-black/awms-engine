@@ -30,7 +30,7 @@ class AuditDoc extends Component {
         queryString: window.apipath + "/api/viw",
         t: "Document",
         q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 2004}]",
-        f: "ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,DesBranchName,DesWarehouseName,DesSupplierName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Remark,Created,ModifyBy,LastUpdate",
+        f: "ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,DesBranchName,DesWarehouseName,DesSupplierName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Remark,Created,ModifyBy,LastUpdate,Options",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
         sk: 0,
@@ -61,13 +61,13 @@ class AuditDoc extends Component {
 
   displayButtonByPermission(dataGetPer) {
     let check = 0
-    if (CheckViewCreatePermission("TransGID_view", dataGetPer)) {
+    if (CheckViewCreatePermission("Audit_view", dataGetPer)) {
       check = 0 //แสดงข้อมูล26
     }
-    if (CheckViewCreatePermission("TransGID_create&modify", dataGetPer)) {
+    if (CheckViewCreatePermission("Audit_create&modify", dataGetPer)) {
       check = 1 //แก้ไข27
     }
-    if (CheckViewCreatePermission("TransGID_execute", dataGetPer)) {
+    if (CheckViewCreatePermission("Audit_execute", dataGetPer)) {
       //แก้ไข28
       if (CheckViewCreatePermission("Administrator", dataGetPer)) {
         check = 3

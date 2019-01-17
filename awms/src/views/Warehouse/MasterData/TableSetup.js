@@ -1073,6 +1073,7 @@ class TableGen extends Component {
 
       if (results.length > 0) {
         strStatus = results[0].status
+        console.log(data.original.Options)
         if (data.original.Options !== null) {
           var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
           if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
