@@ -50,7 +50,7 @@ class AuditQueue extends Component{
   }
 
   componentDidMount(){
-    Axois.get(window.apipath + createQueryString(this.select)).then(res => {
+    Axios.get(window.apipath + createQueryString(this.select)).then(res => {
       var docList = [];
       docList.forEach(x => {
         docList.push({label:x.Code, value:x.ID})
@@ -60,7 +60,7 @@ class AuditQueue extends Component{
   }
 
   onHandleSelectionDoc(docID){
-    Axois.get(window.apipath + "/api/wm/audit/doc?getMapSto=false&docID="+ docID).then(res => {
+    Axios.get(window.apipath + "/api/wm/audit/doc?getMapSto=false&docID="+ docID).then(res => {
       this.setState({document:res.data.document});
     })
   }
@@ -89,7 +89,7 @@ class AuditQueue extends Component{
 
     }
 
-    Axois.post(window.apipath + "/api/wm/audit/create").then(res => {
+    Axios.post(window.apipath + "/api/wm/audit/create").then(res => {
 
     });
   }
