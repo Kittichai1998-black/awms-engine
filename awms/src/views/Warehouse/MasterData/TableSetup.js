@@ -1074,7 +1074,8 @@ class TableGen extends Component {
       if (results.length > 0) {
         strStatus = results[0].status
         console.log(data.original.Options)
-        if (data.original.Options !== null) {
+        if (data.original.Options !== null && data.original.Options !== undefined) {
+          console.log(data.original.Options)
           var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
           if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
             var strSapRes = decodeURIComponent(arrayRes["SapRes"])

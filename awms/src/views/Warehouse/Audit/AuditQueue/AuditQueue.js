@@ -99,14 +99,14 @@ class AuditQueue extends Component{
     return(
       <div>
         <Row>
-          {<AutoSelect data={this.state.docSelection} result={e => this.setState({docSelected:e.value})}/>}
+          <Col sm="3"><span>Area : </span></Col><Col sm="9">{<AutoSelect data={this.state.docSelection} result={e => this.setState({docSelected:e.value})}/>}</Col>
         </Row>
         <Row>
           {this.state.document === null ? null :this.createDocItemList()}
         </Row>
         <Row>
-          <span>Area : </span>{<AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/>}
-          <span>Priority : </span>{<AutoSelect data={this.priority} result={e => this.setState({priority:e.value})}/>}
+          <Col sm="3"><span>Area : </span></Col><Col sm="9">{<AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/>}</Col>
+          <Col sm="3"><span>Priority : </span></Col><Col sm="9">{<AutoSelect data={this.priority} result={e => this.setState({priority:e.value})}/>}</Col>
         </Row>
       </div>
     )
