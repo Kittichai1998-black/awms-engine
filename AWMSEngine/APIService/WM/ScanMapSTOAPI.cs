@@ -36,7 +36,7 @@ namespace AWMSEngine.APIService.WM
                     mapsto = mapsto
                 });
             if ((VirtualMapSTOActionType)this.RequestVO.action == VirtualMapSTOActionType.ADD)
-                new ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, res);
+                new ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, res);
 
             return res;
         }

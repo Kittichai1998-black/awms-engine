@@ -13,16 +13,18 @@ namespace AWMSEngine.Engine.Business.WorkQueue
     public abstract class BaseQueue<TReq, TRes> : BaseEngine<TReq, TRes>
         where TRes : class
     {
-        private void ValidateFinalStorageObject(StorageObjectCriteria mapsto)
+        public void ValidateObjectSizeLimit(StorageObjectCriteria mapsto)
         {
-            var validMapsto = ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, mapsto.type, true, true, this.BuVO);
-            new Engine.Validation.ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, validMapsto);
+            var validMapsto =
+                (mapsto.parentID.HasValue) ?
+                ADO.StorageObjectADO.GetInstant().Get(mapsto.id.Value, mapsto.type, true, true, this.BuVO) :
+                mapsto;
+
+            new Engine.Validation.ValidateObjectSizeLimit().Execute(this.Logger, this.BuVO, validMapsto);
         }
 
         public WorkQueueCriteria GenerateResponse(StorageObjectCriteria mapsto, SPworkQueue queueTrx)
         {
-            this.ValidateFinalStorageObject(mapsto);
-
             var sou_lm = ADO.DataADO.GetInstant()
                 .SelectByID<ams_AreaLocationMaster>(queueTrx.Sou_AreaLocationMaster_ID, this.BuVO);
 

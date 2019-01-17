@@ -58,9 +58,9 @@ class UnitType extends Component {
   //permission
   displayButtonByPermission(dataGetPer) {
     let checkview = true
-      if (CheckViewCreatePermission("Administrator", dataGetPer)) {
-          checkview = false //แก้ไข
-      }
+    if (CheckViewCreatePermission("Administrator", dataGetPer)) {
+      checkview = false //แก้ไข
+    }
 
     if (checkview === true) {
       this.setState({ permissionView: false })
@@ -74,7 +74,7 @@ class UnitType extends Component {
   filterList() {
     const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
     const objType = []
-    Axios.all([Axios.get(createQueryString(objTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
+    Axios.all([Axios.get(createQueryString(objTypeSelect) + "&_token=" + localStorage.getItem("Token"))]).then(
       (Axios.spread((result) => {
         result.data.forEach(row => {
           objType.push({ ID: row.value, Code: row.name })
@@ -95,6 +95,7 @@ class UnitType extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 90 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
       { accessor: 'ObjectType', Header: 'Object Type', updateable: view, Filter: "text", Type: "autocomplete" },

@@ -285,8 +285,8 @@ class CreateQueue extends Component {
       return {}
     } else {
       return <Button id="per_button_doc"
-        style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display: this.state.showbutton }}
-        color="primary"
+        style={{ width: '130px', display: this.state.showbutton }}
+        color="danger"
         className="float-right"
         onClick={() => this.removeCard(docID)}>Remove</Button>
     }
@@ -389,16 +389,16 @@ class CreateQueue extends Component {
 
               <div className="clearfix">
                 <Button id="per_button_doc"
-                  style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', display: this.state.showbutton }}
-                  color="primary"
+                  style={{ width: '130px', display: this.state.showbutton }}
+                  color="success"
                   className="float-right"
                   onClick={() => this.addData()}>Add</Button>
               </div>
             </div>
             <Card style={{ "border-radius": "15px", "border": "1px solid #8080804f", background: "white" }}>
               <CardBody>
-                <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-                <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+                <Button onClick={() => this.updateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+                <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ width: '130px' }} className="float-right">Cancel</Button>
               </CardBody>
             </Card>
           </Col>

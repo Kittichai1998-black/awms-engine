@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AWMSEngine.JobService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Controllers
@@ -26,6 +27,12 @@ namespace AWMSEngine.Controllers
 
             return new { api = "1.1", build_version = version, build_date = linkTime.ToString("yyyy-MM-ddThh:mm") };
         }
+        [HttpGet("2")]
+        public dynamic Get2() { 
+            return new { PostCounting = PostGRDoc311ToSAPJob.counting };
+        }
+
+        
 
 
         private DateTime GetLinkerTime(Assembly assembly, TimeZoneInfo target = null)

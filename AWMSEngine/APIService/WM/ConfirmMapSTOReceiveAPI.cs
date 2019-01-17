@@ -33,8 +33,8 @@ namespace AWMSEngine.APIService.WM
             {
 
                 //Validate
-                new Engine.Validation.ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, res);
-                new Engine.Validation.ValidateInnerSTOLowerlimit().Execute(this.Logger, this.BuVO, res);
+                new Engine.Validation.ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, res);
+                new Engine.Validation.ValidateObjectSizeLowerLimit().Execute(this.Logger, this.BuVO, res);
 
                 List<long> docIDs = new List<long>();
                 if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102) &&

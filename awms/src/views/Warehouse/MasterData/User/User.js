@@ -9,6 +9,7 @@ import { timingSafeEqual } from 'crypto';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
+const imgClose = <img style={{ width: "28px", height: "auto" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANkSURBVGhD7ZlHyxRBEIYXI4aDYgDDP1Bvpr9hwqMR9ageFBN6ULwaPsNdFEU9iH9DDwZQ9GIGIwaMCPo+sA1lU7PT3Tu7sjAvPLisXdXVOz3V1fV1WrVq1YjGiZViv7gu7osP4lcXPvPdNbFPrBDY/HctFMfFC/Enk2cC2wVi6JolzoifwgsuB3yMCXwORevFW+EF0w/4XCcGpgninPAmh4/iotgilok5YmIXPvPdVnFJMNbzATyN8aJRTRU3hTfhA7FJTBGpYuxm8VB4Pm+IHH89xa+Bw3iSb2Kn4MmUCttd4ruI/TNnI0/ivIidk3WWiqbE9nop4nlOir7ECxs7vSXmi6aFz9sinm+NKBJp7Z2wzp6LQeZtXvbHws75RswU2TorrKOvgkftaVH33xxV2SwWzGXnPi2yxK8cH1K8sJ4Oi9+C7ZYqxmKDraeDws7NS561bTnirQNSpZdtCCCMSV1ECD7YeYsgbb8SYQwcE0miyGKvW+MNIhaP2gYCdYuIgw82+Iq1XdhxT0VSAUhVaQ0/iapDpSogbxE5YxFP4bOw46vewX9ESWyNLoheSgksN/igy8La7BW1op63RtQ2deoVYGnwaJuwdldFrbh4WKPlIkVVgZYGj+LtfFfUituTNcqp071FWHKCR7OFtedgrVWc/yeJHFUtIjd4NFlYH8RWq5FfQLyFeIypqgo+kLuIoi10T1ijkXuJRz6N0rexRtxheyklwNJFXBHWZo+olVdKcKx7ygksdxHTRFEp4RVzG0WsQRdzO4Qd90Qkd/PicprugVdOHxFhTF3wQfEi8BGLX7+4nEbehWa38EQAqcEHhUV4waNDws7NhWaeyBINJuuEax5NWU9NXimXCFo2du5TIlvUQFyorSPeDRq6g5J3qX8tZogi0au0zoC2ChM1LXziO55vlehLPL7Y6SPhZY5S4Quf8TwnRN+qai3yThwQZIxSTRf4GGhrEXEn9hYBpDuO/JxmLAcjeT5OlQHmaqy5G8Sv4W2nwBfBHZbFkK3Y05TiMLf7HZ0GygPGej6AORr75T2tFXF2agKyzWoxFJHWaPf9EF4wObD/6UIXp8p+RLuPI56mkxdcL7A5KrJP2EGIIouLD30banYuHu8F5Qjw+Y7g/xjD3xaSC7NWrVpVqdP5C8HnZiqeZ+ELAAAAAElFTkSuQmCC" />;
 
 class User extends Component {
     constructor(props) {
@@ -17,9 +18,9 @@ class User extends Component {
         this.state = {
             colsRole: [
                 { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", minWidth: 50 },
-                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 140 },
+                { accessor: 'Code', Header: 'Role', editable: false, filterable: false, minWidth: 140 },
                 { accessor: 'Name', Header: 'Name', editable: false, filterable: false, minWidth: 140 },
-                { accessor: 'Description', Header: 'Description', editable: false, filterable: false },
+                //{ accessor: 'Description', Header: 'Description', editable: false, filterable: false },
             ],
             data: [],
             statuslist: [{
@@ -33,7 +34,7 @@ class User extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "User",
                 q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified",
+                f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -73,7 +74,7 @@ class User extends Component {
         };
 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.uneditcolumn = ["Created", "Modified"]
+        this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
@@ -86,7 +87,7 @@ class User extends Component {
     }
 
     async componentWillMount() {
-        document.title = "User - AWMS"
+        document.title = "User Account - AWMS"
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("User", dataGetPer, this.props.history);
@@ -187,7 +188,7 @@ class User extends Component {
         if (rowdata.ID <= 0) {
             return null
         } else {
-            return <div className="text-center"><Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+            return <div className="text-center"><Button type="button" color="info" style={{ width: '80px' }}
                 onClick={() => this.getData(rowdata.ID)}>Role</Button></div>
         }
     }
@@ -254,8 +255,9 @@ class User extends Component {
         const view = this.state.permissionView
 
         const cols = [
-            { accessor: 'Code', Header: 'Username', editable: view, filterable: true, Filter: "text", insertable: true, fixed: "left", minWidth: 90, maxWidth: 100 },
-            { show: view, accessor: 'Password', Header: 'Password', editable: view, filterable: false, Type: "password", minWidth: 100, maxWidth: 100 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
+            { accessor: 'Code', Header: 'Username', editable: view, filterable: true, Filter: "text", insertable: true, fixed: "left", minWidth: 100 },
+            { show: view, accessor: 'Password', Header: 'Password', editable: view, filterable: false, Type: "password", minWidth: 120 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 160, maxWidth: 200 },
             { accessor: 'EmailAddress', Header: 'Email Address', editable: view, Filter: "text", minWidth: 170, maxWidth: 200 },
             //{ accessor: 'LineID', Header: 'Line ID', editable: true, minWidth: 90},
@@ -263,8 +265,9 @@ class User extends Component {
             //{ accessor: 'TelOffice', Header: 'Office Tel.', editable: true, minWidth: 90},
             { accessor: 'TelMobile', Header: 'Mobile', Filter: 'text', editable: view, minWidth: 120 },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+            { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+            // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+            // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Role", btntext: "Role" },
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
@@ -282,7 +285,15 @@ class User extends Component {
                 row.className = "text-center"
             }
         })
-
+        const styleclose = {
+            cursor: 'pointer',
+            position: 'absolute',
+            display: 'block',
+            right: '-10px',
+            top: '-10px',
+            background: '#ffffff',
+            borderRadius: '18px',
+          }
         return (
             <div>
                 {/*
@@ -299,14 +310,20 @@ class User extends Component {
                     filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} addExportbtn={view} exportfilebtn={view}
                     table="ams_User" />
                 <Popup open={this.state.open} onClose={this.closeModal}>
-                    <div>
-                        <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{ background: 'white' }}
-                            getselection={this.getSelectionData} showPagination={false} />
-                        <Card>
-                            <CardBody>
-                                <Button onClick={() => this.updateRole()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
-                            </CardBody>
-                        </Card>
+                    <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
+                        <a style={styleclose} onClick={this.closeModal}>
+                            {imgClose}
+                        </a>
+                        <div id="header" style={{ width: '100%', borderBottom: '1px solid #007bff', fontSize: '18px', padding: '5px', color: '#007bff', fontWeight: 'bold' }}>Setting Role</div>
+                        <div style={{ width: '100%', padding: '10px 5px' }}>
+                            <div className="clearfix">
+                                <ReactTable columns={this.state.colsRole} minRows={3} data={this.state.selectroledata} sortable={false} style={{ background: 'white' }}
+                                    getselection={this.getSelectionData} showPagination={false} />
+                            </div>
+                            <div className="clearfix">
+                                <Button onClick={() => this.updateRole()} color="primary" style={{ width: '130px', marginTop: '5px' }} className="float-right">Save</Button>
+                            </div>
+                        </div>
                     </div>
                 </Popup>
             </div>

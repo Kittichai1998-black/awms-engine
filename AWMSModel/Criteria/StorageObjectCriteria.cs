@@ -38,6 +38,7 @@ namespace AWMSModel.Criteria
         public decimal? widthM;
         public decimal? heightM;
         public decimal? weiKG;
+        public decimal? weiAccept;
         public decimal? minWeiKG;
         public decimal? maxWeiKG;
         public DateTime? productDate;
@@ -138,6 +139,7 @@ namespace AWMSModel.Criteria
                             batch = x.batch,
                             minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
                             maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
+                            weiAccept = sos2 != null ? sos2.PercentWeightAccept : null,
                         };
                         s.groupSum = CreateGroupSum(s);
                         s.objectSizeMaps = sos2 != null ?

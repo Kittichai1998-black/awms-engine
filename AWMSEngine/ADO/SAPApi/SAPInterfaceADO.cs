@@ -71,5 +71,15 @@ namespace AWMSEngine.ADO.SAPApi
             var res = RESTFulAccess.SendJson<TRES_MMI0008_1_DO_INFO>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
             return res;
         }
+
+        public SAPResposneAPI MMI0009_CONFORM_PHYSICALCOUNT(dynamic datas, VOCriteria buVO)
+        {
+            string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI00011_URL");
+            string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
+            string password = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
+            var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
+            return res;
+        }
+
     }
 }

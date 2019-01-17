@@ -7,9 +7,11 @@ import {apicall, DatePicker, createQueryString} from '../../../ComponentCore'
 import queryString from 'query-string'
 import _ from 'lodash'
 import moment from 'moment';
+import withFixedColumns from "react-table-hoc-fixed-columns";
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../../ComponentCore/Permission';
 
 const Axios = new apicall()
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 class IssuedDoc extends Component {
   constructor(props) {
@@ -59,7 +61,9 @@ class IssuedDoc extends Component {
             Remark: res.data.document.remark,
             souBranchName:res.data.document.souBranchName,
             desWarehouseName :res.data.document.desWarehouseName,
-            desBranchName :res.data.document.desBranchName,
+            desBranchName: res.data.document.desBranchName,
+            Eventstatus: res.data.document.Eventstatus,
+            Super: res.data.document.Super,
             refID : res.data.document.refID,
             ref1 : res.data.document.ref1,
             ref2 : res.data.document.ref2,
@@ -144,19 +148,30 @@ class IssuedDoc extends Component {
 
   render() {
     const cols = [
-      {accessor: 'packCode', Header: 'PackItem', editable:false, Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>,},
-      {accessor: 'sumQty1', Header: 'Quantity',editable:false,Cell: (e) => <span>{e.original.sumQty1 === undefined ? ('0'+ ' / ' + e.original.quantityDoc) : (e.original.sumQty1 +' / '+ (e.original.quantityDoc === null?'-':e.original.quantityDoc))}</span>,},
-      {accessor: 'packUnitCode', Header: 'UnitType', editable:false,},
-      {accessor: 'batch', Header: 'Batch', editable:false,},
+      {
+        accessor: 'packCode', Header: 'SKUItem', editable: false, fixed: "left", minWidth: 250, maxWidth: 300,
+        resized: false,
+        Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>,
+      },
+      {accessor: 'packUnitCode', Header: 'Unit', editable:false,},
       {accessor: 'lot', Header: 'Lot', editable:false,},
-      {accessor: 'orderNo', Header: 'Order No', editable:false,}
+      { accessor: 'orderNo', Header: 'Order No', editable: false, },
+      {
+        accessor: 'sumQty1', Header: 'Quantity', editable: false,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
+          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+      },
+      { accessor: 'batch', Header: 'Batch', editable: false, }
 
     ];
     const colsdetail = [
       {accessor: 'code', Header: 'Base',editable:false,},
-      {accessor: 'packCode', Header: 'PackItem',editable:false,Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>},
+      {
+        accessor: 'packCode', Header: 'SKUItem', editable: false, fixed: "left", minWidth: 250, maxWidth: 300,
+        Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>
+      },
       {accessor: 'sumQty', Header: 'Quantity',editable:false,},
-      {accessor: 'packUnitCode', Header: 'UnitType',editable:false,},
+      {accessor: 'packUnitCode', Header: 'Unit',editable:false,},
     ];
 
     return (
@@ -169,29 +184,36 @@ class IssuedDoc extends Component {
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-
-        <div><label>Document Date : </label> {this.state.documentDate}</div>
-        <div><label>Document Code : </label> {this.state.DocumentCode}</div>
+        <Row>
+        <Col xs="6"><div><label>Document No : </label> {this.state.DocumentCode}</div></Col>
+          <Col xs="6"><div><label>Document Date : </label> {this.state.documentDate}</div></Col>
+        </Row>
       <Row>
-          <Col xs="6"><div><label>Sou.Warehouse : </label> {this.state.souWarehouseName}</div></Col>
-          <Col xs="6"><div><label>Des.Warehouse : </label> {this.state.desWarehouseName}</div></Col>
+          <Col xs="6"><div><label>Source Warehouse : </label> {this.state.souWarehouseName}</div></Col>
+          <Col xs="6"><div><label>Source Branch : </label> {this.state.souBranchName}</div></Col>
       </Row>
       <Row>
-          <Col xs="6"><div><label>Sou.Branch : </label> {this.state.souBranchName}</div></Col>
-          <Col xs="6"><div><label>Des.Branch : </label> {this.state.desBranchName}</div></Col>
+          <Col xs="6"><div><label>Destination Warehouse : </label> {this.state.desWarehouseName}</div></Col>
+          <Col xs="6"><div><label>Destination Branch : </label> {this.state.desBranchName}</div></Col>
       </Row>
       <Row>
-          <Col xs="6"><div><label>Mat.Doc No : </label> {this.state.refID}</div></Col>
-          <Col xs="6"><div><label>Mat.Doc Years : </label> {this.state.ref1}</div></Col>
+          <Col xs="6"><div><label>SAP.Doc No : </label> {this.state.refID}</div></Col>
+          <Col xs="6"><div><label>SAP.Doc Years : </label> {this.state.ref1}</div></Col>
       </Row>
-      <Row>
+        <Row>
+          <Col xs="6"><div><label>AWMS Res : </label> {this.state.Super}</div></Col>
           <Col xs="6"><div><label>Movement : </label> {this.state.ref2}</div></Col>
+         
+        </Row>
+        <Row>
+          <Col xs="6"><div><label>EventStatus : </label> {this.state.Eventstatus}</div></Col>
           <Col xs="6"><div><label>Remark : </label> {this.state.Remark}</div></Col>
-      </Row>
-        <ReactTable columns={cols} data={this.state.data} NoDataComponent={()=>null} style={{background:"white"}}
+          
+        </Row>
+        <ReactTableFixedColumns columns={cols} data={this.state.data} NoDataComponent={()=>null} style={{background:"white"}}
           sortable={false} defaultPageSize={1000}  filterable={false} editable={false} minRows={5} showPagination={false}/><br/>
 
-        <ReactTable columns={colsdetail} data={this.state.data2} NoDataComponent={()=>null} style={{background:"white"}}
+        <ReactTableFixedColumns columns={colsdetail} data={this.state.data2} NoDataComponent={()=>null} style={{background:"white"}}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false}/>
         <div className="clearfix">
           <Button color="danger" style={{margin:"10px 0"}} className="float-right" onClick={this.onHandleClickCancel}>Back</Button>

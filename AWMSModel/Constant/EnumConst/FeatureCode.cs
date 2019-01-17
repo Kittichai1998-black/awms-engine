@@ -18,6 +18,9 @@ namespace AWMSModel.Constant.EnumConst
         /// <summary> Mapping Pallet: Pack into Base - Use Multi SKU </summary>
         IB0104,
 
+        /// <summary> ASRS Validate Weight </summary>
+        IB0201,
+
         /// <summary> Goods Issued from Storage: เบิกโดยใช้ SKU ที่ Pack ต่างกันได้ </summary>
         //OB0100,
         /// <summary> Goods Issuer Module Cross Dock : สร้างเอกสาร Goods Issued ได้เกินจำนวนสินค้าที่อยู่ในคลัง และ จำนวนใน Goods Receive </summary>

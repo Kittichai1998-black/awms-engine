@@ -25,7 +25,7 @@ class Pack extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "PackMaster",
                 q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,SKUMaster_ID,SKUCode,SKUName,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified",
+                f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -39,7 +39,7 @@ class Pack extends Component {
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["SKUCode", "SKUName", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjCode", "ObjectSizeName", "Created", "Modified"]
+        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjCode", "ObjectSizeName", "Created", "Modified", "LastUpdate"]
     }
 
     onHandleClickCancel(event) {
@@ -81,7 +81,7 @@ class Pack extends Component {
             queryString: window.apipath + "/api/mst",
             t: "SKUMaster",
             q: "[{ 'f': 'Status', c:'<', 'v': 2}",
-            f: "ID,Code",
+            f: "ID,concat(Code,' : ',Name) as Code",
             g: "",
             s: "[{'f':'ID','od':'asc'}]",
             sk: 0,
@@ -133,7 +133,7 @@ class Pack extends Component {
                 let UnitTypeList = {}
                 let ObjSizeList = {}
                 SKUList["data"] = SKUResult.data.datas
-                SKUList["field"] = "SKUCode"
+                SKUList["field"] = "SKU_Code"
                 SKUList["pair"] = "SKUMaster_ID"
                 SKUList["mode"] = "Dropdown"
 
@@ -160,23 +160,25 @@ class Pack extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
             //{accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
             //{accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-            { accessor: 'SKUCode', Header: 'SKU', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 200 },
+            { accessor: 'SKU_Code', Header: 'SKU', updateable: view, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
             //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
-            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 90 },
-            { accessor: 'UnitTypeCode', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 85, className: "left" },
+            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
+            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
             //{accessor: 'ObjCode', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
             //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
             //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
             //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
             ///{accessor: 'PickSizeQty', Header: 'Pick Size Qty', editable:true,Filter:"text",datatype:"int"},
-            { accessor: 'ItemQty', Header: 'Item Qty', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 60 },
+            { accessor: 'ItemQty', Header: 'Conversion from Base Unit', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 70 },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180 },
+            { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+            //{ accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180 },
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 180 },
+            //{ accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 180 },
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];

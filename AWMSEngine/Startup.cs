@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.PropertyFile;
+using AWMSEngine.JobService;
 using AWMSModel.Constant.StringConst;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -54,6 +55,10 @@ namespace AWMSEngine
             string fileName = appProperty[PropertyConst.APP_KEY_LOG_FILENAME];
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             ADO.StaticValue.StaticValueManager.GetInstant();
+
+            AMWUtil.Common.SchedulerUtil.Start<PostGRDoc311ToSAPJob>("0 0/1 * * * ?");
+            AMWUtil.Common.SchedulerUtil.Start<PostGRDocPackage321ToSAPJob>("0 0/1 * * * ?");
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

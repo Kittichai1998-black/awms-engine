@@ -25,6 +25,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 public string unitCode;
                 public long baseUnitID;
                 public string baseUnitCode;
+                public string batch;
             }
         }
 
@@ -35,22 +36,30 @@ namespace AWMSEngine.Engine.Business.Auditor
             {
                 var doc = listItem.First();
                 var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
+
+                var getPalletID = ADO.StorageObjectADO.GetInstant().Get(reqVO, (long?)null, (long?)null, false, false, this.BuVO);
                 List<TRes.ItemList> itemLists = new List<TRes.ItemList>();
 
                 disto.ForEach(x =>
                 {
                     var sto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
-                    itemLists.Add(new TRes.ItemList()
+                    if(sto.parentID == getPalletID.id)
                     {
-                        packCode = sto.code,
-                        docItemID = x.DocumentItem_ID,
-                        baseQty = sto.baseQty,
-                        baseUnitCode = sto.baseUnitCode,
-                        qty = sto.qty,
-                        unitCode = sto.unitCode,
-                        unitID = sto.unitID,
-                        baseUnitID = sto.baseUnitID,
-                    });
+                        itemLists.Add(new TRes.ItemList()
+                        {
+                            packCode = sto.code,
+                            docItemID = x.DocumentItem_ID,
+                            baseQty = sto.baseQty,
+                            baseUnitCode = sto.baseUnitCode,
+                            qty = sto.qty,
+                            unitCode = sto.unitCode,
+                            unitID = sto.unitID,
+                            baseUnitID = sto.baseUnitID,
+                            stoID = sto.id.Value,
+                            batch = sto.batch,
+                        });
+                    }
+                    
                 });
                 var res = new TRes()
                 {
