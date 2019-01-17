@@ -39,7 +39,7 @@ namespace AWMSEngine.JobService
                 return skuMsts.TrueForAll(y => ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Any(z => z.ID == y.SKUMasterType_ID && z.Code == "ZPAC"));
             }).ToList();
 
-            var res = api.Execute(new { apiKey = "WCS_KEY", docIDs = docs.Select(x => x.ID.Value).ToArray() });
+            var res = api.Execute(new { apiKey = "JOBS_KEY", docIDs = docs.Select(x => x.ID.Value).ToArray() });
 
         }
     }

@@ -25,7 +25,7 @@ namespace AWMSEngine.JobService
                     }, new VOCriteria());
 
             APIService.Doc.CloseGRDocAPI api = new CloseGRDocAPI(null);
-            var res = api.Execute(new { apiKey = "WCS_KEY", docIDs = docs.Select(x => x.ID.Value).ToArray() });
+            var res = api.Execute(new { apiKey = "JOBS_KEY", docIDs = docs.Select(x => x.ID.Value).ToArray() });
         }
     }
 }
