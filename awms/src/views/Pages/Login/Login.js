@@ -128,8 +128,8 @@ class Login extends Component {
                       }}/>
                     </InputGroup>
                     <Row>
-                      <Col xs="6">
-                        <Button color="primary" className="px-4" onClick={this.Authorize} type="submit">Login</Button>
+                      <Col xs="12">
+                        <Button color="primary" className="float-right" style={{width: '130px'}} onClick={this.Authorize} type="submit">Login</Button>
                       </Col>
                       {/* <Col xs="6" className="text-right">
                         <Button color="link" className="px-0">Forgot password?</Button>

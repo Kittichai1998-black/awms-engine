@@ -65,6 +65,7 @@ class ClientSecret extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 90 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left" },
       { accessor: 'Description', Header: 'Description', editable: view, sortable: false, Filter: "text", },

@@ -72,7 +72,7 @@ class Stock extends Component {
   }
 
   createDetial(rowdata) {
-    return <Button type="button" color="primary" style={{ background: "##26c6da", borderColor: "#26c6da" }}
+    return <Button type="button" color="primary" 
       onClick={() => this.history.push('/doc/stc/list?docID=' + rowdata.ID)
       }>Detail</Button>
   }

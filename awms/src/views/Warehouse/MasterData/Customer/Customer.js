@@ -25,7 +25,7 @@ class Customer extends Component {
         queryString: window.apipath + "/api/viw",
         t: "CustomerMaster",
         q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f: "ID,Code,Name,Description,Status,Created,Modified",
+        f: "ID,Code,Name,Description,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: "",
@@ -38,7 +38,7 @@ class Customer extends Component {
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["Created", "Modified"]
+    this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
   }
   componentDidMount() {
     document.title = "Customer - AWMS"
@@ -77,13 +77,15 @@ class Customer extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100 },
-      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text",  minWidth: 150 },
       //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       //{ accessor: 'Status', Header: 'Status', editable: true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},
-      { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+      // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+      { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false}, */
-      { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
+      // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime", filterable:false},
       { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" }
     ];
