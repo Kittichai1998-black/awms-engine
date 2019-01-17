@@ -16,7 +16,8 @@ class AuditQueue extends Component{
       palletEdit:false,
       toggle:false,
       pickMode:1,
-      pickItemList:[]
+      pickItemList:[],
+      document:null
     }
     this.createDocItemList = this.createDocItemList.bind(this)
     this.onHandleSelectionDoc = this.onHandleSelectionDoc.bind(this)
@@ -101,7 +102,7 @@ class AuditQueue extends Component{
           {<AutoSelect data={this.state.docSelection} result={e => this.setState({docSelected:e.value})}/>}
         </Row>
         <Row>
-          {this.createDocItemList()}
+          {this.state.document === null ? null :this.createDocItemList()}
         </Row>
         <Row>
           <span>Area : </span>{<AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/>}
