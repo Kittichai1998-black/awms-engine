@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.General
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseStoID, StorageObjectType.BASE, false, true, this.BuVO);
-            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(mapsto.areaID, this.BuVO);
+            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT,mapsto.areaID, this.BuVO);
             var nextArea = desAreas.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
             if(nextArea != null)
             {

@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.Business
                 mapsto = this.ExecNextScan(reqVO);
             }
 
-            this.SetWeiAndQty(mapsto);
+            this.SetQty(mapsto);
 
             return mapsto;
         }
@@ -193,22 +193,20 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private void SetWeiAndQty(StorageObjectCriteria mapsto)
+        private void SetQty(StorageObjectCriteria mapsto)
         {
-            if (mapsto.mapstos.Count() > 0)
+            /*if (mapsto.mapstos.Count() > 0)
             {
-                mapsto.mapstos.ForEach(x => SetWeiAndQty(x));
+                mapsto.mapstos.ForEach(x => SetQty(x));
                 mapsto.weiKG = mapsto.mapstos.Sum(x => x.weiKG);
             }
             var counts = mapsto.mapstos
                 .GroupBy(x => x.objectSizeID)
                 .Select(x => new { objectSizeID = x.Key, count = x.Count() })
-                .ToList();
+                .ToList();*/
             mapsto.objectSizeMaps.ForEach(x =>
             {
-                var f = counts.FirstOrDefault(y => y.objectSizeID == x.innerObjectSizeID);
-                if (f != null) x.quantity = f.count;
-                else x.quantity = 0;
+                x.quantity = mapsto.mapstos.Count(y => y.objectSizeID == x.outerObjectSizeID);
             });
         }
 

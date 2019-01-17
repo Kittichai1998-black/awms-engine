@@ -10,6 +10,7 @@ namespace AWMSModel.Entity
         public StorageObjectType ObjectType;
         public decimal? MinWeigthKG;
         public decimal? MaxWeigthKG;
+        public decimal? PercentWeightAccept;
         public List<ams_ObjectSizeMap> ObjectSizeInners;
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Validation
 {
-    public class ValidateInnerSTOOverlimit : BaseEngine<StorageObjectCriteria, NullCriteria>
+    public class ValidateObjectSizeLowerLimit : BaseEngine<StorageObjectCriteria, NullCriteria>
     {
         protected override NullCriteria ExecuteEngine(StorageObjectCriteria reqVO)
         {
@@ -26,8 +26,8 @@ namespace AWMSEngine.Engine.Validation
             if (sto.objectSizeID.HasValue)
             {
                 this.Logger.LogDebug("//Validate Weight : " + sto.code);
-                if (sto.maxWeiKG.HasValue && sto.weiKG > sto.maxWeiKG)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V3002, "น้ำหนักเกินจากที่กำหนด");
+                if (sto.minWeiKG.HasValue && sto.weiKG < sto.minWeiKG)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3002, "น้ำหนักต่ำกว่าจากที่กำหนด");
             }
             if (sto.mapstos != null)
                 sto.mapstos.ForEach(x => this.ValidateWeight(x));
@@ -39,16 +39,17 @@ namespace AWMSEngine.Engine.Validation
             if (sto.objectSizeID.HasValue)
             {
                 this.Logger.LogDebug("//Validate Quantity : " + sto.code);
-
+                if (sto.mapstos.Count() == 0 && sto.objectSizeMaps.Any(x => x.minQuantity > 0))
+                    throw new AMWException(this.Logger, AMWExceptionCode.V3002, "ต่ำกว่าจำนวนที่กำหนด");
                 foreach (var s in sto.mapstos.GroupBy(x => x.objectSizeID).Select(x => new { objectSizeID = x.Key, count = (decimal)x.Count() }))
                 {
                     var osm = sto.objectSizeMaps.FirstOrDefault(x => x.innerObjectSizeID == s.objectSizeID);
                     if (osm == null)
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ยังไม่ได้กำหนดค่า ไม่สามารถใส่ลงกล่อง หรือ พาเลทได้");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ยังไม่ได้กำหนดค่า ไม่สามารถใส่ลงกล่อง หรือ พาเลท ขนาดนี้ได้");
                     }
-                    if (osm.maxQuantity.HasValue && s.count > osm.maxQuantity.Value)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V3002, "เกินจำนวนที่กำหนด");
+                    if (osm.minQuantity.HasValue && s.count < osm.minQuantity.Value)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3002, "ต่ำกว่าจำนวนที่กำหนด");
                 }
 
             }
