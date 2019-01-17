@@ -1073,19 +1073,22 @@ class TableGen extends Component {
 
       if (results.length > 0) {
         strStatus = results[0].status
-        console.log(data.original.Options)
-        if (data.original.Options !== null) {
-          var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
-          if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
-            var strSapRes = decodeURIComponent(arrayRes["SapRes"])
-            var newSapRes = strSapRes.replace(/\+/g, ' ');
-            // console.log(newSapRes)
-            return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-                  onClick={()=> this.props.createErrorSap(newSapRes) } ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation}</a></h5>
+        if (data.original.Options !== undefined) {
+          if (data.original.Options !== null) {
+            var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
+            if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
+              var strSapRes = decodeURIComponent(arrayRes["SapRes"])
+              var newSapRes = strSapRes.replace(/\+/g, ' ');
+              // console.log(newSapRes)
+              return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
+                onClick={() => this.props.createErrorSap(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation}</a></h5>
+            } else {
+              return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+            }
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }
-        } else {
+        }else{
           return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
         }
       }
@@ -1104,7 +1107,7 @@ class TableGen extends Component {
       </span>
     }
   }
- 
+
   onHandleSelection(rowdata, value, type) {
     if (type === "checkbox") {
       let rowselect = this.state.rowselect;
