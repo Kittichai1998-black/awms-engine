@@ -54,7 +54,7 @@ class SKUMasterType extends Component {
     this.getAutocomplete();
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("Catagory", dataGetPer, this.props.history);
+    CheckWebPermission("Category", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   //permission
@@ -170,7 +170,7 @@ class SKUMasterType extends Component {
             getselection = เก็บค่าที่เลือก
         
           */}
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Catagory"}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"SKUCollection"}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}
           table="ams_SKUMasterType" />

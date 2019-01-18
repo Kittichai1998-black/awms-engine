@@ -48,7 +48,7 @@ class Area extends Component {
         event.preventDefault();
     }
     componentDidMount() {
-        document.title = "Pallet - AWMS"
+        document.title = "Base Pallet - AWMS"
     }
     async componentWillMount() {
         this.filterList();
