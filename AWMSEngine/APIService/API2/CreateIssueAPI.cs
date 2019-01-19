@@ -70,6 +70,7 @@ namespace AWMSEngine.APIService.Api2
                 {
                     refID = doc.docNo,
                     ref1 = doc.docYear,
+                    ref2 = doc.items.First().movementType,
                     options = "DocType=" + doc.docType,
                     actionTime = doc.actionDate.Value,
                     documentDate = doc.documentDate.Value,
