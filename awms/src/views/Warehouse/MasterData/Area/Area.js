@@ -40,7 +40,7 @@ class Area extends Component {
     this.uneditcolumn = ["Warehouse_Code", "AreaMasterType_Code", "Created", "Modified", "LastUpdate"]
   }
   componentDidMount() {
-    document.title = "Area - AWMS"
+    document.title = "Area Zone - AWMS"
   }
   async componentWillMount() {
     this.filterList()

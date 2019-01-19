@@ -202,7 +202,7 @@ class IssuedDoc extends Component {
       </Row>
         <Row>
           <Col xs="6"><div><label>AWMS Res : </label> {this.state.Super}</div></Col>
-          <Col xs="6"><div><label>Movement : </label> {this.state.ref2}</div></Col>
+          <Col xs="6"><div><label>MovementType : </label> {this.state.ref2}</div></Col>
          
         </Row>
         <Row>
