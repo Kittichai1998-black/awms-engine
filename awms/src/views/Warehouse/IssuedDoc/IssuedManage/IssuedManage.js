@@ -167,6 +167,7 @@ class IssuedManage extends Component {
             ref2: rowselect1.data.document.ref2,
             desBranchName: rowselect1.data.document.desBranchName
           })
+
           var groupPack = _.groupBy(rowselect1.data.bstos, "code")
           console.log(groupPack)
           var groupdocItemID = _.groupBy(rowselect1.data.bstos, "docItemID")
@@ -413,7 +414,7 @@ class IssuedManage extends Component {
     /* return  <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
     onChange={(e) => {this.editData(rowdata, e.target.value, "PackQty")}} />; */
     return <Input value={rowdata.value}
-      onChange={(e) => { this.editData(rowdata, e.target.value, "PackQty") }} />
+      onChange={(e) => { this.editData(rowdata, e.target.value, field) }} />
   }
 
   addData() {
@@ -441,6 +442,9 @@ class IssuedManage extends Component {
         data[rowdata.index][field] = value.Code;
         data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitType"] = value.UnitType;
+        data[rowdata.index]["lot"] = value.lot;
+        data[rowdata.index]["orderno"] = value.orderno;
+        data[rowdata.index]["batch"] = value.batch;
         data[rowdata.index]["id"] = value.id;
       }
       this.setState({ data });
@@ -458,6 +462,9 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = "";
       data[rowdata.index]["SKU"] = "";
       data[rowdata.index]["UnitType"] = "";
+      data[rowdata.index]["lot"] = "";
+      data[rowdata.index]["orderno"] = "";
+      data[rowdata.index]["batch"] = "";
       data[rowdata.index]["id"] = "";
     }
     else if (rowdata.column.datatype === "int") {
@@ -646,7 +653,11 @@ class IssuedManage extends Component {
         { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
         //{accessor:"SKU",Header:"SKU",},
         { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("qty", e), datatype: "int" },
-        { accessor: "UnitType", Header: "Unit", },
+       { accessor: "UnitType", Header: "Unit", },
+       { accessor: "lot", Header: "lot", editable: true, Cell: e => this.inputCell("lot", e), datatype: "string" },
+       { accessor: "orderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("orderno", e), datatype: "string" },
+       { accessor: "bath", Header: "Bath", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string"},
+
            
         {
           Cell: (e) => <Button onClick={() => {
@@ -740,7 +751,7 @@ class IssuedManage extends Component {
 
       
         <Row>
-          <Col xs="6"><div>Event Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
+          <Col xs="6"><div>Doc Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
           <Col xs="6"><div className=""><label>Remark : </label>
             {this.state.pageID ? <span> {this.state.remark}</span> :
               <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '100px' }}
@@ -748,15 +759,7 @@ class IssuedManage extends Component {
           </div></Col>       
           </Row>
 
-        {this.state.pageID != 0 ? null : <Row>
-          <Col xs="6">
-            <div className=""><label>Batch : </label>
-              <Input onChange={(e) => this.setState({ Batch: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '63px' }}
-                value={this.state.Batch === undefined ? "" : this.state.Batch} />
-            </div>
-          </Col>
-        </Row>}
-
+     
 
         <div className="clearfix">
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay }}>Add</Button>
@@ -768,7 +771,7 @@ class IssuedManage extends Component {
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
 
-        {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
+        {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
         {this.state.pageID === 0 ? null : <ReactTable columns={cossdetail} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}

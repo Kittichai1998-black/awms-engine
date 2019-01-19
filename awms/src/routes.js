@@ -138,7 +138,7 @@ const WebPageGroup = Loadable({
 });
 
 const Storage = Loadable({
-  loader: () => import('./views/Warehouse/Storage'),
+  loader: () => import('./views/Warehouse/StorageReport/StorageReport'),
   loading: Loading,
 });
 
@@ -211,7 +211,7 @@ const StockCard = Loadable({
 });
 
 const CurrentInv = Loadable({
-  loader: () => import('./views/Warehouse/CurrentInv'),
+  loader: () => import('./views/Warehouse/CurrentReport/CurrentReport'),
   loading: Loading,
 });
 
@@ -309,6 +309,8 @@ const AuditDoc = Loadable({
   loading: Loading,
 });
 
+
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
@@ -378,6 +380,7 @@ const routes = [
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
   { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
+
 ];
 
 export default routes;
