@@ -264,3 +264,4 @@ __pycache__/
 /awms/src/views/Warehouse/StorageView.js
 /AWMSEngine/Properties/PublishProfiles/FolderProfile.pubxml
 *.json
+*.js
