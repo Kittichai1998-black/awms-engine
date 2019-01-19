@@ -299,23 +299,33 @@ const Audit = Loadable({
   loading: Loading,
 });
 
+const AuditQueue = Loadable({
+  loader: () => import('./views/Warehouse/Audit/AuditQueue'),
+  loading: Loading,
+});
+
+const AuditDoc = Loadable({
+  loader: () => import('./views/Warehouse/Audit/AuditDoc'),
+  loading: Loading,
+});
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/mst/sku/manage', exact: true, name: 'Setting / SKU', component: Products },
-  { path: '/mst/catagory/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
+  { path: '/mst/category/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
   { path: '/mst/pack/manage', exact: true, name: 'Setting / SKU Package', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Setting / Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/customer/manage', exact: true, name: 'Setting / Customer', component: Customer },
   { path: '/mst/supplier/manage', exact: true, name: 'Setting / Supplier', component: Supplier },
-  { path: '/mst/area/manage', exact: true, name: 'Setting / Area', component: Area },
+  { path: '/mst/area/manage', exact: true, name: 'Setting / Area Zone', component: Area },
   { path: '/mst/areatype/manage', exact: true, name: 'Setting / Area Type', component: AreaType },
-  { path: '/mst/location/manage', exact: true, name: 'Setting / Location', component: AreaLocation },
+  { path: '/mst/location/manage', exact: true, name: 'Setting / Area Location', component: AreaLocation },
   { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/arearoute/manage', exact: true, name: 'Setting / Area Route', component: AreaRoute },
-  { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet', component: Base },
+  { path: '/mst/pallet/manage', exact: true, name: 'Setting / Base Pallet', component: Base },
   { path: '/mst/pallettype/manage', exact: true, name: 'Setting / Pallet Type', component: BaseType },
   { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/branch/manage', exact: true, name: 'Setting / Branch', component: Branch },
@@ -365,7 +375,9 @@ const routes = [
   { path: '/wm/queue/manage', exact: true, name: 'Queue View', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
-  { path: '/wm/audit', exact: true, name: 'Audit', component: Audit },
+  { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
+  { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
+  { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
 ];
 
 export default routes;

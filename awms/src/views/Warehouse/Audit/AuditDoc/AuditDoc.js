@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
-import { TableGen } from '../MasterData/TableSetup';
-import { apicall, DatePicker, GenerateDropDownStatus } from '../ComponentCore'
-import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
+import { TableGen } from '../../MasterData/TableSetup';
+import { apicall, DatePicker, GenerateDropDownStatus } from '../../ComponentCore'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 import Popup from 'reactjs-popup'
 
 const axois = new apicall()
 const imgExclamation = <img style={{ width: "20px", height: "auto" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALxSURBVGhD7VlLbhNBELUAsWDFd8HvAmxA2N02KNKgbiuwYAcGBAcJYcMGSLaABAiOAEGKInEPIBwgBDY4hOCZCQmboWpSWSBXj7tnum1Fmic9xVKmq95r1/Sn3KhRo0Z1ZL3e/rQrO4mSD4ALiRZfgOuxln+R+DnRcjlR4h38nU2vtNvZw8Y+Gj45bE63zoLA+ViJ7yAsc2GsxWqs5FwayTMUbnwYRM3jkPw1cJsT58I8hpIvMCaFDwuYubtQCj85MRXZj1X7DqXxj6x37iCUyxsmsVdCjpdZFB2gtH6QXW8egsAfuIQhCGW1hDkpfTXQzDuLz/rr/5F7pohQqou4upGM8ihbNlUNILGcSEY5wCzc4wLb0IcBZNwVt0iOGwbXLpyA5W2NC2pDXwZAw4/fWhwjWfaA2X/FBrSkNwM5xXOSZYd8h624Sfk0AFq2UtU5TfJGA16eeS6QC30aQMJx5QnJKwYesqB8vnFBXOjfgPxqdQDc1OISF8CVvg0gU9WUJNOM/EjMDHZlCANJV9wnmWZA/b9nBzsyiAEt3pJMM+DB5eGB7gxiQMnPJNMMuj3xARwYyMAayTSj6vq/yxAGUBvJNGPPG9jzJYQvCjvYkWEMiE8k0wwwsMAOdmQQA5bL6OzwQHcGMaDEDMk0I29QcYMdGcJAqluCZJpBh7lVLoALfRuAFWjFupsHD89xQSZJmNTHJG80sN3naz/wQRD/J+1ePkXy7IAdAS7YZOh4pUTgRRo3Dj7gaHp7B+BSvzE1dYRkuSHWrdtsUAv6MjDQ7RskpxzKdie8GFDyKckoD2y0golFNkEBqxrAnF5ai4i8uavkEpcoBHPxvpq7u9j5JsawMin5zNvMc4BvogeJ+kOJqxJWm4GSNylNWGxMd47i2gxmtlgxDsRNCmf9V3T+MIUfH7Ddhx0zMLLCiSsijoGSfJRcvXiSwk0OeMjCphP2bfDMjhcP/B0NRG4jd35TEx/pfzN4qrQ+mNWoUaMAjcY/hH7RYM9nkHQAAAAASUVORK5CYII=" />;
 const imgClose = <img style={{ width: "28px", height: "auto" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANkSURBVGhD7ZlHyxRBEIYXI4aDYgDDP1Bvpr9hwqMR9ageFBN6ULwaPsNdFEU9iH9DDwZQ9GIGIwaMCPo+sA1lU7PT3Tu7sjAvPLisXdXVOz3V1fV1WrVq1YjGiZViv7gu7osP4lcXPvPdNbFPrBDY/HctFMfFC/Enk2cC2wVi6JolzoifwgsuB3yMCXwORevFW+EF0w/4XCcGpgninPAmh4/iotgilok5YmIXPvPdVnFJMNbzATyN8aJRTRU3hTfhA7FJTBGpYuxm8VB4Pm+IHH89xa+Bw3iSb2Kn4MmUCttd4ruI/TNnI0/ivIidk3WWiqbE9nop4nlOir7ECxs7vSXmi6aFz9sinm+NKBJp7Z2wzp6LQeZtXvbHws75RswU2TorrKOvgkftaVH33xxV2SwWzGXnPi2yxK8cH1K8sJ4Oi9+C7ZYqxmKDraeDws7NS561bTnirQNSpZdtCCCMSV1ECD7YeYsgbb8SYQwcE0miyGKvW+MNIhaP2gYCdYuIgw82+Iq1XdhxT0VSAUhVaQ0/iapDpSogbxE5YxFP4bOw46vewX9ESWyNLoheSgksN/igy8La7BW1op63RtQ2deoVYGnwaJuwdldFrbh4WKPlIkVVgZYGj+LtfFfUituTNcqp071FWHKCR7OFtedgrVWc/yeJHFUtIjd4NFlYH8RWq5FfQLyFeIypqgo+kLuIoi10T1ijkXuJRz6N0rexRtxheyklwNJFXBHWZo+olVdKcKx7ygksdxHTRFEp4RVzG0WsQRdzO4Qd90Qkd/PicprugVdOHxFhTF3wQfEi8BGLX7+4nEbehWa38EQAqcEHhUV4waNDws7NhWaeyBINJuuEax5NWU9NXimXCFo2du5TIlvUQFyorSPeDRq6g5J3qX8tZogi0au0zoC2ChM1LXziO55vlehLPL7Y6SPhZY5S4Quf8TwnRN+qai3yThwQZIxSTRf4GGhrEXEn9hYBpDuO/JxmLAcjeT5OlQHmaqy5G8Sv4W2nwBfBHZbFkK3Y05TiMLf7HZ0GygPGej6AORr75T2tFXF2agKyzWoxFJHWaPf9EF4wObD/6UIXp8p+RLuPI56mkxdcL7A5KrJP2EGIIouLD30banYuHu8F5Qjw+Y7g/xjD3xaSC7NWrVpVqdP5C8HnZiqeZ+ELAAAAAElFTkSuQmCC" />;
-class IssuedDoc extends Component {
+
+class AuditDoc extends Component {
   constructor(props) {
     super(props);
 
@@ -31,7 +32,7 @@ class IssuedDoc extends Component {
       select: {
         queryString: window.apipath + "/api/viw",
         t: "Document",
-        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002}]",
+        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 2004}]",
         f: "ID,Code,SouBranchName,SouWarehouseName,SouAreaName,DesCustomerName,DesBranchName,DesWarehouseName,DesSupplierName,ForCustomer,Batch,Lot,ActionTime,DocumentDate,EventStatus,RefID,Ref1,Ref2,Remark,Created,ModifyBy,LastUpdate,Options",
         g: "",
         s: "[{'f':'ID','od':'desc'}]",
@@ -39,9 +40,9 @@ class IssuedDoc extends Component {
         l: 20,
         all: "",
       },
-      sortstatus: 0,
       open: false,
       errorstr: null,
+      sortstatus: 0,
       selectiondata: []
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -53,28 +54,28 @@ class IssuedDoc extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Search Issue : AWMS";
+    document.title = "Search Audit : AWMS";
     //permission
     this.setState({ showbutton: "none" })
     let dataGetPer = await GetPermission()
-    CheckWebPermission("GID", dataGetPer, this.props.history);
+    CheckWebPermission("SAudit", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   //permission
-  // 26	TransGID_view
-  // 27	TransGID_create&modify
-  // 28	TransGID_execute
+  // 52	Audit_view	เอกสารตรวจสอบสินค้า
+  // 53	Audit_create&modify	เอกสารตรวจสอบสินค้า
+  // 55	Audit_execute	เอกสารตรวจสอบสินค้า
 
   displayButtonByPermission(dataGetPer) {
     let check = 0
-    if (CheckViewCreatePermission("TransGID_view", dataGetPer)) {
-      check = 0 //แสดงข้อมูล26
+    if (CheckViewCreatePermission("Audit_view", dataGetPer)) {
+      check = 0 //แสดงข้อมูล52
     }
-    if (CheckViewCreatePermission("TransGID_create&modify", dataGetPer)) {
-      check = 1 //แก้ไข27
+    if (CheckViewCreatePermission("Audit_create&modify", dataGetPer)) {
+      check = 1 //แก้ไข53
     }
-    if (CheckViewCreatePermission("TransGID_execute", dataGetPer)) {
-      //แก้ไข28
+    if (CheckViewCreatePermission("Audit_execute", dataGetPer)) {
+      //แก้ไข55
       if (CheckViewCreatePermission("Administrator", dataGetPer)) {
         check = 3
       } else {
@@ -142,10 +143,10 @@ class IssuedDoc extends Component {
         axois.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
       }
       if (status === "reject") {
-        axois.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+        axois.post(window.apipath + "/api/wm/audit/doc/rejected", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
       }
       if (status === "Close") {
-        axois.post(window.apipath + "/api/wm/issued/doc/Closing", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+        axois.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
       }
     }
   }
@@ -164,7 +165,6 @@ class IssuedDoc extends Component {
   createSapResModal(data) {
     this.setState({ errorstr: data }, () => this.openModal())
   }
- 
   render() {
     const cols = [
       { Header: '', Type: "selectrow", sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50 },
@@ -198,6 +198,7 @@ class IssuedDoc extends Component {
       btntype: "Link",
       func: this.onClickToDesc
     }]
+
     const styleclose = {
       cursor: 'pointer',
       position: 'absolute',
@@ -237,11 +238,11 @@ class IssuedDoc extends Component {
         </div>
         <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
           dropdownfilter={this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-          btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c: '=', 'v': 1002 }, { 'f': 'EventStatus', c: '!=', 'v': 32 }]}
-          accept={false} createErrorSap={this.createSapResModal} />
+          btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c: '=', 'v': 2004 }]}
+          accept={false} />
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            {/* <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button> */}
             <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button>
             <Button id="per_button_working" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
@@ -265,4 +266,4 @@ class IssuedDoc extends Component {
   }
 }
 
-export default IssuedDoc;
+export default AuditDoc;

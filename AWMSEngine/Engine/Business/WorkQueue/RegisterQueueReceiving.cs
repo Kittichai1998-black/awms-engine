@@ -44,6 +44,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             if (mapsto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Base Code '" + reqVO.baseCode + "'");
 
+            if(mapsto.code != reqVO.baseCode)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ถูกต้อง");
+
+
 
             List<amt_DocumentItem> docItems = null;
             //รับสินค้าใหม่เข้าคลัง
@@ -73,6 +77,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
 
             var workQ = this.ProcessRegisterWorkQueue(docItems,mapsto, reqVO);
+
+            this.ValidateObjectSizeLimit(mapsto);
 
             var res = this.GenerateResponse(mapsto, workQ);
             return res;
@@ -141,6 +147,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 var reqMapping = new WCSMappingPallet.TReq()
                 {
+                    actualWeiKG = reqVO.weight,
                     palletData = palletList
                 };
 
@@ -148,7 +155,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }
 
 
-            mapsto.weiKG = reqVO.weight;
+            //mapsto.weiKG = reqVO.weight;
             mapsto.lengthM = reqVO.length;
             mapsto.heightM = reqVO.height;
             mapsto.widthM = reqVO.width;
@@ -296,7 +303,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         private SPworkQueue ProcessRegisterWorkQueue(
             List<amt_DocumentItem> docItems, StorageObjectCriteria mapsto, TReq reqVO)
         {
-            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(mapsto.areaID, _locationASRS.ID, this.BuVO);
+            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID, _locationASRS.ID, this.BuVO);
             var desAreaDefault = desAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
             SPworkQueue workQ = new SPworkQueue()
             {

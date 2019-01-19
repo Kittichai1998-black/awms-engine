@@ -72,7 +72,13 @@ namespace AWMSEngine.APIService
             }
         }
 
-
+        private class _GetKey
+        {
+            public string token;
+            public string _token;
+            public string apikey;
+            public string _apikey;
+        }
 
         public dynamic Execute(dynamic request)
         {
@@ -84,7 +90,8 @@ namespace AWMSEngine.APIService
             string apiKey = null;
             try
             {
-                var getKey = ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
+                /*var getKey = this.ControllerAPI == null ? null : 
+                    ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
                 if (getKey.token != null)
                     token = getKey.token;
                 else if (getKey._token != null)
@@ -97,24 +104,16 @@ namespace AWMSEngine.APIService
                 else if (getKey.apikey != null)
                     apiKey = getKey.apikey;
                 else if (getKey._apikey != null)
-                    apiKey = getKey._apikey;
+                    apiKey = getKey._apikey;*/
 
 
                 if (request != null)
                 {
-                    if (request.token != null)
-                        token = request.token;
-                    else if (request._token != null)
-                        token = request._token;
+                    string _getKeyJson = Newtonsoft.Json.JsonConvert.SerializeObject(request);
+                    _GetKey getKey = Newtonsoft.Json.JsonConvert.DeserializeObject<_GetKey>(_getKeyJson);
 
-                    if (request.apiKey != null)
-                        apiKey = request.apiKey;
-                    else if (request._apiKey != null)
-                        apiKey = request._apiKey;
-                    else if (request.apikey != null)
-                        apiKey = request.apikey;
-                    else if (request._apikey != null)
-                        apiKey = request._apikey;
+                    token = !string.IsNullOrWhiteSpace(getKey.token) ? getKey.token : getKey._token;
+                    apiKey = !string.IsNullOrWhiteSpace(getKey.apikey) ? getKey.apikey : getKey._apikey;
                 }
 
                 if (!string.IsNullOrWhiteSpace(token))
@@ -133,9 +132,9 @@ namespace AWMSEngine.APIService
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
                     this.APIServiceID(),
-                    this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
-                    this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
-                    this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
+                    this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
+                    this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
+                    this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.LocalIpAddress.ToString(),
                     System.Environment.MachineName,
                     this.RequestVO,
                     this.BuVO);

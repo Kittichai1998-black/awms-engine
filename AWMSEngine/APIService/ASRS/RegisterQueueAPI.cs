@@ -29,8 +29,6 @@ namespace AWMSEngine.APIService.ASRS
                 .Select(x => new PutAutoWarehouse.TReq.TCodeName() { Code = x.source, Name = x.source, BranchCode = "1200" })
                 .ToList()
             });*/
-            //validate น้ำหนัก
-            //เพิ่ม Mapping
             var res = new RegisterQueueReceiving().Execute(this.Logger, this.BuVO, req);
             return res;
         }
