@@ -136,7 +136,7 @@ class AreaType extends Component {
     const view = this.state.permissionView
     const cols = [
       { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
-      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 90 },
+     // { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 90 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
       { accessor: 'GroupType', Header: 'Group Type', updateable: view, Filter: "text", Type: "autocomplete" },
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" , Filter:"dropdown"},

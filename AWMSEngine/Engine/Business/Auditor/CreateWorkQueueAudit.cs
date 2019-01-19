@@ -27,10 +27,11 @@ namespace AWMSEngine.Engine.Business.Auditor
         public class TRes
         {
             public long docID;
-            public List<Queue> queues;
-            public class Queue
+            public List<ItemList> listItems;
+            public class ItemList
             {
                 public string palletCode;
+                public string itemCode;
             }
         }
 
@@ -233,7 +234,7 @@ namespace AWMSEngine.Engine.Business.Auditor
             }
 
             TRes listQueue = new TRes();
-            var queues = new List<TRes.Queue>();
+            var itemLists = new List<TRes.ItemList>();
             listWorkQueue.ForEach(x =>
             {
                 SPworkQueue res = new SPworkQueue();
@@ -241,19 +242,18 @@ namespace AWMSEngine.Engine.Business.Auditor
                     res = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
 
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.StorageObject_ID.Value, null, null, StorageObjectEventStatus.AUDITING, this.BuVO);
-                queues.Add(new TRes.Queue()
-                {
-                    palletCode = x.StorageObject_Code
-                });
             });
             disto.ForEach(x =>
             {
-                var res2 = ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO);
+                ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO);
+                var res = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                var resBase = ADO.StorageObjectADO.GetInstant().Get(res.parentID.Value, StorageObjectType.PACK, false, false, this.BuVO);
+                itemLists.Add(new TRes.ItemList { itemCode = res.code, palletCode = resBase.code });
             });
 
             ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
             listQueue.docID = reqVO.docID;
-            listQueue.queues = queues;
+            listQueue.listItems = itemLists;
             return listQueue;
         }
 

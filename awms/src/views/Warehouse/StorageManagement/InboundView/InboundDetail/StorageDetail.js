@@ -6,6 +6,7 @@ import ReactTable from 'react-table'
 import {apicall, DatePicker, createQueryString} from '../../../ComponentCore'
 import queryString from 'query-string'
 import _ from 'lodash'
+import { DocumentEventStatus } from '../../../Status'
 import moment from 'moment';
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../../ComponentCore/Permission';
@@ -62,15 +63,16 @@ class IssuedDoc extends Component {
             souBranchName:res.data.document.souBranchName,
             desWarehouseName :res.data.document.desWarehouseName,
             desBranchName: res.data.document.desBranchName,
-            Eventstatus: res.data.document.Eventstatus,
+            Eventstatus: res.data.document.eventStatus,
             Super: res.data.document.Super,
             refID : res.data.document.refID,
             ref1 : res.data.document.ref1,
             ref2 : res.data.document.ref2,
             documentDate :  moment(res.data.document.documentDate).format("DD-MM-YYYY")
           })
+         
 
-
+          this.renderDocumentStatus();
           var groupPack = _.groupBy(res.data.bstos,"code") 
           var groupdocItemID = _.groupBy(res.data.bstos,"docItemID")       
           let sumArr =[]
@@ -132,6 +134,14 @@ class IssuedDoc extends Component {
        })
     }
 
+  }
+
+
+  renderDocumentStatus() {
+    const res = DocumentEventStatus.filter(row => {
+      return row.code === this.state.Eventstatus
+    })
+    return res.map(row => row.status)
   }
   
   onHandleClickCancel(event) {
@@ -202,11 +212,11 @@ class IssuedDoc extends Component {
       </Row>
         <Row>
           <Col xs="6"><div><label>AWMS Res : </label> {this.state.Super}</div></Col>
-          <Col xs="6"><div><label>Movement : </label> {this.state.ref2}</div></Col>
+          <Col xs="6"><div><label>MovementType : </label> {this.state.ref2}</div></Col>
          
         </Row>
         <Row>
-          <Col xs="6"><div><label>EventStatus : </label> {this.state.Eventstatus}</div></Col>
+          <Col xs="6"><div><label>Doc Status : </label> {this.renderDocumentStatus()}</div></Col>
           <Col xs="6"><div><label>Remark : </label> {this.state.Remark}</div></Col>
           
         </Row>
