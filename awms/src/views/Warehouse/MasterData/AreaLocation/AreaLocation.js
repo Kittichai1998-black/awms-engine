@@ -317,7 +317,7 @@ class AreaLocation extends Component {
       return [
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        { accessor: 'Code', Header: 'Code', Type: "autolocationcode", editable: view, Filter: "text", fixed: "left" },
+        { accessor: 'Code', Header: 'Code', Type: "FLSareacode", editable: view, Filter: "text", fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text" },
         { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text" },

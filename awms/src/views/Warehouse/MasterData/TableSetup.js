@@ -96,6 +96,7 @@ class TableGen extends Component {
     this.datetimelog = this.datetimelog.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
+    this.FLSareaLocationCode = this.FLSareaLocationCode.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
     this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
     this.createAutoCompleteDownshift = this.createAutoCompleteDownshift.bind(this)
@@ -414,27 +415,13 @@ class TableGen extends Component {
               }
             }
           } else {
-            if (col.accessor === "Bank") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Bank");
-                delete row["Code"]
-              }
-            }
-            if (col.accessor === "Bay") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Bay");
-                delete row["Code"]
-              }
-            }
-            if (col.accessor === "Level") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Level");
-                delete row["Code"]
-              }
-            }
-            if (col.accessor === "Gate") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Gate");
+            if (col.accessor === "Code") {
+              if (row[col.accessor] === "" || row[col.accessor] === null) {
+                if (col.Header === "Username") {
+                  window.warning("กรุณากรอกข้อมูล Username");
+                } else {
+                  window.warning("กรุณากรอกข้อมูล Code");
+                }
                 delete row["Code"]
               }
             }
@@ -792,6 +779,14 @@ class TableGen extends Component {
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
       onChange={(e) => { this.onEditValueAutoCode(rowdata, e.target.value, rowdata.column.id) }} />
   }
+  onEditValueArea(rowdata, value, field) {
+    this.onEditorValueChange(rowdata, this.props.areamaster, "AreaMaster_ID")
+    this.onEditorValueChange(rowdata, value, rowdata.column.id)
+  }
+  FLSareaLocationCode(rowdata) {
+    return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
+      onChange={(e) => { this.onEditValueArea(rowdata, e.target.value, rowdata.column.id) }} />
+  }
   autoGenBaseCode(rowdata) {
     if (rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== "") {
       var codestr = this.props.autocode + "," + rowdata.original["BaseMasterType_ID"]
@@ -1089,7 +1084,7 @@ class TableGen extends Component {
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }
-        }else{
+        } else {
           return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
         }
       }
@@ -1297,6 +1292,16 @@ class TableGen extends Component {
       else if (row.Type === "autolocationcode" && (row.body === undefined || !row.body)) {
         if (row.editable) {
           row.Cell = (e) => (this.autoGenLocationCode(e))
+        }
+        else {
+          row.Cell = (e) => {
+            return <span>{e.value}</span>
+          }
+        }
+      }
+      else if (row.Type === "FLSareacode" && (row.body === undefined || !row.body)) {
+        if (row.editable) {
+          row.Cell = (e) => (this.FLSareaLocationCode(e))
         }
         else {
           row.Cell = (e) => {
