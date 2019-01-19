@@ -176,8 +176,25 @@ namespace AWMSEngine.Engine.Business.Auditor
             }
             else
             {
+                
+
                 docItems.ForEach(x =>
                 {
+                    var getSto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]
+                    {
+                        new SQLConditionCriteria("Code", x.Code, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("Batch", x.Batch, SQLOperatorType.EQUALS),
+                    }, this.BuVO);
+
+                    if(getSto == null)
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สินค้า " + x.Code + " Batch : " + x.Batch + " ไม่มีในระบบ");
+                    }
+                    if(getSto.TrueForAll(y => y.EventStatus != 12))
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้า " + x.Code + " Batch : " + x.Batch + " ต้องถูกมีสถานะรับเข้าสินค้าทั้งหมด");
+                    }
+
                     var auditList = ADO.DocumentADO.GetInstant().ListAuditItem(x.ID.Value, x.Lot == "" ? null : x.Lot,
                         x.Batch == "" ? null : x.Batch, x.OrderNo == "" ? null : x.OrderNo, this.BuVO).ToList();
 
