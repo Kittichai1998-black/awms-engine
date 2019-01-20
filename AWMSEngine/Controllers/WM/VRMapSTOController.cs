@@ -33,5 +33,6 @@ namespace AWMSEngine.Controllers.WM
             ListPriceByRootID exec = new ListPriceByRootID(this);
             return exec.Execute(req);// exec.Execute(datas);
         }
+
     }
 }

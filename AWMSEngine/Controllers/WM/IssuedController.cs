@@ -95,7 +95,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpPost("doc/return")]
         public dynamic DocReturn([FromBody] dynamic req)
         {
-            ScanPickingAndConsoAPI exec = new ScanPickingAndConsoAPI(this);
+            ReturnSKUAPI exec = new ReturnSKUAPI(this);
             var res = exec.Execute(req);
             return res;
         }

@@ -129,7 +129,7 @@ class IssuedDoc extends Component {
           this.setState({ data: sumArr1 })
 
         }
-        console.log(this.state.data)
+        console.log(this.state.data2)
 
       })
     }
@@ -173,9 +173,12 @@ class IssuedDoc extends Component {
 
     ];
     const colsdetail = [
+      { accessor: 'code', Header: 'Pallet', editable: false, },
       { accessor: 'packCode', Header: 'SKUCode', editable: false, },
       { accessor: 'packName', Header: 'SKUName', editable: false, },
-      { accessor: 'code', Header: 'Pallet', editable: false, },
+      { accessor: 'batch', Header: 'Batch', editable: false, },
+      { accessor: 'lot', Header: 'Lot', editable: false, },
+      { accessor: 'orderNo', Header: 'Order No', editable: false, },
       { accessor: 'sumQty', Header: 'Qty', editable: false, },
       { accessor: 'packUnitCode', Header: 'Unit', editable: false, },
     ];

@@ -31,6 +31,7 @@ namespace AWMSEngine.Engine.Business
             public VirtualMapSTOActionType action;
             public string options;
             public StorageObjectCriteria mapsto;
+            public bool isRoot = true;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
@@ -136,7 +137,7 @@ namespace AWMSEngine.Engine.Business
         }
         private StorageObjectCriteria ExecFirstScan(TReq reqVO)
         {
-            StorageObjectCriteria mapsto = this.ADOSto.Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, true, true, this.BuVO);
+            StorageObjectCriteria mapsto = this.ADOSto.Get(reqVO.scanCode, null,null, reqVO.isRoot, true, this.BuVO);
 
             if (mapsto == null)
             {
@@ -162,7 +163,14 @@ namespace AWMSEngine.Engine.Business
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่มีรหัส" + reqVO.scanCode + "ในระบบ");
                 }
             }
+            else
+            {
+                if (mapsto.warehouseID != reqVO.warehouseID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "warehouse ไม่ตรงกัน");
 
+                if (mapsto.areaID != reqVO.areaID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "area ไม่ตรงกัน");
+            }
             return mapsto;
         }
 
