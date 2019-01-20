@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter,Col } from 'reactstrap';
+import { Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import moment from 'moment';
 import { DocumentEventStatus } from '../../Status'
@@ -242,7 +242,7 @@ class IssuedManage extends Component {
         }
 
       })
-    }else {
+    } else {
       this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY') })
       Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
         this.setState({
@@ -349,13 +349,15 @@ class IssuedManage extends Component {
           , ref1: this.state.ref1
           , ref2: this.state.ref2
           , batch: this.state.Batch
-          , lot: null
+          , lot: this.state.Lot
+          , orderno: this.state.Orderno
         })
     })
     let postdata = {
       forCustomerID: null
       , batch: this.state.Batch
-      , lot: null
+      , lot: this.state.Lot
+      , orderno: this.state.Orderno
       , souBranchID: 1
       , desBranchID: this.state.branch
       , souWarehouseID: 1
@@ -419,7 +421,7 @@ class IssuedManage extends Component {
 
   addData() {
     const data = this.state.data
-    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", ID: "" })
+    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", ID: "", Batch: "", Lot: "", Orderno: "" })
     this.addIndex -= 1
     this.setState({ data })
   }
@@ -437,6 +439,11 @@ class IssuedManage extends Component {
         //  alert("??")
         //}
         data[rowdata.index][field] = (conv === 0 ? null : conv);
+      }
+      else if (rowdata.column.datatype === "string") {
+
+        data[rowdata.index][field] = value;
+
       }
       else {
         data[rowdata.index][field] = value.Code;
@@ -604,82 +611,86 @@ class IssuedManage extends Component {
   render() {
 
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
-  
+
     let cossdetail = [
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
-      { accessor: "packMaster_Name", Header: "SKU Item", Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>, width: 550 },
+      { accessor: "packMaster_Name", Header: "SKU Code", Cell: (e) => <span>{e.original.packCode}</span>, },
+      { accessor: "packMaster_Name", Header: "SKU Name", Cell: (e) => <span>{e.original.packName}</span>, },
       { accessor: "code", Header: "Base", Cell: (e) => <span>{e.original.code}</span> },
 
+
+      //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
+      { accessor: 'batch', Header: 'Batch', editable: false, },
+      { accessor: 'lot', Header: 'Lot', editable: false, },
+      { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
       },
 
-      //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
       { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
-      { accessor: 'lot', Header: 'Lot', editable: false, },
-      { accessor: 'orderNo', Header: 'Order No', editable: false, },
-      { accessor: 'batch', Header: 'Batch', editable: false, },
+
 
     ]
 
 
-     let cols = [
-       {
-         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
-       },
-       { accessor: "packMaster_Name", Header: "SKU Item", Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>, width: 550 },
+    let cols = [
+      {
+        accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
+      },
+      { accessor: "packMaster_Name", Header: "SKU Code", Cell: (e) => <span>{e.original.packCode}</span>, },
+      { accessor: "packMaster_Name", Header: "SKU Name", Cell: (e) => <span>{e.original.packName}</span>, },
 
-       {
-         accessor: 'sumQty1', Header: 'Qty', editable: false,
-         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
-           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
-       },
+      //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},  
+      { accessor: 'batch', Header: 'Batch', editable: false, },
+      { accessor: 'lot', Header: 'Lot', editable: false, },
+      { accessor: 'orderNo', Header: 'Order No', editable: false, },
+      {
+        accessor: 'sumQty1', Header: 'Qty', editable: false,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
+          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+      },
+      { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
 
-       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
-       { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
-       { accessor: 'lot', Header: 'Lot', editable: false, },
-       { accessor: 'orderNo', Header: 'Order No', editable: false, },
-       { accessor: 'batch', Header: 'Batch', editable: false, },
- 
-      ]
-    
 
-     let col = [
-       
-        { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
-        //{accessor:"SKU",Header:"SKU",},
-        { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("qty", e), datatype: "int" },
-       { accessor: "UnitType", Header: "Unit", },
-       { accessor: "lot", Header: "lot", editable: true, Cell: e => this.inputCell("lot", e), datatype: "string" },
-       { accessor: "orderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("orderno", e), datatype: "string" },
-       { accessor: "bath", Header: "Bath", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string"},
+    ]
 
-           
-        {
-          Cell: (e) => <Button onClick={() => {
-            const data = this.state.data;
-            data.forEach((row, index) => {
-              if (row.id === e.original.id) {
-                data.splice(index, 1)
-              }
-            })
-            this.setState({ data }, () => {
-              let res = this.state.autocompleteUpdate
-              this.state.data.forEach((datarow, index) => {
-                res = res.filter(row => {
-                  return datarow.Code !== row.Code
-                })
+
+    let col = [
+
+      { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
+      //{accessor:"SKU",Header:"SKU",},
+      { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("PackQty", e), datatype: "int" },
+      { accessor: "bath", Header: "Bath", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string" },
+      { accessor: "lot", Header: "lot", editable: true, Cell: e => this.inputCell("lot", e), datatype: "string" },
+      { accessor: "orderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("orderno", e), datatype: "string" },
+      { accessor: "UnitType", Header: "Unit", },
+
+
+      {
+        Cell: (e) => <Button onClick={() => {
+          const data = this.state.data;
+          data.forEach((row, index) => {
+            if (row.id === e.original.id) {
+              data.splice(index, 1)
+            }
+          })
+          this.setState({ data }, () => {
+            let res = this.state.autocompleteUpdate
+            this.state.data.forEach((datarow, index) => {
+              res = res.filter(row => {
+                return datarow.Code !== row.Code
               })
-              this.setState({ autocomplete: res })
             })
-          }} color="danger">Remove</Button>
-        }
-      ]
-    
+            this.setState({ autocomplete: res })
+          })
+        }} color="danger">Remove</Button>
+      }
+    ]
+
     return (
       <div>
         {this.createModal()}
@@ -691,7 +702,7 @@ class IssuedManage extends Component {
 
           <Row>
             <Col xs="6">
-              <div className=""><label>Movement Type: </label>{this.state.pageID ? this.createText(this.state.ref2) :
+              <div className=""><label>Movement Type :</label>{this.state.pageID ? this.createText(this.state.ref2) :
                 <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><AutoSelect data={this.state.auto_movementType}
                   result={(e) => this.setState({ "movementType": e.value, "movementTyperesult": e.label, "movementTypeCode": e.code })} />
                 </div>}</div>
@@ -745,21 +756,21 @@ class IssuedManage extends Component {
               </div>}</span></div></Col>
           </Row>}
 
-     
+
 
         </div>
 
-      
+
         <Row>
-          <Col xs="6"><div>Document Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
+          <Col xs="6"><div>Doc Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
           <Col xs="6"><div className=""><label>Remark : </label>
             {this.state.pageID ? <span> {this.state.remark}</span> :
               <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '100px' }}
                 value={this.state.remark === undefined ? "" : this.state.remark} />}
-          </div></Col>       
-          </Row>
+          </div></Col>
+        </Row>
 
-     
+
 
         <div className="clearfix">
           <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay }}>Add</Button>
