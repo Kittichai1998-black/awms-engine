@@ -19,5 +19,13 @@ namespace AWMSEngine.Controllers
             var res = new ExportFileServerAPI(this).Execute(data);
             return res;
         }
+        [HttpGet("sp")]
+        public dynamic GetSPReport()
+        {
+            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var res = new GetSPReportAPI(this).Execute(req);
+            return res;
+        }
+
     }
 }
