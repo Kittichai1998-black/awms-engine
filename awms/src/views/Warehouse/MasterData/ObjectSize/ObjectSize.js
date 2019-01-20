@@ -23,14 +23,15 @@ class ObjectSize extends Component {
         this.state = {
             colsMap: [
                 { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", minWidth: 50 },
-                { accessor: 'Code', Header: 'Code', editable: false, filterable: false , minWidth: 60 },
-                { accessor: 'Name', Header: 'Name', editable: false, filterable: false , minWidth: 180},
+                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 60 },
+                { accessor: 'Name', Header: 'Name', editable: false, filterable: false, minWidth: 180 },
                 { accessor: 'Description', Header: 'Description', editable: false, filterable: false },
                 { accessor: 'MinQuantity', Header: 'Minimun Quantity', editable: true, Filter: "text", datatype: "int" },
                 { accessor: 'MaxQuantity', Header: 'Maximun Quantity', editable: true, Filter: "text", datatype: "int" },
             ],
             data: [],
             autocomplete: [],
+            objectPalletdata: [],
             statuslist: [{
                 'status': [{ 'value': '*', 'label': 'All' }, { 'value': '1', 'label': 'Active' }, { 'value': '0', 'label': 'Inactive' }],
                 'header': 'Status',
@@ -42,8 +43,19 @@ class ObjectSize extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "ObjectSizeMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Description,ObjectType,MinWeigthKG,MaxWeigthKG,Status,Created,Modified",
+                q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+                f: "ID,Code,Name,Description,ObjectType,MinWeigthKG,MaxWeigthKG,PercentWeightAccept,Status,Created,Modified,LastUpdate",
+                g: "",
+                s: "[{'f':'Code','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            },
+            selectObjectPallet: {
+                queryString: window.apipath + "/api/mst",
+                t: "ObjectSize",
+                q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
+                f: "ID",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -72,11 +84,13 @@ class ObjectSize extends Component {
         };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["Created", "Modified"]
+        this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
         this.setObjectSizeMap = this.setObjectSizeMap.bind(this)
+        this.addObjectSizeMapp = this.addObjectSizeMapp.bind(this)
+        this.getObjectSizePallet = this.getObjectSizePallet.bind(this)
         this.openModal = this.openModal.bind(this)
         this.closeModal = this.closeModal.bind(this)
         this.createMapBtn = this.createMapBtn.bind(this)
@@ -93,10 +107,11 @@ class ObjectSize extends Component {
         event.preventDefault();
     }
     componentDidMount() {
-        document.title = "Object Size : AWMS";
+        document.title = "Standard Pack Size : AWMS";
     }
     async componentWillMount() {
         this.filterList()
+        this.getObjectSizePallet()
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("ObjectSize", dataGetPer, this.props.history);
@@ -336,20 +351,37 @@ class ObjectSize extends Component {
             onChange={(e) => { this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id) }} />;
     }
 
+    addObjectSizeMapp(data){
+        console.log(data)
+        this.getObjectSizePallet()
+    }
+
+    getObjectSizePallet(){
+        api.get(createQueryString(this.state.selectObjectPallet)).then((res) => {
+            let data = [...this.state.objectPalletdata]
+            res.data.datas.forEach(row => {
+                data.push({ ID: row.ID })
+            })
+            //console.log(data)
+            this.setState({ objectPalletdata: data})
+          })
+    }
     render() {
         const view = this.state.permissionView
         const cols = [
-            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
-            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
+            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90, Type: "autoMapPackSize" },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-            { accessor: 'ObjectType', Header: 'Object Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 110 },
-            { accessor: 'MinWeigthKG', Header: 'Minimun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
-            { accessor: 'MaxWeigthKG', Header: 'Maximun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
+            // { accessor: 'ObjectType', Header: 'Object Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 110 },
+            { accessor: 'PercentWeightAccept', Header: 'Accepted Weight (%)', editable: view, Filter: "text", datatype: "int", minWidth: 100, className: 'right' },
+            // { accessor: 'MinWeigthKG', Header: 'Minimun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
+            // { accessor: 'MaxWeigthKG', Header: 'Maximun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
-            { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Map", btntext: "Map" },
+            { accessor: 'LastUpdate', Header: 'Last Update', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
+            // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+            // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
+            // { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Map", btntext: "Map" },
             { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
 
@@ -387,10 +419,11 @@ class ObjectSize extends Component {
         }
         return (
             <div>
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"ObjectSize"}
-                    btn={btnfunc} filterable={true} autocomplete={this.state.autocomplete} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
-                    table="ams_ObjectSize" enumfield={this.state.enumfield} />
-
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"StandardPackSize"}
+                    btn={btnfunc} filterable={true} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
+                    table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]} 
+                    objectSizeMapPallet={this.state.objectPalletdata}/>
+                {/* autocomplete={this.state.autocomplete}  enumfield={this.state.enumfield}*/}
                 <Popup open={this.state.open} onClose={this.closeModal}>
                     <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
                         <a style={styleclose} onClick={this.closeModal}>
