@@ -278,7 +278,7 @@ class AreaLocation extends Component {
       return [
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        //{ accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
+        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
         { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", Type: "autolocationcode" },
         { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", Type: "autolocationcode" },
@@ -299,7 +299,7 @@ class AreaLocation extends Component {
       return [
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        //{ accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
+        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 135 },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text", Type: "autolocationcode" },
         { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175 },
@@ -317,7 +317,7 @@ class AreaLocation extends Component {
       return [
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        //{ accessor: 'Code', Header: 'Code', Type: "autolocationcode", editable: view, Filter: "text", fixed: "left" },
+        { accessor: 'Code', Header: 'Code', Type: "autolocationcode", editable: view, Filter: "text", fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text" },
         { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text" },

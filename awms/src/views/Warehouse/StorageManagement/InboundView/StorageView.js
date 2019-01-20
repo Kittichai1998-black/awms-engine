@@ -142,15 +142,16 @@ class IssuedDoc extends Component {
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
       { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
+      { accessor: 'Remark', Header: 'Remark', editable: false, Filter: "text", },
       //{accessor: 'CodeDocItem', Header: 'CodeDocItem', editable:false, Filter:"text",},
       { accessor: 'SouBranchName', Header: 'Sou.Branch', editable: false, Filter: "text", },
       { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
       { accessor: 'DesBranchName', Header: 'Des.Branch', editable: false, Filter: "text", },
       { accessor: 'DesWarehouseName', Header: 'Des.Warehouse', editable: false, Filter: "text", },
-      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
       { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: "" },
       { accessor: 'ActionTime', Header: 'Action Time', editable: false, Type: "datetime", dateformat: "datetime", filterable: false, minWidth: 120 },
-      { accessor: 'Remark', Header: 'Remark', editable: false, Filter: "text", },
+      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
+     
       //{ Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
     ];
 

@@ -19,7 +19,7 @@ class CurrentReport extends Component {
     this.state = {
       select: {
         queryString: window.apipath + "/api/viw",
-        t: "CurrentInventory_r",
+        t: "r_CurrentInventory",
         q: '',
         f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit",
         g: "",
@@ -63,11 +63,11 @@ class CurrentReport extends Component {
   render() {
 
     let cols = [
-      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: "text", sortable: false, minWidth: 130 },
-      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: "text", sortable: false, minWidth: 250 },
+      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: "text", sortable: false, minWidth: 130 },
+      { accessor: 'SKU_Name', Header: 'SKU Name', Filter: "text", sortable: false, minWidth: 250 },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text", sortable: true },
       { accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: true },
-      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: "text", sortable: false, minWidth: 130 },
+      { accessor: 'Base_Unit', Header: 'Unit', Filter: "text", sortable: false, minWidth: 130 },
     ];
 
     return (
