@@ -205,10 +205,10 @@ const Stockview = Loadable({
   loader: () => import('./views/Warehouse/Stockview'),
   loading: Loading,
 });
-// const StockCard = Loadable({
-//   loader: () => import('./views/Warehouse/StockcardReport/StockcaedReport'),
-//   loading: Loading,
-// });
+ const StockCard = Loadable({
+   loader: () => import('./views/Warehouse/StockcardReport/StockcaedReport'),
+   loading: Loading,
+ });
 
 const CurrentInv = Loadable({
   loader: () => import('./views/Warehouse/CurrentReport/CurrentReport'),
@@ -364,7 +364,7 @@ const routes = [
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
-  // { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
+   { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'Report / Current Inventory', component: CurrentInv },
   { path: '/doc/gr/view', exact: true, name: 'Receive Document', component: StorageDetail },
