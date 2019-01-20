@@ -155,7 +155,7 @@ class Area extends Component {
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
             //{ Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
-            //{ accessor: 'Code', Header: 'Code', Type: "autobasecode", editable: false, Filter: "text", fixed: "left", minWidth: 100 },
+            { accessor: 'Code', Header: 'Code', Type: "autobasecode", editable: false, Filter: "text", fixed: "left", minWidth: 100 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 100 },
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             { accessor: 'BaseMasterType_Code', Header: 'Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 150 },

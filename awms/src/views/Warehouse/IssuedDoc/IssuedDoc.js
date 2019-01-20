@@ -164,7 +164,7 @@ class IssuedDoc extends Component {
   createSapResModal(data) {
     this.setState({ errorstr: data }, () => this.openModal())
   }
- 
+
   render() {
     const cols = [
       { Header: '', Type: "selectrow", sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50 },
@@ -173,12 +173,12 @@ class IssuedDoc extends Component {
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
       { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
-      { accessor: 'SouBranchName', Header: 'Sou.Branch', editable: false, Filter: "text", },
-      { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
-      { accessor: 'DesBranchName', Header: 'Des.Branch', editable: false, Filter: "text" },
-      { accessor: 'DesWarehouseName', Header: 'Des.Warehouse', editable: false, Filter: "text", },
-      { accessor: 'DesSupplierName', Header: 'Des.Supplier', editable: false, Filter: "text" },
-      { accessor: 'DesCustomerName', Header: 'Des.Customer', editable: false, Filter: "text" },
+      { accessor: 'SouBranchName', Header: 'Branch Sou.', editable: false, Filter: "text", },
+      { accessor: 'SouWarehouseName', Header: 'Ware Sou.', editable: false, Filter: "text", },
+      { accessor: 'DesBranchName', Header: 'Branch Des.', editable: false, Filter: "text" },
+      { accessor: 'DesWarehouseName', Header: 'Ware Des.', editable: false, Filter: "text", },
+      { accessor: 'DesSupplierName', Header: 'Sup Des.', editable: false, Filter: "text" },
+      { accessor: 'DesCustomerName', Header: 'Cus Des.', editable: false, Filter: "text" },
       //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
       //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
       // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},

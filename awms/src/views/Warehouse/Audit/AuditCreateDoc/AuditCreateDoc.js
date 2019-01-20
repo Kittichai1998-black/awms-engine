@@ -41,12 +41,12 @@ class IssuedManage extends Component {
       ref2: null,
       remark: null,
       documentStatus: 10,
-      issuedNo: "-",
+      auditNo: "-",
       select2: {
         queryString: window.apipath + "/api/viw",
         t: "PackMaster",
         q: '[{ "f": "Status", "c":"=", "v": 1}]',
-        f: "id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType, UnitTypeCode",
+        f: "id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType, UnitTypeCode, SKUMaster_ID",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -90,97 +90,35 @@ class IssuedManage extends Component {
         pageID: values.ID,
         addstatus: true,
       })
-      Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID + "&getMapSto=true").then((rowselect1) => {
+      Axios.get(window.apipath + "/api/wm/audit/doc/?docID=" + values.ID + "&getMapSto=true").then((rowselect1) => {
         if (rowselect1.data._result.status === 0) {
           this.setState({ data: [] })
         }
         else {
-          console.log(rowselect1)
+          console.log(rowselect1.data.document.documentItems)
           this.setState({
             data: rowselect1.data.document,
+            data2: rowselect1.data.document.documentItems,
             remark: rowselect1.data.document.remark,
             documentStatus: rowselect1.data.document.eventStatus,
             documentDate: moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
             date: moment(rowselect1.data.document.actionTime),
             addstatus: true,
-            issuedNo: rowselect1.data.document.code,
+            auditNo: rowselect1.data.document.code,
             Batch: rowselect1.data.document.batch,
             refID: rowselect1.data.document.refID,
             ref1: rowselect1.data.document.ref1,
             ref2: rowselect1.data.document.ref2,
             desBranchName: rowselect1.data.document.desBranchName
+          }, () => {
+            this.state.data2.forEach(x=>{
+              var qryStr = queryString.parse(x.options)
+              x.palletCode = qryStr.palletCode;
+              x.locationCode = qryStr.locationCode;
+            })
+
+            this.forceUpdate();
           })
-          var groupPack = _.groupBy(rowselect1.data.bstos, "code")
-          console.log(groupPack)
-          var groupdocItemID = _.groupBy(rowselect1.data.bstos, "docItemID")
-          console.log(groupPack)
-          let sumArr = []
-          let sumArr1 = []
-
-          for (let res1 in groupdocItemID) {
-            let sum = 0
-            groupdocItemID[res1].forEach(res2 => {
-              rowselect1.data.document.documentItems.forEach(x => {
-                console.log(x.docItemID)
-                console.log(res2.docItemID)
-                if (res2.docItemID === x.id) {
-                  sum += res2.packQty
-                  res2.sumQty1 = sum
-                  res2.batch = x.batch
-                  res2.options = x.options
-                  res2.quantityDoc = x.quantity
-                  res2.lot = x.lot
-                  res2.orderNo = x.orderNo
-                }
-              })
-
-
-            })
-
-            sumArr1.push(groupdocItemID[res1][groupdocItemID[res1].length - 1])
-          }
-
-
-
-          for (let res1 in groupPack) {
-            let sum = 0
-            groupPack[res1].forEach(res2 => {
-              sum += res2.packBaseQty
-              res2.sumQty = sum
-
-              sumArr.forEach(response => {
-                if (response.code === res2.code) {
-                  res2.code = "";
-                }
-              })
-
-            })
-            sumArr.push(groupPack[res1][groupPack[res1].length - 1])
-          }
-
-
-          var sumQTYPack = 0
-          var result = rowselect1.data.document.documentItems
-
-          this.setState({ data2: sumArr }, () => {
-
-            result.forEach(row1 => {
-              sumQTYPack = 0
-              row1.batch = this.state.batch
-
-              this.state.data2.forEach(row2 => {
-
-                if (row1.packMaster_Code === row2.packCode) {
-                  sumQTYPack += row2.sumQty
-                  row1.sumQty = sumQTYPack
-                }
-              })
-            })
-          })
-
-          this.setState({ data3: sumArr1 })
-
-          //**************************************8
         }
 
       })
@@ -239,14 +177,17 @@ class IssuedManage extends Component {
         createOptions += "palletCode=" + row.palletCode;
       }
       if(row.locationCode !== undefined || row.locationCode !== ""){
-        createOptions += "locationCode=" + row.locationCode;
+        if(createOptions !== "")
+          createOptions += "&locationCode=" + row.locationCode; 
+        else
+          createOptions += "locationCode=" + row.locationCode;
       }
       listAudit.push({
         "skuCode":null,
         "packCode":null,
         "skuID":row.id === undefined ? null : row.id,
         "quantity":null,
-        "unitType":row.UnitType === undefined ? null : row.UnitType,
+        "unitType":row.UnitTypeCode === undefined ? null : row.UnitTypeCode,
         "expireDate":null,
         "productionDate":null,
         "orderNo":null,
@@ -273,6 +214,7 @@ class IssuedManage extends Component {
         "documentDate": this.DateNow.format("YYYY/MM/DD"),
         "docItems": listAudit
     };
+    console.log(createAuditData)
     if (listAudit.length > 0) {
       Axios.post(window.apipath + "/api/wm/audit/doc/Create", createAuditData).then((res) => {
         if (res.data._result.status === 1) {
@@ -321,8 +263,9 @@ class IssuedManage extends Component {
       else {
         data[rowdata.index][field] = value.Code;
         data[rowdata.index]["SKU"] = value.SKU;
+        data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
         data[rowdata.index]["unitType_Name"] = value.UnitType;
-        data[rowdata.index]["id"] = value.id;
+        data[rowdata.index]["id"] = value.SKUMaster_ID;
       }
       this.setState({ data });
 
@@ -338,6 +281,7 @@ class IssuedManage extends Component {
     else if (rowdata.column.datatype !== "int") {
       data[rowdata.index][field] = "";
       data[rowdata.index]["SKU"] = "";
+      data[rowdata.index]["UnitTypeCode"] = "";
       data[rowdata.index]["UnitType"] = "";
       data[rowdata.index]["id"] = "";
     }
@@ -481,7 +425,7 @@ class IssuedManage extends Component {
 
      let cols = [
         { accessor: 'palletCode', Header: 'Pallet Code', editable: false, Cell: e => this.inputCell("palletCode", e), datatype:"text" },
-        { accessor: 'locationCode', Header: 'Location Code', editable: false, Cell: e => this.inputCell("locationCode", e), datatype:"text" },
+       { accessor: 'locationCode', Header: 'Location Code', editable: false, Cell: e => this.inputCell("locationCode", e), datatype:"text" },
        { accessor: "code", Header: "SKU Item",Cell: (e) => this.createAutoComplete(e),  width: 550 },
        //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
        { accessor: 'batch', Header: 'Batch', editable: false, Cell: e => this.inputCell("batch", e), datatype:"text" },
@@ -505,14 +449,19 @@ class IssuedManage extends Component {
           })
         }} color="danger">Remove</Button>
       },
-      ]
+      ];
 
+      let colsview = [{ accessor: 'palletCode', Header: 'Pallet Code', editable: false, },
+      { accessor: 'locationCode', Header: 'Location Code', editable: false },
+      { accessor: "code", Header: "SKU Item",  width: 550 },
+      { accessor: 'batch', Header: 'Batch', editable: false, },
+      { accessor: "unitType_Name", Header: "Unit", editable: false,},]
     return (
       <div>
         {this.createModal()}
         <div className="clearfix">
           <Row>
-            <Col xs="6"><div className="d-block" >SAP Document : <span style={{ marginLeft: '5px' }}>{this.state.refID}</span></div></Col>
+            <Col xs="6"><div className="d-block" >SAP Document : <span style={{ marginLeft: '5px' }}>{this.state.auditNo}</span></div></Col>
             <Col xs="6"><div>Document Date : <span style={{ marginLeft: '5px' }}>{this.state.documentDate}</span></div></Col>
           </Row>
 
@@ -557,11 +506,10 @@ class IssuedManage extends Component {
           {/* <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code}</span> */}
         </div>
 
-
         {this.state.pageID != 0 ? null : <ReactTable columns={cols} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
-        {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
+        {this.state.pageID === 0 ? null : <ReactTable columns={colsview} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
 

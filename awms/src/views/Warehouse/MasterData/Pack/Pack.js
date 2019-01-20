@@ -161,7 +161,7 @@ class Pack extends Component {
         const view = this.state.permissionView
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
-            //{accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+            {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
             //{accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             { accessor: 'Name', Header: 'SKU', updateable: view, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },

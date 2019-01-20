@@ -152,7 +152,7 @@ class ListProduct extends Component {
     const cols = [
       { Header: 'No.', fixed: "left", Type: 'numrows',filterable: false,  className: 'center', minWidth: 45, maxWidth: 45 },
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
-     //{ accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
+     { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 270 },
       { accessor: 'SKUTypeCode', Header: 'Category', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 100 },
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
