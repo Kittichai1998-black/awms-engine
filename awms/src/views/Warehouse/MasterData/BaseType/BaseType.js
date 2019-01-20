@@ -103,7 +103,7 @@ class BaseType extends Component {
         const view = this.state.permissionView
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
-            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
+            //{ accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 140 },
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", maxWidth: 130 },

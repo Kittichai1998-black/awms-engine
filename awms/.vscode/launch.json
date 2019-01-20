@@ -9,10 +9,7 @@
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}",
-			"runtimeArgs": [
-				"--max-old-space-size=12288"
-			]
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }
