@@ -72,8 +72,8 @@ class Branch extends Component {
     const view = this.state.permissionView
     const cols = [
       { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40  },
-      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100,maxWidth: 120 },
-      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text",  minWidth: 120 },
+      //{ accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100,maxWidth: 120 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", },
       //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text",},
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
       { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },

@@ -103,7 +103,7 @@ class Warehouse extends Component {
         const view = this.state.permissionView
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
-            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 120},
+            //{ accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 120},
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 120 },
             //{accessor: 'Description', Header: 'Description',editable:true, sortable:false,Filter:"text",},
             { accessor: 'Branch_Code', Header: 'Branch', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 120},

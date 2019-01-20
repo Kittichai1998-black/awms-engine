@@ -78,7 +78,7 @@ class Customer extends Component {
     const view = this.state.permissionView
     const cols = [
       { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
-      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100 },
+      //{ accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 90, maxWidth: 100 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text",  minWidth: 150 },
       //{accessor: 'Description', Header: 'Description', sortable:false, editable:false, Filter:"text",},
       //{ accessor: 'Status', Header: 'Status', editable: true, Type:"checkbox" ,Filter:"dropdown", Filter:"dropdown",},

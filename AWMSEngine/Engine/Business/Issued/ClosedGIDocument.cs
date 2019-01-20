@@ -408,7 +408,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             DELIV_NUMB = RefID,
                             DELIV_ITEM = dataDocItem.Options == null ? (decimal?)null : decimal.Parse(ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem")),
                             MATERIAL = dataDocItem.Code,
-                            PLANT = batchSto,
+                            PLANT = SouBranch,
                             STGE_LOC = SouWarehouse,
                             BATCH = batchSto,
                             DLV_QTY = stoQty.ToString(),

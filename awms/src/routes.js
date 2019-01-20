@@ -12,7 +12,7 @@ const Dashboard = Loadable({
   loading: Loading,
 });
 
-const Products = Loadable({
+/* const Products = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Product'),
   loading: Loading,
 });
@@ -25,14 +25,14 @@ const Pack = Loadable({
 const PackType = Loadable({
   loader: () => import('./views/Warehouse/MasterData/PackType'),
   loading: Loading,
-});
+}); */
 
 const Barcode = Loadable({
   loader: () => import('./views/Warehouse/Barcode'),
   loading: Loading,
 });
 
-const Customer = Loadable({
+/* const Customer = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Customer'),
   loading: Loading,
 });
@@ -135,10 +135,10 @@ const WebPage = Loadable({
 const WebPageGroup = Loadable({
   loader: () => import('./views/Warehouse/MasterData/WebPageGroup'),
   loading: Loading,
-});
+}); */
 
 const Storage = Loadable({
-  loader: () => import('./views/Warehouse/Storage'),
+  loader: () => import('./views/Warehouse/StorageReport/StorageReport'),
   loading: Loading,
 });
 
@@ -211,7 +211,7 @@ const StockCard = Loadable({
 });
 
 const CurrentInv = Loadable({
-  loader: () => import('./views/Warehouse/CurrentInv'),
+  loader: () => import('./views/Warehouse/CurrentReport/CurrentReport'),
   loading: Loading,
 });
 
@@ -309,23 +309,25 @@ const AuditDoc = Loadable({
   loading: Loading,
 });
 
+
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/mst/sku/manage', exact: true, name: 'Setting / SKU', component: Products },
-  { path: '/mst/category/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
+  /*{ path: '/mst/sku/manage', exact: true, name: 'Setting / SKU', component: Products },
+  { path: '/mst/catagory/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
   { path: '/mst/pack/manage', exact: true, name: 'Setting / SKU Package', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Setting / Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/customer/manage', exact: true, name: 'Setting / Customer', component: Customer },
   { path: '/mst/supplier/manage', exact: true, name: 'Setting / Supplier', component: Supplier },
-  { path: '/mst/area/manage', exact: true, name: 'Setting / Area Zone', component: Area },
+  { path: '/mst/area/manage', exact: true, name: 'Setting / Area', component: Area },
   { path: '/mst/areatype/manage', exact: true, name: 'Setting / Area Type', component: AreaType },
-  { path: '/mst/location/manage', exact: true, name: 'Setting / Area Location', component: AreaLocation },
+  { path: '/mst/location/manage', exact: true, name: 'Setting / Location', component: AreaLocation },
   { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/arearoute/manage', exact: true, name: 'Setting / Area Route', component: AreaRoute },
-  { path: '/mst/pallet/manage', exact: true, name: 'Setting / Base Pallet', component: Base },
+  { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet', component: Base },
   { path: '/mst/pallettype/manage', exact: true, name: 'Setting / Pallet Type', component: BaseType },
   { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/branch/manage', exact: true, name: 'Setting / Branch', component: Branch },
@@ -339,7 +341,7 @@ const routes = [
   { path: '/mst/unittype/manage', exact: true, name: 'Setting / Unit Type', component: UnitType },
   { path: '/mst/webcontrol/manage', exact: true, name: 'Setting / Web Control', component: WebControl },
   { path: '/mst/webpage/manage', exact: true, name: 'Setting / Web Page', component: WebPage },
-  { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup },
+  { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup }, */
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Receive / Search Receive', component: InboundView },
@@ -378,6 +380,7 @@ const routes = [
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
   { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
+  { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
 ];
 
 export default routes;

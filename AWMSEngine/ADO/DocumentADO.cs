@@ -634,5 +634,17 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+
+        public List<amt_StorageObject> getSTOList(long docItem, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docItemID", docItem);
+
+            var res = this.Query<amt_StorageObject>("SP_DOCITEM_AUDIT_STOLIST",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
     }
 }

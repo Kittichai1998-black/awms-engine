@@ -64,5 +64,12 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
+
+        [HttpPost("doc/Create")]
+        public dynamic CreateAuditDoc([FromBody]dynamic request)
+        {
+            CreateADDocAPI exec = new CreateADDocAPI(this);
+            return exec.Execute(request);
+        }
     }
 }

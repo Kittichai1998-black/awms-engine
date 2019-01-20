@@ -416,13 +416,27 @@ class TableGen extends Component {
               }
             }
           } else {
-            if (col.accessor === "Code") {
-              if (row[col.accessor] === "" || row[col.accessor] === null) {
-                if (col.Header === "Username") {
-                  window.warning("กรุณากรอกข้อมูล Username");
-                } else {
-                  window.warning("กรุณากรอกข้อมูล Code");
-                }
+            if (col.accessor === "Bank") {
+              if (row[col.accessor] === "") {
+                window.warning("กรุณากรอกข้อมูล Bank");
+                delete row["Code"]
+              }
+            }
+            if (col.accessor === "Bay") {
+              if (row[col.accessor] === "") {
+                window.warning("กรุณากรอกข้อมูล Bay");
+                delete row["Code"]
+              }
+            }
+            if (col.accessor === "Level") {
+              if (row[col.accessor] === "") {
+                window.warning("กรุณากรอกข้อมูล Level");
+                delete row["Code"]
+              }
+            }
+            if (col.accessor === "Gate") {
+              if (row[col.accessor] === "") {
+                window.warning("กรุณากรอกข้อมูล Gate");
                 delete row["Code"]
               }
             }
@@ -814,19 +828,9 @@ class TableGen extends Component {
     this.onEditorValueChange(rowdata, this.props.areamaster, "AreaMaster_ID")
     this.onEditorValueChange(rowdata, value, rowdata.column.id)
   }
-  onEditValuePackSize(rowdata, value) {
-    this.onEditorValueChange(rowdata, 2, "ObjectType")
-    this.onEditorValueChange(rowdata, null, "MinWeigthKG")
-    this.onEditorValueChange(rowdata, null, "MaxWeigthKG")
-    this.onEditorValueChange(rowdata, value, rowdata.column.id)
-  }
   FLSareaLocationCode(rowdata) {
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
       onChange={(e) => { this.onEditValueArea(rowdata, e.target.value, rowdata.column.id) }} />
-  }
-  AutoMapPackSize(rowdata) {
-    return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
-      onChange={(e) => { this.onEditValuePackSize(rowdata, e.target.value) }} />
   }
   autoGenBaseCode(rowdata) {
     if (rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== "") {
@@ -1125,7 +1129,7 @@ class TableGen extends Component {
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }
-        } else {
+        }else{
           return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
         }
       }
@@ -1343,16 +1347,6 @@ class TableGen extends Component {
       else if (row.Type === "FLSareacode" && (row.body === undefined || !row.body)) {
         if (row.editable) {
           row.Cell = (e) => (this.FLSareaLocationCode(e))
-        }
-        else {
-          row.Cell = (e) => {
-            return <span>{e.value}</span>
-          }
-        }
-      }
-      else if (row.Type === "autoMapPackSize" && (row.body === undefined || !row.body)) {
-        if (row.editable) {
-          row.Cell = (e) => (this.AutoMapPackSize(e))
         }
         else {
           row.Cell = (e) => {

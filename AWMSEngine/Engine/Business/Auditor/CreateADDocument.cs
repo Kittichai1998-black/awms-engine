@@ -50,6 +50,7 @@ namespace AWMSEngine.Engine.Business.Auditor
             public List<TItem> docItems;
             public class TItem
             {
+                public long? skuID;
                 public string skuCode;
                 public string packCode;
                 //public int? packItemQty;
@@ -154,31 +155,36 @@ namespace AWMSEngine.Engine.Business.Auditor
 
             };
 
-            foreach (var recItem in reqVO.docItems)
+            foreach (var docItem in reqVO.docItems)
             {
 
                 ams_PackMaster packMst = null;
                 ams_SKUMaster skuMst = null;
 
-                if (!string.IsNullOrWhiteSpace(recItem.packCode))
+                if (!string.IsNullOrWhiteSpace(docItem.packCode))
                 {
-                    packMst = ADO.MasterADO.GetInstant().GetPackMasterByPack(recItem.packCode, recItem.unitType, this.BuVO);
+                    packMst = ADO.MasterADO.GetInstant().GetPackMasterByPack(docItem.packCode, docItem.unitType, this.BuVO);
                     skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
                 }
-                else if (!string.IsNullOrWhiteSpace(recItem.skuCode))
+                else if (docItem.skuID.HasValue)
                 {
-                    skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(recItem.skuCode, this.BuVO);
-                    packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, recItem.unitType, this.BuVO);
+                    skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docItem.skuID, this.BuVO);
+                    packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, docItem.unitType, this.BuVO);
+                }
+                else if (!string.IsNullOrWhiteSpace(docItem.skuCode))
+                {
+                    skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(docItem.skuCode, this.BuVO);
+                    packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, docItem.unitType, this.BuVO);
                 }
                 else
                 {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode");
                 }
 
                 //var mainUnitType = this.StaticValue.UnitTypes.First(x => x.Code == recItem.packItemUnit);
-                var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, recItem.quantity ?? 1, packMst.UnitType_ID);
+                var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, docItem.quantity ?? 1, packMst.UnitType_ID);
                 decimal? baseQuantity = null;
-                if (recItem.quantity.HasValue)
+                if (docItem.quantity.HasValue)
                     baseQuantity = baseUnitTypeConvt.baseQty;
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
@@ -187,24 +193,24 @@ namespace AWMSEngine.Engine.Business.Auditor
                     SKUMaster_ID = skuMst.ID.Value,
                     PackMaster_ID = packMst.ID.Value,
 
-                    Quantity = recItem.quantity,
+                    Quantity = docItem.quantity,
                     UnitType_ID = baseUnitTypeConvt.unitType_ID,
                     BaseQuantity = baseQuantity,
                     BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
 
-                    OrderNo = recItem.orderNo,
-                    Batch = recItem.batch,
-                    Lot = recItem.lot,
+                    OrderNo = docItem.orderNo,
+                    Batch = docItem.batch,
+                    Lot = docItem.lot,
 
-                    Options = recItem.options,
-                    ExpireDate = recItem.expireDate,
-                    ProductionDate = recItem.productionDate,
-                    Ref1 = recItem.ref1,
-                    Ref2 = recItem.ref2,
-                    RefID = recItem.refID,
+                    Options = docItem.options,
+                    ExpireDate = docItem.expireDate,
+                    ProductionDate = docItem.productionDate,
+                    Ref1 = docItem.ref1,
+                    Ref2 = docItem.ref2,
+                    RefID = docItem.refID,
 
-                    EventStatus = recItem.eventStatus,
-                    DocItemStos = recItem.docItemStos
+                    EventStatus = docItem.eventStatus,
+                    DocItemStos = docItem.docItemStos
                 });
             }
 
