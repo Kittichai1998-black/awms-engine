@@ -97,7 +97,6 @@ class TableGen extends Component {
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
     this.FLSareaLocationCode = this.FLSareaLocationCode.bind(this)
-    this.AutoMapPackSize = this.AutoMapPackSize.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
     this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
     this.createAutoCompleteDownshift = this.createAutoCompleteDownshift.bind(this)
