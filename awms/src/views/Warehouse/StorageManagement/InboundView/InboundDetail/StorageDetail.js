@@ -199,7 +199,7 @@ class IssuedDoc extends Component {
           <Col xs="6"><div><label>Document Date : </label> {this.state.documentDate}</div></Col>
         </Row>
       <Row>
-          <Col xs="6"><div><label>Source Warehouse : </label> {this.state.souWarehouseName}</div></Col>
+          <Col xs="6"><div><label>Warehouse Source: </label> {this.state.souWarehouseName}</div></Col>
           <Col xs="6"><div><label>Source Branch : </label> {this.state.souBranchName}</div></Col>
       </Row>
       <Row>
@@ -211,12 +211,12 @@ class IssuedDoc extends Component {
           <Col xs="6"><div><label>SAP.Doc Years : </label> {this.state.ref1}</div></Col>
       </Row>
         <Row>
-          <Col xs="6"><div><label>AWMS Res : </label> {this.state.Super}</div></Col>
-          <Col xs="6"><div><label>MovementType : </label> {this.state.ref2}</div></Col>
+          <Col xs="6"><div><label>AWMS Ref. : </label> {this.state.Super}</div></Col>
+          <Col xs="6"><div><label>Movement Type : </label> {this.state.ref2}</div></Col>
          
         </Row>
         <Row>
-          <Col xs="6"><div><label>Doc Status : </label> {this.renderDocumentStatus()}</div></Col>
+          <Col xs="6"><div><label>Document Status : </label> {this.renderDocumentStatus()}</div></Col>
           <Col xs="6"><div><label>Remark : </label> {this.state.Remark}</div></Col>
           
         </Row>
