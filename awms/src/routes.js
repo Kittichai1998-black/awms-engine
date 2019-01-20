@@ -17,120 +17,120 @@ const Dashboard = Loadable({
   loading: Loading,
 });
 
-// const Pack = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Pack'),
-//   loading: Loading,
-// });
+const Pack = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Pack'),
+  loading: Loading,
+});
 
 const PackType = Loadable({
   loader: () => import('./views/Warehouse/MasterData/PackType'),
   loading: Loading,
 }); 
 
-// const Barcode = Loadable({
-//   loader: () => import('./views/Warehouse/Barcode'),
-//   loading: Loading,
-// });
+const Barcode = Loadable({
+  loader: () => import('./views/Warehouse/Barcode'),
+  loading: Loading,
+});
 
  const Customer = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Customer'),
   loading: Loading,
 });
 
-// const Supplier = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Suppiler'),
-//   loading: Loading,
-// });
+const Supplier = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Suppiler'),
+  loading: Loading,
+});
 
-// const Area = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Area'),
-//   loading: Loading,
-// });
+const Area = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Area'),
+  loading: Loading,
+});
 
-// const AreaType = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/AreaType'),
-//   loading: Loading,
-// });
+const AreaType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaType'),
+  loading: Loading,
+});
 
-// const AreaLocation = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/AreaLocation'),
-//   loading: Loading,
-// });
+const AreaLocation = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaLocation'),
+  loading: Loading,
+});
 
-// const AreaRoute = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/AreaRoute'),
-//   loading: Loading,
-// });
+const AreaRoute = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaRoute'),
+  loading: Loading,
+});
 
-// const Base = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Base'),
-//   loading: Loading,
-// });
+const Base = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Base'),
+  loading: Loading,
+});
 
-// const BaseType = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/BaseType'),
-//   loading: Loading,
-// });
+const BaseType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/BaseType'),
+  loading: Loading,
+});
 
-// const Branch = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Branch'),
-//   loading: Loading,
-// });
+const Branch = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Branch'),
+  loading: Loading,
+});
 
-// const User = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/User'),
-//   loading: Loading,
-// });
+const User = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/User'),
+  loading: Loading,
+});
 
-// const Warehouse = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Warehouse'),
-//   loading: Loading,
-// });
+const Warehouse = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Warehouse'),
+  loading: Loading,
+});
 
-// const Permission = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Permission'),
-//   loading: Loading,
-// });
+const Permission = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Permission'),
+  loading: Loading,
+});
 
-// const APIServiceGroup = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/APIServiceGroup'),
-//   loading: Loading,
-// });
+const APIServiceGroup = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/APIServiceGroup'),
+  loading: Loading,
+});
 
-// const APIService = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/APIService'),
-//   loading: Loading,
-// });
+const APIService = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/APIService'),
+  loading: Loading,
+});
 
-// const SKUType = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/SKUType'),
-//   loading: Loading,
-// });
+const SKUType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/SKUType'),
+  loading: Loading,
+});
 
-// const ObjectSize = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/ObjectSize'),
-//   loading: Loading,
-// });
+const ObjectSize = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/ObjectSize'),
+  loading: Loading,
+});
 
-// const JobScheduleModule = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/JobScheduleModule'),
-//   loading: Loading,
-// });
+const JobScheduleModule = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/JobScheduleModule'),
+  loading: Loading,
+});
 
-// const UnitType = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/UnitType'),
-//   loading: Loading,
-// });
+const UnitType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/UnitType'),
+  loading: Loading,
+});
 
-// const WebControl = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/WebControl'),
-//   loading: Loading,
-// });
+const WebControl = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/WebControl'),
+  loading: Loading,
+});
 
-// const WebPage = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/WebPage'),
-//   loading: Loading,
-// });
+const WebPage = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/WebPage'),
+  loading: Loading,
+});
 
 const WebPageGroup = Loadable({
   loader: () => import('./views/Warehouse/MasterData/WebPageGroup'),
@@ -205,10 +205,10 @@ const Stockview = Loadable({
   loader: () => import('./views/Warehouse/Stockview'),
   loading: Loading,
 });
-const StockCard = Loadable({
-  loader: () => import('./views/Warehouse/StockcardReport/StockcaedReport'),
-  loading: Loading,
-});
+// const StockCard = Loadable({
+//   loader: () => import('./views/Warehouse/StockcardReport/StockcaedReport'),
+//   loading: Loading,
+// });
 
 const CurrentInv = Loadable({
   loader: () => import('./views/Warehouse/CurrentReport/CurrentReport'),
@@ -364,7 +364,7 @@ const routes = [
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
-  { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
+  // { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'Report / Current Inventory', component: CurrentInv },
   { path: '/doc/gr/view', exact: true, name: 'Receive Document', component: StorageDetail },
