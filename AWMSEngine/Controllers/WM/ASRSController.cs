@@ -18,6 +18,12 @@ namespace AWMSEngine.Controllers.WM
             var res = new APIService.ASRS.GetLocationInfoAPI(this).Execute(value);
             return res;
         }
+        [HttpPost("location")]
+        public dynamic GetLocationInfo2([FromBody] dynamic value)
+        {
+            var res = new APIService.ASRS.GetLocationInfoAPI(this).Execute(value);
+            return res;
+        }
 
         [HttpPost("queue/register")]
         public dynamic RegisterInboundQueueAPI([FromBody] dynamic value)
