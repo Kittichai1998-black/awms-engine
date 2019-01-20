@@ -110,10 +110,9 @@ namespace AMWUtil.DataAccess.Http
                     string json = datas.Json();
                     if (logger != null)
                         logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + json);
-                    using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream(), Encoding.UTF8))
+                    using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {
-
-                        streamWriter.Write(json);
+                        streamWriter.Write(Newtonsoft.Json.JsonConvert.SerializeObject(datas));
                         streamWriter.Flush();
                         streamWriter.Close();
                     }

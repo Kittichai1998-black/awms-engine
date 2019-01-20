@@ -161,10 +161,10 @@ class Pack extends Component {
         const view = this.state.permissionView
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
-            //{accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+            {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
             //{accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-            { accessor: 'SKU_Code', Header: 'SKU', updateable: view, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
+            { accessor: 'Name', Header: 'SKU', updateable: view, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
             //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
             { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
             { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },

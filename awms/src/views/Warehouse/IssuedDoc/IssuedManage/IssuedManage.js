@@ -3,15 +3,14 @@ import "react-table/react-table.css";
 import { Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import moment from 'moment';
-import _ from 'lodash'
 import { DocumentEventStatus } from '../../Status'
 import queryString from 'query-string'
 import { AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
 import Downshift from 'downshift'
 import ReactAutocomplete from 'react-autocomplete'
 import arrimg from '../../../../img/arrowhead.svg'
-import withFixedColumns from "react-table-hoc-fixed-columns";
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
+import _ from 'lodash'
 
 function isInt(value) {
   return !isNaN(value) &&
@@ -20,8 +19,6 @@ function isInt(value) {
 }
 
 const Axios = new apicall()
-const ReactTableFixedColumns = withFixedColumns(ReactTable);
-
 
 class IssuedManage extends Component {
   constructor(props) {
@@ -31,10 +28,9 @@ class IssuedManage extends Component {
       data: [],
       branch: [],
       auto_branch: [],
-      auto_supplier: [],
       auto_warehouse: [],
-      auto_bacth: [],
       auto_customer: [],
+      auto_supplier: [],
       auto_movementType: [],
       branch: "",
       customer: "",
@@ -48,9 +44,9 @@ class IssuedManage extends Component {
       issuedNo: "-",
       select2: {
         queryString: window.apipath + "/api/viw",
-        t: "StorageObjectBatch",
+        t: "PackMaster",
         q: '[{ "f": "Status", "c":"=", "v": 1}]',
-        f: "PackMaster_ID as id, PackCode, PackName, concat(PackCode, ' : ', PackName) AS SKU, UnitTypeName AS UnitType,Batch",
+        f: "id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -61,17 +57,13 @@ class IssuedManage extends Component {
         queryString: window.apipath + "/api/trx",
         t: "StorageObject",
         q: "[{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'ObjectType', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'in', 'v': '11,12'}]",
-        f: "Code, Batch",
+        f: "Code",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: "",
         l: "",
         all: "",
       },
-
-
-
-
       inputstatus: true,
       pageID: 0,
       addstatus: true,
@@ -85,7 +77,6 @@ class IssuedManage extends Component {
     this.getSelectionData = this.getSelectionData.bind(this)
     this.initialData = this.initialData.bind(this)
     this.genWarehouseData = this.genWarehouseData.bind(this)
-    this.genBatchData = this.genBatchData.bind(this)
     this.DateNow = moment()
     this.addIndex = 0
     //this.autoSelectData = this.autoSelectData.bind(this)
@@ -106,27 +97,12 @@ class IssuedManage extends Component {
     this.warehouseselect = {
       queryString: window.apipath + "/api/mst",
       t: "Warehouse",
-      q: '[{ "f": "Code", "c":"!=", "v": 5005}]',
+      q: "",
       f: "ID,Code, Name",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
       all: "",
-    }
-
-    this.bathselect = {
-      queryString: window.apipath + "/api/viw",
-      t: "DocumentItem",
-      q: '[{ "f": "Status", "c":"!=", "v": 1}]',
-      f: "ID,Code,Batch",
-      g: "",
-      s: "[{'f':'ID','od':'asc'}]",
-      sk: 0,
-      all: "",
-
-
-
-
     }
 
     this.customerselect = {
@@ -172,29 +148,11 @@ class IssuedManage extends Component {
         addstatus: true,
       })
       Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID + "&getMapSto=true").then((rowselect1) => {
-
-
-        
         if (rowselect1.data._result.status === 0) {
-      
           this.setState({ data: [] })
-                    
-        } else {
+        }
+        else {
           console.log(rowselect1)
-          //******************
-          //rowselect1.data.document.documentItems.forEach(x => {
-          //  this.setState({
-          //    batch: x.batch,
-          //    optionsItem : x.options,
-          //    lot: x.lot,
-          //    quantityDoc: x.quantity,
-          //    unitType_NameDoc: x.unitType_Name
-             
-          //  })
-            
-          //})
-      
-          //*********************       
           this.setState({
             data: rowselect1.data.document,
             remark: rowselect1.data.document.remark,
@@ -210,10 +168,6 @@ class IssuedManage extends Component {
             desBranchName: rowselect1.data.document.desBranchName
           })
 
-          console.log(this.state.quantityDoc)
-          console.log(this.state.optionsItem)
-
-          //******************************
           var groupPack = _.groupBy(rowselect1.data.bstos, "code")
           console.log(groupPack)
           var groupdocItemID = _.groupBy(rowselect1.data.bstos, "docItemID")
@@ -233,6 +187,8 @@ class IssuedManage extends Component {
                   res2.batch = x.batch
                   res2.options = x.options
                   res2.quantityDoc = x.quantity
+                  res2.lot = x.lot
+                  res2.orderNo = x.orderNo
                 }
               })
 
@@ -249,13 +205,13 @@ class IssuedManage extends Component {
             groupPack[res1].forEach(res2 => {
               sum += res2.packBaseQty
               res2.sumQty = sum
-         
+
               sumArr.forEach(response => {
                 if (response.code === res2.code) {
                   res2.code = "";
                 }
               })
-          
+
             })
             sumArr.push(groupPack[res1][groupPack[res1].length - 1])
           }
@@ -263,7 +219,7 @@ class IssuedManage extends Component {
 
           var sumQTYPack = 0
           var result = rowselect1.data.document.documentItems
-       
+
           this.setState({ data2: sumArr }, () => {
 
             result.forEach(row1 => {
@@ -286,8 +242,7 @@ class IssuedManage extends Component {
         }
 
       })
-    }
-    else {
+    } else {
       this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY') })
       Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
         this.setState({
@@ -296,8 +251,6 @@ class IssuedManage extends Component {
         })
       })
     }
-
-
 
     this.renderDocumentStatus();
     /* var today = moment();
@@ -311,24 +264,13 @@ class IssuedManage extends Component {
 
 
       //  this.setState({ auto_branch: branchresult.data.datas, addstatus: false }, () => {
-    //    const auto_branch = []    
-    //    this.state.auto_branch.forEach(row => {
-    //      auto_branch.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
-     // })
-    //    this.setState({ auto_branch })
-    //  })
-   })
-
-    Axios.get(createQueryString(this.customerselect)).then(customerresult => {
-      this.setState({ auto_customer: customerresult.data.datas, addstatus: false }, () => {
-        const auto_customer = []
-        this.state.auto_customer.forEach(row => {
-          auto_customer.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
-        })
-        this.setState({ auto_customer })
-      })
+      //    const auto_branch = []    
+      //    this.state.auto_branch.forEach(row => {
+      //      auto_branch.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
+      // })
+      //    this.setState({ auto_branch })
+      //  })
     })
-
     Axios.get(createQueryString(this.supplierselect)).then(supplierresult => {
       this.setState({ auto_supplier: supplierresult.data.datas, addstatus: false }, () => {
         const auto_supplier = []
@@ -340,6 +282,15 @@ class IssuedManage extends Component {
       })
     })
 
+    Axios.get(createQueryString(this.customerselect)).then(customerresult => {
+      this.setState({ auto_customer: customerresult.data.datas, addstatus: false }, () => {
+        const auto_customer = []
+        this.state.auto_customer.forEach(row => {
+          auto_customer.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
+        })
+        this.setState({ auto_customer })
+      })
+    })
 
     Axios.get(createQueryString(this.movementTypeselect)).then(movementTyperesult => {
       this.setState({ auto_movementType: movementTyperesult.data.datas, addstatus: false }, () => {
@@ -354,7 +305,7 @@ class IssuedManage extends Component {
 
   }
   async componentWillMount() {
-    document.title = "Create Issue : AWMS";
+    document.title = "Goods Issue Manage : AWMS";
     let dataGetPer = await GetPermission()
     this.displayButtonByPermission(dataGetPer)
   }
@@ -372,9 +323,8 @@ class IssuedManage extends Component {
         storageObjectdata.push({ label: row.Code })
       })
       this.setState({ storageObjectdata })
+      this.genWarehouseData();
     })
-    this.genWarehouseData();
-    this.genBatchData();
   }
 
 
@@ -399,13 +349,15 @@ class IssuedManage extends Component {
           , ref1: this.state.ref1
           , ref2: this.state.ref2
           , batch: this.state.Batch
-          , lot: null
+          , lot: this.state.Lot
+          , orderno: this.state.Orderno
         })
     })
     let postdata = {
       forCustomerID: null
       , batch: this.state.Batch
-      , lot: null
+      , lot: this.state.Lot
+      , orderno: this.state.Orderno
       , souBranchID: 1
       , desBranchID: this.state.branch
       , souWarehouseID: 1
@@ -444,48 +396,32 @@ class IssuedManage extends Component {
     return res.map(row => row.status)
   }
   genWarehouseData() {
-    
-      const warehouse = this.warehouseselect
-      warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"!=", "v": "5005"},{ "f": "Branch_ID", "c":"=", "v": 1}]'
-     // console.log(warehouse)
-      Axios.get(createQueryString(warehouse)).then((res) => {
-        const auto_warehouse = []
-        console.log(res)
-        res.data.datas.forEach(row => {
 
-          auto_warehouse.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
-        })
-        this.setState({ auto_warehouse })
-      })
-    
-  }
-
-  genBatchData() {
-    const batch = this.bathselect
-    batch.q = '[{ "f": "Status", "c":"=", "v": 1}]'
-    Axios.get(createQueryString(batch)).then((res) => {
-      const auto_bacth = []
-      console.log(batch)
+    const warehouse = this.warehouseselect
+    warehouse.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Code", "c":"!=", "v": "5005"},{ "f": "Branch_ID", "c":"=", "v": 1}]'
+    // console.log(warehouse)
+    Axios.get(createQueryString(warehouse)).then((res) => {
+      const auto_warehouse = []
+      console.log(res)
       res.data.datas.forEach(row => {
 
-        auto_bacth.push({ value: row.ID, label: row.Batch })
+        auto_warehouse.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
       })
-      this.setState({ auto_bacth })
-      console.log(this.state.auto_bacth)
+      this.setState({ auto_warehouse })
     })
-  }
 
+  }
 
   inputCell(field, rowdata) {
     /* return  <Input type="text" value={rowdata.value === null ? "" : rowdata.value} 
     onChange={(e) => {this.editData(rowdata, e.target.value, "PackQty")}} />; */
     return <Input value={rowdata.value}
-      onChange={(e) => { this.editData(rowdata, e.target.value, "PackQty") }} />
+      onChange={(e) => { this.editData(rowdata, e.target.value, field) }} />
   }
 
   addData() {
     const data = this.state.data
-    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", Batch:"",ID: "" })
+    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", ID: "", Batch: "", Lot: "", Orderno: "" })
     this.addIndex -= 1
     this.setState({ data })
   }
@@ -504,12 +440,18 @@ class IssuedManage extends Component {
         //}
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
+      else if (rowdata.column.datatype === "string") {
+
+        data[rowdata.index][field] = value;
+
+      }
       else {
-        console.log(value)
         data[rowdata.index][field] = value.Code;
         data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitType"] = value.UnitType;
-        data[rowdata.index]["Batch"] = value.Batch;
+        data[rowdata.index]["lot"] = value.lot;
+        data[rowdata.index]["orderno"] = value.orderno;
+        data[rowdata.index]["batch"] = value.batch;
         data[rowdata.index]["id"] = value.id;
       }
       this.setState({ data });
@@ -527,6 +469,9 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = "";
       data[rowdata.index]["SKU"] = "";
       data[rowdata.index]["UnitType"] = "";
+      data[rowdata.index]["lot"] = "";
+      data[rowdata.index]["orderno"] = "";
+      data[rowdata.index]["batch"] = "";
       data[rowdata.index]["id"] = "";
     }
     else if (rowdata.column.datatype === "int") {
@@ -573,29 +518,29 @@ class IssuedManage extends Component {
   createAutoComplete(rowdata) {
     if (!this.state.readonly) {
       const style = {
-        color: '#2f353a',
-        borderRadius: '0px 0px 3px 3px',
-        border: '0.5px solid #20a8d8',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-        background: 'white',
+        borderRadius: '3px',
+        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+        background: 'rgba(255, 255, 255, 0.9)',
+        padding: '2px 0',
         fontSize: '90%',
+        //position: 'fixed',
+        //maxHeight:'50px',
+        //min:'20px',
         overflow: 'auto',
         maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
-        zIndex: '998'
+        zIndex: '998',
       }
 
       return <ReactAutocomplete
         inputProps={{
           style: {
-            color: '#2f353a',
-            width: "100%", borderRadius: "3px", backgroundImage: 'url(' + arrimg + ')',
-            backgroundPosition: "8px 50%",
+            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
+            backgroundPosition: "8px 8px",
             backgroundSize: "10px",
             backgroundRepeat: "no-repeat",
-            padding: "0.37rem 0.1875rem 0.37rem 1.5625em",
-            alignItems: 'center',
-            position: 'relative',
-            height: 'auto'
+            paddingLeft: "25px",
+            position: 'relative'
+
           }
         }}
         wrapperStyle={{ width: "100%" }}
@@ -604,7 +549,7 @@ class IssuedManage extends Component {
         items={this.state.autocomplete}
         shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
         renderItem={(item, isHighlighted) =>
-          <div key={item.Code} style={{ padding: '0px 3px 0px 6px', background: isHighlighted ? '#20a8d8' : 'white', color: isHighlighted ? 'white' : '#2f353a' }}>
+          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
             {item.SKU}
           </div>
         }
@@ -666,151 +611,188 @@ class IssuedManage extends Component {
   render() {
 
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
-    let cols
+
     let cossdetail = [
-      { accessor: "packMaster_Name", Header: "SKU Item", Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>, width: 550 },
+      {
+        accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
+      },
+      { accessor: "packMaster_Name", Header: "SKU Code", Cell: (e) => <span>{e.original.packCode}</span>, },
+      { accessor: "packMaster_Name", Header: "SKU Name", Cell: (e) => <span>{e.original.packName}</span>, },
       { accessor: "code", Header: "Base", Cell: (e) => <span>{e.original.code}</span> },
 
+
+      //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
+      { accessor: 'batch', Header: 'Batch', editable: false, },
+      { accessor: 'lot', Header: 'Lot', editable: false, },
+      { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
-        accessor: 'sumQty1', Header: 'Quantity', editable: false,
+        accessor: 'sumQty1', Header: 'Qty', editable: false,
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
       },
-     
-      //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
+
       { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
-      { accessor: 'batch', Header: 'Batch', editable: false, },
+
+
     ]
 
 
-    if (this.state.pageID) {
-      cols = [
-        {
-          accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined  ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
-        },
-        { accessor: "packMaster_Code", Header: "Pack Item", Cell: (e) => <span>{e.original.packMaster_Code + ' : ' + e.original.packMaster_Name}</span>, width: 550 },
-        //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
-        { accessor: "quantity", Header: "Quantity", Cell: (e) => <span>{e.original.quantity}</span> },
-        { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.unitType_Name}</span> }
-      ]
-    }
-    else {
-      cols = [
-        { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
-        //{accessor:"SKU",Header:"SKU",},
+    let cols = [
+      {
+        accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
+      },
+      { accessor: "packMaster_Name", Header: "SKU Code", Cell: (e) => <span>{e.original.packCode}</span>, },
+      { accessor: "packMaster_Name", Header: "SKU Name", Cell: (e) => <span>{e.original.packName}</span>, },
 
-        { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("qty", e), datatype: "int" },
-        { accessor: "UnitType", Header: "Unit", },
-        { accessor: 'Batch', Header: 'Batch', editable: false, },
-        {
-          Cell: (e) => <Button onClick={() => {
-            const data = this.state.data;
-            data.forEach((row, index) => {
-              if (row.id === e.original.id) {
-                data.splice(index, 1)
-              }
-            })
-            this.setState({ data }, () => {
-              let res = this.state.autocompleteUpdate
-              this.state.data.forEach((datarow, index) => {
-                res = res.filter(row => {
-                  return datarow.Code !== row.Code
-                })
+      //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},  
+      { accessor: 'batch', Header: 'Batch', editable: false, },
+      { accessor: 'lot', Header: 'Lot', editable: false, },
+      { accessor: 'orderNo', Header: 'Order No', editable: false, },
+      {
+        accessor: 'sumQty1', Header: 'Qty', editable: false,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
+          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+      },
+      { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
+
+
+    ]
+
+
+    let col = [
+
+      { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
+      //{accessor:"SKU",Header:"SKU",},
+      { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("PackQty", e), datatype: "int" },
+      { accessor: "bath", Header: "Bath", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string" },
+      { accessor: "lot", Header: "lot", editable: true, Cell: e => this.inputCell("lot", e), datatype: "string" },
+      { accessor: "orderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("orderno", e), datatype: "string" },
+      { accessor: "UnitType", Header: "Unit", },
+
+
+      {
+        Cell: (e) => <Button onClick={() => {
+          const data = this.state.data;
+          data.forEach((row, index) => {
+            if (row.id === e.original.id) {
+              data.splice(index, 1)
+            }
+          })
+          this.setState({ data }, () => {
+            let res = this.state.autocompleteUpdate
+            this.state.data.forEach((datarow, index) => {
+              res = res.filter(row => {
+                return datarow.Code !== row.Code
               })
-              this.setState({ autocomplete: res })
             })
-          }} color="danger">Remove</Button>
-        }
-      ]
-    }
-
+            this.setState({ autocomplete: res })
+          })
+        }} color="danger">Remove</Button>
+      }
+    ]
 
     return (
       <div>
         {this.createModal()}
         <div className="clearfix">
           <Row>
+            <Col xs="6"><div className="d-block" >Issued No : <span style={{ marginLeft: '5px' }}>{this.state.issuedNo}</span></div></Col>
             <Col xs="6"><div>Document Date : <span style={{ marginLeft: '5px' }}>{this.state.documentDate}</span></div></Col>
-            <Col xs="6"><div>Event Status :<span style={{ marginLeft: '5px'}}> {this.renderDocumentStatus()}</span></div></Col>
           </Row>
+
           <Row>
+            <Col xs="6">
+              <div className=""><label>Movement Type :</label>{this.state.pageID ? this.createText(this.state.ref2) :
+                <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><AutoSelect data={this.state.auto_movementType}
+                  result={(e) => this.setState({ "movementType": e.value, "movementTyperesult": e.label, "movementTypeCode": e.code })} />
+                </div>}</div>
+            </Col>
+            <Col xs="6"> <div className="d-block"><label>Action Time : </label><div style={{ display: "inline-block", width: "300px", marginLeft: '10px' }}>{this.state.pageID ? <span>{this.state.date.format("DD-MM-YYYY HH:mm:ss")}</span> : this.dateTimePicker()}</div>
+            </div></Col>
+          </Row>
+
+          <Row>
+            <Col xs="6"> <div className=""><label >Source Branch : </label>{this.state.pageID ? this.createText("THIP") :
+              <div style={{ width: "300px", display: "inline-block" }}><label>1100 : THIP</label></div>}</div>
+            </Col>
+            <Col xs="6">
+              <div className=""><label>Source Warehouse : </label>{this.state.pageID ? this.createText("ASRS") :
+                <div style={{ width: "300px", display: "inline-block" }}><label>5005 : ASRS</label></div>}</div>
+            </Col>
+          </Row>
+
+
+          <Row>
+            <Col xs="6">
+              <div className="">
+                <label>Destination Branch : </label>{this.state.pageID ? this.createText(this.state.data.desBranchName) :
+                  <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
+                    <div style={{ marginLeft: '5px', display: "inline-block" }}>{this.state.auto_branch}</div> </div>}</div>
+            </Col>
+            <Col xs="6"><div className=""><label >Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.desWarehouseName) :
+              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
+                <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} />
+              </div>}</div></Col>
+          </Row>
+
+
+          {this.state.pageID === 0 ? null : <Row>
+            <Col xs="6">
+              <div className=""><label > Destination Supplier : </label>{this.createText(this.state.data.desSupplierName)}</div>
+            </Col>
+            <Col xs="6">
+              <div className=""><label > Destination Customer : </label>{this.createText(this.state.data.desCustomerName)}</div>
+            </Col>
+          </Row>}
+
+
+          {this.state.pageID === 0 ? null : <Row>
             <Col xs="6"><div>SAP.Doc No : <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.refID) :
               <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.refID}</span>
               </div>}</span></div></Col>
-              
-            <Col xs="6"><div>SAP.Doc Years  <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.ref1) :
+
+            <Col xs="6"><div>SAP.Doc Years : <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.ref1) :
               <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.ref1}</span>
               </div>}</span></div></Col>
-          </Row>
-          <Row>
-            <Col xs="6"><div className="d-block" >Issued No : <span style={{ marginLeft: '5px'}}>{this.state.issuedNo}</span></div></Col>
-            <Col xs="6"><div className="d-block"><label>Action Time : </label>
-              <div style={{ display: "inline-block", marginLeft: '5px' }}>{this.state.pageID ? <span>{this.state.date.format("DD-MM-YYYY HH:mm:ss")}</span> : this.dateTimePicker()}</div></div></Col>
-          </Row>
+          </Row>}
+
+
+
         </div>
+
+
+        <Row>
+          <Col xs="6"><div>Doc Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
+          <Col xs="6"><div className=""><label>Remark : </label>
+            {this.state.pageID ? <span> {this.state.remark}</span> :
+              <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '100px' }}
+                value={this.state.remark === undefined ? "" : this.state.remark} />}
+          </div></Col>
+        </Row>
+
+
+
         <div className="clearfix">
-          <Row>
-            <div className="col-6">
-              <div className="">
-                <label >Source Branch : </label>{this.state.pageID ? this.createText("THIP") :
-                  <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><label>1100 : THIP</label>
-                  </div>}
-              </div>
-              <div className="">
-                <label>Destination Branch : </label>{this.state.pageID ? this.createText(this.state.data.desBranchName) :
-                  <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>  
-                    <div style={{ marginLeft: '5px', display: "inline-block" }}>{this.state.auto_branch}</div> </div>}</div>
-          
-
-             <div className=""><label>MovementType: </label>{this.state.pageID ? this.createText(this.state.ref2) :
-                <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
-                  <AutoSelect data={this.state.auto_movementType}
-                    result={(e) => this.setState({ "movementType": e.value, "movementTyperesult": e.label, "movementTypeCode": e.code })} /></div>}</div>
-
-              <div className=""><label >Supplier : </label>{this.state.pageID ? this.createText(this.state.suplier):
-                <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
-                  <AutoSelect data={this.state.auto_supplier} result={(e) => this.setState({ "suplier": e.value, "supplierresult": e.label})} /></div>}</div>
-            </div>
-
-            <div className="col-6">
-              <div className=""><label>Source Warehouse : </label>{this.state.pageID ? this.createText("ASRS") :
-                <div style={{ width: "300px", display: "inline-block", marginLeft: '5px'}}><label>5005 : ASRS</label></div>}</div>
-
-              <div className=""><label >Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.desWarehouseName) :
-                <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
-                  <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} /></div>}</div>
-
-          
-          
-            
-
-          
-              <div className=""><label>Remark : </label>
-                {this.state.pageID ? <span> {this.state.remark}</span> :
-                  <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}
-
-                    value={this.state.remark === undefined ? "" : this.state.remark} />}
-             
-              </div>
-         </div>
-          </Row>
-        </div>
-        <div className="clearfix">
-
-         
-          <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay, width: "130px" }}>Add</Button>
+          <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay }}>Add</Button>
           {/* <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code}</span> */}
         </div>
-        {console.log(this.state.data)}
-        <ReactTable columns={cols} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} NoDataComponent={() => null} style={{ background: "white" }}
-          sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />
+
+
+        {this.state.pageID != 0 ? null : <ReactTable columns={col} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} NoDataComponent={() => null} style={{ background: "white" }}
+          sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
+
+
+        {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
+          sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
         {this.state.pageID === 0 ? null : <ReactTable columns={cossdetail} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
+
+
         <Card>
           <CardBody style={{ textAlign: 'right' }}>
-            {this.state.pageID !== 0 ? null : <Button onClick={() => this.createDocument()} style={{ display: this.state.adddispla, width: "130px" }} color="primary" className="mr-sm-1">Create</Button>}
-            <Button style={{ color: "#FFF", width: "130px" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
+            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay }} color="primary" className="mr-sm-1">Create</Button>
+            <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>

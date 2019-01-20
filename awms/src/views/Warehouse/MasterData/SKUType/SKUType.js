@@ -54,7 +54,7 @@ class SKUMasterType extends Component {
     this.getAutocomplete();
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("Catagory", dataGetPer, this.props.history);
+    CheckWebPermission("Category", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   //permission
@@ -142,7 +142,7 @@ class SKUMasterType extends Component {
       { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40  },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 120 },
-      // { accessor: 'ObjectSize_Code', Header: 'Default Object Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
+      { accessor: 'ObjectSize_Code', Header: 'Default Object Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
       // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
@@ -170,7 +170,7 @@ class SKUMasterType extends Component {
             getselection = เก็บค่าที่เลือก
         
           */}
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Catagory"}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"SKUCollection"}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}
           table="ams_SKUMasterType" />
