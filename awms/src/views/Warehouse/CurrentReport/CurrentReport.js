@@ -6,7 +6,7 @@ import moment from 'moment';
 import { AutoSelect, Clone, apicall, createQueryString } from '../ComponentCore';
 import ExtendTable from '../MasterData/ExtendTable';
 import ExportFile from '../MasterData/ExportFile';
-import { Button, Row, Col } from 'reactstrap';
+import { Button, Row, Col, Input } from 'reactstrap';
 
 const Axios = new apicall()
 
@@ -17,6 +17,7 @@ class CurrentReport extends Component {
   constructor() {
     super();
     this.state = {
+      data:[],
       select: {
         queryString: window.apipath + "/api/viw",
         t: "r_CurrentInventory",
@@ -25,7 +26,7 @@ class CurrentReport extends Component {
         g: "",
         s: "[{'f':'SKU_Code','od':'asc'}]",
         sk: 0,
-        l: 0,
+        l: 100,
         all: "",
       },
 
@@ -40,8 +41,6 @@ class CurrentReport extends Component {
       this.setState({
         data: response.data.datas
       })
-
-      console.log(this.state.data)
     })
 
   }
@@ -60,14 +59,37 @@ class CurrentReport extends Component {
     //})
   }
 
+  onChangeFilter(inputValue, rowData){
+    let selectUrl = this.state.select;
+    let selectCondition = JSON.parse(selectUrl.q === "" ? "[]" : selectUrl.q);
+
+    if(selectCondition.length > 0){
+      selectCondition.forEach((row, index) => {
+        if (row.f === rowData.column.id) {
+          selectCondition.splice(index, 1)
+        }
+      })
+    }
+
+    selectCondition.push({ 'f': rowData.column.id, c:'like', 'v': '*'+ inputValue.target.value +'*'})
+    selectUrl.q = JSON.stringify(selectCondition);
+    
+    console.log(selectUrl)
+    Axios.get(createQueryString(selectUrl)).then((response) => {
+      this.setState({
+        data: response.data.datas, select:selectUrl
+      }, () => console.log(this.state.select))
+    })
+  }
+
   render() {
 
     let cols = [
-      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: "text", sortable: false, minWidth: 130 },
-      { accessor: 'SKU_Name', Header: 'SKU Name', Filter: "text", sortable: false, minWidth: 250 },
-      { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text", sortable: true },
-      { accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: true },
-      { accessor: 'Base_Unit', Header: 'Unit', Filter: "text", sortable: false, minWidth: 130 },
+      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 130 },
+      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 250 },
+      { accessor: 'Warehouse', Header: 'Warehouse', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: true },
+      { accessor: 'Qty', Header: 'Qty', filterable:false, sortable: true },
+      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 130 },
     ];
 
     return (
@@ -75,15 +97,23 @@ class CurrentReport extends Component {
       <div>
         <div>
           <Row>
-            <Col xs="12">
+            <Col xs="10">
+            </Col>
+            <Col xs="2">
               <ExportFile column={cols} dataexp={this.state.data} filename={this.state.name} />
             </Col>
           </Row>
+          <Row>
+            <Col xs="12">
+              
+            </Col>
+          </Row>
         </div>
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
+        {/* <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
           filterable={true} autocomplete={this.state.autocomplete}
           uneditcolumn={this.uneditcolumn}
-          table="amvr_StorageObject" />
+          table="amvr_StorageObject" /> */}
+        <ReactTable columns={cols} data={this.state.data} editable={false} filterable={true} defaultPageSize={1000}/>
       </div>
 
     )

@@ -309,6 +309,11 @@ const AuditDoc = Loadable({
   loading: Loading,
 });
 
+const AuditCreate = Loadable({
+  loader: () => import('./views/Warehouse/Audit/AuditCreateDoc/AuditCreateDoc'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -374,7 +379,8 @@ const routes = [
   { path: '/wm/issue/manage', exact: true, name: 'Issue / Create Queue', component: CreateQueue },
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
   { path: '/sys/sto/progress', exact: true, name: 'Dashboard / Picking Progress', component: TaskList },
-  { path: '/wm/queue/manage', exact: true, name: 'Queue View', component: QueueView },
+  { path: '/sys/gr/progress?IOType=IN', exact: true, name: 'Recieve Queue View', component: QueueView },
+  { path: '/sys/gi/progress?IOType=OUT', exact: true, name: 'Issue Queue View', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
