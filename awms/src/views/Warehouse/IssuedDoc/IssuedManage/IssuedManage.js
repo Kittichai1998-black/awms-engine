@@ -613,7 +613,7 @@ class IssuedManage extends Component {
       { accessor: "code", Header: "Base", Cell: (e) => <span>{e.original.code}</span> },
 
       {
-        accessor: 'sumQty1', Header: 'Quantity', editable: false,
+        accessor: 'sumQty1', Header: 'Qty', editable: false,
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
       },
@@ -634,7 +634,7 @@ class IssuedManage extends Component {
        { accessor: "packMaster_Name", Header: "SKU Item", Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>, width: 550 },
 
        {
-         accessor: 'sumQty1', Header: 'Quantity', editable: false,
+         accessor: 'sumQty1', Header: 'Qty', editable: false,
          Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
            (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
        },
@@ -691,7 +691,7 @@ class IssuedManage extends Component {
 
           <Row>
             <Col xs="6">
-              <div className=""><label>MovementType: </label>{this.state.pageID ? this.createText(this.state.ref2) :
+              <div className=""><label>Movement Type: </label>{this.state.pageID ? this.createText(this.state.ref2) :
                 <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><AutoSelect data={this.state.auto_movementType}
                   result={(e) => this.setState({ "movementType": e.value, "movementTyperesult": e.label, "movementTypeCode": e.code })} />
                 </div>}</div>
@@ -751,7 +751,7 @@ class IssuedManage extends Component {
 
       
         <Row>
-          <Col xs="6"><div>Doc Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
+          <Col xs="6"><div>Document Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
           <Col xs="6"><div className=""><label>Remark : </label>
             {this.state.pageID ? <span> {this.state.remark}</span> :
               <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '100px' }}

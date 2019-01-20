@@ -336,7 +336,7 @@ const routes = [
   { path: '/mst/permission/manage', exact: true, name: 'Setting / Permission', component: Permission },
   { path: '/mst/apiservicegroup/manage', exact: true, name: 'Setting / API Service Group', component: APIServiceGroup },
   { path: '/mst/apiservice/manage', exact: true, name: 'Setting / API Service', component: APIService },
-  { path: '/mst/objectsize/manage', exact: true, name: 'Setting / Object Size', component: ObjectSize },
+  { path: '/mst/objectsize/manage', exact: true, name: 'Setting / Standard Pack Size', component: ObjectSize },
   { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Setting / Job Schedule Module', component: JobScheduleModule },
   { path: '/mst/unittype/manage', exact: true, name: 'Setting / Unit Type', component: UnitType },
   { path: '/mst/webcontrol/manage', exact: true, name: 'Setting / Web Control', component: WebControl },

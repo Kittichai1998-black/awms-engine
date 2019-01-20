@@ -96,6 +96,7 @@ class TableGen extends Component {
     this.datetimelog = this.datetimelog.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
+    this.FLSareaLocationCode = this.FLSareaLocationCode.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
     this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
     this.createAutoCompleteDownshift = this.createAutoCompleteDownshift.bind(this)
@@ -452,11 +453,41 @@ class TableGen extends Component {
         "nr": false
       }
       Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
-        //console.log(res)
+
         if (res.data._result !== undefined) {
           if (res.data._result.status === 1) {
             this.Notification(this.state.statusUpdateData)
-          }
+            //this.queryInitialData(this.state.dataselect);
+          } 
+          // else {
+          //   if (this.props.objectSizeMapPallet !== undefined) {
+          //     console.log(this.props.objectSizeMapPallet)
+          //     const datamap = Clone(this.props.objectSizeMapPallet)
+          //     if (dataedit.length > 0) {
+          //       dataedit.forEach((row) => {
+          //         let codewhere = [{ "f": "Status", "c": "!=", "v": 2 }, { "f": "ObjectType", "c": "=", "v": 2 }, { "f": "Code", "c": "=", "v": row["Code"] }]
+          //         let ObjectSizeMaster = Clone(this.state.dataselect)
+          //         ObjectSizeMaster["q"] = JSON.stringify(codewhere)
+          //         let queryString = createQueryString(ObjectSizeMaster)
+          //         console.log(queryString)
+          //         Axios.get(queryString).then((res) => {
+          //           if (res.data._result !== undefined) {
+          //             if (res.data._result.status === 1) {
+          //               res.data.datas.forEach(row => {
+          //                 let ObjID = row.ID
+          //                 console.log(ObjID)
+          //                 datamap.forEach((rowmap) => {
+          //                   rowmap.ID
+          //                 })
+          //               })
+          //             }
+          //           }
+          //           this.queryInitialData(this.state.dataselect);
+          //         })
+          //       })
+          //     }
+          //   }
+          // }
         }
         this.queryInitialData(this.state.dataselect);
       })
@@ -791,6 +822,14 @@ class TableGen extends Component {
   autoGenLocationCode(rowdata) {
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
       onChange={(e) => { this.onEditValueAutoCode(rowdata, e.target.value, rowdata.column.id) }} />
+  }
+  onEditValueArea(rowdata, value, field) {
+    this.onEditorValueChange(rowdata, this.props.areamaster, "AreaMaster_ID")
+    this.onEditorValueChange(rowdata, value, rowdata.column.id)
+  }
+  FLSareaLocationCode(rowdata) {
+    return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
+      onChange={(e) => { this.onEditValueArea(rowdata, e.target.value, rowdata.column.id) }} />
   }
   autoGenBaseCode(rowdata) {
     if (rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== "") {
@@ -1297,6 +1336,16 @@ class TableGen extends Component {
       else if (row.Type === "autolocationcode" && (row.body === undefined || !row.body)) {
         if (row.editable) {
           row.Cell = (e) => (this.autoGenLocationCode(e))
+        }
+        else {
+          row.Cell = (e) => {
+            return <span>{e.value}</span>
+          }
+        }
+      }
+      else if (row.Type === "FLSareacode" && (row.body === undefined || !row.body)) {
+        if (row.editable) {
+          row.Cell = (e) => (this.FLSareaLocationCode(e))
         }
         else {
           row.Cell = (e) => {
