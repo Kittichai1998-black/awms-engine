@@ -153,7 +153,7 @@ class AuditDoc extends Component {
 
   onClickToDesc(data) {
     return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da" }}
-      onClick={() => this.history.push('/doc/gi/manage?ID=' + data.ID)}>Detail</Button>
+      onClick={() => this.history.push('/sys/ad/create?ID=' + data.ID)}>Detail</Button>
   }
   openModal() {
     this.setState({ open: true })
@@ -169,7 +169,7 @@ class AuditDoc extends Component {
     const cols = [
       { Header: '', Type: "selectrow", sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50 },
       { accessor: 'EventStatus', Header: 'Doc Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120 },
-      { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gi/manage?ID=' + e.original.ID)} >{e.original.Code}</a> },
+      { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/sys/ad/create?ID=' + e.original.ID)} >{e.original.Code}</a> },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
       { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
@@ -220,7 +220,7 @@ class AuditDoc extends Component {
       */}
         <div className="clearfix">
 
-          <Button id="per_button_doc" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+          <Button id="per_button_doc" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/sys/ad/create')}>Create Document</Button>
 
           {/* <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => {
             let data1 = { "exportName": "DocumentIssuedToShop", "whereValues": [this.state.date.format('YYYY-MM-DD')] }

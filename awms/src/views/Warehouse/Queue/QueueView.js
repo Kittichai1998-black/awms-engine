@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table';
+import queryString from 'query-string'
 import { apicall, createQueryString } from '../ComponentCore';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
@@ -24,7 +25,7 @@ class QueueView extends Component {
       g: "",
       s: "[{'f':'Row','od':'asc'}]",
       sk: 0,
-      l: 100,
+      l: 20,
       all: "",
     }
 
@@ -46,8 +47,12 @@ class QueueView extends Component {
   }
 
   componentDidMount() {
-    this.GetQueueData()
-    let interval = setInterval(this.GetQueueData, 2000);
+    const values = queryString.parse(this.props.location.search)
+    var url = this.select;
+    url.q = "[{ 'f': 'IOType', c:'=', 'v': '"+ values.IOType + "'}]";
+    this.GetQueueData(url)
+    
+    let interval = setInterval(() => {this.GetQueueData(url)}, 2000);
     this.setState({ interval: interval })
   }
 
@@ -55,8 +60,8 @@ class QueueView extends Component {
     clearInterval(this.state.interval)
   }
 
-  GetQueueData() {
-    API.get(createQueryString(this.select)).then(res => {
+  GetQueueData(url) {
+    API.get(createQueryString(url)).then(res => {
       this.setState({ data: res.data.datas });
     })
   }
