@@ -157,7 +157,7 @@ class IssuedDoc extends Component {
       {accessor: 'lot', Header: 'Lot', editable:false,},
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
-        accessor: 'sumQty1', Header: 'Quantity', editable: false,
+        accessor: 'sumQty1', Header: 'Qty', editable: false,
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
       },
@@ -170,7 +170,7 @@ class IssuedDoc extends Component {
         accessor: 'packCode', Header: 'SKUItem', editable: false, fixed: "left", minWidth: 250, maxWidth: 300,
         Cell: (e) => <span>{e.original.packCode + ' : ' + e.original.packName}</span>
       },
-      {accessor: 'sumQty', Header: 'Quantity',editable:false,},
+      {accessor: 'sumQty', Header: 'Qty',editable:false,},
       {accessor: 'packUnitCode', Header: 'Unit',editable:false,},
     ];
 
