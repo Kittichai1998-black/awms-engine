@@ -202,23 +202,16 @@ namespace AWMSEngine.Engine.Business.Issued
         }
 
         private void sandToSAPfail(List<amt_Document> docHs, List<amt_DocumentItem> docItem, SAPResposneAPI sapRes)
-        {
-
-            
+        {           
             foreach (var d in docHs)
             {
                 var docH = ADO.DataADO.GetInstant().SelectByID<amt_Document>(d.ID, this.BuVO);
-                docH.RefID = sapRes.mat_doc;
-                docH.Ref1 = sapRes.doc_year;
                 docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
                 ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
                 docItem.ForEach(di =>
                 {
-                    di.RefID = sapRes.mat_doc;
-                    di.Ref1 = sapRes.doc_year;
                     ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
                 });
-
             }
         }
 
@@ -288,6 +281,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
         private SAPInterfaceReturnvalues DataSendToApi4(string actionTime,string docDate,string docID,List<amt_DocumentItem> docItem,string Ref2,string SouBranch,string SouWarehouse,string DesWarehouse,long relation,ams_Warehouse DesWareDoc)
         {
+
             var dataAPI4 = new SAPInterfaceReturnvalues()
             {
                 GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
@@ -295,7 +289,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     PSTNG_DATE = actionTime,
                     DOC_DATE = docDate,
                     REF_DOC_NO = docID,
-                    HEADER_TXT = "ASRS Trf within Plant",
+                    HEADER_TXT = "ASRS Trf with in Plant",
                     GOODSMVT_CODE = "04"
 
                 },
@@ -307,7 +301,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 decimal check = 0;
                 if (relation == 0)
                 {
-                    check = dataDocItem.DocItemStos.Sum(x => x.Quantity).Value;
+                    //check = dataDocItem.DocItemStos.Sum(x => x.Quantity).Value;
+                    check = dataDocItem.DocItemStos.Where(x => x.Status == 1).Sum(x => x.Quantity).Value;
                 }
                 else
                 {
@@ -315,47 +310,52 @@ namespace AWMSEngine.Engine.Business.Issued
                         new KeyValuePair<string, object> ("DocumentItem_ID",dataDocItem.ID)
                         }, this.BuVO);
 
-                    check = diSto.Sum(x => x.Quantity).Value;
+                    check = diSto.Where(x => x.Status == 1).Sum(x => x.Quantity).Value;
                 }
 
-                    if (check == 0)
+                if (check == 0)
+                {
+                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataDocItem.ID.Value,
+                        DocumentEventStatus.CLOSED, this.BuVO);
+                }
+                else
+                {
+                    var dataStoBranch = new List<dynamic>();
+                    foreach (var stoDoc in dataDocItem.DocItemStos)
                     {
-                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataDocItem.ID.Value,
-                            DocumentEventStatus.CLOSED, this.BuVO);
-                    }
-                    else
-                    {
-                        var dataStoBranch = new List<dynamic>();
-                        foreach (var stoDoc in dataDocItem.DocItemStos)
+                        var sto = ADO.StorageObjectADO.GetInstant().Get(stoDoc.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                        if (sto.batch != null)
                         {
-                            var sto = ADO.StorageObjectADO.GetInstant().Get(stoDoc.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
-                            if(sto.batch != null)
-                            {
-                                dataStoBranch.Add(sto.batch);
-                            }
+                            dataStoBranch.Add(sto.batch);
                         }
+                    }
                     var stoBatch = dataStoBranch.Distinct().ToList();
                     foreach (var batchSto in stoBatch)
-                        {
+                    {
                         List<amt_DocumentItemStorageObject> stoData = ADO.StorageObjectADO.GetInstant().ListStoBacth(batchSto, dataDocItem.ID.Value, this.BuVO);
                         var stoQty = stoData.Sum(x => x.Quantity);
- 
+
 
                         var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
-                            dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
-                            {
-                                MATERIAL = dataDocItem.Code,
-                                PLANT = SouBranch,
-                                STGE_LOC = SouWarehouse,
-                                BATCH = batchSto,
-                                MOVE_TYPE = Ref2,
-                                ENTRY_QNT = stoQty.Value,
-                                ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
-                                MOVE_STLOC = DesWarehouse,
-                                MOVE_PLANT = DesWareDoc == null ? "" : this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
-                            });
-                        }
+                        dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
+                        {
+                            MATERIAL = dataDocItem.Code,
+                            PLANT = SouBranch,
+                            STGE_LOC = SouWarehouse,
+                            BATCH = batchSto,
+                            MOVE_TYPE = Ref2,
+                            ENTRY_QNT = stoQty.Value,
+                            ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
+                            MOVE_STLOC = DesWarehouse,
+                            MOVE_PLANT = DesWareDoc == null ? "" : this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
+                        });
                     }
+                    
+                }
+            }
+            if (dataAPI4.GOODSMVT_ITEM.Count == 0)
+            {
+                dataAPI4 = null;
             }
             return dataAPI4;
         }
@@ -369,7 +369,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
             foreach (var dataDocItem in docItem)
             {
-                if (dataDocItem.DocItemStos == null)
+                if (dataDocItem.DocItemStos.Count == 0)
                 {
                     data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
                     {
@@ -408,7 +408,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             DELIV_NUMB = RefID,
                             DELIV_ITEM = dataDocItem.Options == null ? (decimal?)null : decimal.Parse(ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem")),
                             MATERIAL = dataDocItem.Code,
-                            PLANT = batchSto,
+                            PLANT = SouBranch,
                             STGE_LOC = SouWarehouse,
                             BATCH = batchSto,
                             DLV_QTY = stoQty.ToString(),
