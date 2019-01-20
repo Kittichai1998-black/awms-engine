@@ -248,8 +248,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                                         unitType = packH.unitCode,
 
                                                         batch = packH.batch,
-                                                        lot = null,//packH.lot,
-                                                        orderNo = null,//packH.orderNo,
+                                                        lot = packH.lot,//packH.lot,
+                                                        orderNo = packH.orderNo,//packH.orderNo,
 
 
                                                         ref2 = this.StaticValue.Warehouses.First(y => y.ID == souWarehouseID).Code == "5005" ? "321" : "311",//TODO FIX SAPCODE
