@@ -48,7 +48,7 @@ class ListProduct extends Component {
     event.preventDefault();
   }
   componentDidMount() {
-    document.title = "SKU - AWMS"
+    document.title = "SKU Master - AWMS"
   }
   async componentWillMount() {
     this.getAutocomplete();

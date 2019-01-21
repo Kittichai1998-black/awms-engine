@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.Business.Auditor
             foreach(var docItem in docItems)
             {
                 var stoList = ADO.DocumentADO.GetInstant().getSTOList(docItem.ID.Value, this.BuVO);
-                if (stoList == null)
+                if (stoList.Count == 0)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้าสำหรับ PI ในคลังสินค้า");
                 var palletList = stoList.GroupBy(x => new { x.ParentStorageObject_ID }).Select(g => g.Key.ParentStorageObject_ID).ToList();
 

@@ -71,5 +71,12 @@ namespace AWMSEngine.Controllers.WM
             CreateADDocAPI exec = new CreateADDocAPI(this);
             return exec.Execute(request);
         }
+
+        [HttpPost("doc/Reject")]
+        public dynamic RejectAuditDoc([FromBody]dynamic request)
+        {
+            RejectedADDocAPI exec = new RejectedADDocAPI(this);
+            return exec.Execute(request);
+        }
     }
 }
