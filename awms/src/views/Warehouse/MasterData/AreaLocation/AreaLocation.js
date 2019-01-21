@@ -141,8 +141,9 @@ class AreaLocation extends Component {
           })
           const warehousedata = []
           this.state.warehousedata.forEach(row => {
-            warehousedata.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
+            // warehousedata.push({ value: 1, label: "5005" + ' : ' + "ASRS" })
           })
+          warehousedata.push({ value: 1, label: "5005" + ' : ' + "ASRS" })
           this.setState({ supplierdata, warehousedata })
         })
       }
