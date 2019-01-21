@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Badge, Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Badge, Input, Card, Button, CardBody, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Row, Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import ReactAutocomplete from 'react-autocomplete';
 import DatePicker from 'react-datepicker'
@@ -19,7 +19,7 @@ import ExportFile from './ExportFile';
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
-
+const imgExclamation = <img style={{ width: "15px", height: "inherit" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALxSURBVGhD7VlLbhNBELUAsWDFd8HvAmxA2N02KNKgbiuwYAcGBAcJYcMGSLaABAiOAEGKInEPIBwgBDY4hOCZCQmboWpSWSBXj7tnum1Fmic9xVKmq95r1/Sn3KhRo0Z1ZL3e/rQrO4mSD4ALiRZfgOuxln+R+DnRcjlR4h38nU2vtNvZw8Y+Gj45bE63zoLA+ViJ7yAsc2GsxWqs5FwayTMUbnwYRM3jkPw1cJsT58I8hpIvMCaFDwuYubtQCj85MRXZj1X7DqXxj6x37iCUyxsmsVdCjpdZFB2gtH6QXW8egsAfuIQhCGW1hDkpfTXQzDuLz/rr/5F7pohQqou4upGM8ihbNlUNILGcSEY5wCzc4wLb0IcBZNwVt0iOGwbXLpyA5W2NC2pDXwZAw4/fWhwjWfaA2X/FBrSkNwM5xXOSZYd8h624Sfk0AFq2UtU5TfJGA16eeS6QC30aQMJx5QnJKwYesqB8vnFBXOjfgPxqdQDc1OISF8CVvg0gU9WUJNOM/EjMDHZlCANJV9wnmWZA/b9nBzsyiAEt3pJMM+DB5eGB7gxiQMnPJNMMuj3xARwYyMAayTSj6vq/yxAGUBvJNGPPG9jzJYQvCjvYkWEMiE8k0wwwsMAOdmQQA5bL6OzwQHcGMaDEDMk0I29QcYMdGcJAqluCZJpBh7lVLoALfRuAFWjFupsHD89xQSZJmNTHJG80sN3naz/wQRD/J+1ePkXy7IAdAS7YZOh4pUTgRRo3Dj7gaHp7B+BSvzE1dYRkuSHWrdtsUAv6MjDQ7RskpxzKdie8GFDyKckoD2y0golFNkEBqxrAnF5ai4i8uavkEpcoBHPxvpq7u9j5JsawMin5zNvMc4BvogeJ+kOJqxJWm4GSNylNWGxMd47i2gxmtlgxDsRNCmf9V3T+MIUfH7Ddhx0zMLLCiSsijoGSfJRcvXiSwk0OeMjCphP2bfDMjhcP/B0NRG4jd35TEx/pfzN4qrQ+mNWoUaMAjcY/hH7RYM9nkHQAAAAASUVORK5CYII=" />;
 /* const getColumnWidth = (rows, accessor, headerText) => {
   const maxWidth = 500
   const magicSpacing = 10
@@ -79,7 +79,9 @@ class TableGen extends Component {
       currentPage: 1,
       filename: "data",
       enumvalue: [],
-      statusUpdateData: null
+      statusUpdateData: null,
+      countpages: null,
+      defaultPageS: 100
     };
 
     this.customSorting = this.customSorting.bind(this);
@@ -94,6 +96,7 @@ class TableGen extends Component {
     this.datetimelog = this.datetimelog.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.autoGenLocationCode = this.autoGenLocationCode.bind(this)
+    this.FLSareaLocationCode = this.FLSareaLocationCode.bind(this)
     this.autoGenBaseCode = this.autoGenBaseCode.bind(this)
     this.onEditValueAutoCode = this.onEditValueAutoCode.bind(this)
     this.createAutoCompleteDownshift = this.createAutoCompleteDownshift.bind(this)
@@ -146,7 +149,10 @@ class TableGen extends Component {
         let queryString = createQueryString(data)
         Axios.get(queryString).then(
           (res) => {
-            this.setState({ data: res.data.datas, loading: false })
+            let countpages = null;
+            let counts = res.data.counts;
+            countpages = Math.ceil(counts / this.state.defaultPageS);
+            this.setState({ data: res.data.datas, countpages: countpages, loading: false })
           })
       }
       else {
@@ -447,11 +453,41 @@ class TableGen extends Component {
         "nr": false
       }
       Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
-        //console.log(res)
+
         if (res.data._result !== undefined) {
           if (res.data._result.status === 1) {
             this.Notification(this.state.statusUpdateData)
-          }
+            //this.queryInitialData(this.state.dataselect);
+          } 
+          // else {
+          //   if (this.props.objectSizeMapPallet !== undefined) {
+          //     console.log(this.props.objectSizeMapPallet)
+          //     const datamap = Clone(this.props.objectSizeMapPallet)
+          //     if (dataedit.length > 0) {
+          //       dataedit.forEach((row) => {
+          //         let codewhere = [{ "f": "Status", "c": "!=", "v": 2 }, { "f": "ObjectType", "c": "=", "v": 2 }, { "f": "Code", "c": "=", "v": row["Code"] }]
+          //         let ObjectSizeMaster = Clone(this.state.dataselect)
+          //         ObjectSizeMaster["q"] = JSON.stringify(codewhere)
+          //         let queryString = createQueryString(ObjectSizeMaster)
+          //         console.log(queryString)
+          //         Axios.get(queryString).then((res) => {
+          //           if (res.data._result !== undefined) {
+          //             if (res.data._result.status === 1) {
+          //               res.data.datas.forEach(row => {
+          //                 let ObjID = row.ID
+          //                 console.log(ObjID)
+          //                 datamap.forEach((rowmap) => {
+          //                   rowmap.ID
+          //                 })
+          //               })
+          //             }
+          //           }
+          //           this.queryInitialData(this.state.dataselect);
+          //         })
+          //       })
+          //     }
+          //   }
+          // }
         }
         this.queryInitialData(this.state.dataselect);
       })
@@ -539,18 +575,32 @@ class TableGen extends Component {
   }
 
   paginationButton() {
+    const notPageactive = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+      color: 'black',
+      background: '#eceff1',
+      minWidth: '90px'
+    }
+    const pageactive = {
+      textDecoration: 'none',
+      color: 'black',
+      background: '#cfd8dc',
+      minWidth: '90px'
+    }
     return (
-      <div style={{ marginBottom: '3px', textAlign: 'center', margin: 'auto', width: '300px' }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={{ background: "#cfd8dc", width: '100px' }}
+            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
-            <li className="page-item"><a className="page-link" style={{ background: "#eceff1", width: '100px' }}
+            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages}</p>
+            <li className="page-item"><a className="page-link" style={this.state.currentPage === this.state.countpages ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("next")}>
               Next</a></li>
           </ul>
-          <p className="float-central" style={{ width: "200px" }}>  PAGE : {this.state.currentPage}</p>
         </nav>
       </div>
     )
@@ -649,7 +699,7 @@ class TableGen extends Component {
 
   createCustomButton(type, text, data) {
     if (type === "Remove") {
-      return <Button type="button" color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '80px' }}
+      return <Button type="button" color="danger" style={{ width: '80px' }}
         onClick={() => this.removedata(data)}>Remove</Button>
     }
     else if (type === "Link") {
@@ -772,6 +822,14 @@ class TableGen extends Component {
   autoGenLocationCode(rowdata) {
     return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
       onChange={(e) => { this.onEditValueAutoCode(rowdata, e.target.value, rowdata.column.id) }} />
+  }
+  onEditValueArea(rowdata, value, field) {
+    this.onEditorValueChange(rowdata, this.props.areamaster, "AreaMaster_ID")
+    this.onEditorValueChange(rowdata, value, rowdata.column.id)
+  }
+  FLSareaLocationCode(rowdata) {
+    return <Input type="text" value={rowdata.value === null ? "" : rowdata.value}
+      onChange={(e) => { this.onEditValueArea(rowdata, e.target.value, rowdata.column.id) }} />
   }
   autoGenBaseCode(rowdata) {
     if (rowdata.row["Code"] === "" && rowdata.row["BaseMasterType_Code"] !== "") {
@@ -1007,7 +1065,7 @@ class TableGen extends Component {
     if (type === "EventStatus") {
       let strStatus
       const results = EventStatus.filter(row => {
-        return row.code === data
+        return row.code === data.value
       })
       if (results.length > 0) {
         strStatus = results[0].status
@@ -1023,7 +1081,7 @@ class TableGen extends Component {
     } else if (type === "StorageObjectEventStatus") {
       let strStatus
       const results = StorageObjectEventStatus.filter(row => {
-        return row.code === data
+        return row.code === data.value
       })
       if (results.length > 0) {
         strStatus = results[0].status
@@ -1041,29 +1099,49 @@ class TableGen extends Component {
       return <span>
         {
           DocumentStatus.filter(row => {
-            return row.code === data
+            return row.code === data.value
           })[0].status
         }
       </span>
     }
     else if (type === "DocumentEvent") {
-      let strStatus
+      let strStatus = ""
       const results = DocumentEventStatus.filter(row => {
-        return row.code === data
+        return row.code === data.value
       })
+
       if (results.length > 0) {
         strStatus = results[0].status
+        console.log(data.original)
+        if (data.original.Options !== undefined) {
+          if (data.original.Options !== null) {
+            var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
+            if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
+              var strSapRes = decodeURIComponent(arrayRes["SapRes"])
+              var newSapRes = strSapRes.replace(/\+/g, ' ').replace(/\|/g, ' , ');
+              // console.log(newSapRes)
+              return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
+                onClick={() => this.props.createErrorSap(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation}</a></h5>
+            } else {
+              return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+            }
+          } else {
+            return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+          }
+        }else{
+          return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+        }
       }
       else {
-        strStatus = ""
+        return null
       }
-      return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+
     }
     else if (type === "Status") {
       return <span>
         {
           Status.filter(row => {
-            return row.code === data
+            return row.code === data.value
           })[0].status
         }
       </span>
@@ -1140,17 +1218,17 @@ class TableGen extends Component {
     if (this.props.accept === true) {
       return <Card>
         <CardBody>
-          <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+          <Button onClick={() => this.updateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ width: '130px' }} className="float-right">Cancel</Button>
         </CardBody>
       </Card>
     }
     else if (this.props.printbtn === true) {
       return <Card>
         <CardBody>
-          <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
-          <Button onClick={() => this.printbarcodeall()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Print</Button>
+          <Button onClick={() => this.updateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+          <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ width: '130px' }} className="float-right">Cancel</Button>
+          <Button onClick={() => this.printbarcodeall()} color="info" style={{ width: '130px' }} className="float-left">Print</Button>
         </CardBody>
       </Card>
     }
@@ -1161,12 +1239,12 @@ class TableGen extends Component {
 
   AddGenerate() {
     if (this.props.addbtn === true) {
-      return <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a" }} type="button" color="success" className="float-right">Add</Button>
+      return <Button onClick={this.onHandleClickAdd} style={{ width: 130 }} type="button" color="success" className="float-right">Add</Button>
     } else if (this.props.addExportbtn === true) {
       const datatable = [...this.state.data];
       return (
         <div>
-          <Button onClick={this.onHandleClickAdd} style={{ width: 130, background: "#66bb6a", borderColor: "#66bb6a", marginLeft: '5px' }} type="button" color="success" className="float-right">Add</Button>
+          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '5px' }} type="button" color="success" className="float-right">Add</Button>
           <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
         </div>
       )
@@ -1219,8 +1297,26 @@ class TableGen extends Component {
       else if (row.editable && (row.body === undefined || !row.body)) {
         row.Cell = (e) => (this.inputTextEditor(e))
       }
-
-      if (row.Type === "datetime") {
+      if (row.Type === "numrows") {
+        row.Cell = (e) => {
+          let numrow = 0;
+          if (this.state.currentPage !== undefined) {
+            if (this.state.currentPage > 1) {
+              // e.index + 1 + (2*100)  
+              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+            } else {
+              numrow = e.index + 1;
+            }
+          }
+          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        }
+        row.getProps = (state, rowInfo) => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        })
+      }
+      else if (row.Type === "datetime") {
         if (row.editable === true)
           row.Cell = (e) => this.datePickerBody(row.dateformat, e.value, e)
         else
@@ -1247,6 +1343,16 @@ class TableGen extends Component {
           }
         }
       }
+      else if (row.Type === "FLSareacode" && (row.body === undefined || !row.body)) {
+        if (row.editable) {
+          row.Cell = (e) => (this.FLSareaLocationCode(e))
+        }
+        else {
+          row.Cell = (e) => {
+            return <span>{e.value}</span>
+          }
+        }
+      }
       else if (row.Type === "autobasecode" && (row.body === undefined || !row.body)) {
         row.Cell = (e) => (this.autoGenBaseCode(e))
         row.className = "text-center"
@@ -1258,7 +1364,7 @@ class TableGen extends Component {
       else if (row.Type === "button") {
         this.props.btn.find(btnrow => {
           if (row.btntype === "Remove" && btnrow.btntype) {
-            row.Cell = (e) => <div className="text-center"><Button type="button" style={{ background: "#ef5350", borderColor: "#ef5350" }} color="success" onClick={() => this.removedata(e.original)}>Remove</Button></div>
+            row.Cell = (e) => <div className="text-center"><Button type="button" color="danger" onClick={() => this.removedata(e.original)}>Remove</Button></div>
           }
           else {
             if (row.btntype === btnrow.btntype) {
@@ -1294,19 +1400,19 @@ class TableGen extends Component {
         row.className = "text-center"
       }
       else if (row.Type === "DocumentStatus") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "EventStatus") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "StorageObjectEventStatus") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "DocumentEvent") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
       else if (row.Type === "Status") {
-        row.Cell = (e) => this.createStatusField(e.value, row.Type)
+        row.Cell = (e) => this.createStatusField(e, row.Type)
       }
 
       if (row.Aggregated === "blank") {
@@ -1327,7 +1433,7 @@ class TableGen extends Component {
           className="-striped"
           data={this.state.data}
           ref={ref => this.tableComponent = ref}
-          style={{ backgroundColor: 'white', zIndex: 0 }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
           loading={this.state.loading}
           filterable={this.props.filterable}
           columns={col}
@@ -1335,7 +1441,7 @@ class TableGen extends Component {
           multiSort={false}
           showPagination={true}
           minRows={5}
-          defaultPageSize={100}
+          defaultPageSize={this.state.defaultPageS}
           SubComponent={this.subTable}
           getTrProps={(state, rowInfo) => {
             let result = false

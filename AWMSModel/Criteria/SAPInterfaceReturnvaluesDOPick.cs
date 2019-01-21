@@ -17,6 +17,7 @@ namespace AWMSModel.Criteria
             public string BATCH;
             public string DLV_QTY;
             public string SALES_UNIT;
+            public string MOVE_PLANT;
         }
 
     }

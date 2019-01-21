@@ -49,6 +49,7 @@ namespace AWMSEngine.Engine.Business.Picking
             public class palletItem
             {
                 public long? docItemID;
+                public string item;
                 public long? STOID;
                 public string packCode;
                 public bool pick;
@@ -96,7 +97,8 @@ namespace AWMSEngine.Engine.Business.Picking
                                 canPick = (x.MaxQty - x.Qty),
                                 pick = true,
                                 shouldPick = (x.MaxQty - x.Qty) > row.qty ? row.qty : (x.MaxQty - x.Qty),
-                                unitType = unitType
+                                unitType = unitType,
+                                item = row.options,
                             });
                         });
                     }
@@ -112,7 +114,7 @@ namespace AWMSEngine.Engine.Business.Picking
                             canPick = 0,
                             pick = false,
                             shouldPick = 0,
-                            unitType = unitType
+                            unitType = unitType,
                         });
                     }
 

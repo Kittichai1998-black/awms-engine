@@ -8,9 +8,10 @@ namespace AWMSModel.Entity
     {
         public long DocumentItem_ID;
         public long StorageObject_ID;
-        public decimal Quantity;
-        public decimal BaseQuantity;
+        public decimal? Quantity;
+        public decimal? BaseQuantity;
         public long UnitType_ID;
         public long BaseUnitType_ID;
+        public long Status;
     }
 }

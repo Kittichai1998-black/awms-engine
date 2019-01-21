@@ -227,6 +227,16 @@ namespace AWMSEngine.ADO
             return docItemSto;
         }
 
+        public amt_Document Get(long docID, VOCriteria buVO)
+        {
+            var whares = new List<SQLConditionCriteria>();
+
+            whares.Add(new SQLConditionCriteria("ID", docID, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
+
+            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            return res.FirstOrDefault();
+        }
         public List<amt_Document> List(List<long> docIDs, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
@@ -469,27 +479,68 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<amt_Document> ListParentLink(long documentID, VOCriteria buVO)
+        public List<amt_Document> ListChildUnderParentLink(long childDocumentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("documentID", documentID);
+            param.Add("childDocumentID", childDocumentID);
+            var res = this.Query<amt_Document>("SP_DOC_LISTCHILD_UNDER_PARENTLINK",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        //public List<amt_Document> ListParentLink(long childDocumentID, VOCriteria buVO)
+        public List<amt_Document> ListDocumentCanAudit(string palletCode, StorageObjectEventStatus eventStatus, DocumentTypeID docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("palletCode", palletCode);
+            param.Add("eventStatus", eventStatus);
+            param.Add("docTypeID", docTypeID);
+            var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_AUDIT",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<amt_Document> ListParentLink(long childDocumentID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("documentID", childDocumentID);
             var res = this.Query<amt_Document>("SP_DOC_LIST_PARENTLINK",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
-        public List<amt_DocumentItem> ListItemParentLink(long documentID, VOCriteria buVO)
+        public List<amt_DocumentItem> ListItemParentLink(long childDocumentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("documentID", documentID);
+            param.Add("documentID", childDocumentID);
             var res = this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_PARENTLINK",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
-        public amt_DocumentItem DocItemPut(amt_DocumentItem docItem, VOCriteria buVO)
+        public amt_Document Put(amt_Document doc, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = this.CreateDynamicParameters(doc, 
+                "DocumentItems", "DocumetnChilds", "ParentDocument",
+                "Status", "CreateBy", "CreateTime", "ModifyBy", "ModifyTime");
+            param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
+            param.Add("@actionBy", buVO.ActionBy);
+            
+            var res = this.Query<dynamic>("SP_DOC_PUT",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
+            doc.ID = res.ID;
+            doc.Status = param.Get<EntityStatus>("@status");
+            return doc;
+        }
+        public amt_DocumentItem PutItem(amt_DocumentItem docItem, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@ID", docItem.ID);
@@ -516,11 +567,13 @@ namespace AWMSEngine.ADO
             param.Add("@actionBy", buVO.ActionBy);
 
 
-            var res = this.Query<amt_DocumentItem>("SP_DOCITEM_PUT",
+            var res = this.Query<dynamic>("SP_DOCITEM_PUT",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
-            return res;
+            docItem.ID = res.ID;
+            docItem.Status = param.Get<EntityStatus>("@status");
+            return docItem;
         }
 
         public List<SPOutDocItemQueueProcess> ProcessQueueByDocItemID(long? docItemID, int pickOrderBy, string pickBy, string stampDate, string orderNo, string batch, decimal qty, VOCriteria buVO)
@@ -541,7 +594,19 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public void CreateDocItemSto (long docItemID, long? stoID, decimal qty, long? unitTypeID, decimal baseQty, long? baseUnitTypeID, VOCriteria buVO)
+        public List<SPOutDocItemQueueProcess> ListAuditItem(long docItem, string lot, string batch, string order_no, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("DOCITEM_ID", docItem);
+            param.Add("STAMP_DATE", lot);
+            param.Add("BATCH", batch);
+            param.Add("ORDER_NO", order_no);
+            var res = this.Query<SPOutDocItemQueueProcess>("SP_DOCITEM_QUEUE_PROCESS_AUDIT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
+
+        public void CreateDocItemSto (long docItemID, long stoID, decimal qty, int unitTypeID, decimal baseQty, int baseUnitTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("DOCITEM_ID", docItemID);
@@ -556,6 +621,31 @@ namespace AWMSEngine.ADO
                 param, 
                 buVO.Logger, 
                 buVO.SqlTransaction);
+        }
+
+        public List<amt_Document> updateStatus(long? ID,EntityStatus tostatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("ID", ID);
+            param.Add("tostatus", tostatus);
+
+            var res = this.Query<amt_Document>("SP_DOC_UPDATESTATUS",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<amt_StorageObject> getSTOList(long docItem, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docItemID", docItem);
+
+            var res = this.Query<amt_StorageObject>("SP_DOCITEM_AUDIT_STOLIST",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
         }
     }
 }

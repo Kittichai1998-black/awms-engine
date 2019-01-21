@@ -264,6 +264,7 @@ class StorageManagement extends Component {
       };
 
       Axios.post(window.apipath + "/api/wm/asrs/sto/mapping", data).then(res => {
+        console.log(res)
         this.setState({ loading: true })
         let header = []
         if (res.data._result.status !== 0) {

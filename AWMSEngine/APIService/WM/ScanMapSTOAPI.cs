@@ -20,23 +20,10 @@ namespace AWMSEngine.APIService.WM
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var mapsto = ObjectUtil.DynamicToModel<StorageObjectCriteria>(this.RequestVO.mapsto);
-            var res = new ScanMapStoV2().Execute(this.Logger, this.BuVO,
-                new ScanMapStoV2.TReq()
-                {
-                    scanCode = this.RequestVO.scanCode,
-                    warehouseID = this.RequestVO.warehouseID,
-                    areaID = this.RequestVO.areaID,
-                    batch = this.RequestVO.batch,
-                    lot = this.RequestVO.lot,
-                    amount = this.RequestVO.amount,
-                    mode = (VirtualMapSTOModeType)this.RequestVO.mode,
-                    options = this.RequestVO.options,
-                    action = (VirtualMapSTOActionType)this.RequestVO.action,
-                    mapsto = mapsto
-                });
+            var req = ObjectUtil.DynamicToModel<ScanMapStoNoDoc.TReq>(this.RequestVO);
+            var res = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO, req);
             if ((VirtualMapSTOActionType)this.RequestVO.action == VirtualMapSTOActionType.ADD)
-                new ValidateInnerSTOOverlimit().Execute(this.Logger, this.BuVO, res);
+                new ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, res);
 
             return res;
         }

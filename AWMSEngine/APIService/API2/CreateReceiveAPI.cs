@@ -82,6 +82,15 @@ namespace AWMSEngine.APIService.Api2
             /////////////////////////////////////////////////
             foreach (var doc in reqData.documents)
             {
+                var revision =
+                    ADO.DataADO.GetInstant().SelectBy<amt_Document>(new KeyValuePair<string, object>[]{
+                    new KeyValuePair<string, object>("RefID",doc.docNo),
+                    new KeyValuePair<string, object>("Ref1",doc.docYear),
+                    new KeyValuePair<string, object>("DocumentType_ID",DocumentTypeID.SUPER_GOODS_RECEIVED)
+                    }, this.BuVO);
+                if (revision.Count > 0)
+                    doc.remark = "[Revision." + (revision.Count + 1) + "] " + doc.remark;
+
                 var reqDoc = new CreateSGRDocumentByDocLink.TReq()
                 {
                     refID = doc.docNo,

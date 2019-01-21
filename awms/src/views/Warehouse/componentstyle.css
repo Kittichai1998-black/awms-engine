@@ -30,7 +30,7 @@
 }
 
 .-filters .rt-tr .rt-th {
-  background-color: #BDBDBD !important;
+  background-color: #c8ced3 !important;
   color: aliceblue !important;
 }
 .-header .rt-tr .rt-th {
@@ -38,6 +38,7 @@
   color: aliceblue !important;
   height:  45px !important;
   vertical-align:bottom !important;
+  font-weight: 500 !important;
 }
 .heading {
   font-weight: 500;
@@ -57,24 +58,25 @@
   }
 
 .rmv .rt-td {
-  background: rgba(248, 108, 107, 0.78) !important;
+  background: rgb(248, 138, 138) !important;
 }
 
 .editrow .rt-td {
-  background: rgba(255, 193, 7, 0.78) !important;
+  background: rgb(255, 207, 61) !important;
 }
 
 .inqueue .rt-td {
   background: white !important;
 }
 .working .rt-td {
-  background: rgba(255, 193, 7, 0.78) !important;
+  /* background: rgba(255, 193, 7, 0.78) !important; */
+  background: rgb(255, 207, 61) !important;
 }
 .success .rt-td {
   background: rgba(77, 189, 116, 0.78) !important;
 }
 .error .rt-td {
-  background: rgba(248, 108, 107, 0.78) !important;
+  background: rgb(248, 138, 138) !important;
 }
 .cancel .rt-td {
   background: rgba(200, 206, 211, 0.78) !important;

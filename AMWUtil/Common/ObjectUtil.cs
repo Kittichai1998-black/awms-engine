@@ -243,7 +243,16 @@ namespace AMWUtil.Common
         public static string QryStrGetValue(string param, string key)
         {
             var match = Regex.Match("?" + param + "&", "[&?]" + key + "=([^&]*)");
-            string res = Regex.Replace(match.Value, "^[?&]*"+ key + "=|[&]*$", "");
+            string res = Regex.Replace(match.Value, "^[?&]*" + key + "=|[&]*$", "");
+            return res;
+        }
+        public static string QryStrSetValue(string param, string key, object value)
+        {
+            var kv = QryStrToKeyValues(param);
+            kv.RemoveAll(x => x.Key == key);
+            kv.Add(new KeyValuePair<string, string>(key, string.Format("{0}", value)));
+
+            var res = ListKeyToQryStr(kv);
             return res;
         }
         public static bool QryStrContainsKey(string param, string key)
@@ -365,6 +374,10 @@ namespace AMWUtil.Common
         public static T Clone<T>(this T obj)
         {
             return (T)Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+        }
+        public static bool In(this string vals, string val)
+        {
+            return vals.Split(',').Any(x => x == val);
         }
     }
 }

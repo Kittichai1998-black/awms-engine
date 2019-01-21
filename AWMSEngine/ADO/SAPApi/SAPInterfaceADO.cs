@@ -54,7 +54,7 @@ namespace AWMSEngine.ADO.SAPApi
             var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
             return res;
         }
-        public SAPResposneAPI MMI0009_FG_GOOD_ISSUE(dynamic datas, VOCriteria buVO)
+        public SAPResposneAPI MMI0009_CONFORM_DELIVERY_ORDER_PICK(dynamic datas, VOCriteria buVO)
         {
             string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0009_URL");
             string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
@@ -63,22 +63,23 @@ namespace AWMSEngine.ADO.SAPApi
             return res;
         }
 
-        public class MMI0008_1
+        public TRES_MMI0008_1_DO_INFO MMI0008_1_DO_INFO(TREQ_MMI0008_1_DO_INFO datas, VOCriteria buVO)
         {
-            public THeader HEADER_DATA;
-            public class THeader
-            {
-                public string DELIV_NUMB;
-                public string DELIV_ITEM;
-            }
-        }
-        public CreateIssueAPI.TModel.TDocument MMI0008_1_DO_INFO(MMI0008_1 datas, VOCriteria buVO)
-        {
-            string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0008_1_URL");
+            string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0008_URL");
             string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
             string password = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
-            var res = RESTFulAccess.SendJson<CreateIssueAPI.TModel.TDocument>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
+            var res = RESTFulAccess.SendJson<TRES_MMI0008_1_DO_INFO>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
             return res;
         }
+
+        public SAPResposneAPI MMI0009_CONFORM_PHYSICALCOUNT(dynamic datas, VOCriteria buVO)
+        {
+            string apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI00011_URL");
+            string username = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
+            string password = StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
+            var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
+            return res;
+        }
+
     }
 }

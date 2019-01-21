@@ -21,7 +21,7 @@ class Branch extends Component {
         queryString: window.apipath + "/api/viw",
         t: "BranchMaster",
         q: "[{ 'f': 'Status', c:'!=', 'v': 2}]",
-        f: "ID,Code,Name,Description,Status,Created,Modified",
+        f: "ID,Code,Name,Description,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -32,7 +32,7 @@ class Branch extends Component {
       selectiondata: [],
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-    this.uneditcolumn = ["Created", "Modified"]
+    this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
   componentDidMount() {
@@ -71,13 +71,15 @@ class Branch extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
-      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 100 },
-      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 120 },
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40  },
+      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100,maxWidth: 120 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", },
       //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text",},
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+      { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+      // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-      { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+      // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
     ];

@@ -31,6 +31,7 @@ namespace AWMSEngine.Engine.Business
             public VirtualMapSTOActionType action;
             public string options;
             public StorageObjectCriteria mapsto;
+            public bool isRoot = true;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
@@ -44,7 +45,7 @@ namespace AWMSEngine.Engine.Business
                 mapsto = this.ExecNextScan(reqVO);
             }
 
-            this.SetWeiAndQty(mapsto);
+            this.SetQty(mapsto);
 
             return mapsto;
         }
@@ -136,7 +137,7 @@ namespace AWMSEngine.Engine.Business
         }
         private StorageObjectCriteria ExecFirstScan(TReq reqVO)
         {
-            StorageObjectCriteria mapsto = this.ADOSto.Get(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, true, true, this.BuVO);
+            StorageObjectCriteria mapsto = this.ADOSto.Get(reqVO.scanCode, null,null, reqVO.isRoot, true, this.BuVO);
 
             if (mapsto == null)
             {
@@ -162,7 +163,14 @@ namespace AWMSEngine.Engine.Business
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่มีรหัส" + reqVO.scanCode + "ในระบบ");
                 }
             }
+            else
+            {
+                if (mapsto.warehouseID != reqVO.warehouseID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "warehouse ไม่ตรงกัน");
 
+                if (mapsto.areaID != reqVO.areaID)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "area ไม่ตรงกัน");
+            }
             return mapsto;
         }
 
@@ -193,22 +201,20 @@ namespace AWMSEngine.Engine.Business
             return mapsto;
         }
 
-        private void SetWeiAndQty(StorageObjectCriteria mapsto)
+        private void SetQty(StorageObjectCriteria mapsto)
         {
-            if (mapsto.mapstos.Count() > 0)
+            /*if (mapsto.mapstos.Count() > 0)
             {
-                mapsto.mapstos.ForEach(x => SetWeiAndQty(x));
+                mapsto.mapstos.ForEach(x => SetQty(x));
                 mapsto.weiKG = mapsto.mapstos.Sum(x => x.weiKG);
             }
             var counts = mapsto.mapstos
                 .GroupBy(x => x.objectSizeID)
                 .Select(x => new { objectSizeID = x.Key, count = x.Count() })
-                .ToList();
+                .ToList();*/
             mapsto.objectSizeMaps.ForEach(x =>
             {
-                var f = counts.FirstOrDefault(y => y.objectSizeID == x.innerObjectSizeID);
-                if (f != null) x.quantity = f.count;
-                else x.quantity = 0;
+                x.quantity = mapsto.mapstos.Count(y => y.objectSizeID == x.outerObjectSizeID);
             });
         }
 

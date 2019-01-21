@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Button } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { apicall,createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
 
@@ -25,7 +25,7 @@ class Area extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "BaseMaster",
                 q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Weight,Status,Created,Modified",
+                f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,WeightKG,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -40,7 +40,7 @@ class Area extends Component {
         this.filterList = this.filterList.bind(this)
         this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.uneditcolumn = ["BaseMasterType_Code", "ObjectSize_Code", "UnitType_Code", "Created", "Modified"]
+        this.uneditcolumn = ["BaseMasterType_Code", "ObjectSize_Code", "UnitType_Code", "Created", "Modified", "LastUpdate"]
     }
 
     onHandleClickCancel(event) {
@@ -48,7 +48,7 @@ class Area extends Component {
         event.preventDefault();
     }
     componentDidMount() {
-        document.title = "Pallet - AWMS"
+        document.title = "Base Pallet - AWMS"
     }
     async componentWillMount() {
         this.filterList();
@@ -142,7 +142,7 @@ class Area extends Component {
     }
 
     createBarcodeBtn(rowdata) {
-        return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+        return <Button type="button" color="info" style={{ width: '80px' }}
             onClick={() => {
                 let barcode = [{ "barcode": rowdata["Code"], "Name": rowdata["Name"] }]
                 let barcodestr = JSON.stringify(barcode)
@@ -153,18 +153,20 @@ class Area extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
             //{ Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
             { accessor: 'Code', Header: 'Code', Type: "autobasecode", editable: false, Filter: "text", fixed: "left", minWidth: 100 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 100 },
             //{accessor: 'Description', Header: 'Description', editable:true,Filter:"text", sortable:true},
             { accessor: 'BaseMasterType_Code', Header: 'Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 150 },
-            { accessor: 'Weight', Header: 'Weight (Kg.)', editable: view, Filter: "text", datatype: "int", minWidth: 90, className: "center" },
+            { accessor: 'WeightKG', Header: 'Weight (Kg.)', editable: view, Filter: "text", datatype: "int", minWidth: 90, className: "center" },
             { accessor: 'ObjectSize_Code', Header: 'Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 250 },
             { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+            { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+            // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+            // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
             { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },

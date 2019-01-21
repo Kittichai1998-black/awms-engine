@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.Business.Received
 {
-    public class CloseGRDocument : BaseEngine<CloseGRDocument.TDocReq, CloseGRDocument.TDocRes>
+    public class ClosedGRDocument : BaseEngine<ClosedGRDocument.TDocReq, ClosedGRDocument.TDocRes>
     {
         public class TDocReq
         {
@@ -44,6 +44,8 @@ namespace AWMSEngine.Engine.Business.Received
             {
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                 docHs.Where(x => groupDocH.docHIDs.Any(y => y == x.ID)).ToList().ForEach(x => docItems.AddRange(x.DocumentItems));
+                if (!docItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSING))
+                    continue;
 
                 SAPInterfaceReturnvalues sapReq = new SAPInterfaceReturnvalues()
                 {
@@ -62,7 +64,7 @@ namespace AWMSEngine.Engine.Business.Received
                         STGE_LOC = this.StaticValue.Warehouses.First(y => y.ID == docHs.First(z => z.ID == x.Document_ID).Sou_Warehouse_ID).Code,
                         BATCH = x.Batch,
                         MOVE_TYPE = x.Ref2,
-                        ENTRY_QNT = x.DocItemStos.Sum(y=>y.Quantity),
+                        ENTRY_QNT = x.DocItemStos.Sum(y=>y.Quantity.Value),
                         ENTRY_UOM = this.StaticValue.UnitTypes.First(y=>y.ID== x.UnitType_ID).Code,
                         MOVE_PLANT = this.StaticValue.Branchs.First(y => y.ID == docHs.First(z => z.ID == x.Document_ID).Des_Branch_ID).Code,
                         MOVE_STLOC = this.StaticValue.Warehouses.First(y => y.ID == docHs.First(z => z.ID == x.Document_ID).Des_Warehouse_ID).Code                        
@@ -70,26 +72,56 @@ namespace AWMSEngine.Engine.Business.Received
                 };
 
                 SAPResposneAPI sapRes = null;
-                if (sapReq.GOODSMVT_ITEM.First().STGE_LOC != "5005")
+                if ("311,321".In(sapReq.GOODSMVT_ITEM.First().MOVE_TYPE))
                 {
-                    sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(sapReq, this.BuVO);
-                }
-                else
-                {
-                    var skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docItems.First().SKUMaster_ID, this.BuVO);
-                    var skuTypeMst = this.StaticValue.SKUMasterTypes.First(x => x.ID == skuMst.SKUMasterType_ID);
-                    if(skuTypeMst.Code == "ZPAC")
-                        sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0002_PACKAGE_GOODS_RECEIPT(sapReq, this.BuVO);
-                    else
-                        sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0003_CUSTOMER_RETURN(sapReq, this.BuVO);
-                }
-                res.sapDatas.Add(sapRes);
 
-                if (sapRes.docstatus == "0")
-                {
-                    groupDocH.docHIDs.ForEach(x => {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
-                    });
+                    if (sapReq.GOODSMVT_ITEM.First().STGE_LOC != "5005")
+                    {
+                        sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0001_FG_GOODS_RECEIPT(sapReq, this.BuVO);
+                    }
+                    else
+                    {
+                        var skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docItems.First().SKUMaster_ID, this.BuVO);
+                        var skuTypeMst = this.StaticValue.SKUMasterTypes.First(x => x.ID == skuMst.SKUMasterType_ID);
+                        if (skuTypeMst.Code == "ZPAC")
+                            sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0002_PACKAGE_GOODS_RECEIPT(sapReq, this.BuVO);
+                        else
+                            sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0003_CUSTOMER_RETURN(sapReq, this.BuVO);
+                    }
+
+                    res.sapDatas.Add(sapRes);
+
+                    if (sapRes.docstatus == "0")
+                    {
+                        groupDocH.docHIDs.ForEach(x => {
+                            var docH = docHs.First(d => d.ID == x);
+                            docH.RefID = sapRes.mat_doc;
+                            docH.Ref1 = sapRes.doc_year;
+                            docH.EventStatus = DocumentEventStatus.CLOSED;
+                            docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
+                            ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
+                            docH.DocumentItems.ForEach(di => { di.RefID = sapRes.mat_doc; di.Ref1 = sapRes.doc_year;
+                                docH.EventStatus = DocumentEventStatus.CLOSED;
+                                ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
+                            });
+                            //ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                        });
+                    }
+                    else
+                    {
+                        groupDocH.docHIDs.ForEach(x => {
+                            var docH = docHs.First(d => d.ID == x);
+                            docH.RefID = sapRes.mat_doc;
+                            docH.Ref1 = sapRes.doc_year;
+                            docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(" |", sapRes.@return.Select(y => y.message).ToArray()));
+                            ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
+                            docH.DocumentItems.ForEach(di => {
+                                di.RefID = sapRes.mat_doc;
+                                di.Ref1 = sapRes.doc_year;
+                                ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
+                            });
+                        });
+                    }
                 }
             }
             return res;

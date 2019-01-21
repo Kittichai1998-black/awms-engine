@@ -4,10 +4,11 @@ import { Card, Button, CardBody, Input } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import Popup from 'reactjs-popup'
-import {apicall, createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
+const imgClose = <img style={{ width: "28px", height: "auto" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANkSURBVGhD7ZlHyxRBEIYXI4aDYgDDP1Bvpr9hwqMR9ageFBN6ULwaPsNdFEU9iH9DDwZQ9GIGIwaMCPo+sA1lU7PT3Tu7sjAvPLisXdXVOz3V1fV1WrVq1YjGiZViv7gu7osP4lcXPvPdNbFPrBDY/HctFMfFC/Enk2cC2wVi6JolzoifwgsuB3yMCXwORevFW+EF0w/4XCcGpgninPAmh4/iotgilok5YmIXPvPdVnFJMNbzATyN8aJRTRU3hTfhA7FJTBGpYuxm8VB4Pm+IHH89xa+Bw3iSb2Kn4MmUCttd4ruI/TNnI0/ivIidk3WWiqbE9nop4nlOir7ECxs7vSXmi6aFz9sinm+NKBJp7Z2wzp6LQeZtXvbHws75RswU2TorrKOvgkftaVH33xxV2SwWzGXnPi2yxK8cH1K8sJ4Oi9+C7ZYqxmKDraeDws7NS561bTnirQNSpZdtCCCMSV1ECD7YeYsgbb8SYQwcE0miyGKvW+MNIhaP2gYCdYuIgw82+Iq1XdhxT0VSAUhVaQ0/iapDpSogbxE5YxFP4bOw46vewX9ESWyNLoheSgksN/igy8La7BW1op63RtQ2deoVYGnwaJuwdldFrbh4WKPlIkVVgZYGj+LtfFfUituTNcqp071FWHKCR7OFtedgrVWc/yeJHFUtIjd4NFlYH8RWq5FfQLyFeIypqgo+kLuIoi10T1ijkXuJRz6N0rexRtxheyklwNJFXBHWZo+olVdKcKx7ygksdxHTRFEp4RVzG0WsQRdzO4Qd90Qkd/PicprugVdOHxFhTF3wQfEi8BGLX7+4nEbehWa38EQAqcEHhUV4waNDws7NhWaeyBINJuuEax5NWU9NXimXCFo2du5TIlvUQFyorSPeDRq6g5J3qX8tZogi0au0zoC2ChM1LXziO55vlehLPL7Y6SPhZY5S4Quf8TwnRN+qai3yThwQZIxSTRf4GGhrEXEn9hYBpDuO/JxmLAcjeT5OlQHmaqy5G8Sv4W2nwBfBHZbFkK3Y05TiMLf7HZ0GygPGej6AORr75T2tFXF2agKyzWoxFJHWaPf9EF4wObD/6UIXp8p+RLuPI56mkxdcL7A5KrJP2EGIIouLD30banYuHu8F5Qjw+Y7g/xjD3xaSC7NWrVpVqdP5C8HnZiqeZ+ELAAAAAElFTkSuQmCC" />;
 
 function isInt(value) {
     return !isNaN(value) &&
@@ -21,15 +22,16 @@ class ObjectSize extends Component {
 
         this.state = {
             colsMap: [
-                { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center" },
-                { accessor: 'Code', Header: 'Code', editable: false, filterable: false },
-                { accessor: 'Name', Header: 'Name', editable: false, filterable: false },
+                { Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", minWidth: 50 },
+                { accessor: 'Code', Header: 'Code', editable: false, filterable: false, minWidth: 60 },
+                { accessor: 'Name', Header: 'Name', editable: false, filterable: false, minWidth: 180 },
                 { accessor: 'Description', Header: 'Description', editable: false, filterable: false },
                 { accessor: 'MinQuantity', Header: 'Minimun Quantity', editable: true, Filter: "text", datatype: "int" },
                 { accessor: 'MaxQuantity', Header: 'Maximun Quantity', editable: true, Filter: "text", datatype: "int" },
             ],
             data: [],
             autocomplete: [],
+            objectPalletdata: [],
             statuslist: [{
                 'status': [{ 'value': '*', 'label': 'All' }, { 'value': '1', 'label': 'Active' }, { 'value': '0', 'label': 'Inactive' }],
                 'header': 'Status',
@@ -41,8 +43,19 @@ class ObjectSize extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "ObjectSizeMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Description,ObjectType,MinWeigthKG,MaxWeigthKG,Status,Created,Modified",
+                q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+                f: "ID,Code,Name,Description,ObjectType,MinWeigthKG,MaxWeigthKG,PercentWeightAccept,Status,Created,Modified,LastUpdate",
+                g: "",
+                s: "[{'f':'Code','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            },
+            selectObjectPallet: {
+                queryString: window.apipath + "/api/mst",
+                t: "ObjectSize",
+                q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
+                f: "ID",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -71,11 +84,13 @@ class ObjectSize extends Component {
         };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["Created", "Modified"]
+        this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
         this.onHandleSelection = this.onHandleSelection.bind(this)
         this.getData = this.getData.bind(this)
         this.setObjectSizeMap = this.setObjectSizeMap.bind(this)
+        this.addObjectSizeMapp = this.addObjectSizeMapp.bind(this)
+        this.getObjectSizePallet = this.getObjectSizePallet.bind(this)
         this.openModal = this.openModal.bind(this)
         this.closeModal = this.closeModal.bind(this)
         this.createMapBtn = this.createMapBtn.bind(this)
@@ -92,10 +107,11 @@ class ObjectSize extends Component {
         event.preventDefault();
     }
     componentDidMount() {
-        document.title = "Object Size : AWMS";
+        document.title = "Standard Pack Size : AWMS";
     }
     async componentWillMount() {
         this.filterList()
+        this.getObjectSizePallet()
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("ObjectSize", dataGetPer, this.props.history);
@@ -116,7 +132,7 @@ class ObjectSize extends Component {
     filterList() {
         const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
         const objType = []
-        Axios.all([Axios.get(createQueryString(objTypeSelect)+"&_token="+localStorage.getItem("Token"))]).then(
+        Axios.all([Axios.get(createQueryString(objTypeSelect) + "&_token=" + localStorage.getItem("Token"))]).then(
             (Axios.spread((result) => {
                 result.data.forEach(row => {
                     objType.push({ ID: row.value, Code: row.name })
@@ -137,7 +153,7 @@ class ObjectSize extends Component {
     getData(Root_ID) {
         const selectdata = []
         const selectMapdata = []
-        Axios.get(createQueryString(this.state.select)+"&_token="+localStorage.getItem("Token")).then((response) => {
+        Axios.get(createQueryString(this.state.select) + "&_token=" + localStorage.getItem("Token")).then((response) => {
             response.data.datas.forEach(row => {
                 selectdata.push({
                     ID: row.ID
@@ -150,7 +166,7 @@ class ObjectSize extends Component {
                 })
             })
             this.setState({ selectdata })
-            Axios.get(createQueryString(this.state.selectMapChild)+"&_token="+localStorage.getItem("Token")).then((responset) => {
+            Axios.get(createQueryString(this.state.selectMapChild) + "&_token=" + localStorage.getItem("Token")).then((responset) => {
                 responset.data.datas.forEach(row => {
                     selectMapdata.push({
                         ID: row.ID
@@ -219,8 +235,12 @@ class ObjectSize extends Component {
     }
 
     createMapBtn(rowdata) {
-        return <Button type="button" color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
-            onClick={() => this.getData(rowdata.ID)}>Map Size</Button>
+        if (rowdata.ID <= 0) {
+            return null
+        } else {
+            return <Button type="button" color="info" style={{ width: '80px' }}
+                onClick={() => this.getData(rowdata.ID)}>Map Size</Button>
+        }
     }
 
     updateObjSizeMap() {
@@ -229,7 +249,7 @@ class ObjectSize extends Component {
             dataUpdate.forEach((row) => {
                 row["ID"] = row["ID"] <= 0 ? null : row["ID"]
             })
-            let updjson = {  
+            let updjson = {
                 "t": "ams_ObjectSizeMap",
                 "pk": "ID",
                 "datas": dataUpdate,
@@ -331,19 +351,37 @@ class ObjectSize extends Component {
             onChange={(e) => { this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id) }} />;
     }
 
+    addObjectSizeMapp(data){
+        console.log(data)
+        this.getObjectSizePallet()
+    }
+
+    getObjectSizePallet(){
+        api.get(createQueryString(this.state.selectObjectPallet)).then((res) => {
+            let data = [...this.state.objectPalletdata]
+            res.data.datas.forEach(row => {
+                data.push({ ID: row.ID })
+            })
+            //console.log(data)
+            this.setState({ objectPalletdata: data})
+          })
+    }
     render() {
         const view = this.state.permissionView
         const cols = [
-            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
+            { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90, Type: "autoMapPackSize" },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-            { accessor: 'ObjectType', Header: 'Object Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 110 },
-            { accessor: 'MinWeigthKG', Header: 'Minimun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
-            { accessor: 'MaxWeigthKG', Header: 'Maximun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
+            // { accessor: 'ObjectType', Header: 'Object Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 110 },
+            { accessor: 'PercentWeightAccept', Header: 'Accepted Weight (%)', editable: view, Filter: "text", datatype: "int", minWidth: 100, className: 'right' },
+            // { accessor: 'MinWeigthKG', Header: 'Minimun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
+            // { accessor: 'MaxWeigthKG', Header: 'Maximun Weigth(Kg.)', editable: view, Filter: "text", datatype: "int" },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-            { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
-            { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
-            { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Map", btntext: "Map" },
+            { accessor: 'LastUpdate', Header: 'Last Update', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
+            // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+            // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
+            // { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Map", btntext: "Map" },
             { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
 
@@ -370,22 +408,37 @@ class ObjectSize extends Component {
                 row.Cell = (e) => (this.inputTextEditor(e))
             }
         })
-
+        const styleclose = {
+            cursor: 'pointer',
+            position: 'absolute',
+            display: 'block',
+            right: '-10px',
+            top: '-10px',
+            background: '#ffffff',
+            borderRadius: '18px',
+        }
         return (
             <div>
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"ObjectSize"}
-                    btn={btnfunc} filterable={true} autocomplete={this.state.autocomplete} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
-                    table="ams_ObjectSize" enumfield={this.state.enumfield} />
-
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"StandardPackSize"}
+                    btn={btnfunc} filterable={true} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
+                    table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]} 
+                    objectSizeMapPallet={this.state.objectPalletdata}/>
+                {/* autocomplete={this.state.autocomplete}  enumfield={this.state.enumfield}*/}
                 <Popup open={this.state.open} onClose={this.closeModal}>
-                    <div>
-                        <ReactTable columns={this.state.colsMap} minRows={3} data={this.state.selectdata} sortable={false} style={{ background: 'white', 'max-height': '400px' }}
-                            getselection={this.getSelectionData} showPagination={false} />
-                        <Card>
-                            <CardBody>
-                                <Button onClick={() => this.updateObjSizeMap()} color="danger" style={{ background: "#26c6da", borderColor: "#26c6da ", width: '130px' }} className="float-left">Save</Button>
-                            </CardBody>
-                        </Card>
+                    <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
+                        <a style={styleclose} onClick={this.closeModal}>
+                            {imgClose}
+                        </a>
+                        <div id="header" style={{ width: '100%', borderBottom: '1px solid #007bff', fontSize: '18px', padding: '5px', color: '#007bff', fontWeight: 'bold' }}>Map Size</div>
+                        <div style={{ width: '100%', padding: '10px 5px' }}>
+                            <div className="clearfix">
+                                <ReactTable columns={this.state.colsMap} minRows={3} data={this.state.selectdata} sortable={false} style={{ background: 'white', 'max-height': '400px' }}
+                                    getselection={this.getSelectionData} showPagination={false} />
+                            </div>
+                            <div className="clearfix">
+                                <Button onClick={() => this.updateObjSizeMap()} color="primary" style={{ width: '130px', marginTop: '5px' }} className="float-right">Save</Button>
+                            </div>
+                        </div>
                     </div>
                 </Popup>
             </div>

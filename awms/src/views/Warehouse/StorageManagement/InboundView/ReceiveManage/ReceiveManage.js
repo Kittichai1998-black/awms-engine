@@ -113,14 +113,14 @@ class ReceiveManage extends Component {
     }
   }
   async componentWillMount() {
-    document.title = "Storage Detail : AWMS";
+    document.title = "Receive Document Manage : AWMS";
     let dataGetPer = await GetPermission()
     //CheckWebPermission("CreateGR", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   displayButtonByPermission(dataGetPer) {
-    // 63 CreateReceive_view
-    if (!CheckViewCreatePermission("CreateReceive_create&modify", dataGetPer)) {
+    // 63 TransGRD_create&modify
+    if (!CheckViewCreatePermission("TransGRD_create&modify", dataGetPer)) {
       this.props.history.push("/404")
     }
   }

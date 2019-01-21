@@ -179,7 +179,7 @@ class ChangePass extends Component {
                   </InputGroupAddon>
                     <Input type="password" minLength="6" name="ConfPass" value={this.state.dataprofile.ConfPass} onChange={this.handleInputChange} />
                 </InputGroup>
-                 <Button color="primary" type="submit" block>Save</Button>
+                 <Button color="primary" type="submit" className="float-right" style={{width: '130px'}} block>Change</Button>
               </CardBody>
             </Card>
           </Col>

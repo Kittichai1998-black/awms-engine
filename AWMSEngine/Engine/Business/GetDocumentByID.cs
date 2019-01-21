@@ -54,7 +54,7 @@ namespace AWMSEngine.Engine.Business
             res.document = doc;
 
             /*--------------------------*/
-            if (reqVO.getMapSto)
+            if (reqVO.getMapSto && doc.documentItems.Count != 0)
             {
                 res.bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
                 res.bstos.ForEach(bs =>
@@ -67,6 +67,7 @@ namespace AWMSEngine.Engine.Business
                         bs.packQty = newUnit.qty;
                         bs.packUnitID = newUnit.unitType_ID;
                         bs.packUnitCode = this.StaticValue.UnitTypes.First(x => x.ID == newUnit.unitType_ID).Code;
+                        
                     }
                 });
             }

@@ -43,6 +43,9 @@ namespace AWMSModel.Criteria.SP.Response
         public int? forCustomerID;
         public DateTime? prodDate;
         public DateTime? expDate;
+
+        public EntityStatus status;
+
         //public DateTime createTime;
     }
 }

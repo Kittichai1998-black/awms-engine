@@ -15,19 +15,21 @@ class AreaLocation extends Component {
       data: null,
       autocomplete: [],
       cols1: [
+        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
-        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text" },
-        { accessor: 'Name', Header: 'Name', editable: true, Filter: "text" },
+        //{ accessor: 'Code', Header: 'Code', editable: false, Filter: "text" },
+        { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", minWidth: 150 },
         //{accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
         { accessor: 'Bank', Header: 'Bank', editable: true, Filter: "text", Type: "autolocationcode", },
         { accessor: 'Bay', Header: 'Bay', editable: true, Filter: "text", Type: "autolocationcode" },
         { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'ObjectSize_Code', Header: 'Size', updateable: true, Filter: "text", Type: "autocomplete" },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: true, Filter: "text", Type: "autocomplete" },
         { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", Type: "autocomplete" },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+        { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+        // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-        { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
+        // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         //{Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         { Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
@@ -90,7 +92,7 @@ class AreaLocation extends Component {
     this.autoSelectData = this.autoSelectData.bind(this)
     this.createBarcodeBtn = this.createBarcodeBtn.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["AreaMaster_Code", "AreaMaster_Name", "AreaMaster_Description", "ObjectSize_Code", "UnitType_Code", "Modified", "Created"]
+    this.uneditcolumn = ["AreaMaster_Code", "AreaMaster_Name", "AreaMaster_Description", "ObjectSize_Code", "UnitType_Code", "Modified", "Created", "LastUpdate"]
 
   }
   onHandleClickCancel(event) {
@@ -102,7 +104,7 @@ class AreaLocation extends Component {
     this.filterList();
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("Location", dataGetPer, this.props.history);
+    CheckWebPermission("Area Location", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   //permission
@@ -125,9 +127,9 @@ class AreaLocation extends Component {
   }
 
   componentDidMount() {
-    document.title = "Location - AWMS"
+    document.title = "Area Location - AWMS"
     Axios.all([api.get(createQueryString(this.state.supplier)),
-      api.get(createQueryString(this.state.warehouse))]).then(
+    api.get(createQueryString(this.state.warehouse))]).then(
       (Axios.spread((supplierresult, warehouseresult) => {
         this.setState({
           supplierdata: supplierresult.data.datas,
@@ -139,8 +141,9 @@ class AreaLocation extends Component {
           })
           const warehousedata = []
           this.state.warehousedata.forEach(row => {
-            warehousedata.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
+            // warehousedata.push({ value: 1, label: "5005" + ' : ' + "ASRS" })
           })
+          warehousedata.push({ value: 1, label: "5005" + ' : ' + "ASRS" })
           this.setState({ supplierdata, warehousedata })
         })
       }
@@ -262,7 +265,7 @@ class AreaLocation extends Component {
   }
 
   createBarcodeBtn(rowdata) {
-    return <Button type="button" color="info" style={{ background: "#26c6da", borderColor: "#26c6da", width: '80px' }}
+    return <Button type="button" color="info" style={{ width: '80px' }}
       onClick={() => {
         let barcode = [{ "barcode": rowdata["Code"], "Name": rowdata["Name"] }]
         let barcodestr = JSON.stringify(barcode)
@@ -274,18 +277,20 @@ class AreaLocation extends Component {
     const view = this.state.permissionView
     if (this.state.grouptype === 1) { //STORAGE
       return [
+        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
-        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left" },
+        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
         { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", Type: "autolocationcode" },
         { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", Type: "autolocationcode" },
         { accessor: 'Level', Header: 'Level', editable: view, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'ObjectSize_Code', Header: 'Size', updateable: view, Filter: "text", Type: "autocomplete" },
-        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete" },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175 },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165 },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+        { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+        // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-        { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
+        // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
@@ -293,35 +298,39 @@ class AreaLocation extends Component {
 
     } else if (this.state.grouptype === 2) { //Gate
       return [
+        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
-        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left" },
+        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 135 },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'ObjectSize_Code', Header: 'Size', updateable: view, Filter: "text", Type: "autocomplete" },
-        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete" },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175 },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165 },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+        { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+        //{ accessor: 'Created', Header: 'Create', editable: false, filterable: false },
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-        { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
+        //{ accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
       ];
     } else { // STAGING
       return [
+        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
-        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left" },
+        { accessor: 'Code', Header: 'Code', Type: "autolocationcode", editable: view, Filter: "text", fixed: "left" },
+        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text" },
         { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text" },
         { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", datatype: "int" },
         { accessor: 'Level', Header: 'Level', editable: view, Filter: "text", datatype: "int" },
-        { accessor: 'ObjectSize_Code', Header: 'Size', updateable: view, Filter: "text", Type: "autocomplete" },
-        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete" },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175 },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165 },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
-        { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
+        { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+        // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
         /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-        { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
+        // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
         //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
         //{show:this.state.permissionView,Header: '', Aggregated:"button",Type:"button", filterable:false, sortable:false, btntype:"Barcode", btntext:"Barcode"},
         { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
@@ -335,7 +344,7 @@ class AreaLocation extends Component {
         queryString: window.apipath + "/api/viw",
         t: "AreaLocationMaster",
         q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " + this.state.areamaster + "}]",
-        f: "ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Status,Created,Modified",
+        f: "ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -365,7 +374,7 @@ class AreaLocation extends Component {
         </Row>
         <Row>
           <Col>
-            {this.dropdownAuto(this.state.areadata, "Area", "areares", true)}
+            {this.dropdownAuto(this.state.areadata, "Area Zone", "areares", true)}
           </Col>
         </Row>
         <Row><Col></Col></Row>

@@ -23,7 +23,7 @@ class Area extends Component {
         queryString: window.apipath + "/api/viw",
         t: "AreaMaster",
         q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f: "ID,Code,Name,Description,Warehouse_ID,Warehouse_Code,AreaMasterType_ID,AreaMasterType_Code,Status,Created,Modified",
+        f: "ID,Code,Name,Description,Warehouse_ID,Warehouse_Code,AreaMasterType_ID,AreaMasterType_Code,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -37,10 +37,10 @@ class Area extends Component {
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.filterList = this.filterList.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["Warehouse_Code", "AreaMasterType_Code", "Created", "Modified"]
+    this.uneditcolumn = ["Warehouse_Code", "AreaMasterType_Code", "Created", "Modified", "LastUpdate"]
   }
   componentDidMount() {
-    document.title = "Area - AWMS"
+    document.title = "Area Zone - AWMS"
   }
   async componentWillMount() {
     this.filterList()
@@ -120,15 +120,17 @@ class Area extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 160 },
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
       { accessor: 'Warehouse_Code', Header: 'Warehouse', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 100 },
-      { accessor: 'AreaMasterType_Code', Header: 'AreaMasterType', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 170 },
+      { accessor: 'AreaMasterType_Code', Header: 'Area Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 170 },
       //{accessor: 'Status', Header: 'Status',Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-      { accessor: 'Created', Header: 'Create', filterable: false, minWidth: 170 },
+      { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+      // { accessor: 'Created', Header: 'Create', filterable: false, minWidth: 170 },
       /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-      { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+      // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
       //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
     ];

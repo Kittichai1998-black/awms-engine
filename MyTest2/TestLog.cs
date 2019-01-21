@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quartz;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -16,6 +17,17 @@ namespace MyTest2
         {
             this.sysout = sysout;
         }
+
+        public class JobTest : IJob
+        {
+            public Task Execute(IJobExecutionContext context)
+            {
+                ITestOutputHelper sysout = (ITestOutputHelper)context.MergedJobDataMap.Get("sysout");
+                sysout.WriteLine(context.MergedJobDataMap.Get("key").ToString() + " -- " + DateTime.Now);
+                return null;
+            }
+        }
+
         [Fact]
         public void Loging()
         {
@@ -32,6 +44,18 @@ namespace MyTest2
                     }
                 });
 
+            Console.ReadKey();
+        }
+
+        [Fact]
+        public void TestJob()
+        {
+            AMWUtil.Common.SchedulerUtil.Start<JobTest>("0/10 * * * * ?",
+                new KeyValuePair<string, object>("sysout", sysout),
+                new KeyValuePair<string, object>("key", "Test01"));
+            AMWUtil.Common.SchedulerUtil.Start<JobTest>("0/11 * * * * ?",
+                new KeyValuePair<string, object>("sysout", sysout),
+                new KeyValuePair<string, object>("key", "Test02"));
             Console.ReadKey();
         }
 

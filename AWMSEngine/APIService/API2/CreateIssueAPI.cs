@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.Engine.Business.Issued;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
@@ -56,10 +57,20 @@ namespace AWMSEngine.APIService.Api2
             this.BeginTransaction();
             foreach (var doc in reqData.documents)
             {
+                var revision =
+                    ADO.DataADO.GetInstant().SelectBy<amt_Document>(new KeyValuePair<string, object>[]{
+                    new KeyValuePair<string, object>("RefID",doc.docNo),
+                    new KeyValuePair<string, object>("Ref1",doc.docYear),
+                    new KeyValuePair<string, object>("DocumentType_ID",DocumentTypeID.SUPER_GOODS_ISSUED)
+                    }, this.BuVO);
+                if (revision.Count > 0)
+                    doc.remark = "[Revision." + (revision.Count + 1) + "] " + doc.remark;
+
                 var reqDoc = new CreateSGIDocumentByDocLink.TReq()
                 {
                     refID = doc.docNo,
                     ref1 = doc.docYear,
+                    ref2 = doc.items.First().movementType,
                     options = "DocType=" + doc.docType,
                     actionTime = doc.actionDate.Value,
                     documentDate = doc.documentDate.Value,

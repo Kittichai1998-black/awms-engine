@@ -25,8 +25,8 @@ class ListProduct extends Component {
         queryString: window.apipath + "/api/viw",
         t: "SKUMaster",
         q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f: "ID,SKUMasterType_ID,SKUMasterType_Code,UnitType_ID,UnitType_Code,Code," +
-          "Name,Description,WeightKG,WidthM,LengthM,HeightM,Cost,Price,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code",
+        f: "ID,SKUMasterType_ID,SKUTypeCode,SKUTypeName,UnitType_ID,UnitTypeCode,UnitTypeName,Code," +
+          "Name,Description,WeightKG,WidthM,LengthM,HeightM,Cost,Price,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code,LastUpdate",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -40,7 +40,7 @@ class ListProduct extends Component {
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["SKUMasterType_Code", "SKUMasterType_Name", "UnitType_Code", "Created", "Modified", "Revision", "ObjectSize_Code"]
+    this.uneditcolumn = ["SKUTypeCode", "SKUTypeName", "UnitTypeCode", "UnitTypeName", "Created", "Modified", "Revision", "ObjectSize_Code", "LastUpdate"]
   }
 
   onHandleClickCancel(event) {
@@ -86,7 +86,7 @@ class ListProduct extends Component {
       queryString: window.apipath + "/api/mst",
       t: "UnitType",
       q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
-      f: "ID,concat(Code,' : ',Name) as Code",
+      f: "ID,Code",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
@@ -97,7 +97,7 @@ class ListProduct extends Component {
       queryString: window.apipath + "/api/mst",
       t: "SKUMasterType",
       q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-      f: "ID,concat(Code,' : ',Name) as Code",
+      f: "ID,Code",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
@@ -123,12 +123,12 @@ class ListProduct extends Component {
         let unitList = {}
         let objectsizeList = {}
         packList["data"] = packresult.data.datas
-        packList["field"] = "SKUMasterType_Code"
+        packList["field"] = "SKUTypeCode"
         packList["pair"] = "SKUMasterType_ID"
         packList["mode"] = "Dropdown"
 
         unitList["data"] = unitresult.data.datas
-        unitList["field"] = "UnitType_Code"
+        unitList["field"] = "UnitTypeCode"
         unitList["pair"] = "UnitType_ID"
         unitList["mode"] = "Dropdown"
 
@@ -150,23 +150,25 @@ class ListProduct extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows',filterable: false,  className: 'center', minWidth: 45, maxWidth: 45 },
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
-      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", minWidth: 120 },
-      { accessor: 'SKUMasterType_Code', Header: 'Catagory', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 120 },
-      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 230 },
+     { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 270 },
+      { accessor: 'SKUTypeCode', Header: 'Category', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 100 },
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
-      { accessor: 'UnitType_Code', Header: 'Base Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 100 },
       { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", minWidth: 100, className: "right" },
+      { accessor: 'UnitTypeCode', Header: 'Base Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 85 },
       //{ accessor: 'WidthM', Header: 'Width (M)', editable: true, datatype: "int"},
       //{ accessor: 'LengthM', Header: 'Length (M)', editable: true, datatype: "int" },
       //{ accessor: 'HeightM', Header: 'Height (M)', editable: true, datatype: "int"},
       //{ accessor: 'ObjectSize_Code', Header: 'Object Size', Filter: "text", Type: "autocomplete", minWidth: 90 },
       //{ accessor: 'Cost', Header: 'Cost', editable: true, datatype: "int", Filter: "text" },
       //{ accessor: 'Price', Header: 'Price', editable: true, datatype: "int", Filter: "text" },
-      //{ accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" },
-      { accessor: 'Created', Header: 'Create', filterable: false, minWidth: 170, maxWidth: 170 },
+      //{ accessor: 'Status', Header: 'Status', editable: true, Type: "checkbox", Filter: "dropdown" }, 
+      { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+      //{ accessor: 'Created', Header: 'Create', filterable: false, minWidth: 120, maxWidth: 170 },
       /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-      { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170, maxWidth: 170 },
+      //{ accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 120, maxWidth: 170 },
       //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
     ];

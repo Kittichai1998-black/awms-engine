@@ -26,7 +26,7 @@ class SKUMasterType extends Component {
         queryString: window.apipath + "/api/viw",
         t: "SKUMasterType",
         q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified",
+        f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -41,7 +41,7 @@ class SKUMasterType extends Component {
     this.getAutocompletee = this.getAutocomplete.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-    this.uneditcolumn = ["ObjectSize_Code", "Modified", "Created"]
+    this.uneditcolumn = ["ObjectSize_Code", "Modified", "Created", "LastUpdate"]
   }
   onHandleClickCancel(event) {
     this.forceUpdate();
@@ -54,7 +54,7 @@ class SKUMasterType extends Component {
     this.getAutocomplete();
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("Catagory", dataGetPer, this.props.history);
+    CheckWebPermission("Category", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
   }
   //permission
@@ -139,13 +139,15 @@ class SKUMasterType extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40  },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120 },
-      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 120 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 120 },
       { accessor: 'ObjectSize_Code', Header: 'Default Object Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
-      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
+      { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
+      // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },
       /* {accessor: 'CreateTime', Header: 'Create Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-      { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
+      // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 170 },
       //{accessor: 'ModifyTime', Header: 'Modify Time', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
       { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
     ];
@@ -168,7 +170,7 @@ class SKUMasterType extends Component {
             getselection = เก็บค่าที่เลือก
         
           */}
-        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"Catagory"}
+        <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"SKUCollection"}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}
           table="ams_SKUMasterType" />

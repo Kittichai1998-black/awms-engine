@@ -40,6 +40,8 @@ namespace AWMSModel.Entity
         public string BaseUnitType_Name;
 
         public string Batch;
+        public string Lot;
+        public string OrderNo;
         public string DesCustomer;
         public string DesCustomerName;
        

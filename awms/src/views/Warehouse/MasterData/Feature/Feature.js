@@ -66,11 +66,12 @@ class Feature extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left" },
-      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 500 },
-      { accessor: 'GroupName', Header: 'GroupName', editable: view, Filter: "text", fixed: "left", minWidth: 140 },
+      { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 500 },
+      { accessor: 'GroupName', Header: 'Group Name', editable: view, Filter: "text", minWidth: 140 },
       { accessor: 'Description', Header: 'Description', editable: view, sortable: false, Filter: "text", },
-      { accessor: 'DataValue', Header: 'DataValue', editable: view, Filter: "text" },
+      { accessor: 'DataValue', Header: 'Data Value', editable: view, Filter: "text" },
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},  
       { accessor: 'Created', Header: 'Create', filterable: false },
       { accessor: 'Modified', Header: 'Modify', filterable: false },
