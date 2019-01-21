@@ -4,7 +4,7 @@ import { Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table';
 import queryString from 'query-string'
 import { apicall, createQueryString } from '../ComponentCore';
-import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
+//import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const API = new apicall()
 
@@ -32,27 +32,35 @@ class QueueView extends Component {
     this.GetQueueData = this.GetQueueData.bind(this)
   }
 
-  async componentWillMount() {
-    document.title = "Queue View : AWMS";
-    let dataGetPer = await GetPermission()
-    CheckWebPermission("QueueView", dataGetPer, this.props.history);
-    this.displayButtonByPermission(dataGetPer)
-  }
+  // async componentWillMount() {
+    
+  //   //let dataGetPer = await GetPermission()
+  //   //CheckWebPermission("QueueView", dataGetPer, this.props.history);
+  //   //this.displayButtonByPermission(dataGetPer)
+  // }
 
-  displayButtonByPermission(dataGetPer) {
-    //70 Queue_view
-    if (!CheckViewCreatePermission("Queue_view", dataGetPer)) {
-      this.props.history.push("/404")
-    }
-  }
+  // displayButtonByPermission(dataGetPer) {
+  //   //70 Queue_view
+  //   // 57	ReProgress_view
+  //   // 60	IssuProgress_view
+  //   // if (!CheckViewCreatePermission("ReProgress_view", dataGetPer) || !CheckViewCreatePermission("IssuProgress_view", dataGetPer)) {
+  //   //   this.props.history.push("/404")
+  //   // }
+  // }
 
   componentDidMount() {
     const values = queryString.parse(this.props.location.search)
+    if(values.IOType === "IN"){
+      document.title = "Receiving Progress : AWMS";
+    }
+    if(values.IOType === "OUT"){
+      document.title = "Issuing Progress : AWMS";
+    }
     var url = this.select;
-    url.q = "[{ 'f': 'IOType', c:'=', 'v': '"+ values.IOType + "'}]";
+    url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + values.IOType + "'}]";
     this.GetQueueData(url)
-    
-    let interval = setInterval(() => {this.GetQueueData(url)}, 2000);
+
+    let interval = setInterval(() => { this.GetQueueData(url) }, 2000);
     this.setState({ interval: interval })
   }
 
@@ -67,9 +75,9 @@ class QueueView extends Component {
   }
 
   render() {
-    const cols = [{ accessor: "Row", Header: "No.",className: 'center', minWidth: 40  },
-    { accessor: "IOType", Header: "IOType", minWidth: 50,className: 'center' },
-    { accessor: "Priority", Header: "Priority", minWidth: 60,className: 'center' },
+    const cols = [{ accessor: "Row", Header: "No.", className: 'center', minWidth: 40 },
+    { accessor: "IOType", Header: "IOType", minWidth: 50, className: 'center' },
+    { accessor: "Priority", Header: "Priority", minWidth: 60, className: 'center' },
     { accessor: "Document_Code", Header: "Document" },
     { accessor: "RefID", Header: "SAP Document" },
     { accessor: "StorageObject_Code", Header: "Pallet", minWidth: 95 },

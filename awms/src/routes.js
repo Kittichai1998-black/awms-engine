@@ -205,10 +205,10 @@ const Stockview = Loadable({
   loader: () => import('./views/Warehouse/Stockview'),
   loading: Loading,
 });
-  const StockCard = Loadable({
-    loader: () => import('./views/Warehouse/StockcardReport/StockcaedReport'),
-    loading: Loading,
-  });
+// const StockCard = Loadable({
+//     loader: () => import('./views/Warehouse/StockcardReport/StockcaedReport'),
+//     loading: Loading,
+// });
 
 const CurrentInv = Loadable({
   loader: () => import('./views/Warehouse/CurrentReport/CurrentReport'),
@@ -320,9 +320,9 @@ const AuditCreate = Loadable({
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/mst/sku/manage', exact: true, name: 'Setting / SKU', component: Products },
+  { path: '/mst/sku/manage', exact: true, name: 'Setting / SKU Master', component: Products },
   { path: '/mst/catagory/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
-  { path: '/mst/pack/manage', exact: true, name: 'Setting / SKU Package', component: Pack },
+  { path: '/mst/pack/manage', exact: true, name: 'Setting / SKU Unit', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Setting / Pack Type', component: PackType },
   { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/customer/manage', exact: true, name: 'Setting / Customer', component: Customer },
@@ -332,7 +332,7 @@ const routes = [
   { path: '/mst/location/manage', exact: true, name: 'Setting / Location', component: AreaLocation },
   { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/arearoute/manage', exact: true, name: 'Setting / Area Route', component: AreaRoute },
-  { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet', component: Base },
+  { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet Master', component: Base },
   { path: '/mst/pallettype/manage', exact: true, name: 'Setting / Pallet Type', component: BaseType },
   { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   { path: '/mst/branch/manage', exact: true, name: 'Setting / Branch', component: Branch },
@@ -341,7 +341,7 @@ const routes = [
   { path: '/mst/permission/manage', exact: true, name: 'Setting / Permission', component: Permission },
   { path: '/mst/apiservicegroup/manage', exact: true, name: 'Setting / API Service Group', component: APIServiceGroup },
   { path: '/mst/apiservice/manage', exact: true, name: 'Setting / API Service', component: APIService },
-  { path: '/mst/objectsize/manage', exact: true, name: 'Setting / Standard Pack Size', component: ObjectSize },
+  { path: '/mst/objectsize/manage', exact: true, name: 'Setting / Weight Validate', component: ObjectSize },
   { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Setting / Job Schedule Module', component: JobScheduleModule },
   { path: '/mst/unittype/manage', exact: true, name: 'Setting / Unit Type', component: UnitType },
   { path: '/mst/webcontrol/manage', exact: true, name: 'Setting / Web Control', component: WebControl },
@@ -364,7 +364,7 @@ const routes = [
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
-    { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
+  //  { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'Report / Current Inventory', component: CurrentInv },
   { path: '/doc/gr/view', exact: true, name: 'Receive Document', component: StorageDetail },
@@ -379,8 +379,8 @@ const routes = [
   { path: '/wm/issue/manage', exact: true, name: 'Issue / Create Queue', component: CreateQueue },
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
   { path: '/sys/sto/progress', exact: true, name: 'Dashboard / Picking Progress', component: TaskList },
-  { path: '/sys/gr/progress?IOType=IN', exact: true, name: 'Recieve Queue View', component: QueueView },
-  { path: '/sys/gi/progress?IOType=OUT', exact: true, name: 'Issue Queue View', component: QueueView },
+  { path: '/sys/gr/progress?IOType=IN', exact: true, name: 'Receiving Progress', component: QueueView },
+  { path: '/sys/gi/progress?IOType=OUT', exact: true, name: 'Issuing Progress', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
