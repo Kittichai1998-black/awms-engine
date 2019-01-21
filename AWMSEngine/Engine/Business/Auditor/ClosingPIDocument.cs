@@ -52,6 +52,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                     null, null,
                     DocumentEventStatus.CLOSING,
                     this.BuVO);
+
+                    ADO.StorageObjectADO.GetInstant().UpdateAuditSto(doc.ID.Value, this.BuVO);
                 }
                 else
                 {
@@ -69,6 +71,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                     null, null,
                     DocumentEventStatus.CLOSING,
                     this.BuVO);
+
+                    ADO.StorageObjectADO.GetInstant().UpdateAuditSto(doc.ID.Value, this.BuVO);
                 }
             }
             return null;
