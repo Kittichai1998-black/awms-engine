@@ -142,10 +142,10 @@ class AuditDoc extends Component {
       if (status === "accept") {
         axois.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
       }
-      if (status === "reject") {
-        axois.post(window.apipath + "/api/wm/audit/doc/rejected", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+      else if (status === "reject") {
+        axois.post(window.apipath + "/api/wm/audit/doc/Reject", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
       }
-      if (status === "Close") {
+      else if (status === "Close") {
         axois.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
       }
     }
@@ -242,7 +242,7 @@ class AuditDoc extends Component {
           accept={false} />
         <Card>
           <CardBody>
-            {/* <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button> */}
+            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button>
             <Button id="per_button_working" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
