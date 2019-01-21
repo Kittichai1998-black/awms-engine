@@ -1,246 +1,113 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col } from 'reactstrap';
+import {Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col, Form,FormGroup,FormText,Label} from 'reactstrap';
 import moment from 'moment';
-import { DocumentEventStatus } from '../../Status'
-import { AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
+import Select from 'react-select';
+import {DocumentEventStatus} from '../../Status'
+import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
 import ReactAutocomplete from 'react-autocomplete'
 import arrimg from '../../../../img/arrowhead.svg'
-import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 
 const Axios = new apicall()
 
-class CreateQueue extends Component {
+class CreateQueue extends Component{
   constructor(props) {
     super(props);
-
+    
     this.state = {
-      DocumentData: [],
-      auto_doc: [],
-      Card: [],
-      data: [],
-      dataAdd: [],
-      docID: null,
-      docresult: "",
-      SAPdoc: "",
-      StampDate: "",
-      MMType: "",
-      Batch: "",
-      ForCus: "",
-      PickOrderID: null,
-      PickOrderby: "",
-      PickbyFieldID: null,
-      PickbyField: "",
-      SelectiveFieldValue: "",
-      SelectiveFieldLabel: "",
-      SelectiveValue: "",
-      PriorityID: null,
-      Priority: "",
-      refID: "",
-      ref1: "",
-      ref2: "",
-      remark: "",
-      inputstatus: true,
-      pageID: 0,
-      addstatus: true,
-      adddisplay: "none",
-      basedisplay: "none",
-      modalstatus: false,
-      orderlist: [{ 'value': 0, 'label': 'FIFO' },
-      { 'value': 1, 'label': 'LIFO' }],
-      orderfieldlist: [{ 'value': 'CreateDate', 'label': 'Received Date' },
-      { 'value': 'ProductDate', 'label': 'Stamp Date' },
-      { 'value': 'Batch', 'label': 'Batch' }],
-      selectivelist: [{ 'value': 'null', 'label': 'None' },
-      { 'value': 'Ref1', 'label': 'Stamp Date' },
-      { 'value': 'Batch', 'label': 'Batch' },
-      { 'value': 'OrderNo', 'label': 'Order No' }],
-      prioritylist: [{ 'value': 0, 'label': 'Low' },
-      { 'value': 1, 'label': 'Normal' },
-      { 'value': 2, 'label': 'High' },
-      { 'value': 3, 'label': 'Critical' }],
+      orderlist:[ {'value' : 0,'label' : 'FIFO'},
+                  {'value' : 1,'label' : 'LIFO'}],
+      orderfieldlist:[{'value' : 'CreateDate','label' : 'Received Date'},
+                      {'value' : 'Lot','label' : 'Lot'},
+                      {'value' : 'Batch','label' : 'Batch'}],
+      prioritylist:[{'value' : 0,'label' : 'Low'},
+                    {'value' : 1,'label' : 'Normal'},
+                    {'value' : 2,'label' : 'High'},
+                    {'value' : 3,'label' : 'Critical'}],
+      DocumentData:[],
+      DocumentItemData:[],
+      auto_doc:[],
+      dataProcessItems:[],
+      processCard: [],
+      itemCard: [],
+      itemShowCard: [],
+      batchCard:[],
+      data : [],
+      dataAdd:[],
+      docItem:[],
+      docID:null,
+      docresult:"",
+      SAPdoc:"",
+      StampDate:"",
+      MMType:"",
+      Batch:"",
+      ForCus:"",
+      PickOrderby:"",
+      PickbyField:"",
+      Priority:"",
+      refID:"",
+      ref1:"",
+      ref2:"",   
+      dataProcessSelected:[],
+      batchShowCard:[],                   
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.initialData = this.initialData.bind(this)
     this.DateNow = moment()
-    this.addIndex = 0
     this.addData = this.addData.bind(this)
-    this.addNewCard = this.addNewCard.bind(this)
+    this.addNewProcessCard = this.addNewProcessCard.bind(this)
     this.viewDetail = this.viewDetail.bind(this)
     this.genBtnDetail = this.genBtnDetail.bind(this)
     this.genBtnRemoveCard = this.genBtnRemoveCard.bind(this)
     this.createCardsList = this.createCardsList.bind(this)
     this.removeCard = this.removeCard.bind(this)
     this.createAutoDocList = this.createAutoDocList.bind(this)
+    this.genBtnGetDocItem = this.genBtnGetDocItem.bind(this)
 
 
-    this.docselect = {
-      queryString: window.apipath + "/api/viw",
-      t: "Document",
-      q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
-      f: "ID,Code,DesWarehouse,RefID,Ref2,DesCustomer,DesCustomerName,Batch,Ref1",
-      g: "",
-      s: "[{'f':'ID','od':'asc'}]",
-      sk: 0,
-      all: "",
-    }
+    this.docselect = {queryString:window.apipath + "/api/viw",
+      t:"Document",
+      q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
+      f:"ID,Code,DesWarehouse,DesWarehouseName,RefID,Ref2,DesCustomer,DesCustomerName,Batch,Ref1",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      all:"",}
   }
-  async componentWillMount() {
-    document.title = "Create Queue : AWMS";
-    //permission
-    this.setState({ showbutton: "none" })
-    let dataGetPer = await GetPermission()
-    CheckWebPermission("CQueue", dataGetPer, this.props.history);
-    this.displayButtonByPermission(dataGetPer)
-  }
-  displayButtonByPermission(dataGetPer) {
-    // 63 CreateReceive_view
-    if (!CheckViewCreatePermission("CreateQueue_create&modify", dataGetPer)) {
-      this.props.history.push("/404")
-    }
-  }
-  initialData() {
+    
+  initialData(){
     Axios.get(createQueryString(this.docselect)).then(Docresult => {
-      this.setState({ DocumentData: Docresult.data.datas, addstatus: true }, () => {
+      this.setState({DocumentData : Docresult.data.datas }, () => {
         const DocumentData = []
         this.state.DocumentData.forEach(row => {
-          DocumentData.push({
-            value: row.ID
-            , SAPdoc: row.RefID
-            , MMType: row.Ref2
-            , StampDate: row.ref1
-            , Batch: row.Batch
-            , ForCus: row.DesCustomer + ' : ' + row.DesCustomerName
-            , label: row.Code + ' : ' + row.DesWarehouse
+          DocumentData.push({value:row.ID
+                        ,SAPdoc:(row.RefID?row.RefID + (row.Ref1?' : '+row.Ref1:""):"")
+                        ,MMType:row.Ref2
+                        ,StampDate:row.Ref1
+                        ,Batch:row.Batch
+                        ,ForCus:row.DesCustomer + ' : ' + row.DesCustomerName
+                        ,label:row.Code + (row.DesWarehouseName?' : ' + row.DesWarehouseName : "")
           })
         })
         this.setState({ DocumentData }, () => this.createAutoDocList())
       })
     })
   }
-
-  componentDidMount() {
+    
+  componentDidMount(){
     this.initialData()
-
   }
-
-  onHandleClickCancel(event) {
+      
+  onHandleClickCancel(event){
     this.forceUpdate();
     event.preventDefault();
   }
 
-  addNewCard(datarow) {
-    return <div style={{ "border-radius": "15px", "border": "1px solid white", "padding": "20px", background: "white", "margin": "5px" }}>
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Document : </label></Col>
-        <Col md="9">
-          <span>{datarow.docDetail ? datarow.docDetail : ""}</span>
-        </Col>
-        <Col md="1">
-          <div className="clearfix">
-            {this.genBtnDetail(datarow.ID)}
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>SAP Document : </label></Col>
-        <Col md="5">
-          <span>{datarow.RefID ? datarow.RefID : ""}</span>
-        </Col>
-        <Col md="5"></Col>
-      </Row>
-
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Movement Type : </label></Col>
-        <Col md="5">
-          <span>{datarow.Ref2 ? datarow.Ref2 : ""}</span>
-        </Col>
-        <Col md="5"></Col>
-      </Row>
-
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>For Customer : </label></Col>
-        <Col md="5">
-          <span>{datarow.DesCustomer ? datarow.DesCustomer : ""}</span>
-        </Col>
-        <Col md="5"></Col>
-      </Row>
-
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Pick by : </label></Col>
-        <Col md="5">
-          <div>
-            <span>{datarow.PickOrderby ? datarow.PickOrderby : ""}</span>
-          </div>
-        </Col>
-        <Col md="5">
-          <div>
-            <span>{datarow.PickbyField ? datarow.PickbyField : ""}</span>
-          </div>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Selective : </label></Col>
-        <Col md="5">
-          <div>
-            <span>{datarow.SelectiveFieldLabel ? datarow.SelectiveFieldLabel : ""}</span>
-          </div>
-        </Col>
-        <Col md="5">
-          <div>
-            <span>{datarow.SelectiveValue ? datarow.SelectiveValue : ""}</span>
-          </div>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Priority : </label></Col>
-        <Col md="5">
-          <div>
-            <span>{datarow.Priority ? datarow.Priority : ""}</span>
-          </div>
-        </Col>
-      </Row>
-      <div className="clearfix">
-        {this.genBtnRemoveCard(datarow.ID)}
-      </div>
-    </div>
-  }
-
-  addData() {
-    const dataAdd = this.state.dataAdd;
-    if (this.state.docresult === "") {
-      alert("กรุณาเลือก Document ที่ต้องการสร้างคิวงาน")
-    } else {
-      dataAdd.push({
-        ID: this.state.docID
-        , docDetail: this.state.docresult
-        , RefID: this.state.SAPdoc
-        , Ref1: this.state.StampDate
-        , Ref2: this.state.MMType
-        , Batch: this.state.Batch
-        , DesCustomer: this.state.ForCus
-        , PickOrderID: this.state.PickOrderID
-        , PickOrderby: this.state.PickOrderby
-        , PickbyFieldID: this.state.PickbyFieldID
-        , PickbyField: this.state.PickbyField
-        , SelectiveFieldValue: this.state.SelectiveFieldValue
-        , SelectiveFieldLabel: this.state.SelectiveFieldLabel
-        , SelectiveValue: this.state.SelectiveValue
-        , PriorityID: this.state.PriorityID
-        , Priority: this.state.Priority
-      });
-      this.setState({ dataAdd, "docID": "", "SAPdoc": "", "MMType": "", "ForCus": "", "StampDate": "", "Batch": "", "docresult": "" })
-      this.createAutoDocList();
-      this.createCardsList();
-    }
-  }
-  createAutoDocList() {
+  createAutoDocList(){
     const auto_doc = [...this.state.DocumentData]
-    this.state.dataAdd.forEach((datarowadd) => {
+    this.state.dataProcessSelected.forEach((dataProcess) => {
       auto_doc.forEach((datarow, index) => {
-        if (datarow.value === datarowadd.ID) {
+        if (datarow.value === dataProcess.value) {
           auto_doc.splice(index, 1);
         }
       })
@@ -248,22 +115,431 @@ class CreateQueue extends Component {
     this.setState({ auto_doc });
   }
 
-  createCardsList() {
-    console.log(this.state.dataAdd)
-    const dataAdd = this.state.dataAdd
-    let Card = []
-    dataAdd.forEach((datarow, index) => {
-      Card = Card.concat(this.addNewCard(datarow));
-    })
-    this.setState({ Card });
+  genBtnGetDocItem(){
+    return <Button className="float-left" type="button" color="primary" onClick={() => this.getDocItemData(this.state.docID)}>Check Document From SAP</Button>
   }
 
-  viewDetail(docID) {
-    if (docID) {
+  getDocItemData(doc_id){
+    const docItemselect = {queryString:window.apipath + "/api/viw",
+      t:"DocumentItem",
+      q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
+      f:"ID,Code,RefID,Ref2,Batch,Ref1,BaseQuantity,Options,SKUMaster_Name,OrderNo,Lot",
+      g:"",
+      s:"[{'f':'ID','od':'asc'}]",
+      sk:0,
+      all:"",}
+
+    Axios.get(createQueryString(docItemselect)).then(Docresult => {
+      this.setState({DocumentItemData : Docresult.data.datas }, () => {
+        const DocumentItemData = []
+        this.state.DocumentItemData.forEach(row => {
+          DocumentItemData.push({docID:doc_id
+                        ,dociID:row.ID
+                        ,itemCode:row.Code
+                        ,itemName:row.SKUMaster_Name
+                        ,item:row.Options
+                        ,batch:row.Batch
+                        ,orderNo:row.OrderNo
+                        ,lot:row.Lot
+                        ,BaseQuantity:row.BaseQuantity
+          })
+        })
+        this.setState({ DocumentItemData }, () => this.createItemCardsList(1))
+      })
+    })
+  }
+
+  createItemCardsList(chk){
+    const DocumentItemData = this.state.DocumentItemData;
+    const dataProcessItems = this.state.dataProcessItems;
+    let itemCard = []
+    
+    DocumentItemData.forEach((datarow) => {
+       if(chk===1){
+        dataProcessItems.push({docID:datarow.docID
+          ,dociID:datarow.dociID
+          ,itemCode:datarow.itemCode
+          ,itemName:datarow.itemName
+          ,item:datarow.item
+          ,batch:datarow.batch
+          ,pickOrderby:null
+          ,pickOrderby_label:null
+          ,orderByField:null
+          ,orderByField_label:null
+          ,lot:datarow.lot
+          ,orderNo:datarow.orderNo
+          ,priority:0
+          ,priority_label:null
+          ,qty:datarow.BaseQuantity
+          ,batchs:[]
+        });
+        this.onEditorValueChange(datarow.dociID, 0,"pickOrderby")
+        this.onEditorValueChange(datarow.dociID, "CreateDate","orderByField")
+        this.onEditorValueChange(datarow.dociID, 1,"priority")
+       }
+      else{      
+      } 
+      itemCard = itemCard.concat(this.addNewItemCard(datarow));
+    })
+    this.setState({ itemCard },() => this.setState({dataProcessItems}));
+  }
+
+  genBtnNewBatch(dociID){
+    return <Button id="per_button_doc" 
+    style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px',display:this.state.showbutton }} color="primary" 
+    className="float-left"  onClick={() => this.genNewInputText(dociID)}>Add New Batch</Button>
+  }
+
+  genNewInputText(dociID){
+    const DocumentItemData = this.state.DocumentItemData;
+    const dataProcessItems = this.state.dataProcessItems;
+
+    if(dataProcessItems.length>0){
+      dataProcessItems.forEach(datarow => {
+        if(datarow.dociID===dociID){
+          datarow.batchs.push({
+            value:null,
+            qty:0
+          })
+        }else{
+        }
+      });
+    }else{
+      DocumentItemData.forEach((datarow) => {
+        if(datarow.dociID === dociID){
+          dataProcessItems.push({docID:datarow.docID,dociID:datarow.dociID,itemCode:datarow.itemCode,itemName:datarow.itemName,item:datarow.item
+            ,batch:datarow.batch,pickOrderby:null,pickOrderby_label:null,orderByField:null,orderByField_label:null
+            ,lot:datarow.lot,orderNo:datarow.orderNo,priority:0,priority_label:null,qty:datarow.BaseQuantity
+            ,batchs:[{value:null,qty:0}]});
+        }
+      })                 
+    }
+    this.setState({ dataProcessItems },() => this.createItemCardsList(2),this.createBatchCardsList()) 
+  }
+
+  createBatchCardsList(){
+    const dataProcessItems = this.state.dataProcessItems;
+    let batch = [];
+
+    dataProcessItems.map((item) => {
+        batch = batch.concat(item.batchs.map(row => {
+          return {"dociID":item.dociID,"batchNo":(item.batchs.length-1),"value":row.value,"qty":row.qty}
+        }))
+    });
+    let batchCard = []
+    batch.forEach((datarow) => {
+      batchCard = batchCard.concat(this.addNewInputText(datarow));
+    })
+    this.setState({ batchCard });
+  }
+
+  onEditorValueChange(dociID, value, field) {
+    const dataProcessItems = [...this.state.dataProcessItems];
+    dataProcessItems.forEach(row => {
+      if (row.dociID.toString() === (dociID.toString().split(',')[0])){
+        if(field==="orderNo"){
+          row.orderNo=value
+        }else if(field==="lot"){
+          row.lot=value
+        }else if(field==="pickOrderby"){
+          row.pickOrderby_label=this.state.orderlist.find(e => e.value===value).label
+          row.pickOrderby=value
+        }else if(field==="orderByField"){
+          row.orderByField_label=this.state.orderfieldlist.find(e => e.value===value).label
+          row.orderByField=value
+        }else if(field==="priority"){
+          row.priority_label=this.state.prioritylist.find(e => e.value===value).label
+          row.priority=value
+        }else if(field==="value"){
+          row.batchs[dociID.toString().split(',')[1]].value=value
+        }else if(field==="qty"){
+          row.batchs[dociID.toString().split(',')[1]].qty=value
+        }
+      }
+      });
+    this.setState({ dataProcessItems });
+  }
+
+  addNewInputText(datarow){
+    return <div className={[datarow.dociID,datarow.batchNo]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
+    <Row>
+      <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
+      <Col md="4"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo, e.target.value,"value") }} /></div></Col> 
+      <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
+      <Col md="4"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo,e.target.value,"qty") }} /></div></Col> 
+    </Row>
+  </div>
+  }
+
+  addNewItemCard(datarow){
+    const batchCard = this.state.batchCard
+    let batchCards =[]
+    if(batchCard.length > 0){
+      batchCard.forEach(row => {
+        if(row.props.className[0] === datarow.dociID){
+          batchCards.push(row)
+        }
+      });
+    }
+    return (<div className={datarow.dociID} style={{"border-radius": "15px", "border": "1px solid white", "padding": "20px", background:"white", "margin":"5px"}}>
+      <Row>
+        <Col><span>{(datarow.itemCode?datarow.itemCode:"") +" : "+ (datarow.itemName?datarow.itemName:"")}</span></Col>
+      </Row>
+      <Row style={{"padding-top":"10px"}}>
+        <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Pick by : </label></Col>
+        <Col md="5">
+          <div style={{}}>
+            <Select defaultValue={this.state.orderlist.filter(x => x.value===0)}
+                    options={this.state.orderlist}
+                    onChange={(e) => {this.onEditorValueChange(datarow.dociID, e.value,"pickOrderby")}}>
+            </Select>
+          </div>
+        </Col>
+        <Col md="5">
+          <div style={{}}>
+            <Select defaultValue={this.state.orderfieldlist.filter(x => x.value==="CreateDate")}
+                    options={this.state.orderfieldlist}
+                    onChange={(e) => {this.onEditorValueChange(datarow.dociID, e.value,"orderByField")}}>
+            </Select>
+          </div>
+        </Col>
+      </Row>
+      <Row style={{"padding-top":"10px"}}>
+        <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Order No : </label></Col>
+        <Col md="5">
+          <div style={{display:"inline"}}>
+            <Input Value = {datarow.orderNo?datarow.orderNo:""}
+            onChange={(e) => { this.onEditorValueChange(datarow.dociID, e.target.value,"orderNo") }} />
+          </div>
+        </Col>
+      </Row>
+      <Row style={{"padding-top":"10px"}}>
+        <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Lot : </label></Col>
+        <Col md="5">
+          <div style={{display:"inline"}}>
+          <Input Value = {datarow.lot?datarow.lot:""}
+          onChange={(e) => { this.onEditorValueChange(datarow.dociID, e.target.value,"lot") }} />
+          </div>
+        </Col>
+      </Row>
+
+      <Row style={{"padding-top":"10px"}}>
+        <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Priority : </label></Col>
+        <Col md="5">
+          <div style={{}}>
+            <Select defaultValue={this.state.prioritylist.filter(x => x.value===1)}
+                    options={this.state.prioritylist}
+                    onChange={(e) => {this.onEditorValueChange(datarow.dociID, e.value,"priority")}}>
+            </Select>
+          </div>
+        </Col>
+      </Row>
+
+      <Row style={{"padding-top":"10px"}}>
+        <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label></label></Col>
+        <Col md="5">
+          <div className="clearfix">
+            {this.genBtnNewBatch(datarow.dociID)}
+          </div>
+        </Col> 
+      </Row>
+              
+      <Row style={{"padding-top":"10px"}}>
+      <Col lg="12"> 
+        <Card style={ batchCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white"}:{"display":"none"}}>
+          { batchCards }
+        </Card>
+      </Col> 
+      </Row>
+  </div>)
+  }
+  addNewProcessCard(datarow){
+    const itemShowCard = this.state.itemShowCard
+    let itemShowCards =[]
+    if(itemShowCard.length > 0){
+      itemShowCard.forEach(row => {
+        if(row.props.className === datarow.value){
+          itemShowCards.push(row)
+        }
+      });
+    }
+    return <div style={{"border-radius": "15px", "border": "1px solid white", "padding": "20px", background:"white", "margin":"5px"}}>
+      <Form>
+        <FormGroup row>
+          <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
+          <Col ><span>{datarow.label?datarow.label:""}</span></Col>
+          <Col sm={2}>{this.genBtnDetail(datarow.value)}</Col>
+        </FormGroup>
+        <FormGroup row>
+          <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
+          <Col sm={7}><span>{datarow.SAPdoc?datarow.SAPdoc:""}</span></Col>
+        </FormGroup>
+        <FormGroup row>
+          <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Movement Type : </Label></Col>
+          <Col sm={7}><span>{datarow.MMType?datarow.MMType:""}</span></Col>
+        </FormGroup>
+        <FormGroup row>
+          <Col sm={12}>
+            <Card style={itemShowCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white"}:{"display":"none"}}>
+              { itemShowCards }
+            </Card> 
+          </Col>
+        </FormGroup>
+      </Form>
+    </div>
+  }
+
+  addData(){
+    let dataProcessSelected = this.state.dataProcessSelected;
+    const dataProcessItems = this.state.dataProcessItems;
+    let DocumentData = this.state.DocumentData;
+    const docID = this.state.docID
+    if(this.state.docresult===""){
+      alert("Document Item Not Found!")
+    }else{
+      if(this.state.DocumentItemData.length === 0){
+      }else{
+        dataProcessItems.forEach(itemrow =>{
+          if(itemrow.batchs.length===0){
+            itemrow.batchs.push({"value":"Unknow","qty":itemrow.qty})
+
+          }else{
+            if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0))>=itemrow.qty){
+              alert("จำนวน")
+            }else{
+              itemrow.batchs.forEach(batchrow =>{
+                if(batchrow.value===null){
+                  batchrow.value="Unknow"
+                  batchrow.qty=itemrow.qty
+                }
+                else{
+                  if(itemrow.qty-batchrow.qty>=0){
+                    itemrow.qty=itemrow.qty-batchrow.qty
+                  }else{
+                    itemrow.batchs.push({"value":"Unknow","qty":itemrow.qty})
+                  }
+                }
+              })
+              if(itemrow.qty>0)
+                itemrow.batchs.push({"value":"Unknow","qty":itemrow.qty})
+            }
+          }
+        })
+        dataProcessSelected.push(DocumentData.find(x => x.value === docID))
+        dataProcessSelected.forEach((datarow) => {
+          if(datarow.value === docID){
+            datarow.items = [] 
+            dataProcessItems.forEach(itemrow => {
+              if(itemrow.docID === docID){
+                datarow.items.push(itemrow)
+              }
+            })            
+          }
+        });
+      }
+    }
+    this.createItemShowCardsList(docID)
+    this.setState({dataProcessSelected
+      ,"docID":""
+      ,"SAPdoc":""
+      ,"MMType":""
+      ,"ForCus":""
+      ,"StampDate":""
+      ,"Batch":""
+      ,"docresult":""}, () => this.removeItemCard())  
+
+    this.createAutoDocList();
+  }
+ 
+  createItemShowCardsList(docID){
+    const dataProcessSelected = this.state.dataProcessSelected
+    let batchShowCard = []
+    dataProcessSelected.forEach((row) => {
+      row.items.forEach(itemrow => {
+        itemrow.batchs.forEach(batchrow =>{
+          batchShowCard = batchShowCard.concat(this.addNewBatchCard(itemrow.dociID,batchrow));
+        })
+      });
+    })
+
+    this.setState({ batchShowCard },()=> this.createBatchShowCardsList());
+  }
+  createBatchShowCardsList(){
+    const dataProcessSelected = this.state.dataProcessSelected
+    let itemShowCard = []
+    dataProcessSelected.forEach((row) => {
+      row.items.forEach(itemrow => {
+        itemShowCard = itemShowCard.concat(this.addNewOutputItem(itemrow))
+      })
+    })
+    this.setState({ itemShowCard },()=> this.createCardsList());
+  }
+  addNewBatchCard(dociID,datarow){
+    return <div className={[dociID,datarow.value]} >
+      <Form>
+        <FormGroup row>
+          <Col sm={6}><span>{ datarow.value }</span></Col>
+          <Col sm={6}><span>{ "Qty :      " +datarow.qty }</span></Col>
+        </FormGroup>
+      </Form>
+    </div>
+  }
+
+  addNewOutputItem(datarow){
+    const batchShowCard = this.state.batchShowCard
+    let batchShowCards =[]
+    if(batchShowCard.length > 0){
+      batchShowCard.forEach(row => {
+        if(row.props.className[0] === datarow.dociID){
+          batchShowCards.push(row)
+        }
+      });
+    }
+    return  <div className= { datarow.docID } style={{"border-radius": "15px", "border-bottom": "2px solid rgb(157, 174, 236)",  "padding": "20px",  background:"white", "margin":"5px"}}>
+    <Form>
+      <FormGroup row>
+        <Col sm={12}><span>{(datarow.itemCode?datarow.itemCode:"") + (datarow.itemName?" : "+datarow.itemName:"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Pick by : </Label></Col>
+        <Col sm={10}><span>{(datarow.orderByField_label?datarow.orderByField_label:"") + (datarow.pickOrderby_label?" ("+datarow.pickOrderby_label+")":"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Order No : </Label></Col>
+        <Col sm={10}><span>{(datarow.orderNo?datarow.orderNo:"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Lot : </Label></Col>
+        <Col sm={10}><span>{(datarow.lot?datarow.lot:"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Priority : </Label></Col>
+        <Col sm={10}><span>{(datarow.priority_label?datarow.priority_label:"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Batch : </Label></Col>
+        <Col sm={10} style={batchShowCards.length > 0?{}:{"display":"none"}}>{ batchShowCards }</Col>
+      </FormGroup>
+    </Form>
+  </div>
+  }
+
+  createCardsList(){
+    const dataProcessSelected = this.state.dataProcessSelected
+    let processCard = []
+    dataProcessSelected.forEach((datarow) => {
+      processCard = processCard.concat(this.addNewProcessCard(datarow));
+    })
+    this.setState({ processCard });
+    
+  }
+
+  viewDetail(docID){
+    if(docID){
       window.open('/doc/gi/manage?ID=' + docID)
     }
   }
-  removeCard(docID) {
+  removeCard(docID){
     const dataAdd = this.state.dataAdd
     dataAdd.forEach((datarow, index) => {
       if (datarow.ID === docID) {
@@ -275,142 +551,131 @@ class CreateQueue extends Component {
     this.createAutoDocList()
   }
 
-  genBtnDetail(docID) {
-    if (docID === "") {
+  removeItemCard(){
+    const batchCard = this.state.batchCard
+    let itemCard = this.state.itemCard
+    let DocumentItemData = this.state.DocumentItemData
+    let dataProcessItems = this.state.dataProcessItems
+    if(batchCard.length>0){
+      batchCard.forEach((index) => {
+        batchCard.splice(index, 1);
+      });
+    }
+    itemCard=[];
+    dataProcessItems=[];
+    DocumentItemData=[];
+     if(itemCard.length>0){
+      itemCard.forEach((index) => {
+        itemCard.splice(index, 1);
+      });
+    }
+    DocumentItemData.forEach((datarow, index) => {
+        DocumentItemData.splice(index, 1);
+    })
+    this.setState({ itemCard } ,() => this.setState({dataProcessItems},()=>this.setState({DocumentItemData},() => this.createItemCardsList())))  
+  }
+
+  genBtnDetail(docID){
+    if(docID===""){
       return {}
-    } else {
+    }else{
       return <Button className="float-right" type="button" color="primary" onClick={() => window.open('/doc/gi/manage?ID=' + docID)}>Detail</Button>
     }
   }
 
-  genBtnRemoveCard(docID) {
-    if (docID === "") {
+  genBtnRemoveCard(docID){
+    if(docID===""){
       return {}
-    } else {
-      return <Button id="per_button_doc"
-        style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px', display: this.state.showbutton }}
-        color="primary"
-        className="float-right"
-        onClick={() => this.removeCard(docID)}>Remove</Button>
+    }else{
+      return <Button id="per_button_doc" 
+      style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px',display:this.state.showbutton }}
+      color="primary" 
+      className="float-right" 
+      onClick={() => this.removeCard(docID)}>Remove</Button>
     }
   }
+  processQ(){
+     let Itemselecteddata = []
+    this.state.dataProcessSelected.forEach(row => {
+      Itemselecteddata.push({
+        documentsProcess:row
+        })
+    })
+    let postdata = {
+      documentsProcess:Itemselecteddata
+      //, issueItems: acceptdata
+    } 
+    Axios.post(window.apipath + "/api/wm/issued/queue", Itemselecteddata).then((res) => {
+      if (res.data._result.status === 1) {
+        this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
+        window.location.reload()
+      }
+    })
+    /* if (acceptdata.length > 0) {
+      Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
+        if (res.data._result.status === 1) {
+          this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
+          window.location.reload()
+        }
+      })
+    } */
+  }
 
-  render() {
-    const Cards = this.state.Card
-
-    return (
+  render(){
+    const processCards = this.state.processCard
+    const itemCards = this.state.itemCard
+    return(
       <div>
-        <Row>
-          <Col lg="6">
-            <Card style={Cards.length > 0 ? { "border-radius": "15px", "border": "1px solid #8080804f", background: "#8080804f" } : { "display": "none" }}>
-              <span style={{ "padding-left": "15px", fontWeight: "bold", fontSize: "1.1em" }}>รายการ Document Issue</span>
-              {Cards}
-            </Card>
+        <Row style={{"marginBottom":"10px"}}>
+          <Col lg="6"> 
+            <Form style={{"border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background:"#FFFFFF"}}>
+              <FormGroup row>
+                <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
+                <Col ><AutoSelect selectfirst={false} data={this.state.auto_doc} result={(e) => this.setState({"docID":e.value,"SAPdoc":e.SAPdoc,"MMType":e.MMType,"ForCus":e.ForCus,"StampDate":e.StampDate,"Batch":e.Batch,"docresult":e.label})}/></Col>
+                <Col sm={2}><Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button></Col>
+              </FormGroup>
+              <FormGroup row>
+                <Label sm={3}></Label>
+                <Col sm={7}><div>{ this.genBtnGetDocItem() }</div></Col>
+              </FormGroup>
+              <FormGroup row>
+                <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document :</Label></Col>
+                <Col sm={7}><span>{this.state.SAPdoc?this.state.SAPdoc:""}</span></Col>
+              </FormGroup>
+              <FormGroup row>
+                <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Movement Type : </Label></Col>
+                <Col sm={7}><span>{this.state.MMType?this.state.MMType:""}</span></Col>
+              </FormGroup>
+              <FormGroup row>
+                <Col sm={12}>
+                  <Card style={itemCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"#8080804f"}:{"display":"none"}}>
+                    <span style={{"padding-left":"15px", fontWeight:"bold", fontSize:"1.1em"}}>Items List</span>
+                    { itemCards }
+                  </Card>
+                </Col>
+              </FormGroup>
+              <FormGroup row >
+              <Col sm={12} style={{"float":"right"}}>
+                      <Button id="per_button_doc" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px',display:this.state.showbutton }}
+                      color="primary" className="float-right"onClick={() => this.addData()}>Add</Button>
+              </Col>
+              </FormGroup>
+            </Form>
           </Col>
-
-          <Col lg="6">
-            <div style={{ "border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background: "#FFFFFF" }}>
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Document : </label></Col>
-                <Col md="9">
-                  <div style={{}}>
-                    <AutoSelect selectfirst={false} data={this.state.auto_doc}
-                      result={(e) => this.setState({ "docID": e.value, "SAPdoc": e.SAPdoc, "MMType": e.MMType, "ForCus": e.ForCus, "StampDate": e.StampDate, "Batch": e.Batch, "docresult": e.label })} />
-                  </div>
-                </Col>
-                <Col md="1">
-                  <div className="clearfix">
-                    <Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button>
-                  </div>
-                </Col>
-              </Row>
-
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>SAP Document : </label></Col>
-                <Col md="5">
-                  <span>{this.state.SAPdoc ? this.state.SAPdoc : ""}</span>
-                </Col>
-                <Col md="5"></Col>
-              </Row>
-
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Movement Type : </label></Col>
-                <Col md="5">
-                  <span>{this.state.MMType ? this.state.MMType : ""}</span>
-                </Col>
-                <Col md="5"></Col>
-              </Row>
-
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>For Customer : </label></Col>
-                <Col md="5">
-                  <span>{this.state.ForCus ? this.state.ForCus : ""}</span>
-                </Col>
-                <Col md="5"></Col>
-              </Row>
-
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Pick by : </label></Col>
-                <Col md="5">
-                  <div style={{}}>
-                    <AutoSelect selectfirst={false} data={this.state.orderlist}
-                      result={(e) => this.setState({ "PickOrderID": e.value, "PickOrderby": e.label })} />
-                  </div>
-                </Col>
-                <Col md="5">
-                  <div style={{}}>
-                    <AutoSelect selectfirst={false} data={this.state.orderfieldlist}
-                      result={(e) => this.setState({ "PickbyFieldID": e.value, "PickbyField": e.label })} />
-                  </div>
-                </Col>
-              </Row>
-
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Selective : </label></Col>
-                <Col md="5">
-                  <div style={{}}>
-                    <AutoSelect selectfirst={false} data={this.state.selectivelist}
-                      result={(e) => this.setState({ "SelectiveFieldValue": e.value, "SelectiveFieldLabel": e.label })} />
-                  </div>
-                </Col>
-                <Col md="5">
-                  <div style={{ display: this.state.SelectiveFieldValue === "null" || this.state.SelectiveFieldValue === "" ? "none" : "inline" }}>
-                    <Input style={{ display: "inline" }}
-                      onChange={(e) => this.setState({ "SelectiveValue": e.target.value })}
-                      Value={(this.state.SelectiveFieldValue === "Batch" ? this.state.Batch : "")}
-                    />
-                  </div>
-                </Col>
-              </Row>
-
-              <Row style={{ "padding-top": "10px" }}>
-                <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Priority : </label></Col>
-                <Col md="5">
-                  <div style={{}}>
-                    <AutoSelect selectfirst={false} data={this.state.prioritylist}
-                      result={(e) => this.setState({ "PriorityID": e.value, "Priority": e.label })} />
-                  </div>
-                </Col>
-              </Row>
-
-              <div className="clearfix">
-                <Button id="per_button_doc"
-                  style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px', display: this.state.showbutton }}
-                  color="primary"
-                  className="float-right"
-                  onClick={() => this.addData()}>Add</Button>
-              </div>
-            </div>
-            <Card style={{ "border-radius": "15px", "border": "1px solid #8080804f", background: "white" }}>
-              <CardBody>
-                <Button onClick={() => this.updateData()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-                <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
-              </CardBody>
+          <Col lg="6"> 
+            <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"#8080804f"}:{"display":"none"}}>
+              <span style={{"padding-left":"15px", fontWeight:"bold", fontSize:"1.1em"}}>Document Issue List</span>
+              { processCards }
+              <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
+                <CardBody>
+                  <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Process</Button>
+                  <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+                </CardBody>
+              </Card>
             </Card>
-          </Col>
+          </Col> 
         </Row>
-      </div>
-    )
+      </div>)
   }
 }
 

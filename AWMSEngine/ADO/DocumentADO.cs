@@ -523,15 +523,16 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<SPOutDocItemQueueProcess> ProcessQueueByDocItemID(long? docItemID, int pickOrderBy, string pickBy, string stampDate, string batch, string orderNo, VOCriteria buVO)
+        public List<SPOutDocItemQueueProcess> ProcessQueueByDocItemID(long? docItemID, int pickOrderBy, string pickBy, string stampDate, string orderNo, string batch, decimal qty, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("DOCITEM_ID", docItemID);
             param.Add("PICK_ORDER_BY", pickOrderBy);
             param.Add("PICK_BY", pickBy);
-            param.Add("STAMP_DATE", stampDate);
-            param.Add("BATCH", batch);
+            param.Add("LOT", stampDate);
             param.Add("ORDER_NO", orderNo);
+            param.Add("BATCH", batch);
+            param.Add("QTY", qty);
 
             var res = this.Query<SPOutDocItemQueueProcess>("SP_DOCITEM_QUEUE_PROCESS",
                                 System.Data.CommandType.StoredProcedure,
@@ -540,7 +541,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public void CreateDocItemSto (long docItemID, long stoID, decimal qty, int unitTypeID, decimal baseQty, int baseUnitTypeID, VOCriteria buVO)
+        public void CreateDocItemSto (long docItemID, long? stoID, decimal qty, long? unitTypeID, decimal baseQty, long? baseUnitTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("DOCITEM_ID", docItemID);
