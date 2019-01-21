@@ -12,7 +12,7 @@ const Dashboard = Loadable({
   loading: Loading,
 });
 
-/* const Products = Loadable({
+ const Products = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Product'),
   loading: Loading,
 });
@@ -25,14 +25,14 @@ const Pack = Loadable({
 const PackType = Loadable({
   loader: () => import('./views/Warehouse/MasterData/PackType'),
   loading: Loading,
-}); */
+}); 
 
 const Barcode = Loadable({
   loader: () => import('./views/Warehouse/Barcode'),
   loading: Loading,
 });
 
-/* const Customer = Loadable({
+ const Customer = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Customer'),
   loading: Loading,
 });
@@ -135,7 +135,7 @@ const WebPage = Loadable({
 const WebPageGroup = Loadable({
   loader: () => import('./views/Warehouse/MasterData/WebPageGroup'),
   loading: Loading,
-}); */
+}); 
 
 const Storage = Loadable({
   loader: () => import('./views/Warehouse/StorageReport/StorageReport'),
@@ -205,10 +205,10 @@ const Stockview = Loadable({
   loader: () => import('./views/Warehouse/Stockview'),
   loading: Loading,
 });
-const StockCard = Loadable({
-  loader: () => import('./views/Warehouse/StockCard'),
-  loading: Loading,
-});
+  const StockCard = Loadable({
+    loader: () => import('./views/Warehouse/StockcardReport/StockcaedReport'),
+    loading: Loading,
+  });
 
 const CurrentInv = Loadable({
   loader: () => import('./views/Warehouse/CurrentReport/CurrentReport'),
@@ -309,13 +309,18 @@ const AuditDoc = Loadable({
   loading: Loading,
 });
 
+const AuditCreate = Loadable({
+  loader: () => import('./views/Warehouse/Audit/AuditCreateDoc/AuditCreateDoc'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  /*{ path: '/mst/sku/manage', exact: true, name: 'Setting / SKU', component: Products },
+  { path: '/mst/sku/manage', exact: true, name: 'Setting / SKU', component: Products },
   { path: '/mst/catagory/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
   { path: '/mst/pack/manage', exact: true, name: 'Setting / SKU Package', component: Pack },
   { path: '/mst/packtype/manage', exact: true, name: 'Setting / Pack Type', component: PackType },
@@ -341,7 +346,7 @@ const routes = [
   { path: '/mst/unittype/manage', exact: true, name: 'Setting / Unit Type', component: UnitType },
   { path: '/mst/webcontrol/manage', exact: true, name: 'Setting / Web Control', component: WebControl },
   { path: '/mst/webpage/manage', exact: true, name: 'Setting / Web Page', component: WebPage },
-  { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup }, */
+  { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup }, 
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Receive / Search Receive', component: InboundView },
@@ -359,7 +364,7 @@ const routes = [
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
-  { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
+    { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'Report / Current Inventory', component: CurrentInv },
   { path: '/doc/gr/view', exact: true, name: 'Receive Document', component: StorageDetail },
@@ -374,13 +379,14 @@ const routes = [
   { path: '/wm/issue/manage', exact: true, name: 'Issue / Create Queue', component: CreateQueue },
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
   { path: '/sys/sto/progress', exact: true, name: 'Dashboard / Picking Progress', component: TaskList },
-  { path: '/wm/queue/manage', exact: true, name: 'Queue View', component: QueueView },
+  { path: '/sys/gr/progress?IOType=IN', exact: true, name: 'Recieve Queue View', component: QueueView },
+  { path: '/sys/gi/progress?IOType=OUT', exact: true, name: 'Issue Queue View', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
   { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
-  { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
+  //{ path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
 ];
 
 export default routes;
