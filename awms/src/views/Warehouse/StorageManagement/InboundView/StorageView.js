@@ -138,7 +138,7 @@ class IssuedDoc extends Component {
       { Header: '', Type: "selectrow", sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50 },
       { accessor: 'EventStatus', Header: 'Doc Status', editable: false, Filter: "dropdown", Type: "DocumentEvent", fixed: "left", minWidth: 120 },
       { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gr/view?docID=' + e.original.ID)} >{e.original.DocumentType_ID === 1101 ? e.original.CodeDocItem : e.original.Code}</a> },
-      { accessor: 'Super', Header: 'AMWS Ref.', editable: false, Filter: "text" },
+      { accessor: 'Super', Header: 'AWMS Ref.', editable: false, Filter: "text" },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
       { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
