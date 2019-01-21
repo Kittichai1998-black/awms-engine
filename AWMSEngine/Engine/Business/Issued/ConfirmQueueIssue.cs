@@ -59,9 +59,9 @@ namespace AWMSEngine.Engine.Business.Issued
             return res;
         }
 
-            private SPworkQueue CreateQIssue(List<amt_DocumentItem> docItems, StorageObjectCriteria mapsto, int priority, DateTime actualTime)
+            private SPworkQueue CreateQIssue(List<amt_DocumentItem> docItems, StorageObjectCriteria mapsto, int priority, DateTime actualTime,long souAreaID)
         {
-            var souAreas = ADO.AreaADO.GetInstant().ListDestinationArea(mapsto.areaID, null, this.BuVO);
+            var souAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, souAreaID, this.BuVO);
             var souAreaDefault = souAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
             SPworkQueue res = new SPworkQueue();
             SPworkQueue workQ = new SPworkQueue()
