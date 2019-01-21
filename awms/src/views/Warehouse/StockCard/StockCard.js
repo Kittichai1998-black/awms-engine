@@ -40,6 +40,17 @@ class StockCard extends Component {
         l: 0,
         all: "",
       },
+      SKUMaster: {
+        queryString: window.apipath + "/api/mst",
+        t: "PackMSKUMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "ID,concat(Code,' : ',Name) as PackName , Code",
+        g: "",
+        s: "[{'f':'Code','od':'asc'}]",
+        sk: 0,
+        l: 0,
+        all: "",
+      },
       Document: {
         queryString: window.apipath + "/api/trx",
         t: "Document",
@@ -70,11 +81,11 @@ class StockCard extends Component {
   }
   async componentWillMount() {
     document.title = "Stock Card : AWMS";
-    Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
+    Axios.get(createQueryString(this.state.SKUMaster)).then((response) => {
       const PackMasterdata = []
       response.data.datas.forEach(row => {
         var PackData = row.PackName
-        PackMasterdata.push({ label: PackData, value: row.Code })
+        PackMasterdata.push({ label: PackData, value: row.ID })
       })
       this.setState({ PackMasterdata })
     })
