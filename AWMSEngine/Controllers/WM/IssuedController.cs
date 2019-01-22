@@ -92,16 +92,6 @@ namespace AWMSEngine.Controllers.WM
             return res;
         }
 
-        [HttpPost("doc/return")]
-        public dynamic DocReturn([FromBody] dynamic req)
-        {
-            ReturnSKUAPI exec = new ReturnSKUAPI(this);
-            var res = exec.Execute(req);
-            return res;
-        }
-
-
-
 
     }
 }

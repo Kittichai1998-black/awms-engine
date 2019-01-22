@@ -11,6 +11,9 @@ namespace AWMSModel.Criteria.SP.Response
         public string code;
         public string name;
         public StorageObjectType objectType;
+        public string lot;
+        public string batch;
+        public string orderNo;
 
         public long docItemID;
 
@@ -30,6 +33,14 @@ namespace AWMSModel.Criteria.SP.Response
         public decimal packBaseQty;
         public long packBaseUnitID;
         public string packBaseUnitCode;
+
+        public decimal distoQty;
+        public long distoUnitID;
+        public string distoUnitCode;
+
+        public decimal distoBaseQty;
+        public long distoBaseUnitID;
+        public string distoBaseUnitCode;
 
         public int areaID;
         public string areaCode;

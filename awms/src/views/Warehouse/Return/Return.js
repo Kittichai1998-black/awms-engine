@@ -11,6 +11,7 @@ import {
 import ReactTable from 'react-table';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 import { error } from 'util';
+import _ from "lodash";
 
 const Axios = new apicall()
 
@@ -33,8 +34,8 @@ class Return extends Component {
       DocumentItemSto: {
         queryString: window.apipath + "/api/viw",
         t: "DocItemSto",
-        q: "[{ 'f': 'EventStatus', c:'!=', 'v': 24}]",
-        f: "*",
+        q: "[{ 'f': 'Status', c:'!=', 'v': 2 }]",
+        f: "ID,Document_ID,Code,Quantity,OrderNo,Batch,Lot,QtySto,EventStatus,UnitType_ID,UnitTypeCode,UnitTypeName",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: "",
@@ -108,18 +109,20 @@ class Return extends Component {
       unittypeCode:[],
       dataSKUinPallet:[],
       Base:[],
-      check:""
+      check:"",
+      DocItemSto:[]
 
     }
 
     this.checkPallet = this.checkPallet.bind(this)
-    this.genDocItem = this.genDocItem.bind(this)
+    //this.genDocItem = this.genDocItem.bind(this)
     this.createDataCard = this.createDataCard.bind(this)
     this.mappingPallet = this.mappingPallet.bind(this)
     this.genUnitCode = this.genUnitCode.bind(this)
-    this.insertToDisto = this.insertToDisto.bind(this)
+    //this.insertToDisto = this.insertToDisto.bind(this)
     this.checkBase = this.checkBase.bind(this)
-    this.insertSKUtoOb = this.insertSKUtoOb.bind(this)
+    //this.insertSKUtoOb = this.insertSKUtoOb.bind(this)
+    this.genDocItemSto = this.genDocItemSto.bind(this)
   }
 
   async componentWillMount() {
@@ -157,7 +160,6 @@ checkBase(){
         Base.push({ value: row.ID,UnitType_ID:row.UnitType_ID})
       })
       this.setState({ Base})
-      this.setState({check:"insert"})
       this.checkPallet(true)
     }else{
       alert("Don't have pallet : "+this.state.barcode +" in system")
@@ -165,22 +167,28 @@ checkBase(){
   })
 }
 
-
-  genDocItem(data){ 
-    this.setState({docIDIssue:data})
-    let QueryDoc = this.state.DocItem
-    let JSONDoc = []
+genDocItemSto(data){ 
+  console.log(data)
+  this.setState({DocID:data})
+  let QueryDoc = this.state.DocumentItemSto
+  let JSONDoc = []
     JSONDoc.push({ "f": "Document_ID", "c": "=", "v":data})
     QueryDoc.q = JSON.stringify(JSONDoc)  
     Axios.get(createQueryString(QueryDoc)).then((response) => {
-      const IssueDocItem = []
-      response.data.datas.forEach( x => {
-        console.log(x)
-        IssueDocItem.push({value: x.ID, label:x.Code,code:x.Code,batch:x.Batch,lot:x.Lot,OrderNo:x.OrderNo,QuantityDocItem:x.Quantity,unitIDDocItem:x.UnitType_ID,baseQty:x.BaseQuantity,baseUnitID:x.BaseUnitType_ID,sku:x.SKUMaster_ID,ProductionDate:x.ProductionDate})
-      })
-      this.setState({IssueDocItem})
-    })
-  }
+      console.log(response)
+      const DocItemSto = []
+      if(response.data.datas.length !== 0){
+        response.data.datas.forEach( x => {
+          console.log(x) 
+          DocItemSto.push({value:x.ID,label:x.Code}) 
+        })       
+      }else{
+        DocItemSto.push({value:null,label:null})
+      }
+      this.setState({DocItemSto})
+   })
+ 
+}
 
 genUnitCode(data,flag){
   console.log(this.state.UnitType)
@@ -196,139 +204,91 @@ genUnitCode(data,flag){
     })
 }
 
-  mappingPallet(data,flag){
-    console.log(data)
-    let postdata = {  
-      scanCode: this.state.barcode
-      , amount: 1
-      , areaID: this.state.AreaID
-      , action: 1
-      , mode: 0
-      , options: null
-      , unitCode: data
-      , warehouseID: 1
-      , mapsto: null
-      , isRoot: true
-    }
-    console.log(postdata)
-    Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
-      console.log(res)
-      if (res.data._result.status === 1) {
-        if(this.state.check === "insert"){
-      var card =this.createDataCard(null,flag,res.data)  
-      this.setState({card})
-        }else{
-          res.data.mapstos.forEach( row =>{
-            const dataSKUinPallet = []
-            row.mapstos.forEach( x=>{
-              console.log(x)
-              dataSKUinPallet.push({id:x.id,sku:x.code,qty:x.qty})
-            })
-            console.log(dataSKUinPallet)      
-            this.createDataCard(dataSKUinPallet,flag,null)  
-          })  
-        }
-    }
-    })
-  }
 
-  insertSKUtoOb(data,map){
-    let postdata = {   
+checkPallet(check){
+  console.log(this.state.docItem)
+  if(check === true){
+
+    console.log(this.state.barcode)
+    let QueryDoc = this.state.PalletSto
+    let JSONDoc = []
+    JSONDoc.push({ "f": "CodePallet", "c": "=", "v":this.state.barcode})
+    QueryDoc.q = JSON.stringify(JSONDoc)  
+      Axios.get(createQueryString(QueryDoc)).then((response) => {
+      const dataPallet = []
+      if( response.data.datas.length === 0){
+              this.setState({check:"insert"})
+        //==== ไม่มีข้อมูลใน stoOb ====
+        // this.state.Base.forEach( x =>{
+        //   //this.genUnitCode(x.UnitType_ID,true) 
+        // })
+        this.mappingPallet(true)
+      }else{
+          //==== เช็ค pallet ====
+           //Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => { })
+        var checkPallet = true
+
+          if(checkPallet === true){
+            //เพิ่มได้
+            this.mappingPallet(true)
+          }else{
+            //เพิ่มไม่ได้
+            alert("Cannot use Pallter : "+this.state.barcode)   
+          }          
+      } 
+    })   
+  }
+}
+
+  mappingPallet(flag){
+
+    console.log(flag)
+    if(flag === true){
+      let postdata = {  
         scanCode: this.state.barcode
-        , OrderNo : this.state.docItem.OrderNo
-        , batch : this.state.docItem.batch
-        , lot: this.state.docItem.lot
-        , unitCode : data
-        , amount: this.state.dataValue
-        , productDate : this.state.docItem.ProductionDate
+        , amount: 1
         , areaID: this.state.AreaID
         , action: 1
         , mode: 0
         , options: null
+        , unitCode: null
         , warehouseID: 1
-        , mapsto: map
-        , isRoot: true         
-    }
-    console.log(postdata)
-    //Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
-
-
-    //})
-  }
-
-  checkPallet(check){
-    console.log(this.state.docItem)
-    if(check === true){
-
-      console.log(this.state.barcode)
-      let QueryDoc = this.state.PalletSto
-      let JSONDoc = []
-      JSONDoc.push({ "f": "CodePallet", "c": "=", "v":this.state.barcode})
-      QueryDoc.q = JSON.stringify(JSONDoc)  
-        Axios.get(createQueryString(QueryDoc)).then((response) => {
-        const dataPallet = []
-        if( response.data.datas.length === 0){
-          this.state.Base.forEach( x =>{
-            this.genUnitCode(x.UnitType_ID,true) 
-          })
-          
-        }else{
-          response.data.datas.forEach( x => {
-            dataPallet.push({value:x.ID,batch:x.Batch,lot:x.Lot,OrderNo:x.OrderNo,pallet:x.CodePallet,code:x.Code,area:x.AreaMaster_ID,unitType:x.UnitTypePallet})
-            })
-            this.setState({dataPallet},()=>{
-
-    
-              if(this.state.docItem.batch === null || this.state.docItem.batch  === ""){
-                this.state.docItem.batch = null
-              }
-              if(this.state.docItem.OrderNo  === null || this.state.docItem.OrderNo   ===" "){
-                this.state.docItem.OrderNo  = null
-              }
-              if(this.state.docItem.lot === null || this.state.docItem.lot  === ""){
-                this.state.docItem.lot = null
-              }
-    
-              this.state.dataPallet.forEach(data =>{
-                if(data.batch === null || data.batch === ""){
-                  data.batch = null
-                }
-                if(data.lot === null || data.lot === ""){
-                  data.lot = null
-                }
-                if(data.OrderNo === null || data.OrderNo === ""){
-                  data.OrderNo = null
-                }
-                this.state.UnitType = data.unitType
+        , mapsto: null
+        , isRoot: true
+      }
+      console.log(postdata)
+      Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
+        console.log(res)
+        if (res.data._result.status === 1) {
+          if(this.state.check === "insert"){
+            var card =this.createDataCard(null,false)  
+            this.setState({card})
+          }else{
+            //==== แสดงข้อมูล
+            res.data.mapstos.forEach( row =>{
+              const dataSKUinPallet = []
+              row.mapstos.forEach( x=>{
+                console.log(x)
+                dataSKUinPallet.push({id:x.id,sku:x.code,qty:x.qty})
               })
-              
-                var result = this.state.dataPallet.filter(x=> x.batch === this.state.docItem.batch && 
-                  x.lot === this.state.docItem.lot &&
-                  x.OrderNo === this.state.docItem.OrderNo && 
-                  x.pallet === this.state.barcode &&
-                  x.code === this.state.docItem.code)
-                var flag = false
-                if(result.length != 0){
-                  //เพิ่มได้
-                  flag = true
-                  
-                }else{
-                  //เพิ่มไม่ได้
-                  flag = false
-                }
-                this.genUnitCode(this.state.UnitType,flag)  
-          })   
-        } 
-      })   
+              console.log(dataSKUinPallet)      
+              this.createDataCard(dataSKUinPallet,true)  
+            })  
+          }
+      }
+      })
+    }else{
+console.log("อิอิ")
     }
+
   }
 
 
-  createDataCard(data,flag,map){
 
-    if(flag){ //เพิ่มได้
+  createDataCard(data,flag){
+//เพิ่มได้
       console.log(data)
-      if(data === null){
+      if(flag === false){
 
         return <Card>
             <CardBody>
@@ -336,46 +296,50 @@ genUnitCode(data,flag){
               <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> - &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> - </div>
               <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
               <div><label  style={{fontWeight:"bolder"}}>Code : </label> {this.state.docItem.code}</div>
-              <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={this.state.docItem.QuantityDocItem} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  onChange={(e) => {
-              this.ChangeData(e, e.target.value) }}/> / {this.state.docItem.QuantityDocItem}</div>
-              <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {this.state.unittypeCode}</div><br/>
-              <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.insertSKUtoOb(data,map)}} color="primary" id="per_button_confirm">Confirm</Button></div>
+              <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> 
+              {/* <Input defaultValue={} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  onChange={(e) => {
+              this.ChangeData(e, e.target.value) }}/>  */}
+              / {}</div>
+              <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {}</div><br/>
+              <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {}} color="primary" id="per_button_confirm">Confirm</Button></div>
             </CardBody>
           </Card>
         
       }else{
         let QueryDoc = this.state.DocumentItemSto
         let JSONDoc = []
-        JSONDoc.push({"f": "Status", "c":"=", "v": 1, "f": "Document_ID", "c": "=", "v": this.state.docIDIssue })
+        JSONDoc.push({"f": "Status", "c":"=", "v": 1, "f": "Document_ID", "c": "=", "v": this.state.DocID })
         QueryDoc.q = JSON.stringify(JSONDoc)
+        let Doc = []
         data.forEach(dataPallet =>{
         Axios.get(createQueryString(QueryDoc)).then((res) => {
           console.log(res)
-          var dataCard = res.data.datas.map((list,index) => {
-           
-              console.log(dataPallet.sku)
-          return <Card key={index}>
-            <CardBody>
-              <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
-              <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {dataPallet.sku}&nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {dataPallet.qty} </div>
-              <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
-              <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.Code}</div>
-              <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  onChange={(e) => {
-              this.ChangeData(e, e.target.value) }}/> / {this.state.docItem.QuantityDocItem}</div>
-              <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.UnitTypeName}</div><br/>
-              <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.insertToDisto(dataPallet.id)}} color="primary" id="per_button_confirm">Confirm</Button></div>
-            </CardBody>
-          </Card>
-            
-          })
-            this.setState({displayDataCard : dataCard})
-          })
+
+          
         })
-      }
-    }else{
-      //เพิ่มไม่ได้
-     alert("Cannot use Pallter : "+this.state.barcode)     
-    }
+
+          //groupbyแล้วsum
+          // var dataCard = res.data.datas.map((list,index) => {
+           
+          //     console.log(dataPallet.sku)
+          // return <Card key={index}>
+          //   <CardBody>
+          //     <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
+          //     <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {dataPallet.sku}&nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {dataPallet.qty} </div>
+          //     <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
+          //     <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.Code}</div>
+          //     <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
+          //     onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {this.state.docItem.QuantityDocItem}</div>
+          //     <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.UnitTypeName}</div><br/>
+          //     <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {}} color="primary" id="per_button_confirm">Confirm</Button></div>
+          //   </CardBody>
+          // </Card>
+            
+          // })
+            //this.setState({displayDataCard : dataCard})
+         
+        })
+      }   
   }
 
   
@@ -385,45 +349,11 @@ genUnitCode(data,flag){
     console.log(dataValue)
   }
   
-insertToDisto(StoId){
-    this.state.IssueDocItem.forEach(x=>{
-      if(this.state.dataValue !== undefined){
-        let  postdata = {  
-          ID: null
-          , documentItemID: x.value
-          , StorageObjectID: StoId
-          , qty: this.state.dataValue
-          , unitID: x.unitIDDocItem
-          , baseUnitID: x.baseUnitID
-          , status: 1
-          , actionBy: localStorage.User_ID 
-          , sku: x.sku
-        }
-        console.log(postdata)
-          Axios.post(window.apipath + "/api/wm/issued/doc/return",postdata).then((res) => {
-            if(res.data._result.status === 1){
-              window.success(res.data._result.message)
-            }else{
-              alert(res.data._result.message)
-            }
-          })
-          }else{
-
-            alert("Please input Qty for SKU")
-
-          }
-      })
-
-}
-
-
-
-
   dropdownAuto() {
     return <div>
       <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Issue Doc : </label><br/>
       <div style={{textAlign:"center", display: "inline-block", width: "100%"}}>
-        <AutoSelect data={this.state.IssueDocdata} result={(res) => {this.genDocItem(res.value) }} />
+        <AutoSelect data={this.state.IssueDocdata} result={(res) => {this.genDocItemSto(res.value) }} />
       </div>
     </div>
   }
@@ -435,8 +365,8 @@ insertToDisto(StoId){
         
           {this.dropdownAuto()}       
 
-          <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>SKU : </label><br/>
-          <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.IssueDocItem} result={(e) => this.setState({ "docItem": e})}  /></div><br/>
+          <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Item Return : </label><br/>
+          <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.DocItemSto} result={(e) => this.setState({ "docItem": e})}  /></div><br/>
     
           <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Area : </label><br/>
           <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.AreaData} result={(e) => this.setState({ "AreaID": e.value})}  /></div><br/>
