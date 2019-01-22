@@ -25,7 +25,7 @@ export default class Datepicker extends Component{
 
     render(){
         return(
-            <DatePicker selected={this.state.date}
+            <DatePicker  selected={this.state.date}
                 customInput={<Input/>}
                 onChange={(e) => {
                     if(e.isValid() && e !== null){

@@ -63,19 +63,19 @@ class StoragReport extends Component {
   render() {
 
     let cols = [
-      { accessor: 'Pallet', Header: 'Pallet', Filter: "text", sortable: false, },
-      { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text", sortable: false, },
+      { accessor: 'Pallet', Header: 'Pallet', Filter: "text", sortable: true, },
+      { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text", sortable: true, },
       { accessor: 'Area', Header: 'Area', Filter: "text", sortable: true },
       { accessor: 'Location', Header: 'Location', Filter: "text", sortable: true },
-      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: "text", sortable: false, },
-      { accessor: 'SKU_Name', Header: 'SKU Name', Filter: "text", sortable: false, },
+      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: "text", sortable: true, },
+      { accessor: 'SKU_Name', Header: 'SKU Name', Filter: "text", sortable: true, },
       { accessor: 'Batch', Header: 'Batch', Filter: "text", sortable: true },
       { accessor: 'Lot', Header: 'Lot', Filter: "text", sortable: true },
       { accessor: 'OrderNo', Header: 'OrderNo', Filter: "text", sortable: true },
-      { accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: false, },
-      { accessor: 'Base_Unit', Header: 'Unit', Filter: "text", sortable: false, },
-      { accessor: 'WeiPallet', Header: 'Weight Pallet', Filter: "text", sortable: false, },
-      { accessor: 'WeiPack', Header: 'Weight Pack', Filter: "text", sortable: false, },
+      { accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: true, },
+      { accessor: 'Base_Unit', Header: 'Unit', Filter: "text", sortable: true, },
+      { accessor: 'WeiPallet', Header: 'Weight Pallet', Filter: "text", sortable: true, },
+      { accessor: 'WeiPack', Header: 'Weight Pack', Filter: "text", sortable: true, },
       { accessor: 'Status', Header: 'Status', Filter: "text", sortable: true },
       { accessor: 'Receive_Time', Header: 'Receive Time', Filter: "text", sortable: true },
     ];
