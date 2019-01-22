@@ -104,8 +104,8 @@ class AuditQueue extends Component{
           }
         });
 
-        var queueTable = <ReactTable data={queueList} editable={false} filterable={false}
-        columns={[{ accessor: 'palletCode', Header: 'Pallet Code'},
+        var queueTable = <ReactTable data={queueList} editable={false} filterable={false} defaultPageSize="2000"
+        showPageSizeOptions={false} columns={[{ accessor: 'palletCode', Header: 'Pallet Code'},
         { accessor: 'packCode', Header: 'Pack Code'}]}/>
 
         this.setState({queueTable, docID})
@@ -138,9 +138,6 @@ class AuditQueue extends Component{
           </Col>
           <Col sm="6">
             {this.state.docID === undefined ? null : <Card style={{padding:"30px"}}>
-              <Row>
-                {this.state.docID}
-              </Row>
               <Row>
                 {this.state.queueTable}
               </Row>

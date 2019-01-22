@@ -22,17 +22,14 @@ class CurrentReport extends Component {
         queryString: window.apipath + "/api/viw",
         t: "r_CurrentInventory",
         q: '',
-        f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit",
+        f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit,Batch,OrderNo,Lot",
         g: "",
         s: "[{'f':'SKU_Code','od':'asc'}]",
         sk: 0,
         l: 100,
         all: "",
       },
-
     }
-
-
   }
 
   componentDidMount() {
@@ -88,6 +85,9 @@ class CurrentReport extends Component {
       { accessor: 'SKU_Code', Header: 'SKU_Code', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 130 },
       { accessor: 'SKU_Name', Header: 'SKU_Name', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 250 },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: true },
+      { accessor: 'Batch', Header: 'Batch', filterable:false, sortable: true },
+      { accessor: 'Lot', Header: 'Lot', filterable:false, sortable: true },
+      { accessor: 'OrderNo', Header: 'OrderNo', filterable:false, sortable: true },
       { accessor: 'Qty', Header: 'Qty', filterable:false, sortable: true },
       { accessor: 'Base_Unit', Header: 'Base_Unit', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 130 },
     ];

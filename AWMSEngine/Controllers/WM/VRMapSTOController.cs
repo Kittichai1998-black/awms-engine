@@ -34,5 +34,11 @@ namespace AWMSEngine.Controllers.WM
             return exec.Execute(req);// exec.Execute(datas);
         }
 
+        [HttpPost("return")]
+        public dynamic Reurn(dynamic datas)
+        {
+            ScanMapStoAPI exec = new ScanMapStoAPI(this);
+            return exec.Execute(datas);
+        }
     }
 }

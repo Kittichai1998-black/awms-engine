@@ -46,6 +46,8 @@ class IssuedDoc extends Component {
         console.log(res)
         if (res.data._result.status === 1) {
           res.data.document.documentItems.forEach(x => {
+
+            console.log(x)
             this.setState({
               batch: x.batch,
               lot: x.lot,
@@ -74,18 +76,20 @@ class IssuedDoc extends Component {
 
           this.renderDocumentStatus();
           var groupPack = _.groupBy(res.data.bstos, "code")
-          var groupdocItemID = _.groupBy(res.data.bstos, "docItemID")
+          var groupdocItemID = _.groupBy(res.data.document.documentItems, "id")
+          console.log(groupPack)
+          console.log(groupdocItemID)
           let sumArr = []
-          let sumArr1 = []
+           let sumArr1 = []
 
           for (let res1 in groupdocItemID) {
             let sum = 0
             groupdocItemID[res1].forEach(res2 => {
-              sum += res2.packQty
+              sum += res2.quantity
               res2.sumQty1 = sum
-              res2.batch = this.state.batch
-              res2.lot = this.state.lot
-              res2.orderNo = this.state.orderNo
+              // res2.batch = this.state.batch
+              // res2.lot = this.state.lot
+              // res2.orderNo = this.state.orderNo
               res2.quantityDoc = this.state.quantityDoc
 
 
@@ -93,12 +97,15 @@ class IssuedDoc extends Component {
 
             sumArr1.push(groupdocItemID[res1][groupdocItemID[res1].length - 1])
           }
-
+          console.log(sumArr1)
 
           for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              sum += res2.packBaseQty
+              // res2.batch = this.state.batch
+              // res2.lot = this.state.lot
+              // res2.orderNo = this.state.orderNo
+              sum += res2.distoQty
               res2.sumQty = sum
               sumArr.forEach(response => {
                 if (response.code === res2.code) {
@@ -158,8 +165,8 @@ class IssuedDoc extends Component {
 
   render() {
     const cols = [
-      { accessor: 'packCode', Header: 'SKUCode', editable: false, },
-      { accessor: 'packName', Header: 'SKUName', editable: false, },
+      { accessor: 'packMaster_Code', Header: 'SKUCode', editable: false, },
+      { accessor: 'packMaster_Name', Header: 'SKUName', editable: false, },
 
       { accessor: 'batch', Header: 'Batch', editable: false, },
       { accessor: 'lot', Header: 'Lot', editable: false, },
@@ -169,7 +176,7 @@ class IssuedDoc extends Component {
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
       },
-      { accessor: 'packUnitCode', Header: 'Unit', editable: false, },
+      { accessor: 'unitType_Code', Header: 'Unit', editable: false, },
 
     ];
     const colsdetail = [
