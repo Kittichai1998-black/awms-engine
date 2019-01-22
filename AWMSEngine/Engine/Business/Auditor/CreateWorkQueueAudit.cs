@@ -87,24 +87,16 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                 foreach(var sto in stoList)
                 {
-                    var packMapsto = ADO.StorageObjectADO.GetInstant().Get(docItem.PackMaster_ID.Value, StorageObjectType.PACK, false, false, this.BuVO);
-                    if (packMapsto != null)
+                    disto.Add(new amt_DocumentItemStorageObject()
                     {
-                        disto.Add(new amt_DocumentItemStorageObject()
-                        {
-                            ID = (long?)null,
-                            DocumentItem_ID = docItem.ID.Value,
-                            StorageObject_ID = packMapsto.id.Value,
-                            BaseQuantity = (decimal?)null,
-                            Quantity = (decimal?)null,
-                            BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                            UnitType_ID = docItem.UnitType_ID.Value
-                        });
-                    }
-                    else
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่มีสินค้าในระบบ");
-                    }
+                        ID = (long?)null,
+                        DocumentItem_ID = docItem.ID.Value,
+                        StorageObject_ID = sto.ID.Value,
+                        BaseQuantity = (decimal?)null,
+                        Quantity = (decimal?)null,
+                        BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
+                        UnitType_ID = docItem.UnitType_ID.Value
+                    });
                 }
             }
 

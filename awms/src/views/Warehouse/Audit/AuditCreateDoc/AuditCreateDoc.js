@@ -173,13 +173,16 @@ class IssuedManage extends Component {
     let listAudit = [];
     this.state.data.forEach(row => {
       var createOptions = "";
-      if(row.palletCode !== undefined || row.palletCode !== ""){
+      if(row.palletCode !== undefined){
+        if(row.palletCode !== "")
         createOptions += "palletCode=" + row.palletCode;
       }
-      if(row.locationCode !== undefined || row.locationCode !== ""){
+      if(row.locationCode !== undefined){
         if(createOptions !== "")
+          if(row.locationCode !== "")
           createOptions += "&locationCode=" + row.locationCode; 
         else
+        if(row.locationCode !== "")
           createOptions += "locationCode=" + row.locationCode;
       }
       listAudit.push({
@@ -214,7 +217,6 @@ class IssuedManage extends Component {
         "documentDate": this.DateNow.format("YYYY/MM/DD"),
         "docItems": listAudit
     };
-    console.log(createAuditData)
     if (listAudit.length > 0) {
       Axios.post(window.apipath + "/api/wm/audit/doc/Create", createAuditData).then((res) => {
         if (res.data._result.status === 1) {
