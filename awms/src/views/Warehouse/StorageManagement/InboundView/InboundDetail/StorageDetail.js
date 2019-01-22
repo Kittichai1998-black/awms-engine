@@ -45,8 +45,6 @@ class IssuedDoc extends Component {
       Axios.get(window.apipath + "/api/wm/received/doc/?docID=" + ID + "&getMapSto=true").then(res => {
         console.log(res)
         if (res.data._result.status === 1) {
-            //           var group = _.groupBy(res.data.document.documentItems, "id")
-            // console.log(group)
           res.data.document.documentItems.forEach(x => {
 
             console.log(x)
@@ -89,9 +87,9 @@ class IssuedDoc extends Component {
             groupdocItemID[res1].forEach(res2 => {
               sum += res2.quantity
               res2.sumQty1 = sum
-              res2.batch = this.state.batch
-              res2.lot = this.state.lot
-              res2.orderNo = this.state.orderNo
+              // res2.batch = this.state.batch
+              // res2.lot = this.state.lot
+              // res2.orderNo = this.state.orderNo
               res2.quantityDoc = this.state.quantityDoc
 
 
@@ -104,9 +102,9 @@ class IssuedDoc extends Component {
           for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              res2.batch = this.state.batch
-              res2.lot = this.state.lot
-              res2.orderNo = this.state.orderNo
+              // res2.batch = this.state.batch
+              // res2.lot = this.state.lot
+              // res2.orderNo = this.state.orderNo
               sum += res2.distoQty
               res2.sumQty = sum
               sumArr.forEach(response => {
