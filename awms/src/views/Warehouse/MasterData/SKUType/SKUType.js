@@ -142,7 +142,7 @@ class SKUMasterType extends Component {
       { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40  },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 120 },
-      { accessor: 'ObjectSize_Code', Header: 'Default Object Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
+      { accessor: 'ObjectSize_Code', Header: 'Default Pack Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
       //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
       { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
       // { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 170 },

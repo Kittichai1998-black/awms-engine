@@ -36,40 +36,26 @@ namespace AWMSEngine.Engine.Business.Auditor
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + doc.ID);
 
-                if (reqVO.auto == 0)
+                if (doc.EventStatus != DocumentEventStatus.WORKING && doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING && doc.EventStatus != DocumentEventStatus.CLOSED)
                 {
-                    if (doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING && doc.EventStatus != DocumentEventStatus.CLOSED)
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKED ไม่สามารถ Close เอกสารได้ ");
-                    }
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKING และ WORKED ไม่สามารถ Close เอกสารได้ ");
+                }
 
-                    var docItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new KeyValuePair<string, object>[] {
+                var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(docID, this.BuVO);
+
+                if(disto.Any(x => x.Quantity == null))
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้ายังถูกตรวจสอบไม่ครบ ไม่สามารถปิดเอกสารได้");
+                }
+
+                var docItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new KeyValuePair<string, object>[] {
                     new KeyValuePair<string, object> ("Document_ID",docID)
                     }, this.BuVO);
 
-
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
-                    null, null,
-                    DocumentEventStatus.CLOSING,
-                    this.BuVO);
-                }
-                else
-                {
-                    if (doc.EventStatus != DocumentEventStatus.WORKING && doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING && doc.EventStatus != DocumentEventStatus.CLOSED)
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKING และ WORKED ไม่สามารถ Close เอกสารได้ ");
-                    }
-
-                    var docItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object> ("Document_ID",docID)
-                    }, this.BuVO);
-
-
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
-                    null, null,
-                    DocumentEventStatus.CLOSING,
-                    this.BuVO);
-                }
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
+                null, null,
+                DocumentEventStatus.CLOSING,
+                this.BuVO);
             }
             return null;
         }

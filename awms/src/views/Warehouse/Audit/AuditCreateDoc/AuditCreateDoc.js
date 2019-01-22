@@ -46,7 +46,7 @@ class IssuedManage extends Component {
         queryString: window.apipath + "/api/viw",
         t: "PackMaster",
         q: '[{ "f": "Status", "c":"=", "v": 1}]',
-        f: "id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType, UnitTypeCode, SKUMaster_ID",
+        f: "id, Code, Name, concat(SKUCode, ' : ', SKUName, ' : ' , UnitTypeName) AS SKU, UnitTypeName AS UnitType, UnitTypeCode, SKUMaster_ID",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -113,8 +113,8 @@ class IssuedManage extends Component {
           }, () => {
             this.state.data2.forEach(x=>{
               var qryStr = queryString.parse(x.options)
-              x.palletCode = qryStr.palletCode;
-              x.locationCode = qryStr.locationCode;
+              x.palletCode = qryStr.palletCode === "undefined" ? null : qryStr.palletCode;
+              x.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
             })
 
             this.forceUpdate();
@@ -173,13 +173,16 @@ class IssuedManage extends Component {
     let listAudit = [];
     this.state.data.forEach(row => {
       var createOptions = "";
-      if(row.palletCode !== undefined || row.palletCode !== ""){
+      if(row.palletCode !== undefined){
+        if(row.palletCode !== "")
         createOptions += "palletCode=" + row.palletCode;
       }
-      if(row.locationCode !== undefined || row.locationCode !== ""){
+      if(row.locationCode !== undefined){
         if(createOptions !== "")
+          if(row.locationCode !== "")
           createOptions += "&locationCode=" + row.locationCode; 
         else
+        if(row.locationCode !== "")
           createOptions += "locationCode=" + row.locationCode;
       }
       listAudit.push({
@@ -191,7 +194,7 @@ class IssuedManage extends Component {
         "expireDate":null,
         "productionDate":null,
         "orderNo":null,
-        "batch":row.Batch === undefined ? null : row.Batch,
+        "batch":row.batch === undefined ? null : row.batch,
         "lot":null,
         "ref1":null,
         "ref2":null,
@@ -214,7 +217,6 @@ class IssuedManage extends Component {
         "documentDate": this.DateNow.format("YYYY/MM/DD"),
         "docItems": listAudit
     };
-    console.log(createAuditData)
     if (listAudit.length > 0) {
       Axios.post(window.apipath + "/api/wm/audit/doc/Create", createAuditData).then((res) => {
         if (res.data._result.status === 1) {
@@ -262,7 +264,7 @@ class IssuedManage extends Component {
       }
       else {
         data[rowdata.index][field] = value.Code;
-        data[rowdata.index]["SKU"] = value.SKU;
+        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
         data[rowdata.index]["unitType_Name"] = value.UnitType;
         data[rowdata.index]["id"] = value.SKUMaster_ID;
@@ -273,7 +275,7 @@ class IssuedManage extends Component {
       let res = this.state.autocompleteUpdate
       this.state.data.forEach(datarow => {
         res = res.filter(row => {
-          return datarow[field] !== row.Code && datarow["UnitType"] !== row.UnitType
+          return datarow["SKU"] !== row.SKU && datarow["UnitTypeCode"] !== row.UnitType
         })
       })
       this.setState({ autocomplete: res })
@@ -351,7 +353,6 @@ class IssuedManage extends Component {
             backgroundRepeat: "no-repeat",
             paddingLeft: "25px",
             position: 'relative'
-
           }
         }}
         wrapperStyle={{ width: "100%" }}
@@ -360,7 +361,7 @@ class IssuedManage extends Component {
         items={this.state.autocomplete}
         shouldItemRender={(item, value) => item.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1}
         renderItem={(item, isHighlighted) =>
-          <div key={item.Code} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+          <div key={item.id} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
             {item.SKU}
           </div>
         }
@@ -371,7 +372,7 @@ class IssuedManage extends Component {
           });
           if (res.length === 1) {
             if (res[0].SKU === e.target.value)
-              this.editData(rowdata, res[0], rowdata.column.id)
+              this.editData(rowdata, res[0].SKU, rowdata.column.id)
             else
               this.editData(rowdata, e.target.value, rowdata.column.id)
           }

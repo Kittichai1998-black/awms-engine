@@ -45,32 +45,37 @@ class Audit extends Component{
     this.setState({palletCode:e.target.value})
   }
 
-  palletScan(){
+  palletScan() {
     return <Card style={this.style}>
       <CardBody>
-        <div><label>Pallet Code : </label><input id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
-          if(e.key === "Enter"){
+        <label className="float-left" style={{ paddingRight: "10px" }}>Pallet Code : </label>
+        <input style={{ width: "200px" }} id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
+          if (e.key === "Enter") {
             this.onHandleSetPalletCode();
           }
-        }}/></div>
-        {this.state.palletEdit ? <div><span onClick={() => {this.setState({palletComponent:true})}}>Cancel</span></div> : null}
+        }} />
+        {this.state.palletEdit ? <Button style={{ background: "#00701a", color: "white", width: "100px" }}
+          onClick={() => { this.setState({ palletComponent: true }) }}>Cancel</Button> : null}
       </CardBody>
     </Card>
   }
 
-  palletDisplay(){
+  palletDisplay() {
     return <Card style={this.style}>
-      <CardBody>
-        <div><label>Pallet Code : </label><span>{this.state.palletCode}</span></div>
-        <div><span onClick={() => {this.setState({palletComponent:false, palletEdit:true})}}>Edit</span></div>
+      <CardBody style={{ background: "#ffffff" }}>
+        <div><label>Pallet Code : </label><span style={{ width: '100px' }} >{this.state.palletCode}</span></div>
+        <div>
+          <Button style={{ background: "#006db3", color: "white", width: "100px" }}
+            onClick={() => { this.setState({ palletComponent: false, palletEdit: true }) }}>Edit</Button>
+        </div>
       </CardBody>
     </Card>
   }
 
   createAuditItem(){
-    let som_style = {background:"orange", color:"black"};
-    let full_style = {background:"green", color:"white"};
-    let no_style = {background:"gray", color:"white"};
+    let som_style = { background: "#ff8f00", color: "white" };
+    let full_style = { background: "#ef6c00", color: "white" };
+    let no_style = { background: "#f9a825", color: "white" };
 
     return this.state.itemLists.map((list,index) => {
       if(list.auditQty === undefined){

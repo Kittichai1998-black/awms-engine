@@ -664,7 +664,7 @@ class IssuedManage extends Component {
       { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
       //{accessor:"SKU",Header:"SKU",},
       { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("PackQty", e), datatype: "int" },
-      { accessor: "bath", Header: "Bath", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string" },
+      { accessor: "bath", Header: "Batch", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string" },
       { accessor: "lot", Header: "lot", editable: true, Cell: e => this.inputCell("lot", e), datatype: "string" },
       { accessor: "orderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("orderno", e), datatype: "string" },
       { accessor: "UnitType", Header: "Unit", },
@@ -791,7 +791,7 @@ class IssuedManage extends Component {
 
         <Card>
           <CardBody style={{ textAlign: 'right' }}>
-            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay }} color="primary" className="mr-sm-1">Create</Button>
+            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay}} color="primary" className="mr-sm-1">Create</Button>
             <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
