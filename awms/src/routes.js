@@ -386,7 +386,7 @@ const routes = [
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
   { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
-  //{ path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
+  { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
 ];
 
 export default routes;
