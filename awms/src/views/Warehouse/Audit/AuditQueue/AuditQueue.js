@@ -71,7 +71,7 @@ class AuditQueue extends Component{
 
   createDocItemList(){
     return this.state.document.documentItems.map(x => {
-      return <Card style={{width:"100%"}}>
+      return <Card style={{width:"100%", padding:'5px', margin:'5px 0'}}>
         <CardBody>
           <div>Item : {x.code}</div>
           <div>Unit : {x.unitType_Code}</div>
@@ -98,15 +98,17 @@ class AuditQueue extends Component{
       {
         var docID = res.data.docID;
         var queueList = res.data.listItems.map(x=> {
-          return <div><Card>
-            <CardBody>
-              <div><span>Pallet Code : </span><span>x.palletCode</span></div>
-              <div><span>Pack Code : </span><span>x.itemCode</span></div>
-            </CardBody>
-          </Card></div>
+          return {
+            palletCode:x.palletCode,
+            packCode:x.itemCode
+          }
         });
 
-        this.setState({queueList, docID})
+        var queueTable = <ReactTable data={queueList} editable={false} filterable={false}
+        columns={[{ accessor: 'palletCode', Header: 'Pallet Code'},
+        { accessor: 'packCode', Header: 'Pack Code'}]}/>
+
+        this.setState({queueTable, docID})
       }
     });
   }
@@ -129,6 +131,8 @@ class AuditQueue extends Component{
               <Row>
                 <Col sm="2"><span>Area : </span></Col><Col sm="10"><AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/></Col>
                 <Col sm="2"><span>Priority : </span></Col><Col sm="10"><AutoSelect data={this.priority} result={e => this.setState({priority:e.value})}/></Col>
+                
+                {this.state.document === null ? null : <Button style={{ background: "#d50000", color: "white", width: "150px",marginTop:'20px' }} onClick={this.onHandleCreateAuditQueue}>Create Queue</Button>}
               </Row>
             </Card>
           </Col>
@@ -138,12 +142,11 @@ class AuditQueue extends Component{
                 {this.state.docID}
               </Row>
               <Row>
-                {this.state.queueList}
+                {this.state.queueTable}
               </Row>
             </Card>}
             </Col>
         </Row>
-        {this.state.document === null ? null : <Button onClick={this.onHandleCreateAuditQueue}>Create Queue</Button>}
       </div>
     )
   }
