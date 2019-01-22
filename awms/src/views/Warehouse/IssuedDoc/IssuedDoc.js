@@ -219,7 +219,7 @@ class IssuedDoc extends Component {
       */}
         <div className="clearfix">
 
-          <Button id="per_button_doc" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+          <Button id="per_button_doc" style={{ width: '150px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
 
           {/* <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => {
             let data1 = { "exportName": "DocumentIssuedToShop", "whereValues": [this.state.date.format('YYYY-MM-DD')] }
