@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace AWMSEngine.Engine.Business.Issued
+namespace AWMSEngine.Engine.Business
 {
     public class InsertToDocItemSto : BaseEngine<InsertToDocItemSto.TDocReq, InsertToDocItemSto.TDocRes>
     {
@@ -34,6 +34,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
         protected override TDocRes ExecuteEngine(TDocReq reqVO)
         {
+
 
             var basemodel = this.StaticValue.ConvertToNewUnitBySKU(reqVO.sku, reqVO.qty, reqVO.unitID, reqVO.baseUnitID);
 
