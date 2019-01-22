@@ -43,7 +43,7 @@ class ExportFile extends Component {
          <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} className="float-right">
           <DropdownToggle caret color="warning">{iconprint} Export File</DropdownToggle>
           <DropdownMenu>
-            <ExportXSL column={this.props.column} dataxls={this.props.dataexp} filename={this.props.filename} autocomp={this.props.autocomp} enum={this.props.enum} />
+            <ExportXSL column={this.props.column} dataxls={this.props.dataexp} dataselect={this.props.dataselect} filename={this.props.filename} autocomp={this.props.autocomp} enum={this.props.enum} />
             {/*<DropdownItem onClick={() => {
               this.onLoadPDF()
             }}>{iconpdf} PDF</DropdownItem>*/}

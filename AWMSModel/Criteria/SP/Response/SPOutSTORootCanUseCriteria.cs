@@ -11,6 +11,9 @@ namespace AWMSModel.Criteria.SP.Response
         public string code;
         public string name;
         public StorageObjectType objectType;
+        public string lot;
+        public string batch;
+        public string orderNo;
 
         public long docItemID;
 
