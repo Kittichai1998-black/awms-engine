@@ -63,9 +63,9 @@ class ListProduct extends Component {
     if (CheckViewCreatePermission("SKU_view", dataGetPer)) {
       checkview = true //แสดงข้อมูลเฉยๆ
     }
-    if (CheckViewCreatePermission("SKU_create&modify", dataGetPer)) {
-      checkview = false //แก้ไข
-    }
+    //if (CheckViewCreatePermission("SKU_create&modify", dataGetPer)) {
+    ////  checkview = false //แก้ไข
+    //}
     if (checkview === true) {
       this.setState({ permissionView: false })
     } else if (checkview === false) {
