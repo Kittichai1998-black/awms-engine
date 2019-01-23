@@ -29,7 +29,7 @@ class AuditQueue extends Component{
     this.select =  {
       queryString: window.apipath + "/api/viw",
       t: "Document",
-      q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 2004},{ 'f': 'EventStatus', c:'=', 'v': 11}]",//,{ 'f': 'Status', c:'=', 'v': 1}
+      q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 2004},{ 'f': 'EventStatus', c:'=', 'v': 10}]",//,{ 'f': 'Status', c:'=', 'v': 1}
       f: "ID,Code",
       g: "",
       s: "[{'f':'ID','od':'desc'}]",
@@ -104,7 +104,7 @@ class AuditQueue extends Component{
           }
         });
 
-        var queueTable = <ReactTable data={queueList} editable={false} filterable={false} defaultPageSize="2000"
+        var queueTable = <ReactTable style={{width:"100%"}} data={queueList} editable={false} filterable={false} defaultPageSize="2000"
         showPageSizeOptions={false} columns={[{ accessor: 'palletCode', Header: 'Pallet Code'},
         { accessor: 'packCode', Header: 'Pack Code'}]}/>
 
