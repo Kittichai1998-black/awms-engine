@@ -20,7 +20,7 @@ class IssuedDoc extends Component {
 
     this.state = {
       data: [],
-      data2: []
+      data2: [],
 
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -45,6 +45,9 @@ class IssuedDoc extends Component {
       Axios.get(window.apipath + "/api/wm/received/doc/?docID=" + ID + "&getMapSto=true").then(res => {
         console.log(res)
         if (res.data._result.status === 1) {
+          if(res.data.bstos.length === 0){
+            this.setState({check :undefined})
+          }
           res.data.document.documentItems.forEach(x => {
 
             console.log(x)
@@ -74,10 +77,13 @@ class IssuedDoc extends Component {
           })
 
 
-          this.renderDocumentStatus();
+
           var groupPack = _.groupBy(res.data.bstos, "code")
           var groupdocItemID = _.groupBy(res.data.document.documentItems, "id")
           console.log(groupPack)
+          if(groupPack === null){
+            console.log("dd")
+          }
           console.log(groupdocItemID)
           let sumArr = []
            let sumArr1 = []
@@ -107,12 +113,15 @@ class IssuedDoc extends Component {
               // res2.orderNo = this.state.orderNo
               sum += res2.distoQty
               res2.sumQty = sum
+              console.log(sum)
+
               sumArr.forEach(response => {
                 if (response.code === res2.code) {
                   res2.code = "";
                 }
               })
             })
+            console.log(sum)
             sumArr.push(groupPack[res1][groupPack[res1].length - 1])
           }
 
@@ -122,9 +131,9 @@ class IssuedDoc extends Component {
           this.setState({ data2: sumArr }, () => {
             result.forEach(row1 => {
               sumQTYPack = 0
-
+console.log(row1)
               this.state.data2.forEach(row2 => {
-
+                console.log(row2)
                 if (row1.packMaster_Code === row2.packCode) {
                   sumQTYPack += row2.sumQty
                   row1.sumQty = sumQTYPack
@@ -136,6 +145,7 @@ class IssuedDoc extends Component {
           this.setState({ data: sumArr1 })
 
         }
+        console.log(this.state.data)
         console.log(this.state.data2)
 
       })
@@ -173,8 +183,8 @@ class IssuedDoc extends Component {
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
-          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty + ' / ' +
+          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
       { accessor: 'unitType_Code', Header: 'Unit', editable: false, },
 

@@ -791,7 +791,7 @@ class IssuedManage extends Component {
 
         <Card>
           <CardBody style={{ textAlign: 'right' }}>
-            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay}} color="primary" className="mr-sm-1">Create</Button>
+            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay }} color="primary" className="mr-sm-1">Create</Button>
             <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>

@@ -1236,9 +1236,10 @@ class TableGen extends Component {
       )
     } else if (this.props.exportfilebtn === false) {
       const datatable = [...this.state.data];
+      const selectdatas = Clone(this.props.data)
       return (
         <div>
-          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
+          <ExportFile column={this.props.column} dataexp={datatable} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
         </div>
       )
     } else {

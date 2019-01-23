@@ -33,9 +33,9 @@ class Return extends Component {
       },
       DocumentItemSto: {
         queryString: window.apipath + "/api/viw",
-        t: "DocItemSto",
+        t: "DocStoReturn",
         q: "[{ 'f': 'Status', c:'!=', 'v': 2 }]",
-        f: "ID,Document_ID,Code,Quantity,OrderNo,Batch,Lot,QtySto,EventStatus,UnitType_ID,UnitTypeCode,UnitTypeName",
+        f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: "",
@@ -110,7 +110,8 @@ class Return extends Component {
       dataSKUinPallet:[],
       Base:[],
       check:"",
-      DocItemSto:[]
+      DocItemSto:[],
+      show:"none"
 
     }
 
@@ -118,7 +119,7 @@ class Return extends Component {
     //this.genDocItem = this.genDocItem.bind(this)
     this.createDataCard = this.createDataCard.bind(this)
     this.mappingPallet = this.mappingPallet.bind(this)
-    this.genUnitCode = this.genUnitCode.bind(this)
+    //this.updateDocItemSto = this.updateDocItemSto(this)
     //this.insertToDisto = this.insertToDisto.bind(this)
     this.checkBase = this.checkBase.bind(this)
     //this.insertSKUtoOb = this.insertSKUtoOb.bind(this)
@@ -172,7 +173,7 @@ genDocItemSto(data){
   this.setState({DocID:data})
   let QueryDoc = this.state.DocumentItemSto
   let JSONDoc = []
-    JSONDoc.push({ "f": "Document_ID", "c": "=", "v":data})
+    JSONDoc.push({ "f": "ID", "c": "=", "v":data})
     QueryDoc.q = JSON.stringify(JSONDoc)  
     Axios.get(createQueryString(QueryDoc)).then((response) => {
       console.log(response)
@@ -180,7 +181,7 @@ genDocItemSto(data){
       if(response.data.datas.length !== 0){
         response.data.datas.forEach( x => {
           console.log(x) 
-          DocItemSto.push({value:x.ID,label:x.Code}) 
+          DocItemSto.push({value:x.DocItem,label:x.SKUCode}) 
         })       
       }else{
         DocItemSto.push({value:null,label:null})
@@ -188,20 +189,6 @@ genDocItemSto(data){
       this.setState({DocItemSto})
    })
  
-}
-
-genUnitCode(data,flag){
-  console.log(this.state.UnitType)
-    let QueryDoc = this.state.UnitTypeTable
-    let JSONDoc = []
-    JSONDoc.push({ "f": "ID", "c": "=", "v":data})
-    QueryDoc.q = JSON.stringify(JSONDoc)  
-    Axios.get(createQueryString(QueryDoc)).then((response) => {
-      response.data.datas.forEach( x => {
-       this.setState({unittypeCode:x.Code})
-      })
-    this.mappingPallet(this.state.unittypeCode,flag)   
-    })
 }
 
 
@@ -260,9 +247,13 @@ checkPallet(check){
       Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
         console.log(res)
         if (res.data._result.status === 1) {
-          if(this.state.check === "insert"){
-            var card =this.createDataCard(null,false)  
-            this.setState({card})
+
+          if(res.data.mapstos.length === 0){
+
+            // var card =this.createDataCard(null,false)  
+            // this.setState({card})
+            this.setState({show:"block"})
+            this.createDataCard(null,false)
           }else{
             //==== แสดงข้อมูล
             res.data.mapstos.forEach( row =>{
@@ -271,78 +262,76 @@ checkPallet(check){
                 console.log(x)
                 dataSKUinPallet.push({id:x.id,sku:x.code,qty:x.qty})
               })
-              console.log(dataSKUinPallet)      
+              console.log(dataSKUinPallet)  
+              this.setState({show:"block"})    
               this.createDataCard(dataSKUinPallet,true)  
             })  
           }
       }
       })
-    }else{
-console.log("อิอิ")
-    }
-
   }
 
-
+}
 
   createDataCard(data,flag){
 //เพิ่มได้
-      console.log(data)
-      if(flag === false){
+  let QueryDoc = this.state.DocumentItemSto
+  let JSONDoc = []
+  JSONDoc.push({"f": "Status", "c":"=", "v": 1, "f": "ID", "c": "=", "v": this.state.DocID })
+  QueryDoc.q = JSON.stringify(JSONDoc)
+  let Doc = []
+  if(flag === true){
 
-        return <Card>
-            <CardBody>
-              <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
-              <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> - &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> - </div>
-              <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
-              <div><label  style={{fontWeight:"bolder"}}>Code : </label> {this.state.docItem.code}</div>
-              <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> 
-              {/* <Input defaultValue={} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  onChange={(e) => {
-              this.ChangeData(e, e.target.value) }}/>  */}
-              / {}</div>
-              <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {}</div><br/>
-              <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {}} color="primary" id="per_button_confirm">Confirm</Button></div>
-            </CardBody>
-          </Card>
-        
-      }else{
-        let QueryDoc = this.state.DocumentItemSto
-        let JSONDoc = []
-        JSONDoc.push({"f": "Status", "c":"=", "v": 1, "f": "Document_ID", "c": "=", "v": this.state.DocID })
-        QueryDoc.q = JSON.stringify(JSONDoc)
-        let Doc = []
-        data.forEach(dataPallet =>{
-        Axios.get(createQueryString(QueryDoc)).then((res) => {
-          console.log(res)
-
+    data.forEach(dataPallet =>{
+      Axios.get(createQueryString(QueryDoc)).then((res) => {
+        var dataCard = res.data.datas.map((list,index) => {              
+            console.log(list)
+        return <Card key={index}>
+          <CardBody>
+            <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {dataPallet.qty}</div>
+            <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.SKUCode}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
+            onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {list.BaseQty}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.Unit}</div><br/>
+            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(true)}} color="primary" >Confirm</Button></div>
+          </CardBody>
+        </Card>
           
         })
-
-          //groupbyแล้วsum
-          // var dataCard = res.data.datas.map((list,index) => {
-           
-          //     console.log(dataPallet.sku)
-          // return <Card key={index}>
-          //   <CardBody>
-          //     <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
-          //     <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {dataPallet.sku}&nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {dataPallet.qty} </div>
-          //     <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
-          //     <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.Code}</div>
-          //     <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
-          //     onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {this.state.docItem.QuantityDocItem}</div>
-          //     <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.UnitTypeName}</div><br/>
-          //     <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {}} color="primary" id="per_button_confirm">Confirm</Button></div>
-          //   </CardBody>
-          // </Card>
-            
-          // })
-            //this.setState({displayDataCard : dataCard})
-         
+          this.setState({displayDataCard : dataCard})
         })
-      }   
+      }) 
+  }else{
+      Axios.get(createQueryString(QueryDoc)).then((res) => {
+        var dataCard = res.data.datas.map((list,index) => {              
+            console.log(list)
+        return <Card key={index}>
+          <CardBody>
+            <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {" - "} &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {" - "}</div>
+            <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.SKUCode}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
+            onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {list.BaseQty}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.Unit}</div><br/>
+            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(true)}} color="primary" >Confirm</Button></div>
+          </CardBody>
+        </Card>
+          
+        })
+          this.setState({displayDataCard : dataCard})
+        })
+  
+}
   }
 
-  
+  updateDocItemSto(data){
+     this.setState({displayDataCard:null})
+     this.setState({barcode:null})
+  }
+
   ChangeData(e,dataValue) {
     e.target.style.background = "yellow"
     this.setState({dataValue})
@@ -382,7 +371,6 @@ console.log("อิอิ")
               }} />{' '}<br/>
         <br />
         {this.state.displayDataCard}
-        {this.state.card}
       </div>
     )
   }
