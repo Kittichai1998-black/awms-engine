@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/values")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
@@ -27,9 +27,9 @@ namespace AWMSEngine.Controllers
 
             return new { api = "1.1", build_version = version, build_date = linkTime.ToString("yyyy-MM-ddThh:mm") };
         }
-        [HttpGet("2")]
-        public dynamic Get2() { 
-            return new { PostCounting = PostGRDoc311ToSAPJob.counting };
+        [HttpGet("jobs")]
+        public dynamic GetJobs() { 
+            return AMWUtil.Common.SchedulerUtil.MonitorJobs;
         }
 
         

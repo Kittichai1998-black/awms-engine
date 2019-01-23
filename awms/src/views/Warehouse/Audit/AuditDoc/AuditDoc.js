@@ -172,13 +172,8 @@ class AuditDoc extends Component {
       { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/sys/ad/create?ID=' + e.original.ID)} >{e.original.Code}</a> },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
-      { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
-      { accessor: 'SouBranchName', Header: 'Branch Sou.', editable: false, Filter: "text", },
-      { accessor: 'SouWarehouseName', Header: 'Ware Sou.', editable: false, Filter: "text", },
-      { accessor: 'DesBranchName', Header: 'Branch Des.', editable: false, Filter: "text" },
-      { accessor: 'DesWarehouseName', Header: 'Ware Des.', editable: false, Filter: "text", },
-      { accessor: 'DesSupplierName', Header: 'Sup Des.', editable: false, Filter: "text" },
-      { accessor: 'DesCustomerName', Header: 'Cus Des.', editable: false, Filter: "text" },
+      { accessor: 'SouBranchName', Header: 'Sou.Branch', editable: false, Filter: "text", },
+      { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
       //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
       //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
       // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
@@ -243,7 +238,7 @@ class AuditDoc extends Component {
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
-            <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button>
+            {/* <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button> */}
             <Button id="per_button_working" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>

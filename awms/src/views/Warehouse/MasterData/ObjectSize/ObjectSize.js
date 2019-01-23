@@ -419,7 +419,7 @@ class ObjectSize extends Component {
         }
         return (
             <div>
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"StandardPackSize"}
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"WeightValidate"}
                     btn={btnfunc} filterable={true} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
                     table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]} 
                     objectSizeMapPallet={this.state.objectPalletdata}/>

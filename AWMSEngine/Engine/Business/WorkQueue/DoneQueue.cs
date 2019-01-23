@@ -89,11 +89,12 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             if (mapsto.parentType != StorageObjectType.LOCATION)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ข้อมูลพาเลทไม่ถูกต้อง");
 
-            mapsto.areaID = queueTrx.AreaMaster_ID;
+            /*mapsto.areaID = queueTrx.AreaMaster_ID;
             mapsto.parentID = queueTrx.AreaLocationMaster_ID;
             mapsto.parentType = StorageObjectType.LOCATION;
 
-            ADO.StorageObjectADO.GetInstant().PutV2(mapsto, this.BuVO);
+            ADO.StorageObjectADO.GetInstant().PutV2(mapsto, this.BuVO);*/
+            ADO.StorageObjectADO.GetInstant().UpdateLocation(mapsto, queueTrx.AreaLocationMaster_ID.Value, this.BuVO);
 
             if (queueTrx.IOType == IOType.INPUT)
             {
@@ -107,6 +108,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         private void UpdateDocumentWorked(SPworkQueue queueTrx, TReq reqVO)
         {
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(queueTrx.ID.Value, this.BuVO);
+            
             List<long> docIDs = new List<long>();
             var countDocItems = ADO.DocumentADO.GetInstant().CountStoInDocItems(
                     docItems.Where(x => x.BaseQuantity.HasValue).GroupBy(x => x.ID.Value).Select(x => x.Key), this.BuVO);
@@ -124,6 +126,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 if (checkDocItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
                     ADO.DocumentADO.GetInstant().UpdateEventStatus(docID, DocumentEventStatus.WORKED, this.BuVO);
             });
+
         }
 
         

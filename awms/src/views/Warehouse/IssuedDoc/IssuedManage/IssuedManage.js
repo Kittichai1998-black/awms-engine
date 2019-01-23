@@ -45,7 +45,7 @@ class IssuedManage extends Component {
       select2: {
         queryString: window.apipath + "/api/viw",
         t: "PackMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ItemQty", "c":"=", "v": 1}]',
         f: "id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
@@ -100,7 +100,7 @@ class IssuedManage extends Component {
       q: "",
       f: "ID,Code, Name",
       g: "",
-      s: "[{'f':'ID','od':'asc'}]",
+      s: "[{'f':'Code','od':'asc'}]",
       sk: 0,
       all: "",
     }
@@ -156,6 +156,8 @@ class IssuedManage extends Component {
    
      
           console.log(rowselect1)
+
+
           this.setState({
             //data: rowselect1.data.document,
             remark: rowselect1.data.document.remark,
@@ -168,7 +170,10 @@ class IssuedManage extends Component {
             refID: rowselect1.data.document.refID,
             ref1: rowselect1.data.document.ref1,
             ref2: rowselect1.data.document.ref2,
-            desBranchName: rowselect1.data.document.desBranchName
+            desBranchName: rowselect1.data.document.desBranchName,
+            desSupplierName: rowselect1.data.document.desSupplierName,
+            desWarehouseName: rowselect1.data.document.desWarehouseName,
+            desCustomerName: rowselect1.data.document.desCustomerName
           })
 
           var groupPack = _.groupBy(rowselect1.data.bstos, "code")
@@ -198,31 +203,44 @@ class IssuedManage extends Component {
             console.log(pg)
             if (pg.length > 0) {
               x.sumQty1 = pg[0].distoQty
-              x.batch = pg[0].batch
-              x.options = pg[0].options
-              x.quantityDoc = pg[0].quantity
-              x.lot = pg[0].lot
-              x.orderNo = pg[0].orderNo
+              //x.batch = pg[0].batch
+              //x.options = pg[0].options
+              //x.lot = pg[0].lot
+              //x.orderNo = pg[0].orderNo
               x.distoUnitCode = pg[0].distoUnitCode
             }
             else {
-              x.quantityDoc = 0
               x.distoUnitCode = x.unitType_Code
+             
             }
+            x.batchsp = x.batch
+            x.options = x.options
 
             sumArr1.push(x);
           })
 
+
+
+
+
+
           this.setState({ data3: sumArr1 });
 
+          console.log(sumArr1)
 
+          console.log(this.state.batch)
 
           for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              sum += res2.distoQty
-              res2.sumQty = sum
-
+              res2.sumQty1 = res2.distoQty
+              sumArr1.forEach(x=> {
+                if(x.id === res2.docItemID){
+                  res2.quantity = x.quantity
+                  res2.options = x.options
+                 
+                }
+              })
               sumArr.forEach(response => {
                 if (response.code === res2.code) {
                   res2.code = "";
@@ -237,9 +255,12 @@ class IssuedManage extends Component {
           var sumQTYPack = 0
           var result = rowselect1.data.document.documentItems
 
+
+
+
           this.setState({ data2: sumArr }, () => {
 
-            result.forEach(row1 => {
+              result.forEach(row1 => {
               sumQTYPack = 0
               row1.batch = this.state.batch
 
@@ -365,10 +386,22 @@ class IssuedManage extends Component {
           , refID: this.state.refID
           , ref1: this.state.ref1
           , ref2: this.state.ref2
-          , batch: this.state.Batch
-          , lot: this.state.Lot
-          , orderno: this.state.Orderno
+          , batch: row.Batch
+          , lot: row.Lot
+          , orderno: row.Orderno
         })
+
+      if (row.id > 0 && qty <= 0) {
+        alert("กรุณาใส่จำนวนสินค้า")
+      }
+
+      if (row.id <= 0 && qty > 0) {
+        alert("กรุณาเลือก Pack Item")
+      }
+
+      if (row.id <= 0 && qty <= 0) {
+        alert("ยังไม่มีรายการ PackItem")
+      }
     })
     let postdata = {
       forCustomerID: null
@@ -398,6 +431,7 @@ class IssuedManage extends Component {
         }
       })
     }
+
 
 
   }
@@ -457,8 +491,7 @@ class IssuedManage extends Component {
         //}
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
-      else if (rowdata.column.datatype === "string") {
-
+      else if (rowdata.column.datatype === "text") {
         data[rowdata.index][field] = value;
 
       }
@@ -466,9 +499,9 @@ class IssuedManage extends Component {
         data[rowdata.index][field] = value.Code;
         data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitType"] = value.UnitType;
-        data[rowdata.index]["lot"] = value.lot;
-        data[rowdata.index]["orderno"] = value.orderno;
-        data[rowdata.index]["batch"] = value.batch;
+        data[rowdata.index]["Lot"] = value.lot;
+        data[rowdata.index]["Orderno"] = value.orderno;
+        data[rowdata.index]["Batch"] = value.batch;
         data[rowdata.index]["id"] = value.id;
       }
       this.setState({ data });
@@ -486,22 +519,26 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = "";
       data[rowdata.index]["SKU"] = "";
       data[rowdata.index]["UnitType"] = "";
-      data[rowdata.index]["lot"] = "";
-      data[rowdata.index]["orderno"] = "";
-      data[rowdata.index]["batch"] = "";
+      data[rowdata.index]["Lot"] = "";
+      data[rowdata.index]["Orderno"] = "";
+      data[rowdata.index]["Batch"] = "";
       data[rowdata.index]["id"] = "";
     }
     else if (rowdata.column.datatype === "int") {
       data[rowdata.index][field] = "";
     }
     this.setState({ data });
+
+    console.log(this.state.data)
+
   }
+
 
   createText(data) {
     return <span>{data}</span>
   }
 
-
+  
   toggle() {
     this.setState({ modalstatus: !this.state.modalstatus });
   }
@@ -627,15 +664,17 @@ class IssuedManage extends Component {
 
   render() {
 
+    console.log(this.state.data3)
+
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
 
     let cossdetail = [
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
-      { accessor: "packMaster_Name", Header: "SKU Code", Cell: (e) => <span>{e.original.packCode}</span>, },
-      { accessor: "packMaster_Name", Header: "SKU Name", Cell: (e) => <span>{e.original.packName}</span>, },
-      { accessor: "code", Header: "Base", Cell: (e) => <span>{e.original.code}</span> },
+      { accessor: "packCode", Header: "SKU Code"},
+      { accessor: "packName", Header: "SKU Name"},
+      { accessor: "code", Header: "Base"},
 
 
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
@@ -644,13 +683,10 @@ class IssuedManage extends Component {
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
-          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
+        (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
-
-      { accessor: "distoUnitCode", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
-
-
+      { accessor: "distoUnitCode", Header: "Unit"},
     ]
 
 
@@ -658,19 +694,19 @@ class IssuedManage extends Component {
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
-      { accessor: "packMaster_Name", Header: "SKU Code"},
+      { accessor: "packMaster_Code", Header: "SKU Code"},
       { accessor: "packMaster_Name", Header: "SKU Name"},
 
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},  
-      { accessor: 'batch', Header: 'Batch', editable: false, },
+      { accessor: 'batchsp', Header: 'Batch', editable: false, },
       { accessor: 'lot', Header: 'Lot', editable: false, },
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
-          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
+          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
-      { accessor: "distoUnitCode", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
+      { accessor: "distoUnitCode", Header: "Unit" },
 
 
     ]
@@ -681,9 +717,9 @@ class IssuedManage extends Component {
       { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
       //{accessor:"SKU",Header:"SKU",},
       { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("PackQty", e), datatype: "int" },
-      { accessor: "bath", Header: "Batch", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string" },
-      { accessor: "lot", Header: "lot", editable: true, Cell: e => this.inputCell("lot", e), datatype: "string" },
-      { accessor: "orderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("orderno", e), datatype: "string" },
+      { accessor: "Batch", Header: "Batch", editable: true, Cell: e => this.inputCell("Batch", e), datatype: "text" },
+      { accessor: "Lot", Header: "Lot", editable: true, Cell: e => this.inputCell("Lot", e), datatype: "text" },
+      { accessor: "OrderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("Orderno", e), datatype: "text" },
       { accessor: "UnitType", Header: "Unit", },
 
 
@@ -742,11 +778,11 @@ class IssuedManage extends Component {
           <Row>
             <Col xs="6">
               <div className="">
-                <label>Destination Branch : </label>{this.state.pageID ? this.createText(this.state.data.desBranchName) :
+                <label>Destination Branch : </label>{this.state.pageID ? this.createText(this.state.desBranchName) :
                   <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
                     <div style={{ marginLeft: '5px', display: "inline-block" }}>{this.state.auto_branch}</div> </div>}</div>
             </Col>
-            <Col xs="6"><div className=""><label >Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.data.desWarehouseName) :
+            <Col xs="6"><div className=""><label >Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.desWarehouseName) :
               <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
                 <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} />
               </div>}</div></Col>
@@ -755,10 +791,10 @@ class IssuedManage extends Component {
 
           {this.state.pageID === 0 ? null : <Row>
             <Col xs="6">
-              <div className=""><label > Destination Supplier : </label>{this.createText(this.state.data.desSupplierName)}</div>
+              <div className=""><label > Destination Supplier : </label>{this.createText(this.state.desSupplierName)}</div>
             </Col>
             <Col xs="6">
-              <div className=""><label > Destination Customer : </label>{this.createText(this.state.data.desCustomerName)}</div>
+              <div className=""><label > Destination Customer : </label>{this.createText(this.state.desCustomerName)}</div>
             </Col>
           </Row>}
 
@@ -798,7 +834,7 @@ class IssuedManage extends Component {
         {this.state.pageID != 0 ? null : <ReactTable columns={col} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
-        {console.log(this.state.data3)}
+        {console.log(this.state.data2)}
         {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 

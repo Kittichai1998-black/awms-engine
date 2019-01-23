@@ -17,6 +17,24 @@ namespace AWMSEngine.ADO
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
+        public StorageObjectCriteria UpdateLocation(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
+        {
+            var location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(locationID, buVO);
+
+            baseInfo.parentID = location.ID;
+            baseInfo.parentType = StorageObjectType.LOCATION;
+            baseInfo.areaID = location.AreaMaster_ID;
+
+            this.PutV2(baseInfo, buVO);
+            baseInfo.ToTreeList().ForEach(x => {
+                if (x != baseInfo)
+                {
+                    x.areaID = location.AreaMaster_ID;
+                    this.PutV2(x, buVO);
+                }
+            });
+            return baseInfo;
+        }
         public StorageObjectCriteria Get(string code, long? warehouseID, long? areaID, bool isToRoot, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -346,6 +364,22 @@ namespace AWMSEngine.ADO
             param.Add("docItemID", docItemID);
             var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_BATCH_QTY", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
 
+            return res;
+        }
+
+        public List<SPOutSTOProcesQueueIssue> StoProcessQueue(string itemCode, int pickOrderBy, string pickBy, string stampDate, string orderNo, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("@ITEM_CODE", itemCode);
+            param.Add("PICK_ORDER_BY", pickOrderBy);
+            param.Add("PICK_BY", pickBy);
+            param.Add("LOT", stampDate);
+            param.Add("ORDER_NO", orderNo);
+
+            var res = this.Query<SPOutSTOProcesQueueIssue>("SP_STO_PROCESS_QUEUE_ISSUE",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
 

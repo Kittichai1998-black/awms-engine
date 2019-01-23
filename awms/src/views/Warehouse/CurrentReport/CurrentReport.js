@@ -33,7 +33,7 @@ class CurrentReport extends Component {
   }
 
   componentDidMount() {
-
+    document.title = "Current Inventory - AWMS"
     Axios.get(createQueryString(this.state.select)).then((response) => {
       this.setState({
         data: response.data.datas
