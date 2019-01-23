@@ -12,20 +12,20 @@ const Dashboard = Loadable({
   loading: Loading,
 });
 
-//  const Products = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Product'),
-//   loading: Loading,
-// });
+ const Products = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Product'),
+  loading: Loading,
+});
 
-// const Pack = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Pack'),
-//   loading: Loading,
-// });
+const Pack = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Pack'),
+  loading: Loading,
+});
 
 // const PackType = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/PackType'),
 //   loading: Loading,
-// }); 
+// });
 
 // const Barcode = Loadable({
 //   loader: () => import('./views/Warehouse/Barcode'),
@@ -52,20 +52,20 @@ const Dashboard = Loadable({
 //   loading: Loading,
 // });
 
-// const AreaLocation = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/AreaLocation'),
-//   loading: Loading,
-// });
+const AreaLocation = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaLocation'),
+  loading: Loading,
+});
 
 // const AreaRoute = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/AreaRoute'),
 //   loading: Loading,
 // });
 
-// const Base = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Base'),
-//   loading: Loading,
-// });
+const Base = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Base'),
+  loading: Loading,
+});
 
 // const BaseType = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/BaseType'),
@@ -77,10 +77,10 @@ const Dashboard = Loadable({
 //   loading: Loading,
 // });
 
-// const User = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/User'),
-//   loading: Loading,
-// });
+const User = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/User'),
+  loading: Loading,
+});
 
 // const Warehouse = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/Warehouse'),
@@ -102,15 +102,15 @@ const Dashboard = Loadable({
 //   loading: Loading,
 // });
 
-// const SKUType = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/SKUType'),
-//   loading: Loading,
-// });
+const SKUType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/SKUType'),
+  loading: Loading,
+});
 
-// const ObjectSize = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/ObjectSize'),
-//   loading: Loading,
-// });
+const ObjectSize = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/ObjectSize'),
+  loading: Loading,
+});
 
 // const JobScheduleModule = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/JobScheduleModule'),
@@ -135,7 +135,7 @@ const Dashboard = Loadable({
 // const WebPageGroup = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/WebPageGroup'),
 //   loading: Loading,
-// }); 
+// });
 
 const Storage = Loadable({
   loader: () => import('./views/Warehouse/StorageReport/StorageReport'),
@@ -187,10 +187,10 @@ const LoadingChecklist = Loadable({
   loading: Loading,
 });
 
-const ComfrimBox = Loadable({
-  loader: () => import('./views/Warehouse/ComfirmBox'),
-  loading: Loading,
-});
+// const ComfrimBox = Loadable({
+//   loader: () => import('./views/Warehouse/ComfirmBox'),
+//   loading: Loading,
+// });
 const StockCorrection = Loadable({
   loader: () => import('./views/Warehouse/StockCorrection'),
   loading: Loading,
@@ -320,33 +320,33 @@ const AuditCreate = Loadable({
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Dashboard },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  // { path: '/mst/sku/manage', exact: true, name: 'Setting / SKU Master', component: Products },
-  // { path: '/mst/category/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
-  // { path: '/mst/pack/manage', exact: true, name: 'Setting / SKU Unit', component: Pack },
+  { path: '/mst/sku/manage', exact: true, name: 'Setting / SKU Master', component: Products },
+  { path: '/mst/category/manage', exact: true, name: 'Setting / SKU Collection', component: SKUType },
+  { path: '/mst/pack/manage', exact: true, name: 'Setting / SKU Unit', component: Pack },
   // { path: '/mst/packtype/manage', exact: true, name: 'Setting / Pack Type', component: PackType },
   // { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/customer/manage', exact: true, name: 'Setting / Customer', component: Customer },
   // { path: '/mst/supplier/manage', exact: true, name: 'Setting / Supplier', component: Supplier },
   // { path: '/mst/area/manage', exact: true, name: 'Setting / Area', component: Area },
   // { path: '/mst/areatype/manage', exact: true, name: 'Setting / Area Type', component: AreaType },
-  // { path: '/mst/location/manage', exact: true, name: 'Setting / Location', component: AreaLocation },
+  { path: '/mst/location/manage', exact: true, name: 'Setting / Location', component: AreaLocation },
   // { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/arearoute/manage', exact: true, name: 'Setting / Area Route', component: AreaRoute },
-  // { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet Master', component: Base },
+  { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet Master', component: Base },
   // { path: '/mst/pallettype/manage', exact: true, name: 'Setting / Pallet Type', component: BaseType },
   // { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/branch/manage', exact: true, name: 'Setting / Branch', component: Branch },
-  // { path: '/mst/user/manage', exact: true, name: 'Setting / User Account', component: User },
+  { path: '/mst/user/manage', exact: true, name: 'Setting / User Account', component: User },
   // { path: '/mst/warehouse/manage', exact: true, name: 'Setting / Warehouse', component: Warehouse },
   // { path: '/mst/permission/manage', exact: true, name: 'Setting / Permission', component: Permission },
   // { path: '/mst/apiservicegroup/manage', exact: true, name: 'Setting / API Service Group', component: APIServiceGroup },
   // { path: '/mst/apiservice/manage', exact: true, name: 'Setting / API Service', component: APIService },
-  // { path: '/mst/objectsize/manage', exact: true, name: 'Setting / Weight Validate', component: ObjectSize },
+  { path: '/mst/objectsize/manage', exact: true, name: 'Setting / Weight Validate', component: ObjectSize },
   // { path: '/mst/jobschedulemodule/manage', exact: true, name: 'Setting / Job Schedule Module', component: JobScheduleModule },
   // { path: '/mst/unittype/manage', exact: true, name: 'Setting / Unit Type', component: UnitType },
   // { path: '/mst/webcontrol/manage', exact: true, name: 'Setting / Web Control', component: WebControl },
   // { path: '/mst/webpage/manage', exact: true, name: 'Setting / Web Page', component: WebPage },
-  // { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup }, 
+  // { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Receive / Search Receive', component: InboundView },
@@ -359,12 +359,12 @@ const routes = [
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/sys/storage/list', exact: true, name: 'Report / Storage Object', component: Storage },
   { path: '/sys/storage/history', exact: true, name: 'History', component: History },
-  { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
+  // { path: '/mst/base/rebox', exact: true, name: 'Return Box', component: ComfrimBox },
   { path: '/wm/sto/correction', exact: true, name: 'Stock Correction', component: StockCorrection },
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
-  { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
+    { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'Report / Current Inventory', component: CurrentInv },
   { path: '/doc/gr/view', exact: true, name: 'Receive Document', component: StorageDetail },
