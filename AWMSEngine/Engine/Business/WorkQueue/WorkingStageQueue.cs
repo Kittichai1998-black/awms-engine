@@ -26,27 +26,32 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         }
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
+            this.initMasterData(reqVO);
             var queueTrx = this.UpdateWorkQueueWork(reqVO);
             if (queueTrx.StorageObject_Code != reqVO.baseCode)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ตรงกับที่มีใน Work Queue '" + queueTrx.StorageObject_Code + "'");
 
+            var baseInfo = this.UpdateStorageObject(reqVO, queueTrx);
 
-            var baseInfo = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             var res = base.GenerateResponse(baseInfo, queueTrx);
             return res;
         }
-        private SPworkQueue UpdateWorkQueueWork(TReq reqVO)
+
+        private ams_Warehouse wm;
+        private ams_AreaMaster am;
+        private ams_AreaLocationMaster lm;
+        public void initMasterData(TReq reqVO)
         {
-            var queueTrx = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
-            var wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
+
+            wm = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (wm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + reqVO.warehouseCode + "'");
 
-            var am = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == wm.ID);
+            am = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == wm.ID);
             if (am == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + reqVO.areaCode + "'");
 
-            var lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            lm = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.locationCode),
                     new KeyValuePair<string,object>("AreaMaster_ID",am.ID.Value),
@@ -55,9 +60,15 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
             if (lm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.locationCode + "'");
+        }
+
+        private SPworkQueue UpdateWorkQueueWork(TReq reqVO)
+        {
+            var queueTrx = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
 
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED ||
-                queueTrx.EventStatus == WorkQueueEventStatus.WORKING)
+                queueTrx.EventStatus == WorkQueueEventStatus.WORKING ||
+                queueTrx.EventStatus == WorkQueueEventStatus.IDLE)
             {
                 queueTrx.AreaLocationMaster_ID = lm.ID;
                 queueTrx.AreaMaster_ID = am.ID.Value;
@@ -80,13 +91,20 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             }
             else
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Cannot Complete Before Working");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Queue status not Working");
             }
 
             return queueTrx;
         }
-        
 
-        
+        private StorageObjectCriteria UpdateStorageObject(TReq reqVO, SPworkQueue queueTrx)
+        {
+            var baseInfo = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+
+            ADO.StorageObjectADO.GetInstant().UpdateLocation(baseInfo, this.lm.ID.Value, this.BuVO);
+            return baseInfo;
+        }
+
+
     }
 }

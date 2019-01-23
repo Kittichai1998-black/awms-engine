@@ -17,6 +17,22 @@ namespace AWMSEngine.ADO
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
+        public StorageObjectCriteria UpdateLocation(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
+        {
+            var location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(locationID, buVO);
+            baseInfo.parentID = location.ID;
+            baseInfo.parentType = StorageObjectType.LOCATION;
+            baseInfo.areaID = location.AreaMaster_ID;
+            this.PutV2(baseInfo, buVO);
+            baseInfo.ToTreeList().ForEach(x => {
+                if (x != baseInfo)
+                {
+                    x.areaID = location.AreaMaster_ID;
+                    this.PutV2(x, buVO);
+                }
+            });
+            return baseInfo;
+        }
         public StorageObjectCriteria Get(string code, long? warehouseID, long? areaID, bool isToRoot, bool isToChild, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
