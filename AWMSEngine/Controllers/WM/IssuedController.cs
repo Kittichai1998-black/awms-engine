@@ -91,7 +91,13 @@ namespace AWMSEngine.Controllers.WM
             var res = exec.Execute(req);
             return res;
         }
-
+        [HttpPost("queue/confirm")]
+        public dynamic ConfirmQueue([FromBody] dynamic req)
+        {
+            ConfirmQueueIssueAPI exec = new ConfirmQueueIssueAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
 
     }
 }

@@ -57,7 +57,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Location Code '" + reqVO.locationCode + "'");
 
             if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED ||
-                queueTrx.EventStatus == WorkQueueEventStatus.WORKING)
+                queueTrx.EventStatus == WorkQueueEventStatus.WORKING ||
+                queueTrx.EventStatus == WorkQueueEventStatus.IDLE)
             {
                 queueTrx.AreaLocationMaster_ID = lm.ID;
                 queueTrx.AreaMaster_ID = am.ID.Value;

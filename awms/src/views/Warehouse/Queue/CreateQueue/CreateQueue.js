@@ -103,7 +103,18 @@ class CreateQueue extends Component{
   }
       
   onHandleClickCancel() {
+    const processCard = this.state.processCard;
     const dataProcessSelected = this.state.dataProcessSelected
+
+    processCard.forEach((index) => {
+      processCard.splice(index, 1);
+    });
+    dataProcessSelected.forEach((index) => {
+      dataProcessSelected.splice(index, 1);
+    });
+    this.setState({ processCard,dataProcessSelected })
+    this.createAutoDocList();
+    /* const dataProcessSelected = this.state.dataProcessSelected
 
     this.setState({dataProcessSelected
       ,"docID":""
@@ -122,7 +133,7 @@ class CreateQueue extends Component{
     })
     this.setState({ dataAdd })
     this.createCardsList()
-    this.createAutoDocList()
+    this.createAutoDocList() */
 }
 
   createAutoDocList(){
@@ -142,33 +153,49 @@ class CreateQueue extends Component{
   }
 
   getDocItemData(doc_id){
-    const docItemselect = {queryString:window.apipath + "/api/viw",
-      t:"DocumentItem",
-      q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
-      f:"ID,Code,RefID,Ref2,Batch,Ref1,BaseQuantity,Options,SKUMaster_Name,OrderNo,Lot",
-      g:"",
-      s:"[{'f':'ID','od':'asc'}]",
-      sk:0,
-      all:"",}
+    if(doc_id !== ""){
+      const DocumentItemData = this.state.DocumentItemData
+      DocumentItemData.forEach((index) => {
+        DocumentItemData.splice(index, 1);
+      });
+      const dataProcessItems = this.state.dataProcessItems
+      dataProcessItems.forEach((index) =>{
+        dataProcessItems.splice(index, 1);
+      });
+      const itemCard = this.state.itemCard
+      itemCard.forEach((index) =>{
+        itemCard.splice(index, 1);
+      });
 
-    Axios.get(createQueryString(docItemselect)).then(Docresult => {
-      this.setState({DocumentItemData : Docresult.data.datas }, () => {
-        const DocumentItemData = []
-        this.state.DocumentItemData.forEach(row => {
-          DocumentItemData.push({docID:doc_id
-                        ,dociID:row.ID
-                        ,itemCode:row.Code
-                        ,itemName:row.SKUMaster_Name
-                        ,item:row.Options
-                        ,batch:row.Batch
-                        ,orderNo:row.OrderNo
-                        ,lot:row.Lot
-                        ,BaseQuantity:row.BaseQuantity
+      const docItemselect = {queryString:window.apipath + "/api/viw",
+        t:"DocumentItem",
+        q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
+        f:"ID,Code,RefID,Ref2,Batch,Ref1,BaseQuantity,Options,SKUMaster_Name,OrderNo,Lot",
+        g:"",
+        s:"[{'f':'ID','od':'asc'}]",
+        sk:0,
+        all:"",}
+
+      Axios.get(createQueryString(docItemselect)).then(Docresult => {
+        this.setState({DocumentItemData : Docresult.data.datas }, () => {
+          const DocumentItemData = []
+          this.state.DocumentItemData.forEach(row => {
+            DocumentItemData.push({docID:doc_id
+                          ,dociID:row.ID
+                          ,itemCode:row.Code
+                          ,itemName:row.SKUMaster_Name
+                          ,item:row.Options
+                          ,batch:row.Batch
+                          ,orderNo:row.OrderNo
+                          ,lot:row.Lot
+                          ,BaseQuantity:row.BaseQuantity
+            })
           })
+          this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
+          
         })
-        this.setState({ DocumentItemData }, () => this.createItemCardsList(1))
       })
-    })
+    }
   }
 
   createItemCardsList(chk){
@@ -177,7 +204,7 @@ class CreateQueue extends Component{
     let itemCard = []
     
     DocumentItemData.forEach((datarow) => {
-       if(chk===1){
+      if(chk===1){
         dataProcessItems.push({docID:datarow.docID
           ,dociID:datarow.dociID
           ,itemCode:datarow.itemCode
@@ -198,7 +225,7 @@ class CreateQueue extends Component{
         this.onEditorValueChange(datarow.dociID, 0,"pickOrderby")
         this.onEditorValueChange(datarow.dociID, "CreateDate","orderByField")
         this.onEditorValueChange(datarow.dociID, 1,"priority")
-       }
+      }
       else{      
       } 
       itemCard = itemCard.concat(this.addNewItemCard(datarow));
@@ -283,12 +310,17 @@ class CreateQueue extends Component{
   }
 
   addNewInputText(datarow){
+    const styleclose = {cursor: 'pointer', position: 'absolute', display: 'inline', background: '#ffffff', borderRadius: '18px'}
     return <div className={[datarow.dociID,datarow.batchNo]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
     <Row>
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
       <Col md="4"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo, e.target.value,"value") }} /></div></Col> 
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
-      <Col md="4"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo,e.target.value,"qty") }} /></div></Col> 
+      <Col md="3"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo,e.target.value,"qty") }} /></div></Col>
+      <Col md="1"><a style={styleclose} onClick={this.closeModal}>
+                    { imgClose }
+                </a>
+                </Col>
     </Row>
   </div>
   }
@@ -375,6 +407,7 @@ class CreateQueue extends Component{
       </Row>
   </div>)
   }
+
   addNewProcessCard(datarow){
     const itemShowCard = this.state.itemShowCard
     let itemShowCards =[]
@@ -725,16 +758,18 @@ class CreateQueue extends Component{
   openModal() {
     this.setState({ open: true })
   }
+
   closeModal() {
     this.setState({ open: false })
     this.setState({ dataUpdate: [] })
   }
+
   confirmQ(){
 
   }
 
   render(){
-    const processCards = this.state.processCard
+    const processCard = this.state.processCard
     const itemCards = this.state.itemCard
     const processedDocCard = this.state.processedDocCard
     const styleclose = {cursor: 'pointer', position: 'absolute', display: 'block', right: '-10px', top: '-10px', background: '#ffffff', borderRadius: '18px',
@@ -778,10 +813,10 @@ class CreateQueue extends Component{
             </Form>
           </Col>
           <Col lg="6"> 
-            <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"#8080804f"}:{"display":"none"}}>
+            <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"#8080804f"}:{"display":"none"}}>
               <span style={{"padding-left":"15px", fontWeight:"bold", fontSize:"1.1em"}}>Document Issue List</span>
-              { processCards }
-              <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
+              { processCard }
+              <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                 <CardBody>
                   <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Process</Button>
                   <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Clear</Button>
@@ -798,10 +833,10 @@ class CreateQueue extends Component{
                 </a>
                 <div id="header" style={{ width: '100%', borderBottom: '1px solid #007bff', fontSize: '18px', padding: '5px', color: '#007bff', fontWeight: 'bold' }}>Processed</div>
                 <div style={{ width: '100%', padding: '10px 5px' ,height: '500px', overflow: 'scroll' }}>
-                <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
+                <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                   { processedDocCard }
                 </Card>
-                <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
+                <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                   <CardBody>
                     <Button onClick={() => this.confirmQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Confirm</Button>
                     <Button onClick={this.closeModal} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Close</Button>
