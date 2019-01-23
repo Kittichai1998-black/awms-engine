@@ -45,7 +45,7 @@ class IssuedManage extends Component {
       select2: {
         queryString: window.apipath + "/api/viw",
         t: "PackMaster",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        q: '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ItemQty", "c":"=", "v": 1}]',
         f: "id, Code, Name, concat(SKUCode, ' : ', SKUName) AS SKU, UnitTypeName AS UnitType",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
@@ -214,8 +214,15 @@ class IssuedManage extends Component {
              
             }
             x.batchsp = x.batch
+            x.options = x.options
+
             sumArr1.push(x);
           })
+
+
+
+
+
 
           this.setState({ data3: sumArr1 });
 
@@ -230,6 +237,8 @@ class IssuedManage extends Component {
               sumArr1.forEach(x=> {
                 if(x.id === res2.docItemID){
                   res2.quantity = x.quantity
+                  res2.options = x.options
+                 
                 }
               })
               sumArr.forEach(response => {
@@ -246,9 +255,12 @@ class IssuedManage extends Component {
           var sumQTYPack = 0
           var result = rowselect1.data.document.documentItems
 
+
+
+
           this.setState({ data2: sumArr }, () => {
 
-            result.forEach(row1 => {
+              result.forEach(row1 => {
               sumQTYPack = 0
               row1.batch = this.state.batch
 
@@ -378,6 +390,18 @@ class IssuedManage extends Component {
           , lot: row.Lot
           , orderno: row.Orderno
         })
+
+      if (row.id > 0 && qty <= 0) {
+        alert("กรุณาใส่จำนวนสินค้า")
+      }
+
+      if (row.id <= 0 && qty > 0) {
+        alert("กรุณาเลือก Pack Item")
+      }
+
+      if (row.id <= 0 && qty <= 0) {
+        alert("ยังไม่มีรายการ PackItem")
+      }
     })
     let postdata = {
       forCustomerID: null
@@ -407,6 +431,7 @@ class IssuedManage extends Component {
         }
       })
     }
+
 
 
   }
@@ -809,7 +834,7 @@ class IssuedManage extends Component {
         {this.state.pageID != 0 ? null : <ReactTable columns={col} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
-        {console.log(this.state.data3)}
+        {console.log(this.state.data2)}
         {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
