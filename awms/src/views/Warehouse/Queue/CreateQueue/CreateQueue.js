@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import {Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col, Form,FormGroup,FormText,Label} from 'reactstrap';
+import {Input, Card, CardBody, Button, Row, Col, Form,FormGroup,FormText,Label} from 'reactstrap';
 import moment from 'moment';
 import Select from 'react-select';
-import {DocumentEventStatus} from '../../Status'
-import {AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
-import ReactAutocomplete from 'react-autocomplete'
-import arrimg from '../../../../img/arrowhead.svg'
+import {AutoSelect, apicall, createQueryString} from '../../ComponentCore'
+import Popup from 'reactjs-popup'
 
 const Axios = new apicall()
+const imgClose = <img style={{ width: "28px", height: "auto" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANkSURBVGhD7ZlHyxRBEIYXI4aDYgDDP1Bvpr9hwqMR9ageFBN6ULwaPsNdFEU9iH9DDwZQ9GIGIwaMCPo+sA1lU7PT3Tu7sjAvPLisXdXVOz3V1fV1WrVq1YjGiZViv7gu7osP4lcXPvPdNbFPrBDY/HctFMfFC/Enk2cC2wVi6JolzoifwgsuB3yMCXwORevFW+EF0w/4XCcGpgninPAmh4/iotgilok5YmIXPvPdVnFJMNbzATyN8aJRTRU3hTfhA7FJTBGpYuxm8VB4Pm+IHH89xa+Bw3iSb2Kn4MmUCttd4ruI/TNnI0/ivIidk3WWiqbE9nop4nlOir7ECxs7vSXmi6aFz9sinm+NKBJp7Z2wzp6LQeZtXvbHws75RswU2TorrKOvgkftaVH33xxV2SwWzGXnPi2yxK8cH1K8sJ4Oi9+C7ZYqxmKDraeDws7NS561bTnirQNSpZdtCCCMSV1ECD7YeYsgbb8SYQwcE0miyGKvW+MNIhaP2gYCdYuIgw82+Iq1XdhxT0VSAUhVaQ0/iapDpSogbxE5YxFP4bOw46vewX9ESWyNLoheSgksN/igy8La7BW1op63RtQ2deoVYGnwaJuwdldFrbh4WKPlIkVVgZYGj+LtfFfUituTNcqp071FWHKCR7OFtedgrVWc/yeJHFUtIjd4NFlYH8RWq5FfQLyFeIypqgo+kLuIoi10T1ijkXuJRz6N0rexRtxheyklwNJFXBHWZo+olVdKcKx7ygksdxHTRFEp4RVzG0WsQRdzO4Qd90Qkd/PicprugVdOHxFhTF3wQfEi8BGLX7+4nEbehWa38EQAqcEHhUV4waNDws7NhWaeyBINJuuEax5NWU9NXimXCFo2du5TIlvUQFyorSPeDRq6g5J3qX8tZogi0au0zoC2ChM1LXziO55vlehLPL7Y6SPhZY5S4Quf8TwnRN+qai3yThwQZIxSTRf4GGhrEXEn9hYBpDuO/JxmLAcjeT5OlQHmaqy5G8Sv4W2nwBfBHZbFkK3Y05TiMLf7HZ0GygPGej6AORr75T2tFXF2agKyzWoxFJHWaPf9EF4wObD/6UIXp8p+RLuPI56mkxdcL7A5KrJP2EGIIouLD30banYuHu8F5Qjw+Y7g/xjD3xaSC7NWrVpVqdP5C8HnZiqeZ+ELAAAAAElFTkSuQmCC" />;
 
 class CreateQueue extends Component{
   constructor(props) {
@@ -28,7 +27,10 @@ class CreateQueue extends Component{
       DocumentItemData:[],
       auto_doc:[],
       dataProcessItems:[],
+      dataProcessed:[],
       processCard: [],
+      processedCard: [],
+      processedDocCard:[],
       itemCard: [],
       itemShowCard: [],
       batchCard:[],
@@ -49,7 +51,8 @@ class CreateQueue extends Component{
       ref1:"",
       ref2:"",   
       dataProcessSelected:[],
-      batchShowCard:[],                   
+      batchShowCard:[],   
+      open: false,                
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.initialData = this.initialData.bind(this)
@@ -63,7 +66,8 @@ class CreateQueue extends Component{
     this.removeCard = this.removeCard.bind(this)
     this.createAutoDocList = this.createAutoDocList.bind(this)
     this.genBtnGetDocItem = this.genBtnGetDocItem.bind(this)
-
+    this.openModal = this.openModal.bind(this)
+    this.closeModal = this.closeModal.bind(this)
 
     this.docselect = {queryString:window.apipath + "/api/viw",
       t:"Document",
@@ -98,10 +102,28 @@ class CreateQueue extends Component{
     this.initialData()
   }
       
-  onHandleClickCancel(event){
-    this.forceUpdate();
-    event.preventDefault();
-  }
+  onHandleClickCancel() {
+    const dataProcessSelected = this.state.dataProcessSelected
+
+    this.setState({dataProcessSelected
+      ,"docID":""
+      ,"SAPdoc":""
+      ,"MMType":""
+      ,"ForCus":""
+      ,"StampDate":""
+      ,"Batch":""
+      ,"docresult":""}, () => this.removeItemCard())  
+
+    this.createAutoDocList();
+
+    const dataAdd = this.state.dataAdd
+    dataAdd.forEach((index) => {
+        dataAdd.splice(index, 1);
+    })
+    this.setState({ dataAdd })
+    this.createCardsList()
+    this.createAutoDocList()
+}
 
   createAutoDocList(){
     const auto_doc = [...this.state.DocumentData]
@@ -256,7 +278,7 @@ class CreateQueue extends Component{
           row.batchs[dociID.toString().split(',')[1]].qty=value
         }
       }
-      });
+    });
     this.setState({ dataProcessItems });
   }
 
@@ -283,7 +305,7 @@ class CreateQueue extends Component{
     }
     return (<div className={datarow.dociID} style={{"border-radius": "15px", "border": "1px solid white", "padding": "20px", background:"white", "margin":"5px"}}>
       <Row>
-        <Col><span>{(datarow.itemCode?datarow.itemCode:"") +" : "+ (datarow.itemName?datarow.itemName:"")}</span></Col>
+        <Col><span>{(datarow.itemCode?datarow.itemCode:"") +" : "+ (datarow.itemName?datarow.itemName:"") +" Qty : "+(datarow.BaseQuantity?datarow.BaseQuantity:"")}</span></Col>
       </Row>
       <Row style={{"padding-top":"10px"}}>
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Pick by : </label></Col>
@@ -399,59 +421,64 @@ class CreateQueue extends Component{
     }else{
       if(this.state.DocumentItemData.length === 0){
       }else{
-        dataProcessItems.forEach(itemrow =>{
-          if(itemrow.batchs.length===0){
-            itemrow.batchs.push({"value":"Unknow","qty":itemrow.qty})
-
-          }else{
-            if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0))>=itemrow.qty){
-              alert("จำนวน")
-            }else{
-              itemrow.batchs.forEach(batchrow =>{
-                if(batchrow.value===null){
-                  batchrow.value="Unknow"
-                  batchrow.qty=itemrow.qty
-                }
-                else{
-                  if(itemrow.qty-batchrow.qty>=0){
-                    itemrow.qty=itemrow.qty-batchrow.qty
-                  }else{
-                    itemrow.batchs.push({"value":"Unknow","qty":itemrow.qty})
-                  }
+        var xxx = this.validateProcessItemsData(dataProcessItems)
+        dataProcessSelected.push(DocumentData.find(x => x.value === docID))
+          dataProcessSelected.forEach((datarow) => {
+            if(datarow.value === docID){
+              datarow.items = [] 
+              xxx.forEach(itemrow => {
+                if(itemrow.docID === docID){
+                  datarow.items.push(itemrow)
                 }
               })
-              if(itemrow.qty>0)
-                itemrow.batchs.push({"value":"Unknow","qty":itemrow.qty})
             }
-          }
-        })
-        dataProcessSelected.push(DocumentData.find(x => x.value === docID))
-        dataProcessSelected.forEach((datarow) => {
-          if(datarow.value === docID){
-            datarow.items = [] 
-            dataProcessItems.forEach(itemrow => {
-              if(itemrow.docID === docID){
-                datarow.items.push(itemrow)
-              }
-            })            
-          }
-        });
+          });
+
+          this.createItemShowCardsList(docID)
+          this.setState({dataProcessSelected
+            ,"docID":""
+            ,"SAPdoc":""
+            ,"MMType":""
+            ,"ForCus":""
+            ,"StampDate":""
+            ,"Batch":""
+            ,"docresult":""}, () => this.removeItemCard())  
+
+          this.createAutoDocList();
       }
     }
-    this.createItemShowCardsList(docID)
-    this.setState({dataProcessSelected
-      ,"docID":""
-      ,"SAPdoc":""
-      ,"MMType":""
-      ,"ForCus":""
-      ,"StampDate":""
-      ,"Batch":""
-      ,"docresult":""}, () => this.removeItemCard())  
-
-    this.createAutoDocList();
+  }
+  validateProcessItemsData(dataProcessItems){
+    dataProcessItems.forEach(itemrow =>{
+      if(itemrow.batchs.length===0){
+        itemrow.batchs.push({"value":null,"qty":itemrow.qty})
+      }else{
+        if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0)) > itemrow.qty){
+          alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
+        }else{
+          itemrow.batchs.forEach(batchrow =>{
+            if(batchrow.value===null){
+              batchrow.value=null
+              batchrow.qty=itemrow.qty
+            }
+            else{
+              if(itemrow.qty-batchrow.qty>=0){
+                itemrow.qty=itemrow.qty-batchrow.qty
+              }else{
+                itemrow.batchs.push({"value":null,"qty":itemrow.qty})
+              }
+            }
+          })
+          if(itemrow.qty>0){
+            itemrow.batchs.push({"value":null,"qty":itemrow.qty})
+          }
+        }
+      }
+    });
+    return dataProcessItems
   }
  
-  createItemShowCardsList(docID){
+  createItemShowCardsList(){
     const dataProcessSelected = this.state.dataProcessSelected
     let batchShowCard = []
     dataProcessSelected.forEach((row) => {
@@ -461,7 +488,6 @@ class CreateQueue extends Component{
         })
       });
     })
-
     this.setState({ batchShowCard },()=> this.createBatchShowCardsList());
   }
   createBatchShowCardsList(){
@@ -498,7 +524,7 @@ class CreateQueue extends Component{
     return  <div className= { datarow.docID } style={{"border-radius": "15px", "border-bottom": "2px solid rgb(157, 174, 236)",  "padding": "20px",  background:"white", "margin":"5px"}}>
     <Form>
       <FormGroup row>
-        <Col sm={12}><span>{(datarow.itemCode?datarow.itemCode:"") + (datarow.itemName?" : "+datarow.itemName:"")}</span></Col>
+        <Col sm={12}><span>{(datarow.itemCode?datarow.itemCode:"") + (datarow.itemName?" : "+datarow.itemName:"")}</span></Col>  {/* +" Qty : "+(datarow.qty?datarow.qty:"") */}
       </FormGroup>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Pick by : </Label></Col>
@@ -524,6 +550,76 @@ class CreateQueue extends Component{
   </div>
   }
 
+  genDocCardConfirm(datarow){
+    const processedCard = this.state.processedCard
+    let ShowCards =[]
+    if(processedCard.length > 0){
+      processedCard.forEach(row => {
+        if(row.props.className === datarow.docID){
+          ShowCards.push(row)
+        }
+      });
+    }
+    return  <div className= { datarow.docID } style={{"border-radius": "15px", "padding": "20px",  background:"white", "margin":"5px"}}>
+    <Form>
+      <FormGroup row>
+        <Col sm={12}><span>{(datarow.docCode?"Document : " + datarow.docCode:"") }</span></Col>
+      </FormGroup>
+      {ShowCards}
+    </Form>
+  </div>
+  }
+  genStoRootCardConfirm(datarow){
+    return  <div className= { datarow.docID } style={{"border-radius": "15px", "border-bottom": "2px solid rgb(157, 174, 236)",  "padding": "20px",  background:"white", "margin":"5px" }}>
+    <Form>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Pallet : </Label></Col>
+        <Col sm={3}><span>{(datarow.baseCode?datarow.baseCode:"") }</span></Col>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Item : </Label></Col>
+        <Col sm={3}><span>{(datarow.itemCode?datarow.itemCode:"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Order No : </Label></Col>
+        <Col sm={3}><span>{(datarow.orderNo?datarow.orderNo:"") }</span></Col>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Lot : </Label></Col>
+        <Col sm={3}><span>{(datarow.lot?datarow.lot:"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Batch : </Label></Col>
+        <Col sm={3}><span>{(datarow.batch?datarow.batch:"") }</span></Col>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
+        <Col sm={3}><span>{(datarow.qty && datarow.stoBaseQty?datarow.qty+"/"+datarow.stoBaseQty:"")}</span></Col>
+      </FormGroup>
+    </Form>
+  </div>
+  }
+
+  createStoRootCardConfirmList(){
+    const dataProcessed = this.state.dataProcessed
+    let processedCard = []
+    dataProcessed.forEach((datarow) => {
+      processedCard = processedCard.concat(this.genStoRootCardConfirm(datarow));
+    })
+    this.setState({ processedCard },()=>this.createDocCardConfirmList());
+  }
+
+  createDocCardConfirmList(){
+    const dataProcessed = this.state.dataProcessed
+    let processedDocCard = []
+    dataProcessed.forEach((datarow) => {
+      if(processedDocCard.length>0){
+        processedDocCard.forEach(row => {
+          if(row.props.className !== datarow.docID){
+            processedDocCard = processedDocCard.concat(this.genDocCardConfirm(datarow));
+          }
+        });
+      }else{
+        processedDocCard = processedDocCard.concat(this.genDocCardConfirm(datarow));
+      }
+    })
+    this.setState({ processedDocCard },()=>this.openModal());
+  }
+
   createCardsList(){
     const dataProcessSelected = this.state.dataProcessSelected
     let processCard = []
@@ -531,7 +627,6 @@ class CreateQueue extends Component{
       processCard = processCard.concat(this.addNewProcessCard(datarow));
     })
     this.setState({ processCard });
-    
   }
 
   viewDetail(docID){
@@ -569,7 +664,7 @@ class CreateQueue extends Component{
         itemCard.splice(index, 1);
       });
     }
-    DocumentItemData.forEach((datarow, index) => {
+    DocumentItemData.forEach((index) => {
         DocumentItemData.splice(index, 1);
     })
     this.setState({ itemCard } ,() => this.setState({dataProcessItems},()=>this.setState({DocumentItemData},() => this.createItemCardsList())))  
@@ -595,35 +690,55 @@ class CreateQueue extends Component{
     }
   }
   processQ(){
-     let Itemselecteddata = []
-    this.state.dataProcessSelected.forEach(row => {
-      Itemselecteddata.push({
-        documentsProcess:row
-        })
-    })
+    let doc=[]
+    let items=[]
+    let dataProcessed =[]
+    this.state.dataProcessSelected.forEach(docrow => {
+      docrow.items.forEach(itemrow => {
+        items.push({
+        docItemID:itemrow.dociID
+        ,itemCode:itemrow.itemCode
+        ,refID:null
+        ,pickOrderType:itemrow.pickOrderby
+        ,orderBy:itemrow.orderByField
+        ,orderNo:itemrow.orderNo
+        ,lot:itemrow.lot
+        ,priority:itemrow.priority
+        ,batchs:itemrow.batchs})
+      });
+      doc.push({
+        docID:docrow.value
+        ,items:items
+      })
+    });
     let postdata = {
-      documentsProcess:Itemselecteddata
-      //, issueItems: acceptdata
+      documentsProcess:doc
     } 
-    Axios.post(window.apipath + "/api/wm/issued/queue", Itemselecteddata).then((res) => {
+    Axios.post(window.apipath + "/api/wm/issued/queue", postdata).then((res) => {
       if (res.data._result.status === 1) {
-        this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
-        window.location.reload()
+        dataProcessed = res.data.DocumentProcessed
+        this.setState({ dataProcessed }, ()=>this.createStoRootCardConfirmList());
       }
     })
-    /* if (acceptdata.length > 0) {
-      Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
-        if (res.data._result.status === 1) {
-          this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
-          window.location.reload()
-        }
-      })
-    } */
+  }
+  
+  openModal() {
+    this.setState({ open: true })
+  }
+  closeModal() {
+    this.setState({ open: false })
+    this.setState({ dataUpdate: [] })
+  }
+  confirmQ(){
+
   }
 
   render(){
     const processCards = this.state.processCard
     const itemCards = this.state.itemCard
+    const processedDocCard = this.state.processedDocCard
+    const styleclose = {cursor: 'pointer', position: 'absolute', display: 'block', right: '-10px', top: '-10px', background: '#ffffff', borderRadius: '18px',
+  }
     return(
       <div>
         <Row style={{"marginBottom":"10px"}}>
@@ -669,14 +784,33 @@ class CreateQueue extends Component{
               <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                 <CardBody>
                   <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Process</Button>
-                  <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Cancel</Button>
+                  <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Clear</Button>
                 </CardBody>
               </Card>
             </Card>
           </Col> 
         </Row>
+
+        <Popup open={this.state.open} onClose={this.closeModal}>
+          <div style={{ border: '2px solid #007bff', borderRadius:'5px'}}>
+                <a style={styleclose} onClick={this.closeModal}>
+                    { imgClose }
+                </a>
+                <div id="header" style={{ width: '100%', borderBottom: '1px solid #007bff', fontSize: '18px', padding: '5px', color: '#007bff', fontWeight: 'bold' }}>Processed</div>
+                <div style={{ width: '100%', padding: '10px 5px' ,height: '500px', overflow: 'scroll' }}>
+                <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
+                  { processedDocCard }
+                </Card>
+                <Card style={processCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
+                  <CardBody>
+                    <Button onClick={() => this.confirmQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Confirm</Button>
+                    <Button onClick={this.closeModal} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Close</Button>
+                  </CardBody>
+                </Card>
+                </div>
+            </div>
+        </Popup>
       </div>)
   }
 }
-
 export default CreateQueue;
