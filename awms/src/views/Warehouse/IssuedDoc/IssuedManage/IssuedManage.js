@@ -182,7 +182,7 @@ class IssuedManage extends Component {
                 console.log(x.docItemID)
                 console.log(res2.docItemID)
                 if (res2.docItemID === x.id) {
-                  sum += res2.packQty
+                  sum += res2.distoQty
                   res2.sumQty1 = sum
                   res2.batch = x.batch
                   res2.options = x.options
@@ -203,7 +203,7 @@ class IssuedManage extends Component {
           for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              sum += res2.packBaseQty
+              sum += res2.distoQty
               res2.sumQty = sum
 
               sumArr.forEach(response => {
@@ -631,7 +631,7 @@ class IssuedManage extends Component {
           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
       },
 
-      { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
+      { accessor: "distoUnitCode", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
 
 
     ]
@@ -653,7 +653,7 @@ class IssuedManage extends Component {
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
           (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
       },
-      { accessor: "unitType_Name", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
+      { accessor: "distoUnitCode", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
 
 
     ]
@@ -664,7 +664,7 @@ class IssuedManage extends Component {
       { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
       //{accessor:"SKU",Header:"SKU",},
       { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("PackQty", e), datatype: "int" },
-      { accessor: "bath", Header: "Bath", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string" },
+      { accessor: "bath", Header: "Batch", editable: true, Cell: e => this.inputCell("bath", e), datatype: "string" },
       { accessor: "lot", Header: "lot", editable: true, Cell: e => this.inputCell("lot", e), datatype: "string" },
       { accessor: "orderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("orderno", e), datatype: "string" },
       { accessor: "UnitType", Header: "Unit", },

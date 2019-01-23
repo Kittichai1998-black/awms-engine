@@ -25,7 +25,7 @@ class Pack extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "PackMaster",
                 q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
+                f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -39,7 +39,7 @@ class Pack extends Component {
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjCode", "ObjectSizeName", "Created", "Modified", "LastUpdate"]
+        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode","ObjectSize_Code", "Created", "Modified", "LastUpdate"]
     }
 
     onHandleClickCancel(event) {
@@ -48,7 +48,7 @@ class Pack extends Component {
     }
 
     async componentWillMount() {
-        document.title = "SKU Package - AWMS"
+        document.title = "SKU Unit - AWMS"
         this.filterList();
         //permission
         let dataGetPer = await GetPermission()
@@ -113,7 +113,7 @@ class Pack extends Component {
         const ObjSizeSelect = {
             queryString: window.apipath + "/api/mst",
             t: "ObjectSize",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}",
+            q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}",
             f: "ID,Code",
             g: "",
             s: "[{'f':'ID','od':'asc'}]",
@@ -148,7 +148,7 @@ class Pack extends Component {
                 UnitTypeList["mode"] = "Dropdown"
 
                 ObjSizeList["data"] = ObjSizeResult.data.datas
-                ObjSizeList["field"] = "ObjCode"
+                ObjSizeList["field"] = "ObjectSizeCode"
                 ObjSizeList["pair"] = "ObjectSize_ID"
                 ObjSizeList["mode"] = "Dropdown"
 
@@ -161,27 +161,27 @@ class Pack extends Component {
         const view = this.state.permissionView
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
-            {accessor: 'Code', Header: 'Code', editable:false,Filter:"text", fixed: "left"},
+            { accessor: 'Code', Header: 'SKU Code', editable: false, Filter: "text", fixed: "left" },
             //{accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-            { accessor: 'Name', Header: 'SKU', updateable: view, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
+            { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
             //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
             { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
-      
-            //{accessor: 'ObjCode', Header: 'Object Size',updateable:false,Filter:"text", Type:"autocomplete"},
+            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
+            { accessor: 'ObjCode', Header: 'Weight Validate',updateable:false,Filter:"text", Type:"autocomplete",minWidth: 80, className: "left" },
             //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
             //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
             //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
             ///{accessor: 'PickSizeQty', Header: 'Pick Size Qty', editable:true,Filter:"text",datatype:"int"},
-          { accessor: 'ItemQty', Header: 'Conversion from Base Unit', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 70 },
-          { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
+            { accessor: 'ItemQty', Header: 'Base Qty/Unit', editable: false, Filter: "text", datatype: "int", className: "right", minWidth: 70 },
+            { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter: "text", Type: "autocomplete" },
             //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
             { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
             //{ accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180 },
             /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
             //{ accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 180 },
             //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
-            { show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
+            { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
 
         const btnfunc = [{
@@ -197,7 +197,7 @@ class Pack extends Component {
             ddlfilter = json dropdown สำหรับทำ dropdown filter
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
-                    filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
+                    filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={false}
                     btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"Pack"}
                     table="ams_PackMaster" />
             </div>

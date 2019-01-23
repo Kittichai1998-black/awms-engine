@@ -364,6 +364,16 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+
+        public List<amt_DocumentItemStorageObject> UpdateAuditSto(long docID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docID", docID);
+            param.Add("userID", buVO.ActionBy);
+            var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_UPDATE_QTY_AUDIT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
     }
 
 }

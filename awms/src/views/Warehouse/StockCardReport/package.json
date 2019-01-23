@@ -1,0 +1,6 @@
+{
+  "name": "StockCardReport",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./StockCardReport.js"
+}
