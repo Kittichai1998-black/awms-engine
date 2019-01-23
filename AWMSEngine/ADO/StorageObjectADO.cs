@@ -364,6 +364,32 @@ namespace AWMSEngine.ADO
 
             return res;
         }
+
+        public List<SPOutSTOProcesQueueIssue> StoProcessQueue(string itemCode, int pickOrderBy, string pickBy, string stampDate, string orderNo, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("@ITEM_CODE", itemCode);
+            param.Add("PICK_ORDER_BY", pickOrderBy);
+            param.Add("PICK_BY", pickBy);
+            param.Add("LOT", stampDate);
+            param.Add("ORDER_NO", orderNo);
+
+            var res = this.Query<SPOutSTOProcesQueueIssue>("SP_STO_PROCESS_QUEUE_ISSUE",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+
+        public List<amt_DocumentItemStorageObject> UpdateAuditSto(long docID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docID", docID);
+            param.Add("userID", buVO.ActionBy);
+            var res = this.Query<amt_DocumentItemStorageObject>("SP_STO_UPDATE_QTY_AUDIT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
     }
 
 }

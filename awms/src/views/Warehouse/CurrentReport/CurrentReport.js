@@ -17,22 +17,19 @@ class CurrentReport extends Component {
   constructor() {
     super();
     this.state = {
-      data:[],
+      data: [],
       select: {
         queryString: window.apipath + "/api/viw",
         t: "r_CurrentInventory",
         q: '',
-        f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit",
+        f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit,Batch,OrderNo,Lot",
         g: "",
         s: "[{'f':'SKU_Code','od':'asc'}]",
         sk: 0,
         l: 100,
         all: "",
       },
-
     }
-
-
   }
 
   componentDidMount() {
@@ -59,11 +56,11 @@ class CurrentReport extends Component {
     //})
   }
 
-  onChangeFilter(inputValue, rowData){
+  onChangeFilter(inputValue, rowData) {
     let selectUrl = this.state.select;
     let selectCondition = JSON.parse(selectUrl.q === "" ? "[]" : selectUrl.q);
 
-    if(selectCondition.length > 0){
+    if (selectCondition.length > 0) {
       selectCondition.forEach((row, index) => {
         if (row.f === rowData.column.id) {
           selectCondition.splice(index, 1)
@@ -71,13 +68,13 @@ class CurrentReport extends Component {
       })
     }
 
-    selectCondition.push({ 'f': rowData.column.id, c:'like', 'v': '*'+ inputValue.target.value +'*'})
+    selectCondition.push({ 'f': rowData.column.id, c: 'like', 'v': '*' + inputValue.target.value + '*' })
     selectUrl.q = JSON.stringify(selectCondition);
-    
+
     console.log(selectUrl)
     Axios.get(createQueryString(selectUrl)).then((response) => {
       this.setState({
-        data: response.data.datas, select:selectUrl
+        data: response.data.datas, select: selectUrl
       }, () => console.log(this.state.select))
     })
   }
@@ -85,11 +82,14 @@ class CurrentReport extends Component {
   render() {
 
     let cols = [
-      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 130 },
-      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 250 },
-      { accessor: 'Warehouse', Header: 'Warehouse', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: true },
-      { accessor: 'Qty', Header: 'Qty', filterable:false, sortable: true },
-      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter:(e) => <Input onKeyPress={(input) => {if (input.key === 'Enter'){this.onChangeFilter(input, e)}}}/>, sortable: false, minWidth: 130 },
+      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 130 },
+      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 250 },
+      { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: true },
+      { accessor: 'Batch', Header: 'Batch', filterable: false, sortable: true },
+      { accessor: 'Lot', Header: 'Lot', filterable: false, sortable: true },
+      { accessor: 'OrderNo', Header: 'OrderNo', filterable: false, sortable: true },
+      { accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true },
+      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 130 },
     ];
 
     return (
@@ -105,7 +105,7 @@ class CurrentReport extends Component {
           </Row>
           <Row>
             <Col xs="12">
-              
+
             </Col>
           </Row>
         </div>
@@ -113,7 +113,8 @@ class CurrentReport extends Component {
           filterable={true} autocomplete={this.state.autocomplete}
           uneditcolumn={this.uneditcolumn}
           table="amvr_StorageObject" /> */}
-        <ReactTable columns={cols} data={this.state.data} editable={false} filterable={true} defaultPageSize={1000}/>
+        <ReactTable style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }} minRows={5}
+          columns={cols} data={this.state.data} editable={false} filterable={true} defaultPageSize={100} />
       </div>
 
     )

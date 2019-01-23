@@ -123,6 +123,16 @@ namespace AWMSEngine.Engine.Business.Received
                         });
                     }
                 }
+                else
+                {
+                    List<long> ids = new List<long>();
+                    ids.AddRange(reqVO.docIDs);
+                    ids.AddRange(groupDocH.docHIDs);
+                    ids.Distinct().ToList().ForEach(x=> {
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                    });
+                    
+                }
             }
             return res;
         }

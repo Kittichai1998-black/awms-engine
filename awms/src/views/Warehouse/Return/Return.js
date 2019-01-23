@@ -11,6 +11,7 @@ import {
 import ReactTable from 'react-table';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 import { error } from 'util';
+import _ from "lodash";
 
 const Axios = new apicall()
 
@@ -32,8 +33,8 @@ class Return extends Component {
       },
       DocumentItemSto: {
         queryString: window.apipath + "/api/viw",
-        t: "DocItemSto",
-        q: "[{ 'f': 'EventStatus', c:'!=', 'v': 24}]",
+        t: "DocStoReturn",
+        q: "[{ 'f': 'Status', c:'!=', 'v': 2 }]",
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -63,6 +64,36 @@ class Return extends Component {
         l: "",
         all: "",
       },
+      Area:{
+        queryString: window.apipath + "/api/mst",
+        t: "AreaMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "ID,Code, Name",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        all: "",
+      },
+      UnitTypeTable:{
+        queryString: window.apipath + "/api/mst",
+        t: "UnitType",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "ID,Code",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        all: "",
+      },
+      BaseMaster:{
+        queryString: window.apipath + "/api/mst",
+        t: "BaseMaster",
+        q: '[{ "f": "Status", "c":"=", "v": 1}]',
+        f: "ID,Code,UnitType_ID",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        all: "",
+      },     
       qtyEdit: [],
       dataTable: [],
       IssueDocItem:[],
@@ -70,16 +101,29 @@ class Return extends Component {
       dataDoc:[],
       dataDocItem:[],
       barcode:"",
-      dataFilter:[]
+      dataFilter:[],
+      areaCode:[],
+      IssueDocdata:[],
+      AreaData:[],
+      UnitType:[],
+      unittypeCode:[],
+      dataSKUinPallet:[],
+      Base:[],
+      check:"",
+      DocItemSto:[],
+      show:"none"
 
     }
 
-    //this.createListTable = this.createListTable.bind(this)
     this.checkPallet = this.checkPallet.bind(this)
-    this.genDocItem = this.genDocItem.bind(this)
-    //this.createPickItem = this.createPickItem.bind(this)
+    //this.genDocItem = this.genDocItem.bind(this)
     this.createDataCard = this.createDataCard.bind(this)
-
+    this.mappingPallet = this.mappingPallet.bind(this)
+    //this.updateDocItemSto = this.updateDocItemSto(this)
+    //this.insertToDisto = this.insertToDisto.bind(this)
+    this.checkBase = this.checkBase.bind(this)
+    //this.insertSKUtoOb = this.insertSKUtoOb.bind(this)
+    this.genDocItemSto = this.genDocItemSto.bind(this)
   }
 
   async componentWillMount() {
@@ -93,29 +137,64 @@ class Return extends Component {
       })
       this.setState({ IssueDocdata})
     })
+
+    Axios.get(createQueryString(this.state.Area)).then((response) => {
+      const AreaData = []
+      response.data.datas.forEach(row => {
+        AreaData.push({ value: row.ID, label: row.Code+" : "+row.Name})
+      })
+      this.setState({ AreaData})
+    })
   }
-  
-  genDocItem(data){ 
-    this.setState({docIDIssue:data})
-    let QueryDoc = this.state.DocItem
-    let JSONDoc = []
-    JSONDoc.push({ "f": "Document_ID", "c": "=", "v":data})
+
+checkBase(){
+  let QueryDoc = this.state.BaseMaster
+  let JSONDoc = []
+  JSONDoc.push({ "f": "Code", "c": "=", "v":this.state.barcode})
+  QueryDoc.q = JSON.stringify(JSONDoc)  
+  Axios.get(createQueryString(QueryDoc)).then((response) => {
+    
+    if(response.data.datas.length !== 0){
+      const Base = []
+      response.data.datas.forEach(row => {
+        console.log(row)
+        Base.push({ value: row.ID,UnitType_ID:row.UnitType_ID})
+      })
+      this.setState({ Base})
+      this.checkPallet(true)
+    }else{
+      alert("Don't have pallet : "+this.state.barcode +" in system")
+    }
+  })
+}
+
+genDocItemSto(data){ 
+  console.log(data)
+  this.setState({DocID:data})
+  let QueryDoc = this.state.DocumentItemSto
+  let JSONDoc = []
+    JSONDoc.push({ "f": "ID", "c": "=", "v":data})
     QueryDoc.q = JSON.stringify(JSONDoc)  
     Axios.get(createQueryString(QueryDoc)).then((response) => {
-      const IssueDocItem = []
       console.log(response)
-      response.data.datas.forEach( x => {
-        console.log(x)
-        IssueDocItem.push({value: x.Code, label:x.Code,batch:x.Batch,lot:x.Lot,OrderNo:x.OrderNo,QuantityDocItem:x.Quantity})
-      })
-      this.setState({IssueDocItem})
-      console.log(this.state.IssueDocItem)
-    })
+      const DocItemSto = []
+      if(response.data.datas.length !== 0){
+        response.data.datas.forEach( x => {
+          console.log(x) 
+          DocItemSto.push({value:x.DocItem,label:x.SKUCode}) 
+        })       
+      }else{
+        DocItemSto.push({value:null,label:null})
+      }
+      this.setState({DocItemSto})
+   })
+ 
+}
 
-  }
 
-
-  checkPallet(){
+checkPallet(check){
+  console.log(this.state.docItem)
+  if(check === true){
 
     console.log(this.state.barcode)
     let QueryDoc = this.state.PalletSto
@@ -123,162 +202,174 @@ class Return extends Component {
     JSONDoc.push({ "f": "CodePallet", "c": "=", "v":this.state.barcode})
     QueryDoc.q = JSON.stringify(JSONDoc)  
       Axios.get(createQueryString(QueryDoc)).then((response) => {
-      console.log(response)
       const dataPallet = []
-      response.data.datas.forEach( x => {
-        console.log(x)
-        dataPallet.push({value:x.ID,batch:x.Batch,lot:x.Lot,OrderNo:x.OrderNo,pallet:x.CodePallet,code:x.Code})
-        })
-        this.setState({dataPallet},()=>{
-          console.log(this.state.dataPallet)
+      if( response.data.datas.length === 0){
+              this.setState({check:"insert"})
+        //==== ไม่มีข้อมูลใน stoOb ====
+        // this.state.Base.forEach( x =>{
+        //   //this.genUnitCode(x.UnitType_ID,true) 
+        // })
+        this.mappingPallet(true)
+      }else{
+          //==== เช็ค pallet ====
+           //Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => { })
+        var checkPallet = true
 
-          if(this.state.docItem.batch === null || this.state.docItem.batch  === ""){
-            this.state.docItem.batch = null
-          }
-          if(this.state.docItem.OrderNo  === null || this.state.docItem.OrderNo   ===" "){
-            this.state.docItem.OrderNo  = null
-          }
-          if(this.state.docItem.lot === null || this.state.docItem.lot  === ""){
-            this.state.docItem.lot = null
-          }
+          if(checkPallet === true){
+            //เพิ่มได้
+            this.mappingPallet(true)
+          }else{
+            //เพิ่มไม่ได้
+            alert("Cannot use Pallter : "+this.state.barcode)   
+          }          
+      } 
+    })   
+  }
+}
 
-          this.state.dataPallet.forEach(data =>{
-            if(data.batch === null || data.batch === ""){
-              data.batch = null
-            }
-            if(data.lot === null || data.lot === ""){
-              data.lot = null
-            }
-            if(data.OrderNo === null || data.OrderNo === ""){
-              data.OrderNo = null
-            }
-          })
-          
-            var result = this.state.dataPallet.filter(x=> x.batch === this.state.docItem.batch && 
-              x.lot === this.state.docItem.lot &&
-              x.OrderNo === this.state.docItem.OrderNo && 
-              x.pallet === this.state.barcode &&
-              x.code === this.state.docItem.value)
-              console.log(result)
-            console.log(result.length)
-            var flag = false
-            if(result.length != 0){
-              //เพิ่มได้
-              flag = true
-              
-            }else{
-              //เพิ่มไม่ได้
-              flag = false
-            }    
-            this.createDataCard(flag)
-            console.log(flag)       
+  mappingPallet(flag){
+
+    console.log(flag)
+    if(flag === true){
+      let postdata = {  
+        scanCode: this.state.barcode
+        , amount: 1
+        , areaID: this.state.AreaID
+        , action: 1
+        , mode: 0
+        , options: null
+        , unitCode: null
+        , warehouseID: 1
+        , mapsto: null
+        , isRoot: true
+      }
+      console.log(postdata)
+      Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
+        console.log(res)
+        if (res.data._result.status === 1) {
+
+          if(res.data.mapstos.length === 0){
+
+            // var card =this.createDataCard(null,false)  
+            // this.setState({card})
+            this.setState({show:"block"})
+            this.createDataCard(null,false)
+          }else{
+            //==== แสดงข้อมูล
+            res.data.mapstos.forEach( row =>{
+              const dataSKUinPallet = []
+              row.mapstos.forEach( x=>{
+                console.log(x)
+                dataSKUinPallet.push({id:x.id,sku:x.code,qty:x.qty})
+              })
+              console.log(dataSKUinPallet)  
+              this.setState({show:"block"})    
+              this.createDataCard(dataSKUinPallet,true)  
+            })  
+          }
+      }
       })
-    })
   }
 
-  createDataCard(flag){
+}
 
-    if(flag){ //เพิ่มได้
-      let QueryDoc = this.state.DocumentItemSto
-      let JSONDoc = []
-      JSONDoc.push({ "f": "Document_ID", "c": "=", "v": this.state.docIDIssue })
-      QueryDoc.q = JSON.stringify(JSONDoc)
+  createDataCard(data,flag){
+//เพิ่มได้
+  let QueryDoc = this.state.DocumentItemSto
+  let JSONDoc = []
+  JSONDoc.push({"f": "Status", "c":"=", "v": 1, "f": "ID", "c": "=", "v": this.state.DocID })
+  QueryDoc.q = JSON.stringify(JSONDoc)
+  let Doc = []
+  if(flag === true){
+
+    data.forEach(dataPallet =>{
       Axios.get(createQueryString(QueryDoc)).then((res) => {
-        console.log(res)
-        var dataCard = res.data.datas.map((list,index) => {
+        var dataCard = res.data.datas.map((list,index) => {              
+            console.log(list)
         return <Card key={index}>
           <CardBody>
-            <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.Code}</div>
-            <div><label  style={{fontWeight:"bolder"}}>Qty : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  onChange={(e) => {
-            this.ChangeData(e, e.target.value) }}/> / {this.state.docItem.QuantityDocItem}</div>
-            <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.UnitTypeName}</div><br/>
-            <div style={{textAlign:"center", width: "100%" }}><Button color="primary" id="per_button_confirm">Confirm</Button></div>
+            <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {dataPallet.qty}</div>
+            <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.SKUCode}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
+            onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {list.BaseQty}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.Unit}</div><br/>
+            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(true)}} color="primary" >Confirm</Button></div>
           </CardBody>
         </Card>
-          })
+          
+        })
           this.setState({displayDataCard : dataCard})
         })
-    }else{
-      //เพิ่มไม่ได้
-     alert("Cannot use Pallter : "+this.state.barcode)     
-    }
+      }) 
+  }else{
+      Axios.get(createQueryString(QueryDoc)).then((res) => {
+        var dataCard = res.data.datas.map((list,index) => {              
+            console.log(list)
+        return <Card key={index}>
+          <CardBody>
+            <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {" - "} &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {" - "}</div>
+            <div style={{textAlign:"center"}}><label  style={{textAlign:"center",fontWeight:"bolder"}}>SKU For Return</label></div>
+            <div><label  style={{fontWeight:"bolder"}}>Code : </label> {list.SKUCode}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
+            onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {list.BaseQty}</div>
+            <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.Unit}</div><br/>
+            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(true)}} color="primary" >Confirm</Button></div>
+          </CardBody>
+        </Card>
+          
+        })
+          this.setState({displayDataCard : dataCard})
+        })
+  
+}
   }
 
-  
+  updateDocItemSto(data){
+     this.setState({displayDataCard:null})
+     this.setState({barcode:null})
+  }
+
   ChangeData(e,dataValue) {
     e.target.style.background = "yellow"
-    let rootdata
-    //let data = this.state.qtyEdit
-    // data.forEach((row, index) => {
-    //   if (row.baseStoID === dataParent) {
-    //     data.splice(index, 1)
-    //   }
-    // })
-    // data.push({ baseStoID: dataParent, packStoCode: dataCode, packQty: dataValue })
-
-    // this.setState({ qtyEdit: data })
-    // rootdata = {
-    //   "rootStoID": this.rootID,
-    //   "remark": this.state.remark,
-    //   "adjustItems": data,
-    //   "rootStoType": this.rootType,
-    // }
-    // this.setState({ updateQty: rootdata })
+    this.setState({dataValue})
+    console.log(dataValue)
   }
   
   dropdownAuto() {
     return <div>
-      <label style={{ width: '95px', display: "inline-block", marginRight: "10px" }}>Issue Doc : </label>
-      <div style={{ display: "inline-block", width: "60%"}}>
-        <AutoSelect data={this.state.IssueDocdata} result={(res) => {this.genDocItem(res.value) }} />
+      <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Issue Doc : </label><br/>
+      <div style={{textAlign:"center", display: "inline-block", width: "100%"}}>
+        <AutoSelect data={this.state.IssueDocdata} result={(res) => {this.genDocItemSto(res.value) }} />
       </div>
     </div>
   }
 
 
-  // createListTable(flag) {
-  //   if(flag){ //เพิ่มได้
-  //     console.log(this.state.Issue)
-  //     let QueryDoc = this.state.DocumentItemSto
-  //     let JSONDoc = []
-  //     const arrdata = []
-  //     JSONDoc.push({ "f": "Document_ID", "c": "=", "v": this.state.Issue })
-  //     QueryDoc.q = JSON.stringify(JSONDoc)
-  //     Axios.get(createQueryString(QueryDoc)).then((res) => {
-  //       res.data.datas.forEach(row => {
-  //         arrdata.push({ Code: row.Code, Qty: row.Quantity, UnitTypeName: row.UnitTypeName })
-  //       })
-  //       this.setState({ dataTable: arrdata }, () => console.log(this.state.dataTable))
-  //     })
-  //   }else{
-  //     //เพิ่มไม่ได้
-  //   }
-  // }
-
   render() {    
     return (
       <div>
-        <Row>
-          <Col sm="6">
-            {this.dropdownAuto()}           
-          </Col>
-          <Col sm="6">
-          <div className=""><label style={{width: '95px', display: "inline-block", marginRight: "10px" }}>Doc Item : </label>
-                <div style={{ display: "inline-block", width: "60%", }}><AutoSelect data={this.state.IssueDocItem} result={(e) => this.setState({ "docItem": e})}  /></div>
-          </div>         
-          </Col>
-          <Col sm="6">
-          <label style={{ width: '95px', display: "inline-block",  marginRight: "10px" }}>Barcode Pallet : </label>
-            <Input id="barcodetext" style={{ width: '60%', display: 'inline-block' }} type="text"
+        
+          {this.dropdownAuto()}       
+
+          <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Item Return : </label><br/>
+          <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.DocItemSto} result={(e) => this.setState({ "docItem": e})}  /></div><br/>
+    
+          <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Area : </label><br/>
+          <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.AreaData} result={(e) => this.setState({ "AreaID": e.value})}  /></div><br/>
+
+          <label style={{width: '100%', display: "inline-block",  marginRight: "10px" }}>Barcode Pallet : </label><br/>
+            <Input id="barcodetext" style={{textAlign:"center", width: '100%', display: 'inline-block' }} type="text"
               value={this.state.barcode} placeholder="Barcode"
               onChange={e => { this.setState({ barcode: e.target.value }) }}
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && this.state.barcode !== "") {
-                  this.checkPallet()
+                if (e.key === 'Enter' && this.state.barcode !== "") {                 
+                  this.checkBase()
                 }
-              }} />{' '}
-          </Col>
-        </Row><br />
+              }} />{' '}<br/>
+        <br />
         {this.state.displayDataCard}
       </div>
     )

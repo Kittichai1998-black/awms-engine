@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService.WM
 {
-    public class ScanMapStoAPI : BaseAPIService
+    public class ReturnAPI : BaseAPIService
     {
-        public ScanMapStoAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ReturnAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
 
@@ -24,8 +24,16 @@ namespace AWMSEngine.APIService.WM
             var res = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO, req);
             if ((VirtualMapSTOActionType)this.RequestVO.action == VirtualMapSTOActionType.ADD)
                 new ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, res);
+            this.CommitTransaction();
 
-            return res;
+
+            this.BeginTransaction();
+            var reqInsert = ObjectUtil.DynamicToModel<InsertToDocItemSto.TDocReq>(this.RequestVO);
+            var resInsert = new InsertToDocItemSto().Execute(this.Logger, this.BuVO, reqInsert);
+            return resInsert;
+
+
+
         }
     }
 }

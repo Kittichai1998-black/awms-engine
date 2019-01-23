@@ -173,22 +173,22 @@ class IssuedDoc extends Component {
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
       { accessor: 'Ref2', Header: 'Movement', editable: false, Filter: "text", },
-      { accessor: 'SouBranchName', Header: 'Branch Sou.', editable: false, Filter: "text", },
-      { accessor: 'SouWarehouseName', Header: 'Ware Sou.', editable: false, Filter: "text", },
-      { accessor: 'DesBranchName', Header: 'Branch Des.', editable: false, Filter: "text" },
-      { accessor: 'DesWarehouseName', Header: 'Ware Des.', editable: false, Filter: "text", },
-      { accessor: 'DesSupplierName', Header: 'Sup Des.', editable: false, Filter: "text" },
-      { accessor: 'DesCustomerName', Header: 'Cus Des.', editable: false, Filter: "text" },
+      { accessor: 'Remark', Header: 'Remark', editable: false, Filter: "text" },
+      { accessor: 'SouBranchName', Header: 'Sou.Branch', editable: false, Filter: "text", },
+      { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
+      { accessor: 'DesBranchName', Header: 'Des.Branch', editable: false, Filter: "text", },
+      { accessor: 'DesWarehouseName', Header: 'Des.Warehouse', editable: false, Filter: "text", },
+      { accessor: 'DesSupplierName', Header: 'Des.Supplier', editable: false, Filter: "text" },
+      { accessor: 'DesCustomerName', Header: 'Des.Customer', editable: false, Filter: "text" },
       //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
       //{accessor: 'SouAreaName', Header: 'Area', editable:false, Filter:"text",},
       // {accessor: 'ForCustomer', Header: 'For Customer', editable:false, Filter:"text",},
       // { accessor: 'Batch', Header: 'Batch', editable: false, Filter: "text", },
       // {accessor: 'Lot', Header: 'Lot', editable:false, Filter:"text",},
       // { accessor: 'LastUpdate', Header: 'Last Update', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
-      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
       { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: false },
       { accessor: 'ActionTime', Header: 'Action Time', editable: false, Type: "datetime", dateformat: "datetime", filterable: false, minWidth: 120 },
-      { accessor: 'Remark', Header: 'Remark', editable: false, Filter: "text" },
+      { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
       //{ Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
     ];
@@ -219,7 +219,7 @@ class IssuedDoc extends Component {
       */}
         <div className="clearfix">
 
-          <Button id="per_button_doc" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+          <Button id="per_button_doc" style={{ width: '150px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
 
           {/* <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => {
             let data1 = { "exportName": "DocumentIssuedToShop", "whereValues": [this.state.date.format('YYYY-MM-DD')] }
@@ -242,7 +242,7 @@ class IssuedDoc extends Component {
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
-            <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button>
+            {/* <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button> */}
             <Button id="per_button_working" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>

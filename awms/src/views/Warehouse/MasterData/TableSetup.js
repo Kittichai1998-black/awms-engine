@@ -415,27 +415,13 @@ class TableGen extends Component {
               }
             }
           } else {
-            if (col.accessor === "Bank") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Bank");
-                delete row["Code"]
-              }
-            }
-            if (col.accessor === "Bay") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Bay");
-                delete row["Code"]
-              }
-            }
-            if (col.accessor === "Level") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Level");
-                delete row["Code"]
-              }
-            }
-            if (col.accessor === "Gate") {
-              if (row[col.accessor] === "") {
-                window.warning("กรุณากรอกข้อมูล Gate");
+            if (col.accessor === "Code") {
+              if (row[col.accessor] === "" || row[col.accessor] === null) {
+                if (col.Header === "Username") {
+                  window.warning("กรุณากรอกข้อมูล Username");
+                } else {
+                  window.warning("กรุณากรอกข้อมูล Code");
+                }
                 delete row["Code"]
               }
             }
@@ -458,7 +444,7 @@ class TableGen extends Component {
           if (res.data._result.status === 1) {
             this.Notification(this.state.statusUpdateData)
             //this.queryInitialData(this.state.dataselect);
-          } 
+          }
           // else {
           //   if (this.props.objectSizeMapPallet !== undefined) {
           //     console.log(this.props.objectSizeMapPallet)
@@ -1128,7 +1114,7 @@ class TableGen extends Component {
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }
-        }else{
+        } else {
           return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
         }
       }
@@ -1250,9 +1236,10 @@ class TableGen extends Component {
       )
     } else if (this.props.exportfilebtn === false) {
       const datatable = [...this.state.data];
+      const selectdatas = Clone(this.props.data)
       return (
         <div>
-          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
+          <ExportFile column={this.props.column} dataexp={datatable} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
         </div>
       )
     } else {

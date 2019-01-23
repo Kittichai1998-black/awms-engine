@@ -5,21 +5,14 @@ using System.Text;
 
 namespace AWMSModel.Criteria.SP.Response
 {
-    public class SPOutSTORootCanUseCriteria
+    public class SPOutSTOProcesQueueIssue
     {
         public long id;
         public string code;
-        public string name;
         public StorageObjectType objectType;
-        public string lot;
-        public string batch;
-        public string orderNo;
-
-        public long docItemID;
 
         public long rootID;
         public string rootCode;
-        public string rootName;
 
         public long mstID;
         public long packID;
@@ -27,20 +20,10 @@ namespace AWMSModel.Criteria.SP.Response
         public string packName;
 
         public decimal packQty;
-        public long packUnitID;
-        public string packUnitCode;
 
         public decimal packBaseQty;
         public long packBaseUnitID;
         public string packBaseUnitCode;
-
-        public decimal distoQty;
-        public long distoUnitID;
-        public string distoUnitCode;
-
-        public decimal distoBaseQty;
-        public long distoBaseUnitID;
-        public string distoBaseUnitCode;
 
         public int areaID;
         public string areaCode;
@@ -52,11 +35,14 @@ namespace AWMSModel.Criteria.SP.Response
         public string branchCode;
 
         public int? forCustomerID;
+
+        public string lot;
+        public string batch;
+        public string orderNo;
+
         public DateTime? prodDate;
         public DateTime? expDate;
 
-        public EntityStatus status;
-
-        //public DateTime createTime;
+        public DateTime createTime;
     }
 }

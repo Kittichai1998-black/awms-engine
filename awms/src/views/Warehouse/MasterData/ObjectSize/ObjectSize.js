@@ -107,7 +107,7 @@ class ObjectSize extends Component {
         event.preventDefault();
     }
     componentDidMount() {
-        document.title = "Standard Pack Size : AWMS";
+        document.title = "Weight Validate : AWMS";
     }
     async componentWillMount() {
         this.filterList()
