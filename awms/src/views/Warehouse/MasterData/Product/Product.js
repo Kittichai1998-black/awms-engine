@@ -193,7 +193,7 @@ class ListProduct extends Component {
       */}
 
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
-          filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view} expFilename={"SKU"}
+          filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view} expFilename={"SKUMaster"}
           btn={btnfunc} uneditcolumn={this.uneditcolumn}
           table="ams_SKUMaster" />
 
