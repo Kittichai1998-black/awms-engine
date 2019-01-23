@@ -20,9 +20,11 @@ namespace AWMSEngine.ADO
         public StorageObjectCriteria UpdateLocation(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
         {
             var location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(locationID, buVO);
+
             baseInfo.parentID = location.ID;
             baseInfo.parentType = StorageObjectType.LOCATION;
             baseInfo.areaID = location.AreaMaster_ID;
+
             this.PutV2(baseInfo, buVO);
             baseInfo.ToTreeList().ForEach(x => {
                 if (x != baseInfo)
