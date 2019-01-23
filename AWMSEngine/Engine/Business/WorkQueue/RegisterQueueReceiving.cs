@@ -74,7 +74,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากมีสถานะ '" + mapsto.eventStatus + "'");
             }
 
-
+            if (docItems.Count() == 0)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสารรอรับเข้า");
 
             var workQ = this.ProcessRegisterWorkQueue(docItems,mapsto, reqVO);
 
@@ -214,6 +215,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 if (docItem != null)
                 {
                     ADO.DocumentADO.GetInstant().MappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
+                    docItems.Add(docItem);
                 }
                 else if(isAutoCreate)
                 {

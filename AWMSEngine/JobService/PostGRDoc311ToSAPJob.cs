@@ -13,7 +13,6 @@ namespace AWMSEngine.JobService
 {
     public class PostGRDoc311ToSAPJob : BaseJobService
     {
-        public static int counting = 0;
         public override void ExecuteJob(IJobExecutionContext context)
         {
             var docs = 

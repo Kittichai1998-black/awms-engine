@@ -198,7 +198,7 @@ class Pack extends Component {
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
                     filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={false}
-                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"Pack"}
+                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"}
                     table="ams_PackMaster" />
             </div>
         )
