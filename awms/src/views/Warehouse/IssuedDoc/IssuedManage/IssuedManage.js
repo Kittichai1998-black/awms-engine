@@ -148,13 +148,16 @@ class IssuedManage extends Component {
         addstatus: true,
       })
       Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID + "&getMapSto=true").then((rowselect1) => {
-        if (rowselect1.data._result.status === 0) {
-          this.setState({ data: [] })
-        }
-        else {
+        if (rowselect1.data._result.status === 1) {
+          //this.setState({ data: [] })
+
+        
+
+   
+     
           console.log(rowselect1)
           this.setState({
-            data: rowselect1.data.document,
+            //data: rowselect1.data.document,
             remark: rowselect1.data.document.remark,
             documentStatus: rowselect1.data.document.eventStatus,
             documentDate: moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
@@ -170,42 +173,55 @@ class IssuedManage extends Component {
 
           var groupPack = _.groupBy(rowselect1.data.bstos, "code")
           console.log(groupPack)
-          var groupdocItemID = _.groupBy(rowselect1.data.bstos, "docItemID")
+          var groupdocItem = rowselect1.data.document.documentItems
           console.log(groupPack)
           let sumArr = []
           let sumArr1 = []
 
-          for (let res1 in groupdocItemID) {
-            let sum = 0
-            groupdocItemID[res1].forEach(res2 => {
-              rowselect1.data.document.documentItems.forEach(x => {
-                console.log(x.docItemID)
-                console.log(res2.docItemID)
-                if (res2.docItemID === x.id) {
-                  sum += res2.distoQty
-                  res2.sumQty1 = sum
-                  res2.batch = x.batch
-                  res2.options = x.options
-                  res2.quantityDoc = x.quantity
-                  res2.lot = x.lot
-                  res2.orderNo = x.orderNo
-                }
-              })
+          //for (let res1 in groupPack) {
+          //  let gpf = groupPack[res1][0];
+          //  let di = groupdocItem.filter(x => {
+          //    return x.id = gpf.docItemID;
+          //  })
+          //  di.sumQty1 = gpf.distoQty
+          //  di.batch = gpf.batch
+          //  di.options = gpf.options
+          //  di.quantityDoc = gpf.quantity
+          //  di.lot = gpf.lot
+          //  di.orderNo = gpf.orderNo
 
+          //  sumArr1.push(di);
+          //}
 
-            })
+          groupdocItem.forEach(x => {
+            let pg = rowselect1.data.bstos.filter(y => { return y.docItemID === x.id });
+            console.log(pg)
+            if (pg.length > 0) {
+              x.sumQty1 = pg[0].distoQty
+              x.batch = pg[0].batch
+              x.options = pg[0].options
+              x.lot = pg[0].lot
+              x.orderNo = pg[0].orderNo
+              x.distoUnitCode = pg[0].distoUnitCode
+            }
+            else {
+              x.distoUnitCode = x.unitType_Code
+            }
 
-            sumArr1.push(groupdocItemID[res1][groupdocItemID[res1].length - 1])
-          }
+            sumArr1.push(x);
+          })
 
-
+          this.setState({ data3: sumArr1 });
 
           for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              sum += res2.distoQty
-              res2.sumQty = sum
-
+              res2.sumQty1 = res2.distoQty
+              sumArr1.forEach(x=> {
+                if(x.id === res2.docItemID){
+                  res2.quantity = x.quantity
+                }
+              })
               sumArr.forEach(response => {
                 if (response.code === res2.code) {
                   res2.code = "";
@@ -616,9 +632,9 @@ class IssuedManage extends Component {
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
-      { accessor: "packMaster_Name", Header: "SKU Code", Cell: (e) => <span>{e.original.packCode}</span>, },
-      { accessor: "packMaster_Name", Header: "SKU Name", Cell: (e) => <span>{e.original.packName}</span>, },
-      { accessor: "code", Header: "Base", Cell: (e) => <span>{e.original.code}</span> },
+      { accessor: "packCode", Header: "SKU Code"},
+      { accessor: "packName", Header: "SKU Name"},
+      { accessor: "code", Header: "Base"},
 
 
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
@@ -627,13 +643,10 @@ class IssuedManage extends Component {
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
-          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
+        (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
-
-      { accessor: "distoUnitCode", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
-
-
+      { accessor: "distoUnitCode", Header: "Unit"},
     ]
 
 
@@ -641,8 +654,8 @@ class IssuedManage extends Component {
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
-      { accessor: "packMaster_Name", Header: "SKU Code", Cell: (e) => <span>{e.original.packCode}</span>, },
-      { accessor: "packMaster_Name", Header: "SKU Name", Cell: (e) => <span>{e.original.packName}</span>, },
+      { accessor: "packMaster_Name", Header: "SKU Code"},
+      { accessor: "packMaster_Name", Header: "SKU Name"},
 
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},  
       { accessor: 'batch', Header: 'Batch', editable: false, },
@@ -650,10 +663,10 @@ class IssuedManage extends Component {
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantityDoc) : (e.original.sumQty1 + ' / ' +
-          (e.original.quantityDoc === null ? '-' : e.original.quantityDoc))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
+          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
-      { accessor: "distoUnitCode", Header: "Unit", Cell: (e) => <span>{e.original.packBaseUnitCode}</span> },
+      { accessor: "distoUnitCode", Header: "Unit" },
 
 
     ]
@@ -781,7 +794,7 @@ class IssuedManage extends Component {
         {this.state.pageID != 0 ? null : <ReactTable columns={col} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
-
+        {console.log(this.state.data3)}
         {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
@@ -791,7 +804,7 @@ class IssuedManage extends Component {
 
         <Card>
           <CardBody style={{ textAlign: 'right' }}>
-            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay }} color="primary" className="mr-sm-1">Create</Button>
+            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay}} color="primary" className="mr-sm-1">Create</Button>
             <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
             {this.state.resultstatus}
           </CardBody>
