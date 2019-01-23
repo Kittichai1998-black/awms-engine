@@ -149,10 +149,12 @@ class IssuedManage extends Component {
       })
       Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID + "&getMapSto=true").then((rowselect1) => {
         if (rowselect1.data._result.status === 0) {
-          this.setState({ data: [] })
+          
         }
         else {
           console.log(rowselect1)
+
+
           this.setState({
             data: rowselect1.data.document,
             remark: rowselect1.data.document.remark,
