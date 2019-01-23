@@ -56,8 +56,8 @@ namespace AWMSEngine
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             ADO.StaticValue.StaticValueManager.GetInstant();
 
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDoc311ToSAPJob>("0 0/5 * * * ?");
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDocPackage321ToSAPJob>("0 0/5 * * * ?");
+            //AMWUtil.Common.SchedulerUtil.Start<PostGRDoc311ToSAPJob>("0 0/30 * * * ?");
+            //AMWUtil.Common.SchedulerUtil.Start<PostGRDocPackage321ToSAPJob>("0 0/15 * * * ?");
             
             if (env.IsDevelopment())
             {

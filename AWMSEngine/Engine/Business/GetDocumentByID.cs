@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.Business
                 new SQLConditionCriteria[]
                 {
                     new SQLConditionCriteria("Document_ID",doc.ID, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
+                    //new SQLConditionCriteria("Status",EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS),
                 },
                 this.BuVO);
             doc.documentItems = docItems;

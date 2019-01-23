@@ -108,7 +108,7 @@ namespace AWMSEngine.APIService.Api2
             List<KeyValuePair<string, string>> txtMsts = new List<KeyValuePair<string, string>>();
             reqData.documents.ForEach(x =>
                                         x.items.FindAll(y => !string.IsNullOrEmpty(y.desCustomer))
-                                            .ForEach(y => txtMsts.Add(new KeyValuePair<string, string>(y.desCustomer, y.desCustomer))));
+                                            .ForEach(y => txtMsts.Add(new KeyValuePair<string, string>(y.desCustomer, y.desCustomerName))));
             txtMsts = txtMsts.Distinct()
                 .Where(x => !ADO.StaticValue.StaticValueManager.GetInstant().Customers.Any(y => y.Code == x.Key && y.Name == x.Value))
                 .ToList();
@@ -137,7 +137,7 @@ namespace AWMSEngine.APIService.Api2
             List<KeyValuePair<string, string>> txtMsts = new List<KeyValuePair<string, string>>();
             reqData.documents.ForEach(x =>
                                         x.items.FindAll(y => !string.IsNullOrEmpty(y.desSupplier))
-                                            .ForEach(y => txtMsts.Add(new KeyValuePair<string, string>(y.desSupplier, y.desSupplier))));
+                                            .ForEach(y => txtMsts.Add(new KeyValuePair<string, string>(y.desSupplier, y.desSupplierName))));
             txtMsts = txtMsts.Distinct()
                 .Where(x => !ADO.StaticValue.StaticValueManager.GetInstant().Customers.Any(y => y.Code == x.Key && y.Name == x.Value))
                 .ToList();
