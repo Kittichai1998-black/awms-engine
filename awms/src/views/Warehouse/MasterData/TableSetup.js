@@ -1224,22 +1224,24 @@ class TableGen extends Component {
   }
 
   AddGenerate() {
+    let selectdatas = Clone(this.props.data)
     if (this.props.addbtn === true) {
-      return <Button onClick={this.onHandleClickAdd} style={{ width: 130 }} type="button" color="success" className="float-right">Add</Button>
-    } else if (this.props.addExportbtn === true) {
-      const datatable = [...this.state.data];
       return (
-        <div>
-          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '5px' }} type="button" color="success" className="float-right">Add</Button>
-          <ExportFile column={this.props.column} dataexp={datatable} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
+        <div style={{ marginTop: '3px', marginBottom: '3px' }}>
+          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginRight: '3px' }} type="button" color="success" className="float-right">Add</Button>
+        </div>
+      )
+    } else if (this.props.addExportbtn === true) {
+      return (
+        <div style={{ marginTop: '3px', marginBottom: '3px' }}>
+          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '2px', marginRight: '3px' }} type="button" color="success" className="float-right">Add</Button>
+          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
         </div>
       )
     } else if (this.props.exportfilebtn === false) {
-      const datatable = [...this.state.data];
-      const selectdatas = Clone(this.props.data)
       return (
-        <div>
-          <ExportFile column={this.props.column} dataexp={datatable} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
+        <div style={{ marginTop: '3px', marginBottom: '3px' }}>
+          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
         </div>
       )
     } else {
@@ -1420,7 +1422,7 @@ class TableGen extends Component {
           className="-striped"
           data={this.state.data}
           ref={ref => this.tableComponent = ref}
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+          style={{ marginTop: '3px', backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
           loading={this.state.loading}
           filterable={this.props.filterable}
           columns={col}

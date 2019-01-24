@@ -220,7 +220,7 @@ class IssuedManage extends Component {
     if (listAudit.length > 0) {
       Axios.post(window.apipath + "/api/wm/audit/doc/Create", createAuditData).then((res) => {
         if (res.data._result.status === 1) {
-          //this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
+          this.props.history.push('/sys/ad/create?ID=' + res.data.ID)
           window.location.reload()
         }
       })
@@ -502,8 +502,8 @@ class IssuedManage extends Component {
           </Col>       
         </Row>
 
-        <div className="clearfix">
-          <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay }}>Add</Button>
+        <div className="clearfix" style={{ marginTop: '3px', marginBottom: '3px' }}>
+          <Button className="float-right" onClick={() => this.addData()} color="success" disabled={this.state.addstatus} style={{ width: "130px", display: this.state.adddisplay }}>Add</Button>
           {/* <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code}</span> */}
         </div>
 
@@ -512,16 +512,14 @@ class IssuedManage extends Component {
 
         {this.state.pageID === 0 ? null : <ReactTable columns={colsview} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
-
-
+ 
         <Card>
-          <CardBody style={{ textAlign: 'right' }}>
-            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay }} color="primary" className="mr-sm-1">Create</Button>
-            <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/sys/ad/search')}>Close</Button>
+          <CardBody>
+            <Button onClick={() => this.createDocument()} style={{ width: "130px", marginRight: '5px', display: this.state.adddisplay }} color="primary" className="float-right">Create</Button>
+            <Button style={{ width: "130px" }} type="button" color="secondary" onClick={() => this.props.history.push('/sys/ad/search')} className="float-left">Back</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>
-
       </div>
     )
   }

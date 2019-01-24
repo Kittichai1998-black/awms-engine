@@ -19,11 +19,14 @@ class AuditQueue extends Component{
       pickItemList:[],
       document:null,
       docSelection:[],
-      queueList:[]
+      queueList:[],
+      percent:100,
+      queueProcess:false
     }
     this.createDocItemList = this.createDocItemList.bind(this);
     this.onHandleSelectionDoc = this.onHandleSelectionDoc.bind(this);
     this.onHandleCreateAuditQueue = this.onHandleCreateAuditQueue.bind(this);
+    this.onHandleGetAuditQueue = this.onHandleGetAuditQueue.bind(this);
 
     this.style = {width:"100%", overflow:"hidden", marginBottom: "10px", textAlign:"left"}
     this.select =  {
@@ -42,6 +45,7 @@ class AuditQueue extends Component{
     { 'value': 1, 'label': 'Normal' },
     { 'value': 2, 'label': 'High' },
     { 'value': 3, 'label': 'Critical' }];
+    this.auditType = [{'label':"Percentage",'value':0},{'label':"Pallet",'value':1}];
   }
 
   async componentWillMount() {
@@ -65,7 +69,7 @@ class AuditQueue extends Component{
 
   onHandleSelectionDoc(docID){
     Axios.get(window.apipath + "/api/wm/audit/doc?getMapSto=false&docID="+ docID).then(res => {
-      this.setState({document:res.data.document});
+      this.setState({document:res.data.document, docID});
     })
   }
 
@@ -77,7 +81,7 @@ class AuditQueue extends Component{
           <div>Unit : {x.unitType_Code}</div>
           <div>Batch : {x.batch}</div>
           {x.refID === null ? null : <div>SAP Document : {x.refID}</div>}
-          {x.locationCode === undefined ? <div>Location : {x.locationCode}</div> : x.palletCode === undefined ? <div>Pallet Code : {x.palletCode}</div> : null}
+          {x.locationCode !== undefined ? <div>Location : {x.locationCode}</div> : x.palletCode !== undefined ? <div>Pallet Code : {x.palletCode}</div> : null}
         </CardBody>
       </Card>
     })
@@ -85,30 +89,37 @@ class AuditQueue extends Component{
 
   onHandleCreateAuditQueue(){
     let data = {
-      docID:this.state.document.id,
-      warehouseID:1,
-      palletCode:this.state.document.palletCode === undefined ? "" : this.state.document.palletCode,
-      locationCode:this.state.document.locationCode === undefined ? "" : this.state.document.locationCode ,
-      priority:this.state.priority,
-      desAreaID:this.state.desAreaID,
+      docID:this.state.docID,
+      workQueue:this.state.workQueue,
+      disto:this.state.disto,
     }
 
     Axios.post(window.apipath + "/api/wm/audit/create", data).then(res => {
       if(res.data._result.status === 1)
       {
-        var docID = res.data.docID;
-        var queueList = res.data.listItems.map(x=> {
-          return {
-            palletCode:x.palletCode,
-            packCode:x.itemCode
-          }
-        });
+        this.setState({itemList:res.data.listItems})
+      }
+    });
+  }
 
-        var queueTable = <ReactTable style={{width:"100%"}} data={queueList} editable={false} filterable={false} defaultPageSize="2000"
-        showPageSizeOptions={false} columns={[{ accessor: 'palletCode', Header: 'Pallet Code'},
-        { accessor: 'packCode', Header: 'Pack Code'}]}/>
+  onHandleGetAuditQueue(){
+    Axios.get(window.apipath + "/api/wm/audit/get?docID="+ this.state.docID + "&warehouseID=1&priority=" + 
+      this.state.priority + "&desAreaID=" + this.state.desAreaID + "&percent=" + this.state.percent +
+      "&auditType=" + this.state.auditType).then(res => {
+        if(res.data._result.status === 1)
+        {
+          var docID = res.data.docID;
+          var queueList = res.data.workQueue.map(x=> {
+            return {
+              palletCode:x.storageObject_Code
+            }
+          });
 
-        this.setState({queueTable, docID})
+          var queueTable = <ReactTable style={{width:"100%"}} data={queueList} editable={false} filterable={false} defaultPageSize={2000}
+          editable={false} minRows={5} showPagination={false}
+          columns={[{ accessor: 'palletCode', Header: 'Pallet Code'}]}/>
+
+          this.setState({queueTable, docID, workQueue: res.data.workQueue, disto: res.data.disto, queueProcess:true})
       }
     });
   }
@@ -131,16 +142,18 @@ class AuditQueue extends Component{
               <Row>
                 <Col sm="2"><span>Area : </span></Col><Col sm="10"><AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/></Col>
                 <Col sm="2"><span>Priority : </span></Col><Col sm="10"><AutoSelect data={this.priority} result={e => this.setState({priority:e.value})}/></Col>
-                
-                {this.state.document === null ? null : <Button style={{ background: "#d50000", color: "white", width: "150px",marginTop:'20px' }} onClick={this.onHandleCreateAuditQueue}>Create Queue</Button>}
+                <Col sm="2">Audit : </Col><Col sm="4"><Input style={{width:"150px"}} type="number" value={this.state.percent} onChange={(e) => this.setState({percent:e.target.value})}/></Col><Col sm="6"><AutoSelect data={this.auditType} result={e => this.setState({auditType:e.value})}/></Col>
+                {this.state.document === null ? null : <Button style={{ width: "150px",marginTop:'20px' }} color="success" onClick={this.onHandleGetAuditQueue}>Process Queue</Button>}
               </Row>
             </Card>
           </Col>
           <Col sm="6">
-            {this.state.docID === undefined ? null : <Card style={{padding:"30px"}}>
+            {this.state.queueProcess === false ? null : <Card style={{padding:"30px"}}>
               <Row>
                 {this.state.queueTable}
               </Row>
+              <Row>
+                {this.state.document === null ? null : <Button style={{ width: "150px",marginTop:'20px' }} color="primary" onClick={this.onHandleCreateAuditQueue}>Create Queue</Button>}</Row>
             </Card>}
             </Col>
         </Row>

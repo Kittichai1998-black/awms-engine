@@ -37,7 +37,7 @@ namespace AWMSEngine.Engine.Business.Issued
                
 
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + doc.ID);
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + doc.ID +"Status : REMOVE");
 
                 if (reqVO.auto == 0)
                 {

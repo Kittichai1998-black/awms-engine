@@ -33,7 +33,7 @@ class CurrentReport extends Component {
   }
 
   componentDidMount() {
-
+    document.title = "Current Inventory - AWMS"
     Axios.get(createQueryString(this.state.select)).then((response) => {
       this.setState({
         data: response.data.datas
@@ -100,7 +100,7 @@ class CurrentReport extends Component {
             <Col xs="10">
             </Col>
             <Col xs="2">
-              <ExportFile column={cols} dataexp={this.state.data} filename={this.state.name} />
+              <ExportFile column={cols} dataselect={this.state.select} filename={"CurrentInventory"} />
             </Col>
           </Row>
           <Row>

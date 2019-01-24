@@ -42,6 +42,14 @@ namespace AWMSEngine.Controllers.WM
             return res;
         }
 
+        [HttpGet("Get")]
+        public dynamic GetQueue()
+        {
+            GetWorkQueueAuditAPI exec = new GetWorkQueueAuditAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            return exec.Execute(req);
+        }
+
         [HttpPost]
         public dynamic UpdateAudit([FromBody]dynamic req)
         {
@@ -66,7 +74,7 @@ namespace AWMSEngine.Controllers.WM
         }
 
         [HttpPost("doc/Create")]
-        public dynamic CreateAuditDoc([FromBody]dynamic request)
+        public dynamic CreateAuditQueue([FromBody]dynamic request)
         {
             CreateADDocAPI exec = new CreateADDocAPI(this);
             return exec.Execute(request);
