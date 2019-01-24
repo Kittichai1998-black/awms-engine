@@ -172,6 +172,7 @@ class AuditDoc extends Component {
       { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: "text", fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/sys/ad/create?ID=' + e.original.ID)} >{e.original.Code}</a> },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: "text", },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: "text", },
+      { accessor: 'Remark', Header: 'Remark', editable: false, Filter: "text" },
       { accessor: 'SouBranchName', Header: 'Sou.Branch', editable: false, Filter: "text", },
       { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
       //{accessor: 'SouBranchName', Header: 'Branch',editable:false, Filter:"text"},
@@ -183,7 +184,6 @@ class AuditDoc extends Component {
       { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
       { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: false },
       { accessor: 'ActionTime', Header: 'Action Time', editable: false, Type: "datetime", dateformat: "datetime", filterable: false, minWidth: 120 },
-      { accessor: 'Remark', Header: 'Remark', editable: false, Filter: "text" },
       //{accessor: 'Modified', Header: 'ModifyBy', editable:false, filterable:false},
       //{ Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Link" },
     ];

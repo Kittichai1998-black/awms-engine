@@ -58,7 +58,7 @@ class Picking extends Component {
             this.onHandleSetPalletCode();
           }
         }} />
-        {this.state.palletEdit ? <Button style={{ background: "#00701a", color: "white", width: "100px" }}
+        {this.state.palletEdit ? <Button style={{ width: "100px" }} color="danger"
           onClick={() => { this.setState({ palletComponent: true }) }}>Cancel</Button> : null}
       </CardBody>
     </Card>
@@ -70,7 +70,7 @@ class Picking extends Component {
       <CardBody style={{ background: "#ffffff" }}>
         <div><label>Pallet Code : </label><span style={{ width: '100px' }} >{this.state.palletCode}</span></div>
         <div>
-          <Button style={{ background: "#006db3", color: "white", width: "100px" }}
+          <Button style={{ width: "100px" }} color="success"
             onClick={() => { this.setState({ palletComponent: false, palletEdit: true }) }}>Edit</Button>
         </div>
       </CardBody>
@@ -79,7 +79,7 @@ class Picking extends Component {
 
   createIssuedList() {
     let issuedlist = this.state.docItems.map((list, index) => {
-      return <Button key={index} style={{ background: "#00701a", color: "white", width: "100%", overflow: "hidden", marginBottom: "10px", textAlign: "left" }}
+      return <Button key={index} style={{ background: "rgb(116, 203, 147)", color: "#23282c", width: "100%", overflow: "hidden", marginBottom: "10px", textAlign: "left" }}
         onClick={() => this.setState({ issuedComponent: true, issuedSelect: list }, () => { this.onHandleClickSelectDocument(list.docID) })}>
         <div>Document : {list.docCode}</div>
         <div>Material No : {list.matDoc}</div>
@@ -121,13 +121,13 @@ class Picking extends Component {
           <div>Material No : {issued.matDoc}</div>
           <div>Destination : {issued.destination}</div>
           <div>
-            <Button style={{ background: "#006db3", color: "white", width: "100px" }}
+            <Button style={{ width: "100px" }} color="success"
               onClick={() => {
                 this.setState({ issuedComponent: false })
                 this.onHandleSetPalletCode()
               }}>{"Edit"}</Button>
             &nbsp;&nbsp;
-          <Button style={{ background: "#00701a", color: "white", width: "100px" }} onClick={() => { this.setState({ toggle: !this.state.toggle }) }}>{"See More..."}</Button></div>
+          <Button style={{ width: "100px" }} color="info" onClick={() => { this.setState({ toggle: !this.state.toggle }) }}>{"See More..."}</Button></div>
         </CardBody>
       </Card>
     }
@@ -143,9 +143,9 @@ class Picking extends Component {
               return <div>{row.itemCode + " => " + row.picked + "/" + row.willPick}</div>
             })}
           </ul>
-          <div><Button style={{ background: "#006db3", color: "white", width: "150px" }}
+          <div><Button style={{ width: "150px" }} color="success"
             onClick={() => { this.setState({ issuedComponent: false }) }}>{"Edit"}</Button >
-            <Button style={{ background: "#00701a", color: "white", width: "150px" }}
+            <Button style={{ width: "150px" }} color="info"
               onClick={() => { this.setState({ toggle: !this.state.toggle }) }}>{"See Flew..."}</Button></div>
         </CardBody>
       </Card>
@@ -154,9 +154,9 @@ class Picking extends Component {
   }
 
   createPickItem() {
-    let som_style = { background: "#ff8f00", color: "white" };
-    let full_style = { background: "#ef6c00", color: "white" };
-    let no_style = { background: "#f9a825", color: "white" };
+    let som_style = { background: "#ffc107", color: "#23282c" }; //#ff8f00
+    let full_style = { background: "#f9a825", color: "#23282c" }; //#ef6c00 
+    let no_style = { background: "rgb(255, 207, 61)", color: "#23282c" }; //#f9a825
 
     return this.state.stos.map((list, index) => {
       return <Card key={index} style={
@@ -252,7 +252,7 @@ class Picking extends Component {
           {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}>
             <CardBody>
               {this.createPickItem()}
-              {<Button style={{ background: "#d50000", color: "white", width: "150px" }} onClick={() => { this.onHandleClickPicking() }}>Picking</Button>}
+              {<Button style={{ width: "150px" }} color="primary" onClick={() => { this.onHandleClickPicking() }}>Picking</Button>}
             </CardBody>
           </Card> : null}
         </Row>

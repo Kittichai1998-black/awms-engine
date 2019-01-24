@@ -83,19 +83,11 @@ class StoragReport extends Component {
   }
 
 
-  componentWillUnmount() {
-
-
-  }
-
-
-  initialData() {
-    //Axios.get(createQueryString(this.state.select)).then((rowselect2) => {
-    //  this.setState({
-    //    data: rowselect2.data.datas,
-    //  })
-    //  console.log(this.state.data)
-    //})
+  datetimeBody(value) {
+    if (value !== null) {
+      const date = moment(value);
+      return <div>{date.format('DD-MM-YYYY')}</div>
+    }
   }
 
   render() {
@@ -119,22 +111,24 @@ class StoragReport extends Component {
       { accessor: 'WeiPallet', Header: 'Weight Pallet', Filter: "text", sortable: false, },
       { accessor: 'WeiPack', Header: 'Weight Pack', Filter: "text", sortable: false, },
       { accessor: 'Status', Header: 'Status', Filter: "text", sortable: true },
-      { accessor: 'Receive_Time', Header: 'Receive Time', Filter: "text", sortable: true },
+      {
+        accessor: 'Receive_Time', Header: 'Receive Time', Filter: "text", sortable: true, Cell: (e) =>
+          this.datetimeBody(e.value) },
     ];
 
     return (
 
       <div>
-        <div>
+        {/*ปุ่ม export excel ส่งค่าจาก tablegen มาแสดงแทน <div> 
           <Row>
             <Col xs="12">
               <ExportFile column={cols} dataexp={this.state.data} filename={this.state.name} />
             </Col>
           </Row>
-        </div>
+        </div> */}
         <TableGen column={cols} data={this.state.select} filterable={true}
           uneditcolumn={this.uneditcolumn} className='-striped -highlight'
-          defaultPageSize={10}
+          defaultPageSize={10} expFilename={"StorageObject"} exportfilebtn={false}
         />
 
         {/* <ReactTable pageSize="10000" NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} sortable={false} style={{ background: "white", marginBottom: "50px" }}

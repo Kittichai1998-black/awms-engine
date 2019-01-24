@@ -35,7 +35,7 @@ class AuditQueue extends Component{
       q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 2004},{ 'f': 'EventStatus', c:'=', 'v': 10}]",//,{ 'f': 'Status', c:'=', 'v': 1}
       f: "ID,Code",
       g: "",
-      s: "[{'f':'ID','od':'desc'}]",
+      s: "[{'f':'Code','od':'desc'}]",
       sk: 0,
       l: 0,
       all: "",
@@ -110,7 +110,6 @@ class AuditQueue extends Component{
         {
           var docID = res.data.docID;
           var queueList = res.data.workQueue.map(x=> {
-            console.log(x.storageObject_Code)
             return {
               palletCode:x.storageObject_Code
             }
@@ -144,7 +143,7 @@ class AuditQueue extends Component{
                 <Col sm="2"><span>Area : </span></Col><Col sm="10"><AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/></Col>
                 <Col sm="2"><span>Priority : </span></Col><Col sm="10"><AutoSelect data={this.priority} result={e => this.setState({priority:e.value})}/></Col>
                 <Col sm="2">Audit : </Col><Col sm="4"><Input style={{width:"150px"}} type="number" value={this.state.percent} onChange={(e) => this.setState({percent:e.target.value})}/></Col><Col sm="6"><AutoSelect data={this.auditType} result={e => this.setState({auditType:e.value})}/></Col>
-                {this.state.document === null ? null : <Button style={{ background: "#d50000", color: "white", width: "150px",marginTop:'20px' }} onClick={this.onHandleGetAuditQueue}>Process Queue</Button>}
+                {this.state.document === null ? null : <Button style={{ width: "150px",marginTop:'20px' }} color="success" onClick={this.onHandleGetAuditQueue}>Process Queue</Button>}
               </Row>
             </Card>
           </Col>
@@ -154,7 +153,7 @@ class AuditQueue extends Component{
                 {this.state.queueTable}
               </Row>
               <Row>
-                {this.state.document === null ? null : <Button style={{ background: "#d50000", color: "white", width: "150px",marginTop:'20px' }} onClick={this.onHandleCreateAuditQueue}>Create Queue</Button>}</Row>
+                {this.state.document === null ? null : <Button style={{ width: "150px",marginTop:'20px' }} color="primary" onClick={this.onHandleCreateAuditQueue}>Create Queue</Button>}</Row>
             </Card>}
             </Col>
         </Row>
