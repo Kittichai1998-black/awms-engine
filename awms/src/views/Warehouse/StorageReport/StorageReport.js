@@ -93,6 +93,7 @@ class StoragReport extends Component {
   render() {
 
     let cols = [
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
       { accessor: 'Pallet', Header: 'Pallet', Filter: "text", sortable: true, },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: "text", sortable: true, },
       { accessor: 'Area', Header: 'Area', Filter: "text", sortable: true },
@@ -113,7 +114,8 @@ class StoragReport extends Component {
       { accessor: 'Status', Header: 'Status', Filter: "text", sortable: true },
       {
         accessor: 'Receive_Time', Header: 'Receive Time', Filter: "text", sortable: true, Cell: (e) =>
-          this.datetimeBody(e.value) },
+          this.datetimeBody(e.value)
+      },
     ];
 
     return (
