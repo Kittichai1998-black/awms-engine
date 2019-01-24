@@ -110,7 +110,6 @@ class AuditQueue extends Component{
         {
           var docID = res.data.docID;
           var queueList = res.data.workQueue.map(x=> {
-            console.log(x.storageObject_Code)
             return {
               palletCode:x.storageObject_Code
             }
