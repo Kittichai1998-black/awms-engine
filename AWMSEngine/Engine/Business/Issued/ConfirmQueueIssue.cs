@@ -57,15 +57,6 @@ namespace AWMSEngine.Engine.Business.Issued
             StorageObjectCriteria stoCriteria = new StorageObjectCriteria();
             foreach (var list in reqVO.DocumentProcessed)
             {
-                //var docItem = ADO.DataADO.GetInstant().SelectBy<amv_Document>("amv_DocumentItem", "*", null,
-                //    new SQLConditionCriteria[]
-                //    {
-                //    new SQLConditionCriteria("ID", docItemsProcess.docItemID, SQLOperatorType.EQUALS),
-                //    new SQLConditionCriteria("Document_ID", docsProcess.docID, SQLOperatorType.EQUALS),
-                //    new SQLConditionCriteria("EventStatus",DocEventStatuses, SQLOperatorType.IN)
-                //    },
-                //    new SQLOrderByCriteria[] { }, null, null,
-                //    this.BuVO).FirstOrDefault();
                 this._warehouseASRS = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == list.wareHouseID);
                 if (_warehouseASRS == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + list.wareHouseID + "'");
@@ -99,7 +90,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     this.BuVO).FirstOrDefault();
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(xx.baseCode, xx.wareHouseID, xx.areaID, false, true, this.BuVO);
                 docItems.Add(docItem);
-                SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, xx.areaID);
+                SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
             }
             
 

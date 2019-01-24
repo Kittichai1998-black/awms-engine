@@ -149,10 +149,11 @@ class CreateQueue extends Component{
   }
 
   genBtnGetDocItem(){
-    return <Button className="float-left" type="button" color="primary" onClick={() => this.getDocItemData(this.state.docID)}>Check Document From SAP</Button>
+    return <Button className="float-left" type="button" color="primary" onClick={() => this.getDocItemData(this.state.docID,(this.state.MMType!==""||this.state.MMType!==null||this.state.MMType!==undefined)?this.state.MMType:"")}>Check Document From SAP</Button>
   }
 
-  getDocItemData(doc_id){
+  getDocItemData(doc_id,mmType){
+    let dataDocItem =[]
     if(doc_id !== ""){
       const DocumentItemData = this.state.DocumentItemData
       DocumentItemData.forEach((index) => {
@@ -167,6 +168,7 @@ class CreateQueue extends Component{
         itemCard.splice(index, 1);
       });
 
+      if(mmType !== ""){
       const docItemselect = {queryString:window.apipath + "/api/viw",
         t:"DocumentItem",
         q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
@@ -176,25 +178,54 @@ class CreateQueue extends Component{
         sk:0,
         all:"",}
 
-      Axios.get(createQueryString(docItemselect)).then(Docresult => {
-        this.setState({DocumentItemData : Docresult.data.datas }, () => {
-          const DocumentItemData = []
-          this.state.DocumentItemData.forEach(row => {
-            DocumentItemData.push({docID:doc_id
-                          ,dociID:row.ID
-                          ,itemCode:row.Code
-                          ,itemName:row.SKUMaster_Name
-                          ,item:row.Options
-                          ,batch:row.Batch
-                          ,orderNo:row.OrderNo
-                          ,lot:row.Lot
-                          ,BaseQuantity:row.BaseQuantity
+        Axios.get(createQueryString(docItemselect)).then(Docresult => {
+          this.setState({DocumentItemData : Docresult.data.datas }, () => {
+            const DocumentItemData = []
+            this.state.DocumentItemData.forEach(row => {
+              DocumentItemData.push({docID:doc_id
+                            ,dociID:row.ID
+                            ,itemCode:row.Code
+                            ,itemName:row.SKUMaster_Name
+                            ,item:row.Options
+                            ,batch:row.Batch
+                            ,orderNo:row.OrderNo
+                            ,lot:row.Lot
+                            ,BaseQuantity:row.BaseQuantity
+              })
             })
+            this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
+            
           })
-          this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
-          
         })
-      })
+      }else{
+        let postdata = 
+        {
+          "apiKey":"THIP_TEST",
+            "docs":[{
+              "docID":doc_id,
+              "docType":1002
+              }]
+        }        
+        Axios.post(window.apipath + "/api/wm/issue/doc/check", postdata).then((res) => {
+          if (res.data._result.status === 1) {
+            dataDocItem = res.data.documentItems
+            const DocumentItemData = []
+            dataDocItem.forEach(row => {
+              DocumentItemData.push({docID:doc_id
+                            ,dociID:row.ID
+                            ,itemCode:row.Code
+                            ,itemName:row.SKUMaster_Name
+                            ,item:row.Options
+                            ,batch:row.Batch
+                            ,orderNo:row.OrderNo
+                            ,lot:row.Lot
+                            ,BaseQuantity:row.BaseQuantity
+              })
+            })
+            this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
+          }
+        })
+      }
     }
   }
 
@@ -765,7 +796,19 @@ class CreateQueue extends Component{
   }
 
   confirmQ(){
-
+    let dataConfirm = []
+    const dataProcessed = this.state.dataProcessed
+    dataProcessed.forEach(row => {
+      row.areaID = 2
+    });
+    let postdata = {
+      DocumentProcessed:dataProcessed
+    }
+    Axios.post(window.apipath + "/api/wm/issued/queue/confirm", postdata).then((res) => {
+      if (res.data._result.status === 1) {
+        dataConfirm = res.data.DocumentProcessed
+      }
+    })
   }
 
   render(){
