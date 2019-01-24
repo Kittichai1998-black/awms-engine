@@ -329,7 +329,7 @@ const routes = [
   // { path: '/mst/supplier/manage', exact: true, name: 'Setting / Supplier', component: Supplier },
   // { path: '/mst/area/manage', exact: true, name: 'Setting / Area', component: Area },
   // { path: '/mst/areatype/manage', exact: true, name: 'Setting / Area Type', component: AreaType },
-  { path: '/mst/location/manage', exact: true, name: 'Setting / Location', component: AreaLocation },
+  { path: '/mst/location/manage', exact: true, name: 'Setting / Area Location', component: AreaLocation },
   // { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/arearoute/manage', exact: true, name: 'Setting / Area Route', component: AreaRoute },
   { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet Master', component: Base },

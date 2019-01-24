@@ -215,6 +215,14 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 if (docItem != null)
                 {
                     ADO.DocumentADO.GetInstant().MappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
+
+                    var doc = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
+                    if(doc.EventStatus == DocumentEventStatus.IDLE)
+                    {
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                        if (doc.ParentDocument_ID.HasValue)
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                    }
                     docItems.Add(docItem);
                 }
                 else if(isAutoCreate)

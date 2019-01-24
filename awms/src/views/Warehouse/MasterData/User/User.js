@@ -306,7 +306,7 @@ class User extends Component {
             filterable = เปิดปิดโหมด filter
             getselection = เก็บค่าที่เลือก
           */}
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"User"} checkClickAdd={this.onCheckClickAdd}
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"UserAccount"} checkClickAdd={this.onCheckClickAdd}
                     filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} addExportbtn={view} exportfilebtn={view}
                     table="ams_User" />
                 <Popup open={this.state.open} onClose={this.closeModal}>

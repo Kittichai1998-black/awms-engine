@@ -183,8 +183,8 @@ console.log(row1)
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty + ' / ' +
-          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty === undefined ? ('0' + ' / ' + e.original.sumQty1) : (e.original.sumQty + ' / ' +
+          (e.original.sumQty1 === 0 ? '-' : e.original.sumQty1))}</span>,
       },
       { accessor: 'unitType_Code', Header: 'Unit', editable: false, },
 

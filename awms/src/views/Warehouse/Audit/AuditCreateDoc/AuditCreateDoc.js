@@ -220,7 +220,7 @@ class IssuedManage extends Component {
     if (listAudit.length > 0) {
       Axios.post(window.apipath + "/api/wm/audit/doc/Create", createAuditData).then((res) => {
         if (res.data._result.status === 1) {
-          //this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
+          this.props.history.push('/sys/ad/create?ID=' + res.data.ID)
           window.location.reload()
         }
       })

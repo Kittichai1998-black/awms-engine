@@ -23,7 +23,7 @@ class Return extends Component {
       Document: {
         queryString: window.apipath + "/api/trx",
         t: "Document",
-        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'EventStatus', c:'!=', 'v': 24}]",
+        q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'Status', c:'=', 'v': 3}]",
         f: "ID,Code",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -37,7 +37,7 @@ class Return extends Component {
         q: "[{ 'f': 'Status', c:'!=', 'v': 2 }]",
         f: "*",
         g: "",
-        s: "[{'f':'ID','od':'asc'}]",
+        s: "[{'f':'ID','od':'desc'}]",
         sk: "",
         l: "",
         all: "",
@@ -45,7 +45,7 @@ class Return extends Component {
       PalletSto: {
         queryString: window.apipath + "/api/viw",
         t: "PalletSto",
-        q: "[{ 'f': 'Status', c:'!=', 'v': 2}]",
+        q: "[{ 'f': 'StatusPallet', c:'=', 'v': 1}]",
         f: "*",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -69,16 +69,6 @@ class Return extends Component {
         t: "AreaMaster",
         q: '[{ "f": "Status", "c":"=", "v": 1}]',
         f: "ID,Code, Name",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        all: "",
-      },
-      UnitTypeTable:{
-        queryString: window.apipath + "/api/mst",
-        t: "UnitType",
-        q: '[{ "f": "Status", "c":"=", "v": 1}]',
-        f: "ID,Code",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
@@ -111,19 +101,19 @@ class Return extends Component {
       Base:[],
       check:"",
       DocItemSto:[],
-      show:"none"
+      show:"none",
+      DocItemReturn:[]
 
     }
 
     this.checkPallet = this.checkPallet.bind(this)
-    //this.genDocItem = this.genDocItem.bind(this)
+    this.genDocItem = this.genDocItem.bind(this)
     this.createDataCard = this.createDataCard.bind(this)
     this.mappingPallet = this.mappingPallet.bind(this)
-    //this.updateDocItemSto = this.updateDocItemSto(this)
-    //this.insertToDisto = this.insertToDisto.bind(this)
     this.checkBase = this.checkBase.bind(this)
-    //this.insertSKUtoOb = this.insertSKUtoOb.bind(this)
     this.genDocItemSto = this.genDocItemSto.bind(this)
+    this.Clear = this.Clear.bind(this)
+
   }
 
   async componentWillMount() {
@@ -145,6 +135,7 @@ class Return extends Component {
       })
       this.setState({ AreaData})
     })
+
   }
 
 checkBase(){
@@ -157,11 +148,12 @@ checkBase(){
     if(response.data.datas.length !== 0){
       const Base = []
       response.data.datas.forEach(row => {
+        //==== มี pallet ====
         console.log(row)
         Base.push({ value: row.ID,UnitType_ID:row.UnitType_ID})
       })
       this.setState({ Base})
-      this.checkPallet(true)
+      this.mappingPallet(true)      
     }else{
       alert("Don't have pallet : "+this.state.barcode +" in system")
     }
@@ -188,44 +180,30 @@ genDocItemSto(data){
       }
       this.setState({DocItemSto})
    })
- 
 }
 
+genDocItem(data){
+  console.log(data)
+  let QueryDoc = this.state.DocItem
+  let JSONDoc = []
+  JSONDoc.push({ "f": "ID", "c": "=", "v":data})
+  QueryDoc.q = JSON.stringify(JSONDoc)  
+  Axios.get(createQueryString(QueryDoc)).then((response) => {
+    const DocItemReturn = []
+    response.data.datas.forEach( x => {
+      console.log(x) 
+      DocItemReturn.push({value:x.ID,Code:x.Code,Lot:x.Lot,OrderNo:x.OrderNo,Batch:x.Batch})
+    })   
+console.log(DocItemReturn)
+    this.setState({DocItemReturn})
+  })
+}
 
 checkPallet(check){
-  console.log(this.state.docItem)
-  if(check === true){
-
-    console.log(this.state.barcode)
-    let QueryDoc = this.state.PalletSto
-    let JSONDoc = []
-    JSONDoc.push({ "f": "CodePallet", "c": "=", "v":this.state.barcode})
-    QueryDoc.q = JSON.stringify(JSONDoc)  
-      Axios.get(createQueryString(QueryDoc)).then((response) => {
-      const dataPallet = []
-      if( response.data.datas.length === 0){
-              this.setState({check:"insert"})
-        //==== ไม่มีข้อมูลใน stoOb ====
-        // this.state.Base.forEach( x =>{
-        //   //this.genUnitCode(x.UnitType_ID,true) 
-        // })
-        this.mappingPallet(true)
-      }else{
-          //==== เช็ค pallet ====
-           //Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => { })
-        var checkPallet = true
-
-          if(checkPallet === true){
-            //เพิ่มได้
-            this.mappingPallet(true)
-          }else{
-            //เพิ่มไม่ได้
-            alert("Cannot use Pallter : "+this.state.barcode)   
-          }          
-      } 
-    })   
-  }
+  //==== เช็ค pallet ====
+//Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => { })
 }
+
 
   mappingPallet(flag){
 
@@ -245,35 +223,33 @@ checkPallet(check){
       }
       console.log(postdata)
       Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
+
         console.log(res)
         if (res.data._result.status === 1) {
 
           if(res.data.mapstos.length === 0){
-
-            // var card =this.createDataCard(null,false)  
-            // this.setState({card})
-            this.setState({show:"block"})
-            this.createDataCard(null,false)
+            // ==== Pallet ใหม่ ไม่เช็ค ===
+            console.log(res.data.id)
+            this.createDataCard(null,false,res.data.id)
           }else{
             //==== แสดงข้อมูล
             res.data.mapstos.forEach( row =>{
               const dataSKUinPallet = []
               row.mapstos.forEach( x=>{
                 console.log(x)
-                dataSKUinPallet.push({id:x.id,sku:x.code,qty:x.qty})
+                dataSKUinPallet.push({id:x.parentID,sku:x.code,qty:x.qty})
               })
               console.log(dataSKUinPallet)  
-              this.setState({show:"block"})    
-              this.createDataCard(dataSKUinPallet,true)  
+               this.createDataCard(dataSKUinPallet,true,null)                     
             })  
           }
-      }
+        }
       })
   }
 
 }
 
-  createDataCard(data,flag){
+  createDataCard(data,flag,palletID){
 //เพิ่มได้
   let QueryDoc = this.state.DocumentItemSto
   let JSONDoc = []
@@ -286,7 +262,7 @@ checkPallet(check){
       Axios.get(createQueryString(QueryDoc)).then((res) => {
         var dataCard = res.data.datas.map((list,index) => {              
             console.log(list)
-        return <Card key={index}>
+        return <Card key={index} style={{background:"#f9a825"}}>
           <CardBody>
             <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
             <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {dataPallet.qty}</div>
@@ -295,7 +271,8 @@ checkPallet(check){
             <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
             onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {list.BaseQty}</div>
             <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.Unit}</div><br/>
-            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(true)}} color="primary" >Confirm</Button></div>
+            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(dataPallet.id)}} color="primary" >Confirm</Button>&nbsp;&nbsp;
+            <Button onClick={() => {this.Clear()}} color="#00701a" >Cancel</Button></div>
           </CardBody>
         </Card>
           
@@ -316,7 +293,8 @@ checkPallet(check){
             <div><label  style={{fontWeight:"bolder"}}>Qty for return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"  
             onChange={(e) => {this.ChangeData(e, e.target.value) }}/> / {list.BaseQty}</div>
             <div><label  style={{fontWeight:"bolder"}}>Unit Type : </label> {list.Unit}</div><br/>
-            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(true)}} color="primary" >Confirm</Button></div>
+            <div style={{textAlign:"center", width: "100%" }}><Button onClick={() => {this.updateDocItemSto(palletID)}} color="primary" >Confirm</Button>&nbsp;&nbsp;
+            <Button onClick={() => {this.Clear()}} color="#00701a" >Cancel</Button></div>
           </CardBody>
         </Card>
           
@@ -328,8 +306,39 @@ checkPallet(check){
   }
 
   updateDocItemSto(data){
-     this.setState({displayDataCard:null})
-     this.setState({barcode:null})
+    console.log(this.state.dataValue)
+    console.log(this.state.DocID)
+    console.log(this.state.dataValue)
+    console.log(this.state.DocItemReturn)
+    if(this.state.dataValue !== undefined)
+    {
+      console.log("xxx")
+      this.state.DocItemReturn.forEach( x =>{
+        let postdata = {  
+          DocItemID: x.value
+          , bstos: data //ในกรณีที่พาเลทไม่มีสินค้าข้างในต้องใส่อะไร
+          , SKU: x.Code
+          , Batch: x.Batch
+          , Lot: x.Lot
+          , OrderNo: x.OrderNo
+          , BaseQty : this.state.dataValue
+        }
+    console.log(postdata)
+        // Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
+    
+        // })
+        this.Clear()
+        window.success("Success")
+      })
+
+    }else{
+      alert("Please input Qty item return")
+    }
+  }
+
+
+  Clear(){
+    this.setState({displayDataCard:null})
   }
 
   ChangeData(e,dataValue) {
@@ -355,7 +364,7 @@ checkPallet(check){
           {this.dropdownAuto()}       
 
           <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Item Return : </label><br/>
-          <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.DocItemSto} result={(e) => this.setState({ "docItem": e})}  /></div><br/>
+          <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.DocItemSto} result={(e) => this.genDocItem(e.value)}  /></div><br/>
     
           <label style={{width: '100%', display: "inline-block", marginRight: "10px" }}>Area : </label><br/>
           <div style={{textAlign:"center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.AreaData} result={(e) => this.setState({ "AreaID": e.value})}  /></div><br/>
