@@ -48,6 +48,14 @@ class IssuedDoc extends Component {
           if(res.data.bstos.length === 0){
             this.setState({check :undefined})
           }
+
+          res.data.document.documentItems.forEach(x=>{
+            var sumQty = 0;
+            res.data.bstos.filter(y=>y.docItemID==x.id).forEach(y=>{sumQty+=y.distoQty});
+            x.sumQty2 = sumQty;
+
+          });
+
           res.data.document.documentItems.forEach(x => {
 
             console.log(x)
@@ -80,10 +88,10 @@ class IssuedDoc extends Component {
 
           var groupPack = _.groupBy(res.data.bstos, "code")
           var groupdocItemID = _.groupBy(res.data.document.documentItems, "id")
+
           console.log(groupPack)
-          if(groupPack === null){
-            console.log("dd")
-          }
+          console.log(groupdocItemID)
+
           console.log(groupdocItemID)
           let sumArr = []
            let sumArr1 = []
@@ -113,7 +121,6 @@ class IssuedDoc extends Component {
               // res2.orderNo = this.state.orderNo
               sum += res2.distoQty
               res2.sumQty = sum
-              console.log(sum)
 
               sumArr.forEach(response => {
                 if (response.code === res2.code) {
@@ -121,7 +128,6 @@ class IssuedDoc extends Component {
                 }
               })
             })
-            console.log(sum)
             sumArr.push(groupPack[res1][groupPack[res1].length - 1])
           }
 
@@ -131,9 +137,7 @@ class IssuedDoc extends Component {
           this.setState({ data2: sumArr }, () => {
             result.forEach(row1 => {
               sumQTYPack = 0
-console.log(row1)
               this.state.data2.forEach(row2 => {
-                console.log(row2)
                 if (row1.packMaster_Code === row2.packCode) {
                   sumQTYPack += row2.sumQty
                   row1.sumQty = sumQTYPack
@@ -181,11 +185,17 @@ console.log(row1)
       { accessor: 'batch', Header: 'Batch', editable: false, },
       { accessor: 'lot', Header: 'Lot', editable: false, },
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
+      // {
+      //   accessor: 'sumQty1', Header: 'Qty', editable: false,
+      //   Cell: (e) => <span className="float-left">{e.original.sumQty === undefined ? ('0' + ' / ' + e.original.sumQty1) : (e.original.sumQty + ' / ' +
+      //     (e.original.sumQty1 === 0 ? '-' : e.original.sumQty1))}</span>,
+      // },
       {
-        accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty === undefined ? ('0' + ' / ' + e.original.sumQty1) : (e.original.sumQty + ' / ' +
+        accessor: 'sumQty2', Header: 'Qty', editable: false,
+        Cell: (e) => <span className="float-left">{e.original.sumQty2 === undefined ? ('0' + ' / ' + e.original.sumQty1) : (e.original.sumQty2 + ' / ' +
           (e.original.sumQty1 === 0 ? '-' : e.original.sumQty1))}</span>,
       },
+      // { accessor: 'sumQty2', Header: 'Qty', editable: false, },
       { accessor: 'unitType_Code', Header: 'Unit', editable: false, },
 
     ];

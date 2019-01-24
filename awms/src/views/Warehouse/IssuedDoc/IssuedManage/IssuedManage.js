@@ -669,12 +669,12 @@ class IssuedManage extends Component {
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
 
     let cossdetail = [
+      { accessor: "code", Header: "Pallet"},
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
       { accessor: "packCode", Header: "SKU Code"},
       { accessor: "packName", Header: "SKU Name"},
-      { accessor: "code", Header: "Base"},
 
 
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
@@ -714,12 +714,12 @@ class IssuedManage extends Component {
 
     let col = [
 
-      { accessor: "PackItem", Header: "Pack Item", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
+      { accessor: "PackItem", Header: "SKU", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
       //{accessor:"SKU",Header:"SKU",},
-      { accessor: "PackQty", Header: "PackQty", editable: true, Cell: e => this.inputCell("PackQty", e), datatype: "int" },
       { accessor: "Batch", Header: "Batch", editable: true, Cell: e => this.inputCell("Batch", e), datatype: "text" },
       { accessor: "Lot", Header: "Lot", editable: true, Cell: e => this.inputCell("Lot", e), datatype: "text" },
       { accessor: "OrderNo", Header: "Order No", editable: true, Cell: e => this.inputCell("Orderno", e), datatype: "text" },
+      { accessor: "PackQty", Header: "Qty", editable: true, Cell: e => this.inputCell("PackQty", e), datatype: "int" },
       { accessor: "UnitType", Header: "Unit", },
 
 
