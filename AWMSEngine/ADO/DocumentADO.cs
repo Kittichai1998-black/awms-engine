@@ -192,16 +192,19 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
-        public int UpdateStatusMappingSTO(long id, EntityStatus status, VOCriteria buVO)
+        public long UpdateStatusMappingSTO(long id, EntityStatus status, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@id", id);
             param.Add("@status", status);
             param.Add("@actionBy", buVO.ActionBy);
-            return this.Execute("SP_DOCITEM_MAP_STO_V2",
+            param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
+            this.Execute("SP_DOCITEM_MAP_STO_V2",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction);
+            long resID = param.Get<long>("@resID");
+            return resID;
         }
         public List<amt_DocumentItemStorageObject> MappingSTO(List<amt_DocumentItemStorageObject> docItemSto, VOCriteria buVO)
         {
@@ -606,7 +609,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public void CreateDocItemSto (long docItemID, long stoID, decimal qty, int unitTypeID, decimal baseQty, int baseUnitTypeID, VOCriteria buVO)
+        public void CreateDocItemSto (long docItemID, long stoID, decimal qty, long unitTypeID, decimal baseQty, long baseUnitTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("DOCITEM_ID", docItemID);

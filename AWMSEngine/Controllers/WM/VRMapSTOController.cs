@@ -33,12 +33,6 @@ namespace AWMSEngine.Controllers.WM
             ListPriceByRootID exec = new ListPriceByRootID(this);
             return exec.Execute(req);// exec.Execute(datas);
         }
-
-        [HttpPost("return")]
-        public dynamic Reurn(dynamic datas)
-        {
-            ScanMapStoAPI exec = new ScanMapStoAPI(this);
-            return exec.Execute(datas);
-        }
+      
     }
 }
