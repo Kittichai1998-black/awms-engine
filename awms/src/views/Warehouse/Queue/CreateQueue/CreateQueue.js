@@ -212,14 +212,14 @@ class CreateQueue extends Component{
             const DocumentItemData = []
             dataDocItem.forEach(row => {
               DocumentItemData.push({docID:doc_id
-                            ,dociID:row.ID
-                            ,itemCode:row.Code
+                            ,dociID:row.id
+                            ,itemCode:row.code
                             ,itemName:row.SKUMaster_Name
-                            ,item:row.Options
-                            ,batch:row.Batch
-                            ,orderNo:row.OrderNo
-                            ,lot:row.Lot
-                            ,BaseQuantity:row.BaseQuantity
+                            ,item:row.options
+                            ,batch:row.batch
+                            ,orderNo:row.orderNo
+                            ,lot:row.lot
+                            ,BaseQuantity:row.baseQuantity
               })
             })
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
@@ -273,14 +273,26 @@ class CreateQueue extends Component{
   genNewInputText(dociID){
     const DocumentItemData = this.state.DocumentItemData;
     const dataProcessItems = this.state.dataProcessItems;
-
+    let checkBatchInput = false;
     if(dataProcessItems.length>0){
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
-          datarow.batchs.push({
-            value:null,
-            qty:0
-          })
+          if(datarow.batchs.length>0){
+            datarow.batchs.forEach(batchrow =>{
+              if((batchrow.value === null && batchrow.qty === 0) ||
+              (batchrow.value === null || batchrow.qty === 0)){
+                checkBatchInput = false;
+              }
+            });
+          }else{
+            checkBatchInput = true;
+          }
+          if(checkBatchInput){
+            datarow.batchs.push({
+              value:null,
+              qty:0
+            })
+          }
         }else{
         }
       });
@@ -348,10 +360,10 @@ class CreateQueue extends Component{
       <Col md="4"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo, e.target.value,"value") }} /></div></Col> 
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
       <Col md="3"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo,e.target.value,"qty") }} /></div></Col>
-      <Col md="1"><a style={styleclose} onClick={this.closeModal}>
+      {/* <Col md="1"><a style={styleclose} onClick={this.closeModal}>
                     { imgClose }
                 </a>
-                </Col>
+                </Col> */}
     </Row>
   </div>
   }
@@ -368,7 +380,7 @@ class CreateQueue extends Component{
     }
     return (<div className={datarow.dociID} style={{"border-radius": "15px", "border": "1px solid white", "padding": "20px", background:"white", "margin":"5px"}}>
       <Row>
-        <Col><span>{(datarow.itemCode?datarow.itemCode:"") +" : "+ (datarow.itemName?datarow.itemName:"") +" Qty : "+(datarow.BaseQuantity?datarow.BaseQuantity:"")}</span></Col>
+        <Col><span>{(datarow.itemCode?datarow.itemCode:"") +(datarow.itemName?" : "+ datarow.itemName:"") +(datarow.BaseQuantity?" Qty : "+datarow.BaseQuantity:"")}</span></Col>
       </Row>
       <Row style={{"padding-top":"10px"}}>
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Pick by : </label></Col>
@@ -564,6 +576,7 @@ class CreateQueue extends Component{
     })
     this.setState({ itemShowCard },()=> this.createCardsList());
   }
+
   addNewBatchCard(dociID,datarow){
     return <div className={[dociID,datarow.value]} >
       <Form>
