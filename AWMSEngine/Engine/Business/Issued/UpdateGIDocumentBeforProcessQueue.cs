@@ -61,8 +61,8 @@ namespace AWMSEngine.Engine.Business.Issued
                         {
                             HEADER_DATA = new ADO.SAPApi.TREQ_MMI0008_1_DO_INFO.THeader()
                             {
-                                DELIV_ITEM = refID,
-                                DELIV_NUMB = string.Empty
+                                DELIV_NUMB = refID,
+                                DELIV_ITEM = string.Empty
                             }
                         };
                     var sapDO = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0008_1_DO_INFO(tReq, this.BuVO);
@@ -90,16 +90,18 @@ namespace AWMSEngine.Engine.Business.Issued
                     docItemRefSAPs.AddRange(doc.DocumentItems);
                 });
 
-                foreach (var sapDOItem in sapDO.ITEM_DATA)
+                var sapDODocument = sapDO.documents.FirstOrDefault();
+                if(sapDODocument != null)
+                foreach (var sapDOItem in sapDODocument.items)
                 {
 
-                    var docItem = docItemRefSAPs.FirstOrDefault(x => ObjectUtil.QryStrGetValue(x.Options, "DocItem") == sapDOItem.DELIV_ITEM);
-                    var souWarehouses = this.StaticValue.Warehouses.First(x => x.Code == sapDOItem.STGE_LOC);
-                    var desCustomer = this.StaticValue.Customers.First(x => x.Code == sapDOItem.SHIPTO_CODE);
-                    var sapUnit = this.StaticValue.UnitTypes.First(x => x.Code == sapDOItem.SALES_UNIT && x.ObjectType == StorageObjectType.PACK);
-                    var newUnit = this.StaticValue.ConvertToBaseUnitBySKU(sapDOItem.MATERIAL, sapDOItem.DLV_QTY, sapUnit.ID.Value);
-                    if (newUnit.baseQty != sapDOItem.DLV_QTY_IMUNIT)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Convert Sale Qty ได้ไม่ตรงกัน");
+                    var docItem = docItemRefSAPs.FirstOrDefault(x => ObjectUtil.QryStrGetValue(x.Options, "DocItem") == sapDOItem.item);
+                    var souWarehouses = this.StaticValue.Warehouses.First(x => x.Code == "5005");
+                    var desCustomer = this.StaticValue.Customers.First(x => x.Code == sapDOItem.desCustomer);
+                    var sapUnit = this.StaticValue.UnitTypes.First(x => x.Code == sapDOItem.unit && x.ObjectType == StorageObjectType.PACK);
+                    var newUnit = this.StaticValue.ConvertToBaseUnitBySKU(sapDOItem.code, sapDOItem.qty, sapUnit.ID.Value);
+                    //if (newUnit.baseQty != sapDOItem.qty)
+                    //    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Convert Sale Qty ได้ไม่ตรงกัน");
 
                     var docRefSAP = docRefSAPs.FirstOrDefault(x => x.Des_Customer_ID == desCustomer.ID && x.Sou_Warehouse_ID == souWarehouses.ID);
                     //Create Doc
@@ -111,8 +113,8 @@ namespace AWMSEngine.Engine.Business.Issued
                             Sou_Warehouse_ID = souWarehouses.ID,
                             Sou_Branch_ID = souWarehouses.Branch_ID,
                             EventStatus = DocumentEventStatus.IDLE,
-                            RefID = sapDOItem.DELIV_NUMB,
-                            Options = "DocType=" + sapDOItem.DLV_TYPE,
+                            RefID = sapDODocument.docNo,
+                            Options = "DocType=" + sapDODocument.docType,
                             ActionTime = DateTime.Now,
                             DocumentDate = DateTime.Now,
                         };
@@ -130,9 +132,9 @@ namespace AWMSEngine.Engine.Business.Issued
 
                     //Update Doc Item
                     docItem.Document_ID = docRefSAP.ID.Value;
-                    docItem.Code = sapDOItem.MATERIAL;
-                    docItem.Batch = sapDOItem.BATCH;
-                    docItem.Options = "DocItem=" + sapDOItem.DELIV_ITEM + "&DocType=" + sapDOItem.DLV_TYPE;
+                    docItem.Code = sapDOItem.code;
+                    docItem.Batch = sapDOItem.batch;
+                    docItem.Options = "DocItem=" + sapDOItem.item + "&DocType=" + sapDODocument.docType;
                     docItem.Quantity = newUnit.qty;
                     docItem.UnitType_ID = newUnit.unitType_ID;
                     docItem.BaseQuantity = newUnit.baseQty;
