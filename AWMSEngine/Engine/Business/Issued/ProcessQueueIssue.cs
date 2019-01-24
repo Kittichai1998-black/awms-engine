@@ -164,7 +164,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 this.BuVO);
                 var ert = reqVO.documentsProcess.Select(x => x.items).ToList();
                 if (stoRoot.Count == 0)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่มีสินค้าในคลัง");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบสินค้า " + item.itemCode +" ตามเงื่อนไขในคลังสินค้า");
 
                 foreach (var doc in reqVO.documentsProcess)
                 {
