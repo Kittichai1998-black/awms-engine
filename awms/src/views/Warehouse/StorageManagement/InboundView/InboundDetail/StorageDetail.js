@@ -45,8 +45,8 @@ class IssuedDoc extends Component {
       Axios.get(window.apipath + "/api/wm/received/doc/?docID=" + ID + "&getMapSto=true").then(res => {
         console.log(res)
         if (res.data._result.status === 1) {
-          if(res.data.bstos.length === 0){
-            this.setState({check :undefined})
+          if (res.data.bstos.length === 0) {
+            this.setState({ check: undefined })
           }
 
           res.data.document.documentItems.forEach(x=>{
@@ -94,7 +94,7 @@ class IssuedDoc extends Component {
 
           console.log(groupdocItemID)
           let sumArr = []
-           let sumArr1 = []
+          let sumArr1 = []
 
           for (let res1 in groupdocItemID) {
             let sum = 0
@@ -252,9 +252,11 @@ class IssuedDoc extends Component {
 
         <ReactTableFixedColumns columns={colsdetail} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />
-        <div className="clearfix">
-          <Button color="danger" style={{ margin: "10px 0" }} className="float-right" onClick={this.onHandleClickCancel}>Back</Button>
-        </div>
+        <Card>
+          <CardBody>
+            <Button color="secondary" style={{ width: "130px" }} className="float-left" onClick={this.onHandleClickCancel}>Back</Button>
+          </CardBody>
+        </Card>
       </div>
     )
   }
