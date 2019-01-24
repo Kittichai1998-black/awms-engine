@@ -279,12 +279,16 @@ class CreateQueue extends Component{
         if(datarow.dociID===dociID){
           if(datarow.batchs.length>0){
             datarow.batchs.forEach(batchrow =>{
-              if((batchrow.value === null && batchrow.qty === 0) ||
+              if((batchrow.value === null && (batchrow.qty?batchrow.qty:0) === 0) ||
               (batchrow.value === null || batchrow.qty === 0)){
                 checkBatchInput = false;
               }
+              else{
+                checkBatchInput = true;
+              }
             });
-          }else{
+          }
+          else{
             checkBatchInput = true;
           }
           if(checkBatchInput){
@@ -492,12 +496,14 @@ class CreateQueue extends Component{
     const dataProcessItems = this.state.dataProcessItems;
     let DocumentData = this.state.DocumentData;
     const docID = this.state.docID
+    let checkQty = true;
     if(this.state.docresult===""){
       alert("Document Item Not Found!")
     }else{
       if(this.state.DocumentItemData.length === 0){
       }else{
         var xxx = this.validateProcessItemsData(dataProcessItems)
+        
         dataProcessSelected.push(DocumentData.find(x => x.value === docID))
           dataProcessSelected.forEach((datarow) => {
             if(datarow.value === docID){
@@ -521,21 +527,26 @@ class CreateQueue extends Component{
             ,"docresult":""}, () => this.removeItemCard())  
 
           this.createAutoDocList();
+        
       }
     }
   }
   validateProcessItemsData(dataProcessItems){
+    let checkBatchNull = false;
+    let checkMoreQty = false;
     dataProcessItems.forEach(itemrow =>{
       if(itemrow.batchs.length===0){
         itemrow.batchs.push({"value":null,"qty":itemrow.qty})
       }else{
         if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0)) > itemrow.qty){
           alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
+          checkMoreQty =true
         }else{
           itemrow.batchs.forEach(batchrow =>{
             if(batchrow.value===null){
               batchrow.value=null
               batchrow.qty=itemrow.qty
+              checkBatchNull = true
             }
             else{
               if(itemrow.qty-batchrow.qty>=0){
@@ -545,13 +556,18 @@ class CreateQueue extends Component{
               }
             }
           })
-          if(itemrow.qty>0){
+          if(itemrow.qty>0 && checkBatchNull === false){
             itemrow.batchs.push({"value":null,"qty":itemrow.qty})
           }
         }
       }
     });
-    return dataProcessItems
+    /* if(checkMoreQty){
+      dataProcessItems.forEach((index) => {
+        dataProcessItems.splice(index,1)
+      });
+    } */
+      return dataProcessItems
   }
  
   createItemShowCardsList(){

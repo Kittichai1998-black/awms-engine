@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
+using AWMSEngine.ADO.QueueApi;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -91,6 +92,10 @@ namespace AWMSEngine.Engine.Business.Issued
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(xx.baseCode, xx.wareHouseID, xx.areaID, false, true, this.BuVO);
                 docItems.Add(docItem);
                 SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
+                WCSQueueApi tt = new WCSQueueApi()
+                {
+
+                };
             }
             
 
