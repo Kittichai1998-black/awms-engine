@@ -151,10 +151,10 @@ class IssuedManage extends Component {
         if (rowselect1.data._result.status === 1) {
           //this.setState({ data: [] })
 
-        
 
-   
-     
+
+
+
           console.log(rowselect1)
 
 
@@ -211,7 +211,7 @@ class IssuedManage extends Component {
             }
             else {
               x.distoUnitCode = x.unitType_Code
-             
+
             }
             x.batchsp = x.batch
             x.options = x.options
@@ -234,11 +234,11 @@ class IssuedManage extends Component {
             let sum = 0
             groupPack[res1].forEach(res2 => {
               res2.sumQty1 = res2.distoQty
-              sumArr1.forEach(x=> {
-                if(x.id === res2.docItemID){
+              sumArr1.forEach(x => {
+                if (x.id === res2.docItemID) {
                   res2.quantity = x.quantity
                   res2.options = x.options
-                 
+
                 }
               })
               sumArr.forEach(response => {
@@ -260,7 +260,7 @@ class IssuedManage extends Component {
 
           this.setState({ data2: sumArr }, () => {
 
-              result.forEach(row1 => {
+            result.forEach(row1 => {
               sumQTYPack = 0
               row1.batch = this.state.batch
 
@@ -538,7 +538,7 @@ class IssuedManage extends Component {
     return <span>{data}</span>
   }
 
-  
+
   toggle() {
     this.setState({ modalstatus: !this.state.modalstatus });
   }
@@ -672,9 +672,9 @@ class IssuedManage extends Component {
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
-      { accessor: "packCode", Header: "SKU Code"},
-      { accessor: "packName", Header: "SKU Name"},
-      { accessor: "code", Header: "Base"},
+      { accessor: "packCode", Header: "SKU Code" },
+      { accessor: "packName", Header: "SKU Name" },
+      { accessor: "code", Header: "Base" },
 
 
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
@@ -684,9 +684,9 @@ class IssuedManage extends Component {
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
-        (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
+          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
-      { accessor: "distoUnitCode", Header: "Unit"},
+      { accessor: "distoUnitCode", Header: "Unit" },
     ]
 
 
@@ -694,8 +694,8 @@ class IssuedManage extends Component {
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
       },
-      { accessor: "packMaster_Code", Header: "SKU Code"},
-      { accessor: "packMaster_Name", Header: "SKU Name"},
+      { accessor: "packMaster_Code", Header: "SKU Code" },
+      { accessor: "packMaster_Name", Header: "SKU Name" },
 
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},  
       { accessor: 'batchsp', Header: 'Batch', editable: false, },
@@ -825,8 +825,8 @@ class IssuedManage extends Component {
 
 
 
-        <div className="clearfix">
-          <Button className="float-right" onClick={() => this.addData()} color="primary" disabled={this.state.addstatus} style={{ display: this.state.adddisplay }}>Add</Button>
+        <div className="clearfix" style={{ marginTop: '3px', marginBottom: '3px' }}>
+          <Button className="float-right" onClick={() => this.addData()} color="success" disabled={this.state.addstatus} style={{ width: "130px", display: this.state.adddisplay }}>Add</Button>
           {/* <span className="float-right" style={{display:this.state.basedisplay, backgroundColor:"white",padding:"5px", border:"2px solid #555555",borderRadius:"4px"}} >{this.state.code}</span> */}
         </div>
 
@@ -843,9 +843,9 @@ class IssuedManage extends Component {
 
 
         <Card>
-          <CardBody style={{ textAlign: 'right' }}>
-            <Button onClick={() => this.createDocument()} style={{ display: this.state.adddisplay}} color="primary" className="mr-sm-1">Create</Button>
-            <Button style={{ color: "#FFF" }} type="button" color="danger" onClick={() => this.props.history.push('/doc/gi/list')}>Close</Button>
+          <CardBody>
+            <Button onClick={() => this.createDocument()} style={{ width: "130px", marginRight: '5px', display: this.state.adddisplay }} color="primary" className="float-right">Create</Button>
+            <Button style={{ width: "130px" }} type="button" color="secondary" onClick={() => this.props.history.push('/doc/gi/list')} className="float-left">Back</Button>
             {this.state.resultstatus}
           </CardBody>
         </Card>
