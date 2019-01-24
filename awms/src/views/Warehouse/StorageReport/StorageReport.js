@@ -83,19 +83,11 @@ class StoragReport extends Component {
  }
 
 
-  componentWillUnmount() {
-
-
-  }
-
-
-  initialData() {
-    //Axios.get(createQueryString(this.state.select)).then((rowselect2) => {
-    //  this.setState({
-    //    data: rowselect2.data.datas,
-    //  })
-    //  console.log(this.state.data)
-    //})
+  datetimeBody(value) {
+    if (value !== null) {
+      const date = moment(value);
+      return <div>{date.format('DD-MM-YYYY')}</div>
+    }
   }
 
   render() {
@@ -110,14 +102,16 @@ class StoragReport extends Component {
       { accessor: 'Batch', Header: 'Batch', Filter: "text", sortable: true },
       { accessor: 'Lot', Header: 'Lot', Filter: "text", sortable: true },
       { accessor: 'OrderNo', Header: 'OrderNo', Filter: "text", sortable: true },
-      { accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: false,Footer: 			  
+      { accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: true,Footer: 			  
       (<span><label>Sum :</label>{" "}{ _.sumBy(cols,x => parseFloat(x.Qty))}</span>)},
       
-      { accessor: 'Base_Unit', Header: 'Unit', Filter: "text", sortable: false, },
-      { accessor: 'WeiPallet', Header: 'Weight Pallet', Filter: "text", sortable: false, },
-      { accessor: 'WeiPack', Header: 'Weight Pack', Filter: "text", sortable: false, },
+      { accessor: 'Base_Unit', Header: 'Unit', Filter: "text", sortable: true, },
+      { accessor: 'WeiPallet', Header: 'Weight Pallet', Filter: "text", sortable: true, },
+      { accessor: 'WeiPack', Header: 'Weight Pack', Filter: "text", sortable: true, },
       { accessor: 'Status', Header: 'Status', Filter: "text", sortable: true },
-      { accessor: 'Receive_Time', Header: 'Receive Time', Filter: "text", sortable: true },
+      {
+        accessor: 'Receive_Time', Header: 'Receive Time', Filter: "text", sortable: true, Cell: (e) =>
+          this.datetimeBody(e.value) },
     ];
 
     return (

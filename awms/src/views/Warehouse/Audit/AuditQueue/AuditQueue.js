@@ -32,7 +32,7 @@ class AuditQueue extends Component{
       q: "[{ 'f': 'DocumentType_ID', c:'=', 'v': 2004},{ 'f': 'EventStatus', c:'=', 'v': 10}]",//,{ 'f': 'Status', c:'=', 'v': 1}
       f: "ID,Code",
       g: "",
-      s: "[{'f':'ID','od':'desc'}]",
+      s: "[{'f':'Code','od':'desc'}]",
       sk: 0,
       l: 0,
       all: "",
