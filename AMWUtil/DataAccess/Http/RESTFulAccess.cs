@@ -110,7 +110,7 @@ namespace AMWUtil.DataAccess.Http
                     string json = datas.Json();
                     if (logger != null)
                         logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + json);
-                    return new T();
+                    //return new T();
 
                     using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {

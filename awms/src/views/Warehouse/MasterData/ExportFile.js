@@ -52,8 +52,11 @@ class ExportFile extends Component {
         filename: moment().format('DDMMYYYY_HHmm') + ".xlsx"
       })
     }
-
-    if (this.props.dataselect) {
+    if(this.props.dataxls){
+      this.setState({ dataxls: Clone(this.props.dataxls) }, () => {
+        document.getElementById("btnLoad").click();
+      })
+    }else if (this.props.dataselect) {
       let dataselect = this.props.dataselect
       dataselect["l"] = 0
       let queryString = createQueryString(dataselect)

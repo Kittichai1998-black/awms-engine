@@ -100,7 +100,7 @@ class CurrentReport extends Component {
             <Col xs="10">
             </Col>
             <Col xs="2">
-              <ExportFile column={cols} dataexp={this.state.data} filename={this.state.name} />
+              <ExportFile column={cols} dataselect={this.state.select} filename={"CurrentInventory"} />
             </Col>
           </Row>
           <Row>

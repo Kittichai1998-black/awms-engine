@@ -39,8 +39,8 @@ class StockCardReport extends Component {
         sk: 0,
         l: 0,
         all: "",
-      },    
-      
+      },
+
       PackMasterdata: [],
       batch: "",
 
@@ -72,7 +72,7 @@ class StockCardReport extends Component {
     return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" />
   }
   dateTimePickerTo() {
-    return <DatePicker style={{ width: "300px"}} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" />
+    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
 
@@ -182,16 +182,16 @@ class StockCardReport extends Component {
             <Col xs="6">
               <div className=""><label>Batch : </label>
                 <Input onChange={(e) => this.setState({ Batch: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '28px' }}
-                  value={ this.state.Batch} />
+                  value={this.state.Batch} />
               </div>
             </Col>
-           
+
           </Row>
           <Row>
             <Col xs="6">
               <div className=""><label>Lot : </label>
-                <Input onChange={(e) => this.setState({ Lot: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '50px'}}
-                  value={ this.state.Lot} />
+                <Input onChange={(e) => this.setState({ Lot: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '50px' }}
+                  value={this.state.Lot} />
               </div>
             </Col>
             <Col xs="6">
@@ -205,32 +205,28 @@ class StockCardReport extends Component {
             <Col xs="6">
               <div >
                 <label>Date From : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px'  }}>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
                   {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
                 </div></div>
             </Col>
-            
+
             <Col xs="6">
               <div>
                 <label >Date To : </label>
                 <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
                   {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
                 </div>
-                </div>
-                 </Col>
-              </Row>
-
+              </div>
+            </Col>
+          </Row>
 
           <Row>
-            
-            <Col sm="12">
-              <ExportFile column={cols} dataexp={this.state.data} filename={this.state.name} />
-              <Button style={{ width: "130px", float: "right" }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+            <Col sm="12" style={{ marginTop: '3px', marginBottom: '3px' }}>
+              <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} style={{ width: "130px", marginLeft: '5px' }} className="float-right" />
+              <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+            </Col>
+          </Row>
 
-            </Col>      
-            </Row>
-
-          
         </div>
         <ReactTable pageSize="10000" NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} sortable={false} style={{ background: "white", marginBottom: "50px" }}
           filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data} />

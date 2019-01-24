@@ -609,7 +609,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public void CreateDocItemSto (long docItemID, long stoID, decimal qty, int unitTypeID, decimal baseQty, int baseUnitTypeID, VOCriteria buVO)
+        public void CreateDocItemSto (long docItemID, long stoID, decimal qty, long unitTypeID, decimal baseQty, long baseUnitTypeID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("DOCITEM_ID", docItemID);

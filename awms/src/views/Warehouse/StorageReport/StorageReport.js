@@ -125,16 +125,16 @@ class StoragReport extends Component {
     return (
 
       <div>
-        <div>
+        {/*ปุ่ม export excel ส่งค่าจาก tablegen มาแสดงแทน <div> 
           <Row>
             <Col xs="12">
               <ExportFile column={cols} dataexp={this.state.data} filename={this.state.name} />
             </Col>
           </Row>
-        </div>
+        </div> */}
         <TableGen column={cols} data={this.state.select} filterable={true}
           uneditcolumn={this.uneditcolumn} className='-striped -highlight'
-          defaultPageSize={10}
+          defaultPageSize={10} expFilename={"StorageObject"} exportfilebtn={false}
         />
 
         {/* <ReactTable pageSize="10000" NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} sortable={false} style={{ background: "white", marginBottom: "50px" }}
