@@ -18,27 +18,51 @@ namespace AWMSEngine.ADO.SAPApi
     {
         public string DOCSTATUS;
 
-        public List<TItem> ITEM_DATA;
-        public class TItem
+        public List<APIService.Api2.CreateIssueAPI.TModel.TDocument> documents;
+        /*public class TDocument
         {
-            public string DELIV_NUMB;
-            public string DLV_TYPE;
-            public string SOLDTO_CODE;
-            public string SOLDTO_NAME;
-            public string SHIPTO_CODE;
-            public string SHIPTO_NAME;
-            public string DELIV_ITEM;
-            public string MATERIAL;
-            public string PLANT;
-            public string STGE_LOC;
-            public string BATCH;
-            public decimal DLV_QTY_IMUNIT;
-            public string BASE_UOM;
-            public decimal DLV_QTY;
-            public string SALES_UNIT;
-        }
+            public string docNo;
+            public string docYear;
+            public string docType;
+            public DateTime actionDate;
+            public DateTime documentDate;
+            public string remark;
+            public List<TItem> items;
+            public class TItem
+            {
+                public string item;
+                public string code;
+                public string batch;
+                public decimal qty;
+                public string unit;
+                public string desCustomer;
+                public string desCustomerName;
+                public string desSupplier;
+                public string desSupplierName;
+                public string movementType;
+            }
+        }*/
+        
+    /*public class TItem
+    {
+        public string DELIV_NUMB;
+        public string DLV_TYPE;
+        public string SOLDTO_CODE;
+        public string SOLDTO_NAME;
+        public string SHIPTO_CODE;
+        public string SHIPTO_NAME;
+        public string DELIV_ITEM;
+        public string MATERIAL;
+        public string PLANT;
+        public string STGE_LOC;
+        public string BATCH;
+        public decimal DLV_QTY_IMUNIT;
+        public string BASE_UOM;
+        public decimal DLV_QTY;
+        public string SALES_UNIT;
+    }*/
 
-        public List<TReturn> RETURN;
+    public List<TReturn> RETURN;
         public class TReturn
         {
             public string TYPE;
