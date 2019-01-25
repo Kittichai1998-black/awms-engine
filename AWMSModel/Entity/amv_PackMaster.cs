@@ -19,7 +19,7 @@ namespace AWMSModel.Entity
         public decimal WidthM;
         public decimal LengthM;
         public decimal HeightM;
-        public int ItemQty;
+        //public int ItemQty;
         public long ObjectSize_ID;
         public int Revision;
         public EntityStatus Status;
@@ -28,9 +28,17 @@ namespace AWMSModel.Entity
         public long ModifyBy;
         public DateTime ModifyTime;
         public string PackName;
+
+        public decimal Quantity;
         public long UnitType_ID;
         public string UnitTypeCode;
         public string UnitTypeName;
+
+        public decimal BaseQuantity;
+        public long BaseUnitType_ID;
+        public string BaseUnitTypeCode;
+        public string BaseUnitTypeName;
+
         public string ObjectSizeName;
         public string SKUCode;
         public string SKUName;
