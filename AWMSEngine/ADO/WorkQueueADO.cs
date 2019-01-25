@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Exception;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
@@ -66,7 +67,7 @@ namespace AWMSEngine.ADO
             param.Add("StartTime", obj.StartTime);
             param.Add("EndTime ", obj.EndTime);
             param.Add("EventStatus", obj.EventStatus);
-            param.Add("Status", obj.Status);
+            param.Add("Status", StaticValue.StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<WorkQueueEventStatus>(obj.EventStatus));
             param.Add("Priority", obj.Priority);
             param.Add("ActionBy", buVO.ActionBy);
 
