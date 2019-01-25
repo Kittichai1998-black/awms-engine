@@ -12,9 +12,6 @@ namespace AWMSEngine.ADO.QueueApi
         public class TReq
         {
             public List<queueout> queueOut;
-            public DateTime actualTime;
-            //public BaseInfo baseInfo;
-
             public class queueout
             {
                 public long queueID;
@@ -22,18 +19,20 @@ namespace AWMSEngine.ADO.QueueApi
                 public string desAreaCode;
                 public string desLocationCode;
                 public int priority;
-                //public List<baseInfo> baseInfo;
-                public class baseInfo
+                public List<baseinfo> baseInfo;
+                public class baseinfo
                 {
-                    public string packCode;
-                    public decimal packQty;
-                    public string skuCode;
-                    public decimal skuQty;
-                    public string lot;
-                    public string batch;
+                    public string baseCode;
+                    public List<packinfo> packInfos;
+                    public class packinfo
+                    {
+                        public string skuCode;
+                        public decimal skuQty;
+                        public string lot;
+                        public string batch;
+                    }
                 }
             }
-            
         }
 
         public class TRes : TReq

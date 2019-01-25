@@ -61,20 +61,22 @@ namespace AWMSEngine.Engine.Business.Issued
 
         public class DocumentProcess
         {
-            public long docID;
+            public amt_Document document;
+            public amt_DocumentItem documentItem;
+            public StorageObjectCriteria stoPack;
             public string docCode;
             public long dociID;
-            public long stoi;
+            public long? stoi;
             public string itemCode;
-            public decimal qty;
+            public decimal? qty;
             public string batch;
             public string orderNo;
             public string lot;
             public int priority;
-            public long wareHouseID;
-            public long areaID;
+            public long? wareHouseID;
+            public long? areaID;
             public string baseCode;
-            public decimal stoBaseQty;
+            public decimal? stoBaseQty;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -168,7 +170,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 foreach (var doc in reqVO.documentsProcess)
                 {
-                    var document = ADO.DataADO.GetInstant().SelectBy<amv_Document>("amv_Document", "ID,ParentDocument_ID,code", null,
+                    var document = ADO.DataADO.GetInstant().SelectBy<amt_Document>("amt_Document", "ID,ParentDocument_ID,code", null,
                     new SQLConditionCriteria[]
                     {
                         new SQLConditionCriteria("ID", doc.docID, SQLOperatorType.EQUALS),
@@ -180,17 +182,29 @@ namespace AWMSEngine.Engine.Business.Issued
 
                     foreach (var docItem in doc.items.Where(x => x.itemCode == item.itemCode))
                     {
+                        var documentItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("amt_DocumentItem", "*", null,
+                        new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("ID", docItem.docItemID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("EventStatus",DocEventStatuses, SQLOperatorType.IN)
+                        },
+                        new SQLOrderByCriteria[] { }, null, null,
+                        this.BuVO).FirstOrDefault();
+
                         foreach (var batch in docItem.batchs)
                         {
                             foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0))
                             {
+                                var stoPack = ADO.StorageObjectADO.GetInstant().Get(sto.code, null, null, false, true, this.BuVO);
                                 if (batch.qty > 0)
                                 {
                                     if (sto.packQty >= batch.qty)
                                     {
                                         listDocProcessed.Add(new DocumentProcess
                                         {
-                                            docID = doc.docID,
+                                            document = document,
+                                            documentItem = documentItem,
+                                            stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
                                             docCode = document.Code,
                                             dociID = docItem.docItemID,
                                             stoi = sto.id,
@@ -213,7 +227,9 @@ namespace AWMSEngine.Engine.Business.Issued
                                     {
                                         listDocProcessed.Add(new DocumentProcess
                                         {
-                                            docID = doc.docID,
+                                            document = document,
+                                            documentItem = documentItem,
+                                            stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
                                             docCode = document.Code,
                                             dociID = docItem.docItemID,
                                             stoi = sto.id,
@@ -236,6 +252,28 @@ namespace AWMSEngine.Engine.Business.Issued
                                 {
                                     break;
                                 }
+                            }
+                            if(listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
+                            {
+                                listDocProcessed.Add(new DocumentProcess
+                                {
+                                    document = document,
+                                    documentItem = documentItem,
+                                    stoPack = null,
+                                    docCode = document.Code,
+                                    dociID = docItem.docItemID,
+                                    stoi = null,
+                                    itemCode = docItem.itemCode,
+                                    qty = null,
+                                    batch = batch.value,
+                                    orderNo = null,
+                                    lot = null,
+                                    priority = docItem.priority,
+                                    wareHouseID = null,
+                                    areaID = null,
+                                    baseCode = null,
+                                    stoBaseQty = null
+                                });
                             }
                         }
                     }

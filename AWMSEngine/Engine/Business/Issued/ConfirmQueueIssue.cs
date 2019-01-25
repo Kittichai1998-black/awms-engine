@@ -34,7 +34,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 public decimal stoBaseQty;
             }
         }
-        
+
         public class TRes
         {
             public List<docItemStoageObject> dociSto;
@@ -46,6 +46,27 @@ namespace AWMSEngine.Engine.Business.Issued
                 public string stoCode;
                 public decimal packQty;
             }
+        }
+        public class queueout
+        {
+            public long queueID;
+            public string desWarehouseCode;
+            public string desAreaCode;
+            public string desLocationCode;
+            public int priority;
+            public List<baseinfo> baseInfo;
+        }
+        public class baseinfo
+        {
+            public string baseCode;
+            public List<packinfo> packInfos;
+        }
+        public class packinfo
+        {
+            public string skuCode;
+            public decimal skuQty;
+            public string lot;
+            public string batch;
         }
 
         private ams_Warehouse _warehouseASRS;
@@ -65,41 +86,60 @@ namespace AWMSEngine.Engine.Business.Issued
                 if (_areaASRS == null)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.areaID + "'");
 
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null,DocumentEventStatus.WORKING, this.BuVO);
+                //update Document EventStatus 10 --> 11
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                //update StorageObject EventStatus 12 --> 17
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
                 var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
+                var xxx = ADO.StorageObjectADO.GetInstant().Get(list.stoi, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
 
                 var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
-                ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, list.stoi, list.qty, getRootSTO.mapstos[0].unitID, list.qty, getRootSTO.mapstos[0].baseUnitID, this.BuVO);
-                
+                ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, xxx ?? 0, list.qty, getRootSTO.mapstos[0].unitID, list.qty, getRootSTO.mapstos[0].baseUnitID, this.BuVO);
             }
-            var results = reqVO.DocumentProcessed.GroupBy(n => new { n.stoi, n.dociID, n.baseCode, n.wareHouseID, n.areaID })
-                .Select(g => new {
+            var resultDocItemSto = reqVO.DocumentProcessed.GroupBy(n => new { n.stoi, n.dociID, n.baseCode, n.wareHouseID, n.areaID })
+                .Select(g => new
+                {
                     g.Key.stoi,
                     g.Key.dociID,
                     g.Key.baseCode,
                     g.Key.wareHouseID,
-                    g.Key.areaID}).ToList();
-            foreach (var xx in results)
+                    g.Key.areaID
+                }).ToList();
+            foreach (var result in resultDocItemSto)
             {
                 var docItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("amt_DocumentItem", "*", null,
                     new SQLConditionCriteria[]
                     {
-                    new SQLConditionCriteria("ID", xx.dociID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("ID", result.dociID, SQLOperatorType.EQUALS),
                     },
                     new SQLOrderByCriteria[] { }, null, null,
                     this.BuVO).FirstOrDefault();
-                stoCriteria = ADO.StorageObjectADO.GetInstant().Get(xx.baseCode, xx.wareHouseID, xx.areaID, false, true, this.BuVO);
+                stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
                 docItems.Add(docItem);
                 SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
-                WCSQueueApi tt = new WCSQueueApi()
-                {
 
-                };
             }
-            
+            //var resultQueueOutWCS = reqVO.DocumentProcessed.GroupBy(n => new { n.stoi, n.baseCode, n.wareHouseID, n.areaID })
+            //    .Select(g => new
+            //    {
+            //        g.Key.stoi,
+            //        g.Key.baseCode,
+            //        g.Key.wareHouseID,
+            //        g.Key.areaID
+            //    }).ToList();
+            //WCSQueueApi.TReq.queueout.baseinfo.packinfo rr = new WCSQueueApi.TReq.queueout.baseinfo.packinfo()
+            //{
 
-        List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
+            //};
+            //WCSQueueApi.TReq tt = new WCSQueueApi.TReq()
+            //{
+
+
+            //};
+            //WCSQueueApi.GetInstant().SendQueue(tt, this.BuVO);
+
+            List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;
             return res;
         }

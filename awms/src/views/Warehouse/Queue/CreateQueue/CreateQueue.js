@@ -252,6 +252,7 @@ class CreateQueue extends Component{
           ,priority_label:null
           ,qty:datarow.BaseQuantity
           ,batchs:[]
+          ,defaultBatch:datarow.batch
         });
         this.onEditorValueChange(datarow.dociID, 0,"pickOrderby")
         this.onEditorValueChange(datarow.dociID, "CreateDate","orderByField")
@@ -274,6 +275,7 @@ class CreateQueue extends Component{
     const DocumentItemData = this.state.DocumentItemData;
     const dataProcessItems = this.state.dataProcessItems;
     let checkBatchInput = false;
+    let checkDefaultBatch = false;
     if(dataProcessItems.length>0){
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
@@ -289,9 +291,15 @@ class CreateQueue extends Component{
             });
           }
           else{
+            checkDefaultBatch = true;
             checkBatchInput = true;
           }
-          if(checkBatchInput){
+          if(checkBatchInput && checkDefaultBatch){
+            datarow.batchs.push({
+              value:datarow.defaultBatch,
+              qty:datarow.defaultBatch?datarow.qty:0
+            })
+          }else if(checkBatchInput){
             datarow.batchs.push({
               value:null,
               qty:0
@@ -306,7 +314,7 @@ class CreateQueue extends Component{
           dataProcessItems.push({docID:datarow.docID,dociID:datarow.dociID,itemCode:datarow.itemCode,itemName:datarow.itemName,item:datarow.item
             ,batch:datarow.batch,pickOrderby:null,pickOrderby_label:null,orderByField:null,orderByField_label:null
             ,lot:datarow.lot,orderNo:datarow.orderNo,priority:0,priority_label:null,qty:datarow.BaseQuantity
-            ,batchs:[{value:null,qty:0}]});
+            ,batchs:[{value:datarow.batch,qty:datarow.BaseQuantity}]});
         }
       })                 
     }
@@ -347,7 +355,11 @@ class CreateQueue extends Component{
           row.priority_label=this.state.prioritylist.find(e => e.value===value).label
           row.priority=value
         }else if(field==="value"){
+          if(dociID.toString().includes(',')){
           row.batchs[dociID.toString().split(',')[1]].value=value
+          }else{
+            row.batchs[dociID.toString()].value=value
+          }
         }else if(field==="qty"){
           row.batchs[dociID.toString().split(',')[1]].qty=value
         }
@@ -357,17 +369,14 @@ class CreateQueue extends Component{
   }
 
   addNewInputText(datarow){
-    const styleclose = {cursor: 'pointer', position: 'absolute', display: 'inline', background: '#ffffff', borderRadius: '18px'}
+    const styleclose = { float: 'left', cursor: 'pointer', position: 'absolute', display: 'inline', background: '#ffffff', borderRadius: '18px'}
     return <div className={[datarow.dociID,datarow.batchNo]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
     <Row>
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
-      <Col md="4"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo, e.target.value,"value") }} /></div></Col> 
+      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.value?datarow.value:""} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo, e.target.value,"value") }} /></div></Col> 
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
-      <Col md="3"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo,e.target.value,"qty") }} /></div></Col>
-      {/* <Col md="1"><a style={styleclose} onClick={this.closeModal}>
-                    { imgClose }
-                </a>
-                </Col> */}
+      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.qty?datarow.qty:0} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo,e.target.value,"qty") }} /></div></Col>
+      <Col md="1" style={{"margin-left":"-20px"}}><a style={styleclose} onClick={this.closeModal}>{ imgClose }</a></Col>
     </Row>
   </div>
   }
@@ -543,7 +552,7 @@ class CreateQueue extends Component{
           checkMoreQty =true
         }else{
           itemrow.batchs.forEach(batchrow =>{
-            if(batchrow.value===null){
+            if(batchrow.value===null && itemrow.qty>0){
               batchrow.value=null
               batchrow.qty=itemrow.qty
               checkBatchNull = true
@@ -784,20 +793,23 @@ class CreateQueue extends Component{
   }
   processQ(){
     let doc=[]
-    let items=[]
+   
     let dataProcessed =[]
     this.state.dataProcessSelected.forEach(docrow => {
+      let items=[]
       docrow.items.forEach(itemrow => {
-        items.push({
-        docItemID:itemrow.dociID
-        ,itemCode:itemrow.itemCode
-        ,refID:null
-        ,pickOrderType:itemrow.pickOrderby
-        ,orderBy:itemrow.orderByField
-        ,orderNo:itemrow.orderNo
-        ,lot:itemrow.lot
-        ,priority:itemrow.priority
-        ,batchs:itemrow.batchs})
+        if(docrow.value === itemrow.docID){
+          items.push({
+          docItemID:itemrow.dociID
+          ,itemCode:itemrow.itemCode
+          ,refID:null
+          ,pickOrderType:itemrow.pickOrderby
+          ,orderBy:itemrow.orderByField
+          ,orderNo:itemrow.orderNo
+          ,lot:itemrow.lot
+          ,priority:itemrow.priority
+          ,batchs:itemrow.batchs})
+        }
       });
       doc.push({
         docID:docrow.value
@@ -854,9 +866,9 @@ class CreateQueue extends Component{
               <FormGroup row>
                 <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
                 <Col ><AutoSelect selectfirst={false} data={this.state.auto_doc} result={(e) => this.setState({"docID":e.value,"SAPdoc":e.SAPdoc,"MMType":e.MMType,"ForCus":e.ForCus,"StampDate":e.StampDate,"Batch":e.Batch,"docresult":e.label})}/></Col>
-                <Col sm={2}><Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button></Col>
+                <Col sm={2} style={this.state.docID?{}:{"display":"none"}}><Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button></Col>
               </FormGroup>
-              <FormGroup row>
+              <FormGroup row style={this.state.docID?{}:{"display":"none"}}>
                 <Label sm={3}></Label>
                 <Col sm={7}><div>{ this.genBtnGetDocItem() }</div></Col>
               </FormGroup>
@@ -876,7 +888,7 @@ class CreateQueue extends Component{
                   </Card>
                 </Col>
               </FormGroup>
-              <FormGroup row >
+              <FormGroup row style={itemCards.length > 0?{}:{"display":"none"}}>
               <Col sm={12} style={{"float":"right"}}>
                       <Button id="per_button_doc" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px',display:this.state.showbutton }}
                       color="primary" className="float-right"onClick={() => this.addData()}>Add</Button>
