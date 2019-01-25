@@ -42,15 +42,15 @@ const Pack = Loadable({
 //   loading: Loading,
 // });
 
-// const Area = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Area'),
-//   loading: Loading,
-// });
+const Area = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Area'),
+  loading: Loading,
+});
 
-// const AreaType = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/AreaType'),
-//   loading: Loading,
-// });
+const AreaType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/AreaType'),
+  loading: Loading,
+});
 
 const AreaLocation = Loadable({
   loader: () => import('./views/Warehouse/MasterData/AreaLocation'),
@@ -67,10 +67,10 @@ const Base = Loadable({
   loading: Loading,
 });
 
-// const BaseType = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/BaseType'),
-//   loading: Loading,
-// });
+const BaseType = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/BaseType'),
+  loading: Loading,
+});
 
 // const Branch = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/Branch'),
@@ -250,10 +250,10 @@ const StorageDetail = Loadable({
 //   loading: Loading,
 // });
 
-// const Role = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Role'),
-//   loading: Loading,
-// });
+const Role = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Role'),
+  loading: Loading,
+});
 
 // const Transport = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/Transport'),
@@ -327,13 +327,13 @@ const routes = [
   // { path: '/mst/sku/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/customer/manage', exact: true, name: 'Setting / Customer', component: Customer },
   // { path: '/mst/supplier/manage', exact: true, name: 'Setting / Supplier', component: Supplier },
-  // { path: '/mst/area/manage', exact: true, name: 'Setting / Area', component: Area },
-  // { path: '/mst/areatype/manage', exact: true, name: 'Setting / Area Type', component: AreaType },
+  { path: '/mst/area/manage', exact: true, name: 'Setting / Area', component: Area },
+  { path: '/mst/areatype/manage', exact: true, name: 'Setting / Area Type', component: AreaType },
   { path: '/mst/location/manage', exact: true, name: 'Setting / Area Location', component: AreaLocation },
   // { path: '/mst/arealocation/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/arearoute/manage', exact: true, name: 'Setting / Area Route', component: AreaRoute },
   { path: '/mst/pallet/manage', exact: true, name: 'Setting / Pallet Master', component: Base },
-  // { path: '/mst/pallettype/manage', exact: true, name: 'Setting / Pallet Type', component: BaseType },
+  { path: '/mst/pallettype/manage', exact: true, name: 'Setting / Pallet Type', component: BaseType },
   // { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/branch/manage', exact: true, name: 'Setting / Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'Setting / User Account', component: User },
@@ -374,7 +374,7 @@ const routes = [
   // { path: '/mst/doctype/manage', exact: true, name: 'Setting / Document Type', component: DocumentType },
   // { path: '/mst/ft/manage', exact: true, name: 'Setting / Feature', component: Feature },
   // { path: '/mst/jobs/manage', exact: true, name: 'Setting / Job Schedule', component: JobSchedule },
-  // { path: '/mst/role/manage', exact: true, name: 'Setting / Role', component: Role },
+  { path: '/mst/role/manage', exact: true, name: 'Setting / Role', component: Role },
   // { path: '/mst/tp/manage', exact: true, name: 'Setting / Transport', component: Transport },
   { path: '/wm/issue/manage', exact: true, name: 'Issue / Create Queue', component: CreateQueue },
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
