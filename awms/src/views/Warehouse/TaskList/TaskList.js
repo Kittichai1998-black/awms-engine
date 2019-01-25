@@ -31,46 +31,36 @@ class TaskList extends Component {
       selectArea: [],
       WorkingOutselect: {
         queryString: window.apipath + "/api/viw",
-        t: "WorkingOut",
-        //q: "",
-        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
-        f: "Time,Gate,AreaID,Pallet,Product,MoveTo,EventStatus,WorkStatus",
+        t: "r_DashboardMoveOut",
+        // q: "",
+        q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 }]",
+        f: "Time,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,SAPRef,QtyUnit,EventStatus",
         g: "",
-        s: "[{'f':'WorkStatus','od':'asc'}]",
+        s: "[{'f':'Time','od':'desc'}]",
         sk: 0,
         l: 100,
         all: "",
       },
       TaskListselect: {
         queryString: window.apipath + "/api/viw",
-        t: "TaskList",
+        t: "r_DashboardTaskOnFloor",
         //q: "",
-        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' },{ 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' }]",
-        //q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
-        f: "Pallet,DocCode,DocumentTypeID,TaskName,Product,PalletSKU,AreaID,Location,Amount,Customer,DsoStatus,DocStatus,StoStatus",
+        q: "[{ 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' }]",
+        f: "Time,TaskName,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,SAPRef,QtyUnit,DocumentType_ID,EventStatus",
         g: "",
-        s: "[{'f':'DsoStatus','od':'asc'},{'f':'ModifyTime','od':'desc'}]",
+        s: "[{'f':'Time','od':'desc'}]",
         sk: 0,
         l: 100,
         all: "",
-      },
-      // data1: [{ Time: "John", Gate: "G25", Pallet: "001001007", Product: "ถุงพลาสติก1", MoveTo: null, WorkStatus: 1 },
-      // { Time: "Anna", Gate: "G22", Pallet: "001001006", Product: "ถุงพลาสติก2", MoveTo: null, WorkStatus: 2 },
-      // { Time: "Frank", Gate: "G23", Pallet: "001001009", Product: "ถุงพลาสติก3", MoveTo: null, WorkStatus: 3 },
-      // { Time: "Estur", Gate: "G24", Pallet: "001001008", Product: "ถุงพลาสติก4", MoveTo: null, WorkStatus: 4 },
-      // { Time: "Estur", Gate: "G24", Pallet: "001001008", Product: "ถุงพลาสติก4", MoveTo: null, WorkStatus: 5 }],
-      // data2: [{ DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "10/100", WorkStatus: 1 },
-      // { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "20/100", WorkStatus: 2 },
-      // { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "30/100", WorkStatus: 3 },
-      // { DocCode: "Code1 : xxxx", TaskName: "cccccc", Location: "ccccccccc", Product: "ถุงพลาสติก1", Amount: "40/100", WorkStatus: 4 }]
+      } 
     }
     this.timeout = null;
     this.updateQueueData = this.updateQueueData.bind(this)
     this.GetListData = this.GetListData.bind(this)
   }
   //   ID	Code	Name
-  // 8	FF	พื้นที่ Staging ด้านหน้า
-  // 9	FR	พื้นที่ Staging ด้านหลัง
+  // 3,8	Fด้านหน้า
+  // 4,9	Rด้านหลัง
   async componentWillMount() {
     document.title = "Picking Progress : AWMS";
     //permission
@@ -90,7 +80,7 @@ class TaskList extends Component {
 
   GetListData() {
     if (this._mounted) {
-      console.log("loaddata")
+      // console.log("loaddata")
       API.all([API.get(createQueryString(this.state.WorkingOutselect)),
       API.get(createQueryString(this.state.TaskListselect))]).then((res) => {
         this.setState({
@@ -110,20 +100,20 @@ class TaskList extends Component {
     this.setState({ isFull: false });
   }
   updateQueueData(selValue) {
-    const areaWorkingOut = this.state.WorkingOutselect;
-    const areaTaskList = this.state.TaskListselect;
+    var areaWorkingOut = this.state.WorkingOutselect;
+    var areaTaskList = this.state.TaskListselect;
     let areawhere = [];
     let taskwhere = [];
     if (selValue !== undefined) {
       if (selValue !== "") {
-        console.log(selValue)
-        areawhere.push({ 'f': 'AreaID', 'c': '=', 'v': selValue });
-        taskwhere.push({ 'f': 'AreaID', 'c': '=', 'v': selValue }, { 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
+        // console.log(selValue)
+        areawhere.push({ 'f': 'AreaCode', 'c': '=', 'v': selValue }, { 'f': 'IOType', 'c': '=', 'v': 1 });
+        taskwhere.push({ 'f': 'AreaCode', 'c': '=', 'v': selValue === 'F' ? 'FS' : selValue === 'R' ? 'RS' : '' }, { 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       } else {
-        areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }, { 'f': 'DocumentTypeID', 'c': 'in', 'v': '1002,2004' });
+        areawhere.push({ 'f': 'IOType', 'c': '=', 'v': 1 });
+        taskwhere.push({ 'f': 'AreaCode', 'c': '=', 'v': selValue === 'F' ? 'FS' : selValue === 'R' ? 'RS' : '' }, { 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       }
@@ -132,52 +122,35 @@ class TaskList extends Component {
   }
   render() {
     const cols1 = [
-      { accessor: "Time", Header: "Time", minWidth: 65, className: 'center' },
-      { accessor: "Gate", Header: "Gate", minWidth: 90 },
-      { accessor: "Pallet", Header: "Pallet", minWidth: 100 },
-      // { accessor: "Product", Header: "Product", minWidth: 150 },
-      { accessor: "MoveTo", Header: "Move To", minWidth: 210 },
+      { accessor: "Time", Header: "Time", minWidth: 120, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('DD-MM-YYYY HH:mm:ss') : "" },
+      { accessor: "Document_Code", Header: "Doc No.", minWidth: 90 },
+      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 90 },
+      { accessor: "AreaLoc_Code", Header: "Gate", minWidth: 50 },
+      { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
+      { accessor: "Product", Header: "Product", minWidth: 300 },
+      { accessor: "QtyUnit", Header: "Qty", minWidth: 90 },
+      { accessor: "Destination", Header: "Destination", minWidth: 90 },
     ]
-    // const cols2 = [
-    //   { accessor: "DocCode", Header: "Document", minWidth: 80 },
-    //   {
-    //     accessor: "TaskName", Header: "Task Name", minWidth: 80,
-    //     Cell: row => (<p className="p_wrap">{row.value}</p>)
-    //   },
-    //   { accessor: "Product", Header: "Product", minWidth: 70 },
-    //   {
-    //     accessor: "Location", Header: "Location", minWidth: 100,
-    //     Cell: row => (
-    //       <div
-    //         style={{
-    //           backgroundColor: "rgba(255, 255, 255, 0.18)",
-    //           borderRadius: "2px"
-    //         }}
-    //       >
-    //         <p className="p_wrap">{row.value}</p>
-    //       </div>
-    //     )
-    //   },
-    //   { accessor: "Amount", Header: "Amount", minWidth: 60 },
-    // ]
     const cols2 = [
-      //{ accessor: "DocCode", Header: "Doc", minWidth: 80 },
       {
         accessor: "TaskName", Header: "Task Name", minWidth: 50, className: 'center',
         Cell: row => (
           <Badge color={row.value} style={{ fontSize: '1rem', fontWeight: '600' }}>{row.value}</Badge>
         )
       },
-      { accessor: "Customer", Header: "Destination", minWidth: 100 },
-      { accessor: "Location", Header: "Location", minWidth: 90 },
-      { accessor: "PalletSKU", Header: "Pallet", minWidth: 210 },
-      // { accessor: "Product", Header: "Product", minWidth: 70 },
-      //{ accessor: "Amount", Header: "Amount", minWidth: 60, className: 'right' },
+      { accessor: "Time", Header: "Time", minWidth: 120, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('DD-MM-YYYY HH:mm:ss') : "" },
+      { accessor: "Document_Code", Header: "Doc No.", minWidth: 90 },
+      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 90 },
+      { accessor: "AreaLoc_Code", Header: "Stage", minWidth: 50 },
+      { accessor: "Base_Code", Header: "Pallet", minWidth: 90 },
+      { accessor: "Product", Header: "Product", minWidth: 250 },
+      { accessor: "QtyUnit", Header: "Qty", minWidth: 90 },
+      { accessor: "Destination", Header: "Destination", minWidth: 90 },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
-      { value: '8', label: 'Front Area' },
-      { value: '9', label: 'Rear Area' }
+      { value: 'F', label: 'Front Area' },
+      { value: 'R', label: 'Rear Area' }
     ];
     return (
       <div>
@@ -218,21 +191,12 @@ class TaskList extends Component {
                       let classStatus = ""
                       if (rowInfo && rowInfo.row) {
                         result = true
-                        if (rowInfo.original.WorkStatus === 1) {
+                        if (rowInfo.original.EventStatus === 11 || rowInfo.original.EventStatus === 12) {
                           rmv = true
                           classStatus = "inqueue"
-                        } else if (rowInfo.original.WorkStatus === 2) {
-                          rmv = true
-                          classStatus = "working"
-                        } else if (rowInfo.original.WorkStatus === 3) {
+                        } else if (rowInfo.original.EventStatus === 31 || rowInfo.original.EventStatus === 32) {
                           rmv = true
                           classStatus = "success"
-                        } else if (rowInfo.original.WorkStatus === 4) {
-                          rmv = true
-                          classStatus = "error"
-                        } else if (rowInfo.original.WorkStatus === 5) {
-                          rmv = true
-                          classStatus = "cancel"
                         } else { rmv = false }
                       }
                       if (result && rmv)
@@ -258,29 +222,7 @@ class TaskList extends Component {
                     showPagination={false}
                     NoDataComponent={() => null}
                     loading={this.state.loadingTaskList}
-                    //defaultPageSize={15}
-                    getTrProps={(state, rowInfo, column) => {
-                      let result = false
-                      let rmv = false
-                      let classStatus = ""
-                      if (rowInfo && rowInfo.row) {
-                        result = true
-                        if (rowInfo.original.DsoStatus === 0) {
-                          rmv = true
-                          classStatus = "inqueue"
-                        } else if (rowInfo.original.DsoStatus === 1) {
-                          rmv = true
-                          classStatus = "success"
-                        } else if (rowInfo.original.DsoStatus === 2) {
-                          rmv = true
-                          classStatus = "error"
-                        } else { rmv = false }
-                      }
-                      if (result && rmv)
-                        return { className: classStatus }
-                      else
-                        return {}
-                    }}
+                  //defaultPageSize={15} 
                   />
                 </Card>
               </Col>
