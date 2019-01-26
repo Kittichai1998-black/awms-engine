@@ -33,7 +33,7 @@ class User extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "User",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
                 f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
@@ -71,8 +71,7 @@ class User extends Component {
             dataUpdate: [],
             rowselect: [],
             checkclick_add: false
-        };
-
+        }; 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
@@ -293,7 +292,7 @@ class User extends Component {
             top: '-10px',
             background: '#ffffff',
             borderRadius: '18px',
-          }
+        }
         return (
             <div>
                 {/*
@@ -308,7 +307,7 @@ class User extends Component {
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"UserAccount"} checkClickAdd={this.onCheckClickAdd}
                     filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} addExportbtn={view} exportfilebtn={view}
-                    table="ams_User" />
+                    searchURL={this.props.location.search} table="ams_User" />
                 <Popup open={this.state.open} onClose={this.closeModal}>
                     <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
                         <a style={styleclose} onClick={this.closeModal}>

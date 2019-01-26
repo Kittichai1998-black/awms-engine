@@ -10,6 +10,7 @@ import guid from 'guid';
 import { EventStatus, DocumentStatus, DocumentEventStatus, Status, StorageObjectEventStatus } from '../Status'
 import Select from 'react-select'
 import { apicall, createQueryString, Clone } from '../ComponentCore'
+import queryString from 'query-string'
 import _ from 'lodash'
 import Downshift from 'downshift'
 import '../componentstyle.css'
@@ -163,10 +164,29 @@ class TableGen extends Component {
       }
     }
   }
-
+  searchURL(searchURL, datasel) {
+    if (searchURL) {
+      const search = queryString.parse(encodeURI(searchURL))
+      var url = datasel;
+      var sel = JSON.parse(url.q)
+      for (let value in search) {
+        if (search[value]) {
+          if (search[value] !== "") {
+            sel.push({ "f": value, "c": "like", "v": "*" + encodeURIComponent(search[value]) + "*" })
+          }
+        }
+      }
+      url["q"] = JSON.stringify(sel)
+      this.queryInitialData(url);
+    }
+  }
   componentDidMount() {
     if (this.props.data) {
-      this.queryInitialData(this.props.data);
+      if (this.props.searchURL) {
+        this.searchURL(this.props.searchURL, this.props.data)
+      } else {
+        this.queryInitialData(this.props.data);
+      }
       this.setState({ originalselect: this.props.data.q })
     }
     else {
@@ -214,8 +234,7 @@ class TableGen extends Component {
     else {
       filterlist = [{ "f": "Status", "c": "!=", "v": 2 }]
     }
-
-    if (filter.length > 0) {
+    if (filter) {
       let filterlength = filter.length;
       var dataval = "";
       filter.forEach((data, id) => {
@@ -233,7 +252,7 @@ class TableGen extends Component {
               filterlist.push({ "f": data["id"], "c": "!=", "v": 2 })
             }
             else {
-              filterlist.push({ "f": data["id"], "c": "like", "v":  "*" + encodeURIComponent(data["value"]) + "*"})
+              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
             }
           }
           else if (data["value"].includes("%")) {
@@ -273,7 +292,7 @@ class TableGen extends Component {
               });
               //}
             } else {
-              filterlist.push({ "f": data["id"], "c": "=", "v": encodeURIComponent(data["value"]) })
+              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
             }
           }
         }
@@ -286,7 +305,7 @@ class TableGen extends Component {
         this.setState({ currentPage: 1 })
         select["q"] = JSON.stringify(filterlist)
         let queryString = createQueryString(select)
-        //console.log(queryString)
+        console.log(queryString)
         Axios.get(queryString).then(
           (res) => {
             this.setState({ data: res.data.datas, loading: false });
@@ -1099,7 +1118,6 @@ class TableGen extends Component {
 
       if (results.length > 0) {
         strStatus = results[0].status
-        console.log(data.original)
         if (data.original.Options !== undefined) {
           if (data.original.Options !== null) {
             var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')

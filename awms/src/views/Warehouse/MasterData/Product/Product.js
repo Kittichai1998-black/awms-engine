@@ -24,7 +24,7 @@ class ListProduct extends Component {
       select: {
         queryString: window.apipath + "/api/viw",
         t: "SKUMaster",
-        q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "ID,SKUMasterType_ID,SKUTypeCode,SKUTypeName,UnitType_ID,UnitTypeCode,UnitTypeName,Code," +
           "Name,Description,WeightKG,WidthM,LengthM,HeightM,Cost,Price,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code,LastUpdate",
         g: "",
@@ -47,15 +47,14 @@ class ListProduct extends Component {
     this.forceUpdate();
     event.preventDefault();
   }
-  componentDidMount() {
-    document.title = "SKU Master - AWMS"
-  }
+
   async componentWillMount() {
-    this.getAutocomplete();
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("SKU", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
+    document.title = "SKU Master - AWMS"
+    this.getAutocomplete();
   }
   //permission
   displayButtonByPermission(dataGetPer) {
@@ -150,9 +149,9 @@ class ListProduct extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
-      { Header: 'No.', fixed: "left", Type: 'numrows',filterable: false,  className: 'center', minWidth: 45, maxWidth: 45 },
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
-     { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
+      { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 270 },
       { accessor: 'SKUTypeCode', Header: 'Category', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 100 },
       //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:false, },
@@ -194,7 +193,7 @@ class ListProduct extends Component {
 
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view} expFilename={"SKUMaster"}
-          btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn} searchURL={this.props.location.search}
           table="ams_SKUMaster" />
 
       </div>

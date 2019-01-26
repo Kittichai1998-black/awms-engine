@@ -262,7 +262,7 @@ checkPallet(check){
       Axios.get(createQueryString(QueryDoc)).then((res) => {
         var dataCard = res.data.datas.map((list,index) => {              
             console.log(list)
-        return <Card key={index} style={{background:"#f9a825"}}>
+        return <Card key={index} style={{background:'rgb(116, 203, 147)'}}>
           <CardBody>
             <div style={{textAlign:"center"}}><label  style={{fontWeight:"bolder"}}>Pallet Detail</label></div>
             <div><label  style={{fontWeight:"bolder"}}>Sku in pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label  style={{fontWeight:"bolder"}}>qty : </label> {dataPallet.qty}</div>
@@ -327,8 +327,8 @@ checkPallet(check){
         // Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
     
         // })
-        this.Clear()
         window.success("Success")
+        this.Clear()
       })
 
     }else{
@@ -339,6 +339,7 @@ checkPallet(check){
 
   Clear(){
     this.setState({displayDataCard:null})
+    window.location.reload()
   }
 
   ChangeData(e,dataValue) {

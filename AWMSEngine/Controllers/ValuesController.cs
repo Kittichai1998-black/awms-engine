@@ -28,11 +28,18 @@ namespace AWMSEngine.Controllers
             return new { api = "1.1", build_version = version, build_date = linkTime.ToString("yyyy-MM-ddThh:mm") };
         }
         [HttpGet("jobs")]
-        public dynamic GetJobs() { 
+        public dynamic GetJobs()
+        {
             return AMWUtil.Common.SchedulerUtil.MonitorJobs;
         }
+        [HttpGet("test01")]
+        public dynamic GetJobs(int skuID, int oldUnitID, int newUnitID, decimal qty)
+        {
+            var res = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToNewUnitBySKU(skuID, qty, oldUnitID, newUnitID);
+            return res;
+        }
 
-        
+
 
 
         private DateTime GetLinkerTime(Assembly assembly, TimeZoneInfo target = null)

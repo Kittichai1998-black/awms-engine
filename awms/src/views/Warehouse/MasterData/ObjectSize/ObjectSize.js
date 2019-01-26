@@ -43,13 +43,13 @@ class ObjectSize extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "ObjectSizeMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+                q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ObjectType", "c":"=", "v": 2}]',
                 f: "ID,Code,Name,Description,ObjectType,MinWeigthKG,MaxWeigthKG,PercentWeightAccept,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
                 l: 100,
-                all: "",
+                all: ""
             },
             selectObjectPallet: {
                 queryString: window.apipath + "/api/mst",
@@ -106,16 +106,15 @@ class ObjectSize extends Component {
         this.forceUpdate();
         event.preventDefault();
     }
-    componentDidMount() {
-        document.title = "Weight Validate : AWMS";
-    }
+
     async componentWillMount() {
-        this.filterList()
-        this.getObjectSizePallet()
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("ObjectSize", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "Weight Validate : AWMS";
+        this.filterList()
+        this.getObjectSizePallet()
     }
     displayButtonByPermission(dataGetPer) {
         let checkview = true
@@ -351,20 +350,20 @@ class ObjectSize extends Component {
             onChange={(e) => { this.onEditorValueChange(rowdata, e.target.value, rowdata.column.id) }} />;
     }
 
-    addObjectSizeMapp(data){
+    addObjectSizeMapp(data) {
         console.log(data)
         this.getObjectSizePallet()
     }
 
-    getObjectSizePallet(){
+    getObjectSizePallet() {
         api.get(createQueryString(this.state.selectObjectPallet)).then((res) => {
             let data = [...this.state.objectPalletdata]
             res.data.datas.forEach(row => {
                 data.push({ ID: row.ID })
             })
             //console.log(data)
-            this.setState({ objectPalletdata: data})
-          })
+            this.setState({ objectPalletdata: data })
+        })
     }
     render() {
         const view = this.state.permissionView
@@ -421,8 +420,8 @@ class ObjectSize extends Component {
             <div>
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"WeightValidate"}
                     btn={btnfunc} filterable={true} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
-                    table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]} 
-                    objectSizeMapPallet={this.state.objectPalletdata}/>
+                    table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]}
+                    objectSizeMapPallet={this.state.objectPalletdata} searchURL={this.props.location.search} />
                 {/* autocomplete={this.state.autocomplete}  enumfield={this.state.enumfield}*/}
                 <Popup open={this.state.open} onClose={this.closeModal}>
                     <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>

@@ -43,7 +43,7 @@ class Pack extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "PackMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
                 f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
@@ -58,7 +58,7 @@ class Pack extends Component {
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode","ObjectSize_Code", "Created", "Modified", "LastUpdate"]
+        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode", "ObjectSize_Code", "Created", "Modified", "LastUpdate"]
     }
 
     onHandleClickCancel(event) {
@@ -67,12 +67,12 @@ class Pack extends Component {
     }
 
     async componentWillMount() {
-        document.title = "SKU Unit - AWMS"
-        this.filterList();
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Pack", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "SKU Unit - AWMS"
+        this.filterList();
     }
 
     //permission
@@ -207,9 +207,9 @@ class Pack extends Component {
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
             //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
-            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
-            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
-            { accessor: 'ObjCode', Header: 'Weight Validate',updateable:false,Filter:"text", Type:"autocomplete",minWidth: 80, className: "left" },
+            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
+            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
+            { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
             //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
             //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
             //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
@@ -231,26 +231,16 @@ class Pack extends Component {
         }]
 
         return (
-          <div>
-
-            <div>          
-                <Row >
-             
-              <div className="float-right">
-                  <Input onChange={(e) => this.setState({ wei: e.target.value  })} style={{ display: "inline-block", width: "300px", marginLeft: '28px' }}
-                        value={this.state.wei} />
-                  <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetData() }}>Search</Button>       
-                </div>
-                    <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} style={{ width: "130px", marginLeft: '5px' }} className="float-right" />
-              
-              </Row>            
-            </div>
-
             <div>
-              <TableGen column={cols} data={this.state.selectSearch} dropdownfilter={this.state.statuslist}
-                    filterable={true} autocomplete={this.state.autocomplete} accept={view} /*exportfilebtn={false}*/
-                    btn={btnfunc} uneditcolumn={this.uneditcolumn} /*expFilename={"SKUUnit"}*/
-                table="ams_PackMaster" />
+                {/*
+            column = คอลัมที่ต้องการแสดง
+            data = json ข้อมูลสำหรับ select ผ่าน url
+            ddlfilter = json dropdown สำหรับทำ dropdown filter
+          */}
+                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
+                    filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={false}
+                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"} searchURL={this.props.location.search}
+                    table="ams_PackMaster" />
             </div>
           </div>
         )
