@@ -40,7 +40,7 @@ namespace AWMSEngine.Engine.Business
 
             var StorageObject = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, false, this.BuVO);
 
-            res.data = ADO.StorageObjectADO.GetInstant().UpdateLocation(StorageObject, reqVO.LocationID,this.BuVO);
+            res.data = ADO.StorageObjectADO.GetInstant().UpdateLocation(StorageObject,StorageObjectEventStatus.RECEIVED ,reqVO.LocationID,this.BuVO);
 
            
             return res;
