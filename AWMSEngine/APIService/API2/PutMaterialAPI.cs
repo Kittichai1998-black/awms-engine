@@ -6,6 +6,7 @@ using AMWUtil.Common;
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -160,6 +161,7 @@ namespace AWMSEngine.APIService.Api2
             dataReqs.ForEach(sku =>
             {
                 List<ams_PackMaster> putDatas = new List<ams_PackMaster>();
+                
                 sku.converts.ForEach(pack =>
                 {
                     decimal itemQty = pack.qtyNum / pack.qtyDen;
@@ -169,17 +171,33 @@ namespace AWMSEngine.APIService.Api2
                         Name = sku.name,
                         SKUMaster_ID = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(sku.code, this.BuVO).ID.Value,
                         Description = sku.description,
-                        WeightKG = sku.weight * itemQty,
+                        WeightKG = sku.weight * pack.qtyDen,
+                        Quantity = pack.qtyNum,
+                        UnitType_ID = StaticValueManager.GetInstant().UnitTypes.First(y => y.Code == pack.unit).ID.Value,
+                        BaseQuantity = pack.qtyDen,
                         ItemQty = itemQty,
+                        BaseUnitType_ID = StaticValueManager.GetInstant().UnitTypes.First(y => y.Code == sku.unit).ID.Value,
                         Revision = 1,
                         PackMasterType_ID = null,
                         ObjectSize_ID = StaticValueManager.GetInstant().SKUMasterTypes.First(y => y.Code == sku.type).ObjectSize_ID.Value,
-                        UnitType_ID = StaticValueManager.GetInstant().UnitTypes.First(y => y.Code == pack.unit).ID.Value,
                         Status = EntityStatus.ACTIVE
                     };
                     putDatas.Add(putData);
                 });
 
+                var packMasters = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("Code",sku.code, SQLOperatorType.EQUALS)
+                }, this.BuVO);
+                packMasters.ForEach(x => {
+                    if (!putDatas.Any(y =>
+                                        y.Code == x.Code &&
+                                        y.UnitType_ID == x.UnitType_ID && 
+                                        y.BaseUnitType_ID == x.BaseUnitType_ID))
+                    {
+                        x.Status = EntityStatus.REMOVE;
+                        putDatas.Add(x);
+                    }
+                });
                 new PutMaster<ams_PackMaster>().Execute(
                     this.Logger,
                     this.BuVO,

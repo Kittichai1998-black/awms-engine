@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
-import { apicall, createQueryString } from '../../ComponentCore'
+import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -22,19 +22,20 @@ class SKUMasterType extends Component {
         'mode': 'check',
       }],
       acceptstatus: false,
-      select: {
-        queryString: window.apipath + "/api/viw",
-        t: "SKUMasterType",
-        q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-        f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified,LastUpdate",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-      },
+      select: {},
       sortstatus: 0,
       selectiondata: [],
+    };
+    this.queryselect = {
+      queryString: window.apipath + "/api/viw",
+      t: "SKUMasterType",
+      q: '[{ "f": "Status", "c":"<", "v": 2}]',
+      f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified,LastUpdate",
+      g: "",
+      s: "[{'f':'ID','od':'asc'}]",
+      sk: 0,
+      l: 100,
+      all: "",
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -48,14 +49,21 @@ class SKUMasterType extends Component {
     event.preventDefault();
   }
   componentDidMount() {
-    document.title = "SKU Collection - AWMS"
   }
   async componentWillMount() {
-    this.getAutocomplete();
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("Category", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
+    document.title = "SKU Collection - AWMS"
+    if (this.props.location.search) {
+      let url = FilterURL(this.props.location.search, this.queryselect)
+      this.setState({ select: url })
+    } else {
+      this.setState({ select: this.queryselect })
+    }
+    this.getAutocomplete();
+
   }
   //permission
   displayButtonByPermission(dataGetPer) {
@@ -139,7 +147,7 @@ class SKUMasterType extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
-      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40  },
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 120 },
       { accessor: 'ObjectSize_Code', Header: 'Default Pack Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },

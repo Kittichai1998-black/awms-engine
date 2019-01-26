@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import { TableGen } from '../TableSetup';
-import { createQueryString, apicall } from '../../ComponentCore'
+import { FilterURL, createQueryString, apicall } from '../../ComponentCore'
 import Popup from 'reactjs-popup'
 import ReactTable from 'react-table'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -30,17 +30,7 @@ class Role extends Component {
                 'mode': 'check',
             }],
             acceptstatus: false,
-            select: {
-                queryString: window.apipath + "/api/viw",
-                t: "Role",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Description,Status,Created,Modified",
-                g: "",
-                s: "[{'f':'ID','od':'asc'}]",
-                sk: "",
-                l: 100,
-                all: "",
-            },
+            select: {},
             selectPermission: {
                 queryString: window.apipath + "/api/mst",
                 t: "Permission",
@@ -71,6 +61,17 @@ class Role extends Component {
             dataUpdate: [],
             rowselect: [],
         };
+        this.queryselect = {
+            queryString: window.apipath + "/api/viw",
+            t: "Role",
+            q: '[{ "f": "Status", "c":"<", "v": 2}]',
+            f: "ID,Code,Name,Description,Status,Created,Modified",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: "",
+            l: 100,
+            all: "",
+        }
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.uneditcolumn = ["Created", "Modified"]
         this.createSelection = this.createSelection.bind(this)
@@ -85,11 +86,17 @@ class Role extends Component {
     }
 
     async componentWillMount() {
-        document.title = "Role : AWMS";
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Role", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "Role : AWMS";
+        if (this.props.location.search) {
+            let url = FilterURL(this.props.location.search, this.queryselect)
+            this.setState({ select: url })
+        } else {
+            this.setState({ select: this.queryselect })
+        }
     }
     displayButtonByPermission(dataGetPer) {
         let checkview = true

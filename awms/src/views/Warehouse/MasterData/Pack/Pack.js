@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
-import { apicall, createQueryString } from '../../ComponentCore'
+import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
 
 const api = new apicall()
 
@@ -21,25 +21,26 @@ class Pack extends Component {
                 'mode': 'check',
             }],
             acceptstatus: false,
-            select: {
-                queryString: window.apipath + "/api/viw",
-                t: "PackMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
-                g: "",
-                s: "[{'f':'Code','od':'asc'}]",
-                sk: 0,
-                l: 100,
-                all: "",
-            },
+            select: {},
             sortstatus: 0,
             selectiondata: [],
 
         };
+        this.queryselect = {
+            queryString: window.apipath + "/api/viw",
+            t: "PackMaster",
+            q: '[{ "f": "Status", "c":"<", "v": 2}]',
+            f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
+            g: "",
+            s: "[{'f':'Code','od':'asc'}]",
+            sk: 0,
+            l: 100,
+            all: "",
+        };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode","ObjectSize_Code", "Created", "Modified", "LastUpdate"]
+        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode", "ObjectSize_Code", "Created", "Modified", "LastUpdate"]
     }
 
     onHandleClickCancel(event) {
@@ -48,12 +49,18 @@ class Pack extends Component {
     }
 
     async componentWillMount() {
-        document.title = "SKU Unit - AWMS"
-        this.filterList();
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Pack", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "SKU Unit - AWMS"
+        if (this.props.location.search) {
+            let url = FilterURL(this.props.location.search, this.queryselect)
+            this.setState({ select: url })
+        } else {
+            this.setState({ select: this.queryselect })
+        }
+        this.filterList();
     }
 
     //permission
@@ -166,9 +173,9 @@ class Pack extends Component {
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
             //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
-            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
-            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
-            { accessor: 'ObjCode', Header: 'Weight Validate',updateable:false,Filter:"text", Type:"autocomplete",minWidth: 80, className: "left" },
+            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
+            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
+            { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
             //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
             //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
             //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},

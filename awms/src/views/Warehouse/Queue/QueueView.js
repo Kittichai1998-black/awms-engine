@@ -4,7 +4,7 @@ import { Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table';
 import queryString from 'query-string'
 import { apicall, createQueryString } from '../ComponentCore';
-//import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const API = new apicall()
 
@@ -32,36 +32,57 @@ class QueueView extends Component {
     this.GetQueueData = this.GetQueueData.bind(this)
   }
 
-  // async componentWillMount() {
-    
-  //   //let dataGetPer = await GetPermission()
-  //   //CheckWebPermission("QueueView", dataGetPer, this.props.history);
-  //   //this.displayButtonByPermission(dataGetPer)
-  // }
+  async componentWillMount() {
+    if (this.props.location.search) {
+      const search = queryString.parse(this.props.location.search)
+      this.setState({ locsearch: search.IOType }, () =>
+        this.setState({ pathname: this.props.location.pathname }))
+    } else {
+      this.props.history.push("/404")
+    }
+    let dataGetPer = await GetPermission()
+    this.displayButtonByPermission(dataGetPer)
+  }
 
-  // displayButtonByPermission(dataGetPer) {
-  //   //70 Queue_view
-  //   // 57	ReProgress_view
-  //   // 60	IssuProgress_view
-  //   // if (!CheckViewCreatePermission("ReProgress_view", dataGetPer) || !CheckViewCreatePermission("IssuProgress_view", dataGetPer)) {
-  //   //   this.props.history.push("/404")
-  //   // }
-  // }
+  displayButtonByPermission(dataGetPer) {
+    //   // 57	ReProgress_view
+    //   // 60	IssuProgress_view
+    if (this.state.pathname) {
+      if (this.state.locsearch === "IN") {
+        if (this.state.pathname === "/sys/gr/progress") {
+          if (!CheckViewCreatePermission("ReProgress_view", dataGetPer)) {
+            this.props.history.push("/404")
+          } else {
+            document.title = "Receiving Progress : AWMS";
+          }
+        } else {
+          this.props.history.push("/404")
+
+        }
+      }
+      if (this.state.locsearch === "OUT") {
+        if (this.state.pathname === "/sys/gi/progress") {
+          if (!CheckViewCreatePermission("IssuProgress_view", dataGetPer)) {
+            this.props.history.push("/404")
+          } else {
+            document.title = "Issuing Progress : AWMS";
+          }
+        } else {
+          this.props.history.push("/404")
+
+        }
+      }
+    }
+  }
 
   componentDidMount() {
-    const values = queryString.parse(this.props.location.search)
-    if(values.IOType === "IN"){
-      document.title = "Receiving Progress : AWMS";
+    if (this.state.locsearch) {
+      var url = this.select;
+      url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + this.state.locsearch + "'}]";
+      this.GetQueueData(url)
+      let interval = setInterval(() => { this.GetQueueData(url) }, 2000);
+      this.setState({ interval: interval })
     }
-    if(values.IOType === "OUT"){
-      document.title = "Issuing Progress : AWMS";
-    }
-    var url = this.select;
-    url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + values.IOType + "'}]";
-    this.GetQueueData(url)
-
-    let interval = setInterval(() => { this.GetQueueData(url) }, 2000);
-    this.setState({ interval: interval })
   }
 
   componentWillUnmount() {
@@ -82,19 +103,19 @@ class QueueView extends Component {
     { accessor: "RefID", Header: "SAP Document" },
     { accessor: "StorageObject_Code", Header: "Pallet", minWidth: 95 },
     { accessor: "Pack_Name", Header: "Pack", minWidth: 290 },
-    { accessor: "Des_AreaLocation_Name", Header: "Des" },
+    { accessor: "Des_AreaLocation_Name", Header: "Destination" },
     { accessor: "StartTime", Header: "Start", filterable: false },
     { accessor: "EndTime", Header: "End", filterable: false }]
     return (
       <div>
         <div className="clearfix">
-          <div className="float-right">
+          <div className="float-right" style={{ marginTop: '3px', marginBottom: '3px' }}>
             <Button color="success" style={{ marginRight: '5px' }}>Create By Issue</Button>
             <Button color="primary">Create By PI</Button>
           </div>
         </div>
         <ReactTable columns={cols} data={this.state.data} filterable={true} minRows={10} defaultPageSize={10000} showPagination={false}
-          style={{ background: 'white' }}
+          style={{ background: 'white', marginBottom: '10px' }}
           getTrProps={(state, rowInfo) => {
             if (rowInfo !== undefined) {
               if (rowInfo.original.EventStatus === 11) {

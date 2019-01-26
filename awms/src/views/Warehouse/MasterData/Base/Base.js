@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Button } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { apicall, createQueryString } from '../../ComponentCore'
+import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
 
@@ -21,20 +21,21 @@ class Area extends Component {
                 'mode': 'check',
             }],
             acceptstatus: false,
-            select: {
-                queryString: window.apipath + "/api/viw",
-                t: "BaseMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,WeightKG,Status,Created,Modified,LastUpdate",
-                g: "",
-                s: "[{'f':'Code','od':'asc'}]",
-                sk: 0,
-                l: 100,
-                all: "",
-            },
+            select: {},
             sortstatus: 0,
             selectiondata: []
         };
+        this.queryselect = {
+            queryString: window.apipath + "/api/viw",
+            t: "BaseMaster",
+            q: '[{ "f": "Status", "c":"<", "v": 2}]',
+            f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,WeightKG,Status,Created,Modified,LastUpdate",
+            g: "",
+            s: "[{'f':'Code','od':'asc'}]",
+            sk: 0,
+            l: 100,
+            all: "",
+        }
         this.getSelectionData = this.getSelectionData.bind(this)
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
@@ -47,15 +48,19 @@ class Area extends Component {
         this.forceUpdate();
         event.preventDefault();
     }
-    componentDidMount() {
-        document.title = "Pallet Master - AWMS"
-    }
     async componentWillMount() {
-        this.filterList();
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Pallet", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "Pallet Master - AWMS"
+        if (this.props.location.search) {
+            let url = FilterURL(this.props.location.search, this.queryselect)
+            this.setState({ select: url })
+        } else {
+            this.setState({ select: this.queryselect })
+        }
+        this.filterList();
     }
     displayButtonByPermission(dataGetPer) {
         let checkview = true

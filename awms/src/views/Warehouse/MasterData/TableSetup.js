@@ -214,8 +214,7 @@ class TableGen extends Component {
     else {
       filterlist = [{ "f": "Status", "c": "!=", "v": 2 }]
     }
-
-    if (filter.length > 0) {
+    if (filter) {
       let filterlength = filter.length;
       var dataval = "";
       filter.forEach((data, id) => {
@@ -233,7 +232,7 @@ class TableGen extends Component {
               filterlist.push({ "f": data["id"], "c": "!=", "v": 2 })
             }
             else {
-              filterlist.push({ "f": data["id"], "c": "like", "v":  "*" + encodeURIComponent(data["value"]) + "*"})
+              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
             }
           }
           else if (data["value"].includes("%")) {
@@ -273,7 +272,7 @@ class TableGen extends Component {
               });
               //}
             } else {
-              filterlist.push({ "f": data["id"], "c": "=", "v": encodeURIComponent(data["value"]) })
+              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
             }
           }
         }
@@ -286,7 +285,7 @@ class TableGen extends Component {
         this.setState({ currentPage: 1 })
         select["q"] = JSON.stringify(filterlist)
         let queryString = createQueryString(select)
-        //console.log(queryString)
+        console.log(queryString)
         Axios.get(queryString).then(
           (res) => {
             this.setState({ data: res.data.datas, loading: false });
@@ -1098,7 +1097,6 @@ class TableGen extends Component {
 
       if (results.length > 0) {
         strStatus = results[0].status
-        console.log(data.original)
         if (data.original.Options !== undefined) {
           if (data.original.Options !== null) {
             var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
