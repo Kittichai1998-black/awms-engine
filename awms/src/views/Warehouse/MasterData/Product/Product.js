@@ -28,7 +28,7 @@ class ListProduct extends Component {
     this.queryselect = {
       queryString: window.apipath + "/api/viw",
       t: "SKUMaster",
-      q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+      q: '[{ "f": "Status", "c":"<", "v": 2}]',
       f: "ID,SKUMasterType_ID,SKUTypeCode,SKUTypeName,UnitType_ID,UnitTypeCode,UnitTypeName,Code," +
         "Name,Description,WeightKG,WidthM,LengthM,HeightM,Cost,Price,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code,LastUpdate",
       g: "",

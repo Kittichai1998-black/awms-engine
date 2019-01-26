@@ -29,7 +29,7 @@ class Pack extends Component {
         this.queryselect = {
             queryString: window.apipath + "/api/viw",
             t: "PackMaster",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+            q: '[{ "f": "Status", "c":"<", "v": 2}]',
             f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
             g: "",
             s: "[{'f':'Code','od':'asc'}]",

@@ -65,7 +65,7 @@ class User extends Component {
         this.queryselect = {
             queryString: window.apipath + "/api/viw",
             t: "User",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+            q: '[{ "f": "Status", "c":"<", "v": 2}]',
             f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
             g: "",
             s: "[{'f':'Code','od':'asc'}]",

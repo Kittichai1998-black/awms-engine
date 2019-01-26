@@ -64,7 +64,7 @@ class Role extends Component {
         this.queryselect = {
             queryString: window.apipath + "/api/viw",
             t: "Role",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+            q: '[{ "f": "Status", "c":"<", "v": 2}]',
             f: "ID,Code,Name,Description,Status,Created,Modified",
             g: "",
             s: "[{'f':'ID','od':'asc'}]",

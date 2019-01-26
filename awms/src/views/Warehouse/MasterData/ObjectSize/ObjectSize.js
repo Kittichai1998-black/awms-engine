@@ -75,7 +75,7 @@ class ObjectSize extends Component {
         this.queryselect = {
             queryString: window.apipath + "/api/viw",
             t: "ObjectSizeMaster",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
+            q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ObjectType", "c":"=", "v": 2}]',
             f: "ID,Code,Name,Description,ObjectType,MinWeigthKG,MaxWeigthKG,PercentWeightAccept,Status,Created,Modified,LastUpdate",
             g: "",
             s: "[{'f':'Code','od':'asc'}]",
