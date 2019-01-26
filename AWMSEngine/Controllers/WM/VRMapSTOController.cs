@@ -26,6 +26,13 @@ namespace AWMSEngine.Controllers.WM
             return exec.Execute(datas);
         }
 
+        [HttpPost("moveLocation")]
+        public dynamic moveLocation(dynamic datas)
+        {
+            MoveLocationAPI exec = new MoveLocationAPI(this);
+            return exec.Execute(datas);
+        }
+
         [HttpGet("price")]
         public dynamic GetPrice()
         {
