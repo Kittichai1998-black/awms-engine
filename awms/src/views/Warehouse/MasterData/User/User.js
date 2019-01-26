@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Card, Button, CardBody } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Popup from 'reactjs-popup'
-import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { timingSafeEqual } from 'crypto';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -30,7 +30,17 @@ class User extends Component {
                 'mode': 'check',
             }],
             acceptstatus: false,
-            select: {},
+            select: {
+                queryString: window.apipath + "/api/viw",
+                t: "User",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
+                f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
+                g: "",
+                s: "[{'f':'Code','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            },
             selectRole: {
                 queryString: window.apipath + "/api/mst",
                 t: "Role",
@@ -61,18 +71,7 @@ class User extends Component {
             dataUpdate: [],
             rowselect: [],
             checkclick_add: false
-        };
-        this.queryselect = {
-            queryString: window.apipath + "/api/viw",
-            t: "User",
-            q: '[{ "f": "Status", "c":"<", "v": 2}]',
-            f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
-            g: "",
-            s: "[{'f':'Code','od':'asc'}]",
-            sk: 0,
-            l: 100,
-            all: "",
-        };
+        }; 
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
@@ -92,12 +91,6 @@ class User extends Component {
         let dataGetPer = await GetPermission()
         CheckWebPermission("User", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
-        if (this.props.location.search) {
-            let url = FilterURL(this.props.location.search, this.queryselect)
-            this.setState({ select: url })
-        } else {
-            this.setState({ select: this.queryselect })
-        }
     }
     //permission
     displayButtonByPermission(dataGetPer) {
@@ -314,7 +307,7 @@ class User extends Component {
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"UserAccount"} checkClickAdd={this.onCheckClickAdd}
                     filterable={true} btn={btnfunc} uneditcolumn={this.uneditcolumn} accept={view} addExportbtn={view} exportfilebtn={view}
-                    table="ams_User" />
+                    searchURL={this.props.location.search} table="ams_User" />
                 <Popup open={this.state.open} onClose={this.closeModal}>
                     <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
                         <a style={styleclose} onClick={this.closeModal}>

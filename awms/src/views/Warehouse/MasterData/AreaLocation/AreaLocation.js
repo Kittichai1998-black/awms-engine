@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Button, Row, Col } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { apicall, AutoSelect, createQueryString } from '../../ComponentCore'
+import { FilterURL, apicall, AutoSelect, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
 
@@ -101,11 +101,11 @@ class AreaLocation extends Component {
   }
 
   async componentWillMount() {
-    this.filterList();
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("Area Location", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
+    this.filterList();
   }
   //permission
   displayButtonByPermission(dataGetPer) {
@@ -393,7 +393,7 @@ class AreaLocation extends Component {
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
                   table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>*/}
         <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"Location"}
-          filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype} exportfilebtn={view}
+          filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype} exportfilebtn={view} searchURL={this.props.location.search}
           btn={btnfunc} uneditcolumn={this.uneditcolumn} defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'AreaMaster_ID', c: '=', 'v': this.state.areamaster }]}
           table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} accept={view} />
       </div>

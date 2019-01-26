@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
-import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 
 const api = new apicall()
 
@@ -21,21 +21,20 @@ class Pack extends Component {
                 'mode': 'check',
             }],
             acceptstatus: false,
-            select: {},
+            select: {
+                queryString: window.apipath + "/api/viw",
+                t: "PackMaster",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
+                f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
+                g: "",
+                s: "[{'f':'Code','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            },
             sortstatus: 0,
             selectiondata: [],
 
-        };
-        this.queryselect = {
-            queryString: window.apipath + "/api/viw",
-            t: "PackMaster",
-            q: '[{ "f": "Status", "c":"<", "v": 2}]',
-            f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
-            g: "",
-            s: "[{'f':'Code','od':'asc'}]",
-            sk: 0,
-            l: 100,
-            all: "",
         };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
@@ -54,12 +53,6 @@ class Pack extends Component {
         CheckWebPermission("Pack", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
         document.title = "SKU Unit - AWMS"
-        if (this.props.location.search) {
-            let url = FilterURL(this.props.location.search, this.queryselect)
-            this.setState({ select: url })
-        } else {
-            this.setState({ select: this.queryselect })
-        }
         this.filterList();
     }
 
@@ -205,7 +198,7 @@ class Pack extends Component {
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
                     filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={false}
-                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"}
+                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"} searchURL={this.props.location.search}
                     table="ams_PackMaster" />
             </div>
         )

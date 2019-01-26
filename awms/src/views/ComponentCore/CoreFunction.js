@@ -115,22 +115,18 @@ const GenerateDropDownStatus = (status) => {
 }
 
 function FilterURL(seacrhlocation, select) {
-  const search = queryString.parse(seacrhlocation)
-  var url = select;
-  var sel = JSON.parse(url.q)
-  for (let value in search) {
-    if (search[value]) {
-      if (search[value] !== "") {
-        if (search[value].includes("*")) {
-          sel.push({ "f": value, "c": "like", "v": "*" + encodeURIComponent(search[value]) + "*" })
-        } else {
-          sel.push({ "f": value, "c": "=", "v": encodeURIComponent(search[value]) })
+    const search = queryString.parse(encodeURI(seacrhlocation))
+    var url = select;
+    var sel = JSON.parse(url.q)
+    for (let value in search) {
+        if (search[value]) {
+            if (search[value] !== "") {
+                sel.push({ "f": value, "c": "like", "v": "*" + encodeURIComponent(search[value]) + "*" })
+            }
         }
-      }
     }
-  }
-  url["q"] = JSON.stringify(sel)
-  return url;
+    url["q"] = JSON.stringify(sel)
+    return url;
 }
 
 export { apicall, createQueryString, Clone, DateTimeConverter, GenerateDropDownStatus, FilterURL }
