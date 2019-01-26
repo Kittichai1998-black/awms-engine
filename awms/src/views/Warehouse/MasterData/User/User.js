@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Card, Button, CardBody } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Popup from 'reactjs-popup'
-import { apicall, createQueryString } from '../../ComponentCore'
+import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
 import ReactTable from 'react-table'
 import { timingSafeEqual } from 'crypto';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -30,17 +30,7 @@ class User extends Component {
                 'mode': 'check',
             }],
             acceptstatus: false,
-            select: {
-                queryString: window.apipath + "/api/viw",
-                t: "User",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
-                f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
-                g: "",
-                s: "[{'f':'Code','od':'asc'}]",
-                sk: 0,
-                l: 100,
-                all: "",
-            },
+            select: {},
             selectRole: {
                 queryString: window.apipath + "/api/mst",
                 t: "Role",
@@ -72,7 +62,17 @@ class User extends Component {
             rowselect: [],
             checkclick_add: false
         };
-
+        this.queryselect = {
+            queryString: window.apipath + "/api/viw",
+            t: "User",
+            q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+            f: "ID,Code,Name,Password,SaltPassword,EmailAddress,LineID,FacebookID,TelOffice,TelMobile,Status,Created,Modified,LastUpdate",
+            g: "",
+            s: "[{'f':'Code','od':'asc'}]",
+            sk: 0,
+            l: 100,
+            all: "",
+        };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
@@ -92,6 +92,12 @@ class User extends Component {
         let dataGetPer = await GetPermission()
         CheckWebPermission("User", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        if (this.props.location.search) {
+            let url = FilterURL(this.props.location.search, this.queryselect)
+            this.setState({ select: url })
+        } else {
+            this.setState({ select: this.queryselect })
+        }
     }
     //permission
     displayButtonByPermission(dataGetPer) {
@@ -293,7 +299,7 @@ class User extends Component {
             top: '-10px',
             background: '#ffffff',
             borderRadius: '18px',
-          }
+        }
         return (
             <div>
                 {/*
