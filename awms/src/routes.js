@@ -315,7 +315,7 @@ const AuditCreate = Loadable({
 });
 
 const MoveLocation = Loadable({
-  loader: () => import('./views/Warehouse/MoveLocation/moveLocation'),
+  loader: () => import('./views/Warehouse/MoveLocation/MoveLocation'),
   loading: Loading,
 });
 

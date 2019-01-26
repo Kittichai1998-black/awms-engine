@@ -256,12 +256,4 @@ paket-files/
 # CodeRush
 .cr/
 
-# Python Tools for Visual Studio (PTVS)
-__pycache__/
-*.pyc
-/test_build
-/amws-engine
-/awms/src/views/Warehouse/StorageView.js
-/AWMSEngine/Properties/PublishProfiles/FolderProfile.pubxml
-*.json
-*.js
+
