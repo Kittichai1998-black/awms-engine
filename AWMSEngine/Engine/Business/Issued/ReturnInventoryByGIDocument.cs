@@ -32,8 +32,8 @@ namespace AWMSEngine.Engine.Business.Issued
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "สินค้าใน Pallet มี Batch, Lot หรือ Order No ไม่ตรงกับสินค้าที่จะรับคืน");
             }
-
-            ADO.DocumentADO.GetInstant().ListItemAndStoInDoc
+            return null;
+            //ADO.DocumentADO.GetInstant().ListItemAndStoInDoc
         }
 
 
