@@ -3,23 +3,13 @@ import "react-table/react-table.css";
 import { Button, Row, Col, Input } from 'reactstrap';
 import ReactTable from 'react-table';
 //import Axios from 'axios';
-import { apicall, AutoSelect, DatePicker } from '../ComponentCore';
+import { apicall, AutoSelect, DatePicker, createQueryString } from '../ComponentCore';
 //import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 import ExportFile from '../MasterData/ExportFile';
+import _ from 'lodash';
 
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
 const Axios = new apicall()
 
 
@@ -158,13 +148,23 @@ class StockCardReport extends Component {
           this.datetimeBody(e.value)
       },
 
-      { accessor: 'Doc_Code', Header: 'Doc No', editable: false, Cell: (e) => <span>{e.original.Doc_Code}</span> },
-      { accessor: 'MovementType', Header: 'Description', editable: false, Cell: (e) => <span>{e.original.MovementType}</span> },
-      { accessor: 'Batch', Header: 'Batch', editable: false, Cell: (e) => <span>{e.original.Batch}</span> },
-      { accessor: 'Debit', Header: 'Debit', editable: false, Cell: (e) => <span>{e.original.Debit}</span> },
-      { accessor: 'Credit', Header: 'Credit', editable: false, Cell: (e) => <span>{e.original.Credit}</span> },
-      { accessor: 'Total', Header: 'Balance', editable: false, Cell: (e) => <span>{e.original.Total}</span> },
-      { accessor: 'Unit', Header: 'Unit', editable: false, Cell: (e) => <span>{e.original.Unit}</span> },
+      { accessor: 'Doc_Code', Header: 'Doc No', editable: false },
+      { accessor: 'MovementType', Header: 'Description', editable: false },
+      { accessor: 'Batch', Header: 'Batch', editable: false },
+      { accessor: 'Debit', Header: 'Debit', editable: false, Footer:
+        (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
+        x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
+        parseFloat(x.Debit) : null)}</span>) 
+      },
+      { accessor: 'Credit', Header: 'Credit', editable: false, Footer:
+      (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
+      x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
+      parseFloat(x.Credit) : null)}</span>)  },
+      { accessor: 'Total', Header: 'Balance', editable: false, Footer:
+      (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
+      x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
+      parseFloat(x.Total) : null)}</span>)  },
+      { accessor: 'Unit', Header: 'Unit', editable: false },
     ];
     return (
       <div>
@@ -228,8 +228,8 @@ class StockCardReport extends Component {
           </Row>
 
         </div>
-        <ReactTable pageSize="10000" NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} sortable={false} style={{ background: "white", marginBottom: "50px" }}
-          filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.data} />
+        <ReactTable pageSize="10000"  sortable={false} style={{ background: "white", marginBottom: "50px" }}
+          filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} />
       </div>
     )
   }
