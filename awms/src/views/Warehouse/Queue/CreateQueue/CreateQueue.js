@@ -902,7 +902,7 @@ class CreateQueue extends Component{
                     { imgClose }
                 </a>
                 <div id="header" style={{ width: "100%", borderBottom: "1px solid #007bff", fontSize: "18px", padding: "5px", color: "#007bff", fontWeight: "bold" }}>Processed</div>
-                <div style={{ width: "100%", padding: "10px 5px" ,height: "500px", overflow: "scroll" }}>
+                <div style={{ width: "100%", padding: "10px 5px" ,height: "500px", overflow: "auto" }}>
                 <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                   { processedDocCard }
                 </Card>
