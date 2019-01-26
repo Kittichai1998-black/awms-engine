@@ -26,9 +26,10 @@ class StoragReport extends Component {
         g: "",
         s: "[{'f':'Pallet','od':'asc'}]",
         sk: 0,
-        l: 100,
+        l: 0,
         all: "",
       },
+      sum1:0
 
     }
 
@@ -37,49 +38,13 @@ class StoragReport extends Component {
 
   componentDidMount() {
     document.title = "Storage Object - AWMS"
-    //     Axios.get(createQueryString(this.state.select)).then((response) => {
-    //       this.setState({
-    //         data: response.data.datas
-    //       })
+        Axios.get(createQueryString(this.state.select)).then((response) => {
+          this.setState({
+            data: response.data.datas
+          })
 
-    //       console.log(this.state.data)
-    //     })
-
-
-    //     var arrdata = []
-    //     var sum = 0
-    //     Axios.get(createQueryString(this.state.select)).then((res) => {
-    //     console.log(res)
-    //     res.data.datas.forEach(x => {
-
-    //         arrdata.push({Pallet:x.Pallet,Warehouse:x.Warehouse
-    //           ,Area:x.Area,Location:x.Location
-    //           ,SKU_Code:x.SKU_Code,SKU_Name:x.SKU_Name
-    //           ,Batch:x.Batch,Lot:x.Lot
-    //           ,OrderNo:x.OrderNo,Qty:x.Qty
-    //           ,Base_Unit:x.Base_Unit,WeiPallet:x.WeiPallet
-    //           ,WeiPack:x.WeiPack,Status:x.Status,Receive_Time:x.Receive_Time
-    //         })
-    //         if(x.Qty !== null){
-    //           sum = sum + parseFloat(x.Qty)
-    //         }
-
-    //       })
-    //       console.log(sum)
-    //       arrdata.push({Pallet:null,Warehouse:null
-    //         ,Area:null,Location:null
-    //         ,SKU_Code:null,SKU_Name:null
-    //         ,Batch:null,Lot:null
-    //         ,OrderNo:null,Qty:sum
-    //         ,Base_Unit:null,WeiPallet:null
-    //         ,WeiPack:null,Status:null,Receive_Time:null
-    //       })
-
-    //       console.log(arrdata)
-    // this.setState({a:sum})
-    // console.log(this.state.a)
-    //this.setState({dataselect:arrdata},()=>{console.log(this.state.dataselect)})
-    // })
+          console.log(this.state.data)
+        })
   }
 
 
@@ -103,8 +68,8 @@ class StoragReport extends Component {
       { accessor: 'Lot', Header: 'Lot', Filter: "text", sortable: true },
       { accessor: 'OrderNo', Header: 'OrderNo', Filter: "text", sortable: true },
       {
-        accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: false, Footer:
-          (<span><label>Sum :</label>{" "}{_.sumBy(cols, x => parseFloat(x.Qty))}</span>)
+        accessor: 'Qty', Header: 'Qty', Filter: "text", sortable: false, Footer: ("cdsvfdf")
+    
       },
 
       { accessor: 'Base_Unit', Header: 'Unit', Filter: "text", sortable: false, },
@@ -126,13 +91,12 @@ class StoragReport extends Component {
             </Col>
           </Row>
         </div> */}
+
         <TableGen column={cols} data={this.state.select} filterable={true}
           uneditcolumn={this.uneditcolumn} className='-striped -highlight'
-          defaultPageSize={10} expFilename={"StorageObject"} exportfilebtn={false}
-        />
-
-        {/* <ReactTable pageSize="10000" NoDataComponent={() => <div style={{ textAlign: "center", height: "100px", color: "rgb(200,206,211)" }}>No row found</div>} sortable={false} style={{ background: "white", marginBottom: "50px" }}
-          filterable={false} showPagination={false} minRows={2} columns={cols} data={this.state.dataselect} /> */}
+          defaultPageSize={10} expFilename={"StorageObject"} exportfilebtn={false} 
+         />
+         
       </div>
 
     )
