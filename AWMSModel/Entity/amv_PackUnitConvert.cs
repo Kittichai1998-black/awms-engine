@@ -10,8 +10,9 @@ namespace AWMSModel.Entity
         public string SKUMaster_Code;
         public int PackMaster_ID;
         public string PackMaster_Code;
-        public int BaseUnitType_ID;
+        public decimal Quantity;
         public int UnitType_ID;
-        public decimal ItemQty;
+        public decimal BaseQuantity;
+        public int BaseUnitType_ID;
     }
 }

@@ -671,7 +671,7 @@ class IssuedManage extends Component {
     let cossdetail = [
       { accessor: "code", Header: "Pallet"},
       {
-        accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
+        accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1].split("&")[0]}</span>
       },
       { accessor: "packCode", Header: "SKU Code"},
       { accessor: "packName", Header: "SKU Name"},
@@ -692,7 +692,7 @@ class IssuedManage extends Component {
 
     let cols = [
       {
-        accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1]}</span>
+        accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1].split("&")[0]}</span>
       },
       { accessor: "packMaster_Code", Header: "SKU Code" },
       { accessor: "packMaster_Name", Header: "SKU Name" },

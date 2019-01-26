@@ -25,7 +25,7 @@ class SKUMasterType extends Component {
       select: {
         queryString: window.apipath + "/api/viw",
         t: "SKUMasterType",
-        q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
         f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -47,15 +47,15 @@ class SKUMasterType extends Component {
     this.forceUpdate();
     event.preventDefault();
   }
-  componentDidMount() {
-    document.title = "SKU Collection - AWMS"
-  }
+   
   async componentWillMount() {
-    this.getAutocomplete();
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("Category", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
+    document.title = "SKU Collection - AWMS"
+    this.getAutocomplete();
+
   }
   //permission
   displayButtonByPermission(dataGetPer) {
@@ -139,7 +139,7 @@ class SKUMasterType extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
-      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40  },
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 100, maxWidth: 120 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 120 },
       { accessor: 'ObjectSize_Code', Header: 'Default Pack Size', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 140 },
@@ -172,7 +172,7 @@ class SKUMasterType extends Component {
           */}
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"SKUCollection"}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
-          btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn} searchURL={this.props.location.search}
           table="ams_SKUMasterType" />
       </div>
     )

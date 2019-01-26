@@ -27,12 +27,10 @@ class StoragReport extends Component {
         g: "",
         s: "[{'f':'Pallet','od':'asc'}]",
         sk: 0,
-        l: 100,
+        l: 0,
         all: "",
       },
-      datafilter:[],
-      loading:true,
-      date:null,
+
     }
 
 

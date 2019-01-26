@@ -33,7 +33,7 @@ class Role extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "Role",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
                 f: "ID,Code,Name,Description,Status,Created,Modified",
                 g: "",
                 s: "[{'f':'ID','od':'asc'}]",
@@ -85,11 +85,11 @@ class Role extends Component {
     }
 
     async componentWillMount() {
-        document.title = "Role : AWMS";
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Role", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "Role : AWMS";
     }
     displayButtonByPermission(dataGetPer) {
         let checkview = true
@@ -323,7 +323,7 @@ class Role extends Component {
       */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
                     filterable={true} accept={view} btn={btnfunc} exportfilebtn={view} addExportbtn={view}
-                    uneditcolumn={this.uneditcolumn} expFilename={"Role"}
+                    uneditcolumn={this.uneditcolumn} expFilename={"Role"} searchURL={this.props.location.search}
                     table="ams_Role_Permission" />
 
                 <Popup open={this.state.open} onClose={this.closeModal}>

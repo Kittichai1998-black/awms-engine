@@ -3,9 +3,28 @@ import "react-table/react-table.css";
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
-import { apicall, createQueryString } from '../../ComponentCore'
+import { apicall } from '../../ComponentCore'
+import { Button, Row, Col, Input } from 'reactstrap';
+import ExportFile from '../../MasterData/ExportFile';
+
+
+const createQueryString = (select) => {
+  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
+    + (select.q === "" ? "" : "&q=" + select.q)
+    + (select.f === "" ? "" : "&f=" + select.f)
+    + (select.g === "" ? "" : "&g=" + select.g)
+    + (select.s === "" ? "" : "&s=" + select.s)
+    + (select.sk === "" ? "" : "&sk=" + select.sk)
+    + (select.l === 0 ? "" : "&l=" + select.l)
+    + (select.all === "" ? "" : "&all=" + select.all)
+  return queryS
+}
+
+
 
 const api = new apicall()
+
+
 
 class Pack extends Component {
     constructor(props) {
@@ -24,7 +43,7 @@ class Pack extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "PackMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
                 f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
@@ -39,7 +58,7 @@ class Pack extends Component {
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
         this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode","ObjectSize_Code", "Created", "Modified", "LastUpdate"]
+        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode", "ObjectSize_Code", "Created", "Modified", "LastUpdate"]
     }
 
     onHandleClickCancel(event) {
@@ -48,12 +67,12 @@ class Pack extends Component {
     }
 
     async componentWillMount() {
-        document.title = "SKU Unit - AWMS"
-        this.filterList();
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Pack", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "SKU Unit - AWMS"
+        this.filterList();
     }
 
     //permission
@@ -71,6 +90,28 @@ class Pack extends Component {
             this.setState({ permissionView: true })
         }
     }
+
+
+  onGetData() {
+    console.log(this.state.wei)
+    this.setState({ weis: encodeURI(this.state.wei) })
+    if (this.state.wei !== "")
+      console.log(this.state.wei)
+    this.setState({
+    
+         selectSearch : {
+        queryString: window.apipath + "/api/viw",
+           t: "PackMaster",
+           q: "[{ 'f': 'Status', c:'!=', 'v': 2},{ 'f': 'ObjectSizeCode', c:'=', 'v':"+this.state.weis+"}]",
+        f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
+        g: "",
+        s: "[{'f':'Code','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+      }
+    })
+  }
 
     componentWillUnmount() {
         Axios.isCancel(true);
@@ -113,7 +154,7 @@ class Pack extends Component {
         const ObjSizeSelect = {
             queryString: window.apipath + "/api/mst",
             t: "ObjectSize",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}",
+          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': '999%'}",
             f: "ID,Code",
             g: "",
             s: "[{'f':'ID','od':'asc'}]",
@@ -166,9 +207,9 @@ class Pack extends Component {
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
             { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
             //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
-            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: view, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
-            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
-            { accessor: 'ObjCode', Header: 'Weight Validate',updateable:false,Filter:"text", Type:"autocomplete",minWidth: 80, className: "left" },
+            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
+            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
+            { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
             //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
             //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
             //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
@@ -198,9 +239,10 @@ class Pack extends Component {
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
                     filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={false}
-                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"}
+                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"} searchURL={this.props.location.search}
                     table="ams_PackMaster" />
             </div>
+          </div>
         )
     }
 }

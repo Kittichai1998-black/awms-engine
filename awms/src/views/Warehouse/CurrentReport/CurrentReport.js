@@ -110,7 +110,6 @@ class CurrentReport extends Component {
     ];
 
     return (
-
       <div>
         <div>
           <Row>

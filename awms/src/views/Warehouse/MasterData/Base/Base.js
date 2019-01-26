@@ -24,7 +24,7 @@ class Area extends Component {
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "BaseMaster",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
                 f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,WeightKG,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
@@ -47,15 +47,13 @@ class Area extends Component {
         this.forceUpdate();
         event.preventDefault();
     }
-    componentDidMount() {
-        document.title = "Pallet Master - AWMS"
-    }
     async componentWillMount() {
-        this.filterList();
         //permission
         let dataGetPer = await GetPermission()
         CheckWebPermission("Pallet", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
+        document.title = "Pallet Master - AWMS"
+        this.filterList();
     }
     displayButtonByPermission(dataGetPer) {
         let checkview = true
@@ -192,7 +190,7 @@ class Area extends Component {
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"Pallet"}
                     filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={view} exportfilebtn={view}
-                    btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                    btn={btnfunc} uneditcolumn={this.uneditcolumn} searchURL={this.props.location.search}
                     table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
 
 

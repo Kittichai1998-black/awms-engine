@@ -316,6 +316,21 @@ namespace AWMSEngine.ADO
             });
             return res;
         }
+        public amt_DocumentItem GetItemAndStoInDocItem(long docItemID, VOCriteria buVO)
+        {
+            var res = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(docItemID, buVO);
+            var resSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("DocumentItem_ID",docItemID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
+                }, buVO);
+
+            /*res.ForEach(x =>
+            {
+                x.DocItemStos = resSto.Where(y => y.DocumentItem_ID == x.ID).ToList();
+            });*/
+            return res;
+        }
         public List<SPOutCountStoInDocItem> CountStoInDocItems(IEnumerable<long> docItemIDs, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
