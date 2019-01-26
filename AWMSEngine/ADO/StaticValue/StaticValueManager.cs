@@ -110,14 +110,7 @@ namespace AWMSEngine.ADO.StaticValue
 
         private List<amv_PackUnitConvert> _PackUnitConverts;
         public List<amv_PackUnitConvert> PackUnitConverts { get => this._PackUnitConverts; }
-        public ConvertUnitCriteria ConvertToBaseUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID)
-        {
-            return null;
-        }
-        public ConvertUnitCriteria ConvertToBaseUnitBySKU(long skuID, decimal qty, long oldUnitTypeID)
-        {
-            return null;
-        }
+
         public ConvertUnitCriteria ConvertToNewUnitBySKU(long skuID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
         {
             var oldUnit = this._PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == oldUnitTypeID);
@@ -134,23 +127,21 @@ namespace AWMSEngine.ADO.StaticValue
                 packMaster_Code = newUnit.PackMaster_Code,
                 qty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity) * newUnit.Quantity / newUnit.BaseQuantity,
                 unitType_ID = newUnit.UnitType_ID,
-                baseQty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity) ,
+                baseQty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity),
                 baseUnitType_ID = oldUnit.BaseUnitType_ID,
             };
         }
-        public ConvertUnitCriteria ConvertToNewUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+
+        public ConvertUnitCriteria ConvertToBaseUnitBySKU(long skuID, decimal qty, long oldUnitTypeID)
         {
-            return null;
+            var baseUnitID = this._PackUnitConverts.First(x => x.SKUMaster_ID == skuID).BaseUnitType_ID;
+            var convertUnit = this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, baseUnitID);
+            return convertUnit;
         }
-        public ConvertUnitCriteria ConvertToNewUnitByPack(string packCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        public ConvertUnitCriteria ConvertToBaseUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID)
         {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
-            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
-        }
-        public ConvertUnitCriteria ConvertToNewUnitByPack(long packID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
-        {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
-            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
+            int skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
+            return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToBaseUnitByPack(string packCode, decimal qty, long oldUnitTypeID)
         {
@@ -161,6 +152,21 @@ namespace AWMSEngine.ADO.StaticValue
         {
             int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
             return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToNewUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            var skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
+            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToNewUnitByPack(string packCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
+            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToNewUnitByPack(long packID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
+            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
         }
 
 
