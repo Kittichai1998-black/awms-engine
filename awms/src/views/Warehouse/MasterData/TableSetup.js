@@ -598,6 +598,7 @@ class TableGen extends Component {
 
   createDropdownFilter(name, func, selectdata) {
     let filter = [...this.state.datafilter]
+   
     let item = null
     let list = null
     this.props.dropdownfilter.forEach(row => {
