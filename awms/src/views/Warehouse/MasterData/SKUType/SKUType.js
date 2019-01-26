@@ -29,7 +29,7 @@ class SKUMasterType extends Component {
     this.queryselect = {
       queryString: window.apipath + "/api/viw",
       t: "SKUMasterType",
-      q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+      q: '[{ "f": "Status", "c":"<", "v": 2}]',
       f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified,LastUpdate",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
