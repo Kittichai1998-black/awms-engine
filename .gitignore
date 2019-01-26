@@ -261,6 +261,5 @@ __pycache__/
 *.pyc
 /test_build
 /AWMSEngine/Properties/PublishProfiles/FolderProfile.pubxml
-*.json
-*.js
+
 
