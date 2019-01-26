@@ -28,7 +28,7 @@ class Area extends Component {
         this.queryselect = {
             queryString: window.apipath + "/api/viw",
             t: "BaseMaster",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}]",
+            q: '[{ "f": "Status", "c":"<", "v": 2}]',
             f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,WeightKG,Status,Created,Modified,LastUpdate",
             g: "",
             s: "[{'f':'Code','od':'asc'}]",

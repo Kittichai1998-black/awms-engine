@@ -314,6 +314,11 @@ const AuditCreate = Loadable({
   loading: Loading,
 });
 
+const MoveLocation = Loadable({
+  loader: () => import('./views/Warehouse/MoveLocation/MoveLocation'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -347,6 +352,7 @@ const routes = [
   // { path: '/mst/webcontrol/manage', exact: true, name: 'Setting / Web Control', component: WebControl },
   // { path: '/mst/webpage/manage', exact: true, name: 'Setting / Web Page', component: WebPage },
   // { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup },
+  { path: '/wm/sto/move', exact: true, name: 'Move Location', component: MoveLocation },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Receive / Search Receive', component: InboundView },

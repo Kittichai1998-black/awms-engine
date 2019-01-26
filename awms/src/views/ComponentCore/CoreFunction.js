@@ -1,6 +1,7 @@
 import Axios from 'axios';
 import moment from 'moment';
 import * as Status from '../Warehouse/Status';
+import queryString from 'query-string'
 
 class apicall {
     get(url) {
@@ -113,4 +114,23 @@ const GenerateDropDownStatus = (status) => {
     return statusList
 }
 
-export { apicall, createQueryString, Clone, DateTimeConverter, GenerateDropDownStatus }
+function FilterURL(seacrhlocation, select) {
+  const search = queryString.parse(seacrhlocation)
+  var url = select;
+  var sel = JSON.parse(url.q)
+  for (let value in search) {
+    if (search[value]) {
+      if (search[value] !== "") {
+        if (search[value].includes("*")) {
+          sel.push({ "f": value, "c": "like", "v": "*" + encodeURIComponent(search[value]) + "*" })
+        } else {
+          sel.push({ "f": value, "c": "=", "v": encodeURIComponent(search[value]) })
+        }
+      }
+    }
+  }
+  url["q"] = JSON.stringify(sel)
+  return url;
+}
+
+export { apicall, createQueryString, Clone, DateTimeConverter, GenerateDropDownStatus, FilterURL }

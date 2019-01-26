@@ -214,8 +214,7 @@ class TableGen extends Component {
     else {
       filterlist = [{ "f": "Status", "c": "!=", "v": 2 }]
     }
-
-    if (filter.length > 0) {
+    if (filter) {
       let filterlength = filter.length;
       var dataval = "";
       filter.forEach((data, id) => {
@@ -286,7 +285,7 @@ class TableGen extends Component {
         this.setState({ currentPage: 1 })
         select["q"] = JSON.stringify(filterlist)
         let queryString = createQueryString(select)
-        //console.log(queryString)
+        console.log(queryString)
         Axios.get(queryString).then(
           (res) => {
             this.setState({ data: res.data.datas, loading: false });
