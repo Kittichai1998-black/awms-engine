@@ -62,8 +62,9 @@ namespace AWMSEngine.Engine.Business.Issued
         public class DocumentProcess
         {
             public amt_Document document;
-            public amt_DocumentItem documentItem;
+            public amv_DocumentItem documentItem;
             public StorageObjectCriteria stoPack;
+            public long docID;
             public string docCode;
             public long dociID;
             public long? stoi;
@@ -182,7 +183,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                     foreach (var docItem in doc.items.Where(x => x.itemCode == item.itemCode))
                     {
-                        var documentItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("amt_DocumentItem", "*", null,
+                        var documentItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>("amv_DocumentItem", "*", null,
                         new SQLConditionCriteria[]
                         {
                             new SQLConditionCriteria("ID", docItem.docItemID, SQLOperatorType.EQUALS),
@@ -193,7 +194,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         foreach (var batch in docItem.batchs)
                         {
-                            foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0))
+                            foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0 && x.evtStatus == 12))
                             {
                                 var stoPack = ADO.StorageObjectADO.GetInstant().Get(sto.code, null, null, false, true, this.BuVO);
                                 if (batch.qty > 0)
@@ -202,6 +203,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     {
                                         listDocProcessed.Add(new DocumentProcess
                                         {
+                                            docID =doc.docID,
                                             document = document,
                                             documentItem = documentItem,
                                             stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
@@ -227,6 +229,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     {
                                         listDocProcessed.Add(new DocumentProcess
                                         {
+                                            docID = doc.docID,
                                             document = document,
                                             documentItem = documentItem,
                                             stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
@@ -257,6 +260,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             {
                                 listDocProcessed.Add(new DocumentProcess
                                 {
+                                    docID = doc.docID,
                                     document = document,
                                     documentItem = documentItem,
                                     stoPack = null,

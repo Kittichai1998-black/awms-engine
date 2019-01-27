@@ -49,7 +49,7 @@ namespace AWMSEngine.Engine.Business.Issued
         }
         public class queueout
         {
-            public long queueID;
+            public long? queueID;
             public string desWarehouseCode;
             public string desAreaCode;
             public string desLocationCode;
@@ -74,8 +74,9 @@ namespace AWMSEngine.Engine.Business.Issued
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
+            
             TRes res = new TRes();
+            WCSQueueApi.TReq qOut = new WCSQueueApi.TReq();
             StorageObjectCriteria stoCriteria = new StorageObjectCriteria();
             foreach (var list in reqVO.DocumentProcessed)
             {
@@ -92,22 +93,25 @@ namespace AWMSEngine.Engine.Business.Issued
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
 
                 var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
-                var xxx = ADO.StorageObjectADO.GetInstant().Get(list.stoi, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
+                var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
 
                 var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
-                ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, xxx ?? 0, list.qty, getRootSTO.mapstos[0].unitID, list.qty, getRootSTO.mapstos[0].baseUnitID, this.BuVO);
+                //insert DocItemSto
+                ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, stoPackID ?? 0, list.qty, getRootSTO.mapstos[0].unitID, list.qty, getRootSTO.mapstos[0].baseUnitID, this.BuVO);
             }
-            var resultDocItemSto = reqVO.DocumentProcessed.GroupBy(n => new { n.stoi, n.dociID, n.baseCode, n.wareHouseID, n.areaID })
+            var resultDocItemSto = reqVO.DocumentProcessed.GroupBy(n => new { n.stoi, n.dociID, n.baseCode, n.wareHouseID, n.areaID, n.priority })
                 .Select(g => new
                 {
                     g.Key.stoi,
                     g.Key.dociID,
                     g.Key.baseCode,
                     g.Key.wareHouseID,
-                    g.Key.areaID
+                    g.Key.areaID,
+                    g.Key.priority
                 }).ToList();
             foreach (var result in resultDocItemSto)
             {
+                List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                 var docItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("amt_DocumentItem", "*", null,
                     new SQLConditionCriteria[]
                     {
@@ -117,27 +121,12 @@ namespace AWMSEngine.Engine.Business.Issued
                     this.BuVO).FirstOrDefault();
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
                 docItems.Add(docItem);
+                //create WorkQueue
                 SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
 
             }
-            //var resultQueueOutWCS = reqVO.DocumentProcessed.GroupBy(n => new { n.stoi, n.baseCode, n.wareHouseID, n.areaID })
-            //    .Select(g => new
-            //    {
-            //        g.Key.stoi,
-            //        g.Key.baseCode,
-            //        g.Key.wareHouseID,
-            //        g.Key.areaID
-            //    }).ToList();
-            //WCSQueueApi.TReq.queueout.baseinfo.packinfo rr = new WCSQueueApi.TReq.queueout.baseinfo.packinfo()
-            //{
 
-            //};
-            //WCSQueueApi.TReq tt = new WCSQueueApi.TReq()
-            //{
-
-
-            //};
-            //WCSQueueApi.GetInstant().SendQueue(tt, this.BuVO);
+            WCSQueueApi.GetInstant().SendQueue(qOut, this.BuVO);
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;

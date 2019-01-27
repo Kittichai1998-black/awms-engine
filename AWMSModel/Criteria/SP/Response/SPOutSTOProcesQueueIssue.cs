@@ -40,6 +40,8 @@ namespace AWMSModel.Criteria.SP.Response
         public string batch;
         public string orderNo;
 
+        public int evtStatus;
+
         public DateTime? prodDate;
         public DateTime? expDate;
 
