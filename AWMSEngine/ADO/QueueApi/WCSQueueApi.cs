@@ -14,7 +14,7 @@ namespace AWMSEngine.ADO.QueueApi
             public List<queueout> queueOut;
             public class queueout
             {
-                public long queueID;
+                public long? queueID;
                 public string desWarehouseCode;
                 public string desAreaCode;
                 public string desLocationCode;
@@ -42,7 +42,7 @@ namespace AWMSEngine.ADO.QueueApi
             public class Result
             {
                 public string resultmessage;
-                public string resultcheck;
+                public int resultcheck;
             }
         }
         

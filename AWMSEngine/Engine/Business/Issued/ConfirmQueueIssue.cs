@@ -74,7 +74,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            
+            var xx = new WCSQueueApi.TReq();
+
             TRes res = new TRes();
             WCSQueueApi.TReq qOut = new WCSQueueApi.TReq();
             StorageObjectCriteria stoCriteria = new StorageObjectCriteria();
@@ -123,10 +124,10 @@ namespace AWMSEngine.Engine.Business.Issued
                 docItems.Add(docItem);
                 //create WorkQueue
                 SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
-
+              
             }
 
-            WCSQueueApi.GetInstant().SendQueue(qOut, this.BuVO);
+            //WCSQueueApi.GetInstant().SendQueue(qOut, this.BuVO);
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;
