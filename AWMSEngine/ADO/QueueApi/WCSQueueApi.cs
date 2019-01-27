@@ -41,7 +41,7 @@ namespace AWMSEngine.ADO.QueueApi
 
             public class Result
             {
-                public string resultmessage;
+                public dynamic resultmessage;
                 public int resultcheck;
             }
         }
