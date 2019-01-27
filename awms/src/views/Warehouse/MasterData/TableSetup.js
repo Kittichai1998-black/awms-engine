@@ -10,6 +10,7 @@ import guid from 'guid';
 import { EventStatus, DocumentStatus, DocumentEventStatus, Status, StorageObjectEventStatus } from '../Status'
 import Select from 'react-select'
 import { apicall, createQueryString, Clone } from '../ComponentCore'
+import queryString from 'query-string'
 import _ from 'lodash'
 import Downshift from 'downshift'
 import '../componentstyle.css'
@@ -163,10 +164,29 @@ class TableGen extends Component {
       }
     }
   }
-
+  searchURL(searchURL, datasel) {
+    if (searchURL) {
+      const search = queryString.parse(encodeURI(searchURL))
+      var url = datasel;
+      var sel = JSON.parse(url.q)
+      for (let value in search) {
+        if (search[value]) {
+          if (search[value] !== "") {
+            sel.push({ "f": value, "c": "like", "v": "*" + encodeURIComponent(search[value]) + "*" })
+          }
+        }
+      }
+      url["q"] = JSON.stringify(sel)
+      this.queryInitialData(url);
+    }
+  }
   componentDidMount() {
     if (this.props.data) {
-      this.queryInitialData(this.props.data);
+      if (this.props.searchURL) {
+        this.searchURL(this.props.searchURL, this.props.data)
+      } else {
+        this.queryInitialData(this.props.data);
+      }
       this.setState({ originalselect: this.props.data.q })
     }
     else {
@@ -597,6 +617,7 @@ class TableGen extends Component {
 
   createDropdownFilter(name, func, selectdata) {
     let filter = [...this.state.datafilter]
+   
     let item = null
     let list = null
     this.props.dropdownfilter.forEach(row => {

@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Button } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
 
@@ -21,21 +21,20 @@ class Area extends Component {
                 'mode': 'check',
             }],
             acceptstatus: false,
-            select: {},
+            select: {
+                queryString: window.apipath + "/api/viw",
+                t: "BaseMaster",
+                q: '[{ "f": "Status", "c":"<", "v": 2}]',
+                f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,WeightKG,Status,Created,Modified,LastUpdate",
+                g: "",
+                s: "[{'f':'Code','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            },
             sortstatus: 0,
             selectiondata: []
         };
-        this.queryselect = {
-            queryString: window.apipath + "/api/viw",
-            t: "BaseMaster",
-            q: '[{ "f": "Status", "c":"<", "v": 2}]',
-            f: "ID,Code,Name,Description,BaseMasterType_ID,BaseMasterType_Code,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,WeightKG,Status,Created,Modified,LastUpdate",
-            g: "",
-            s: "[{'f':'Code','od':'asc'}]",
-            sk: 0,
-            l: 100,
-            all: "",
-        }
         this.getSelectionData = this.getSelectionData.bind(this)
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
@@ -54,12 +53,6 @@ class Area extends Component {
         CheckWebPermission("Pallet", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
         document.title = "Pallet Master - AWMS"
-        if (this.props.location.search) {
-            let url = FilterURL(this.props.location.search, this.queryselect)
-            this.setState({ select: url })
-        } else {
-            this.setState({ select: this.queryselect })
-        }
         this.filterList();
     }
     displayButtonByPermission(dataGetPer) {
@@ -197,7 +190,7 @@ class Area extends Component {
           */}
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"Pallet"}
                     filterable={true} autocomplete={this.state.autocomplete} getselection={this.getSelectionData} accept={view} exportfilebtn={view}
-                    btn={btnfunc} uneditcolumn={this.uneditcolumn}
+                    btn={btnfunc} uneditcolumn={this.uneditcolumn} searchURL={this.props.location.search}
                     table="ams_BaseMaster" autocode="@@sql_gen_base_code" />
 
 

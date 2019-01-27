@@ -117,7 +117,7 @@ class Return extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Return : AWMS";
+    document.title = "Return Issue : AWMS";
     let dataGetPer = await GetPermission()
     CheckWebPermission("Return", dataGetPer, this.props.history);
     Axios.get(createQueryString(this.state.Document)).then((response) => {
