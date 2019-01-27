@@ -148,7 +148,7 @@ class IssuedDoc extends Component {
       { accessor: 'SouWarehouseName', Header: 'Sou.Warehouse', editable: false, Filter: "text", },
       { accessor: 'DesBranchName', Header: 'Des.Branch', editable: false, Filter: "text", },
       { accessor: 'DesWarehouseName', Header: 'Des.Warehouse', editable: false, Filter: "text", },
-      { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: "" },
+      { accessor: 'DocumentDate', Header: 'Doc.Date', editable: false, Type: "datetime", dateformat: "date", filterable: true, Filter: "text" },
       { accessor: 'ActionTime', Header: 'Action Time', editable: false, Type: "datetime", dateformat: "datetime", filterable: false, minWidth: 120 },
       { accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180, maxWidth: 180 },
      

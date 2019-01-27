@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AWMSModel.Constant.EnumConst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +13,6 @@ namespace AWMSModel.Entity
         public decimal? BaseQuantity;
         public long UnitType_ID;
         public long BaseUnitType_ID;
-        public long Status;
+        public EntityStatus Status;
     }
 }

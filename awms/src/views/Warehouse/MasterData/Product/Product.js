@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
-import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -21,21 +21,20 @@ class ListProduct extends Component {
         'mode': 'check',
       }],
       acceptstatus: false,
-      select: {},
+      select: {
+        queryString: window.apipath + "/api/viw",
+        t: "SKUMaster",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID,SKUMasterType_ID,SKUTypeCode,SKUTypeName,UnitType_ID,UnitTypeCode,UnitTypeName,Code," +
+          "Name,Description,WeightKG,WidthM,LengthM,HeightM,Cost,Price,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code,LastUpdate",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+      },
       sortstatus: 0,
       selectiondata: []
-    };
-    this.queryselect = {
-      queryString: window.apipath + "/api/viw",
-      t: "SKUMaster",
-      q: '[{ "f": "Status", "c":"<", "v": 2}]',
-      f: "ID,SKUMasterType_ID,SKUTypeCode,SKUTypeName,UnitType_ID,UnitTypeCode,UnitTypeName,Code," +
-        "Name,Description,WeightKG,WidthM,LengthM,HeightM,Cost,Price,Revision,Status,Created,Modified,ObjectSize_ID,ObjectSize_Code,LastUpdate",
-      g: "",
-      s: "[{'f':'ID','od':'asc'}]",
-      sk: 0,
-      l: 100,
-      all: "",
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -50,19 +49,11 @@ class ListProduct extends Component {
   }
 
   async componentWillMount() {
-
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("SKU", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
     document.title = "SKU Master - AWMS"
-    if (this.props.location.search) {
-      let url = FilterURL(this.props.location.search, this.queryselect)
-      this.setState({ select: url })
-    } else {
-      this.setState({ select: this.queryselect })
-    }
-
     this.getAutocomplete();
   }
   //permission
@@ -202,7 +193,7 @@ class ListProduct extends Component {
 
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view} expFilename={"SKUMaster"}
-          btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn} searchURL={this.props.location.search}
           table="ams_SKUMaster" />
 
       </div>

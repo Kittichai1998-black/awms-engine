@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import { Button, Row, Col } from 'reactstrap';
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
-import { apicall, AutoSelect, createQueryString } from '../../ComponentCore'
+import { FilterURL, apicall, AutoSelect, createQueryString } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 const api = new apicall()
 
@@ -18,13 +18,13 @@ class AreaLocation extends Component {
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         //{ accessor: 'Code', Header: 'Code', editable: false, Filter: "text" },
-        { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", minWidth: 150 },
+        { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", filterable: true , minWidth: 150 },
         //{accessor: 'Description', Header: 'Description', sortable:false, editable:true, Filter:"text"},
-        { accessor: 'Bank', Header: 'Bank', editable: true, Filter: "text", Type: "autolocationcode", },
-        { accessor: 'Bay', Header: 'Bay', editable: true, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: true, Filter: "text", Type: "autocomplete" },
-        { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", Type: "autocomplete" },
+        { accessor: 'Bank', Header: 'Bank', editable: true, Filter: "text", filterable: true , Type: "autolocationcode", },
+        { accessor: 'Bay', Header: 'Bay', editable: true, Filter: "text", filterable: true ,Type: "autolocationcode" },
+        { accessor: 'Level', Header: 'Level', editable: true, Filter: "text", filterable: true , Type: "autolocationcode" },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: true, Filter: "text", filterable: true , Type: "autocomplete" },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: true, Filter: "text", filterable: true , Type: "autocomplete" },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
         // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
@@ -67,7 +67,7 @@ class AreaLocation extends Component {
       area: {
         queryString: window.apipath + "/api/viw",
         t: "AreaMaster",
-        q: '',
+        q: "[{ 'f': 'Status', c:' = ', 'v': 1}]",
         f: "ID,Code,Name,Description,Warehouse_ID,AreaMasterType_ID,GroupType",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
@@ -101,11 +101,11 @@ class AreaLocation extends Component {
   }
 
   async componentWillMount() {
-    this.filterList();
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("Area Location", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
+    this.filterList();
   }
   //permission
   displayButtonByPermission(dataGetPer) {
@@ -202,8 +202,8 @@ class AreaLocation extends Component {
     const objselect = {
       queryString: window.apipath + "/api/mst",
       t: "ObjectSize",
-      q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}",
-      f: "ID,concat(Code,' : ',Name) as Code",
+      q: "[{ 'f': 'Status', c:'!=', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}",
+      f: "ID,concat(Code,' : ',Name) as Code,Status",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
@@ -213,8 +213,8 @@ class AreaLocation extends Component {
     const areatypeselect = {
       queryString: window.apipath + "/api/mst",
       t: "AreaMaster",
-      q: "[{ 'f': 'Status', c:'<', 'v': 2}",
-      f: "ID,Code",
+      q: "[{ 'f': 'Status', c:'!=', 'v': 2}",
+      f: "ID,Code,Status",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
@@ -223,13 +223,14 @@ class AreaLocation extends Component {
     const unitselect = {
       queryString: window.apipath + "/api/mst",
       t: "UnitType",
-      q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}]",
-      f: "ID,concat(Code,' : ',Name) as Code",
+      q: "[{ 'f': 'Status', c:'!=', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 0}]",
+      f: "ID,concat(Code,' : ',Name) as Code,Status",
       g: "",
       s: "[{'f':'ID','od':'asc'}]",
       sk: 0,
       all: "",
     }
+
     Axios.all([api.get(createQueryString(objselect)), api.get(createQueryString(areatypeselect)), api.get(createQueryString(unitselect))]).then(
       (Axios.spread((objresult, areatyperesult, unitresult) => {
         let ddl = [...this.state.autocomplete]
@@ -279,13 +280,13 @@ class AreaLocation extends Component {
       return [
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
-        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
-        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'Level', Header: 'Level', editable: view, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175 },
-        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165 },
+        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", filterable: true  },
+        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150, filterable: true  },
+        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", Type: "autolocationcode", filterable: true  },
+        { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", Type: "autolocationcode", filterable: true  },
+        { accessor: 'Level', Header: 'Level', editable: view, Filter: "text", Type: "autolocationcode", filterable: true  },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175, filterable: true  },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165, filterable: true  },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
         // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
@@ -300,11 +301,11 @@ class AreaLocation extends Component {
       return [
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left" },
-        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 135 },
-        { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text", Type: "autolocationcode" },
-        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175 },
-        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165 },
+        { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", filterable: true  },
+        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 135, filterable: true  },
+        { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text", Type: "autolocationcode", filterable: true  },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175, filterable: true  },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165, filterable: true  },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
         //{ accessor: 'Created', Header: 'Create', editable: false, filterable: false },
@@ -318,14 +319,14 @@ class AreaLocation extends Component {
       return [
         { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
-        { accessor: 'Code', Header: 'Code', Type: "FLSareacode", editable: view, Filter: "text", fixed: "left" },
-        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150 },
-        { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text" },
-        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text" },
-        { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", datatype: "int" },
+        { accessor: 'Code', Header: 'Code', Type: "FLSareacode", editable: view, Filter: "text", filterable:true ,fixed: "left" },
+        { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", filterable: true },
+        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", filterable: true , minWidth: 150 },
+        { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text", filterable: true },
+        { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", datatype: "int", filterable: true },
         { accessor: 'Level', Header: 'Level', editable: view, Filter: "text", datatype: "int" },
-        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175 },
-        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165 },
+        { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175, filterable: true },
+        { accessor: 'UnitType_Code', Header: 'Unit', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 165, filterable: true },
         //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown"},
         { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
         // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
@@ -339,17 +340,22 @@ class AreaLocation extends Component {
   }
 
   getdataselect() {
+    console.log(this.state.areamaster)
     if (this.state.areamaster !== "" && this.state.areamaster !== undefined) {
+      console.log(this.state.areamaster)
       return {
         queryString: window.apipath + "/api/viw",
         t: "AreaLocationMaster",
-        q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " + this.state.areamaster + "}]",
+        q: "[{ 'f': 'Status', c:'!=', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v': " + this.state.areamaster + "}]",
         f: "ID,AreaMaster_ID,AreaMaster_Code,AreaMaster_Name,AreaMaster_Description,Code,Name,Description,Gate,Bank,Bay,Level,ObjectSize_ID,ObjectSize_Code,UnitType_ID,UnitType_Code,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'ID','od':'asc'}]",
         sk: 0,
         l: 100,
         all: "",
+
+
+
       }
 
     } else {
@@ -393,7 +399,7 @@ class AreaLocation extends Component {
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
                   table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>*/}
         <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"Location"}
-          filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype} exportfilebtn={view}
+          filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype} exportfilebtn={view} searchURL={this.props.location.search}
           btn={btnfunc} uneditcolumn={this.uneditcolumn} defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'AreaMaster_ID', c: '=', 'v': this.state.areamaster }]}
           table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} accept={view} />
       </div>
