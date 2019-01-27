@@ -232,7 +232,7 @@ checkPallet(check){
             console.log(res.data.id)
             this.createDataCard(null,false,res.data.id)
           }else{
-            //==== แสดงข้อมูล
+            //==== แสดงข้อมูล ====
             res.data.mapstos.forEach( row =>{
               const dataSKUinPallet = []
               row.mapstos.forEach( x=>{
