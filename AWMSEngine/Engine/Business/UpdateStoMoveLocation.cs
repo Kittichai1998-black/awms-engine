@@ -32,10 +32,10 @@ namespace AWMSEngine.Engine.Business
                     new KeyValuePair<string, object> ("StorageObject_ID",reqVO.bstosID)
                     }, this.BuVO);
 
-            //var flag = docItemSto.TrueForAll(check => check.Status != 0);
+            var flag = docItemSto.TrueForAll(check => check.Status != 0);
 
-            //if (flag == false)
-            //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO.PalletCode + " is Booked");
+            if (flag == false)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO.PalletCode + " is Booked");
 
 
             var StorageObject = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, false, this.BuVO);
