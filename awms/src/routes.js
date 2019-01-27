@@ -360,7 +360,7 @@ const routes = [
   { path: '/doc/gi/list', exact: true, name: 'Issue / Search Issue', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Issue / Create Issue', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Issue / Picking', component: PickConso },
-  { path: '/wm/sto/return', exact: true, name: 'Return', component: Return },
+  { path: '/wm/sto/return', exact: true, name: 'Issue / Return Issue', component: Return },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/sys/storage/list', exact: true, name: 'Report / Storage Object', component: Storage },
