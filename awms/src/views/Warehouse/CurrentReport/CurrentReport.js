@@ -200,15 +200,10 @@ class CurrentReport extends Component {
         accessor: 'QtyAuditing', Header: 'Qty Auditing', editable: false, Footer:
           (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyAuditing))}</span>)
       },
-    
       {
         accessor: 'QtySummary', Header: 'Qty', editable: false, Footer:
           (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
       },
-
-      { accessor: 'Qty', Header: 'Qty', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
-
       { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
 

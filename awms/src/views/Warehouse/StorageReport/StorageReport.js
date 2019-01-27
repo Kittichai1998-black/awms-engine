@@ -197,7 +197,7 @@ class StoragReport extends Component {
 
       {
         accessor: 'Qty', Header: 'Qty', editable: false, Footer:
-          (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
       },
 
       // {

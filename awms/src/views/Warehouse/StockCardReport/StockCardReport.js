@@ -234,16 +234,16 @@ class StockCardReport extends Component {
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'RefID', Header: 'Ref. DO No', editable: false, sortable: true },
       { accessor: 'Debit', Header: 'Debit', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterDebit() === 0 ? "-":this.sumFooterDebit()}</span>)},
+      (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterDebit() === 0 ? "-":this.sumFooterDebit()}</span>)},
 
       {
         accessor: 'Credit', Header: 'Credit', editable: false, Footer:
-          (<span><label>Sum :</label>{" "} {this.sumFooterCredit() === 0 ? "-" : this.sumFooterCredit()}</span>)
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterCredit() === 0 ? "-" : this.sumFooterCredit()}</span>)
       },
 
       {
         accessor: 'Total', Header: 'Total', editable: false, Footer:
-          (<span><label>Sum :</label>{" "} {this.sumFooterTotal() === 0 ? "-" : this.sumFooterTotal()}</span>)
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterTotal() === 0 ? "-" : this.sumFooterTotal()}</span>)
       },
       // {
       //   accessor: 'Debit', Header: 'Debit', editable: false, sortable: true, Footer:
