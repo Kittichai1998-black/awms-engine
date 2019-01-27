@@ -165,41 +165,41 @@ class StoragReport extends Component {
     return (
 
       <div>
-        
         <Row>
-            <Col xs="10">
-            <span>Recieved Date : </span>
-            <DatePicker  selected={this.state.date}
-                customInput={<Input/>}
-                onChange={(e) => {
-                    if(e === null){
-                      this.DatePickerFilter(null)
-                    }
-                    else{
-                      if(e.isValid() && e !== null){
-                        this.DatePickerFilter(e)
-                      }
-                    }
-                    
-                    
-                }}
-            timeIntervals={1}
-            timeFormat="HH:mm"
-            timeCaption="Time"
-            showTimeSelect={false}
-            dateFormat={"DD-MM-YYYY"}/>
-            
-            </Col>
-            <Col xs="2">
-              <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs="12">
 
-            </Col>
-          </Row>
-        
+          <Col xs="6"></Col>
+
+          <Col xs="6">
+            <div className="float-right" style={{ marginBottom: '3px' }} >
+              <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
+            </div>    
+              <div className="float-left">
+              <span style={{ fontWeight: 'bold', marginLeft: '5px' }} >Recieved Date : </span>
+              <DatePicker selected={this.state.date}
+                customInput={<Input />}
+                onChange={(e) => {
+                  if (e === null) {
+                    this.DatePickerFilter(null)
+                  }
+                  else {
+                    if (e.isValid() && e !== null) {
+                      this.DatePickerFilter(e)
+                    }
+                  }
+
+
+                }}
+                timeIntervals={1}
+                timeFormat="HH:mm"
+                timeCaption="Time"
+                showTimeSelect={false}
+                dateFormat={"DD-MM-YYYY"} />
+            </div>
+          </Col>
+
+        </Row>
+
+   
         <ReactTable defaultPageSize="10000" sortable={false} style={{ background: "white", marginBottom: "50px" }}
           filterable={true} showPagination={false} minRows={2} columns={cols} data={this.state.data} minRows={10} loading={this.state.loading}/>
       </div>

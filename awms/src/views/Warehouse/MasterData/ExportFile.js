@@ -129,7 +129,7 @@ class ExportFile extends Component {
     return (
       <div>
         {this.exportExcelBook()}
-        <Button color="warning" style={{ width: 130, marginRight: '3px' }} className="float-right" onClick={() => {
+        <Button color="warning" style={{ width: 130 }}  onClick={() => {
           this.queryData()
         }}>{iconprint} Export Excel</Button>
         {/* <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} className="float-right">

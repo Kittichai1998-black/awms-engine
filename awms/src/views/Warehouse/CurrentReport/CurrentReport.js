@@ -113,16 +113,15 @@ class CurrentReport extends Component {
       <div>
         <div>
           <Row>
-            <Col xs="10">
+            <Col xs="6">
+              
             </Col>
-            <Col xs="2">
-              <ExportFile column={cols} dataselect={this.state.select} filename={"CurrentInventory"} />
+            <Col xs="6">
+              <div className="float-right">
+                <ExportFile column={cols} dataselect={this.state.select} filename={"CurrentInventory"} />
+              </div>
             </Col>
-          </Row>
-          <Row>
-            <Col xs="12">
-
-            </Col>
+        
           </Row>
         </div>
         {/* <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
