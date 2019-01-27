@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import ReactTable from 'react-table'
-import { TableGen } from '../MasterData/TableSetup';
-import moment from 'moment';
-import { AutoSelect, Clone, apicall, createQueryString } from '../ComponentCore';
-import ExtendTable from '../MasterData/ExtendTable';
+import { apicall, createQueryString } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
-import { Button, Row, Col, Input } from 'reactstrap';
+import { Row, Col, Input } from 'reactstrap';
+import _ from 'lodash';
 
 const Axios = new apicall()
 
@@ -18,6 +16,10 @@ class CurrentReport extends Component {
     super();
     this.state = {
       data: [],
+      datafilter: [],
+      loading: true,
+      defaultPageS: 100,
+      currentPage: 1,
       select: {
         queryString: window.apipath + "/api/viw",
         t: "r_CurrentInventory",
@@ -29,16 +31,15 @@ class CurrentReport extends Component {
         l: 100,
         all: "",
       },
-    }
+    };
+    this.paginationButton = this.paginationButton.bind(this)
+    this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
   }
 
   componentDidMount() {
-    document.title = "Current Inventory - AWMS"
-    Axios.get(createQueryString(this.state.select)).then((response) => {
-      this.setState({
-        data: response.data.datas
-      })
-    })
+    document.title = "Current Inventory - AWMS";
+    this.getData()
+
 
   }
   componentWillUnmount() {
@@ -46,50 +47,143 @@ class CurrentReport extends Component {
 
   }
 
-
-  initialData() {
-    //Axios.get(createQueryString(this.state.select)).then((rowselect2) => {
-    //  this.setState({
-    //    data: rowselect2.data.datas,
-    //  })
-    //  console.log(this.state.data)
-    //})
+  getData() {
+    Axios.get(createQueryString(this.state.select)).then((response) => {
+      let countpages = null;
+      let counts = response.data.counts;
+      countpages = Math.ceil(counts / this.state.defaultPageS);
+      this.setState({ data: response.data.datas, countpages: countpages, loading: false })
+    })
   }
 
-  onChangeFilter(inputValue, rowData) {
-    let selectUrl = this.state.select;
-    let selectCondition = JSON.parse(selectUrl.q === "" ? "[]" : selectUrl.q);
+  createCustomFilter(name) {
+    return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
+      onKeyPress={(e) => {
+        if (e.key === 'Enter') {
+          let filter = this.state.datafilter
+          filter.forEach((x, index) => {
+            if (x.id === name.column.id)
+              filter.splice(index, 1);
+          });
+          filter.push({ id: name.column.id, value: e.target.value });
+          this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
-    if (selectCondition.length > 0) {
-      selectCondition.forEach((row, index) => {
-        if (row.f === rowData.column.id) {
-          selectCondition.splice(index, 1)
         }
-      })
-    }
+      }
+      } />
+  }
 
-    selectCondition.push({ 'f': rowData.column.id, c: 'like', 'v': '*' + inputValue.target.value + '*' })
-    selectUrl.q = JSON.stringify(selectCondition);
-
-    console.log(selectUrl)
-    Axios.get(createQueryString(selectUrl)).then((response) => {
-      this.setState({
-        data: response.data.datas, select: selectUrl
-      }, () => console.log(this.state.select))
+  onCheckFliter() {
+    this.setState({ loading: true })
+    let getFilter = this.state.datafilter;
+    let listFilter = getFilter.map(x => {
+      if (x.type === "date")
+        return { "f": x.id, "c": "=", "v": x.value }
+      else
+        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
     })
+    let strCondition = JSON.stringify(listFilter);
+    let getSelect = this.state.select;
+    getSelect.q = strCondition;
+    this.setState({ select: getSelect }, () => { this.getData() })
+  }
+
+  paginationButton() {
+    const notPageactive = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+      color: 'black',
+      background: '#eceff1',
+      minWidth: '90px'
+    }
+    const pageactive = {
+      textDecoration: 'none',
+      color: 'black',
+      background: '#cfd8dc',
+      minWidth: '90px'
+    }
+    return (
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+        <nav>
+          <ul className="pagination">
+            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("prev")}>
+              Previous</a></li>
+            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
+            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    )
+  }
+
+  pageOnHandleClick(position) {
+    this.setState({ loading: true })
+    const select = this.state.select
+    if (position === 'next') {
+      select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
+      ++this.state.currentPage
+    }
+    else {
+      if (select.sk - select.l >= 0) {
+        select.sk = select.sk - select.l
+        if (this.state.currentPage !== 1)
+          --this.state.currentPage
+      }
+    }
+    this.setState({ select }, () => { this.getData() })
+  }
+
+  sumFooterQty(){
+    return _.sumBy(this.state.data, 
+      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
+      parseFloat(x.Qty) : null)
   }
 
   render() {
 
     let cols = [
-      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 130 },
-      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 250 },
-      { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: true },
-      { accessor: 'Batch', Header: 'Batch', filterable: false, sortable: true },
-      { accessor: 'Lot', Header: 'Lot', filterable: false, sortable: true },
-      { accessor: 'OrderNo', Header: 'OrderNo', filterable: false, sortable: true },
-      { accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true },
-      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 130 },
+      {
+        Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Cell: (e) => {
+          let numrow = 0;
+          if (this.state.currentPage !== undefined) {
+            if (this.state.currentPage > 1) {
+              // e.index + 1 + (2*100)  
+              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+            } else {
+              numrow = e.index + 1;
+            }
+          }
+          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        },
+        getProps: (state, rowInfo) => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        })
+      },
+      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 130 },
+      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 250 },
+      { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true },
+      { accessor: 'Batch', Header: 'Batch', filterable: true, sortable: true },
+      { accessor: 'Lot', Header: 'Lot', filterable: true, sortable: true },
+      { accessor: 'OrderNo', Header: 'OrderNo', filterable: true, sortable: true },
+      // {
+      //   accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true,
+      //   Footer:
+      //     (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
+      //       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+      //         parseFloat(x.Qty) : null)}</span>)
+      // },
+
+      { accessor: 'Qty', Header: 'Qty', editable: false, Footer:
+      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
+
+      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
 
     return (
@@ -99,7 +193,7 @@ class CurrentReport extends Component {
             <Col xs="10">
             </Col>
             <Col xs="2">
-              <ExportFile column={cols} dataselect={this.state.select} filename={"CurrentInventory"} />
+              <ExportFile column={cols} dataxls={this.state.data} filename={"CurrentInventory"} />
             </Col>
           </Row>
           <Row>
@@ -108,12 +202,16 @@ class CurrentReport extends Component {
             </Col>
           </Row>
         </div>
-        {/* <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
-          filterable={true} autocomplete={this.state.autocomplete}
-          uneditcolumn={this.uneditcolumn}
-          table="amvr_StorageObject" /> */}
-        <ReactTable style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }} minRows={5}
-          columns={cols} data={this.state.data} editable={false} filterable={true} defaultPageSize={100} />
+        <ReactTable
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          minRows={5}
+          loading={this.state.loading}
+          columns={cols}
+          data={this.state.data}
+          editable={false}
+          filterable={true}
+          defaultPageSize={this.state.defaultPageS}
+          PaginationComponent={this.paginationButton} />
       </div>
 
     )

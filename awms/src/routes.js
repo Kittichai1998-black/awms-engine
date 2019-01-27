@@ -2,6 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable'
 
 import DefaultLayout from './containers/DefaultLayout';
+import AuditReport from './views/Warehouse/AuditReport/AuditReport';
 
 function Loading() {
   return <div>Loading...</div>;
@@ -319,6 +320,11 @@ const MoveLocation = Loadable({
   loading: Loading,
 });
 
+const ReportAudit = Loadable({
+  loader: () => import('./views/Warehouse/AuditReport/AuditReport'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -360,7 +366,7 @@ const routes = [
   { path: '/doc/gi/list', exact: true, name: 'Issue / Search Issue', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Issue / Create Issue', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Issue / Picking', component: PickConso },
-  { path: '/wm/sto/return', exact: true, name: 'Return', component: Return },
+  { path: '/wm/sto/return', exact: true, name: 'Issue / Return Issue', component: Return },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
   { path: '/doc/ld/list', exact: true, name: 'Loading Document', component: LoadingManage },
   { path: '/sys/storage/list', exact: true, name: 'Report / Storage Object', component: Storage },
@@ -393,6 +399,7 @@ const routes = [
   { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
   { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
+  { path: '/sys/ad/report', exact: true, name: 'Report / Audit', component: ReportAudit },
 ];
 
 export default routes;

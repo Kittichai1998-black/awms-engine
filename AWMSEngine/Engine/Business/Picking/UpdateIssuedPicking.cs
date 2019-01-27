@@ -46,8 +46,8 @@ namespace AWMSEngine.Engine.Business.Picking
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var itemList = ADO.DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO);
-            //var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletID, StorageObjectType.PACK, false, false, this.BuVO);
-            //var listSto = sto.ToTreeList().Where(y => y.type == StorageObjectType.PACK).ToList();
+            var palletSTO = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletID, StorageObjectType.BASE, false, true, this.BuVO);
+            var sto = TreeUtil.ToTreeList(palletSTO);
             object close = null;
             reqVO.pickedList.ForEach(x =>
             {
@@ -55,8 +55,10 @@ namespace AWMSEngine.Engine.Business.Picking
                     throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนในพาเลทได้");
                 else if (x.picked > x.canPick)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนที่ต้องหยิบได้");
+                
+                
 
-                var setSTO = ADO.StorageObjectADO.GetInstant().Get(x.STOID, StorageObjectType.PACK, false, false, this.BuVO);
+                var setSTO = sto.Where(s => s.id == x.STOID).FirstOrDefault();
                 //var setSTO = listSto.Where(y => y.id == x.STOID).First();
                 var basePicked = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(setSTO.skuID.Value, x.picked, setSTO.unitID);
 
@@ -69,9 +71,22 @@ namespace AWMSEngine.Engine.Business.Picking
 
                 ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
 
+                var chkQty = sto.Where(s => s.objectSizeID == 2).All(a => a.eventStatus == StorageObjectEventStatus.PICKED);
+                if (chkQty)
+                {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSTO.id.Value, StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                }
+                else
+                {
+                    if(palletSTO.parentType == StorageObjectType.LOCATION)
+                    {
+                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSTO.id.Value, StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                    }
+                }
+
                 var docTarget = ADO.DocumentADO.GetInstant().Target(reqVO.docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
                 var target = docTarget.Any(z => z.needPackQty <= 0);
-                if (target == true)
+                if (target)
                 {
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
                     close = new { docIDs = new long[] { reqVO.docID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };

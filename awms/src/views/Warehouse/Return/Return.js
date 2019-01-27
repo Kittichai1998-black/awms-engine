@@ -117,7 +117,7 @@ class Return extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Return : AWMS";
+    document.title = "Return Issue : AWMS";
     let dataGetPer = await GetPermission()
     CheckWebPermission("Return", dataGetPer, this.props.history);
     Axios.get(createQueryString(this.state.Document)).then((response) => {
@@ -232,7 +232,7 @@ checkPallet(check){
             console.log(res.data.id)
             this.createDataCard(null,false,res.data.id)
           }else{
-            //==== แสดงข้อมูล
+            //==== แสดงข้อมูล ====
             res.data.mapstos.forEach( row =>{
               const dataSKUinPallet = []
               row.mapstos.forEach( x=>{

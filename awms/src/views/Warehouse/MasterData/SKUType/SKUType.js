@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
-import { FilterURL, apicall, createQueryString } from '../../ComponentCore'
+import { apicall, createQueryString } from '../../ComponentCore'
 import { TableGen } from '../TableSetup';
 import Axios from 'axios';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -22,20 +22,19 @@ class SKUMasterType extends Component {
         'mode': 'check',
       }],
       acceptstatus: false,
-      select: {},
+      select: {
+        queryString: window.apipath + "/api/viw",
+        t: "SKUMasterType",
+        q: '[{ "f": "Status", "c":"<", "v": 2}]',
+        f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified,LastUpdate",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+      },
       sortstatus: 0,
       selectiondata: [],
-    };
-    this.queryselect = {
-      queryString: window.apipath + "/api/viw",
-      t: "SKUMasterType",
-      q: '[{ "f": "Status", "c":"<", "v": 2}]',
-      f: "ID,Code,Name,Description,ObjectSize_ID,ObjectSize_Code,Status,Created,Modified,LastUpdate",
-      g: "",
-      s: "[{'f':'ID','od':'asc'}]",
-      sk: 0,
-      l: 100,
-      all: "",
     };
     this.onHandleClickLoad = this.onHandleClickLoad.bind(this);
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -48,20 +47,13 @@ class SKUMasterType extends Component {
     this.forceUpdate();
     event.preventDefault();
   }
-  componentDidMount() {
-  }
+   
   async componentWillMount() {
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("Category", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)
     document.title = "SKU Collection - AWMS"
-    if (this.props.location.search) {
-      let url = FilterURL(this.props.location.search, this.queryselect)
-      this.setState({ select: url })
-    } else {
-      this.setState({ select: this.queryselect })
-    }
     this.getAutocomplete();
 
   }
@@ -180,7 +172,7 @@ class SKUMasterType extends Component {
           */}
         <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"SKUCollection"}
           filterable={true} autocomplete={this.state.autocomplete} accept={view} addExportbtn={view} exportfilebtn={view}
-          btn={btnfunc} uneditcolumn={this.uneditcolumn}
+          btn={btnfunc} uneditcolumn={this.uneditcolumn} searchURL={this.props.location.search}
           table="ams_SKUMasterType" />
       </div>
     )
