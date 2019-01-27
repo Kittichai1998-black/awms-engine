@@ -74,7 +74,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var xx = new WCSQueueApi.TReq();
+            var queueWorkQueue = new WCSQueueApi.TReq();
+            var queueWorkQueueOut = new List<WCSQueueApi.TReq.queueout>();
 
             TRes res = new TRes();
             WCSQueueApi.TReq qOut = new WCSQueueApi.TReq();
@@ -110,6 +111,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     g.Key.areaID,
                     g.Key.priority
                 }).ToList();
+
             foreach (var result in resultDocItemSto)
             {
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
@@ -124,10 +126,32 @@ namespace AWMSEngine.Engine.Business.Issued
                 docItems.Add(docItem);
                 //create WorkQueue
                 SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
-              
-            }
 
+                var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
+                baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                {
+                    baseCode = result.baseCode,
+                    packInfos = null
+                };
+
+                queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
+                {
+                    queueID = null,
+                    desWarehouseCode = "THIP",
+                    desAreaCode = "F",
+                    desLocationCode = null,
+                    priority = result.priority,
+                    baseInfo = baseInfo,
+                });
+               
+            }
+            queueWorkQueue.queueOut = queueWorkQueueOut;
             //WCSQueueApi.GetInstant().SendQueue(qOut, this.BuVO);
+            var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+            if (wcsAcceptRes._result.resultcheck == 0)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
+            }
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;

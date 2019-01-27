@@ -43,12 +43,12 @@ namespace AWMSEngine.Engine.Business.Auditor
             reqVO.workQueue.ForEach(x =>
             {
                 if(x.Sou_AreaMaster_ID == 5){
-                    var baseInfo = new List<WCSQueueApi.TRes.queueout.baseinfo>();
-                    baseInfo.Add(new WCSQueueApi.TReq.queueout.baseinfo()
+                    var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
+                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
                         baseCode = x.StorageObject_Code,
                         packInfos = null
-                    });
+                    };
 
                     queueCheck.queueOut.Add(new WCSQueueApi.TReq.queueout()
                     {
@@ -78,12 +78,12 @@ namespace AWMSEngine.Engine.Business.Auditor
                 {
                     var resWorkQueue = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
 
-                    var baseInfo = new List<WCSQueueApi.TRes.queueout.baseinfo>();
-                    baseInfo.Add(new WCSQueueApi.TReq.queueout.baseinfo()
+                    var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
+                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
                         baseCode = resWorkQueue.StorageObject_Code,
                         packInfos = null
-                    });
+                    };
 
                     queueWorkQueue.queueOut.Add(new WCSQueueApi.TReq.queueout()
                     {

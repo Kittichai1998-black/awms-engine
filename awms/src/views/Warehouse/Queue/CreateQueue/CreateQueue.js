@@ -116,26 +116,6 @@ class CreateQueue extends Component{
     });
     this.setState({ processCard,dataProcessSelected })
     this.createAutoDocList();
-    /* const dataProcessSelected = this.state.dataProcessSelected
-
-    this.setState({dataProcessSelected
-      ,"docID":""
-      ,"SAPdoc":""
-      ,"MMType":""
-      ,"ForCus":""
-      ,"StampDate":""
-      ,"Batch":""
-      ,"docresult":""}, () => this.removeItemCard())  
-
-    this.createAutoDocList();
-
-    const dataAdd = this.state.dataAdd
-    dataAdd.forEach((index) => {
-        dataAdd.splice(index, 1);
-    })
-    this.setState({ dataAdd })
-    this.createCardsList()
-    this.createAutoDocList() */
 }
 
   createAutoDocList(){
@@ -378,8 +358,7 @@ class CreateQueue extends Component{
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
           if(datarow.batchs.length>0){
-            var array = [...datarow.batchs]; // make a separate copy of the array
-            //var index = array.indexOf(e.target.value)
+            var array = [...datarow.batchs]; 
             if (batchNo !== -1) {
               array.splice(batchNo, 1);
               datarow.batchs = array;
