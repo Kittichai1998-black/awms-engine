@@ -1252,15 +1252,15 @@ class TableGen extends Component {
       )
     } else if (this.props.addExportbtn === true) {
       return (
-        <div style={{ marginTop: '3px', marginBottom: '3px' }}>
-          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '2px', marginRight: '3px' }} type="button" color="success" className="float-right">Add</Button>
-          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
+        <div style={{ marginTop: '3px', marginBottom: '3px', display: 'inline-block'}}>
+          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '2px', marginRight: '3px' }} type="button" color="success">Add</Button>
+          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename}/>
         </div>
       )
     } else if (this.props.exportfilebtn === false) {
       return (
-        <div style={{ marginTop: '3px', marginBottom: '3px' }}>
-          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} className="float-right" />
+        <div style={{ marginTop: '3px', marginBottom: '3px' }} className="float-right" >
+          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
         </div>
       )
     } else {
