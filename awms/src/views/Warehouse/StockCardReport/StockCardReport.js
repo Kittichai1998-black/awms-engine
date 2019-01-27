@@ -33,12 +33,19 @@ class StockCardReport extends Component {
 
       PackMasterdata: [],
       batch: "",
-
+      defaultPageS: 100,
+      currentPage: 1,
+      loading: false,
     }
-
+    this.paginationButton = this.paginationButton.bind(this)
+    this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
   }
   async componentWillMount() {
     document.title = "Stock Card : AWMS";
+    //permission
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
+    //41	WarehouseCI_execute
     Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
       const PackMasterdata = []
       response.data.datas.forEach(row => {
@@ -48,15 +55,8 @@ class StockCardReport extends Component {
         PackMasterdata.push({ label: PackData, value: ID })
       })
       this.setState({ PackMasterdata })
-
     })
-    //permission
-    let dataGetPer = await GetPermission()
-    CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //41	WarehouseCI_execute
   }
-
-
 
   dateTimePickerFrom() {
     return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" />
@@ -93,44 +93,37 @@ class StockCardReport extends Component {
         let lot = this.state.Lot
         let orderno = this.state.Orderno
 
-        Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuid=" + skuid + "&startDate=" + formatDateFrom + "&endDate=" + formatDateTo + "&batch=" + (batch === undefined ? '' : batch) + "&lot=" + (lot === undefined ? '' : lot) + "&orderno=" + (orderno === undefined ? '' : orderno) + "&spname=STOCK_CARD").then((rowselect1) => {
+        Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuid=" + skuid
+          + "&startDate=" + formatDateFrom + "&endDate=" + formatDateTo
+          + "&batch=" + (batch === undefined ? '' : batch)
+          + "&lot=" + (lot === undefined ? '' : lot)
+          + "&orderno=" + (orderno === undefined ? '' : orderno)
+          + "&spname=STOCK_CARD").then((rowselect1) => {
+            if (rowselect1) {
+              let countpages = null;
+              let counts = rowselect1.data.datas.length;
+              countpages = Math.ceil(counts / this.state.defaultPageS);
+              rowselect1.data.datas.forEach(x => {
+                this.setState({
+                  Date: x.ActionTime,
+                  Credit: x.Credit,
+                  Debit: x.Debit,
+                  Doc_Code: x.Doc_Code,
+                  Doc_Type: x.Doc_Type,
+                  MovementType: x.MovementType,
+                  SKU_Code: x.SKU_Code,
+                  SKU_Name: x.SKU_Name,
+                  Total: x.Total,
+                  Unit: x.Unit
+                }, () => console.log(this.state.MovementType))
+              })
 
-          rowselect1.data.datas.forEach(x => {
-            this.setState({
-              Date: x.ActionTime,
-              Credit: x.Credit,
-              Debit: x.Debit,
-              Doc_Code: x.Doc_Code,
-              Doc_Type: x.Doc_Type,
-              MovementType: x.MovementType,
-              SKU_Code: x.SKU_Code,
-              SKU_Name: x.SKU_Name,
-              Total: x.Total,
-              Unit: x.Unit
+              this.setState({
+                data: rowselect1.data.datas, countpages: countpages, loading: false
+              }, () => console.log(this.state.data))
+            }
 
-            })
           })
-          console.log(this.state.MovementType)
-
-          this.setState({
-
-
-            data: rowselect1.data.datas
-            //   Date: rowselect1.data.datas.ActionTime,
-            //   Batch: rowselect1.data.datas.Batch,
-            //   Credit: rowselect1.data.datas.Credit,
-            //   Debit: rowselect1.data.datas.Debit,
-            //   Doc_Code: rowselect1.data.datas.Doc_Code,
-            //   Doc_Type: rowselect1.data.datas.Doc_Type,
-            //   MovementType: rowselect1.data.datas.MovementType,
-            //   SKU_Code: rowselect1.data.datas.SKU_Code,
-            //   SKU_Name: rowselect1.data.datas.SKU_Name,
-            //   Total: rowselect1.data.datas.Total,
-            //dd
-          })
-
-          console.log(this.state.data)
-        })
       }
     }
   }
@@ -139,6 +132,37 @@ class StockCardReport extends Component {
       const date = moment(value);
       return <div>{date.format('DD-MM-YYYY')}</div>
     }
+  }
+  paginationButton() {
+    const notPageactive = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+      color: 'black',
+      background: '#eceff1',
+      minWidth: '90px'
+    }
+    const pageactive = {
+      textDecoration: 'none',
+      color: 'black',
+      background: '#cfd8dc',
+      minWidth: '90px'
+    }
+    return (
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+        <nav>
+          <ul className="pagination">
+            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("prev")}>
+              Previous</a></li>
+            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
+            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    )
   }
 
   sumFooterDebit(){
@@ -161,9 +185,28 @@ class StockCardReport extends Component {
 
   render() {
     const cols = [
-      { Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
       {
-        accessor: 'ActionTime', Header: 'Date', editable: false, Cell: (e) =>
+        Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Cell: (e) => {
+          let numrow = 0;
+          if (this.state.currentPage !== undefined) {
+            if (this.state.currentPage > 1) {
+              // e.index + 1 + (2*100)  
+              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+            } else {
+              numrow = e.index + 1;
+            }
+          }
+          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        },
+        getProps: (state, rowInfo) => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        })
+      },
+      {
+        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
           this.datetimeBody(e.value)
       },
 
@@ -261,8 +304,17 @@ class StockCardReport extends Component {
           </Row>
 
         </div>
-        <ReactTable defaultPageSize="100" sortable={false} style={{ background: "white", border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
-          filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} />
+        {/* <ReactTable defaultPageSize="100" sortable={false} style={{ background: "white", border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} /> */}
+        <ReactTable
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          minRows={5}
+          loading={this.state.loading}
+          columns={cols}
+          data={this.state.data}
+          filterable={false}
+          defaultPageSize={this.state.defaultPageS}
+          PaginationComponent={this.paginationButton} />
       </div>
     )
   }

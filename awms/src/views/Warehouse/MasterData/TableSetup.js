@@ -601,8 +601,8 @@ class TableGen extends Component {
             <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
-            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === this.state.countpages ? notPageactive : pageactive}
+            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
+            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("next")}>
               Next</a></li>
           </ul>

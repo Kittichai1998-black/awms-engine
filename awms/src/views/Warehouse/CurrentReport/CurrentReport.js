@@ -110,8 +110,8 @@ class CurrentReport extends Component {
             <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
-            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === this.state.countpages ? notPageactive : pageactive}
+            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
+            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("next")}>
               Next</a></li>
           </ul>
@@ -166,8 +166,8 @@ class CurrentReport extends Component {
           }
         })
       },
-      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
-      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 250 },
+      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 130 },
+      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 250 },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Batch', Header: 'Batch', filterable: true, sortable: true },
       { accessor: 'Lot', Header: 'Lot', filterable: true, sortable: true },
