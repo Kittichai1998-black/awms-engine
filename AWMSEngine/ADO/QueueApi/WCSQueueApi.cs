@@ -14,12 +14,12 @@ namespace AWMSEngine.ADO.QueueApi
             public List<queueout> queueOut;
             public class queueout
             {
-                public long queueID;
+                public long? queueID;
                 public string desWarehouseCode;
                 public string desAreaCode;
                 public string desLocationCode;
                 public int priority;
-                public List<baseinfo> baseInfo;
+                public baseinfo baseInfo;
                 public class baseinfo
                 {
                     public string baseCode;
@@ -41,8 +41,8 @@ namespace AWMSEngine.ADO.QueueApi
 
             public class Result
             {
-                public string resultmessage;
-                public string resultcheck;
+                public dynamic resultmessage;
+                public int resultcheck;
             }
         }
         
