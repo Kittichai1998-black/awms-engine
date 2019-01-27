@@ -9,7 +9,7 @@ namespace AWMSEngine.ADO
 {
     public class LogingADO : BaseMSSQLAccess<LogingADO>
     {
-        public long BeginAPIService(int? serviceID,string url, string ipRemote, string ipLocal, string serverName, object request, VOCriteria buVO)
+        public long BeginAPIService(int? serviceID,string serviceName,string url, string ipRemote, string ipLocal, string serverName, object request, VOCriteria buVO)
         {
             var service = StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == serviceID);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -18,11 +18,13 @@ namespace AWMSEngine.ADO
             param.Add("@APIKey ", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY));
             param.Add("@APIService_ID ", service != null ? service.ID : null);
             param.Add("@APIService_Code ", service != null ? service.ID : null);
-            param.Add("@APIService_Name ", service != null ? service.ID : null);
+            param.Add("@APIService_Name ", serviceName);
             param.Add("@IPRemote", ipRemote);
             param.Add("@IPLocal", ipLocal);
             param.Add("@ServerName ", serverName);
-            param.Add("@InputText ", "");
+            param.Add("@InputText ",
+                string.IsNullOrEmpty(buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY)) ?
+                string.Empty : Newtonsoft.Json.JsonConvert.SerializeObject(request));
             param.Add("@Url ", url);
             param.Add("@ActionBy", buVO.ActionBy);
             param.Add("@ID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.InputOutput);
