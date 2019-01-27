@@ -99,5 +99,11 @@ namespace AWMSEngine.Controllers.WM
             return res;
         }
 
+        [HttpPost("sto/return")]
+        public dynamic ReturnInventoryByGIDocumentAPI([FromBody] dynamic req)
+        {
+            ReturnInventoryByGIDocumentAPI exec = new ReturnInventoryByGIDocumentAPI(this);
+            return exec.Execute(req);
+        }
     }
 }

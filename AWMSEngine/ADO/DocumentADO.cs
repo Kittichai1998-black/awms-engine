@@ -325,10 +325,7 @@ namespace AWMSEngine.ADO
                     new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
                 }, buVO);
 
-            /*res.ForEach(x =>
-            {
-                x.DocItemStos = resSto.Where(y => y.DocumentItem_ID == x.ID).ToList();
-            });*/
+            res.DocItemStos = resSto;
             return res;
         }
         public List<SPOutCountStoInDocItem> CountStoInDocItems(IEnumerable<long> docItemIDs, VOCriteria buVO)
