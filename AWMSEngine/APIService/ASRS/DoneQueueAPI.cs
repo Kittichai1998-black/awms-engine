@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AWMSEngine.Engine.Business.Issued;
+using AWMSModel.Constant.StringConst;
 
 namespace AWMSEngine.APIService.ASRS
 {
@@ -38,12 +40,14 @@ namespace AWMSEngine.APIService.ASRS
                 List<amt_DocumentItemStorageObject> disto = new List<amt_DocumentItemStorageObject>();
                 foreach (var sto in stos)
                 {
-                    if (sto.objectSizeID == 2)
+                    if (sto.type == StorageObjectType.PACK)
                     {
                         var getdisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
-                    new SQLConditionCriteria("StorageObject_ID", sto.id, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
-                }, this.BuVO);
+                            new SQLConditionCriteria("StorageObject_ID", sto.id, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
+                        }, this.BuVO);
+
+                        docItemID.AddRange(getdisto.Select(x => x.DocumentItem_ID).ToList());
 
                         var gdisto = getdisto.Where(x => x.StorageObject_ID == sto.id).GroupBy(x => new { x.StorageObject_ID }).Select(x => new
                         {
@@ -69,7 +73,7 @@ namespace AWMSEngine.APIService.ASRS
                             sto.baseQty = sto.baseQty - gdisto.BaseQuantity;
                             if (sto.qty == 0)
                             {
-                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                                sto.eventStatus = StorageObjectEventStatus.PICKED;
                             }
                             ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                         }
@@ -83,11 +87,33 @@ namespace AWMSEngine.APIService.ASRS
                         }
                     }
                 }
+                
+                foreach(var id in docItemID.Distinct())
+                {
+                    var docID = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(id, this.BuVO).Document_ID;
+
+                    object closeDoc = null;
+                    var docTarget = ADO.DocumentADO.GetInstant().Target(docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                    var target = docTarget.Any(z => z.needPackQty <= 0);
+                    if (target)
+                    {
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
+                        closeDoc = new { docIDs = new long[] { docID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
+                    }
+
+                    if (closeDoc != null)
+                    {
+                        this.BeginTransaction();
+                        var reqLocal = ObjectUtil.DynamicToModel<ClosingGIDocument.TDocReq>(closeDoc);
+                        var resLocal = new ClosingGIDocument().Execute(this.Logger, this.BuVO, reqLocal);
+                        this.CommitTransaction();
+
+                        this.BeginTransaction();
+                        var reqSAP = ObjectUtil.DynamicToModel<ClosedGIDocument.TDocReq>(closeDoc);
+                        var resSAP = new ClosedGIDocument().Execute(this.Logger, this.BuVO, reqSAP);
+                    }
+                }
             }
-            
-
-
-
             return res;
         }
     }

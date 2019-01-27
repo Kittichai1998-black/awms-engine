@@ -1,0 +1,6 @@
+{
+  "name": "CurrentReport",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./CurrentReport.js"
+}

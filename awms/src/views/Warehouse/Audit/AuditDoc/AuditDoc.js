@@ -428,6 +428,7 @@ class AuditDoc extends Component {
             {this.state.resp}
           </CardBody>
         </Card>
+        
         <Popup open={this.state.open} onClose={this.closeModal} closeOnDocumentClick >
           <div style={{ border: '2px solid red', borderRadius: '5px' }}>
             <a style={styleclose} onClick={this.closeModal}>

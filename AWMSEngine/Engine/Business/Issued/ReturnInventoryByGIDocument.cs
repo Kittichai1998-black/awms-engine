@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
             });
             
-            if (reqVO.baseQty < docItem.DocItemStos
+            if (reqVO.baseQty <= docItem.DocItemStos
                                         .Where(x=> mapstoCanReturns.Any(y=>y.id== x.StorageObject_ID))
                                         .Sum(x=>x.BaseQuantity))
             {
@@ -70,12 +70,15 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     DocumentItem_ID = docItem.ID.Value,
                     StorageObject_ID = newSto.id.Value,
-                    Quantity = newSto.qty,
+                    Quantity = -newSto.qty,
                     UnitType_ID = newSto.unitID,
                     BaseUnitType_ID = newSto.baseUnitID,
-                    BaseQuantity = newSto.baseQty,
+                    BaseQuantity = -newSto.baseQty,
                     Status = EntityStatus.ACTIVE,
                 }, this.BuVO);
+            }else
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับคืนสินค้าได้ เนื่องจาก จำนวนที่เหลือจากที่เบิกไม่สอดคล้องกัน");
             }
             return baseInfo;
             //ADO.DocumentADO.GetInstant().ListItemAndStoInDoc
