@@ -164,18 +164,18 @@ class Pack extends Component {
         this.setState({data, dataedit})
     }
 
-    onCreateDropdownFilter(columns, data){
+    onCreateDropdownFilter(columns, data,field){
         let list = data.map((x, idx) => {
           return <option key={idx} value={x.ID}>{x.Code}</option>
         });
         return <select style={{ background: "#FAFAFA" }} onChange={(e) => {
                 let filter =  this.state.datafilter
                 filter.forEach((x, index) => {
-                    if(x.id === columns.column.id)
+                  if (x.id === field)
                     filter.splice(index, 1);
                 });
                 if (e.target.value !== "") {
-                    filter.push({id:columns.column.id, value: e.target.value});
+                  filter.push({ id: field, value: e.target.value});
                   }
                 this.setState({datafilter:filter}, () => {this.onCheckFliter()});
           }}>{list}</select>
@@ -200,7 +200,8 @@ class Pack extends Component {
     }
 
     onClickEditAllWeight(){
-        if(this.state.setWeightAllID !== undefined){
+
+      if (this.state.setWeightAllID !== undefined) {
             let data = this.state.data;
             data.forEach(d => {
                 d.ObjectSize_ID = this.state.setWeightAllID;
@@ -282,24 +283,45 @@ class Pack extends Component {
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
             { accessor: 'Code', Header: 'SKU Code', editable: false, Filter:  (e) => this.createCustomFilter(e), fixed: "left", },
-            { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", fixed: "left", minWidth: 230 },
-            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 80, Cell:(e) => this.onCreateInputEditCell(e), },
-            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left", Cell:(e) => this.onCreateDropdownEdit(e, this.state.UnitType, "UnitType_ID") },
+            { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: (e) => this.createCustomFilter(e), Type: "autocomplete", fixed: "left", minWidth: 230 },
+            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false },
+            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false },
+            //{ accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 80, Cell:(e) => this.onCreateInputEditCell(e), },
+            //{ accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left", Cell:(e) => this.onCreateDropdownEdit(e, this.state.UnitType, "UnitType_ID") },
             { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left" },
             { accessor: 'ItemQty', Header: 'Base Qty/Unit', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 70 },
-            { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter:  (e) => this.onCreateDropdownFilter(e, this.state.ObjSize), Cell:(e) => this.onCreateDropdownEdit(e, this.state.ObjSize, "ObjectSize_ID") },
+          { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter: (e) => this.onCreateDropdownFilter(e, this.state.ObjSize, "ObjectSize_ID"), Cell:(e) => this.onCreateDropdownEdit(e, this.state.ObjSize, "ObjectSize_ID") },
             { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
             { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
 
         return (
-            <div>
-                <Row>
-                    <span>Edit Weight Verify : </span>
-                    {this.onCreateDropdownEditAll(this.state.ObjSize)}
-                    {<Button onClick={() => {this.onClickEditAllWeight()}}>Accept</Button>}
-                </Row>
-                <ReactTable data ={this.state.data} columns={cols} filterable={true}
+          <div>
+            <Row>
+
+              <Col xs="6">
+              
+              </Col>
+          
+              <Col xs="6">
+                <div className="float-right" style={{ marginBottom:'3px' }} >
+                  <ExportFile style={{ width: "130px" }} column={cols} dataselect={this.state.data} filename={"SKUUnit"} />
+                </div>
+                <div className="float-right">
+
+
+                  <span style={{ fontWeight: 'bold' }} >Edit Weight Verify : </span>
+
+
+                  {this.onCreateDropdownEditAll(this.state.ObjSize)}               
+                  <Button style={{ width: "130px", marginRight: "5px" }} color="primary" onClick={() => { this.onClickEditAllWeight() }}>Accept</Button>
+                </div>
+                  </Col>
+              
+            </Row>
+ 
+
+            <ReactTable style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}  data ={this.state.data} columns={cols} filterable={true}
                     getTrProps={(state, rowInfo) => {
                         let result = false
                         let rmv = false

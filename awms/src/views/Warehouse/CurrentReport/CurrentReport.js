@@ -190,16 +190,13 @@ class CurrentReport extends Component {
       <div>
         <div>
           <Row>
-            <Col xs="10">
+            <Col xs="6">
+              
             </Col>
             <Col xs="2">
               <ExportFile column={cols} dataxls={this.state.data} filename={"CurrentInventory"} />
             </Col>
-          </Row>
-          <Row>
-            <Col xs="12">
-
-            </Col>
+        
           </Row>
         </div>
         <ReactTable
