@@ -53,7 +53,11 @@ class ExportFile extends Component {
       })
     }
     if(this.props.dataxls){
-      this.setState({ dataxls: Clone(this.props.dataxls) }, () => {
+      let datasxls = Clone(this.props.dataxls);
+      datasxls.forEach((datarow, index) => {
+        datarow["No."] = (index + 1).toString();
+      })
+      this.setState({ dataxls: datasxls }, () => {
         document.getElementById("btnLoad").click();
       })
     }else if (this.props.dataselect) {
@@ -129,7 +133,7 @@ class ExportFile extends Component {
     return (
       <div>
         {this.exportExcelBook()}
-        <Button color="warning" style={{ width: 130 }}  onClick={() => {
+        <Button color="warning" style={{ width: 130, marginRight: '3px' }} onClick={() => {
           this.queryData()
         }}>{iconprint} Export Excel</Button>
         {/* <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle} className="float-right">

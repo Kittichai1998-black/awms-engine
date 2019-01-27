@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import "react-table/react-table.css";
-import {Input, Card, CardBody, Button, Row, Col, Form,FormGroup,FormText,Label} from 'reactstrap';
-import moment from 'moment';
-import Select from 'react-select';
-import {AutoSelect, apicall, createQueryString} from '../../ComponentCore'
-import Popup from 'reactjs-popup'
+import {Input, Card, CardBody, Button, Row, Col, Form,FormGroup,FormText,Label} from "reactstrap";
+import moment from "moment";
+import ReactTable from "react-table"
+import Select from "react-select";
+import {AutoSelect, apicall, createQueryString} from "../../ComponentCore"
+import Popup from "reactjs-popup"
 
 const Axios = new apicall()
 const imgClose = <img style={{ width: "28px", height: "auto" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANkSURBVGhD7ZlHyxRBEIYXI4aDYgDDP1Bvpr9hwqMR9ageFBN6ULwaPsNdFEU9iH9DDwZQ9GIGIwaMCPo+sA1lU7PT3Tu7sjAvPLisXdXVOz3V1fV1WrVq1YjGiZViv7gu7osP4lcXPvPdNbFPrBDY/HctFMfFC/Enk2cC2wVi6JolzoifwgsuB3yMCXwORevFW+EF0w/4XCcGpgninPAmh4/iotgilok5YmIXPvPdVnFJMNbzATyN8aJRTRU3hTfhA7FJTBGpYuxm8VB4Pm+IHH89xa+Bw3iSb2Kn4MmUCttd4ruI/TNnI0/ivIidk3WWiqbE9nop4nlOir7ECxs7vSXmi6aFz9sinm+NKBJp7Z2wzp6LQeZtXvbHws75RswU2TorrKOvgkftaVH33xxV2SwWzGXnPi2yxK8cH1K8sJ4Oi9+C7ZYqxmKDraeDws7NS561bTnirQNSpZdtCCCMSV1ECD7YeYsgbb8SYQwcE0miyGKvW+MNIhaP2gYCdYuIgw82+Iq1XdhxT0VSAUhVaQ0/iapDpSogbxE5YxFP4bOw46vewX9ESWyNLoheSgksN/igy8La7BW1op63RtQ2deoVYGnwaJuwdldFrbh4WKPlIkVVgZYGj+LtfFfUituTNcqp071FWHKCR7OFtedgrVWc/yeJHFUtIjd4NFlYH8RWq5FfQLyFeIypqgo+kLuIoi10T1ijkXuJRz6N0rexRtxheyklwNJFXBHWZo+olVdKcKx7ygksdxHTRFEp4RVzG0WsQRdzO4Qd90Qkd/PicprugVdOHxFhTF3wQfEi8BGLX7+4nEbehWa38EQAqcEHhUV4waNDws7NhWaeyBINJuuEax5NWU9NXimXCFo2du5TIlvUQFyorSPeDRq6g5J3qX8tZogi0au0zoC2ChM1LXziO55vlehLPL7Y6SPhZY5S4Quf8TwnRN+qai3yThwQZIxSTRf4GGhrEXEn9hYBpDuO/JxmLAcjeT5OlQHmaqy5G8Sv4W2nwBfBHZbFkK3Y05TiMLf7HZ0GygPGej6AORr75T2tFXF2agKyzWoxFJHWaPf9EF4wObD/6UIXp8p+RLuPI56mkxdcL7A5KrJP2EGIIouLD30banYuHu8F5Qjw+Y7g/xjD3xaSC7NWrVpVqdP5C8HnZiqeZ+ELAAAAAElFTkSuQmCC" />;
@@ -14,20 +15,21 @@ class CreateQueue extends Component{
     super(props);
     
     this.state = {
-      orderlist:[ {'value' : 0,'label' : 'FIFO'},
-                  {'value' : 1,'label' : 'LIFO'}],
-      orderfieldlist:[{'value' : 'CreateDate','label' : 'Received Date'},
-                      {'value' : 'Lot','label' : 'Lot'},
-                      {'value' : 'Batch','label' : 'Batch'}],
-      prioritylist:[{'value' : 0,'label' : 'Low'},
-                    {'value' : 1,'label' : 'Normal'},
-                    {'value' : 2,'label' : 'High'},
-                    {'value' : 3,'label' : 'Critical'}],
+      orderlist:[ {"value" : 0,"label" : "FIFO"},
+                  {"value" : 1,"label" : "LIFO"}],
+      orderfieldlist:[{"value" : "CreateDate","label" : "Received Date"},
+                      {"value" : "Lot","label" : "Lot"},
+                      {"value" : "Batch","label" : "Batch"}],
+      prioritylist:[{"value" : 0,"label" : "Low"},
+                    {"value" : 1,"label" : "Normal"},
+                    {"value" : 2,"label" : "High"},
+                    {"value" : 3,"label" : "Critical"}],
       DocumentData:[],
       DocumentItemData:[],
       auto_doc:[],
       dataProcessItems:[],
       dataProcessed:[],
+      dataGroupProcessed:[],
       processCard: [],
       processedCard: [],
       processedDocCard:[],
@@ -85,12 +87,12 @@ class CreateQueue extends Component{
         const DocumentData = []
         this.state.DocumentData.forEach(row => {
           DocumentData.push({value:row.ID
-                        ,SAPdoc:(row.RefID?row.RefID + (row.Ref1?' : '+row.Ref1:""):"")
+                        ,SAPdoc:(row.RefID?row.RefID + (row.Ref1?" : "+row.Ref1:""):"")
                         ,MMType:row.Ref2
                         ,StampDate:row.Ref1
                         ,Batch:row.Batch
-                        ,ForCus:row.DesCustomer + ' : ' + row.DesCustomerName
-                        ,label:row.Code + (row.DesWarehouseName?' : ' + row.DesWarehouseName : "")
+                        ,ForCus:row.DesCustomer + " : " + row.DesCustomerName
+                        ,label:row.Code + (row.DesWarehouseName?" : " + row.DesWarehouseName : "")
           })
         })
         this.setState({ DocumentData }, () => this.createAutoDocList())
@@ -252,6 +254,7 @@ class CreateQueue extends Component{
           ,priority_label:null
           ,qty:datarow.BaseQuantity
           ,batchs:[]
+          ,defaultBatch:datarow.batch
         });
         this.onEditorValueChange(datarow.dociID, 0,"pickOrderby")
         this.onEditorValueChange(datarow.dociID, "CreateDate","orderByField")
@@ -266,7 +269,7 @@ class CreateQueue extends Component{
 
   genBtnNewBatch(dociID){
     return <Button id="per_button_doc" 
-    style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px',display:this.state.showbutton }} color="primary" 
+    style={{ background: "#66bb6a", borderColor: "#66bb6a", width: "130px",display:this.state.showbutton }} color="primary" 
     className="float-left"  onClick={() => this.genNewInputText(dociID)}>Add New Batch</Button>
   }
 
@@ -274,20 +277,31 @@ class CreateQueue extends Component{
     const DocumentItemData = this.state.DocumentItemData;
     const dataProcessItems = this.state.dataProcessItems;
     let checkBatchInput = false;
+    let checkDefaultBatch = false;
     if(dataProcessItems.length>0){
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
           if(datarow.batchs.length>0){
             datarow.batchs.forEach(batchrow =>{
-              if((batchrow.value === null && batchrow.qty === 0) ||
+              if((batchrow.value === null && (batchrow.qty?batchrow.qty:0) === 0) ||
               (batchrow.value === null || batchrow.qty === 0)){
                 checkBatchInput = false;
               }
+              else{
+                checkBatchInput = true;
+              }
             });
-          }else{
+          }
+          else{
+            checkDefaultBatch = true;
             checkBatchInput = true;
           }
-          if(checkBatchInput){
+          if(checkBatchInput && checkDefaultBatch){
+            datarow.batchs.push({
+              value:datarow.defaultBatch,
+              qty:datarow.defaultBatch?datarow.qty:0
+            })
+          }else if(checkBatchInput){
             datarow.batchs.push({
               value:null,
               qty:0
@@ -302,7 +316,7 @@ class CreateQueue extends Component{
           dataProcessItems.push({docID:datarow.docID,dociID:datarow.dociID,itemCode:datarow.itemCode,itemName:datarow.itemName,item:datarow.item
             ,batch:datarow.batch,pickOrderby:null,pickOrderby_label:null,orderByField:null,orderByField_label:null
             ,lot:datarow.lot,orderNo:datarow.orderNo,priority:0,priority_label:null,qty:datarow.BaseQuantity
-            ,batchs:[{value:null,qty:0}]});
+            ,batchs:[{value:datarow.batch,qty:datarow.BaseQuantity}]});
         }
       })                 
     }
@@ -319,8 +333,8 @@ class CreateQueue extends Component{
         }))
     });
     let batchCard = []
-    batch.forEach((datarow) => {
-      batchCard = batchCard.concat(this.addNewInputText(datarow));
+    batch.forEach((datarow,index) => {
+      batchCard = batchCard.concat(this.addNewInputText(index,datarow));
     })
     this.setState({ batchCard });
   }
@@ -328,7 +342,7 @@ class CreateQueue extends Component{
   onEditorValueChange(dociID, value, field) {
     const dataProcessItems = [...this.state.dataProcessItems];
     dataProcessItems.forEach(row => {
-      if (row.dociID.toString() === (dociID.toString().split(',')[0])){
+      if (row.dociID.toString() === (dociID.toString().split(",")[0])){
         if(field==="orderNo"){
           row.orderNo=value
         }else if(field==="lot"){
@@ -343,27 +357,52 @@ class CreateQueue extends Component{
           row.priority_label=this.state.prioritylist.find(e => e.value===value).label
           row.priority=value
         }else if(field==="value"){
-          row.batchs[dociID.toString().split(',')[1]].value=value
+          if(dociID.toString().includes(",")){
+          row.batchs[dociID.toString().split(",")[1]].value=value
+          }else{
+            row.batchs[dociID.toString()].value=value
+          }
         }else if(field==="qty"){
-          row.batchs[dociID.toString().split(',')[1]].qty=value
+          row.batchs[dociID.toString().split(",")[1]].qty=value
         }
       }
     });
     this.setState({ dataProcessItems });
   }
+  clearBatchInput(dociID,batchNo){
+    const DocumentItemData = this.state.DocumentItemData;
+    const dataProcessItems = this.state.dataProcessItems;
+    let checkBatchInput = false;
+    let checkDefaultBatch = false;
+    if(dataProcessItems.length>0){
+      dataProcessItems.forEach(datarow => {
+        if(datarow.dociID===dociID){
+          if(datarow.batchs.length>0){
+            var array = [...datarow.batchs]; // make a separate copy of the array
+            //var index = array.indexOf(e.target.value)
+            if (batchNo !== -1) {
+              array.splice(batchNo, 1);
+              datarow.batchs = array;
+            }
+          }
+        }else{
+        }
+      });
+    }else{
+                 
+    }
+    this.setState({ dataProcessItems },() => this.createItemCardsList(2),this.createBatchCardsList()) 
+  }
 
-  addNewInputText(datarow){
-    const styleclose = {cursor: 'pointer', position: 'absolute', display: 'inline', background: '#ffffff', borderRadius: '18px'}
-    return <div className={[datarow.dociID,datarow.batchNo]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
+  addNewInputText(index,datarow){
+    const styleclose = { cursor: "pointer", position: "absolute", display: "inline", background: "#ffffff", borderRadius: "18px"}
+    return <div className={[datarow.dociID,index]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
     <Row>
+      <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(datarow.dociID,index)}>{ imgClose }</a></Col>
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
-      <Col md="4"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo, e.target.value,"value") }} /></div></Col> 
+      <Col md="4"><div style={{display:"inline"}}><Input defaultValue={datarow.value?datarow.value:""} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index, e.target.value,"value") }} /></div></Col> 
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
-      <Col md="3"><div style={{display:"inline"}}><Input onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+datarow.batchNo,e.target.value,"qty") }} /></div></Col>
-      {/* <Col md="1"><a style={styleclose} onClick={this.closeModal}>
-                    { imgClose }
-                </a>
-                </Col> */}
+      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.qty?datarow.qty:0} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index,e.target.value,"qty") }} /></div></Col>
     </Row>
   </div>
   }
@@ -492,12 +531,14 @@ class CreateQueue extends Component{
     const dataProcessItems = this.state.dataProcessItems;
     let DocumentData = this.state.DocumentData;
     const docID = this.state.docID
+    let checkQty = true;
     if(this.state.docresult===""){
       alert("Document Item Not Found!")
     }else{
       if(this.state.DocumentItemData.length === 0){
       }else{
         var xxx = this.validateProcessItemsData(dataProcessItems)
+        
         dataProcessSelected.push(DocumentData.find(x => x.value === docID))
           dataProcessSelected.forEach((datarow) => {
             if(datarow.value === docID){
@@ -521,21 +562,26 @@ class CreateQueue extends Component{
             ,"docresult":""}, () => this.removeItemCard())  
 
           this.createAutoDocList();
+        
       }
     }
   }
   validateProcessItemsData(dataProcessItems){
+    let checkBatchNull = false;
+    let checkMoreQty = false;
     dataProcessItems.forEach(itemrow =>{
       if(itemrow.batchs.length===0){
         itemrow.batchs.push({"value":null,"qty":itemrow.qty})
       }else{
         if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0)) > itemrow.qty){
           alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
+          checkMoreQty =true
         }else{
           itemrow.batchs.forEach(batchrow =>{
-            if(batchrow.value===null){
+            if(batchrow.value===null && itemrow.qty>0){
               batchrow.value=null
               batchrow.qty=itemrow.qty
+              checkBatchNull = true
             }
             else{
               if(itemrow.qty-batchrow.qty>=0){
@@ -545,13 +591,18 @@ class CreateQueue extends Component{
               }
             }
           })
-          if(itemrow.qty>0){
+          if(itemrow.qty>0 && checkBatchNull === false){
             itemrow.batchs.push({"value":null,"qty":itemrow.qty})
           }
         }
       }
     });
-    return dataProcessItems
+    /* if(checkMoreQty){
+      dataProcessItems.forEach((index) => {
+        dataProcessItems.splice(index,1)
+      });
+    } */
+      return dataProcessItems
   }
  
   createItemShowCardsList(){
@@ -605,19 +656,15 @@ class CreateQueue extends Component{
       </FormGroup>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Pick by : </Label></Col>
-        <Col sm={10}><span>{(datarow.orderByField_label?datarow.orderByField_label:"") + (datarow.pickOrderby_label?" ("+datarow.pickOrderby_label+")":"")}</span></Col>
-      </FormGroup>
-      <FormGroup row>
+        <Col sm={4}><span>{(datarow.orderByField_label?datarow.orderByField_label:"") + (datarow.pickOrderby_label?" ("+datarow.pickOrderby_label+")":"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Order No : </Label></Col>
-        <Col sm={10}><span>{(datarow.orderNo?datarow.orderNo:"")}</span></Col>
+        <Col sm={4}><span>{(datarow.orderNo?datarow.orderNo:"")}</span></Col>
       </FormGroup>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Lot : </Label></Col>
-        <Col sm={10}><span>{(datarow.lot?datarow.lot:"")}</span></Col>
-      </FormGroup>
-      <FormGroup row>
+        <Col sm={4}><span>{(datarow.lot?datarow.lot:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Priority : </Label></Col>
-        <Col sm={10}><span>{(datarow.priority_label?datarow.priority_label:"")}</span></Col>
+        <Col sm={4}><span>{(datarow.priority_label?datarow.priority_label:"")}</span></Col>
       </FormGroup>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Batch : </Label></Col>
@@ -632,67 +679,89 @@ class CreateQueue extends Component{
     let ShowCards =[]
     if(processedCard.length > 0){
       processedCard.forEach(row => {
-        if(row.props.className === datarow.docID){
+        if(row.props.className === datarow.type){
           ShowCards.push(row)
         }
       });
     }
-    return  <div className= { datarow.docID } style={{"border-radius": "15px", "padding": "20px",  background:"white", "margin":"5px"}}>
+    return  <div className= { datarow.type } style={{"border-radius": "15px", "border-bottom": "2px solid rgb(157, 174, 236)",  "padding": "20px",  background:"white", "margin":"5px" }}>
     <Form>
       <FormGroup row>
-        <Col sm={12}><span>{(datarow.docCode?"Document : " + datarow.docCode:"") }</span></Col>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
+        <Col sm={4}><span>{(datarow.data[0].document.code?datarow.data[0].document.code:"")}</span></Col>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Item : </Label></Col>
+        <Col sm={4}><span>{(datarow.data[0].stoPack.code?datarow.data[0].stoPack.code:"")}</span></Col>
       </FormGroup>
-      {ShowCards}
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
+        <Col sm={4}><span>{(datarow.data[0].document.refID?datarow.data[0].document.refID:"")}</span></Col>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
+        <Col sm={4}><span>{(datarow.sumQty?datarow.sumQty + " / " + datarow.sumBaseQty + " " + datarow.data[0].documentItem.baseUnitType_Code 
+        +" ( " + datarow.data[0].documentItem.quantity + " " + datarow.data[0].documentItem.unitType_Code + " ) ":"")}</span></Col>
+      </FormGroup>
+      <FormGroup row>
+        { ShowCards }
+      </FormGroup>
     </Form>
-  </div>
+   </div>
   }
   genStoRootCardConfirm(datarow){
-    return  <div className= { datarow.docID } style={{"border-radius": "15px", "border-bottom": "2px solid rgb(157, 174, 236)",  "padding": "20px",  background:"white", "margin":"5px" }}>
-    <Form>
-      <FormGroup row>
-        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Pallet : </Label></Col>
-        <Col sm={3}><span>{(datarow.baseCode?datarow.baseCode:"") }</span></Col>
-        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Item : </Label></Col>
-        <Col sm={3}><span>{(datarow.itemCode?datarow.itemCode:"")}</span></Col>
-      </FormGroup>
-      <FormGroup row>
-        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Order No : </Label></Col>
-        <Col sm={3}><span>{(datarow.orderNo?datarow.orderNo:"") }</span></Col>
-        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Lot : </Label></Col>
-        <Col sm={3}><span>{(datarow.lot?datarow.lot:"")}</span></Col>
-      </FormGroup>
-      <FormGroup row>
-        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Batch : </Label></Col>
-        <Col sm={3}><span>{(datarow.batch?datarow.batch:"") }</span></Col>
-        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
-        <Col sm={3}><span>{(datarow.qty && datarow.stoBaseQty?datarow.qty+"/"+datarow.stoBaseQty:"")}</span></Col>
-      </FormGroup>
-    </Form>
+
+    return <div className= { datarow.type }>
+    <ReactTable style={{width:"100%"}} data={datarow.data} editable={false} filterable={false} defaultPageSize={2000}
+    editable={false} minRows={1} showPagination={false}
+    columns={[{ accessor: "baseCode", Header: "Pallet"},{ accessor: "batch", Header: "Batch"},{ accessor: "lot", Header: "Lot"},{ accessor: "orderNo", Header: "Order No"}
+    ,{ Cell:(e)=> <span>{ e.original.qty + " / " + e.original.stoBaseQty }</span>, Header: "Qty"},{ Cell:(e)=> <span>{e.original.stoPack.baseUnitCode}</span>, Header: "unit"}]}/>
   </div>
   }
 
   createStoRootCardConfirmList(){
     const dataProcessed = this.state.dataProcessed
     let processedCard = []
-    dataProcessed.forEach((datarow) => {
+    let dataGroupProcessed =[]
+    function groupBy(arr, key) {
+      var newArr = [],
+          Keys = {},
+          newItem, i, j, cur, sumQty = 0, sumBaseQty = 0;
+      for (i = 0, j = arr.length; i < j; i++) {
+          cur = arr[i];
+          if (!(cur[key] in Keys)) {
+              Keys[cur[key]] = { type: cur[key], data: [], sumQty: 0, sumBaseQty: 0 };
+              sumQty = 0;
+              sumBaseQty = 0;
+              newArr.push(Keys[cur[key]]);
+          }
+          sumQty = sumQty+cur["qty"]
+          sumBaseQty = sumBaseQty+cur["stoBaseQty"]
+          Keys[cur[key]].sumQty = sumQty;
+          Keys[cur[key]].sumBaseQty = sumBaseQty;
+          Keys[cur[key]].data.push(cur);
+      }
+      return newArr;
+    }
+
+    var yy =groupBy(dataProcessed, 'dociID'); 
+    dataGroupProcessed = yy
+    yy.forEach((datarow) => {
       processedCard = processedCard.concat(this.genStoRootCardConfirm(datarow));
     })
-    this.setState({ processedCard },()=>this.createDocCardConfirmList());
+    this.setState({ dataGroupProcessed }, () => this.setState({ processedCard },()=>this.createDocCardConfirmList()));
   }
 
   createDocCardConfirmList(){
     const dataProcessed = this.state.dataProcessed
+    const dataGroupProcessed = this.state.dataGroupProcessed
     let processedDocCard = []
-    dataProcessed.forEach((datarow) => {
-      if(processedDocCard.length>0){
+    dataGroupProcessed.forEach((datarow) => {
+     /*  if(processedDocCard.length>0){
         processedDocCard.forEach(row => {
           if(row.props.className !== datarow.docID){
             processedDocCard = processedDocCard.concat(this.genDocCardConfirm(datarow));
           }
         });
-      }else{
+      }else{ */
         processedDocCard = processedDocCard.concat(this.genDocCardConfirm(datarow));
-      }
+      //}
     })
     this.setState({ processedDocCard },()=>this.openModal());
   }
@@ -708,7 +777,7 @@ class CreateQueue extends Component{
 
   viewDetail(docID){
     if(docID){
-      window.open('/doc/gi/manage?ID=' + docID)
+      window.open("/doc/gi/manage?ID=" + docID)
     }
   }
   removeCard(docID){
@@ -751,7 +820,7 @@ class CreateQueue extends Component{
     if(docID===""){
       return {}
     }else{
-      return <Button className="float-right" type="button" color="primary" onClick={() => window.open('/doc/gi/manage?ID=' + docID)}>Detail</Button>
+      return <Button className="float-right" type="button" color="primary" onClick={() => window.open("/doc/gi/manage?ID=" + docID)}>Detail</Button>
     }
   }
 
@@ -760,7 +829,7 @@ class CreateQueue extends Component{
       return {}
     }else{
       return <Button id="per_button_doc" 
-      style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px',display:this.state.showbutton }}
+      style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px",display:this.state.showbutton }}
       color="primary" 
       className="float-right" 
       onClick={() => this.removeCard(docID)}>Remove</Button>
@@ -768,20 +837,23 @@ class CreateQueue extends Component{
   }
   processQ(){
     let doc=[]
-    let items=[]
+   
     let dataProcessed =[]
     this.state.dataProcessSelected.forEach(docrow => {
+      let items=[]
       docrow.items.forEach(itemrow => {
-        items.push({
-        docItemID:itemrow.dociID
-        ,itemCode:itemrow.itemCode
-        ,refID:null
-        ,pickOrderType:itemrow.pickOrderby
-        ,orderBy:itemrow.orderByField
-        ,orderNo:itemrow.orderNo
-        ,lot:itemrow.lot
-        ,priority:itemrow.priority
-        ,batchs:itemrow.batchs})
+        if(docrow.value === itemrow.docID){
+          items.push({
+          docItemID:itemrow.dociID
+          ,itemCode:itemrow.itemCode
+          ,refID:null
+          ,pickOrderType:itemrow.pickOrderby
+          ,orderBy:itemrow.orderByField
+          ,orderNo:itemrow.orderNo
+          ,lot:itemrow.lot
+          ,priority:itemrow.priority
+          ,batchs:itemrow.batchs})
+        }
       });
       doc.push({
         docID:docrow.value
@@ -828,7 +900,7 @@ class CreateQueue extends Component{
     const processCard = this.state.processCard
     const itemCards = this.state.itemCard
     const processedDocCard = this.state.processedDocCard
-    const styleclose = {cursor: 'pointer', position: 'absolute', display: 'block', right: '-10px', top: '-10px', background: '#ffffff', borderRadius: '18px',
+    const styleclose = {cursor: "pointer", position: "absolute", display: "block", right: "-10px", top: "-10px", background: "#ffffff", borderRadius: "18px",
   }
     return(
       <div>
@@ -838,9 +910,9 @@ class CreateQueue extends Component{
               <FormGroup row>
                 <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
                 <Col ><AutoSelect selectfirst={false} data={this.state.auto_doc} result={(e) => this.setState({"docID":e.value,"SAPdoc":e.SAPdoc,"MMType":e.MMType,"ForCus":e.ForCus,"StampDate":e.StampDate,"Batch":e.Batch,"docresult":e.label})}/></Col>
-                <Col sm={2}><Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button></Col>
+                <Col sm={2} style={this.state.docID?{}:{"display":"none"}}><Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button></Col>
               </FormGroup>
-              <FormGroup row>
+              <FormGroup row style={this.state.docID?{}:{"display":"none"}}>
                 <Label sm={3}></Label>
                 <Col sm={7}><div>{ this.genBtnGetDocItem() }</div></Col>
               </FormGroup>
@@ -860,9 +932,9 @@ class CreateQueue extends Component{
                   </Card>
                 </Col>
               </FormGroup>
-              <FormGroup row >
+              <FormGroup row style={itemCards.length > 0?{}:{"display":"none"}}>
               <Col sm={12} style={{"float":"right"}}>
-                      <Button id="per_button_doc" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: '130px',display:this.state.showbutton }}
+                      <Button id="per_button_doc" style={{ background: "#66bb6a", borderColor: "#66bb6a", width: "130px",display:this.state.showbutton }}
                       color="primary" className="float-right"onClick={() => this.addData()}>Add</Button>
               </Col>
               </FormGroup>
@@ -874,8 +946,8 @@ class CreateQueue extends Component{
               { processCard }
               <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                 <CardBody>
-                  <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Process</Button>
-                  <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Clear</Button>
+                  <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: "130px", marginLeft: "5px" }} className="float-right">Process</Button>
+                  <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px" }} className="float-right">Clear</Button>
                 </CardBody>
               </Card>
             </Card>
@@ -883,19 +955,19 @@ class CreateQueue extends Component{
         </Row>
 
         <Popup open={this.state.open} onClose={this.closeModal}>
-          <div style={{ border: '2px solid #007bff', borderRadius:'5px'}}>
+          <div style={{ border: "2px solid #007bff", borderRadius:"5px"}}>
                 <a style={styleclose} onClick={this.closeModal}>
                     { imgClose }
                 </a>
-                <div id="header" style={{ width: '100%', borderBottom: '1px solid #007bff', fontSize: '18px', padding: '5px', color: '#007bff', fontWeight: 'bold' }}>Processed</div>
-                <div style={{ width: '100%', padding: '10px 5px' ,height: '500px', overflow: 'scroll' }}>
+                <div id="header" style={{ width: "100%", borderBottom: "1px solid #007bff", fontSize: "18px", padding: "5px", color: "#007bff", fontWeight: "bold" }}>Processed</div>
+                <div style={{ width: "100%", padding: "10px 5px" ,height: "500px", overflow: "auto" }}>
                 <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                   { processedDocCard }
                 </Card>
                 <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
                   <CardBody>
-                    <Button onClick={() => this.confirmQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px' }} className="float-right">Confirm</Button>
-                    <Button onClick={this.closeModal} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: '130px' }} className="float-right">Close</Button>
+                    <Button onClick={() => this.confirmQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: "130px", marginLeft: "5px" }} className="float-right">Confirm</Button>
+                    <Button onClick={this.closeModal} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px" }} className="float-right">Close</Button>
                   </CardBody>
                 </Card>
                 </div>

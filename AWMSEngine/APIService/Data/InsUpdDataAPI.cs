@@ -37,7 +37,7 @@ namespace AWMSEngine.APIService.Data
             {
                 if (mt.Name.ToUpper().Equals("LOAD" + ((string)this.RequestVO.t).ToUpper().Substring(4)))
                 {
-                    mt.Invoke(stManager, null);
+                    mt.Invoke(stManager, new object[] { null });
                 }
             }
             return res1;
