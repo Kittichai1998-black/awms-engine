@@ -70,10 +70,10 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     DocumentItem_ID = docItem.ID.Value,
                     StorageObject_ID = newSto.id.Value,
-                    Quantity = newSto.qty,
+                    Quantity = -newSto.qty,
                     UnitType_ID = newSto.unitID,
                     BaseUnitType_ID = newSto.baseUnitID,
-                    BaseQuantity = newSto.baseQty,
+                    BaseQuantity = -newSto.baseQty,
                     Status = EntityStatus.ACTIVE,
                 }, this.BuVO);
             }
