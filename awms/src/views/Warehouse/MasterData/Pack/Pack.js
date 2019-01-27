@@ -128,7 +128,12 @@ class Pack extends Component {
         this.setState({ loading: true })
         let getFilter = this.state.datafilter;
         let listFilter = getFilter.map(x=> {
-            return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+            if(x.id === "Status"){
+                return { "f": x.id, "c": "!=", "v": "*" + x.value + "*" }
+            }
+            else{
+                return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+            }
         })
         let strCondition = JSON.stringify(listFilter);
         let getSelect = this.state.select;

@@ -40,7 +40,7 @@ namespace AWMSEngine.APIService.ASRS
                 List<amt_DocumentItemStorageObject> disto = new List<amt_DocumentItemStorageObject>();
                 foreach (var sto in stos)
                 {
-                    if (sto.objectSizeID == 2)
+                    if (sto.type == StorageObjectType.PACK)
                     {
                         var getdisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
                             new SQLConditionCriteria("StorageObject_ID", sto.id, SQLOperatorType.EQUALS),
@@ -73,7 +73,7 @@ namespace AWMSEngine.APIService.ASRS
                             sto.baseQty = sto.baseQty - gdisto.BaseQuantity;
                             if (sto.qty == 0)
                             {
-                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                                sto.eventStatus = StorageObjectEventStatus.PICKED;
                             }
                             ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                         }
@@ -111,7 +111,6 @@ namespace AWMSEngine.APIService.ASRS
                         this.BeginTransaction();
                         var reqSAP = ObjectUtil.DynamicToModel<ClosedGIDocument.TDocReq>(closeDoc);
                         var resSAP = new ClosedGIDocument().Execute(this.Logger, this.BuVO, reqSAP);
-
                     }
                 }
             }

@@ -19,7 +19,7 @@ namespace AWMSEngine.ADO.QueueApi
                 public string desAreaCode;
                 public string desLocationCode;
                 public int priority;
-                public List<baseinfo> baseInfo;
+                public baseinfo baseInfo;
                 public class baseinfo
                 {
                     public string baseCode;
