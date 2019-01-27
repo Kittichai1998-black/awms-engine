@@ -24,7 +24,7 @@ class CurrentReport extends Component {
         queryString: window.apipath + "/api/viw",
         t: "r_CurrentInventory",
         q: '',
-        f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit,Batch,OrderNo,Lot",
+        f: "*",
         g: "",
         s: "[{'f':'SKU_Code','od':'asc'}]",
         sk: 0,
@@ -140,7 +140,7 @@ class CurrentReport extends Component {
   sumFooterQty(){
     return _.sumBy(this.state.data, 
       x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Qty) : null)
+        parseFloat(x.QtySummary) : null)
   }
 
   render() {
@@ -169,6 +169,7 @@ class CurrentReport extends Component {
       { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 130 },
       { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 250 },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true },
+      { accessor: 'Area', Header: 'Area', },
       { accessor: 'Batch', Header: 'Batch', filterable: true, sortable: true },
       { accessor: 'Lot', Header: 'Lot', filterable: true, sortable: true },
       { accessor: 'OrderNo', Header: 'OrderNo', filterable: true, sortable: true },
@@ -179,11 +180,30 @@ class CurrentReport extends Component {
       //       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
       //         parseFloat(x.Qty) : null)}</span>)
       // },
+      {
+        accessor: 'QtyReceiving', Header: 'Qty Receiving', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceiving))}</span>)
+      },
+      {
+        accessor: 'QtyReceived', Header: 'Qty Received', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceived))}</span>)
+      },
+      {
+        accessor: 'QtyPicking', Header: 'Qty Picking', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyPicking))}</span>)
+      },
+      {
+        accessor: 'QtyAuditing', Header: 'Qty Auditing', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyAuditing))}</span>)
+      },
+    
+      {
+        accessor: 'QtySummary', Header: 'Qty', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
+      },
 
-      { accessor: 'Qty', Header: 'Qty', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
 
-      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
+      { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
 
     return (
@@ -193,8 +213,10 @@ class CurrentReport extends Component {
             <Col xs="6">
               
             </Col>
-            <Col xs="2">
-              <ExportFile column={cols} dataxls={this.state.data} filename={"CurrentInventory"} />
+            <Col xs="6">
+              <div className="float-right">
+                <ExportFile column={cols} dataxls={this.state.data} filename={"CurrentInventory"} />
+              </div>
             </Col>
         
           </Row>

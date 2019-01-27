@@ -208,14 +208,13 @@ class Pack extends Component {
     onClickUpdateData(){
         let dataedit = this.state.dataedit.map(x => {
             return {
-                "ID":x.ID,
-                "WeightKG":x.WeightKG,
-                "UnitType_ID":x.UnitType_ID,
+              "ID": x.SKUMaster_ID,
+              "ObjectSize_ID": x.ObjectSize_ID
             }
         });
         
         let updjson = {
-            "t": "ams_PackMaster",
+            "t": "ams_SKUMaster",
             "pk": "ID",
             "datas": dataedit,
             "nr": false
@@ -285,7 +284,7 @@ class Pack extends Component {
             //{ accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left", Cell:(e) => this.onCreateDropdownEdit(e, this.state.UnitType, "UnitType_ID") },
             { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left" },
             { accessor: 'ItemQty', Header: 'Base Qty/Unit', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 70 },
-          { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter: (e) => this.onCreateDropdownFilter(e, this.state.ObjSize, "ObjectSize_ID"), Cell:(e) => this.onCreateDropdownEdit(e, this.state.ObjSize, "ObjectSize_ID") },
+            { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter: (e) => this.onCreateDropdownFilter(e, this.state.ObjSize, "ObjectSize_ID"), Cell:(e) => this.onCreateDropdownEdit(e, this.state.ObjSize, "ObjectSize_ID") },
             { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
             { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
