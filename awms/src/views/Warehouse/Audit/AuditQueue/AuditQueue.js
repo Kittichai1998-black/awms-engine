@@ -40,7 +40,7 @@ class AuditQueue extends Component{
       l: 0,
       all: "",
     };
-    this.station = [{'label':"Front",'value':8},{'label':"Back",'value':9}];
+    this.station = [{'label':"Front",'value':2},{'label':"Back",'value':3}];
     this.priority = [{ 'value': 0, 'label': 'Low' },
     { 'value': 1, 'label': 'Normal' },
     { 'value': 2, 'label': 'High' },
