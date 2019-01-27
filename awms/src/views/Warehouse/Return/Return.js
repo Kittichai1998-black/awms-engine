@@ -106,7 +106,7 @@ class Return extends Component {
 
     }
 
-    this.checkPallet = this.checkPallet.bind(this)
+    
     this.genDocItem = this.genDocItem.bind(this)
     this.createDataCard = this.createDataCard.bind(this)
     this.mappingPallet = this.mappingPallet.bind(this)
@@ -199,10 +199,7 @@ console.log(DocItemReturn)
   })
 }
 
-checkPallet(check){
-  //==== เช็ค pallet ====
-//Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => { })
-}
+
 
 
   mappingPallet(flag){
@@ -315,20 +312,21 @@ checkPallet(check){
       console.log("xxx")
       this.state.DocItemReturn.forEach( x =>{
         let postdata = {  
-          DocItemID: x.value
-          , bstos: data //ในกรณีที่พาเลทไม่มีสินค้าข้างในต้องใส่อะไร
-          , SKU: x.Code
-          , Batch: x.Batch
-          , Lot: x.Lot
-          , OrderNo: x.OrderNo
-          , BaseQty : this.state.dataValue
+          docItemID: x.value
+          , baseID: data 
+          , packCode: x.Code
+          , batch: x.Batch
+          , lot: x.Lot
+          , orderNo: x.OrderNo
+          , baseQty : this.state.dataValue
         }
-    console.log(postdata)
-        // Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
-    
-        // })
-        window.success("Success")
-        this.Clear()
+        console.log(postdata)
+        console.log(window.apipath + "/api/wm/issued/sto/return")
+        Axios.post(window.apipath + "/api/wm/issued/sto/return", postdata).then((res) => {
+          console.log(res)
+        })
+        // window.success("Success")
+        // this.Clear()
       })
 
     }else{
