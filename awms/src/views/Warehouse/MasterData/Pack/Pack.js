@@ -94,15 +94,24 @@ class Pack extends Component {
 
   onGetData() {
     console.log(this.state.wei)
-    this.setState({ weis: encodeURI(this.state.wei) })
+    const weiht = encodeURIComponent(this.state.wei)
+    const weights = weiht.split("2")[0]
+    console.log(weiht)
+    this.setState({ weights },()=>{ console.log(this.state.weights)})
+
+
+    console.log(this.state.weights)
+
+
+
     if (this.state.wei !== "")
-      console.log(this.state.wei)
+
     this.setState({
     
          selectSearch : {
         queryString: window.apipath + "/api/viw",
-           t: "PackMaster",
-           q: "[{ 'f': 'Status', c:'!=', 'v': 2},{ 'f': 'ObjectSizeCode', c:'=', 'v':"+this.state.weis+"}]",
+         t: "PackMaster",
+           q: "[{ 'f': 'Status', c:'!=', 'v': 2},{ 'f': 'ObjectSizeCode', c:'like', 'v':" + encodeURIComponent(weiht)+"}]",
         f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
@@ -154,7 +163,7 @@ class Pack extends Component {
         const ObjSizeSelect = {
             queryString: window.apipath + "/api/mst",
             t: "ObjectSize",
-          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': '999%'}",
+          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}",
             f: "ID,Code",
             g: "",
             s: "[{'f':'ID','od':'asc'}]",
@@ -232,12 +241,21 @@ class Pack extends Component {
 
         return (
             <div>
-                {/*
-            column = คอลัมที่ต้องการแสดง
-            data = json ข้อมูลสำหรับ select ผ่าน url
-            ddlfilter = json dropdown สำหรับทำ dropdown filter
-          */}
-                <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist}
+            <div>
+              <Row >
+
+                <div className="float-right">
+                  <Input onChange={(e) => this.setState({ wei: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '28px' }}
+                    value={this.state.wei} />
+                  <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetData() }}>Search</Button>
+                </div>
+                <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} style={{ width: "130px", marginLeft: '5px' }} className="float-right" />
+
+              </Row>
+            </div>
+
+            <div>
+              <TableGen column={cols} data={this.state.selectSearch} dropdownfilter={this.state.statuslist}
                     filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={false}
                     btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"} searchURL={this.props.location.search}
                     table="ams_PackMaster" />
