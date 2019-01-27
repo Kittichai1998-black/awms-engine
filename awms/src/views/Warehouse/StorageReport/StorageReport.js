@@ -30,7 +30,7 @@ class StoragReport extends Component {
         l: 0,
         all: "",
       },
-
+      datafilter:[],
     }
 
 
