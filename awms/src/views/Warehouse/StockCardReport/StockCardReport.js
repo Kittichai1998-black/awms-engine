@@ -182,22 +182,22 @@ class StockCardReport extends Component {
     this.setState({ select }, () => { this.getData() })
   }
 
-  sumFooterDebit(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Debit) : null)
+  sumFooterDebit() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+        parseFloat(x.Debit) : null)
   }
 
-  sumFooterCredit(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Credit) : null)
+  sumFooterCredit() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+        parseFloat(x.Credit) : null)
   }
 
-  sumFooterTotal(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Total) : null)
+  sumFooterTotal() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+        parseFloat(x.Total) : null)
   }
 
   render() {
@@ -231,14 +231,20 @@ class StockCardReport extends Component {
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true },
 
-      { accessor: 'Debit', Header: 'Debit', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterDebit() === 0 ? "-":this.sumFooterDebit()}</span>)},
+      {
+        accessor: 'Debit', Header: 'Debit', editable: false, Footer:
+          (<span><label>Sum :</label>{" "} {this.sumFooterDebit() === 0 ? "-" : this.sumFooterDebit()}</span>)
+      },
 
-      { accessor: 'Credit', Header: 'Credit', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterCredit() === 0 ? "-":this.sumFooterCredit()}</span>)},
+      {
+        accessor: 'Credit', Header: 'Credit', editable: false, Footer:
+          (<span><label>Sum :</label>{" "} {this.sumFooterCredit() === 0 ? "-" : this.sumFooterCredit()}</span>)
+      },
 
-      { accessor: 'Total', Header: 'Total', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterTotal() === 0 ? "-":this.sumFooterTotal()}</span>)},
+      {
+        accessor: 'Total', Header: 'Total', editable: false, Footer:
+          (<span><label>Sum :</label>{" "} {this.sumFooterTotal() === 0 ? "-" : this.sumFooterTotal()}</span>)
+      },
       // {
       //   accessor: 'Debit', Header: 'Debit', editable: false, sortable: true, Footer:
       //     (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
@@ -331,7 +337,13 @@ class StockCardReport extends Component {
           data={this.state.data}
           filterable={false}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} />
+          PaginationComponent={this.paginationButton}
+          getTfootTrProps={(state, rowInfo) => ({
+            style: {
+              backgroundColor: '#c8ced3'
+            }
+          })}
+        />
       </div>
     )
   }

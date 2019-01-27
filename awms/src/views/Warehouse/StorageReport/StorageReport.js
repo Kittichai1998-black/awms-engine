@@ -155,10 +155,10 @@ class StoragReport extends Component {
   }
 
 
-  sumFooterQty(){
-    return _.sumBy(this.state.data, 
+  sumFooterQty() {
+    return _.sumBy(this.state.data,
       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-      parseFloat(x.Qty) : null)
+        parseFloat(x.Qty) : null)
   }
 
   render() {
@@ -194,9 +194,11 @@ class StoragReport extends Component {
       { accessor: 'Lot', Header: 'Lot', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
 
-      { accessor: 'Qty', Header: 'Qty', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
-      
+      {
+        accessor: 'Qty', Header: 'Qty', editable: false, Footer:
+          (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
+      },
+
       // {
       //   accessor: 'Qty', Header: 'Qty', filterable: false, sortable: false, Footer:
       //     (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
@@ -263,7 +265,13 @@ class StoragReport extends Component {
           editable={false}
           filterable={true}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} />
+          PaginationComponent={this.paginationButton}
+          getTfootTrProps={(state, rowInfo) => ({
+            style: {
+              backgroundColor: '#c8ced3'
+            }
+          })}
+        />
       </div>
 
     )

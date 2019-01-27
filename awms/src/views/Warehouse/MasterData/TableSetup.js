@@ -168,7 +168,10 @@ class TableGen extends Component {
     if (searchURL) {
       const search = queryString.parse(encodeURI(searchURL))
       var url = datasel;
-      var sel = JSON.parse(url.q)
+      var sel = [];
+      if (url.q) {
+        sel = JSON.parse(url.q)
+      }
       for (let value in search) {
         if (search[value]) {
           if (search[value] !== "") {
@@ -617,7 +620,7 @@ class TableGen extends Component {
 
   createDropdownFilter(name, func, selectdata) {
     let filter = [...this.state.datafilter]
-   
+
     let item = null
     let list = null
     this.props.dropdownfilter.forEach(row => {
@@ -1252,9 +1255,9 @@ class TableGen extends Component {
       )
     } else if (this.props.addExportbtn === true) {
       return (
-        <div style={{ marginTop: '3px', marginBottom: '3px', display: 'inline-block'}}>
+        <div style={{ marginTop: '3px', marginBottom: '3px', display: 'inline-block' }}>
           <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '2px', marginRight: '3px' }} type="button" color="success">Add</Button>
-          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename}/>
+          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
         </div>
       )
     } else if (this.props.exportfilebtn === false) {

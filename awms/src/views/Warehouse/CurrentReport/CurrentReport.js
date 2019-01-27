@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import ReactTable from 'react-table'
-import { apicall, createQueryString } from '../ComponentCore';
+import { apicall, createQueryString, FilterURL } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
 import { Row, Col, Input } from 'reactstrap';
 import _ from 'lodash';
@@ -20,27 +20,31 @@ class CurrentReport extends Component {
       loading: true,
       defaultPageS: 100,
       currentPage: 1,
-      select: {
-        queryString: window.apipath + "/api/viw",
-        t: "r_CurrentInventory",
-        q: '',
-        f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit,Batch,OrderNo,Lot",
-        g: "",
-        s: "[{'f':'SKU_Code','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-      },
+      select: {}
     };
+    this.queryString = {
+      queryString: window.apipath + "/api/viw",
+      t: "r_CurrentInventory",
+      q: '',
+      f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit,Batch,OrderNo,Lot",
+      g: "",
+      s: "[{'f':'SKU_Code','od':'asc'}]",
+      sk: 0,
+      l: 100,
+      all: "",
+    }
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
   }
 
   componentDidMount() {
     document.title = "Current Inventory - AWMS";
-    this.getData()
-
-
+    if (this.props.location.search) {
+      let select = FilterURL(this.props.location.search, this.queryString)
+      this.setState({ select: select }, () => this.getData())
+    } else {
+      this.setState({ select: this.queryString }, () => this.getData())
+    }
   }
   componentWillUnmount() {
 
@@ -137,10 +141,10 @@ class CurrentReport extends Component {
     this.setState({ select }, () => { this.getData() })
   }
 
-  sumFooterQty(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Qty) : null)
+  sumFooterQty() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+        parseFloat(x.Qty) : null)
   }
 
   render() {
@@ -180,8 +184,10 @@ class CurrentReport extends Component {
       //         parseFloat(x.Qty) : null)}</span>)
       // },
 
-      { accessor: 'Qty', Header: 'Qty', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
+      {
+        accessor: 'Qty', Header: 'Qty', editable: false, Footer:
+          (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
+      },
 
       { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
@@ -211,7 +217,13 @@ class CurrentReport extends Component {
           editable={false}
           filterable={true}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} />
+          PaginationComponent={this.paginationButton}
+          getTfootTrProps={(state, rowInfo) => ({
+            style: {
+              backgroundColor: '#c8ced3'
+            }
+          })}
+        />
       </div>
 
     )
