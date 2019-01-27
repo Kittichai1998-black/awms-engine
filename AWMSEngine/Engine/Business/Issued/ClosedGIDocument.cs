@@ -302,7 +302,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 if (relation == 0)
                 {
                     //check = dataDocItem.DocItemStos.Sum(x => x.Quantity).Value;
-                    check = dataDocItem.DocItemStos.Where(x => x.Status == 1).Sum(x => x.Quantity).Value;
+                    check = dataDocItem.DocItemStos.Where(x => x.Status == EntityStatus.ACTIVE).Sum(x => x.Quantity).Value;
                 }
                 else
                 {
@@ -310,7 +310,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         new KeyValuePair<string, object> ("DocumentItem_ID",dataDocItem.ID)
                         }, this.BuVO);
 
-                    check = diSto.Where(x => x.Status == 1).Sum(x => x.Quantity).Value;
+                    check = diSto.Where(x => x.Status == EntityStatus.ACTIVE).Sum(x => x.Quantity).Value;
                 }
 
                 if (check == 0)

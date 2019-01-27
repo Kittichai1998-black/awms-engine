@@ -2,6 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable'
 
 import DefaultLayout from './containers/DefaultLayout';
+import AuditReport from './views/Warehouse/AuditReport/AuditReport';
 
 function Loading() {
   return <div>Loading...</div>;
@@ -319,6 +320,11 @@ const MoveLocation = Loadable({
   loading: Loading,
 });
 
+const ReportAudit = Loadable({
+  loader: () => import('./views/Warehouse/AuditReport/AuditReport'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -393,6 +399,7 @@ const routes = [
   { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
   { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
+  { path: '/sys/ad/report', exact: true, name: 'Report / Audit', component: ReportAudit },
 ];
 
 export default routes;
