@@ -143,6 +143,7 @@ class StockCardReport extends Component {
 
   render() {
     const cols = [
+      { Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
       {
         accessor: 'ActionTime', Header: 'Date', editable: false, Cell: (e) =>
           this.datetimeBody(e.value)
@@ -151,19 +152,24 @@ class StockCardReport extends Component {
       { accessor: 'Doc_Code', Header: 'Doc No', editable: false },
       { accessor: 'MovementType', Header: 'Description', editable: false },
       { accessor: 'Batch', Header: 'Batch', editable: false },
-      { accessor: 'Debit', Header: 'Debit', editable: false, Footer:
-        (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
-        x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
-        parseFloat(x.Debit) : null)}</span>) 
+      {
+        accessor: 'Debit', Header: 'Debit', editable: false, Footer:
+          (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
+            x => _.every(this.state.data, ["Unit", x.Base_Unit]) == true ?
+              parseFloat(x.Debit) : null)}</span>)
       },
-      { accessor: 'Credit', Header: 'Credit', editable: false, Footer:
-      (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Credit) : null)}</span>)  },
-      { accessor: 'Total', Header: 'Balance', editable: false, Footer:
-      (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Total) : null)}</span>)  },
+      {
+        accessor: 'Credit', Header: 'Credit', editable: false, Footer:
+          (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
+            x => _.every(this.state.data, ["Unit", x.Base_Unit]) == true ?
+              parseFloat(x.Credit) : null)}</span>)
+      },
+      {
+        accessor: 'Total', Header: 'Balance', editable: false, Footer:
+          (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
+            x => _.every(this.state.data, ["Unit", x.Base_Unit]) == true ?
+              parseFloat(x.Total) : null)}</span>)
+      },
       { accessor: 'Unit', Header: 'Unit', editable: false },
     ];
     return (
@@ -228,7 +234,7 @@ class StockCardReport extends Component {
           </Row>
 
         </div>
-        <ReactTable pageSize="10000"  sortable={false} style={{ background: "white", marginBottom: "50px" }}
+        <ReactTable defaultPageSize="100" sortable={false} style={{ background: "white", border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
           filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} />
       </div>
     )
