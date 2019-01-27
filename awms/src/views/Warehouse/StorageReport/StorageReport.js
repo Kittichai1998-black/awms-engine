@@ -154,6 +154,13 @@ class StoragReport extends Component {
     this.setState({ select }, () => { this.getData() })
   }
 
+
+  sumFooterQty(){
+    return _.sumBy(this.state.data, 
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+      parseFloat(x.Qty) : null)
+  }
+
   render() {
 
     let cols = [
@@ -186,12 +193,16 @@ class StoragReport extends Component {
       { accessor: 'Batch', Header: 'Batch', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Lot', Header: 'Lot', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
-      {
-        accessor: 'Qty', Header: 'Qty', filterable: false, sortable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-            x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-              parseFloat(x.Qty) : null)}</span>)
-      },
+
+      { accessor: 'Qty', Header: 'Qty', editable: false, Footer:
+      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
+      
+      // {
+      //   accessor: 'Qty', Header: 'Qty', filterable: false, sortable: false, Footer:
+      //     (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
+      //       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+      //         parseFloat(x.Qty) : null)}</span>)
+      // },
 
       { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {

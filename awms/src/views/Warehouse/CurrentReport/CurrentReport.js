@@ -136,6 +136,13 @@ class CurrentReport extends Component {
     }
     this.setState({ select }, () => { this.getData() })
   }
+
+  sumFooterQty(){
+    return _.sumBy(this.state.data, 
+      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
+      parseFloat(x.Qty) : null)
+  }
+
   render() {
 
     let cols = [
@@ -165,13 +172,17 @@ class CurrentReport extends Component {
       { accessor: 'Batch', Header: 'Batch', filterable: true, sortable: true },
       { accessor: 'Lot', Header: 'Lot', filterable: true, sortable: true },
       { accessor: 'OrderNo', Header: 'OrderNo', filterable: true, sortable: true },
-      {
-        accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true,
-        Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-            x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-              parseFloat(x.Qty) : null)}</span>)
-      },
+      // {
+      //   accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true,
+      //   Footer:
+      //     (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
+      //       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+      //         parseFloat(x.Qty) : null)}</span>)
+      // },
+
+      { accessor: 'Qty', Header: 'Qty', editable: false, Footer:
+      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
+
       { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
 

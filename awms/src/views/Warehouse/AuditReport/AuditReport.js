@@ -38,7 +38,7 @@ class AuditReport extends Component {
 
   }
   async componentWillMount() {
-    document.title = "Stock Card : AWMS";
+    document.title = "Audit : AWMS";
     Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
       const PackMasterdata = []
       response.data.datas.forEach(row => {
@@ -87,7 +87,7 @@ class AuditReport extends Component {
       } else {
         let namefileDateFrom = formatDateFrom.toString();
         let namefileDateTo = formatDateTo.toString();
-        let nameFlie = "STC :" + this.state.CodePack + " " + namefileDateTo + " to " + namefileDateFrom
+        let nameFlie = "STC :" + this.state.Code + " " + namefileDateTo + " to " + namefileDateFrom
         this.setState({ name: nameFlie.toString() })
         console.log(this.state.ID)
         console.log(formatDateFrom)
@@ -97,7 +97,7 @@ class AuditReport extends Component {
         let batch = this.state.Batch
         let lot = this.state.Lot
         let orderno = this.state.Orderno
-        console.log(this.state.CodePack )
+
 
         Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuCode=" + skuCode + "&startDate=" + formatDateFrom + "&endDate=" + formatDateTo + "&batch=" + (batch === undefined ? '' : batch) + "&lot=" + (lot === undefined ? '' : lot) + "&orderno=" + (orderno === undefined ? '' : orderno) + "&spname=STOCK_AUDIT").then((rowselect1) => {
         console.log(rowselect1)
@@ -153,28 +153,36 @@ class AuditReport extends Component {
     }
   }
 
+  sumFooterQty(){
+    return _.sumBy(this.state.data, 
+      x => _.every(this.state.data, ["UnitType_Code",x.UnitType_Code]) == true ?
+      parseFloat(x.BaseQuantity) : null)
+  }
+
+  sumFooterBalance(){
+    return _.sumBy(this.state.data, 
+      x => _.every(this.state.data, ["UnitType_Code",x.UnitType_Code]) == true ?
+      parseFloat(x.Balance) : null)
+  }
+
   render() {
     const cols = [
-      {accessor: 'Code', Header: 'Code', editable: false,},
-      { accessor: 'RefID', Header: 'RefID', editable: false },
-      { accessor: 'StorageObject_Code', Header: 'StorageObject_Code', editable: false },
-      { accessor: 'StorageObject_Name', Header: 'StorageObject_Name', editable: false },
-      { accessor: 'StorageObject_Batch', Header: 'StorageObject_Batch', editable: false},
-      { accessor: 'StorageObject_Lot', Header: 'StorageObject_Lot', editable: false},
-      { accessor: 'StorageObject_OrderNo', Header: 'StorageObject_OrderNo', editable: false},
-      { accessor: 'BaseQuantity', Header: 'BaseQuantity', editable: false},
-      { accessor: 'Balance', Header: 'Balance', editable: false},
-      { accessor: 'UnitType_Code', Header: 'UnitType_Code', editable: false},
+      {accessor: 'Code', Header: 'Doc No.', editable: false,},
+      { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false },
+      { accessor: 'StorageObject_Code', Header: 'SKU Code', editable: false },
+      { accessor: 'StorageObject_Name', Header: 'SKU Name', editable: false },
+      { accessor: 'StorageObject_Batch', Header: 'Batch', editable: false},
+      { accessor: 'StorageObject_Lot', Header: 'Lot', editable: false},
+      { accessor: 'StorageObject_OrderNo', Header: 'OrderNo', editable: false},
+    
+      { accessor: 'BaseQuantity', Header: 'Qty', editable: false, Footer:
+      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
+
+      { accessor: 'Balance', Header: 'Balance', editable: false, Footer:
+      (<span><label>Sum :</label>{" "} {this.sumFooterBalance() === 0 ? "-":this.sumFooterBalance()}</span>)},
+
+      { accessor: 'UnitType_Code', Header: 'Unit', editable: false},
       
-      // { accessor: 'Credit', Header: 'Credit', editable: false, Footer:
-      // (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
-      // x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
-      // parseFloat(x.Credit) : null)}</span>)  },
-      // { accessor: 'Total', Header: 'Balance', editable: false, Footer:
-      // (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
-      // x => _.every(this.state.data, ["Unit",x.Base_Unit]) == true ?
-      // parseFloat(x.Total) : null)}</span>)  },
-      // { accessor: 'Unit', Header: 'Unit', editable: false },
     ];
     return (
       <div>
@@ -240,6 +248,7 @@ class AuditReport extends Component {
         </div>
         <ReactTable pageSize="10000"  sortable={false} style={{ background: "white", marginBottom: "50px" }}
           filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} />
+        
       </div>
     )
   }
