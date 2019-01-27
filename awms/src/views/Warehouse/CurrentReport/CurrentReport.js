@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
 import ReactTable from 'react-table'
-import { TableGen } from '../MasterData/TableSetup';
-import moment from 'moment';
-import { AutoSelect, Clone, apicall, createQueryString } from '../ComponentCore';
-import ExtendTable from '../MasterData/ExtendTable';
+import { apicall, createQueryString } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
-import { Button, Row, Col, Input } from 'reactstrap';
+import { Row, Col, Input } from 'reactstrap';
+import _ from 'lodash';
 
 const Axios = new apicall()
 
@@ -18,6 +16,8 @@ class CurrentReport extends Component {
     super();
     this.state = {
       data: [],
+      datafilter:[],
+      loading:true,
       select: {
         queryString: window.apipath + "/api/viw",
         t: "r_CurrentInventory",
@@ -33,12 +33,9 @@ class CurrentReport extends Component {
   }
 
   componentDidMount() {
-    document.title = "Current Inventory - AWMS"
-    Axios.get(createQueryString(this.state.select)).then((response) => {
-      this.setState({
-        data: response.data.datas
-      })
-    })
+    document.title = "Current Inventory - AWMS";
+    this.getData()
+    
 
   }
   componentWillUnmount() {
@@ -46,6 +43,13 @@ class CurrentReport extends Component {
 
   }
 
+  getData(){
+    Axios.get(createQueryString(this.state.select)).then((response) => {
+      this.setState({
+        data: response.data.datas
+      })
+    })
+  }
 
   initialData() {
     //Axios.get(createQueryString(this.state.select)).then((rowselect2) => {
@@ -55,41 +59,54 @@ class CurrentReport extends Component {
     //  console.log(this.state.data)
     //})
   }
-
-  onChangeFilter(inputValue, rowData) {
-    let selectUrl = this.state.select;
-    let selectCondition = JSON.parse(selectUrl.q === "" ? "[]" : selectUrl.q);
-
-    if (selectCondition.length > 0) {
-      selectCondition.forEach((row, index) => {
-        if (row.f === rowData.column.id) {
-          selectCondition.splice(index, 1)
+  createCustomFilter(name) {
+    return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
+      onKeyPress={(e) => {
+        if (e.key === 'Enter') {
+          let filter =  this.state.datafilter
+          filter.forEach((x, index) => {
+            if(x.id === name.column.id)
+              filter.splice(index, 1);
+          });
+          filter.push({id:name.column.id, value: e.target.value});
+          this.setState({datafilter:filter}, () => {this.onCheckFliter()});
+          
         }
-      })
-    }
+      }
+    } />
+  }
 
-    selectCondition.push({ 'f': rowData.column.id, c: 'like', 'v': '*' + inputValue.target.value + '*' })
-    selectUrl.q = JSON.stringify(selectCondition);
-
-    console.log(selectUrl)
-    Axios.get(createQueryString(selectUrl)).then((response) => {
-      this.setState({
-        data: response.data.datas, select: selectUrl
-      }, () => console.log(this.state.select))
+  onCheckFliter() {
+    this.setState({ loading: true })
+    let getFilter = this.state.datafilter;
+    let listFilter = getFilter.map(x=> {
+      if(x.type === "date")
+      return { "f": x.id, "c": "=", "v": x.value}
+      else
+        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
     })
+    let strCondition = JSON.stringify(listFilter);
+    let getSelect = this.state.select;
+    getSelect.q = strCondition;
+    this.setState({select:getSelect}, () => {this.getData()})
   }
 
   render() {
 
     let cols = [
-      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 130 },
-      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 250 },
-      { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: true },
+      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
+      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 250 },
+      { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Batch', Header: 'Batch', filterable: false, sortable: true },
       { accessor: 'Lot', Header: 'Lot', filterable: false, sortable: true },
       { accessor: 'OrderNo', Header: 'OrderNo', filterable: false, sortable: true },
-      { accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true },
-      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => <Input onKeyPress={(input) => { if (input.key === 'Enter') { this.onChangeFilter(input, e) } }} />, sortable: false, minWidth: 130 },
+      { accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true,
+        Footer:
+        (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data, 
+          x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
+          parseFloat(x.Qty) : null)}</span>)
+      },
+      { accessor: 'Base_Unit', Header: 'Base_Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
 
     return (

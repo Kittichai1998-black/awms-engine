@@ -1,30 +1,12 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { TableGen } from '../TableSetup';
-import Axios from 'axios';
+import ReactTable from 'react-table'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
-import { apicall } from '../../ComponentCore'
-import { Button, Row, Col, Input } from 'reactstrap';
+import { apicall, createQueryString } from '../../ComponentCore'
+import { Button, Row, Col, Input, Card, CardBody } from 'reactstrap';
 import ExportFile from '../../MasterData/ExportFile';
 
-
-const createQueryString = (select) => {
-  let queryS = select.queryString + (select.t === "" ? "?" : "?t=" + select.t)
-    + (select.q === "" ? "" : "&q=" + select.q)
-    + (select.f === "" ? "" : "&f=" + select.f)
-    + (select.g === "" ? "" : "&g=" + select.g)
-    + (select.s === "" ? "" : "&s=" + select.s)
-    + (select.sk === "" ? "" : "&sk=" + select.sk)
-    + (select.l === 0 ? "" : "&l=" + select.l)
-    + (select.all === "" ? "" : "&all=" + select.all)
-  return queryS
-}
-
-
-
-const api = new apicall()
-
-
+const Axios = new apicall()
 
 class Pack extends Component {
     constructor(props) {
@@ -32,14 +14,7 @@ class Pack extends Component {
 
         this.state = {
             data: [],
-            autocomplete: [],
-            statuslist: [{
-                'status': [{ 'value': '*', 'label': 'All' }, { 'value': '1', 'label': 'Active' }, { 'value': '0', 'label': 'Inactive' }],
-                'header': 'Status',
-                'field': 'Status',
-                'mode': 'check',
-            }],
-            acceptstatus: false,
+            dataedit:[],
             select: {
                 queryString: window.apipath + "/api/viw",
                 t: "PackMaster",
@@ -51,14 +26,39 @@ class Pack extends Component {
                 l: 100,
                 all: "",
             },
-            sortstatus: 0,
-            selectiondata: [],
-
+            datafilter:[],UnitType:[],ObjSize:[],currentPage:1,
         };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-        this.filterList = this.filterList.bind(this)
-        this.uneditcolumn = ["SKU_Code", "PackCode", "PackName", "UnitTypeCode", "UnitTypeName", "ObjectSizeCode", "ObjectSize_Code", "Created", "Modified", "LastUpdate"]
+        this.paginationButton = this.paginationButton.bind(this)
+        this.filterList = this.filterList.bind(this);
+        this.onClickUpdateData = this.onClickUpdateData.bind(this)
+        this.UnitTypeSelect = {
+            queryString: window.apipath + "/api/mst",
+            t: "UnitType",
+            q: "[{ 'f': 'Status', c:'<', 'v': 2}",
+            f: "ID,Code",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            all: "",
+        };
+        this.ObjSizeSelect = {
+            queryString: window.apipath + "/api/mst",
+            t: "ObjectSize",
+          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'like', 'v': 2}",
+          f: "ID,Code",
+            g: "",
+            s: "[{'f':'ID','od':'asc'}]",
+            sk: 0,
+            all: "",
+        };
+        this.statuslist = [{
+            'status': [{ 'value': '*', 'label': 'All' }, { 'value': '1', 'label': 'Active' }, { 'value': '0', 'label': 'Inactive' }],
+            'header': 'Status',
+            'field': 'Status',
+            'mode': 'check',
+        }];
     }
 
     onHandleClickCancel(event) {
@@ -73,6 +73,14 @@ class Pack extends Component {
         this.displayButtonByPermission(dataGetPer)
         document.title = "SKU Unit - AWMS"
         this.filterList();
+        this.getData();
+    }
+
+    
+    getData(){
+        Axios.get(createQueryString(this.state.select)).then(res => {
+        this.setState({ data: res.data.datas, loading:false})
+        })
     }
 
     //permission
@@ -91,176 +99,233 @@ class Pack extends Component {
         }
     }
 
-
-  onGetData() {
-    console.log(this.state.wei)
-    const weiht = encodeURIComponent(this.state.wei)
-    const weights = weiht.split("2")[0]
-    console.log(weiht)
-    this.setState({ weights },()=>{ console.log(this.state.weights)})
-
-
-    console.log(this.state.weights)
-
-
-
-    if (this.state.wei !== "")
-
-    this.setState({
-    
-         selectSearch : {
-        queryString: window.apipath + "/api/viw",
-         t: "PackMaster",
-           q: "[{ 'f': 'Status', c:'!=', 'v': 2},{ 'f': 'ObjectSizeCode', c:'like', 'v':" + encodeURIComponent(weiht)+"}]",
-        f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
-        g: "",
-        s: "[{'f':'Code','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-      }
-    })
-  }
-
-    componentWillUnmount() {
-        Axios.isCancel(true);
+    filterList() {
+        Axios.get(createQueryString(this.UnitTypeSelect)).then(res =>{
+            this.setState({UnitType:res.data.datas});
+        });
+        Axios.get(createQueryString(this.ObjSizeSelect)).then(res =>{
+            this.setState({ObjSize:res.data.datas});
+        });
     }
 
-    filterList() {
-        const SKUSelect = {
-            queryString: window.apipath + "/api/mst",
-            t: "SKUMaster",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}",
-            f: "ID,concat(Code,' : ',Name) as Code",
-            g: "",
-            s: "[{'f':'ID','od':'asc'}]",
-            sk: 0,
-            all: "",
+    createCustomFilter(columns) {
+        return <Input type="text" id={columns.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              let filter =  this.state.datafilter
+              filter.forEach((x, index) => {
+                if(x.id === columns.column.id)
+                  filter.splice(index, 1);
+              });
+              filter.push({id:columns.column.id, value: e.target.value});
+              this.setState({datafilter:filter}, () => {this.onCheckFliter()});
+            }
+          }
+        } />
+    }
+    
+    onCheckFliter() {
+        this.setState({ loading: true })
+        let getFilter = this.state.datafilter;
+        let listFilter = getFilter.map(x=> {
+            return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        })
+        let strCondition = JSON.stringify(listFilter);
+        let getSelect = this.state.select;
+        getSelect.q = strCondition;
+        this.setState({select:getSelect}, () => {this.getData()})
+    }
+
+    onCreateInputEditCell(rowdata){
+        return <Input type="text" value={rowdata.value} onChange={(e) => {this.onHandleEditData(e.target.value, rowdata, rowdata.column.id)}}/>
+    }
+
+    onHandleEditData(editdata, rowdata, field){
+        let data = this.state.data;
+        let dataedit = this.state.dataedit;
+        data.forEach(d => {
+            if(rowdata.original.ID === d.ID){
+                d[field] = editdata;
+            }
+        })
+
+        dataedit.forEach((x,idx) => {
+            if(x.ID === rowdata.original.ID){
+                dataedit.splice(idx,1);
+            }
+        });
+
+        dataedit.push(rowdata.original)
+        this.setState({data, dataedit})
+    }
+
+    onCreateDropdownFilter(columns, data){
+        let list = data.map((x, idx) => {
+          return <option key={idx} value={x.ID}>{x.Code}</option>
+        });
+        return <select style={{ background: "#FAFAFA" }} onChange={(e) => {
+                let filter =  this.state.datafilter
+                filter.forEach((x, index) => {
+                    if(x.id === columns.column.id)
+                    filter.splice(index, 1);
+                });
+                if (e.target.value !== "") {
+                    filter.push({id:columns.column.id, value: e.target.value});
+                  }
+                this.setState({datafilter:filter}, () => {this.onCheckFliter()});
+          }}>{list}</select>
+    }
+
+    onCreateDropdownEdit(rowdata, data, field){
+        let list = data.map((x, idx) => {
+            return <option key={idx} value={x.ID}>{x.Code}</option>
+        });
+        return <Input value={rowdata.original[field]} type="select" style={{ background: "#FAFAFA" }} onChange={(e) => {
+                this.onHandleEditData(e.target.value, rowdata, field)
+          }}>{list}</Input>
+    }
+
+    onCreateDropdownEditAll(data){
+        let list = data.map((x, idx) => {
+            return <option key={idx} value={x.ID}>{x.Code}</option>
+        });
+        return <select type="select" style={{ background: "#FAFAFA", width:"100px", margin:" 0 10px" }} onChange={(e) => {
+                this.setState({setWeightAllID:e.target.value})
+          }}>{list}</select>
+    }
+
+    onClickEditAllWeight(){
+        if(this.state.setWeightAllID !== undefined){
+            let data = this.state.data;
+            data.forEach(d => {
+                d.ObjectSize_ID = this.state.setWeightAllID;
+            });
+            this.setState({data, dataedit:data})
         }
+    }
 
-        const PackTypeSelect = {
-            queryString: window.apipath + "/api/mst",
-            t: "PackMasterType",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}",
-            f: "ID,Code",
-            g: "",
-            s: "[{'f':'ID','od':'asc'}]",
-            sk: 0,
-            all: "",
+    onClickUpdateData(){
+        let dataedit = this.state.dataedit.map(x => {
+            return {
+                "ID":x.ID,
+                "WeightKG":x.WeightKG,
+                "UnitType_ID":x.UnitType_ID,
+            }
+        });
+        
+        let updjson = {
+            "t": "ams_PackMaster",
+            "pk": "ID",
+            "datas": dataedit,
+            "nr": false
+          }
+          Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
+            console.log(res.data)
+          });
+    }
+
+    paginationButton() {
+        const notPageactive = {
+          pointerEvents: 'none',
+          cursor: 'default',
+          textDecoration: 'none',
+          color: 'black',
+          background: '#eceff1',
+          minWidth: '90px'
         }
-
-        const UnitTypeSelect = {
-            queryString: window.apipath + "/api/mst",
-            t: "UnitType",
-            q: "[{ 'f': 'Status', c:'<', 'v': 2}",
-            f: "ID,Code",
-            g: "",
-            s: "[{'f':'ID','od':'asc'}]",
-            sk: 0,
-            all: "",
+        const pageactive = {
+          textDecoration: 'none',
+          color: 'black',
+          background: '#cfd8dc',
+          minWidth: '90px'
         }
-
-        const ObjSizeSelect = {
-            queryString: window.apipath + "/api/mst",
-            t: "ObjectSize",
-          q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}",
-            f: "ID,Code",
-            g: "",
-            s: "[{'f':'ID','od':'asc'}]",
-            sk: 0,
-            all: "",
+        return (
+          <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+            <nav>
+              <ul className="pagination">
+                <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+                  onClick={() => this.pageOnHandleClick("prev")}>
+                  Previous</a></li>
+                <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage}  {this.state.countpages}</p>
+                <li className="page-item"><a className="page-link" style={this.state.currentPage === this.state.countpages ? notPageactive : pageactive}
+                  onClick={() => this.pageOnHandleClick("next")}>
+                  Next</a></li>
+              </ul>
+            </nav>
+          </div>
+        )
+      }
+    
+    pageOnHandleClick(position){
+        this.setState({ loading: true })
+        const select = this.state.select
+        if (position === 'next') {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
+          ++this.state.currentPage
         }
-
-        Axios.all([api.get(createQueryString(SKUSelect))
-            , api.get(createQueryString(PackTypeSelect))
-            , api.get(createQueryString(UnitTypeSelect))
-            , api.get(createQueryString(ObjSizeSelect))
-        ]).then(
-            (Axios.spread((SKUResult, PackTypeResult, UnitTypeResult, ObjSizeResult) => {
-                let ddl = [...this.state.autocomplete]
-                let SKUList = {}
-                let PackTypeList = {}
-                let UnitTypeList = {}
-                let ObjSizeList = {}
-                SKUList["data"] = SKUResult.data.datas
-                SKUList["field"] = "SKU_Code"
-                SKUList["pair"] = "SKUMaster_ID"
-                SKUList["mode"] = "Dropdown"
-
-                PackTypeList["data"] = PackTypeResult.data.datas
-                PackTypeList["field"] = "PackCode"
-                PackTypeList["pair"] = "PackMasterType_ID"
-                PackTypeList["mode"] = "Dropdown"
-
-                UnitTypeList["data"] = UnitTypeResult.data.datas
-                UnitTypeList["field"] = "UnitTypeCode"
-                UnitTypeList["pair"] = "UnitType_ID"
-                UnitTypeList["mode"] = "Dropdown"
-
-                ObjSizeList["data"] = ObjSizeResult.data.datas
-                ObjSizeList["field"] = "ObjectSizeCode"
-                ObjSizeList["pair"] = "ObjectSize_ID"
-                ObjSizeList["mode"] = "Dropdown"
-
-                ddl = ddl.concat(SKUList).concat(PackTypeList).concat(UnitTypeList).concat(ObjSizeList)
-                this.setState({ autocomplete: ddl })
-            })))
+        else {
+          if (select.sk - select.l >= 0) {
+            select.sk = select.sk - select.l
+            if (this.state.currentPage !== 1)
+            --this.state.currentPage
+          }
+        }
+        this.setState({select}, ()=>{this.getData()})
     }
 
     render() {
-        const view = this.state.permissionView
         const cols = [
             { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
-            { accessor: 'Code', Header: 'SKU Code', editable: false, Filter: "text", fixed: "left" },
-            //{accessor: 'Name', Header: 'Name', editable:false,Filter:"text", fixed: "left"},
-            //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
-            { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: "text", Type: "autocomplete", fixed: "left", minWidth: 230 },
-            //{accessor: 'PackCode', Header: 'Pack Type',updateable:false,Filter:"text", Type:"autocomplete"},
-            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter: "text", datatype: "int", className: "right", minWidth: 80 },
-            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
-            { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter: "text", Type: "autocomplete", minWidth: 80, className: "left" },
-            //{accessor: 'WidthM', Header: 'Width', editable:true,Filter:"text"},
-            //{accessor: 'LengthM', Header: 'Length', editable:true,Filter:"text"},
-            //{accessor: 'HeightM', Header: 'Height', editable:true,Filter:"text"},
-            ///{accessor: 'PickSizeQty', Header: 'Pick Size Qty', editable:true,Filter:"text",datatype:"int"},
-            { accessor: 'ItemQty', Header: 'Base Qty/Unit', editable: false, Filter: "text", datatype: "int", className: "right", minWidth: 70 },
-            { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter: "text", Type: "autocomplete" },
-            //{accessor: 'Status', Header: 'Status', editable:true, Type:"checkbox" ,Filter:"dropdown",Filter:"dropdown"},
+            { accessor: 'Code', Header: 'SKU Code', editable: false, Filter:  (e) => this.createCustomFilter(e), fixed: "left", },
+            { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", fixed: "left", minWidth: 230 },
+            { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 80, Cell:(e) => this.onCreateInputEditCell(e), },
+            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left", Cell:(e) => this.onCreateDropdownEdit(e, this.state.UnitType, "UnitType_ID") },
+            { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left" },
+            { accessor: 'ItemQty', Header: 'Base Qty/Unit', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 70 },
+            { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter:  (e) => this.onCreateDropdownFilter(e, this.state.ObjSize), Cell:(e) => this.onCreateDropdownEdit(e, this.state.ObjSize, "ObjectSize_ID") },
             { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
-            //{ accessor: 'Created', Header: 'Create', editable: false, filterable: false, minWidth: 180 },
-            /* {accessor: 'CreateTime', Header: 'CreateTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false}, */
-            //{ accessor: 'Modified', Header: 'Modify', editable: false, filterable: false, minWidth: 180 },
-            //{accessor: 'ModifyTime', Header: 'ModifyTime', editable:false, Type:"datetime", dateformat:"datetime",filterable:false},
             { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
         ];
 
-        const btnfunc = [{
-            btntype: "Barcode",
-            func: this.createBarcodeBtn
-        }]
-
         return (
             <div>
-            <div>
-              <Row >
-
-                <div className="float-right">
-                  <Input onChange={(e) => this.setState({ wei: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '28px' }}
-                    value={this.state.wei} />
-                  <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetData() }}>Search</Button>
-                </div>
-                <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} style={{ width: "130px", marginLeft: '5px' }} className="float-right" />
-
-              </Row>
+                <Row>
+                    <span>Edit Weight Verify : </span>
+                    {this.onCreateDropdownEditAll(this.state.ObjSize)}
+                    {<Button onClick={() => {this.onClickEditAllWeight()}}>Accept</Button>}
+                </Row>
+                <ReactTable data ={this.state.data} columns={cols} filterable={true}
+                    getTrProps={(state, rowInfo) => {
+                        let result = false
+                        let rmv = false
+                        this.state.dataedit.forEach(row => {
+                        if (rowInfo && rowInfo.row) {
+                            if (row.ID === rowInfo.original.ID) {
+                            result = true
+                            if (row.Status === 2) {
+                                rmv = true
+                            }
+                            }
+                        }
+                        })
+                        if (result && !rmv)
+                        return { className: "editrow" }
+                        else if (rmv)
+                        return {
+                            className: "rmv"
+                        }
+                        else
+                        return {}
+                    }}
+                    PaginationComponent={this.paginationButton}
+                />
+                <Card>
+                    <CardBody>
+                        <Button onClick={() => this.onClickUpdateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+                        
+                    </CardBody>
+                </Card>
             </div>
-
-            <div>
-              <TableGen column={cols} data={this.state.selectSearch} dropdownfilter={this.state.statuslist}
-                    filterable={true} autocomplete={this.state.autocomplete} accept={view} exportfilebtn={false}
-                    btn={btnfunc} uneditcolumn={this.uneditcolumn} expFilename={"SKUUnit"} searchURL={this.props.location.search}
-                    table="ams_PackMaster" />
-            </div>
-          </div>
         )
     }
 }
