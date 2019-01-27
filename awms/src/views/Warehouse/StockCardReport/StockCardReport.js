@@ -114,7 +114,8 @@ class StockCardReport extends Component {
                   SKU_Code: x.SKU_Code,
                   SKU_Name: x.SKU_Name,
                   Total: x.Total,
-                  Unit: x.Unit
+                  Unit: x.Unit,
+                  RefID: x.RefID
                 }, () => console.log(this.state.MovementType))
               })
 
@@ -182,22 +183,22 @@ class StockCardReport extends Component {
     this.setState({ select }, () => { this.getData() })
   }
 
-  sumFooterDebit(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Debit) : null)
+  sumFooterDebit() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+        parseFloat(x.Debit) : null)
   }
 
-  sumFooterCredit(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Credit) : null)
+  sumFooterCredit() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+        parseFloat(x.Credit) : null)
   }
 
-  sumFooterTotal(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
-      parseFloat(x.Total) : null)
+  sumFooterTotal() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+        parseFloat(x.Total) : null)
   }
 
   render() {
@@ -229,16 +230,21 @@ class StockCardReport extends Component {
 
       { accessor: 'Doc_Code', Header: 'Doc No', editable: false, sortable: true },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
-      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true },
-
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true,},
+      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
+      { accessor: 'RefID', Header: 'Ref. DO No', editable: false, sortable: true },
       { accessor: 'Debit', Header: 'Debit', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterDebit() === 0 ? "-":this.sumFooterDebit()}</span>)},
+      (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterDebit() === 0 ? "-":this.sumFooterDebit()}</span>)},
 
-      { accessor: 'Credit', Header: 'Credit', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterCredit() === 0 ? "-":this.sumFooterCredit()}</span>)},
+      {
+        accessor: 'Credit', Header: 'Credit', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterCredit() === 0 ? "-" : this.sumFooterCredit()}</span>)
+      },
 
-      { accessor: 'Total', Header: 'Total', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterTotal() === 0 ? "-":this.sumFooterTotal()}</span>)},
+      {
+        accessor: 'Total', Header: 'Total', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterTotal() === 0 ? "-" : this.sumFooterTotal()}</span>)
+      },
       // {
       //   accessor: 'Debit', Header: 'Debit', editable: false, sortable: true, Footer:
       //     (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
@@ -314,9 +320,18 @@ class StockCardReport extends Component {
           </Row>
 
           <Row>
-            <Col sm="12" style={{ marginTop: '3px', marginBottom: '3px' }}>
-              <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} style={{ width: "130px", marginLeft: '5px' }} className="float-right" />
-              <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+            <Col xs="6"></Col>
+
+            <Col xs="6">
+              <div>
+                <div className="float-right">
+                  <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} />
+                </div>
+                <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+
+               
+              </div>
+             
             </Col>
           </Row>
 
@@ -331,7 +346,13 @@ class StockCardReport extends Component {
           data={this.state.data}
           filterable={false}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} />
+          PaginationComponent={this.paginationButton}
+          getTfootTrProps={(state, rowInfo) => ({
+            style: {
+              backgroundColor: '#c8ced3'
+            }
+          })}
+        />
       </div>
     )
   }

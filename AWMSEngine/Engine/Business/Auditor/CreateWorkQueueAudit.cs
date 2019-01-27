@@ -37,8 +37,10 @@ namespace AWMSEngine.Engine.Business.Auditor
         {
             TRes listQueue = new TRes();
             var itemLists = new List<TRes.ItemList>();
-            var queueCheck = new WCSQueueApi.TRes();
-            var queueWorkQueue = new WCSQueueApi.TRes();
+            var queueCheck = new WCSQueueApi.TReq();
+            var queueWorkQueue = new WCSQueueApi.TReq();
+            var queueOut = new List<WCSQueueApi.TReq.queueout>();
+            var queueOut2 = new List<WCSQueueApi.TReq.queueout>();
 
             reqVO.workQueue.ForEach(x =>
             {
@@ -50,17 +52,18 @@ namespace AWMSEngine.Engine.Business.Auditor
                         packInfos = null
                     };
 
-                    queueCheck.queueOut.Add(new WCSQueueApi.TReq.queueout()
+                    queueOut.Add(new WCSQueueApi.TReq.queueout()
                     {
                         queueID = null,
                         baseInfo = baseInfo,
                         desAreaCode = this.StaticValue.AreaMasters.Where(y => y.ID == x.Des_AreaMaster_ID).FirstOrDefault().Code,
-                        desLocationCode = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(x.AreaLocationMaster_ID, this.BuVO).Code,
+                        desLocationCode = null,
                         desWarehouseCode = this.StaticValue.Warehouses.Where(y => y.ID == x.Des_Warehouse_ID).FirstOrDefault().Code,
                         priority = x.Priority
                     });
                 }
             });
+            queueCheck.queueOut = queueOut;
 
             var wcsRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
             if (wcsRes._result.resultcheck == 0)
@@ -85,12 +88,12 @@ namespace AWMSEngine.Engine.Business.Auditor
                         packInfos = null
                     };
 
-                    queueWorkQueue.queueOut.Add(new WCSQueueApi.TReq.queueout()
+                    queueOut2.Add(new WCSQueueApi.TReq.queueout()
                     {
                         queueID = resWorkQueue.ID,
                         baseInfo = baseInfo,
                         desAreaCode = this.StaticValue.AreaMasters.Where(y => y.ID == resWorkQueue.Des_AreaMaster_ID).FirstOrDefault().Code,
-                        desLocationCode = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(resWorkQueue.AreaLocationMaster_ID, this.BuVO).Code,
+                        desLocationCode = null,
                         desWarehouseCode = this.StaticValue.Warehouses.Where(y => y.ID == resWorkQueue.Des_Warehouse_ID).FirstOrDefault().Code,
                         priority = resWorkQueue.Priority
                     });
@@ -99,6 +102,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.StorageObject_ID.Value, null, null, StorageObjectEventStatus.AUDITING, this.BuVO);
             });
 
+            queueCheck.queueOut = queueOut2;
             var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
             if (wcsAcceptRes._result.resultcheck == 0)
             {

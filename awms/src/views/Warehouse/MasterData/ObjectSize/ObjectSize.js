@@ -116,12 +116,16 @@ class ObjectSize extends Component {
         this.filterList()
         this.getObjectSizePallet()
     }
+// 76	WeightVal_view
+// 79	WeightVal_create&modify
     displayButtonByPermission(dataGetPer) {
         let checkview = true
-        if (CheckViewCreatePermission("Administrator", dataGetPer)) {
+        if (CheckViewCreatePermission("WeightVal_view", dataGetPer)) {
+            checkview = true //ดู
+        }
+        if (CheckViewCreatePermission("WeightVal_create&modify", dataGetPer)) {
             checkview = false //แก้ไข
         }
-
         if (checkview === true) {
             this.setState({ permissionView: false })
         } else if (checkview === false) {
