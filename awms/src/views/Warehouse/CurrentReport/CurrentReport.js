@@ -141,9 +141,9 @@ class CurrentReport extends Component {
     this.setState({ select }, () => { this.getData() })
   }
 
-  sumFooterQty(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["Base_Unit",x.Base_Unit]) == true ?
+  sumFooterQty() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
         parseFloat(x.QtySummary) : null)
   }
 
@@ -170,56 +170,49 @@ class CurrentReport extends Component {
           }
         })
       },
-      { accessor: 'SKU_Code', Header: 'SKU_Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 130 },
-      { accessor: 'SKU_Name', Header: 'SKU_Name', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 250 },
+      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 130 },
+      { accessor: 'SKU_Name', Header: 'SKU Name', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 250 },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true },
-      { accessor: 'Area', Header: 'Area', },
-      { accessor: 'Batch', Header: 'Batch', filterable: true, sortable: true },
-      { accessor: 'Lot', Header: 'Lot', filterable: true, sortable: true },
-      { accessor: 'OrderNo', Header: 'OrderNo', filterable: true, sortable: true },
-      // {
-      //   accessor: 'Qty', Header: 'Qty', filterable: false, sortable: true,
-      //   Footer:
-      //     (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-      //       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-      //         parseFloat(x.Qty) : null)}</span>)
-      // },
+      { accessor: 'Area', Header: 'Area', filterable: true, sortable: true, Filter: (e) => this.createCustomFilter(e), },
+      { accessor: 'Batch', Header: 'Batch', filterable: true, sortable: true, Filter: (e) => this.createCustomFilter(e) },
+      { accessor: 'Lot', Header: 'Lot', filterable: true, sortable: true, Filter: (e) => this.createCustomFilter(e) },
+      { accessor: 'OrderNo', Header: 'Order No.', filterable: true, sortable: true, Filter: (e) => this.createCustomFilter(e) },
       {
-        accessor: 'QtyReceiving', Header: 'Qty Receiving', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceiving))}</span>)
+        accessor: 'QtyReceiving', Header: 'Qty Receiving', editable: false, filterable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceiving === "" || x.QtyReceiving === undefined ? 0 : x.QtyReceiving))}</span>)
       },
       {
-        accessor: 'QtyReceived', Header: 'Qty Received', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceived))}</span>)
+        accessor: 'QtyReceived', Header: 'Qty Received', editable: false, filterable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceived === "" || x.QtyReceived === undefined ? 0 : x.QtyReceived))}</span>)
       },
       {
-        accessor: 'QtyPicking', Header: 'Qty Picking', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyPicking))}</span>)
+        accessor: 'QtyPicking', Header: 'Qty Picking', editable: false, filterable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyPicking === "" || x.QtyPicking === undefined ? 0 : x.QtyPicking))}</span>)
       },
       {
-        accessor: 'QtyAuditing', Header: 'Qty Auditing', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyAuditing))}</span>)
+        accessor: 'QtyAuditing', Header: 'Qty Auditing', editable: false, filterable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyAuditing === "" || x.QtyAuditing === undefined ? 0 : x.QtyAuditing))}</span>)
       },
       {
-        accessor: 'QtySummary', Header: 'Qty', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
+        accessor: 'QtySummary', Header: 'Qty', editable: false, filterable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === null || this.sumFooterQty() === undefined  ? 0 : this.sumFooterQty()}</span>)
       },
-      { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
+      { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
 
     return (
       <div>
         <div>
-          <Row>
+          <Row style={{ marginBottom: '3px' }}>
             <Col xs="6">
-              
+
             </Col>
             <Col xs="6">
               <div className="float-right">
                 <ExportFile column={cols} dataxls={this.state.data} filename={"CurrentInventory"} />
               </div>
             </Col>
-        
+
           </Row>
         </div>
         <ReactTable
