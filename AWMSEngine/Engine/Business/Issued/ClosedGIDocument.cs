@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         }
 
                         var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
-                        var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
+                        var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
                         if (checkClosed)
                         {
                             this.CloseDocAndDocItem(doc.ID.Value);
@@ -176,7 +176,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                   
                                 }
                                 var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
-                                var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
+                                var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
                                 if (checkClosed)
                                 {
                                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
@@ -336,26 +336,27 @@ namespace AWMSEngine.Engine.Business.Issued
                         }
                     }
                     var stoBatch = dataStoBranch.Distinct().ToList();
-                    foreach (var batchSto in stoBatch)
-                    {
-                        List<amt_DocumentItemStorageObject> stoData = ADO.StorageObjectADO.GetInstant().ListStoBacth(batchSto, dataDocItem.ID.Value, this.BuVO);
-                        var stoQty = stoData.Sum(x => x.Quantity);
 
-
-                        var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
-                        dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
+                        foreach (var batchSto in stoBatch)
                         {
-                            MATERIAL = dataDocItem.Code,
-                            PLANT = SouBranch,
-                            STGE_LOC = SouWarehouse,
-                            BATCH = batchSto,
-                            MOVE_TYPE = Ref2,
-                            ENTRY_QNT = stoQty.Value,
-                            ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
-                            MOVE_STLOC = DesWarehouse,
-                            MOVE_PLANT = DesWareDoc == null ? "" : this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
-                        });
-                    }
+                            List<amt_DocumentItemStorageObject> stoData = ADO.StorageObjectADO.GetInstant().ListStoBacth(batchSto, dataDocItem.ID.Value, this.BuVO);
+                            var stoQty = stoData.Sum(x => x.Quantity);
+
+
+                            var itemDataAPI4 = new List<SAPInterfaceReturnvalues.items>();
+                            dataAPI4.GOODSMVT_ITEM.Add(new SAPInterfaceReturnvalues.items()
+                            {
+                                MATERIAL = dataDocItem.Code,
+                                PLANT = SouBranch,
+                                STGE_LOC = SouWarehouse,
+                                BATCH = batchSto,
+                                MOVE_TYPE = Ref2,
+                                ENTRY_QNT = stoQty.Value,
+                                ENTRY_UOM = this.StaticValue.UnitTypes.First(x => x.ID == dataDocItem.UnitType_ID.Value).Code,
+                                MOVE_STLOC = DesWarehouse,
+                                MOVE_PLANT = DesWareDoc == null ? "" : this.StaticValue.Branchs.First(x => x.ID == DesWareDoc.Branch_ID.Value).Code,
+                            });
+                        }
                     
                 }
             }
@@ -404,6 +405,9 @@ namespace AWMSEngine.Engine.Business.Issued
                     }
 
                     var stoBatch = dataStoBranch.Distinct().ToList();
+
+
+
                     foreach (var batchSto in stoBatch)
                     {
                         List<amt_DocumentItemStorageObject> stoData = ADO.StorageObjectADO.GetInstant().ListStoBacth(batchSto, dataDocItem.ID.Value, this.BuVO);

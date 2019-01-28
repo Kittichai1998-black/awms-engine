@@ -10,19 +10,7 @@ const Axios = new apicall()
 class AuditQueue extends Component{
   constructor(){
     super();
-    this.state = {
-      palletComponent:false,
-      issuedComponent:false,
-      palletEdit:false,
-      toggle:false,
-      pickMode:1,
-      pickItemList:[],
-      document:null,
-      docSelection:[],
-      queueList:[],
-      percent:100,
-      queueProcess:false
-    }
+    this.state = this.initialState
     this.createDocItemList = this.createDocItemList.bind(this);
     this.onHandleSelectionDoc = this.onHandleSelectionDoc.bind(this);
     this.onHandleCreateAuditQueue = this.onHandleCreateAuditQueue.bind(this);
@@ -46,6 +34,19 @@ class AuditQueue extends Component{
     { 'value': 2, 'label': 'High' },
     { 'value': 3, 'label': 'Critical' }];
     this.auditType = [{'label':"Percentage",'value':0},{'label':"Pallet",'value':1}];
+    this.initialState = {
+      palletComponent:false,
+      issuedComponent:false,
+      palletEdit:false,
+      toggle:false,
+      pickMode:1,
+      pickItemList:[],
+      document:null,
+      docSelection:[],
+      queueList:[],
+      percent:100,
+      queueProcess:false
+    }
   }
 
   async componentWillMount() {
@@ -56,8 +57,10 @@ class AuditQueue extends Component{
     //this.displayButtonByPermission(dataGetPer)
     CheckWebPermission("QueueAd", dataGetPer, this.props.history);
   }
-
-  componentDidMount(){
+ componentWillMount(){
+  this.setState(this.initialState)
+} 
+ componentDidMount(){
     Axios.get(createQueryString(this.select)).then(res => {
       var docList = [];
       res.data.datas.forEach(x => {
@@ -88,18 +91,20 @@ class AuditQueue extends Component{
   }
 
   onHandleCreateAuditQueue(){
-    let data = {
-      docID:this.state.docID,
-      workQueue:this.state.workQueue,
-      disto:this.state.disto,
-    }
-
-    Axios.post(window.apipath + "/api/wm/audit/create", data).then(res => {
-      if(res.data._result.status === 1)
-      {
-        this.setState({itemList:res.data.listItems})
+    let resBox = window.confirm("ต้องการสร้างคิวงาน Audit ใช่หรือไม่");
+    if(resBox){
+      let data = {
+        docID:this.state.docID,
+        workQueue:this.state.workQueue,
+        disto:this.state.disto,
       }
-    });
+      Axios.post(window.apipath + "/api/wm/audit/create", data).then(res => {
+        if(res.data._result.status === 1)
+        {
+          this.setState(this.initialState, () => this.setState({itemList:res.data.listItems}))
+        }
+      });
+    }
   }
 
   onHandleGetAuditQueue(){
