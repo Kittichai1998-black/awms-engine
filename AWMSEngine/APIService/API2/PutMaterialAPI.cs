@@ -201,7 +201,7 @@ namespace AWMSEngine.APIService.Api2
                 new PutMaster<ams_PackMaster>().Execute(
                     this.Logger,
                     this.BuVO,
-                    new PutMaster<ams_PackMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code", "UnitType_ID" } });
+                    new PutMaster<ams_PackMaster>.TReq() { datas = putDatas, whereFields = new List<string> { "Code", "UnitType_ID", "BaseUnitType_ID" } });
                 StaticValueManager.GetInstant().LoadPackMaster(this.BuVO);
             });
 

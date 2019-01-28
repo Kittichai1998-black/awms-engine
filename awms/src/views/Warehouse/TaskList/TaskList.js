@@ -32,13 +32,13 @@ class TaskList extends Component {
       WorkingOutselect: {
         queryString: window.apipath + "/api/viw",
         t: "r_DashboardMoveOut",
-        // q: "",
+        // q: "[{ 'f': 'IOType', 'c': '=', 'v': 0 },{ 'f': 'AreaCode', 'c': '=', 'v': 'S' }]",
         q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 }]",
         f: "Time,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,SAPRef,QtyUnit,EventStatus",
         g: "",
         s: "[{'f':'Time','od':'desc'}]",
         sk: 0,
-        l: 100,
+        l: 10,
         all: "",
       },
       TaskListselect: {
@@ -50,7 +50,7 @@ class TaskList extends Component {
         g: "",
         s: "[{'f':'Time','od':'desc'}]",
         sk: 0,
-        l: 100,
+        l: 10,
         all: "",
       } 
     }
@@ -113,6 +113,7 @@ class TaskList extends Component {
         areaTaskList.q = JSON.stringify(taskwhere)
       } else {
         areawhere.push({ 'f': 'IOType', 'c': '=', 'v': 1 });
+        // areawhere.push({ 'f': 'AreaCode', 'c': '=', 'v': 'S' },{ 'f': 'IOType', 'c': '=', 'v': 0 });
         taskwhere.push({ 'f': 'AreaCode', 'c': '=', 'v': selValue === 'F' ? 'FS' : selValue === 'R' ? 'RS' : '' }, { 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)

@@ -8,10 +8,10 @@ import { Input, Row, Col } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
+import withFixedColumns from "react-table-hoc-fixed-columns";
 
 const Axios = new apicall()
-
-
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 class StoragReport extends Component {
 
@@ -101,7 +101,7 @@ class StoragReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
     }
   }
 
@@ -166,6 +166,7 @@ class StoragReport extends Component {
     let cols = [
       {
         Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
         Cell: (e) => {
           let numrow = 0;
           if (this.state.currentPage !== undefined) {
@@ -184,46 +185,62 @@ class StoragReport extends Component {
           }
         })
       },
-      { accessor: 'Pallet', Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, },
-      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, },
+      { accessor: 'Pallet', fixed: "left", Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, },
+      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 115 },
       { accessor: 'SKU_Name', Header: 'SKU Name', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Area', Header: 'Area', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Location', Header: 'Location', Filter: (e) => this.createCustomFilter(e), sortable: true },
-    
+
       { accessor: 'Batch', Header: 'Batch', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Lot', Header: 'Lot', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
 
       {
-        accessor: 'Qty', Header: 'Qty', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
+        accessor: 'Qty', Header: 'Qty', editable: false, filterable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
       },
-
-      // {
-      //   accessor: 'Qty', Header: 'Qty', filterable: false, sortable: false, Footer:
-      //     (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-      //       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-      //         parseFloat(x.Qty) : null)}</span>)
-      // },
-
       { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
-        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPallet))}</span>)
+        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.WeiPallet === null || x.WeiPallet === undefined ? 0 : x.WeiPallet))}</span>)
       },
       {
-        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPack))}</span>)
+        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.WeiPack === null || x.WeiPack === undefined ? 0 : x.WeiPack))}</span>)
       },
       {
-        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd))}</span>)
+        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === null || x.Wei_PackStd === undefined ? 0 : x.Wei_PackStd))}</span>)
       },
-     
+
       { accessor: 'Status', Header: 'Status', Filter: (e) => this.createCustomFilter(e), sortable: true },
       {
-        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, Cell: (e) =>
+        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 150, maxWidth: 150, Cell: (e) =>
           this.datetimeBody(e.value)
       },
     ];
@@ -233,52 +250,49 @@ class StoragReport extends Component {
       <div>
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
-          
-            <Col xs="6">
+
+            <Col xs="6"></Col>
+            <Col xs="2">
               <div className="float-right" >
                 <span className="float-right" style={{ fontWeight: 'bold' }}>Recieved Date : </span>
               </div>
             </Col>
 
-              <DatePicker className="float-right" selected={this.state.date}
-                customInput={<Input />}
-                onChange={(e) => {
-                  if (e === null) {
-                    this.DatePickerFilter(null)
+            <DatePicker className="float-right" selected={this.state.date}
+              customInput={<Input />}
+              onChange={(e) => {
+                if (e === null) {
+                  this.DatePickerFilter(null)
+                }
+                else {
+                  if (e.isValid() && e !== null) {
+                    this.DatePickerFilter(e)
                   }
-                  else {
-                    if (e.isValid() && e !== null) {
-                      this.DatePickerFilter(e)
-                    }
-                  }
+                }
 
-                }}
-                timeIntervals={1}
-                timeFormat="HH:mm"
-                timeCaption="Time"
-                showTimeSelect={false}
-                  dateFormat={"DD-MM-YYYY"} />
-        
-            <Col xs="2">
+              }}
+              timeIntervals={1}
+              timeFormat="HH:mm"
+              timeCaption="Time"
+              showTimeSelect={false}
+              dateFormat={"DD-MM-YYYY"} />
+
+            <Col xs="1">
               <ExportFile column={cols} dataxls={this.state.data} filename={"StorageReport"} />
             </Col>
           </Row>
         </div>
-        <ReactTable
+        <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
           minRows={5}
           loading={this.state.loading}
           columns={cols}
           data={this.state.data}
           editable={false}
+          className="-highlight"
           filterable={true}
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
-          getTfootTrProps={(state, rowInfo) => ({
-            style: {
-              backgroundColor: '#c8ced3'
-            }
-          })}
         />
       </div>
 

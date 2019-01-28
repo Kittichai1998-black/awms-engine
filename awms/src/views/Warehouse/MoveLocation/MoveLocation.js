@@ -57,9 +57,9 @@ class MoveLocation extends Component {
 
   async componentWillMount() {
     //permission
-    // let dataGetPer = await GetPermission()
-    // CheckWebPermission("MoveLoc", dataGetPer, this.props.history);
-    // document.title = "Move Location : AWMS";
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("MoveLoc", dataGetPer, this.props.history);
+    document.title = "Move Location : AWMS";
   }
 
   checkAreaLocation() {
