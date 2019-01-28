@@ -297,7 +297,7 @@ class IssuedDoc extends Component {
     let list = DocumentEventStatus.map((x, idx) => {
       return <option key={idx} value={x.code}>{x.status}</option>
     });
-    return <select style={{ background: "#FAFAFA" }} onChange={(e) => {
+    return <select style={{ background: "#FAFAFA", width: '100%' }} onChange={(e) => {
       let filter = this.state.datafilter
       filter.forEach((x, index) => {
         if (x.id === columns.column.id)

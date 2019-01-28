@@ -9,9 +9,10 @@ import moment from 'moment';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 import ExportFile from '../MasterData/ExportFile';
 import _ from 'lodash';
+import withFixedColumns from "react-table-hoc-fixed-columns";
 
 const Axios = new apicall()
-
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 class StockCardReport extends Component {
   constructor(props) {
@@ -115,7 +116,8 @@ class StockCardReport extends Component {
                   SKU_Name: x.SKU_Name,
                   Total: x.Total,
                   Unit: x.Unit,
-                  RefID: x.RefID
+                  RefID: x.RefID,
+                  Ref2: x.Ref2
                 }, () => console.log(this.state.MovementType))
               })
 
@@ -232,20 +234,21 @@ class StockCardReport extends Component {
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
+      { accessor: 'Ref2', Header: 'MovementType', editable: false, sortable: true },
       { accessor: 'RefID', Header: 'Ref. DO No', editable: false, sortable: true },
       {
-        accessor: 'Debit', Header: 'Debit', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterDebit() === null ? 0 : this.sumFooterDebit()}</span>)
+        accessor: 'Debit', Header: 'Debit', editable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterDebit() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterDebit()}</span>)
       },
 
       {
-        accessor: 'Credit', Header: 'Credit', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterCredit() === null ? 0 : this.sumFooterCredit()}</span>)
+        accessor: 'Credit', Header: 'Credit', editable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterCredit() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterCredit()}</span>)
       },
 
       {
-        accessor: 'Total', Header: 'Total', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterTotal() === null ? 0 : this.sumFooterTotal()}</span>)
+        accessor: 'Total', Header: 'Total', editable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterTotal()}</span>)
       },
       // {
       //   accessor: 'Debit', Header: 'Debit', editable: false, sortable: true, Footer:
@@ -333,8 +336,6 @@ class StockCardReport extends Component {
             </Col>
           </Row>
         </div>
-        {/* <ReactTable defaultPageSize="100" sortable={false} style={{ background: "white", border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
-          filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} /> */}
         <ReactTable
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
           minRows={5}

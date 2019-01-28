@@ -160,13 +160,19 @@ class AuditDoc extends Component {
         postdata["docIDs"].push(rowdata.ID)
       })
       if (status === "accept") {
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => { 
+          this.getData()
+          this.setState({ resp: res.data._result.message }) })
       }
       else if (status === "reject") {
-        Axios.post(window.apipath + "/api/wm/audit/doc/Reject", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+        Axios.post(window.apipath + "/api/wm/audit/doc/Reject", postdata).then((res) => { 
+          this.getData()
+          this.setState({ resp: res.data._result.message }) })
       }
       else if (status === "Close") {
-        Axios.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+        Axios.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => { 
+          this.getData()
+          this.setState({ resp: res.data._result.message }) })
       }
     }
   }
@@ -296,7 +302,7 @@ class AuditDoc extends Component {
     let list = DocumentEventStatus.map((x, idx) => {
       return <option key={idx} value={x.code}>{x.status}</option>
     });
-    return <select style={{ background: "#FAFAFA" }} onChange={(e) => {
+    return <select style={{ background: "#FAFAFA", width: '100%' }} onChange={(e) => {
       let filter = this.state.datafilter
       filter.forEach((x, index) => {
         if (x.id === columns.column.id)

@@ -119,9 +119,15 @@ class IssuedDoc extends Component {
         postdata["docIDs"].push(rowdata.ID)
       })
       if (status === "reject") {
-        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {
+          this.getData()
+          this.setState({ resp: res.data._result.message })
+        })
       } else {
-        Axios.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => { this.setState({ resp: res.data._result.message }) })
+        Axios.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => {
+          this.getData()
+          this.setState({ resp: res.data._result.message })
+        })
 
       }
     }
@@ -251,7 +257,7 @@ class IssuedDoc extends Component {
     let list = DocumentEventStatus.map((x, idx) => {
       return <option key={idx} value={x.code}>{x.status}</option>
     });
-    return <select style={{ background: "#FAFAFA" }} onChange={(e) => {
+    return <select style={{ background: "#FAFAFA", width: '100%' }} onChange={(e) => {
       let filter = this.state.datafilter
       filter.forEach((x, index) => {
         if (x.id === columns.column.id)

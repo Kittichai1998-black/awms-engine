@@ -57,8 +57,10 @@ class AuditQueue extends Component{
     //this.displayButtonByPermission(dataGetPer)
     CheckWebPermission("QueueAd", dataGetPer, this.props.history);
   }
-
-  componentDidMount(){
+ componentWillMount(){
+  this.setState(this.initialState)
+} 
+ componentDidMount(){
     Axios.get(createQueryString(this.select)).then(res => {
       var docList = [];
       res.data.datas.forEach(x => {
@@ -89,7 +91,7 @@ class AuditQueue extends Component{
   }
 
   onHandleCreateAuditQueue(){
-    let resBox = confirm("ต้องการสร้างคิวงาน Audit ใช่หรือไม่");
+    let resBox = window.confirm("ต้องการสร้างคิวงาน Audit ใช่หรือไม่");
     if(resBox){
       let data = {
         docID:this.state.docID,
