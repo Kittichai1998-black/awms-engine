@@ -33,23 +33,31 @@ namespace AWMSEngine.APIService.ASRS
             var getQueue = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(queueID, this.BuVO);
             if(getQueue.IOType == IOType.OUTPUT)
             {
-                var docItemID = new List<long>();
+                var docItemID = new List<amt_DocumentItem>();
                 var setSTO = ADO.StorageObjectADO.GetInstant().Get(getQueue.StorageObject_ID, StorageObjectType.BASE, false, true, this.BuVO);
 
                 var stos = TreeUtil.ToTreeList(setSTO).OrderByDescending(x => x.objectSizeID).ToList();
                 List<amt_DocumentItemStorageObject> disto = new List<amt_DocumentItemStorageObject>();
+
+                var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(stos.Where(x=>x.type== StorageObjectType.PACK).Select(x=>x.id.Value).ToList(), DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                docItems.ForEach(x => {
+                    var i = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID.Value, this.BuVO);
+                    x.DocItemStos = i.DocItemStos.Where(dsto => dsto.Status == EntityStatus.INACTIVE).ToList();
+                });
+
                 foreach (var sto in stos)
                 {
                     if (sto.type == StorageObjectType.PACK)
                     {
-                        var getdisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
-                            new SQLConditionCriteria("StorageObject_ID", sto.id, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
-                        }, this.BuVO);
+                        var getdisto = new List<amt_DocumentItemStorageObject>();
 
-                        docItemID.AddRange(getdisto.Select(x => x.DocumentItem_ID).ToList());
+                        foreach (var docItem in docItems)
+                        {
+                            getdisto = docItem.DocItemStos.Where(x => x.StorageObject_ID == sto.id).ToList();
+                            docItemID.Add(docItems.Where(x => x.ID == docItem.Document_ID).FirstOrDefault());
+                        }
 
-                        var gdisto = getdisto.Where(x => x.StorageObject_ID == sto.id).GroupBy(x => new { x.StorageObject_ID }).Select(x => new
+                        var gdisto = getdisto.GroupBy(x => new { x.StorageObject_ID, x.DocumentItem_ID }).Select(x => new
                         {
                             x.First().ID,
                             x.Key.StorageObject_ID,
@@ -58,28 +66,20 @@ namespace AWMSEngine.APIService.ASRS
                             x.First().DocumentItem_ID,
                             Quantity = x.Sum(y => y.Quantity.Value),
                             BaseQuantity = x.Sum(y => y.BaseQuantity.Value)
-                        }).FirstOrDefault();
+                        }).ToList();
 
-                        if (gdisto != null)
+                        gdisto.ForEach(x =>
                         {
-                            //ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                            //{
-                            //new SQLConditionCriteria("StorageObject_ID", sto.id, SQLOperatorType.EQUALS),
-                            //new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
-                            //}, new KeyValuePair<string, object>[]{
-                            //new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE)
-                            //}, this.BuVO);
+                            ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItemStorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE));
 
-                            ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItemStorageObject>(gdisto.ID.Value, this.BuVO, new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE));
-
-                            sto.qty = sto.qty - gdisto.Quantity;
-                            sto.baseQty = sto.baseQty - gdisto.BaseQuantity;
+                            sto.qty = sto.qty - x.Quantity;
+                            sto.baseQty = sto.baseQty - x.BaseQuantity;
                             if (sto.qty == 0)
                             {
                                 sto.eventStatus = StorageObjectEventStatus.PICKED;
                             }
                             ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
-                        }
+                        });
                     }
                     else if (sto.type == StorageObjectType.BASE)
                     {
@@ -91,7 +91,7 @@ namespace AWMSEngine.APIService.ASRS
                     }
                 }
                 
-                foreach(var id in docItemID.Distinct())
+                foreach(var docItem in docItems)
                 {
                     var docID = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(id, this.BuVO).Document_ID;
 
