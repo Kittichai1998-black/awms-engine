@@ -87,6 +87,11 @@ namespace AWMSEngine.Engine.Business.Issued
                 });
 
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
+                    DocumentEventStatus.IDLE, null,
+                    DocumentEventStatus.REJECTED,
+                    this.BuVO);
+
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
                     null, EntityStatus.ACTIVE,
                     DocumentEventStatus.REJECTED, 
                     this.BuVO);

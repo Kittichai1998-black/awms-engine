@@ -98,9 +98,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
             if (queueTrx.IOType == IOType.INPUT)
             {
-                if (mapsto.eventStatus == StorageObjectEventStatus.RECEIVING)
-                    ADO.StorageObjectADO.GetInstant()
-                        .UpdateStatusToChild(queueTrx.StorageObject_ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                //if (mapsto.eventStatus == StorageObjectEventStatus.RECEIVING)
+                ADO.StorageObjectADO.GetInstant()
+                    .UpdateStatusToChild(queueTrx.StorageObject_ID.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
             }
             return mapsto;
         }
