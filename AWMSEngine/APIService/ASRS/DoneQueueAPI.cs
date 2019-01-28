@@ -93,15 +93,13 @@ namespace AWMSEngine.APIService.ASRS
                 
                 foreach(var docItem in docItems)
                 {
-                    var docID = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(id, this.BuVO).Document_ID;
-
                     object closeDoc = null;
-                    var docTarget = ADO.DocumentADO.GetInstant().Target(docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                    var docTarget = ADO.DocumentADO.GetInstant().Target(docItem.Document_ID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
                     var target = docTarget.Any(z => z.needPackQty <= 0);
                     if (target)
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
-                        closeDoc = new { docIDs = new long[] { docID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docItem.Document_ID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
+                        closeDoc = new { docIDs = new long[] { docItem.Document_ID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
                     }
 
                     if (closeDoc != null)
