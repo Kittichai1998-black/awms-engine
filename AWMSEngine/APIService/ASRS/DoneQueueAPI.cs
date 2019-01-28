@@ -51,6 +51,7 @@ namespace AWMSEngine.APIService.ASRS
 
                         var gdisto = getdisto.Where(x => x.StorageObject_ID == sto.id).GroupBy(x => new { x.StorageObject_ID }).Select(x => new
                         {
+                            x.First().ID,
                             x.Key.StorageObject_ID,
                             x.First().UnitType_ID,
                             x.First().BaseUnitType_ID,
@@ -61,13 +62,15 @@ namespace AWMSEngine.APIService.ASRS
 
                         if (gdisto != null)
                         {
-                            ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                            {
-                            new SQLConditionCriteria("StorageObject_ID", sto.id, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
-                            }, new KeyValuePair<string, object>[]{
-                            new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE)
-                            }, this.BuVO);
+                            //ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                            //{
+                            //new SQLConditionCriteria("StorageObject_ID", sto.id, SQLOperatorType.EQUALS),
+                            //new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
+                            //}, new KeyValuePair<string, object>[]{
+                            //new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE)
+                            //}, this.BuVO);
+
+                            ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItemStorageObject>(gdisto.ID.Value, this.BuVO, new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE));
 
                             sto.qty = sto.qty - gdisto.Quantity;
                             sto.baseQty = sto.baseQty - gdisto.BaseQuantity;
@@ -78,9 +81,9 @@ namespace AWMSEngine.APIService.ASRS
                             ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                         }
                     }
-                    else
+                    else if (sto.type == StorageObjectType.BASE)
                     {
-                        var pickedInPallet = stos.Where(x => x.objectSizeID == 2).Any(x => x.eventStatus != StorageObjectEventStatus.PICKED);
+                        var pickedInPallet = stos.Where(x => x.objectSizeID == 2).All(x => x.eventStatus == StorageObjectEventStatus.PICKED);
                         if (pickedInPallet)
                         {
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
