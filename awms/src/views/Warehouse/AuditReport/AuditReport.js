@@ -9,8 +9,10 @@ import moment from 'moment';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 import ExportFile from '../MasterData/ExportFile';
 import _ from 'lodash';
+import withFixedColumns from "react-table-hoc-fixed-columns";
 
 const Axios = new apicall()
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 
 class AuditReport extends Component {
@@ -33,31 +35,31 @@ class AuditReport extends Component {
 
       PackMasterdata: [],
       batch: "",
-
+      defaultPageS: 100,
+      currentPage: 1,
+      loading: false,
     }
-
+    this.paginationButton = this.paginationButton.bind(this)
+    this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
   }
   async componentWillMount() {
-    document.title = "Audit : AWMS";
-    Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
-      const PackMasterdata = []
-      response.data.datas.forEach(row => {
-        console.log(row)
-        var PackData = row.PackName
-        var PackCode = row.Code
-        var ID = row.ID
-        PackMasterdata.push({ label: PackData, value: ID,Code:PackCode  })
-      })
-      this.setState({ PackMasterdata })
-
-    })
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
     //41	WarehouseCI_execute
+    document.title = "Audit Report : AWMS";
+    Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
+      const PackMasterdata = []
+      response.data.datas.forEach(row => {
+        var PackData = row.PackName
+        var PackCode = row.Code
+        var ID = row.ID
+        PackMasterdata.push({ label: PackData, value: ID, Code: PackCode })
+      })
+      this.setState({ PackMasterdata })
+    })
+
   }
-
-
 
   dateTimePickerFrom() {
     return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" />
@@ -66,12 +68,11 @@ class AuditReport extends Component {
     return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" />
   }
 
-
   onGetDocument() {
-    console.log(this.state.Code)
-    console.log(this.state.PackMasterdata)
-    console.log(this.state.dateFrom)
-    console.log(this.state.dateTo)
+    // console.log(this.state.Code)
+    // console.log(this.state.PackMasterdata)
+    // console.log(this.state.dateFrom)
+    // console.log(this.state.dateTo)
     if (this.state.dateFrom === undefined || this.state.dateTo === undefined || this.state.Code === undefined) {
       alert("Please select data")
     } else if (this.state.data === []) {
@@ -79,8 +80,8 @@ class AuditReport extends Component {
     } else {
       let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
       let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
-      console.log(formatDateFrom)
-      console.log(formatDateTo)
+      // console.log(formatDateFrom)
+      // console.log(formatDateTo)
 
       if (formatDateFrom > formatDateTo) {
         alert("Choose the wrong information")
@@ -89,60 +90,52 @@ class AuditReport extends Component {
         let namefileDateTo = formatDateTo.toString();
         let nameFlie = "STC :" + this.state.Code + " " + namefileDateTo + " to " + namefileDateFrom
         this.setState({ name: nameFlie.toString() })
-        console.log(this.state.ID)
-        console.log(formatDateFrom)
-        console.log(formatDateTo)
+        // console.log(this.state.ID)
+        // console.log(formatDateFrom)
+        // console.log(formatDateTo)
 
-        let skuCode = this.state.Code 
+        let skuCode = this.state.Code
         let batch = this.state.Batch
         let lot = this.state.Lot
         let orderno = this.state.Orderno
 
 
-        Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuCode=" + skuCode + "&startDate=" + formatDateFrom + "&endDate=" + formatDateTo + "&batch=" + (batch === undefined ? '' : batch) + "&lot=" + (lot === undefined ? '' : lot) + "&orderno=" + (orderno === undefined ? '' : orderno) + "&spname=STOCK_AUDIT").then((rowselect1) => {
-        console.log(rowselect1)
-
-        if(rowselect1.data._result.status !== 0){
-          rowselect1.data.datas.forEach(x => {
-            this.setState({
-              ID: x.ID,
-              Code: x.Code,
-              ActionTime: x.ActionTime,
-              RefID: x.RefID,
-              StorageObject_Code: x.StorageObject_Code,
-              StorageObject_Name: x.StorageObject_Name,
-              StorageObject_Batch: x.StorageObject_Batch,
-              StorageObject_Lot: x.StorageObject_Lot,
-              StorageObject_OrderNo: x.StorageObject_OrderNo,
-              DistoID: x.DistoID,
-              BaseQuantity: x.BaseQuantity,
-              Balance:x.Balance,
-              UnitType_Code:x.UnitType_Code
-
-            })
+        Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuCode=" + skuCode
+          + "&startDate=" + formatDateFrom
+          + "&endDate=" + formatDateTo
+          + "&batch=" + (batch === undefined ? '' : batch)
+          + "&lot=" + (lot === undefined ? '' : lot)
+          + "&orderno=" + (orderno === undefined ? '' : orderno)
+          + "&spname=STOCK_AUDIT").then((rowselect1) => {
+            if (rowselect1) {
+              // console.log(rowselect1)
+              if (rowselect1.data._result.status !== 0) {
+                let countpages = null;
+                let counts = rowselect1.data.datas.length;
+                countpages = Math.ceil(counts / this.state.defaultPageS);
+                rowselect1.data.datas.forEach(x => {
+                  this.setState({
+                    ID: x.ID,
+                    Code: x.Code,
+                    ActionTime: x.ActionTime,
+                    RefID: x.RefID,
+                    StorageObject_Code: x.StorageObject_Code,
+                    StorageObject_Name: x.StorageObject_Name,
+                    StorageObject_Batch: x.StorageObject_Batch,
+                    StorageObject_Lot: x.StorageObject_Lot,
+                    StorageObject_OrderNo: x.StorageObject_OrderNo,
+                    DistoID: x.DistoID,
+                    BaseQuantity: x.BaseQuantity,
+                    Balance: x.Balance,
+                    UnitType_Code: x.UnitType_Code
+                  })
+                })
+                this.setState({
+                  data: rowselect1.data.datas, countpages: countpages, loading: false
+                }, () => console.log(this.state.data))
+              }
+            }
           })
-        }
-
-
-          this.setState({
-
-
-            data: rowselect1.data.datas
-            //   Date: rowselect1.data.datas.ActionTime,
-            //   Batch: rowselect1.data.datas.Batch,
-            //   Credit: rowselect1.data.datas.Credit,
-            //   Debit: rowselect1.data.datas.Debit,
-            //   Doc_Code: rowselect1.data.datas.Doc_Code,
-            //   Doc_Type: rowselect1.data.datas.Doc_Type,
-            //   MovementType: rowselect1.data.datas.MovementType,
-            //   SKU_Code: rowselect1.data.datas.SKU_Code,
-            //   SKU_Name: rowselect1.data.datas.SKU_Name,
-            //   Total: rowselect1.data.datas.Total,
-            //dd
-          })
-
-          console.log(this.state.data)
-        })
       }
     }
   }
@@ -153,36 +146,123 @@ class AuditReport extends Component {
     }
   }
 
-  sumFooterQty(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["UnitType_Code",x.UnitType_Code]) == true ?
-      parseFloat(x.BaseQuantity) : null)
+  sumFooterQty() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
+        parseFloat(x.BaseQuantity) : null)
   }
 
-  sumFooterBalance(){
-    return _.sumBy(this.state.data, 
-      x => _.every(this.state.data, ["UnitType_Code",x.UnitType_Code]) == true ?
-      parseFloat(x.Balance) : null)
+  sumFooterBalance() {
+    return _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
+        parseFloat(x.Balance) : null)
+  }
+  paginationButton() {
+    const notPageactive = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+      color: 'black',
+      background: '#eceff1',
+      minWidth: '90px'
+    }
+    const pageactive = {
+      textDecoration: 'none',
+      color: 'black',
+      background: '#cfd8dc',
+      minWidth: '90px'
+    }
+    return (
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+        <nav>
+          <ul className="pagination">
+            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("prev")}>
+              Previous</a></li>
+            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
+            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")}>
+              Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    )
   }
 
+  pageOnHandleClick(position) {
+    this.setState({ loading: true })
+    const select = this.state.select
+    if (position === 'next') {
+      select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
+      ++this.state.currentPage
+    }
+    else {
+      if (select.sk - select.l >= 0) {
+        select.sk = select.sk - select.l
+        if (this.state.currentPage !== 1)
+          --this.state.currentPage
+      }
+    }
+    this.setState({ select }, () => { this.getData() })
+  }
   render() {
     const cols = [
-      {accessor: 'Code', Header: 'Doc No.', editable: false,},
-      { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false },
-      { accessor: 'StorageObject_Code', Header: 'SKU Code', editable: false },
-      { accessor: 'StorageObject_Name', Header: 'SKU Name', editable: false },
-      { accessor: 'StorageObject_Batch', Header: 'Batch', editable: false},
-      { accessor: 'StorageObject_Lot', Header: 'Lot', editable: false},
-      { accessor: 'StorageObject_OrderNo', Header: 'OrderNo', editable: false},
-    
-      { accessor: 'BaseQuantity', Header: 'Qty', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-":this.sumFooterQty()}</span>)},
+      {
+        Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
+        Cell: (e) => {
+          let numrow = 0;
+          if (this.state.currentPage !== undefined) {
+            if (this.state.currentPage > 1) {
+              // e.index + 1 + (2*100)  
+              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+            } else {
+              numrow = e.index + 1;
+            }
+          }
+          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        },
+        getProps: (state, rowInfo) => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        })
+      },
+      {
+        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
+          this.datetimeBody(e.value)
+      },
+      { accessor: 'Code', Header: 'Doc No.', editable: false, sortable: true },
+      { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, sortable: true },
+      { accessor: 'StorageObject_Code', Header: 'SKU Code', editable: false, sortable: true },
+      { accessor: 'StorageObject_Name', Header: 'SKU Name', editable: false, sortable: true },
+      { accessor: 'StorageObject_Batch', Header: 'Batch', editable: false, sortable: true },
+      { accessor: 'StorageObject_Lot', Header: 'Lot', editable: false, sortable: true },
+      { accessor: 'StorageObject_OrderNo', Header: 'Order No.', editable: false, sortable: true },
+      {
+        accessor: 'BaseQuantity', Header: 'Qty', editable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
+      },
 
-      { accessor: 'Balance', Header: 'Balance', editable: false, Footer:
-      (<span><label>Sum :</label>{" "} {this.sumFooterBalance() === 0 ? "-":this.sumFooterBalance()}</span>)},
+      {
+        accessor: 'Balance', Header: 'Balance', editable: false, className: "right", 
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterBalance() === null || this.sumFooterBalance() === undefined ? 0 : this.sumFooterBalance()}</span>)
+      },
 
-      { accessor: 'UnitType_Code', Header: 'Unit', editable: false},
-      
+      { accessor: 'UnitType_Code', Header: 'Unit', editable: false, sortable: true },
+
     ];
     return (
       <div>
@@ -228,7 +308,7 @@ class AuditReport extends Component {
                 </div></div>
             </Col>
 
-            <Col xs="6"> 
+            <Col xs="6">
               <div>
                 <label >Date To : </label>
                 <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
@@ -238,17 +318,29 @@ class AuditReport extends Component {
             </Col>
           </Row>
 
-          <Row>
-            <Col sm="12" style={{ marginTop: '3px', marginBottom: '3px' }}>
-              <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} style={{ width: "130px", marginLeft: '5px' }} className="float-right" />
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+          <Col xs="6"></Col>
+            <Col xs="6">
+            <div>
+                <div className="float-right">
+              <ExportFile column={cols} dataxls={this.state.data} filename={"AuditReport"} />
+              </div>
               <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+              </div>
             </Col>
           </Row>
-
         </div>
-        <ReactTable pageSize="10000"  sortable={false} style={{ background: "white", marginBottom: "50px" }}
-          filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} />
-        
+        <ReactTableFixedColumns
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          minRows={5}
+          loading={this.state.loading}
+          columns={cols}
+          data={this.state.data}
+          filterable={false}
+          className="-highlight"
+          defaultPageSize={this.state.defaultPageS}
+          PaginationComponent={this.paginationButton}
+        />
       </div>
     )
   }

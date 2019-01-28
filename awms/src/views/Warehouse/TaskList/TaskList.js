@@ -38,7 +38,7 @@ class TaskList extends Component {
         g: "",
         s: "[{'f':'Time','od':'desc'}]",
         sk: 0,
-        l: 100,
+        l: 10,
         all: "",
       },
       TaskListselect: {
@@ -50,7 +50,7 @@ class TaskList extends Component {
         g: "",
         s: "[{'f':'Time','od':'desc'}]",
         sk: 0,
-        l: 100,
+        l: 10,
         all: "",
       } 
     }

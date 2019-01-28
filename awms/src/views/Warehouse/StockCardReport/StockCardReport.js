@@ -68,12 +68,12 @@ class StockCardReport extends Component {
 
 
   onGetDocument() {
-    console.log(this.state.ID)
-    console.log(this.state.PackMasterdata)
+    // console.log(this.state.ID)
+    // console.log(this.state.PackMasterdata)
     if (this.state.dateFrom === undefined || this.state.dateTo === undefined || this.state.ID === undefined) {
       alert("Please select data")
     } else if (this.state.data === []) {
-      alert("SKU NOT RECIEV")
+      alert("SKU NOT RECIEVE")
     } else {
       let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
       let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
@@ -85,9 +85,9 @@ class StockCardReport extends Component {
         let namefileDateTo = formatDateTo.toString();
         let nameFlie = "STC :" + this.state.CodePack + " " + namefileDateTo + " to " + namefileDateFrom
         this.setState({ name: nameFlie.toString() })
-        console.log(this.state.ID)
-        console.log(this.state.formatDateFrom)
-        console.log(this.state.formatDateTo)
+        // console.log(this.state.ID)
+        // console.log(this.state.formatDateFrom)
+        // console.log(this.state.formatDateTo)
 
         let skuid = this.state.ID
         let batch = this.state.Batch
@@ -95,37 +95,38 @@ class StockCardReport extends Component {
         let orderno = this.state.Orderno
 
         Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuid=" + skuid
-          + "&startDate=" + formatDateFrom + "&endDate=" + formatDateTo
+          + "&startDate=" + formatDateFrom
+          + "&endDate=" + formatDateTo
           + "&batch=" + (batch === undefined ? '' : batch)
           + "&lot=" + (lot === undefined ? '' : lot)
           + "&orderno=" + (orderno === undefined ? '' : orderno)
           + "&spname=STOCK_CARD").then((rowselect1) => {
             if (rowselect1) {
-              let countpages = null;
-              let counts = rowselect1.data.datas.length;
-              countpages = Math.ceil(counts / this.state.defaultPageS);
-              rowselect1.data.datas.forEach(x => {
+              if (rowselect1.data._result.status !== 0) {
+                let countpages = null;
+                let counts = rowselect1.data.datas.length;
+                countpages = Math.ceil(counts / this.state.defaultPageS);
+                rowselect1.data.datas.forEach(x => {
+                  this.setState({
+                    Date: x.ActionTime,
+                    Credit: x.Credit,
+                    Debit: x.Debit,
+                    Doc_Code: x.Doc_Code,
+                    Doc_Type: x.Doc_Type,
+                    MovementType: x.MovementType,
+                    SKU_Code: x.SKU_Code,
+                    SKU_Name: x.SKU_Name,
+                    Total: x.Total,
+                    Unit: x.Unit,
+                    RefID: x.RefID,
+                    Ref2: x.Ref2
+                  }, () => console.log(this.state.MovementType))
+                })
                 this.setState({
-                  Date: x.ActionTime,
-                  Credit: x.Credit,
-                  Debit: x.Debit,
-                  Doc_Code: x.Doc_Code,
-                  Doc_Type: x.Doc_Type,
-                  MovementType: x.MovementType,
-                  SKU_Code: x.SKU_Code,
-                  SKU_Name: x.SKU_Name,
-                  Total: x.Total,
-                  Unit: x.Unit,
-                  RefID: x.RefID,
-                  Ref2: x.Ref2
-                }, () => console.log(this.state.MovementType))
-              })
-
-              this.setState({
-                data: rowselect1.data.datas, countpages: countpages, loading: false
-              }, () => console.log(this.state.data))
+                  data: rowselect1.data.datas, countpages: countpages, loading: false
+                }, () => console.log(this.state.data))
+              }
             }
-
           })
       }
     }
@@ -230,15 +231,14 @@ class StockCardReport extends Component {
         accessor: 'ActionTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
           this.datetimeBody(e.value)
       },
-
-      { accessor: 'Doc_Code', Header: 'Doc No', editable: false, sortable: true },
+      { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: true },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Ref2', Header: 'MovementType', editable: false, sortable: true },
-      { accessor: 'RefID', Header: 'Ref. DO No', editable: false, sortable: true },
+      { accessor: 'RefID', Header: 'Ref.DO No.', editable: false, sortable: true },
       {
-        accessor: 'Debit', Header: 'Debit', editable: false, className: "right", 
+        accessor: 'Debit', Header: 'Debit', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -249,7 +249,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Credit', Header: 'Credit', editable: false, className: "right", 
+        accessor: 'Credit', Header: 'Credit', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -260,7 +260,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Total', Header: 'Total', editable: false, className: "right", 
+        accessor: 'Total', Header: 'Total', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -355,7 +355,7 @@ class StockCardReport extends Component {
             </Col>
           </Row>
         </div>
-        <ReactTable
+        <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
           minRows={5}
           loading={this.state.loading}
