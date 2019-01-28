@@ -101,7 +101,7 @@ class StoragReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
     }
   }
 
@@ -190,37 +190,29 @@ class StoragReport extends Component {
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Area', Header: 'Area', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Location', Header: 'Location', Filter: (e) => this.createCustomFilter(e), sortable: true },
-    
+
       { accessor: 'Batch', Header: 'Batch', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Lot', Header: 'Lot', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
 
       {
-        accessor: 'Qty', Header: 'Qty', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === 0 ? "-" : this.sumFooterQty()}</span>)
+        accessor: 'Qty', Header: 'Qty', editable: false, filterable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
       },
-
-      // {
-      //   accessor: 'Qty', Header: 'Qty', filterable: false, sortable: false, Footer:
-      //     (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-      //       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-      //         parseFloat(x.Qty) : null)}</span>)
-      // },
-
       { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
-        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPallet))}</span>)
+        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPallet === "" || x.WeiPallet === undefined ? 0 : x.WeiPallet))}</span>)
       },
       {
-        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPack))}</span>)
+        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPack === "" || x.WeiPack === undefined ? 0 : x.WeiPack))}</span>)
       },
       {
-        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd))}</span>)
+        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === "" || x.Wei_PackStd === undefined ? 0 : x.Wei_PackStd))}</span>)
       },
-     
+
       { accessor: 'Status', Header: 'Status', Filter: (e) => this.createCustomFilter(e), sortable: true },
       {
         accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, Cell: (e) =>
@@ -233,32 +225,32 @@ class StoragReport extends Component {
       <div>
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
-          
+
             <Col xs="6">
               <div className="float-right" >
                 <span className="float-right" style={{ fontWeight: 'bold' }}>Recieved Date : </span>
               </div>
             </Col>
 
-              <DatePicker className="float-right" selected={this.state.date}
-                customInput={<Input />}
-                onChange={(e) => {
-                  if (e === null) {
-                    this.DatePickerFilter(null)
+            <DatePicker className="float-right" selected={this.state.date}
+              customInput={<Input />}
+              onChange={(e) => {
+                if (e === null) {
+                  this.DatePickerFilter(null)
+                }
+                else {
+                  if (e.isValid() && e !== null) {
+                    this.DatePickerFilter(e)
                   }
-                  else {
-                    if (e.isValid() && e !== null) {
-                      this.DatePickerFilter(e)
-                    }
-                  }
+                }
 
-                }}
-                timeIntervals={1}
-                timeFormat="HH:mm"
-                timeCaption="Time"
-                showTimeSelect={false}
-                  dateFormat={"DD-MM-YYYY"} />
-        
+              }}
+              timeIntervals={1}
+              timeFormat="HH:mm"
+              timeCaption="Time"
+              showTimeSelect={false}
+              dateFormat={"DD-MM-YYYY"} />
+
             <Col xs="2">
               <ExportFile column={cols} dataxls={this.state.data} filename={"StorageReport"} />
             </Col>

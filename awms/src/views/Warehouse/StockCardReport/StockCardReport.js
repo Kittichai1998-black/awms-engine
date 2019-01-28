@@ -230,20 +230,22 @@ class StockCardReport extends Component {
 
       { accessor: 'Doc_Code', Header: 'Doc No', editable: false, sortable: true },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
-      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true,},
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'RefID', Header: 'Ref. DO No', editable: false, sortable: true },
-      { accessor: 'Debit', Header: 'Debit', editable: false, Footer:
-      (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterDebit() === 0 ? "-":this.sumFooterDebit()}</span>)},
+      {
+        accessor: 'Debit', Header: 'Debit', editable: false, Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterDebit() === null ? 0 : this.sumFooterDebit()}</span>)
+      },
 
       {
         accessor: 'Credit', Header: 'Credit', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterCredit() === 0 ? "-" : this.sumFooterCredit()}</span>)
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterCredit() === null ? 0 : this.sumFooterCredit()}</span>)
       },
 
       {
         accessor: 'Total', Header: 'Total', editable: false, Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterTotal() === 0 ? "-" : this.sumFooterTotal()}</span>)
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterTotal() === null ? 0 : this.sumFooterTotal()}</span>)
       },
       // {
       //   accessor: 'Debit', Header: 'Debit', editable: false, sortable: true, Footer:
@@ -319,22 +321,17 @@ class StockCardReport extends Component {
             </Col>
           </Row>
 
-          <Row>
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
             <Col xs="6"></Col>
-
             <Col xs="6">
               <div>
                 <div className="float-right">
                   <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} />
                 </div>
                 <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
-
-               
               </div>
-             
             </Col>
           </Row>
-
         </div>
         {/* <ReactTable defaultPageSize="100" sortable={false} style={{ background: "white", border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
           filterable={false} showPagination={false} minRows={5} columns={cols} data={this.state.data} /> */}
