@@ -1249,15 +1249,29 @@ class TableGen extends Component {
     let selectdatas = Clone(this.props.data)
     if (this.props.addbtn === true) {
       return (
-        <div style={{ marginTop: '3px', marginBottom: '3px' }}>
+
+        <div className="float-right" style={{ marginTop: '3px', marginBottom: '3px' }}>
           <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginRight: '3px' }} type="button" color="success" className="float-right">Add</Button>
         </div>
       )
     } else if (this.props.addExportbtn === true) {
       return (
-        <div style={{ marginTop: '3px', marginBottom: '3px', display: 'inline-block' }}>
-          <Button onClick={this.onHandleClickAdd} style={{ width: 130, marginLeft: '2px', marginRight: '3px' }} type="button" color="success">Add</Button>
-          <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
+        <div >
+
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+            <Col xs="6"></Col>
+            <Col xs="6">
+              <div>
+                <div className="float-right">
+                  <Button onClick={this.onHandleClickAdd} style={{ width: 130 }} type="button" color="success">Add</Button>
+                </div >
+                <div className="float-right">
+                  <ExportFile column={this.props.column} dataselect={selectdatas} autocomp={this.props.autocomplete} enum={this.props.enumfield} filename={this.props.expFilename} />
+                </div>
+              </div>
+            </Col>
+          </Row>
+      
         </div>
       )
     } else if (this.props.exportfilebtn === false) {

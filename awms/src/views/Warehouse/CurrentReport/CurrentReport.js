@@ -26,7 +26,7 @@ class CurrentReport extends Component {
       queryString: window.apipath + "/api/viw",
       t: "r_CurrentInventory",
       q: '',
-      f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit,Batch,OrderNo,Lot",
+      f: "*",
       g: "",
       s: "[{'f':'SKU_Code','od':'asc'}]",
       sk: 0,
@@ -196,6 +196,15 @@ class CurrentReport extends Component {
       {
         accessor: 'QtySummary', Header: 'Qty', editable: false, filterable: false, className: "right", Footer:
           (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === null || this.sumFooterQty() === undefined  ? 0 : this.sumFooterQty()}</span>)
+      },
+
+      {
+        accessor: 'Wei_Pack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_Pack === "" || x.WeiPack === undefined ? 0 : x.Wei_Pack))}</span>)
+      },
+      {
+        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right", Footer:
+          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === "" || x.WeiPack === undefined ? 0 : x.Wei_PackStd))}</span>)
       },
       { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];

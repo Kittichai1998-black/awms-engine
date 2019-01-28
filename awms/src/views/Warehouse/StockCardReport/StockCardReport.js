@@ -115,7 +115,8 @@ class StockCardReport extends Component {
                   SKU_Name: x.SKU_Name,
                   Total: x.Total,
                   Unit: x.Unit,
-                  RefID: x.RefID
+                  RefID: x.RefID,
+                  Ref2: x.Ref2
                 }, () => console.log(this.state.MovementType))
               })
 
@@ -232,6 +233,7 @@ class StockCardReport extends Component {
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
+      { accessor: 'Ref2', Header: 'MovementType', editable: false, sortable: true },
       { accessor: 'RefID', Header: 'Ref. DO No', editable: false, sortable: true },
       {
         accessor: 'Debit', Header: 'Debit', editable: false, Footer:
