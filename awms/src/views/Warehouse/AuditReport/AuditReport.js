@@ -247,7 +247,7 @@ class AuditReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined || this.sumFooterQty() === 0 ? '-' : this.sumFooterQty()}</span>)
       },
 
       {
@@ -258,7 +258,7 @@ class AuditReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterBalance() === null || this.sumFooterBalance() === undefined ? 0 : this.sumFooterBalance()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterBalance() === null || this.sumFooterBalance() === undefined || this.sumFooterBalance() === 0 ? '-' : this.sumFooterBalance()}</span>)
       },
 
       { accessor: 'UnitType_Code', Header: 'Unit', editable: false, sortable: true },

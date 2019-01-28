@@ -186,22 +186,26 @@ class StockCardReport extends Component {
     this.setState({ select }, () => { this.getData() })
   }
 
-  sumFooterDebit() {
-    return _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-        parseFloat(x.Debit) : null)
-  }
+  // sumFooterDebit() {
+  //   return _.sumBy(this.state.data,
+  //     x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+  //       parseFloat(x.Debit) : null)
+  // }
 
-  sumFooterCredit() {
-    return _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-        parseFloat(x.Credit) : null)
-  }
+  // sumFooterCredit() {
+  //   return _.sumBy(this.state.data,
+  //     x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+  //       parseFloat(x.Credit) : null)
+  // }
 
-  sumFooterTotal() {
-    return _.sumBy(this.state.data,
+  sumFooterTotal(value) {
+    var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-        parseFloat(x.Total) : null)
+        parseFloat(x[value]) : null)
+    if (sumVal === 0 || sumVal === null || sumVal === undefined)
+      return '-'
+    else
+      return sumVal
   }
 
   render() {
@@ -245,7 +249,7 @@ class StockCardReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterDebit() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterDebit()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal("Debit")}</span>)
       },
 
       {
@@ -256,7 +260,7 @@ class StockCardReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterCredit() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterCredit()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal("Credit")}</span>)
       },
 
       {
@@ -267,7 +271,7 @@ class StockCardReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterTotal()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal("Total")}</span>)
       },
       // {
       //   accessor: 'Debit', Header: 'Debit', editable: false, sortable: true, Footer:
