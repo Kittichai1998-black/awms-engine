@@ -207,6 +207,7 @@ class StockCardReport extends Component {
     const cols = [
       {
         Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
         Cell: (e) => {
           let numrow = 0;
           if (this.state.currentPage !== undefined) {
@@ -237,17 +238,35 @@ class StockCardReport extends Component {
       { accessor: 'Ref2', Header: 'MovementType', editable: false, sortable: true },
       { accessor: 'RefID', Header: 'Ref. DO No', editable: false, sortable: true },
       {
-        accessor: 'Debit', Header: 'Debit', editable: false, className: "right", Footer:
+        accessor: 'Debit', Header: 'Debit', editable: false, className: "right", 
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooterDebit() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterDebit()}</span>)
       },
 
       {
-        accessor: 'Credit', Header: 'Credit', editable: false, className: "right", Footer:
+        accessor: 'Credit', Header: 'Credit', editable: false, className: "right", 
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooterCredit() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterCredit()}</span>)
       },
 
       {
-        accessor: 'Total', Header: 'Total', editable: false, className: "right", Footer:
+        accessor: 'Total', Header: 'Total', editable: false, className: "right", 
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal() === null || this.sumFooterDebit() === undefined ? 0 : this.sumFooterTotal()}</span>)
       },
       // {
@@ -343,13 +362,9 @@ class StockCardReport extends Component {
           columns={cols}
           data={this.state.data}
           filterable={false}
+          className="-highlight"
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
-          getTfootTrProps={(state, rowInfo) => ({
-            style: {
-              backgroundColor: '#c8ced3'
-            }
-          })}
         />
       </div>
     )

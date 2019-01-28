@@ -166,6 +166,7 @@ class StoragReport extends Component {
     let cols = [
       {
         Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
         Cell: (e) => {
           let numrow = 0;
           if (this.state.currentPage !== undefined) {
@@ -196,20 +197,44 @@ class StoragReport extends Component {
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
 
       {
-        accessor: 'Qty', Header: 'Qty', editable: false, filterable: false, className: "right", Footer:
+        accessor: 'Qty', Header: 'Qty', editable: false, filterable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
       },
       { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
-        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right", Footer:
+        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
           (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.WeiPallet === null || x.WeiPallet === undefined ? 0 : x.WeiPallet))}</span>)
       },
       {
-        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right", Footer:
+        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
           (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.WeiPack === null || x.WeiPack === undefined ? 0 : x.WeiPack))}</span>)
       },
       {
-        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right", Footer:
+        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
           (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === null || x.Wei_PackStd === undefined ? 0 : x.Wei_PackStd))}</span>)
       },
 
@@ -245,33 +270,29 @@ class StoragReport extends Component {
                   }
                 }
 
-                }}
-                timeIntervals={1}
-                timeFormat="HH:mm"
-                timeCaption="Time"
-                showTimeSelect={false}
-                  dateFormat={"DD-MM-YYYY"} />
-        
+              }}
+              timeIntervals={1}
+              timeFormat="HH:mm"
+              timeCaption="Time"
+              showTimeSelect={false}
+              dateFormat={"DD-MM-YYYY"} />
+
             <Col xs="1">
               <ExportFile column={cols} dataxls={this.state.data} filename={"StorageReport"} />
             </Col>
           </Row>
         </div>
-        <ReactTable
+        <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
           minRows={5}
           loading={this.state.loading}
           columns={cols}
           data={this.state.data}
           editable={false}
+          className="-highlight"
           filterable={true}
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
-          getTfootTrProps={(state, rowInfo) => ({
-            style: {
-              backgroundColor: '#c8ced3'
-            }
-          })}
         />
       </div>
 
