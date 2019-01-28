@@ -231,8 +231,9 @@ class StoragReport extends Component {
       <div>
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
-          
-            <Col xs="6">
+
+            <Col xs="6"></Col>
+            <Col xs="2">
               <div className="float-right" >
                 <span className="float-right" style={{ fontWeight: 'bold' }}>Recieved Date : </span>
               </div>
@@ -257,7 +258,7 @@ class StoragReport extends Component {
                 showTimeSelect={false}
                   dateFormat={"DD-MM-YYYY"} />
         
-            <Col xs="2">
+            <Col xs="1">
               <ExportFile column={cols} dataxls={this.state.data} filename={"StorageReport"} />
             </Col>
           </Row>
