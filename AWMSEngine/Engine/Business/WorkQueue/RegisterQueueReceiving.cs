@@ -67,6 +67,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             //คืนเศษที่เหลือจากการ Counting
             else if (mapsto.eventStatus == StorageObjectEventStatus.AUDITING || mapsto.eventStatus == StorageObjectEventStatus.AUDITED)
             {
+                docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(
+                    mapsto.ToTreeList().Where(x=>x.type == StorageObjectType.PACK).Select(x=>x.id.Value).ToList(),
+                    DocumentTypeID.AUDIT, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVING, this.BuVO);
                 //this.ValidateAuditReturn(mapsto, reqVO);
             }
             else
