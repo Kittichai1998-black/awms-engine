@@ -117,7 +117,10 @@ const GenerateDropDownStatus = (status) => {
 function FilterURL(seacrhlocation, select) {
     const search = queryString.parse(encodeURI(seacrhlocation))
     var url = select;
-    var sel = JSON.parse(url.q)
+    var sel = [];
+    if (url.q) {
+        sel = JSON.parse(url.q)
+    }
     for (let value in search) {
         if (search[value]) {
             if (search[value] !== "") {
