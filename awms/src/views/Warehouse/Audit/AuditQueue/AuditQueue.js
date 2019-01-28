@@ -10,7 +10,7 @@ const Axios = new apicall()
 class AuditQueue extends Component{
   constructor(){
     super();
-    this.state = this.initialState
+    //this.state = this.initialState
     this.createDocItemList = this.createDocItemList.bind(this);
     this.onHandleSelectionDoc = this.onHandleSelectionDoc.bind(this);
     this.onHandleCreateAuditQueue = this.onHandleCreateAuditQueue.bind(this);
@@ -52,14 +52,12 @@ class AuditQueue extends Component{
   async componentWillMount() {
     document.title = "Queue Audit : AWMS";
     //permission
-    this.setState({ showbutton: "none" })
+    this.setState(this.setState(this.initialState), () => this.setState({ showbutton: "none" }))
     let dataGetPer = await GetPermission()
     //this.displayButtonByPermission(dataGetPer)
     CheckWebPermission("QueueAd", dataGetPer, this.props.history);
   }
- componentWillMount(){
-  this.setState(this.initialState)
-} 
+
  componentDidMount(){
     Axios.get(createQueryString(this.select)).then(res => {
       var docList = [];

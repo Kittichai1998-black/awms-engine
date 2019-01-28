@@ -36,7 +36,7 @@ namespace AWMSEngine.APIService.ASRS
                 var docItemID = new List<amt_DocumentItem>();
                 var setSTO = ADO.StorageObjectADO.GetInstant().Get(getQueue.StorageObject_ID, StorageObjectType.BASE, false, true, this.BuVO);
 
-                var stos = TreeUtil.ToTreeList(setSTO).OrderByDescending(x => x.objectSizeID).ToList();
+                var stos = TreeUtil.ToTreeList(setSTO).OrderByDescending(x => x.type).ToList();
                 List<amt_DocumentItemStorageObject> disto = new List<amt_DocumentItemStorageObject>();
 
                 var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(stos.Where(x=>x.type== StorageObjectType.PACK).Select(x=>x.id.Value).ToList(), DocumentTypeID.GOODS_ISSUED, this.BuVO);
@@ -53,8 +53,8 @@ namespace AWMSEngine.APIService.ASRS
 
                         foreach (var docItem in docItems)
                         {
-                            getdisto = docItem.DocItemStos.Where(x => x.StorageObject_ID == sto.id).ToList();
-                            docItemID.Add(docItems.Where(x => x.ID == docItem.Document_ID).FirstOrDefault());
+                            getdisto.AddRange( docItem.DocItemStos.Where(x => x.StorageObject_ID == sto.id).ToList());
+                            //docItemID.Add(docItems.Where(x => x.ID == docItem.Document_ID).FirstOrDefault());
                         }
 
                         var gdisto = getdisto.GroupBy(x => new { x.StorageObject_ID, x.DocumentItem_ID }).Select(x => new
@@ -70,7 +70,8 @@ namespace AWMSEngine.APIService.ASRS
 
                         gdisto.ForEach(x =>
                         {
-                            ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItemStorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE));
+                            ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(x.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                            //ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItemStorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE));
 
                             sto.qty = sto.qty - x.Quantity;
                             sto.baseQty = sto.baseQty - x.BaseQuantity;
@@ -83,8 +84,8 @@ namespace AWMSEngine.APIService.ASRS
                     }
                     else if (sto.type == StorageObjectType.BASE)
                     {
-                        var pickedInPallet = stos.Where(x => x.objectSizeID == 2).All(x => x.eventStatus == StorageObjectEventStatus.PICKED);
-                        if (pickedInPallet)
+                        //var pickedInPallet = stos.Where(x => x.objectSizeID == 2).All(x => x.eventStatus == StorageObjectEventStatus.PICKED);
+                        if (stos.FindAll(x => x.type == StorageObjectType.PACK && x.parentID == sto.id.Value).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.PICKED))
                         {
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
                         }
@@ -93,15 +94,13 @@ namespace AWMSEngine.APIService.ASRS
                 
                 foreach(var docItem in docItems)
                 {
-                    var docID = ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(id, this.BuVO).Document_ID;
-
                     object closeDoc = null;
-                    var docTarget = ADO.DocumentADO.GetInstant().Target(docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                    var docTarget = ADO.DocumentADO.GetInstant().Target(docItem.Document_ID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
                     var target = docTarget.Any(z => z.needPackQty <= 0);
                     if (target)
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
-                        closeDoc = new { docIDs = new long[] { docID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docItem.Document_ID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
+                        closeDoc = new { docIDs = new long[] { docItem.Document_ID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
                     }
 
                     if (closeDoc != null)
