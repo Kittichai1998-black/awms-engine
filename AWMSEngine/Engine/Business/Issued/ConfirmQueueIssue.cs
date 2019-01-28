@@ -21,17 +21,17 @@ namespace AWMSEngine.Engine.Business.Issued
                 public long docID;
                 public string docCode;
                 public long dociID;
-                public long stoi;
+                public long? stoi;
                 public string itemCode;
                 public decimal qty;
                 public string batch;
                 public string orderNo;
                 public string lot;
                 public int priority;
-                public long wareHouseID;
-                public long areaID;
+                public long? wareHouseID;
+                public long? areaID;
                 public string baseCode;
-                public decimal stoBaseQty;
+                public decimal? stoBaseQty;
             }
         }
 
@@ -74,31 +74,12 @@ namespace AWMSEngine.Engine.Business.Issued
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            
+            var queueWorkQueue = new WCSQueueApi.TReq();
+            var queueWorkQueueOut = new List<WCSQueueApi.TReq.queueout>();
+
             TRes res = new TRes();
-            WCSQueueApi.TReq qOut = new WCSQueueApi.TReq();
             StorageObjectCriteria stoCriteria = new StorageObjectCriteria();
-            foreach (var list in reqVO.DocumentProcessed)
-            {
-                this._warehouseASRS = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == list.wareHouseID);
-                if (_warehouseASRS == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + list.wareHouseID + "'");
-                this._areaASRS = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == list.areaID && x.Warehouse_ID == _warehouseASRS.ID);
-                if (_areaASRS == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.areaID + "'");
 
-                //update Document EventStatus 10 --> 11
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
-                //update StorageObject EventStatus 12 --> 17
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
-
-                var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
-                var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
-
-                var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
-                //insert DocItemSto
-                ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, stoPackID ?? 0, list.qty, getRootSTO.mapstos[0].unitID, list.qty, getRootSTO.mapstos[0].baseUnitID, this.BuVO);
-            }
             var resultDocItemSto = reqVO.DocumentProcessed.GroupBy(n => new { n.stoi, n.dociID, n.baseCode, n.wareHouseID, n.areaID, n.priority })
                 .Select(g => new
                 {
@@ -108,7 +89,46 @@ namespace AWMSEngine.Engine.Business.Issued
                     g.Key.wareHouseID,
                     g.Key.areaID,
                     g.Key.priority
-                }).ToList();
+                }).Where(x => x.stoi != null).ToList();
+
+            foreach (var list in reqVO.DocumentProcessed)
+            {
+                if (list.stoi != null)
+                {
+                    this._warehouseASRS = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == list.wareHouseID);
+                    if (_warehouseASRS == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + list.wareHouseID + "'");
+                    this._areaASRS = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == list.areaID && x.Warehouse_ID == _warehouseASRS.ID);
+                    if (_areaASRS == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.areaID + "'");
+
+                    //update Document EventStatus 10 --> 11
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                    //update StorageObject EventStatus 12 --> 17
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi ?? 0, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
+                    var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
+                    var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi ?? 0, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
+
+                    var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
+                    //insert DocItemSto
+                    ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, stoPackID ?? 0, list.qty, getRootSTO.mapstos[0].unitID, list.qty, getRootSTO.mapstos[0].baseUnitID, this.BuVO);
+                }
+                else
+                {
+                    var xx = reqVO.DocumentProcessed.GroupBy(n => new { n.docID }).Select(g => new
+                    {
+                        g.Key.docID
+                    }).ToList();
+                    foreach (var c in xx)
+                    {
+                        bool allSame = reqVO.DocumentProcessed.Where(w => w.docID == xx[0].docID).All(item => item.stoi == null);
+                        if (allSame)
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
+                    }
+                }
+            }
+            
             foreach (var result in resultDocItemSto)
             {
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
@@ -124,9 +144,30 @@ namespace AWMSEngine.Engine.Business.Issued
                 //create WorkQueue
                 SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
 
-            }
+                var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
+                baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                {
+                    baseCode = result.baseCode,
+                    packInfos = null
+                };
 
-            WCSQueueApi.GetInstant().SendQueue(qOut, this.BuVO);
+                queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
+                {
+                    queueID = xyz.ID,
+                    desWarehouseCode = "THIP",
+                    desAreaCode = "F",
+                    desLocationCode = null,
+                    priority = result.priority,
+                    baseInfo = baseInfo,
+                });
+            }
+            queueWorkQueue.queueOut = queueWorkQueueOut;
+            /*WCSQueueApi*/
+            var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+            if (wcsAcceptRes._result.resultcheck == 0)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
+            }
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;
