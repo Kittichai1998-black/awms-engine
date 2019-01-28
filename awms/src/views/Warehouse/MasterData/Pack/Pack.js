@@ -28,7 +28,7 @@ class Pack extends Component {
             queryString: window.apipath + "/api/viw",
             t: "PackMaster",
             q: '[{ "f": "Status", "c":"<", "v": 2}]',
-            f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,ItemQty,Revision,Status,Created,Modified,LastUpdate",
+          f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified,LastUpdate,BaseQuantity,Quantity,BaseUnitTypeCode",
             g: "",
             s: "[{'f':'Code','od':'asc'}]",
             sk: 0,
@@ -318,11 +318,16 @@ class Pack extends Component {
             { accessor: 'Code', Header: 'SKU Code', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left", minWidth: 110 },
             { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 230 },
             { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter: (e) => this.createCustomFilter(e), className: "right" },
-            { accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+        
+          { accessor: 'Quantity', Header: 'Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+          { accessor: 'UnitTypeCode', Header: 'Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+
+          { accessor: 'BaseQuantity', Header: 'Base Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+          { accessor: 'BaseUnitTypeCode', Header: 'Base Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
             //{ accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 80, Cell:(e) => this.onCreateInputEditCell(e), },
             //{ accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left", Cell:(e) => this.onCreateDropdownEdit(e, this.state.UnitType, "UnitType_ID") },
             // { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter: (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "right" },
-            { accessor: 'ItemQty', Header: 'Base Qty/Unit', editable: false, Filter: (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 70 },
+            //{ accessor: 'ItemQty', Header: 'Base Qty/Unit', editable: false, Filter: (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 70 },
             { accessor: 'ObjectSizeCode', Header: '% Weight Verify', updateable: true, Filter: (e) => this.onCreateDropdownFilter(e, this.state.ObjSize, "ObjectSize_ID"), Cell: (e) => this.onCreateDropdownEdit(e, this.state.ObjSize, "ObjectSize_ID") },
             { accessor: 'LastUpdate', Header: 'Last Update', filterable: false, minWidth: 180, maxWidth: 180 },
             { show: false, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
@@ -345,7 +350,7 @@ class Pack extends Component {
 
 
                             {this.onCreateDropdownEditAll(this.state.ObjSize)}
-                            <Button style={{ width: "130px", marginRight: "5px" }} color="primary" onClick={() => { this.onClickEditAllWeight() }}>Accept</Button>
+                            <Button style={{ width: "130px", marginRight: "5px" }} color="primary" onClick={() => { this.onClickEditAllWeight() }}>Update Weight</Button>
                         </div>
                     </Col>
 

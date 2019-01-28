@@ -237,11 +237,15 @@ class AuditReport extends Component {
               </div>
             </Col>
           </Row>
-
-          <Row>
-            <Col sm="12" style={{ marginTop: '3px', marginBottom: '3px' }}>
-              <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} style={{ width: "130px", marginLeft: '5px' }} className="float-right" />
-              <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+            <Col xs="6"></Col>
+            <Col xs="6">
+              <div>
+                <div className="float-right">
+                  <ExportFile column={cols} dataxls={this.state.data} filename={"Audit"} />
+                </div>
+                <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
+              </div>
             </Col>
           </Row>
 
