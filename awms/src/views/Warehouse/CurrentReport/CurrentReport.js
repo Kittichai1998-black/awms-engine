@@ -5,10 +5,11 @@ import { apicall, createQueryString, FilterURL } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
 import { Row, Col, Input } from 'reactstrap';
 import _ from 'lodash';
+import withFixedColumns from "react-table-hoc-fixed-columns";
+import '../../Warehouse/componentstyle.css'
 
 const Axios = new apicall()
-
-
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 class CurrentReport extends Component {
 
@@ -26,7 +27,7 @@ class CurrentReport extends Component {
       queryString: window.apipath + "/api/viw",
       t: "r_CurrentInventory",
       q: '',
-      f: "SKU_ID,SKU_Code,SKU_Name,Warehouse,Qty,Base_Unit,Batch,OrderNo,Lot",
+      f: "*",
       g: "",
       s: "[{'f':'SKU_Code','od':'asc'}]",
       sk: 0,
@@ -152,6 +153,7 @@ class CurrentReport extends Component {
     let cols = [
       {
         Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
         Cell: (e) => {
           let numrow = 0;
           if (this.state.currentPage !== undefined) {
@@ -168,9 +170,9 @@ class CurrentReport extends Component {
           style: {
             backgroundColor: '#c8ced3'
           }
-        })
+        }),
       },
-      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 130 },
+      { accessor: 'SKU_Code', fixed: "left", Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 130 },
       { accessor: 'SKU_Name', Header: 'SKU Name', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 250 },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true },
       { accessor: 'Area', Header: 'Area', filterable: true, sortable: true, Filter: (e) => this.createCustomFilter(e), },
@@ -178,24 +180,75 @@ class CurrentReport extends Component {
       { accessor: 'Lot', Header: 'Lot', filterable: true, sortable: true, Filter: (e) => this.createCustomFilter(e) },
       { accessor: 'OrderNo', Header: 'Order No.', filterable: true, sortable: true, Filter: (e) => this.createCustomFilter(e) },
       {
-        accessor: 'QtyReceiving', Header: 'Qty Receiving', editable: false, filterable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceiving === "" || x.QtyReceiving === undefined ? 0 : x.QtyReceiving))}</span>)
+        accessor: 'QtyReceiving', Header: 'Qty Receiving', editable: false, filterable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyReceiving === null || x.QtyReceiving === undefined ? 0 : x.QtyReceiving))}</span>)
       },
       {
-        accessor: 'QtyReceived', Header: 'Qty Received', editable: false, filterable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyReceived === "" || x.QtyReceived === undefined ? 0 : x.QtyReceived))}</span>)
+        accessor: 'QtyReceived', Header: 'Qty Received', editable: false, filterable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyReceived === null || x.QtyReceived === undefined ? 0 : x.QtyReceived))}</span>)
       },
       {
-        accessor: 'QtyPicking', Header: 'Qty Picking', editable: false, filterable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyPicking === "" || x.QtyPicking === undefined ? 0 : x.QtyPicking))}</span>)
+        accessor: 'QtyPicking', Header: 'Qty Picking', editable: false, filterable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyPicking === null || x.QtyPicking === undefined ? 0 : x.QtyPicking))}</span>)
       },
       {
-        accessor: 'QtyAuditing', Header: 'Qty Auditing', editable: false, filterable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.QtyAuditing === "" || x.QtyAuditing === undefined ? 0 : x.QtyAuditing))}</span>)
+        accessor: 'QtyAuditing', Header: 'Qty Auditing', editable: false, filterable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyAuditing === null || x.QtyAuditing === undefined ? 0 : x.QtyAuditing))}</span>)
       },
       {
-        accessor: 'QtySummary', Header: 'Qty', editable: false, filterable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === null || this.sumFooterQty() === undefined  ? 0 : this.sumFooterQty()}</span>)
+        accessor: 'QtySummary', Header: 'Qty', editable: false, filterable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
+      },
+
+      {
+        accessor: 'Wei_Pack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_Pack === null || x.WeiPack === undefined ? 0 : x.Wei_Pack))}</span>)
+      },
+      {
+        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === null || x.WeiPack === undefined ? 0 : x.Wei_PackStd))}</span>)
       },
       { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
@@ -215,21 +268,18 @@ class CurrentReport extends Component {
 
           </Row>
         </div>
-        <ReactTable
+        <ReactTableFixedColumns
+          innerRef={(ref) => { this.tableRef = ref; }}
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
           minRows={5}
           loading={this.state.loading}
           columns={cols}
           data={this.state.data}
           editable={false}
+          className="-highlight"
           filterable={true}
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
-          getTfootTrProps={(state, rowInfo) => ({
-            style: {
-              backgroundColor: '#c8ced3'
-            }
-          })}
         />
       </div>
 

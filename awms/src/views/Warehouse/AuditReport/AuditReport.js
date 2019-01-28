@@ -228,7 +228,7 @@ class AuditReport extends Component {
                 </div></div>
             </Col>
 
-            <Col xs="6">
+            <Col xs="6"> 
               <div>
                 <label >Date To : </label>
                 <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
