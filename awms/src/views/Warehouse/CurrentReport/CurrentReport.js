@@ -200,11 +200,11 @@ class CurrentReport extends Component {
 
       {
         accessor: 'Wei_Pack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_Pack === "" || x.WeiPack === undefined ? 0 : x.Wei_Pack))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_Pack === null || x.WeiPack === undefined ? 0 : x.Wei_Pack))}</span>)
       },
       {
         accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === "" || x.WeiPack === undefined ? 0 : x.Wei_PackStd))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === null || x.WeiPack === undefined ? 0 : x.Wei_PackStd))}</span>)
       },
       { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
