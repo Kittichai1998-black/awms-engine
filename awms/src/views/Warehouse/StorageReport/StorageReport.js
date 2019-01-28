@@ -8,10 +8,10 @@ import { Input, Row, Col } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
+import withFixedColumns from "react-table-hoc-fixed-columns";
 
 const Axios = new apicall()
-
-
+const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 class StoragReport extends Component {
 
@@ -184,8 +184,8 @@ class StoragReport extends Component {
           }
         })
       },
-      { accessor: 'Pallet', Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, },
-      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, },
+      { accessor: 'Pallet', fixed: "left", Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, },
+      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 115 },
       { accessor: 'SKU_Name', Header: 'SKU Name', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Area', Header: 'Area', Filter: (e) => this.createCustomFilter(e), sortable: true },
@@ -197,25 +197,25 @@ class StoragReport extends Component {
 
       {
         accessor: 'Qty', Header: 'Qty', editable: false, filterable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "} {this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
       },
       { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
         accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPallet === "" || x.WeiPallet === undefined ? 0 : x.WeiPallet))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.WeiPallet === null || x.WeiPallet === undefined ? 0 : x.WeiPallet))}</span>)
       },
       {
         accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.WeiPack === "" || x.WeiPack === undefined ? 0 : x.WeiPack))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.WeiPack === null || x.WeiPack === undefined ? 0 : x.WeiPack))}</span>)
       },
       {
         accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right", Footer:
-          (<span style={{ fontWeight: 'bold' }}><label>Sum :</label>{" "}{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === "" || x.Wei_PackStd === undefined ? 0 : x.Wei_PackStd))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === null || x.Wei_PackStd === undefined ? 0 : x.Wei_PackStd))}</span>)
       },
 
       { accessor: 'Status', Header: 'Status', Filter: (e) => this.createCustomFilter(e), sortable: true },
       {
-        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, Cell: (e) =>
+        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 150, maxWidth: 150, Cell: (e) =>
           this.datetimeBody(e.value)
       },
     ];
