@@ -8,7 +8,7 @@ namespace AWMSModel.Criteria
     public class WorkQueueCriteria
     {
         public long? queueID;//รหัสคิว
-        public IOType IOType;
+        //public IOType ioType;
         public int seq;
         public long? queueParentID;
         public string queueRefID;

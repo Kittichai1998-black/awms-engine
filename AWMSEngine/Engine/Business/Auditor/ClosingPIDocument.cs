@@ -29,7 +29,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 if (doc.Status == 0)
                 {
 
-                    ADO.DocumentADO.GetInstant().updateStatus(docID, EntityStatus.REMOVE, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(docID, DocumentEventStatus.REMOVED, this.BuVO);
                 }
 
 
@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                 var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(docID, this.BuVO);
 
-                if(disto.Any(x => x.Status == EntityStatus.INACTIVE))
+                if(disto.Any(x => x.Status == EntityStatus.INACTIVE))//CHANGE BY TOM
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้ายังถูกตรวจสอบไม่ครบ ไม่สามารถปิดเอกสารได้");
                 }
