@@ -321,8 +321,8 @@ class AreaLocation extends Component {
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', Type: "FLSareacode", editable: view, Filter: "text", filterable:true ,fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", filterable: true },
-        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", filterable: true , minWidth: 150 },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text", filterable: true },
+        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", filterable: true , minWidth: 150 },
         { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", datatype: "int", filterable: true },
         { accessor: 'Level', Header: 'Level', editable: view, Filter: "text", datatype: "int" },
         { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175, filterable: true },
@@ -398,7 +398,7 @@ class AreaLocation extends Component {
                   filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
                   table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>*/}
-        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"Location"}
+        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"AreaLocation"}
           filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype} exportfilebtn={view} searchURL={this.props.location.search}
           btn={btnfunc} uneditcolumn={this.uneditcolumn} defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'AreaMaster_ID', c: '=', 'v': this.state.areamaster }]}
           table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} accept={view} />
