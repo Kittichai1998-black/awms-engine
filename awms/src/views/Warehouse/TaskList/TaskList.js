@@ -33,10 +33,10 @@ class TaskList extends Component {
         queryString: window.apipath + "/api/viw",
         t: "r_DashboardMoveOut",
         // q: "[{ 'f': 'IOType', 'c': '=', 'v': 0 },{ 'f': 'AreaCode', 'c': '=', 'v': 'S' }]",
-        q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 }]",
+        q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 },{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }]",
         f: "Time,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,SAPRef,QtyUnit,EventStatus",
         g: "",
-        s: "[{'f':'Time','od':'desc'}]",
+        s: "[{'f':'Status','od':'asc'},{'f':'Time','od':'asc'}]",
         sk: 0,
         l: 10,
         all: "",
@@ -48,7 +48,7 @@ class TaskList extends Component {
         q: "[{ 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' }]",
         f: "Time,TaskName,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,SAPRef,QtyUnit,DocumentType_ID,EventStatus",
         g: "",
-        s: "[{'f':'Time','od':'desc'}]",
+        s: "[{'f':'Time','od':'asc'}]",
         sk: 0,
         l: 10,
         all: "",
@@ -112,9 +112,9 @@ class TaskList extends Component {
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       } else {
-        areawhere.push({ 'f': 'IOType', 'c': '=', 'v': 1 });
+        areawhere.push({ 'f': 'IOType', 'c': '=', 'v': 1 },{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' });
         // areawhere.push({ 'f': 'AreaCode', 'c': '=', 'v': 'S' },{ 'f': 'IOType', 'c': '=', 'v': 0 });
-        taskwhere.push({ 'f': 'AreaCode', 'c': '=', 'v': selValue === 'F' ? 'FS' : selValue === 'R' ? 'RS' : '' }, { 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' });
+        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }, { 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       }
@@ -123,30 +123,30 @@ class TaskList extends Component {
   }
   render() {
     const cols1 = [
-      { accessor: "Time", Header: "Time", minWidth: 120, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('DD-MM-YYYY HH:mm:ss') : "" },
-      { accessor: "Document_Code", Header: "Doc No.", minWidth: 90 },
-      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 90 },
+      { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       { accessor: "AreaLoc_Code", Header: "Gate", minWidth: 50 },
       { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
       { accessor: "Product", Header: "Product", minWidth: 300 },
-      { accessor: "QtyUnit", Header: "Qty", minWidth: 90 },
-      { accessor: "Destination", Header: "Destination", minWidth: 90 },
+      { accessor: "QtyUnit", Header: "Qty", minWidth: 120 },
+      { accessor: "Destination", Header: "Destination", minWidth: 150 },
+      { accessor: "Document_Code", Header: "Doc No.", minWidth: 90 },
+      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
     ]
     const cols2 = [
+      { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       {
-        accessor: "TaskName", Header: "Task Name", minWidth: 50, className: 'center',
+        accessor: "TaskName", Header: "Task Name", minWidth: 70, className: 'center',
         Cell: row => (
           <Badge color={row.value} style={{ fontSize: '1rem', fontWeight: '600' }}>{row.value}</Badge>
         )
       },
-      { accessor: "Time", Header: "Time", minWidth: 120, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('DD-MM-YYYY HH:mm:ss') : "" },
-      { accessor: "Document_Code", Header: "Doc No.", minWidth: 90 },
-      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 90 },
-      { accessor: "AreaLoc_Code", Header: "Stage", minWidth: 50 },
-      { accessor: "Base_Code", Header: "Pallet", minWidth: 90 },
+      { accessor: "AreaLoc_Code", Header: "Stage", minWidth: 60 },
+      { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
       { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "QtyUnit", Header: "Qty", minWidth: 90 },
-      { accessor: "Destination", Header: "Destination", minWidth: 90 },
+      { accessor: "QtyUnit", Header: "Qty", minWidth: 120 },
+      { accessor: "Destination", Header: "Destination", minWidth: 150 },
+      { accessor: "Document_Code", Header: "Doc No.", minWidth: 90 },
+      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
@@ -159,7 +159,7 @@ class TaskList extends Component {
           enabled={this.state.isFull}
           onChange={isFull => this.setState({ isFull })}
         >
-          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', padding: '1.5625em' } : {}} className="fullscreen">
+          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', padding: '1.5625em', maxHeight: 'auto' } : {}} className="fullscreen">
             <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
               <Row>
                 <Col sm="3" xs="12" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={1000} /></span></label></Col>
@@ -175,13 +175,13 @@ class TaskList extends Component {
             <Row>
               <Col>
                 <Card body outline color="info">
-                  <CardTitle>Moving Out</CardTitle>
+                  <CardTitle>Move Out</CardTitle>
                   <ReactTable
                     columns={cols1}
                     minRows={5}
                     data={this.state.dataworkingout}
                     sortable={false}
-                    style={{ background: 'white', height: '10em', fontSize: '1rem', fontWeight: '400' }}
+                    style={{ background: 'white', height: '12em', fontSize: '1rem', fontWeight: '400' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
@@ -218,7 +218,7 @@ class TaskList extends Component {
                     minRows={10}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white', height: '21.75em', fontSize: '1rem', fontWeight: '400' }}
+                    style={{ background: 'white', height: '12em', fontSize: '1rem', fontWeight: '400' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
