@@ -278,10 +278,10 @@ namespace AWMSEngine.Engine.Business.Issued
                                             break;
                                         }
                                     }
-                                    else
-                                    {
-                                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "สินค้า "+ docItem.itemCode +" ไม่อยู่ในสถานะพร้อมประมวลผล");
-                                    }
+                                    //else
+                                    //{
+                                    //    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "สินค้า "+ docItem.itemCode +" ไม่อยู่ในสถานะพร้อมประมวลผล");
+                                    //}
                                 }
                                 if (listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
                                 {

@@ -109,6 +109,7 @@ namespace AMWUtil.Logger
 
         private void RunWriteLog()
         {
+            return;
             if (LogTask == null || LogTask.IsCompleted)
             {
                 LogTask = Task.Run(() =>
