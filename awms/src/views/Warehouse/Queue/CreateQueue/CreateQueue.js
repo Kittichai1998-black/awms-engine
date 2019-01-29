@@ -616,8 +616,7 @@ class CreateQueue extends Component{
       <Form>
         <FormGroup row>
           <Col sm={6}><span>{ datarow.value }</span></Col>
-          <Col sm={2}><span>{ "Qty : "}</span></Col>
-          <Col sm={4}><span>{ datarow.qty }</span></Col>
+          <Col sm={2}><span>{ "Qty : " + datarow.qty}</span></Col>
         </FormGroup>
       </Form>
     </div>

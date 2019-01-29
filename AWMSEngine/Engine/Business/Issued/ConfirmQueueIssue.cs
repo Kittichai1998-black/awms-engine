@@ -128,8 +128,12 @@ namespace AWMSEngine.Engine.Business.Issued
                     }
                 }
             }
-            
-            foreach (var result in resultDocItemSto)
+
+            var results = resultDocItemSto.GroupBy(n => new { n.stoi, n.dociID, n.baseCode, n.wareHouseID, n.areaID, n.priority }
+            , (key, g) => g.OrderBy(e => e.dociID).First()).ToList();
+
+
+            foreach (var result in results)
             {
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                 var docItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("amt_DocumentItem", "*", null,
