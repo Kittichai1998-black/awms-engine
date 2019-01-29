@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                 var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(docID, this.BuVO);
 
-                if(disto.Any(x => x.Quantity == null))
+                if(disto.Any(x => x.Status == EntityStatus.INACTIVE))
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้ายังถูกตรวจสอบไม่ครบ ไม่สามารถปิดเอกสารได้");
                 }

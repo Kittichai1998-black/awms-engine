@@ -94,7 +94,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             mapsto.parentType = StorageObjectType.LOCATION;
 
             ADO.StorageObjectADO.GetInstant().PutV2(mapsto, this.BuVO);*/
-            ADO.StorageObjectADO.GetInstant().UpdateLocation(mapsto, queueTrx.AreaLocationMaster_ID.Value, this.BuVO);
+            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, queueTrx.AreaLocationMaster_ID.Value, this.BuVO);
 
             if (queueTrx.IOType == IOType.INPUT)
             {

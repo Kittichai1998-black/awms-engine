@@ -318,10 +318,10 @@ namespace AWMSEngine.Engine.Business.Issued
                     ADO.DocumentADO.GetInstant().UpdateItemEventStatus(dataDocItem.ID.Value,
                         DocumentEventStatus.CLOSED, this.BuVO);
 
-                    foreach (var stoDoc in dataDocItem.DocItemStos)
+                    /*foreach (var stoDoc in dataDocItem.DocItemStos)
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(stoDoc.ID.Value, EntityStatus.REMOVE, this.BuVO);
-                    }
+                        ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(stoDoc.ID.Value, 0, 0, EntityStatus.ACTIVE, this.BuVO);
+                    }*/
                         
                 }
                 else

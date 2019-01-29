@@ -24,11 +24,14 @@ namespace AWMSEngine.APIService.ASRS
             this.BeginTransaction();
             DoneQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneQueue.TReq>(this.RequestVO);
             WorkQueueCriteria res = new DoneQueue().Execute(this.Logger, this.BuVO, req);
+
             new Engine.General.MoveStoInGateToNextArea().Execute(this.Logger, this.BuVO, new Engine.General.MoveStoInGateToNextArea.TReq()
             {
                 baseStoID = res.baseInfo.id
             });
+            this.CommitTransaction();
 
+            this.BeginTransaction();
             var queueID = req.queueID.Value;
             var getQueue = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(queueID, this.BuVO);
             if(getQueue.IOType == IOType.OUTPUT)

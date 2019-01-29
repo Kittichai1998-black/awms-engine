@@ -25,13 +25,7 @@ namespace AWMSEngine.Engine.General
             var nextArea = desAreas.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
             if(nextArea != null)
             {
-                mapsto.areaID = nextArea.Des_AreaMaster_ID.Value;
-                if (nextArea.Des_AreaLocationMaster_ID.HasValue)
-                {
-                    mapsto.parentID = nextArea.Des_AreaLocationMaster_ID.Value;
-                    mapsto.parentType = StorageObjectType.LOCATION;
-                }
-                ADO.StorageObjectADO.GetInstant().PutV2(mapsto, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, nextArea.Des_AreaLocationMaster_ID.Value, this.BuVO);
             }
 
             return new TRes() { mapsto = mapsto };

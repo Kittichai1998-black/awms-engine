@@ -192,10 +192,16 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
-        public long UpdateStatusMappingSTO(long id, EntityStatus status, VOCriteria buVO)
+        public long UpdateStatusMappingSTO(long disto_id, EntityStatus status, VOCriteria buVO)
+        {
+            return UpdateStatusMappingSTO(disto_id, null, null, status, buVO);
+        }
+        public long UpdateStatusMappingSTO(long disto_id, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@id", id);
+            param.Add("@id", disto_id);
+            param.Add("@qty", qty);
+            param.Add("@baseQty", baseQty);
             param.Add("@status", status);
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
@@ -422,11 +428,16 @@ namespace AWMSEngine.ADO
         {
             return ListItemBySTO(storageObjectIDs, null, buVO);
         }
-        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID, VOCriteria buVO)
+        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID,VOCriteria buVO)
+        {
+            return ListItemBySTO(storageObjectIDs, docTypeID, null, buVO);
+        }
+        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID, EntityStatus? distoStatus , VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("storageObjectIDs", string.Join(",", storageObjectIDs));
             param.Add("docTypeID", docTypeID);
+            param.Add("distoStatus", docTypeID);
             return this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYSTOID",
                                 System.Data.CommandType.StoredProcedure,
                                 param,

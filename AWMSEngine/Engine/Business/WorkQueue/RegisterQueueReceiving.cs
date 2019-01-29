@@ -53,7 +53,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             //รับสินค้าใหม่เข้าคลัง
             if (mapsto.eventStatus == StorageObjectEventStatus.IDLE)
             {
-                docItems = this.ProcessReceiving(mapsto, reqVO);               
+                docItems = this.ProcessReceiving(mapsto, reqVO);
+
+                if (docItems.Count() == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Receive");
             }
             //คืนเศษที่เหลือจากการ Picking
             else if (mapsto.eventStatus == StorageObjectEventStatus.PICKING)
@@ -63,23 +66,23 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 if (docItems.Any(x => x.EventStatus == DocumentEventStatus.WORKING))
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากงาน Picking ยังไม่เรียบร้อย");
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                if (docItems.Count() == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Issue");
             }
             //คืนเศษที่เหลือจากการ Counting
             else if (mapsto.eventStatus == StorageObjectEventStatus.AUDITING || mapsto.eventStatus == StorageObjectEventStatus.AUDITED)
             {
-                docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(
-                    mapsto.ToTreeList().Where(x=>x.type == StorageObjectType.PACK).Select(x=>x.id.Value).ToList(),
-                    DocumentTypeID.AUDIT, this.BuVO);
+                List<long> packIDs = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList();
+                docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(packIDs, DocumentTypeID.AUDIT, this.BuVO);
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVING, this.BuVO);
-                //this.ValidateAuditReturn(mapsto, reqVO);
+                if (docItems.Count() == 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Audit");
+
             }
             else
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากมีสถานะ '" + mapsto.eventStatus + "'");
             }
-
-            if (docItems.Count() == 0)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสารรอรับเข้า");
 
             var workQ = this.ProcessRegisterWorkQueue(docItems,mapsto, reqVO);
 
