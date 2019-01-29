@@ -28,7 +28,7 @@ class Pack extends Component {
             queryString: window.apipath + "/api/viw",
             t: "PackMaster",
             q: '[{ "f": "Status", "c":"<", "v": 2}]',
-          f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified,LastUpdate,BaseQuantity,Quantity,BaseUnitTypeCode",
+            f: "ID,SKUMaster_ID,SKU_Code,PackMasterType_ID,PackCode,PackName,UnitType_ID,UnitTypeCode,UnitTypeName,ObjectSize_ID,ObjectSizeCode,ObjectSize_Code,Code,Name,Description,WeightKG,WidthM,LengthM,HeightM,Revision,Status,Created,Modified,LastUpdate,BaseQuantity,Quantity,BaseUnitTypeCode",
             g: "",
             s: "[{'f':'Code','od':'asc'}]",
             sk: 0,
@@ -40,6 +40,7 @@ class Pack extends Component {
         this.paginationButton = this.paginationButton.bind(this)
         this.filterList = this.filterList.bind(this);
         this.onClickUpdateData = this.onClickUpdateData.bind(this)
+        this.customSorting = this.customSorting.bind(this);
         this.UnitTypeSelect = {
             queryString: window.apipath + "/api/mst",
             t: "UnitType",
@@ -293,10 +294,26 @@ class Pack extends Component {
         this.setState({ select }, () => { this.getData() })
     }
 
+    customSorting(data) {
+        const select = this.state.select
+        select["s"] = JSON.stringify([{ 'f': data[0].id, 'od': data[0].desc === false ? 'asc' : 'desc' }])
+        let queryString = ""
+        this.setState({ currentPage: 1 })
+        if (this.props.url === undefined || null) {
+            queryString = createQueryString(select)
+        }
+        // else {
+        //   queryString = createQueryStringStorage(this.props.url, data[0].id, data[0].desc === false ? 'asc' : 'desc')
+        // }
+        Axios.get(queryString).then(
+            (res) => {
+                this.setState({ data: res.data.datas, loading: false })
+            })
+    }
     render() {
         const cols = [
             {
-                Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+                Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
                 Cell: (e) => {
                     let numrow = 0;
                     if (this.state.currentPage !== undefined) {
@@ -318,12 +335,12 @@ class Pack extends Component {
             { accessor: 'Code', Header: 'SKU Code', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left", minWidth: 110 },
             { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 230 },
             { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter: (e) => this.createCustomFilter(e), className: "right" },
-        
-          { accessor: 'Quantity', Header: 'Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
-          { accessor: 'UnitTypeCode', Header: 'Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
 
-          { accessor: 'BaseQuantity', Header: 'Base Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
-          { accessor: 'BaseUnitTypeCode', Header: 'Base Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+            { accessor: 'Quantity', Header: 'Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+            { accessor: 'UnitTypeCode', Header: 'Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+
+            { accessor: 'BaseQuantity', Header: 'Base Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+            { accessor: 'BaseUnitTypeCode', Header: 'Base Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
             //{ accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 80, Cell:(e) => this.onCreateInputEditCell(e), },
             //{ accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left", Cell:(e) => this.onCreateDropdownEdit(e, this.state.UnitType, "UnitType_ID") },
             // { accessor: 'ObjCode', Header: 'Weight Validate', updateable: false, Filter: (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "right" },
@@ -357,9 +374,10 @@ class Pack extends Component {
                 </Row>
 
 
-                <ReactTableFixedColumns 
-                    style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }} 
+                <ReactTableFixedColumns
+                    style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
                     data={this.state.data} columns={cols} filterable={true} minRows={5}
+                    multiSort={false}
                     getTrProps={(state, rowInfo) => {
                         let result = false
                         let rmv = false
@@ -383,6 +401,10 @@ class Pack extends Component {
                             return {}
                     }}
                     PaginationComponent={this.paginationButton}
+                    onSortedChange={(sorted) => {
+                        this.setState({ data: [], loading: true });
+                        this.customSorting(sorted)
+                    }}
                 />
                 <Card>
                     <CardBody>

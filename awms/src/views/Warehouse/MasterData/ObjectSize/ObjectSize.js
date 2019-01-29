@@ -116,8 +116,8 @@ class ObjectSize extends Component {
         this.filterList()
         this.getObjectSizePallet()
     }
-// 76	WeightVal_view
-// 79	WeightVal_create&modify
+    // 76	WeightVal_view
+    // 79	WeightVal_create&modify
     displayButtonByPermission(dataGetPer) {
         let checkview = true
         if (CheckViewCreatePermission("WeightVal_view", dataGetPer)) {
@@ -372,7 +372,7 @@ class ObjectSize extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
-            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
             { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 80, maxWidth: 90, Type: "autoMapPackSize" },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
             //{accessor: 'Description', Header: 'Description', sortable:false,Filter:"text",editable:true,},
