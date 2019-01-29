@@ -85,7 +85,7 @@ namespace AWMSEngine.Engine.Business.Picking
                 }
 
                 var docTarget = ADO.DocumentADO.GetInstant().Target(reqVO.docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
-                var target = docTarget.Any(z => z.needPackQty <= 0);
+                var target = docTarget.All(z => z.needPackQty <= 0);
                 if (target)
                 {
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);

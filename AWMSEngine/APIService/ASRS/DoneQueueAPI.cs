@@ -85,7 +85,7 @@ namespace AWMSEngine.APIService.ASRS
                     else if (sto.type == StorageObjectType.BASE)
                     {
                         //var pickedInPallet = stos.Where(x => x.objectSizeID == 2).All(x => x.eventStatus == StorageObjectEventStatus.PICKED);
-                        if (stos.FindAll(x => x.type == StorageObjectType.PACK && x.parentID == sto.id.Value).TrueForAll(x => x.eventStatus == StorageObjectEventStatus.PICKED))
+                        if (stos.FindAll(x=>x.type == StorageObjectType.PACK && x.parentID == sto.id.Value).TrueForAll(x=>x.eventStatus == StorageObjectEventStatus.PICKED))
                         {
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
                         }
@@ -96,7 +96,7 @@ namespace AWMSEngine.APIService.ASRS
                 {
                     object closeDoc = null;
                     var docTarget = ADO.DocumentADO.GetInstant().Target(docItem.Document_ID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
-                    var target = docTarget.Any(z => z.needPackQty <= 0);
+                    var target = docTarget.All(z => z.needPackQty <= 0);
                     if (target)
                     {
                         ADO.DocumentADO.GetInstant().UpdateStatusToChild(docItem.Document_ID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
@@ -105,7 +105,6 @@ namespace AWMSEngine.APIService.ASRS
 
                     if (closeDoc != null)
                     {
-                        this.BeginTransaction();
                         var reqLocal = ObjectUtil.DynamicToModel<ClosingGIDocument.TDocReq>(closeDoc);
                         var resLocal = new ClosingGIDocument().Execute(this.Logger, this.BuVO, reqLocal);
                         this.CommitTransaction();
