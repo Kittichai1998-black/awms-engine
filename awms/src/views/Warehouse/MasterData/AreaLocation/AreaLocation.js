@@ -15,7 +15,7 @@ class AreaLocation extends Component {
       data: null,
       autocomplete: [],
       cols1: [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         //{ accessor: 'Code', Header: 'Code', editable: false, Filter: "text" },
         { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", filterable: true , minWidth: 150 },
@@ -278,7 +278,7 @@ class AreaLocation extends Component {
     const view = this.state.permissionView
     if (this.state.grouptype === 1) { //STORAGE
       return [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", filterable: true  },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150, filterable: true  },
@@ -299,7 +299,7 @@ class AreaLocation extends Component {
 
     } else if (this.state.grouptype === 2) { //Gate
       return [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", filterable: true  },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 135, filterable: true  },
@@ -317,7 +317,7 @@ class AreaLocation extends Component {
       ];
     } else { // STAGING
       return [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', Type: "FLSareacode", editable: view, Filter: "text", filterable:true ,fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", filterable: true },

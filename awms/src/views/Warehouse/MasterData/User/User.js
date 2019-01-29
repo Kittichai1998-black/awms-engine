@@ -254,7 +254,7 @@ class User extends Component {
         const view = this.state.permissionView
 
         const cols = [
-            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 40, maxWidth: 40 },
             { accessor: 'Code', Header: 'Username', editable: view, filterable: true, Filter: "text", insertable: true, fixed: "left", minWidth: 100 },
             { show: view, accessor: 'Password', Header: 'Password', editable: view, filterable: false, Type: "password", minWidth: 120 },
             { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 160, maxWidth: 200 },

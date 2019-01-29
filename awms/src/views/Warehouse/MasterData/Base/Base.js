@@ -151,7 +151,7 @@ class Area extends Component {
     render() {
         const view = this.state.permissionView
         const cols = [
-            { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+            { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
             //{ Header: '', Type: "selection", sortable: false, Filter: "select", className: "text-center", fixed: "left", minWidth: 50, maxWidth: 50},
             { accessor: 'Code', Header: 'Pallet Code', Type: "autobasecode", editable: false, Filter: "text", fixed: "left", minWidth: 100 },
             { accessor: 'Name', Header: 'Pallet Name', editable: view, Filter: "text", fixed: "left", minWidth: 100 },

@@ -149,7 +149,7 @@ class ListProduct extends Component {
   render() {
     const view = this.state.permissionView
     const cols = [
-      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+      { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45 },
       //{ accessor: 'SKUMasterType_Code', Header: 'SKU Type', Filter: "text", fixed: "left" },
       { accessor: 'Code', Header: 'Code', editable: view, Filter: "text", fixed: "left", minWidth: 180 },
       { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", minWidth: 270 },

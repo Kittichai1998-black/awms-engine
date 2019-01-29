@@ -41,6 +41,7 @@ class AuditReport extends Component {
     }
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
+    this.customSorting = this.customSorting.bind(this);
   }
   async componentWillMount() {
     //permission
@@ -205,10 +206,27 @@ class AuditReport extends Component {
     }
     this.setState({ select }, () => { this.getData() })
   }
+  
+  customSorting(data) {
+    const select = this.state.select
+    select["s"] = JSON.stringify([{ 'f': data[0].id, 'od': data[0].desc === false ? 'asc' : 'desc' }])
+    let queryString = ""
+    this.setState({ currentPage: 1 })
+    if (this.props.url === undefined || null) {
+      queryString = createQueryString(select)
+    }
+    // else {
+    //   queryString = createQueryStringStorage(this.props.url, data[0].id, data[0].desc === false ? 'asc' : 'desc')
+    // }
+    Axios.get(queryString).then(
+      (res) => {
+        this.setState({ data: res.data.datas, loading: false })
+      })
+  }
   render() {
     const cols = [
       {
-        Header: 'No.', fixed: "left", filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
+        Header: 'No.', fixed: "left", sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
         Cell: (e) => {
           let numrow = 0;
@@ -336,10 +354,15 @@ class AuditReport extends Component {
           loading={this.state.loading}
           columns={cols}
           data={this.state.data}
+          multiSort={false}
           filterable={false}
           className="-highlight"
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
+          onSortedChange={(sorted) => {
+            this.setState({ data: [], loading: true });
+            this.customSorting(sorted)
+          }}
         />
       </div>
     )

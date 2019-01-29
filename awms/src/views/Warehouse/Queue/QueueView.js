@@ -112,7 +112,7 @@ class QueueView extends Component {
     
         </div>
         <ReactTable columns={cols} data={this.state.data} minRows={10} defaultPageSize={10000} showPagination={false}
-          style={{ background: 'white', marginBottom: '10px' }}
+          style={{ background: 'white', marginBottom: '10px' }} multiSort={false}
           getTrProps={(state, rowInfo) => {
             if (rowInfo !== undefined) {
               if (rowInfo.original.EventStatus === 11) {
