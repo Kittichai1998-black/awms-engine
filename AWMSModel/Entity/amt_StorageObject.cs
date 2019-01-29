@@ -24,6 +24,6 @@ namespace AWMSModel.Entity
         public int EventStatus;
         public string Batch;
         public string Lot;
-        
+        public string OrderNo;
     }
 }
