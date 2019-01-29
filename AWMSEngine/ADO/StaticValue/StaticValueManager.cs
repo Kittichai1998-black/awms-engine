@@ -129,6 +129,7 @@ namespace AWMSEngine.ADO.StaticValue
                 unitType_ID = newUnit.UnitType_ID,
                 baseQty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity),
                 baseUnitType_ID = oldUnit.BaseUnitType_ID,
+                weiKg = newUnit.WeightKG * (qty * oldUnit.BaseQuantity / oldUnit.Quantity) / newUnit.BaseQuantity
             };
         }
 

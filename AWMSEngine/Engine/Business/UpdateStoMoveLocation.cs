@@ -27,20 +27,24 @@ namespace AWMSEngine.Engine.Business
         protected override TDocRes ExecuteEngine(TDocReq reqVO)
         {
             TDocRes res = new TDocRes();
+            var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
 
-            var docItemSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string, object> ("StorageObject_ID",reqVO.bstosID)
-                    }, this.BuVO);
+            var docItemSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                    new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("StorageObject_ID",
+                            string.Join(',', sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToArray()),
+                            SQLOperatorType.IN),
+                        new SQLConditionCriteria("status",EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
+                    }
+                    , this.BuVO);
 
-            var flag = docItemSto.TrueForAll(check => check.Status != 0);
 
-            if (flag == false)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO.PalletCode + " is Booked");
+            if (docItemSto.Any(x=>x.Status == EntityStatus.INACTIVE))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO.PalletCode + " is " + sto.eventStatus.ToString());
 
 
-            var StorageObject = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, false, this.BuVO);
-
-            res.data = ADO.StorageObjectADO.GetInstant().UpdateLocation(StorageObject,StorageObjectEventStatus.RECEIVED ,reqVO.LocationID,this.BuVO);
+            
+            res.data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto,StorageObjectEventStatus.RECEIVED ,reqVO.LocationID,this.BuVO);
 
            
             return res;
