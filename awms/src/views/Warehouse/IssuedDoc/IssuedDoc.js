@@ -236,6 +236,40 @@ class IssuedDoc extends Component {
       }
       } />
   }
+
+  DatePickerFilter(datetime) {
+    this.setState({ date: datetime })
+    let filter = this.state.datafilter
+    filter.forEach((x, index) => {
+      if (x.id === "DocumentDate")
+        filter.splice(index, 1);
+    });
+    if (datetime !== null) {
+      filter.push({ id: "DocumentDate", value: moment(datetime).format('YYYY-MM-DD'), type: "date" });
+    }
+    this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
+  }
+
+  createCustomFilter(name) {
+    return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
+      onKeyPress={(e) => {
+        if (e.key === 'Enter') {
+          let filter = this.state.datafilter
+          filter.forEach((x, index) => {
+            if (x.id === name.column.id)
+              filter.splice(index, 1);
+          });
+          filter.push({ id: name.column.id, value: e.target.value });
+          this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
+
+        }
+      }
+      } />
+  }
+
+
+
+
   onCheckFliter() {
     this.setState({ loading: true })
     let getFilter = this.state.datafilter;
@@ -386,17 +420,51 @@ class IssuedDoc extends Component {
     }
     return (
       <div>
-        {/*
-        column = คอลัมที่ต้องการแสดง
-        data = json ข้อมูลสำหรับ select ผ่าน url
-        ddlfilter = json dropdown สำหรับทำ dropdown filter
-        addbtn = เปิดปิดปุ่ม Add
-        accept = สถานะของในการสั่ง update หรือ insert 
-    
-      */}
-        <div className="clearfix">
-          <Button id="per_button_doc" style={{ width: '150px', marginLeft: '5px', marginBottom: '3px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+
+        <div className="clearfix" style={{ paddingBottom: '3px' }}>
+          <Row>
+
+            <Col xs="4"></Col>
+            <Col xs="4">
+              <div className="float-right" >
+                <span className="float-right" style={{ fontWeight: 'bold' }}>Doc.Date : </span>
+              </div>
+            </Col>
+
+            <DatePicker className="float-right" selected={this.state.date}
+              customInput={<Input />}
+              onChange={(e) => {
+                if (e === null) {
+                  this.DatePickerFilter(null)
+                }
+                else {
+                  if (e.isValid() && e !== null) {
+                    this.DatePickerFilter(e)
+                  }
+                }
+
+              }}
+              timeIntervals={1}
+              timeFormat="HH:mm"
+              timeCaption="Time"
+              showTimeSelect={false}
+              dateFormat={"DD-MM-YYYY"} />
+
+            <div className="clearfix">
+              <Button id="per_button_doc" style={{ width: '150px', marginLeft: '5px', marginBottom: '3px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+            </div>
+          </Row>
         </div>
+
+
+
+
+    
+
+
+
+
+
         <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
           minRows={5}

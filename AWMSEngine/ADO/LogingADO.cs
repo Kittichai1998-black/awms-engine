@@ -22,9 +22,7 @@ namespace AWMSEngine.ADO
             param.Add("@IPRemote", ipRemote);
             param.Add("@IPLocal", ipLocal);
             param.Add("@ServerName ", serverName);
-            param.Add("@InputText ",
-                string.IsNullOrEmpty(buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY)) ?
-                string.Empty : Newtonsoft.Json.JsonConvert.SerializeObject(request));
+            param.Add("@InputText ", Newtonsoft.Json.JsonConvert.SerializeObject(request));
             param.Add("@Url ", url);
             param.Add("@ActionBy", buVO.ActionBy);
             param.Add("@ID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.InputOutput);

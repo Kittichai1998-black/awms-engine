@@ -202,7 +202,7 @@ class IssuedManage extends Component {
             let pg = rowselect1.data.bstos.filter(y => { return y.docItemID === x.id });
             console.log(pg)
             if (pg.length > 0) {
-              x.sumQty1 = pg[0].distoQty
+              x.sumQty1 = pg[0].distoBaseQty
               //x.batch = pg[0].batch
               //x.options = pg[0].options
               //x.lot = pg[0].lot
@@ -210,17 +210,16 @@ class IssuedManage extends Component {
               x.distoUnitCode = pg[0].distoUnitCode
             }
             else {
-              x.distoUnitCode = x.unitType_Code
+              x.distoBaseUnitCode = x.distoBaseUnitCode
 
             }
             x.batchsp = x.batch
             x.options = x.options
+            x.baseQuantity = x.baseQuantity
+            x.distoBaseUnitCode = x.distoBaseUnitCode
 
             sumArr1.push(x);
           })
-
-
-
 
 
 
@@ -233,11 +232,12 @@ class IssuedManage extends Component {
           for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              res2.sumQty1 = res2.distoQty
+              res2.sumQty1 = res2.distoBaseQty
               sumArr1.forEach(x => {
                 if (x.id === res2.docItemID) {
-                  res2.quantity = x.quantity
+                  //res2.quantity = x.quantity
                   res2.options = x.options
+                  res2.baseQuantity = x.baseQuantity
 
                 }
               })
@@ -269,6 +269,7 @@ class IssuedManage extends Component {
                 if (row1.packMaster_Code === row2.packCode) {
                   sumQTYPack += row2.sumQty
                   row1.sumQty = sumQTYPack
+
                 }
               })
             })
@@ -683,8 +684,8 @@ class IssuedManage extends Component {
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
-          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.baseQuantity) : (e.original.sumQty1 + ' / ' +
+          (e.original.baseQuantity === null ? '-' : e.original.baseQuantity))}</span>,
       },
       { accessor: "distoUnitCode", Header: "Unit" },
     ]
@@ -703,8 +704,8 @@ class IssuedManage extends Component {
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
-          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.baseQuantity) : (e.original.sumQty1 + ' / ' +
+          (e.original.baseQuantity === null ? '-' : e.original.baseQuantity))}</span>,
       },
       { accessor: "distoUnitCode", Header: "Unit" },
 
