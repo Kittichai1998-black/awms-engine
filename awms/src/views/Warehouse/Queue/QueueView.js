@@ -23,7 +23,7 @@ class QueueView extends Component {
       f: "Row,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
         "Sou_Area_Name,Des_Area_Name,Sou_AreaLocation_Name,Des_AreaLocation_Name,UserName,CreateTime,Document_Code",
       g: "",
-      s: "[{'f':'Row','od':'asc'}]",
+      s: "[{'f':'Row','od':'desc'}]",
       sk: 0,
       l: 20,
       all: "",
@@ -104,17 +104,14 @@ class QueueView extends Component {
     { accessor: "StorageObject_Code", Header: "Pallet", minWidth: 95 },
     { accessor: "Pack_Name", Header: "Pack", minWidth: 290 },
     { accessor: "Des_AreaLocation_Name", Header: "Destination" },
-    { accessor: "StartTime", Header: "Start", filterable: false },
-    { accessor: "EndTime", Header: "End", filterable: false }]
+    { accessor: "StartTime", Header: "Start",  },
+    { accessor: "EndTime", Header: "End",}]
     return (
       <div>
         <div className="clearfix">
-          <div className="float-right" style={{ marginTop: '3px', marginBottom: '3px' }}>
-            <Button color="success" style={{ marginRight: '5px' }}>Create By Issue</Button>
-            <Button color="primary">Create By PI</Button>
-          </div>
+    
         </div>
-        <ReactTable columns={cols} data={this.state.data} filterable={true} minRows={10} defaultPageSize={10000} showPagination={false}
+        <ReactTable columns={cols} data={this.state.data} minRows={10} defaultPageSize={10000} showPagination={false}
           style={{ background: 'white', marginBottom: '10px' }}
           getTrProps={(state, rowInfo) => {
             if (rowInfo !== undefined) {
@@ -122,6 +119,9 @@ class QueueView extends Component {
                 return { className: "working" }; //yellow
               }
               else if (rowInfo.original.EventStatus === 12) {
+                return { className: "worked" }; //blue
+              }
+              else if (rowInfo.original.EventStatus === 32) {
                 return { className: "success" }; //green
               }
               else if (rowInfo.original.EventStatus === 90) {

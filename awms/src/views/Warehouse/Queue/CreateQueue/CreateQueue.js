@@ -14,7 +14,9 @@ class CreateQueue extends Component{
   constructor(props) {
     super(props);
     
-    this.state = {
+    //this.state = this.initailstate;
+
+    this.initailstate = {
       orderlist:[ {"value" : 0,"label" : "FIFO"},
                   {"value" : 1,"label" : "LIFO"}],
       orderfieldlist:[{"value" : "CreateDate","label" : "Received Date"},
@@ -99,6 +101,9 @@ class CreateQueue extends Component{
       })
     })
   }
+  componentWillMount(){
+    this.setState(this.initailstate)
+  }
     
   componentDidMount(){
     this.initialData()
@@ -116,26 +121,6 @@ class CreateQueue extends Component{
     });
     this.setState({ processCard,dataProcessSelected })
     this.createAutoDocList();
-    /* const dataProcessSelected = this.state.dataProcessSelected
-
-    this.setState({dataProcessSelected
-      ,"docID":""
-      ,"SAPdoc":""
-      ,"MMType":""
-      ,"ForCus":""
-      ,"StampDate":""
-      ,"Batch":""
-      ,"docresult":""}, () => this.removeItemCard())  
-
-    this.createAutoDocList();
-
-    const dataAdd = this.state.dataAdd
-    dataAdd.forEach((index) => {
-        dataAdd.splice(index, 1);
-    })
-    this.setState({ dataAdd })
-    this.createCardsList()
-    this.createAutoDocList() */
 }
 
   createAutoDocList(){
@@ -170,7 +155,7 @@ class CreateQueue extends Component{
         itemCard.splice(index, 1);
       });
 
-      if(mmType !== ""){
+      //if(mmType !== ""){
       const docItemselect = {queryString:window.apipath + "/api/viw",
         t:"DocumentItem",
         q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
@@ -199,7 +184,7 @@ class CreateQueue extends Component{
             
           })
         })
-      }else{
+      /* }else{
         let postdata = 
         {
           "apiKey":"THIP_TEST",
@@ -227,7 +212,7 @@ class CreateQueue extends Component{
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
           }
         })
-      }
+      } */
     }
   }
 
@@ -378,8 +363,7 @@ class CreateQueue extends Component{
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
           if(datarow.batchs.length>0){
-            var array = [...datarow.batchs]; // make a separate copy of the array
-            //var index = array.indexOf(e.target.value)
+            var array = [...datarow.batchs]; 
             if (batchNo !== -1) {
               array.splice(batchNo, 1);
               datarow.batchs = array;
@@ -398,11 +382,11 @@ class CreateQueue extends Component{
     const styleclose = { cursor: "pointer", position: "absolute", display: "inline", background: "#ffffff", borderRadius: "18px"}
     return <div className={[datarow.dociID,index]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
     <Row>
-      <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(datarow.dociID,index)}>{ imgClose }</a></Col>
+      {/* <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(datarow.dociID,index)}>{ imgClose }</a></Col> */}
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
       <Col md="4"><div style={{display:"inline"}}><Input defaultValue={datarow.value?datarow.value:""} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index, e.target.value,"value") }} /></div></Col> 
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
-      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.qty?datarow.qty:0} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index,e.target.value,"qty") }} /></div></Col>
+      <Col md="4"><div style={{display:"inline"}}><Input defaultValue={datarow.qty?datarow.qty:0} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index,e.target.value,"qty") }} /></div></Col>
     </Row>
   </div>
   }
@@ -568,14 +552,13 @@ class CreateQueue extends Component{
   }
   validateProcessItemsData(dataProcessItems){
     let checkBatchNull = false;
-    let checkMoreQty = false;
     dataProcessItems.forEach(itemrow =>{
       if(itemrow.batchs.length===0){
         itemrow.batchs.push({"value":null,"qty":itemrow.qty})
       }else{
         if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0)) > itemrow.qty){
           alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
-          checkMoreQty =true
+          //checkMoreQty =true
         }else{
           itemrow.batchs.forEach(batchrow =>{
             if(batchrow.value===null && itemrow.qty>0){
@@ -633,7 +616,7 @@ class CreateQueue extends Component{
       <Form>
         <FormGroup row>
           <Col sm={6}><span>{ datarow.value }</span></Col>
-          <Col sm={6}><span>{ "Qty :      " +datarow.qty }</span></Col>
+          <Col sm={2}><span>{ "Qty : " + datarow.qty}</span></Col>
         </FormGroup>
       </Form>
     </div>
@@ -690,14 +673,15 @@ class CreateQueue extends Component{
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
         <Col sm={4}><span>{(datarow.data[0].document.code?datarow.data[0].document.code:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Item : </Label></Col>
-        <Col sm={4}><span>{(datarow.data[0].stoPack.code?datarow.data[0].stoPack.code:"")}</span></Col>
+        <Col sm={4}><span>{(datarow.data[0].itemCode?datarow.data[0].itemCode:"")}</span></Col>
       </FormGroup>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
         <Col sm={4}><span>{(datarow.data[0].document.refID?datarow.data[0].document.refID:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
-        <Col sm={4}><span>{(datarow.sumQty?datarow.sumQty + " / " + datarow.sumBaseQty + " " + datarow.data[0].documentItem.baseUnitType_Code 
-        +" ( " + datarow.data[0].documentItem.quantity + " " + datarow.data[0].documentItem.unitType_Code + " ) ":"")}</span></Col>
+        <Col sm={4}><span>{(datarow.sumBaseQty?(datarow.sumBaseQty > datarow.sumQty?datarow.sumQty:datarow.sumBaseQty):0) + " / " + (datarow.data[0].documentItem.baseQuantity?datarow.data[0].documentItem.baseQuantity:0)
+        + " " + (datarow.data[0].documentItem.baseUnitType_Code?datarow.data[0].documentItem.baseUnitType_Code:"")
+        +(" ( " + datarow.data[0].documentItem.quantity + " " + datarow.data[0].documentItem.unitType_Code + " ) ")}</span></Col>
       </FormGroup>
       <FormGroup row>
         { ShowCards }
@@ -711,7 +695,8 @@ class CreateQueue extends Component{
     <ReactTable style={{width:"100%"}} data={datarow.data} editable={false} filterable={false} defaultPageSize={2000}
     editable={false} minRows={1} showPagination={false}
     columns={[{ accessor: "baseCode", Header: "Pallet"},{ accessor: "batch", Header: "Batch"},{ accessor: "lot", Header: "Lot"},{ accessor: "orderNo", Header: "Order No"}
-    ,{ Cell:(e)=> <span>{ e.original.qty + " / " + e.original.stoBaseQty }</span>, Header: "Qty"},{ Cell:(e)=> <span>{e.original.stoPack.baseUnitCode}</span>, Header: "unit"}]}/>
+    ,{ Cell:(e)=> <span>{ (e.original.stoBaseQty?(e.original.qty?e.original.qty:""):"") + (e.original.stoPack?(e.original.stoPack.qty?" / "+ e.original.stoPack.qty:""):"") }</span>
+    , Header: "Qty"},{ Cell:(e)=> <span>{e.original.stoPack?(e.original.stoPack.baseUnitCode?e.original.stoPack.baseUnitCode:""):""}</span>, Header: "unit"}]}/>
   </div>
   }
 
@@ -866,7 +851,15 @@ class CreateQueue extends Component{
     Axios.post(window.apipath + "/api/wm/issued/queue", postdata).then((res) => {
       if (res.data._result.status === 1) {
         dataProcessed = res.data.DocumentProcessed
-        this.setState({ dataProcessed }, ()=>this.createStoRootCardConfirmList());
+        if(dataProcessed.length > 0){
+          this.setState({ dataProcessed }, ()=>this.createStoRootCardConfirmList());
+        }else{
+          alert("ไม่พบสินค้าที่ระบุในคลังสินค้า")
+          this.setState(this.initailstate, () => {this.initialData()})
+          
+        }
+      }else if(res.data._result.status === 0){
+        dataProcessed = res.data._result.message
       }
     })
   }
@@ -889,11 +882,13 @@ class CreateQueue extends Component{
     let postdata = {
       DocumentProcessed:dataProcessed
     }
-    Axios.post(window.apipath + "/api/wm/issued/queue/confirm", postdata).then((res) => {
-      if (res.data._result.status === 1) {
-        dataConfirm = res.data.DocumentProcessed
-      }
-    })
+     Axios.post(window.apipath + "/api/wm/issued/queue/confirm", postdata).then((res) => {
+      if (res.data._result.status === 1) { 
+        window.success("สร้างคิวงานเบิกสำเร็จ")
+        this.setState(this.initailstate, () => {this.initialData()})
+        //dataConfirm = res.data.DocumentProcessed
+       }
+    }) 
   }
 
   render(){

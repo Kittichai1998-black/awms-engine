@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AWMSModel.Criteria.SP.Request;
+using AWMSEngine.ADO.QueueApi;
 
 namespace AWMSEngine.Engine.Business.Issued
 {
@@ -83,6 +84,8 @@ namespace AWMSEngine.Engine.Business.Issued
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
+            var queueWorkQueue = new WCSQueueApi.TReq();
+            var queueWorkQueueOut = new List<WCSQueueApi.TReq.queueout>();
             List<SPOutSTOProcesQueueIssue> stoRoot = new List<SPOutSTOProcesQueueIssue>();
             StorageObjectCriteria rtrt = new StorageObjectCriteria();
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
@@ -156,6 +159,24 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
             }
 
+            //foreach (var item in listItems)
+            //{
+            //    stoRoot = ADO.StorageObjectADO.GetInstant().StoProcessQueue(
+            //    item.itemCode,
+            //    item.pickOrderType,
+            //    item.orderBy,
+            //    item.lot,
+            //    item.orderNo,
+            //    this.BuVO);
+            //}
+            //if (stoRoot.Count == 0 && listDocProcessed.Count == 0)
+            //{
+            //    foreach (var docsProcess in reqVO.documentsProcess)
+            //    {
+            //        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docsProcess.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
+            //    }
+            //}
+
             foreach (var item in listItems)
             {
                 stoRoot = ADO.StorageObjectADO.GetInstant().StoProcessQueue(
@@ -165,9 +186,6 @@ namespace AWMSEngine.Engine.Business.Issued
                 item.lot,
                 item.orderNo,
                 this.BuVO);
-                var ert = reqVO.documentsProcess.Select(x => x.items).ToList();
-                if (stoRoot.Count == 0)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบสินค้า " + item.itemCode +" ตามเงื่อนไขในคลังสินค้า");
 
                 foreach (var doc in reqVO.documentsProcess)
                 {
@@ -194,69 +212,102 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         foreach (var batch in docItem.batchs)
                         {
-                            foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0 && x.evtStatus == 12))
+                            if (stoRoot.Count > 0)
                             {
-                                var stoPack = ADO.StorageObjectADO.GetInstant().Get(sto.code, null, null, false, true, this.BuVO);
-                                if (batch.qty > 0)
+                                foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0))
                                 {
-                                    if (sto.packQty >= batch.qty)
+                                    if (sto.evtStatus == 12)
                                     {
-                                        listDocProcessed.Add(new DocumentProcess
+                                        var stoPack = ADO.StorageObjectADO.GetInstant().Get(sto.code, null, null, false, true, this.BuVO);
+                                        if (batch.qty > 0)
                                         {
-                                            docID =doc.docID,
-                                            document = document,
-                                            documentItem = documentItem,
-                                            stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
-                                            docCode = document.Code,
-                                            dociID = docItem.docItemID,
-                                            stoi = sto.id,
-                                            itemCode = docItem.itemCode,
-                                            qty = batch.qty,
-                                            batch = batch.value,
-                                            orderNo = sto.orderNo,
-                                            lot = sto.lot,
-                                            priority = docItem.priority,
-                                            wareHouseID = sto.warehouseID,
-                                            areaID = sto.areaID,
-                                            baseCode = sto.rootCode,
-                                            stoBaseQty = sto.packQty
+                                            if (sto.packQty >= batch.qty)
+                                            {
+                                                listDocProcessed.Add(new DocumentProcess
+                                                {
+                                                    docID = doc.docID,
+                                                    document = document,
+                                                    documentItem = documentItem,
+                                                    stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
+                                                    docCode = document.Code,
+                                                    dociID = docItem.docItemID,
+                                                    stoi = sto.id,
+                                                    itemCode = docItem.itemCode,
+                                                    qty = batch.qty,
+                                                    batch = batch.value,
+                                                    orderNo = sto.orderNo,
+                                                    lot = sto.lot,
+                                                    priority = docItem.priority,
+                                                    wareHouseID = sto.warehouseID,
+                                                    areaID = sto.areaID,
+                                                    baseCode = sto.rootCode,
+                                                    stoBaseQty = sto.packQty
 
-                                        });
-                                        sto.packQty = sto.packQty - batch.qty;
-                                        batch.qty = 0;
-                                    }
-                                    else
-                                    {
-                                        listDocProcessed.Add(new DocumentProcess
+                                                });
+                                                sto.packQty = sto.packQty - batch.qty;
+                                                batch.qty = 0;
+                                            }
+                                            else
+                                            {
+                                                listDocProcessed.Add(new DocumentProcess
+                                                {
+                                                    docID = doc.docID,
+                                                    document = document,
+                                                    documentItem = documentItem,
+                                                    stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
+                                                    docCode = document.Code,
+                                                    dociID = docItem.docItemID,
+                                                    stoi = sto.id,
+                                                    itemCode = docItem.itemCode,
+                                                    qty = sto.packQty,
+                                                    batch = batch.value,
+                                                    orderNo = sto.orderNo,
+                                                    lot = sto.lot,
+                                                    priority = docItem.priority,
+                                                    wareHouseID = sto.warehouseID,
+                                                    areaID = sto.areaID,
+                                                    baseCode = sto.rootCode,
+                                                    stoBaseQty = sto.packQty
+                                                });
+                                                batch.qty = batch.qty - sto.packQty;
+                                                sto.packQty = (sto.packQty - item.qty) < 0 ? 0 : (sto.packQty - item.qty);
+                                            }
+                                        }
+                                        else
                                         {
-                                            docID = doc.docID,
-                                            document = document,
-                                            documentItem = documentItem,
-                                            stoPack = stoPack.ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault(),
-                                            docCode = document.Code,
-                                            dociID = docItem.docItemID,
-                                            stoi = sto.id,
-                                            itemCode = docItem.itemCode,
-                                            qty = sto.packQty,
-                                            batch = batch.value,
-                                            orderNo = sto.orderNo,
-                                            lot = sto.lot,
-                                            priority = docItem.priority,
-                                            wareHouseID = sto.warehouseID,
-                                            areaID = sto.areaID,
-                                            baseCode = sto.rootCode,
-                                            stoBaseQty = sto.packQty    
-                                        });
-                                        batch.qty = batch.qty - sto.packQty;
-                                        sto.packQty = (sto.packQty - item.qty) < 0 ? 0 : (sto.packQty - item.qty);
+                                            break;
+                                        }
                                     }
+                                    //else
+                                    //{
+                                    //    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "สินค้า "+ docItem.itemCode +" ไม่อยู่ในสถานะพร้อมประมวลผล");
+                                    //}
                                 }
-                                else
+                                if (listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
                                 {
-                                    break;
+                                    listDocProcessed.Add(new DocumentProcess
+                                    {
+                                        docID = doc.docID,
+                                        document = document,
+                                        documentItem = documentItem,
+                                        stoPack = null,
+                                        docCode = document.Code,
+                                        dociID = docItem.docItemID,
+                                        stoi = null,
+                                        itemCode = docItem.itemCode,
+                                        qty = batch.qty,
+                                        batch = batch.value,
+                                        orderNo = null,
+                                        lot = null,
+                                        priority = docItem.priority,
+                                        wareHouseID = null,
+                                        areaID = null,
+                                        baseCode = null,
+                                        stoBaseQty = null
+                                    });
                                 }
                             }
-                            if(listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
+                            else
                             {
                                 listDocProcessed.Add(new DocumentProcess
                                 {
@@ -268,7 +319,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     dociID = docItem.docItemID,
                                     stoi = null,
                                     itemCode = docItem.itemCode,
-                                    qty = null,
+                                    qty = batch.qty,
                                     batch = batch.value,
                                     orderNo = null,
                                     lot = null,
@@ -283,7 +334,33 @@ namespace AWMSEngine.Engine.Business.Issued
                     }
                 }
             }
+
+            foreach (var processed in listDocProcessed)
+            {
+                var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
+                baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                {
+                    baseCode = processed.baseCode,
+                    packInfos = null
+                };
+                queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
+                {
+                    queueID = null,
+                    desWarehouseCode = "THIP",
+                    desAreaCode = "F",
+                    desLocationCode = null,
+                    priority = processed.priority,
+                    baseInfo = baseInfo,
+                });
+            }
             res.DocumentProcessed = listDocProcessed;
+
+            queueWorkQueue.queueOut = queueWorkQueueOut;
+            //var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+            //if (wcsAcceptRes._result.resultcheck == 0)
+            //{
+            //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
+            //}
             return res;
         }
     }

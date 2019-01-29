@@ -143,9 +143,21 @@ class CurrentReport extends Component {
   }
 
   sumFooterQty() {
-    return _.sumBy(this.state.data,
+    var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
         parseFloat(x.QtySummary) : null)
+    if (sumVal === 0 || sumVal === null || sumVal === undefined)
+      return '-'
+    else
+      return sumVal
+  }
+
+  sumFooter(value) {
+    var sumVal = _.sumBy(this.state.data, x => parseFloat(x[value]))
+    if (sumVal === 0 || sumVal === null || sumVal === undefined)
+      return '-'
+    else
+      return sumVal
   }
 
   render() {
@@ -187,7 +199,7 @@ class CurrentReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyReceiving === null || x.QtyReceiving === undefined ? 0 : x.QtyReceiving))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("QtyReceiving")}</span>)
       },
       {
         accessor: 'QtyReceived', Header: 'Qty Received', editable: false, filterable: false, className: "right",
@@ -197,7 +209,7 @@ class CurrentReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyReceived === null || x.QtyReceived === undefined ? 0 : x.QtyReceived))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("QtyReceived")}</span>)
       },
       {
         accessor: 'QtyPicking', Header: 'Qty Picking', editable: false, filterable: false, className: "right",
@@ -207,7 +219,7 @@ class CurrentReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyPicking === null || x.QtyPicking === undefined ? 0 : x.QtyPicking))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("QtyPicking")}</span>)
       },
       {
         accessor: 'QtyAuditing', Header: 'Qty Auditing', editable: false, filterable: false, className: "right",
@@ -217,7 +229,7 @@ class CurrentReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.QtyAuditing === null || x.QtyAuditing === undefined ? 0 : x.QtyAuditing))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("QtyAuditing")}</span>)
       },
       {
         accessor: 'QtySummary', Header: 'Qty', editable: false, filterable: false, className: "right",
@@ -227,7 +239,7 @@ class CurrentReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined ? 0 : this.sumFooterQty()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty()}</span>)
       },
 
       {
@@ -238,7 +250,7 @@ class CurrentReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_Pack === null || x.WeiPack === undefined ? 0 : x.Wei_Pack))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_Pack")}</span>)
       },
       {
         accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
@@ -248,7 +260,7 @@ class CurrentReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{_.sumBy(this.state.data, x => parseFloat(x.Wei_PackStd === null || x.WeiPack === undefined ? 0 : x.Wei_PackStd))}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_PackStd")}</span>)
       },
       { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
