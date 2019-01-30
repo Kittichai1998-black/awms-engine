@@ -101,7 +101,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         {
             var baseInfo = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
 
-            ADO.StorageObjectADO.GetInstant().UpdateLocation(baseInfo, this.lm.ID.Value, this.BuVO);
+            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(baseInfo, this.lm.ID.Value, this.BuVO);
             return baseInfo;
         }
 

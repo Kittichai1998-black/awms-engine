@@ -49,7 +49,7 @@ namespace AWMSEngine.ADO
             var res = this.Query<STOCountDocLockCriteria>("SP_STO_COUNT_DOCLOCK", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).FirstOrDefault();
             return res;
         }
-        public long? UpdateEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
+        public EntityStatus UpdateEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
         {
             var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(eventStatus);
             var res = DataADO.GetInstant().UpdateByID<amt_Document>(id, buVO,
@@ -57,9 +57,9 @@ namespace AWMSEngine.ADO
                     new KeyValuePair<string, object>("EventStatus", eventStatus),
                     new KeyValuePair<string, object>("Status", status)
                 });
-            return res;
+            return status.Value;
         }
-        public long? UpdateItemEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
+        public EntityStatus UpdateItemEventStatus(long id, DocumentEventStatus eventStatus, VOCriteria buVO)
         {
             var status = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(eventStatus);
             var res = DataADO.GetInstant().UpdateByID<amt_DocumentItem>(id, buVO,
@@ -67,7 +67,7 @@ namespace AWMSEngine.ADO
                     new KeyValuePair<string, object>("EventStatus", eventStatus),
                     new KeyValuePair<string, object>("Status", status)
                 });
-            return res;
+            return status.Value;
         }
 
         public amt_Document Create(amt_Document doc, VOCriteria buVO)
@@ -192,10 +192,16 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
-        public long UpdateStatusMappingSTO(long id, EntityStatus status, VOCriteria buVO)
+        public long UpdateStatusMappingSTO(long disto_id, EntityStatus status, VOCriteria buVO)
+        {
+            return UpdateStatusMappingSTO(disto_id, null, null, status, buVO);
+        }
+        public long UpdateStatusMappingSTO(long disto_id, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@id", id);
+            param.Add("@id", disto_id);
+            param.Add("@qty", qty);
+            param.Add("@baseQty", baseQty);
             param.Add("@status", status);
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
@@ -245,7 +251,7 @@ namespace AWMSEngine.ADO
             var whares = new List<SQLConditionCriteria>();
             
             whares.Add(new SQLConditionCriteria("ID", string.Join(',', docIDs), SQLOperatorType.IN));
-            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS));
 
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
@@ -422,11 +428,16 @@ namespace AWMSEngine.ADO
         {
             return ListItemBySTO(storageObjectIDs, null, buVO);
         }
-        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID, VOCriteria buVO)
+        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID,VOCriteria buVO)
+        {
+            return ListItemBySTO(storageObjectIDs, docTypeID, null, buVO);
+        }
+        public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, DocumentTypeID? docTypeID, EntityStatus? distoStatus , VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("storageObjectIDs", string.Join(",", storageObjectIDs));
             param.Add("docTypeID", docTypeID);
+            param.Add("distoStatus", docTypeID);
             return this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYSTOID",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
@@ -638,18 +649,6 @@ namespace AWMSEngine.ADO
                 buVO.SqlTransaction);
         }
 
-        public List<amt_Document> updateStatus(long? ID,EntityStatus tostatus, VOCriteria buVO)
-        {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("ID", ID);
-            param.Add("tostatus", tostatus);
-
-            var res = this.Query<amt_Document>("SP_DOC_UPDATESTATUS",
-                                System.Data.CommandType.StoredProcedure,
-                                param,
-                                buVO.Logger, buVO.SqlTransaction).ToList();
-            return res;
-        }
 
         public List<amt_StorageObject> getSTOList(long docItem, VOCriteria buVO)
         {

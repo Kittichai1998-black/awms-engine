@@ -17,7 +17,7 @@ namespace AWMSEngine.ADO
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
-        public StorageObjectCriteria UpdateLocation(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
+        public StorageObjectCriteria UpdateLocationToChild(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
         {
             return UpdateLocationToChild(baseInfo, baseInfo.eventStatus, locationID, buVO);
         }

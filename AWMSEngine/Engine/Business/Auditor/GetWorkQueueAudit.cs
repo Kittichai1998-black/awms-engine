@@ -97,7 +97,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                         BaseQuantity = (decimal?)null,
                         Quantity = (decimal?)null,
                         BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                        UnitType_ID = docItem.UnitType_ID.Value
+                        UnitType_ID = docItem.UnitType_ID.Value,
+                        Status = EntityStatus.INACTIVE
                     });
                 }
             }

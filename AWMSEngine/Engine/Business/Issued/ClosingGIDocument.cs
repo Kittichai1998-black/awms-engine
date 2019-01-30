@@ -32,7 +32,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 if (doc.Status == 0) {
 
-                    ADO.DocumentADO.GetInstant().updateStatus(num,EntityStatus.REMOVE,this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(num, DocumentEventStatus.REMOVED,this.BuVO);
                 }
                
 

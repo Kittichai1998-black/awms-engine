@@ -1,4 +1,5 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.Common;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
@@ -21,18 +22,29 @@ namespace AWMSEngine.Engine.General
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseStoID, StorageObjectType.BASE, false, true, this.BuVO);
-            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT,mapsto.areaID, this.BuVO);
+            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, mapsto.areaID, this.BuVO);
+
             var nextArea = desAreas.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
-            if(nextArea != null)
+
+            if (nextArea != null && nextArea.Sou_AreaMasterType_GroupType == AreaMasterGroupType.GATE)
             {
-                mapsto.areaID = nextArea.Des_AreaMaster_ID.Value;
                 if (nextArea.Des_AreaLocationMaster_ID.HasValue)
                 {
-                    mapsto.parentID = nextArea.Des_AreaLocationMaster_ID.Value;
                     mapsto.parentType = StorageObjectType.LOCATION;
+                    mapsto.parentID = nextArea.Des_AreaLocationMaster_ID.Value;
                 }
-                ADO.StorageObjectADO.GetInstant().PutV2(mapsto, this.BuVO);
+                else
+                {
+                    mapsto.parentID = null;
+                }
+                mapsto.ToTreeList().ForEach(x =>
+                {
+                    x.areaID = nextArea.Des_AreaMaster_ID.Value;
+                    ADO.StorageObjectADO.GetInstant().PutV2(x, this.BuVO);
+                });
+                //ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, nextArea.Des_AreaLocationMaster_ID.Value, this.BuVO);
             }
+
 
             return new TRes() { mapsto = mapsto };
         }

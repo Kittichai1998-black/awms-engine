@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.Business.Issued;
 using AWMSModel.Constant.StringConst;
+using AWMSEngine.Engine.Business.Picking;
 
 namespace AWMSEngine.APIService.ASRS
 {
@@ -24,96 +25,43 @@ namespace AWMSEngine.APIService.ASRS
             this.BeginTransaction();
             DoneQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneQueue.TReq>(this.RequestVO);
             WorkQueueCriteria res = new DoneQueue().Execute(this.Logger, this.BuVO, req);
+
             new Engine.General.MoveStoInGateToNextArea().Execute(this.Logger, this.BuVO, new Engine.General.MoveStoInGateToNextArea.TReq()
             {
                 baseStoID = res.baseInfo.id
             });
+            var getQueue = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(req.queueID.Value, this.BuVO);
+            var bsto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(getQueue.StorageObject_ID, this.BuVO);
+            this.CommitTransaction();
 
-            var queueID = req.queueID.Value;
-            var getQueue = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(queueID, this.BuVO);
-            if(getQueue.IOType == IOType.OUTPUT)
+            if (getQueue.IOType == IOType.OUTPUT && bsto.EventStatus == StorageObjectEventStatus.PICKING)
             {
-                var docItemID = new List<amt_DocumentItem>();
-                var setSTO = ADO.StorageObjectADO.GetInstant().Get(getQueue.StorageObject_ID, StorageObjectType.BASE, false, true, this.BuVO);
+                this.BeginTransaction();
+                var resPick = new PickBaseSto_WorkedDoc()
+                    .Execute(this.Logger, this.BuVO, new PickBaseSto_WorkedDoc.TReq()
+                    {
+                        baseStoID = getQueue.StorageObject_ID
+                    });
+                this.CommitTransaction();
 
-                var stos = TreeUtil.ToTreeList(setSTO).OrderByDescending(x => x.type).ToList();
-                List<amt_DocumentItemStorageObject> disto = new List<amt_DocumentItemStorageObject>();
-
-                var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(stos.Where(x=>x.type== StorageObjectType.PACK).Select(x=>x.id.Value).ToList(), DocumentTypeID.GOODS_ISSUED, this.BuVO);
-                docItems.ForEach(x => {
-                    var i = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID.Value, this.BuVO);
-                    x.DocItemStos = i.DocItemStos.Where(dsto => dsto.Status == EntityStatus.INACTIVE).ToList();
-                });
-
-                foreach (var sto in stos)
+                if (resPick.docs.Any(x => x.EventStatus == DocumentEventStatus.WORKED))
                 {
-                    if (sto.type == StorageObjectType.PACK)
+                    this.BeginTransaction();
+                    var resLocal = new ClosingGIDocument().Execute(this.Logger, this.BuVO, new ClosingGIDocument.TDocReq()
                     {
-                        var getdisto = new List<amt_DocumentItemStorageObject>();
+                        auto = 0,
+                        docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
+                    });
+                    this.CommitTransaction();
 
-                        foreach (var docItem in docItems)
-                        {
-                            getdisto.AddRange( docItem.DocItemStos.Where(x => x.StorageObject_ID == sto.id).ToList());
-                            //docItemID.Add(docItems.Where(x => x.ID == docItem.Document_ID).FirstOrDefault());
-                        }
-
-                        var gdisto = getdisto.GroupBy(x => new { x.StorageObject_ID, x.DocumentItem_ID }).Select(x => new
-                        {
-                            x.First().ID,
-                            x.Key.StorageObject_ID,
-                            x.First().UnitType_ID,
-                            x.First().BaseUnitType_ID,
-                            x.First().DocumentItem_ID,
-                            Quantity = x.Sum(y => y.Quantity.Value),
-                            BaseQuantity = x.Sum(y => y.BaseQuantity.Value)
-                        }).ToList();
-
-                        gdisto.ForEach(x =>
-                        {
-                            ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(x.ID.Value, EntityStatus.ACTIVE, this.BuVO);
-                            //ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItemStorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE));
-
-                            sto.qty = sto.qty - x.Quantity;
-                            sto.baseQty = sto.baseQty - x.BaseQuantity;
-                            if (sto.qty == 0)
-                            {
-                                sto.eventStatus = StorageObjectEventStatus.PICKED;
-                            }
-                            ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
-                        });
-                    }
-                    else if (sto.type == StorageObjectType.BASE)
+                    this.BeginTransaction();
+                    var resSAP = new ClosedGIDocument().Execute(this.Logger, this.BuVO, new ClosedGIDocument.TDocReq()
                     {
-                        //var pickedInPallet = stos.Where(x => x.objectSizeID == 2).All(x => x.eventStatus == StorageObjectEventStatus.PICKED);
-                        if (stos.FindAll(x=>x.type == StorageObjectType.PACK && x.parentID == sto.id.Value).TrueForAll(x=>x.eventStatus == StorageObjectEventStatus.PICKED))
-                        {
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
-                        }
-                    }
+                        docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
+                    });
+                    this.CommitTransaction();
                 }
-                
-                foreach(var docItem in docItems)
-                {
-                    object closeDoc = null;
-                    var docTarget = ADO.DocumentADO.GetInstant().Target(docItem.Document_ID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
-                    var target = docTarget.All(z => z.needPackQty <= 0);
-                    if (target)
-                    {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docItem.Document_ID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
-                        closeDoc = new { docIDs = new long[] { docItem.Document_ID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
-                    }
 
-                    if (closeDoc != null)
-                    {
-                        var reqLocal = ObjectUtil.DynamicToModel<ClosingGIDocument.TDocReq>(closeDoc);
-                        var resLocal = new ClosingGIDocument().Execute(this.Logger, this.BuVO, reqLocal);
-                        this.CommitTransaction();
-
-                        this.BeginTransaction();
-                        var reqSAP = ObjectUtil.DynamicToModel<ClosedGIDocument.TDocReq>(closeDoc);
-                        var resSAP = new ClosedGIDocument().Execute(this.Logger, this.BuVO, reqSAP);
-                    }
-                }
             }
             return res;
         }
