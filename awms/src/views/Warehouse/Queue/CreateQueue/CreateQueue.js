@@ -17,6 +17,9 @@ class CreateQueue extends Component{
     //this.state = this.initailstate;
 
     this.initailstate = {
+      zoneOutlist:[ {"value" : 1,"label" : "1: Side Gate"},
+                  {"value" : 2,"label" : "2 : Front Gate"},
+                  {"value" : 3,"label" : "3 : Rear Gate"}],
       orderlist:[ {"value" : 0,"label" : "FIFO"},
                   {"value" : 1,"label" : "LIFO"}],
       orderfieldlist:[{"value" : "CreateDate","label" : "Received Date"},
@@ -159,7 +162,7 @@ class CreateQueue extends Component{
       const docItemselect = {queryString:window.apipath + "/api/viw",
         t:"DocumentItem",
         q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
-        f:"ID,Code,RefID,Ref2,Batch,Ref1,BaseQuantity,Options,SKUMaster_Name,OrderNo,Lot",
+        f:"ID,Code,RefID,Ref2,Batch,Ref1,BaseQuantity,Options,SKUMaster_Name,OrderNo,Lot,BaseUnitType_Code",
         g:"",
         s:"[{'f':'ID','od':'asc'}]",
         sk:0,
@@ -177,7 +180,8 @@ class CreateQueue extends Component{
                             ,batch:row.Batch
                             ,orderNo:row.OrderNo
                             ,lot:row.Lot
-                            ,BaseQuantity:row.BaseQuantity
+                            ,baseQuantity:row.BaseQuantity
+                            ,baseUnitTypeCode:row.BaseUnitType_Code
               })
             })
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
@@ -237,7 +241,7 @@ class CreateQueue extends Component{
           ,orderNo:datarow.orderNo
           ,priority:0
           ,priority_label:null
-          ,qty:datarow.BaseQuantity
+          ,qty:datarow.baseQuantity
           ,batchs:[]
           ,defaultBatch:datarow.batch
         });
@@ -300,8 +304,8 @@ class CreateQueue extends Component{
         if(datarow.dociID === dociID){
           dataProcessItems.push({docID:datarow.docID,dociID:datarow.dociID,itemCode:datarow.itemCode,itemName:datarow.itemName,item:datarow.item
             ,batch:datarow.batch,pickOrderby:null,pickOrderby_label:null,orderByField:null,orderByField_label:null
-            ,lot:datarow.lot,orderNo:datarow.orderNo,priority:0,priority_label:null,qty:datarow.BaseQuantity
-            ,batchs:[{value:datarow.batch,qty:datarow.BaseQuantity}]});
+            ,lot:datarow.lot,orderNo:datarow.orderNo,priority:0,priority_label:null,qty:datarow.baseQuantity
+            ,batchs:[{value:datarow.batch,qty:datarow.baseQuantity}]});
         }
       })                 
     }
@@ -403,7 +407,14 @@ class CreateQueue extends Component{
     }
     return (<div className={datarow.dociID} style={{"border-radius": "15px", "border": "1px solid white", "padding": "20px", background:"white", "margin":"5px"}}>
       <Row>
-        <Col><span>{(datarow.itemCode?datarow.itemCode:"") +(datarow.itemName?" : "+ datarow.itemName:"") +(datarow.BaseQuantity?" Qty : "+datarow.BaseQuantity:"")}</span></Col>
+        <Col>
+        <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() =>{window.open("/sys/sto/curinv?SKU_Code=" + datarow.itemCode)}} target="_blank" >
+        <span>{(datarow.itemCode?datarow.itemCode:"") +(datarow.itemName?" : "+ datarow.itemName:"")}</span>
+        </a>
+        </Col>
+        <Col>
+        <span style={{float:"right"}}>{(datarow.baseQuantity?" Qty : "+datarow.baseQuantity:"") + " " + (datarow.baseUnitTypeCode?datarow.baseUnitTypeCode:"")}</span>
+        </Col>
       </Row>
       <Row style={{"padding-top":"10px"}}>
         <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Pick by : </label></Col>
@@ -488,8 +499,8 @@ class CreateQueue extends Component{
       <Form>
         <FormGroup row>
           <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
-          <Col ><span>{datarow.label?datarow.label:""}</span></Col>
-          <Col sm={2}>{this.genBtnDetail(datarow.value)}</Col>
+          <Col ><a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer'  }} 
+          onClick={() =>this.viewDetail(datarow.value)} target="_blank" >{datarow.label}</a></Col>
         </FormGroup>
         <FormGroup row>
           <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
@@ -593,8 +604,8 @@ class CreateQueue extends Component{
     let batchShowCard = []
     dataProcessSelected.forEach((row) => {
       row.items.forEach(itemrow => {
-        itemrow.batchs.forEach(batchrow =>{
-          batchShowCard = batchShowCard.concat(this.addNewBatchCard(itemrow.dociID,batchrow));
+        itemrow.batchs.forEach((batchrow,index) =>{
+          batchShowCard = batchShowCard.concat(this.addNewBatchCard(itemrow.dociID,batchrow,index));
         })
       });
     })
@@ -611,13 +622,19 @@ class CreateQueue extends Component{
     this.setState({ itemShowCard },()=> this.createCardsList());
   }
 
-  addNewBatchCard(dociID,datarow){
-    return <div className={[dociID,datarow.value]} >
+  addNewBatchCard(dociID,datarow,index){
+    return <div className={[dociID,index]} >
       <Form>
-        <FormGroup row>
+      <FormGroup row>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>{index==0?"Batch :":""}</Label></Col>
+        <Col sm={4}><span>{(datarow.value?datarow.value:"")}</span></Col>
+        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
+        <Col sm={4}><span>{(datarow.qty?datarow.qty:"")}</span></Col>
+      </FormGroup>
+        {/* <FormGroup row>
           <Col sm={6}><span>{ datarow.value }</span></Col>
           <Col sm={2}><span>{ "Qty : " + datarow.qty}</span></Col>
-        </FormGroup>
+        </FormGroup> */}
       </Form>
     </div>
   }
@@ -635,7 +652,7 @@ class CreateQueue extends Component{
     return  <div className= { datarow.docID } style={{"border-radius": "15px", "border-bottom": "2px solid rgb(157, 174, 236)",  "padding": "20px",  background:"white", "margin":"5px"}}>
     <Form>
       <FormGroup row>
-        <Col sm={12}><span>{(datarow.itemCode?datarow.itemCode:"") + (datarow.itemName?" : "+datarow.itemName:"")}</span></Col>  {/* +" Qty : "+(datarow.qty?datarow.qty:"") */}
+        <Col sm={12}><span>{(datarow.itemCode?datarow.itemCode:"") + (datarow.itemName?" : "+datarow.itemName:"")}</span></Col>
       </FormGroup>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Pick by : </Label></Col>
@@ -650,8 +667,8 @@ class CreateQueue extends Component{
         <Col sm={4}><span>{(datarow.priority_label?datarow.priority_label:"")}</span></Col>
       </FormGroup>
       <FormGroup row>
-        <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Batch : </Label></Col>
-        <Col sm={10} style={batchShowCards.length > 0?{}:{"display":"none"}}>{ batchShowCards }</Col>
+        {/* <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Batch : </Label></Col> */}
+        <Col sm={12} style={batchShowCards.length > 0?{}:{"display":"none"}}>{ batchShowCards }</Col>
       </FormGroup>
     </Form>
   </div>
@@ -905,7 +922,7 @@ class CreateQueue extends Component{
               <FormGroup row>
                 <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
                 <Col ><AutoSelect selectfirst={false} data={this.state.auto_doc} result={(e) => this.setState({"docID":e.value,"SAPdoc":e.SAPdoc,"MMType":e.MMType,"ForCus":e.ForCus,"StampDate":e.StampDate,"Batch":e.Batch,"docresult":e.label})}/></Col>
-                <Col sm={2} style={this.state.docID?{}:{"display":"none"}}><Button className="float-right" onClick={() => this.viewDetail(this.state.docID)} color="primary" >Detail</Button></Col>
+                <Col sm={2} style={this.state.docID?{}:{"display":"none"}}> <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer'  }} onClick={() =>this.viewDetail(this.state.docID)} target="_blank" >Detail</a></Col>
               </FormGroup>
               <FormGroup row style={this.state.docID?{}:{"display":"none"}}>
                 <Label sm={3}></Label>
@@ -940,10 +957,14 @@ class CreateQueue extends Component{
               <span style={{"padding-left":"15px", fontWeight:"bold", fontSize:"1.1em"}}>Document Issue List</span>
               { processCard }
               <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
-                <CardBody>
-                  <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: "130px", marginLeft: "5px" }} className="float-right">Process</Button>
-                  <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px" }} className="float-right">Clear</Button>
-                </CardBody>
+                <CardBody style={{float:"right"}}><Row ><Col>
+                  <Select defaultValue={this.state.zoneOutlist.filter(x => x.value===2)}
+                      options={this.state.zoneOutlist}>
+                  </Select></Col>
+                  <Col style={{float:"right"}}><Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: "130px", marginLeft: "5px" }} className="float-right">Process</Button>
+                  </Col><Col style={{float:"right"}}><Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px" }} className="float-right">Clear</Button>
+                  </Col></Row>
+                  </CardBody>
               </Card>
             </Card>
           </Col> 
