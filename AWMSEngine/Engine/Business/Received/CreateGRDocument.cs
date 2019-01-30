@@ -179,7 +179,7 @@ namespace AWMSEngine.Engine.Business.Received
                 }
 
                 //var mainUnitType = this.StaticValue.UnitTypes.First(x => x.Code == recItem.packItemUnit);
-                var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, recItem.quantity ?? 1, packMst.UnitType_ID);
+                var baseUnitTypeConvt = this.StaticValue.ConvertToNewUnitByPack(packMst.ID.Value, recItem.quantity ?? 1, packMst.UnitType_ID, packMst.UnitType_ID);
                 decimal? baseQuantity = null;
                 if (recItem.quantity.HasValue)
                     baseQuantity = baseUnitTypeConvt.baseQty;
