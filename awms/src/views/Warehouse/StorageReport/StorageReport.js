@@ -43,6 +43,8 @@ class StoragReport extends Component {
   componentDidMount() {
     document.title = "Storage Object - AWMS";
     this.getData();
+
+     console.log(this.state.date) 
   }
 
   getData() {

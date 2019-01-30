@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Input, Badge, Card, CardBody, Button, Row, Col } from 'reactstrap';
 import ReactTable from 'react-table'
-import { apicall, DatePicker, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
+import { apicall, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 import Popup from 'reactjs-popup'
@@ -21,6 +23,7 @@ class IssuedDoc extends Component {
 
     this.state = {
       data: [],
+      date:null,
       autocomplete: [],
       statuslist: [{
         'status': GenerateDropDownStatus("DocumentStatus"),

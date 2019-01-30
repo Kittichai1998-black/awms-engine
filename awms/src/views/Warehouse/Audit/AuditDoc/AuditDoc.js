@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Row, Col, Badge, Input, Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table'
-import { apicall, createQueryString, DatePicker, GenerateDropDownStatus } from '../../ComponentCore'
+import { apicall, createQueryString, GenerateDropDownStatus } from '../../ComponentCore'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 import Popup from 'reactjs-popup'
 import { DocumentEventStatus } from '../../Status'
