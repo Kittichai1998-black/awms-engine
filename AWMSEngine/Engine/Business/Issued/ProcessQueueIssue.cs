@@ -159,24 +159,6 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
             }
 
-            //foreach (var item in listItems)
-            //{
-            //    stoRoot = ADO.StorageObjectADO.GetInstant().StoProcessQueue(
-            //    item.itemCode,
-            //    item.pickOrderType,
-            //    item.orderBy,
-            //    item.lot,
-            //    item.orderNo,
-            //    this.BuVO);
-            //}
-            //if (stoRoot.Count == 0 && listDocProcessed.Count == 0)
-            //{
-            //    foreach (var docsProcess in reqVO.documentsProcess)
-            //    {
-            //        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docsProcess.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
-            //    }
-            //}
-
             foreach (var item in listItems)
             {
                 stoRoot = ADO.StorageObjectADO.GetInstant().StoProcessQueue(
@@ -278,10 +260,10 @@ namespace AWMSEngine.Engine.Business.Issued
                                             break;
                                         }
                                     }
-                                    //else
-                                    //{
-                                    //    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "สินค้า "+ docItem.itemCode +" ไม่อยู่ในสถานะพร้อมประมวลผล");
-                                    //}
+                                }
+                                if (batch.qty > 0 && stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0 && x.evtStatus != 12).Count() > 0 )
+                                {
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "สินค้า " + docItem.itemCode + " ไม่อยู่ในสถานะพร้อมประมวลผล");
                                 }
                                 if (listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
                                 {
@@ -334,8 +316,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     }
                 }
             }
-
-            foreach (var processed in listDocProcessed)
+            foreach (var processed in listDocProcessed.Where(w => w.areaID==5))
             {
                 var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
                 baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
@@ -346,21 +327,27 @@ namespace AWMSEngine.Engine.Business.Issued
                 queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
                 {
                     queueID = null,
-                    desWarehouseCode = "THIP",
+                    desWarehouseCode = "5005",
                     desAreaCode = "F",
                     desLocationCode = null,
                     priority = processed.priority,
                     baseInfo = baseInfo,
                 });
             }
+            foreach (var checkBaseInfo in queueWorkQueueOut)
+            {
+                if (checkBaseInfo.baseInfo.baseCode != null)
+                {
+                    queueWorkQueue.queueOut = queueWorkQueueOut;
+                    
+                }
+            }
+            var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+            if (wcsAcceptRes._result.resultcheck == 0)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
+            }
             res.DocumentProcessed = listDocProcessed;
-
-            queueWorkQueue.queueOut = queueWorkQueueOut;
-            //var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
-            //if (wcsAcceptRes._result.resultcheck == 0)
-            //{
-            //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
-            //}
             return res;
         }
     }

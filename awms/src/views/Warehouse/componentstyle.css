@@ -110,6 +110,7 @@
   padding: 4px;
   margin-bottom: 5px;
   width: 100%; 
+  min-height: 50%;
 } 
 .styleTable p.rightAlign {
   width:2em;
@@ -130,3 +131,9 @@
 #pbottom{
   height: 5em;
 }
+
+#full {
+  /* height: auto; if more info comes on the page, it will stretch down
+  width: auto; */
+  margin: 0 auto; /*this will cause the div to be in the center*/
+  }

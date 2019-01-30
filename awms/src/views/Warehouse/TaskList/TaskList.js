@@ -45,11 +45,11 @@ class TaskList extends Component {
       TaskListselect: {
         queryString: window.apipath + "/api/viw",
         t: "r_DashboardTaskOnFloor",
-        //q: "",
-        q: "[{ 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' }]",
-        f: "Time,TaskName,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,SAPRef,QtyUnit,DocumentType_ID,EventStatus",
+        q: '',
+        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
+        f: "Time,TaskName,DocNo,LocationCode,PalletCode,Product,Destination,SAPRef,Qty,Status",
         g: "",
-        s: "[{'f':'Time','od':'asc'}]",
+        s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 0, Time, null)','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'desc'}]",
         sk: 0,
         l: 10,
         all: "",
@@ -95,19 +95,10 @@ class TaskList extends Component {
   }
 
   goFull = () => {
-
-    this.setState({ isFull: true }, () => {
-      console.log('wF', document.documentElement.clientHeight)
-      console.log('hF', document.documentElement.clientWidth)
-    }
-    );
+    this.setState({ isFull: true });
   }
   goMin = () => {
-    this.setState({ isFull: false }, () => {
-      console.log('wF', document.documentElement.clientHeight)
-      console.log('hF', document.documentElement.clientWidth)
-    }
-    );
+    this.setState({ isFull: false });
   }
   updateQueueData(selValue) {
     var areaWorkingOut = this.state.WorkingOutselect;
@@ -117,14 +108,14 @@ class TaskList extends Component {
     if (selValue !== undefined) {
       if (selValue !== "") {
         // console.log(selValue)
-        areawhere.push({ 'f': 'AreaCode', 'c': '=', 'v': selValue }, { 'f': 'IOType', 'c': '=', 'v': 1 });
-        taskwhere.push({ 'f': 'AreaCode', 'c': '=', 'v': selValue === 'F' ? 'FS' : selValue === 'R' ? 'RS' : '' }, { 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' });
+        areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': selValue }, { 'f': 'IOType', 'c': '=', 'v': 1 });
+        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': selValue === 2 ? 8 : selValue === 3 ? 9 : '' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       } else {
-        areawhere.push({ 'f': 'IOType', 'c': '=', 'v': 1 }, { 'f': 'AreaID', 'c': 'in', 'v': '2,3' });
+        areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }, { 'f': 'IOType', 'c': '=', 'v': 1 });
         // areawhere.push({ 'f': 'AreaCode', 'c': '=', 'v': 'S' },{ 'f': 'IOType', 'c': '=', 'v': 0 });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }, { 'f': 'DocumentType_ID', 'c': 'in', 'v': '1002,2004' });
+        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' });
         areaWorkingOut.q = JSON.stringify(areawhere)
         areaTaskList.q = JSON.stringify(taskwhere)
       }
@@ -146,23 +137,23 @@ class TaskList extends Component {
     const cols2 = [
       { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       {
-        accessor: "TaskName", Header: "Task Name", minWidth: 70, className: 'center',
+        accessor: "TaskName", Header: "Task Name", minWidth: 80, className: 'center',
         Cell: row => (
-          <Badge color={row.value} style={{ fontSize: '1rem', fontWeight: '600' }}>{row.value}</Badge>
+          <Badge color={row.value} style={{ fontSize: '0.825em', fontWeight: '500' }}>{row.value}</Badge>
         )
       },
-      { accessor: "AreaLoc_Code", Header: "Stage", minWidth: 100 },
-      { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
+      { accessor: "LocationCode", Header: "Stage", minWidth: 100 },
+      { accessor: "PalletCode", Header: "Pallet", minWidth: 100 },
       { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "QtyUnit", Header: "Qty", minWidth: 120 },
-      { accessor: "Destination", Header: "Destination", minWidth: 150 },
-      { accessor: "Document_Code", Header: "Doc No.", minWidth: 105 },
+      { accessor: "Qty", Header: "Qty", minWidth: 150 },
+      { accessor: "Destination", Header: "Destination", minWidth: 100 },
+      { accessor: "DocNo", Header: "Doc No.", minWidth: 105 },
       { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
-      { value: 'F', label: 'Front Area' },
-      { value: 'R', label: 'Rear Area' }
+      { value: '2', label: 'Front Area' },
+      { value: '3', label: 'Rear Area' }
     ];
     return (
       <div>
@@ -170,7 +161,8 @@ class TaskList extends Component {
           enabled={this.state.isFull}
           onChange={isFull => this.setState({ isFull })}
         >
-          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', padding: '1.5625em', height: '100%' } : {}} className="fullscreen">
+          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1.5625em' } : {}} className="fullscreen">
+            <div id="full">
             <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
               <Row>
                 <Col sm="1" xs="6" md="1" lg="1">{logoamw}</Col>
@@ -184,7 +176,7 @@ class TaskList extends Component {
               </Row>
             </div>
 
-            <Row>
+            <Row style={{position: 'relative'}}>
               <Col>
                 <div id="Table1" className="styleTable">
                   <p className="rightAlign" id="pbottom">Move Out</p>
@@ -192,10 +184,9 @@ class TaskList extends Component {
                     <ReactTable
                       columns={cols1}
                       minRows={7}
-                      maxRows={10}
                       data={this.state.dataworkingout}
                       sortable={false}
-                      style={{ background: 'white', minHeight: '50%', fontSize: '1.125em', fontWeight: '450' }}
+                      style={{ background: 'white', fontSize: '1.125em', fontWeight: '450' }}
                       filterable={false}
                       showPagination={false}
                       NoDataComponent={() => null}
@@ -228,13 +219,13 @@ class TaskList extends Component {
               <Col>
                 <div id="Table2" className="Table2 styleTable">
                   <p className="rightAlign" id="pbottom">Task List</p>
+                  <div style={{ overflowY: 'auto'}}> 
                   <ReactTable
                     columns={cols2}
                     minRows={7}
-                    maxRows={10}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white', minHeight: '50%', fontSize: '1.125em', fontWeight: '450' }}
+                    style={{ background: 'white', fontSize: '1.125em', fontWeight: '450' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
@@ -242,8 +233,10 @@ class TaskList extends Component {
                   //defaultPageSize={15} 
                   />
                 </div>
+                </div>
               </Col>
             </Row >
+          </div>
           </div>
         </Fullscreen>
       </div >
