@@ -378,6 +378,7 @@ class IssuedManage extends Component {
 
   createDocument() {
     let acceptdata = []
+   
     this.state.data.forEach(row => {
       let qty = row.PackQty === "" ? 0 : row.PackQty;
       if (row.id > 0 && qty > 0)
@@ -391,7 +392,10 @@ class IssuedManage extends Component {
           , lot: row.Lot
           , orderno: row.Orderno
         })
-
+      console.log(row.id)
+      if (row.id == undefined ) {
+        alert("ไม่พบรายการ SKU ที่ต้องการ")
+      }
       if (row.id > 0 && qty <= 0) {
         alert("กรุณาใส่จำนวนสินค้า")
       }

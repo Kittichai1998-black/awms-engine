@@ -48,20 +48,24 @@ namespace AWMSEngine.Engine.Business.Picking
             //Pciked โดยการ Update STO ทั้งหมดที่ถูกจอง
             foreach(var disto in distos.Where(x=>x.Status == EntityStatus.INACTIVE))
             {
-                disto.Status = EntityStatus.ACTIVE;
-                ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                var pstoPick = stoTree.FirstOrDefault(x => x.id == disto.StorageObject_ID);
+                if (pstoPick != null)
+                {
 
-                var pstoPick = stoTree.First(x => x.id == disto.StorageObject_ID);
-                var unitConvert = StaticValue.ConvertToNewUnitBySKU(
-                                                    pstoPick.skuID.Value, 
-                                                    disto.BaseQuantity.Value,
-                                                    disto.BaseUnitType_ID,
-                                                    pstoPick.unitID);
-                pstoPick.qty -= unitConvert.qty;
-                pstoPick.baseQty -= disto.BaseQuantity.Value;
-                if (pstoPick.baseQty <= 0)
-                    pstoPick.eventStatus = StorageObjectEventStatus.PICKED;
-                ADO.StorageObjectADO.GetInstant().PutV2(pstoPick, this.BuVO);
+                    disto.Status = EntityStatus.ACTIVE;
+                    ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+
+                    var unitConvert = StaticValue.ConvertToNewUnitBySKU(
+                                                        pstoPick.skuID.Value,
+                                                        disto.BaseQuantity.Value,
+                                                        disto.BaseUnitType_ID,
+                                                        pstoPick.unitID);
+                    pstoPick.qty -= unitConvert.qty;
+                    pstoPick.baseQty -= disto.BaseQuantity.Value;
+                    if (pstoPick.baseQty <= 0)
+                        pstoPick.eventStatus = StorageObjectEventStatus.PICKED;
+                    ADO.StorageObjectADO.GetInstant().PutV2(pstoPick, this.BuVO);
+                }
             }
 
             //Update DocItem status WORKED เมื่อ DISTO ทั้งหมดถูก PICK
