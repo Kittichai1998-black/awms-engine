@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col } from 'reactstrap';
+import { Badge, Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import moment from 'moment';
 import { DocumentEventStatus } from '../../Status'
@@ -217,7 +217,7 @@ class IssuedManage extends Component {
             x.options = x.options
             x.baseQuantity = x.baseQuantity
             x.distoBaseUnitCode = x.distoBaseUnitCode
-
+            x.status = x.status
             sumArr1.push(x);
           })
 
@@ -666,6 +666,15 @@ class IssuedManage extends Component {
 
   }
 
+  getStatus(value) {
+    console.log(value)
+    if (value === 0)
+      return <Badge color="PENDING" style={{ fontSize: '0.825em', fontWeight: '500' }}>PENDING</Badge>
+    else if (value === 1)
+      return <Badge color="PICK" style={{ fontSize: '0.825em', fontWeight: '500' }}>PICK</Badge>
+    else
+      return null
+  }
 
   render() {
 
@@ -674,14 +683,16 @@ class IssuedManage extends Component {
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
 
     let cossdetail = [
-      { accessor: "code", Header: "Pallet"},
+      {
+        accessor: "status", Header: "Task", minWidth: 80, className: 'center',
+        Cell: (e) => this.getStatus(e.original.status)
+      },
+      { accessor: "code", Header: "Pallet" },
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1].split("&")[0]}</span>
       },
-      { accessor: "packCode", Header: "SKU Code"},
-      { accessor: "packName", Header: "SKU Name"},
-
-
+      { accessor: "packCode", Header: "SKU Code" },
+      { accessor: "packName", Header: "SKU Name" },
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
       { accessor: 'batch', Header: 'Batch', editable: false, },
       { accessor: 'lot', Header: 'Lot', editable: false, },

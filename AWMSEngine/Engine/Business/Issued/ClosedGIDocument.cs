@@ -79,7 +79,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
 
                             var dataReturn = this.sendToApi9(dataApi9);
-                            if (dataReturn.docstatus == "0")
+                            if (dataReturn.docstatus != "0")
                             {
                                 sandToSAPsuccess(docHs, docItem, dataReturn);
                             }
@@ -222,13 +222,13 @@ namespace AWMSEngine.Engine.Business.Issued
                 var docH = ADO.DataADO.GetInstant().SelectByID<amt_Document>(d.ID, this.BuVO);
                 docH.RefID = sapRes.mat_doc;
                 docH.Ref1 = sapRes.doc_year;
-                //docH.EventStatus = DocumentEventStatus.CLOSED;
+                docH.EventStatus = DocumentEventStatus.CLOSED;
                 docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
                 ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
                 docItem.ForEach(di =>
                 {
                     di.RefID = sapRes.mat_doc; di.Ref1 = sapRes.doc_year;
-                    //docH.EventStatus = DocumentEventStatus.CLOSED;
+                    docH.EventStatus = DocumentEventStatus.CLOSED;
                     ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
 
                 });
