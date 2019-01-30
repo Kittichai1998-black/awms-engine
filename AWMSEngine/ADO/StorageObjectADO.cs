@@ -305,7 +305,17 @@ namespace AWMSEngine.ADO
             param.Add("docItemID", docItemID);
             param.Add("docTypeID", docTypeID);
             var res = this.Query<SPOutSTORootCanUseCriteria>("SP_STOROOT_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
-            
+
+            res.ForEach(x =>
+            {
+                var unitConvertBase = StaticValue.StaticValueManager.GetInstant()
+                .ConvertToNewUnitByPack(x.packID, x.packBaseQty, x.packBaseUnitID, x.distoBaseUnitID);
+                var unitConvertSale = StaticValue.StaticValueManager.GetInstant()
+                .ConvertToNewUnitByPack(x.packID, x.packBaseQty, x.packBaseUnitID, x.distoUnitID);
+
+                x.distoQtyMax = unitConvertSale.qty;
+                x.distoBaseQtyMax = unitConvertBase.qty;
+            });
 
             return res;
         }

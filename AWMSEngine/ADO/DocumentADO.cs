@@ -256,6 +256,17 @@ namespace AWMSEngine.ADO
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
+        public List<amt_Document> ListAndItem(List<long> docIDs, VOCriteria buVO)
+        {
+            var res = this.List(docIDs, buVO);
+            
+            res.ForEach(x =>
+            {
+                x.DocumentItems = this.ListItem(x.ID.Value, buVO);
+            });
+
+            return res;
+        }
 
         public List<amt_Document> List(DocumentTypeID docTypeID, long? souWarehouseID, string orderNo, string batch, string lot, VOCriteria buVO)
         {
@@ -437,7 +448,7 @@ namespace AWMSEngine.ADO
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("storageObjectIDs", string.Join(",", storageObjectIDs));
             param.Add("docTypeID", docTypeID);
-            param.Add("distoStatus", docTypeID);
+            param.Add("distoStatus", distoStatus);
             return this.Query<amt_DocumentItem>("SP_DOCITEM_LIST_BYSTOID",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
