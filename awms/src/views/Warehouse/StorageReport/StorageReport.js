@@ -26,7 +26,7 @@ class StoragReport extends Component {
         queryString: window.apipath + "/api/viw",
         t: "r_StorageObject",
         q: '',
-        f: "ID,Pallet,Warehouse,Area,Location,SKU_Code,SKU_Name,Batch,Lot,OrderNo,Qty,Base_Unit,Status,Receive_Time,Wei_PalletPack,Wei_Pack,concat(Wei_PalletPack, ' ','kg') AS WeiPallet,concat(Wei_Pack, ' ','kg') AS WeiPack, Receive_Date,Wei_PackStd",
+        f: "ID,Pallet,Warehouse,Area,Location,SKU_Code,SKU_Name,Batch,Lot,OrderNo,Qty,Base_Unit,Status,Receive_Time,Wei_PalletPack,Wei_Pack,concat(Wei_PalletPack, ' ','kg') AS WeiPallet,concat(Wei_Pack, ' ','kg') AS WeiPack,Receive_Date,Wei_PackStd,concat(FORMAT(Wei_PackStd, '0.000'), ' ','kg') AS WeiPackStd",
         g: "",
         s: "[{'f':'Pallet','od':'asc'}]",
         sk: 0,
@@ -102,7 +102,7 @@ class StoragReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+      return <div>{date.format('DD-MM-YYYY')}</div>
     }
   }
 
@@ -226,7 +226,7 @@ class StoragReport extends Component {
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
 
       {
-        accessor: 'Qty', Header: 'Qty', editable: false, filterable: false, className: "right",
+        accessor: 'Qty', Header: 'Base Qty', editable: false, filterable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -235,7 +235,7 @@ class StoragReport extends Component {
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty()}</span>)
       },
-      { accessor: 'Base_Unit', Header: 'Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
+      { accessor: 'Base_Unit', Header: 'Base Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
         accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
@@ -257,7 +257,7 @@ class StoragReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("WeiPack")}</span>)
       },
       {
-        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
+        accessor: 'WeiPackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -269,7 +269,7 @@ class StoragReport extends Component {
 
       { accessor: 'Status', Header: 'Status', Filter: (e) => this.createCustomFilter(e), sortable: true },
       {
-        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 150, maxWidth: 150, Cell: (e) =>
+        accessor: 'Receive_Date', Header: 'Received Date', filterable: false, sortable: true, minWidth: 150, maxWidth: 150, Cell: (e) =>
           this.datetimeBody(e.value)
       },
     ];
