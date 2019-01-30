@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Badge, Card, CardBody, Button,Row,Col } from 'reactstrap';
+import { Input, Badge, Card, CardBody, Button, Row, Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import { apicall, DatePicker, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
 import moment from 'moment';
@@ -62,6 +62,7 @@ class IssuedDoc extends Component {
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
+    this.customSorting = this.customSorting.bind(this);
   }
 
   async componentWillMount() {
@@ -329,10 +330,26 @@ class IssuedDoc extends Component {
   createSapResModal(data) {
     this.setState({ errorstr: data }, () => this.openModal())
   }
+  customSorting(data) {
+    const select = this.state.select
+    select["s"] = JSON.stringify([{ 'f': data[0].id, 'od': data[0].desc === false ? 'asc' : 'desc' }])
+    let queryString = ""
+    this.setState({ currentPage: 1 })
+    if (this.props.url === undefined || null) {
+      queryString = createQueryString(select)
+    }
+    // else {
+    //   queryString = createQueryStringStorage(this.props.url, data[0].id, data[0].desc === false ? 'asc' : 'desc')
+    // }
+    Axios.get(queryString).then(
+      (res) => {
+        this.setState({ data: res.data.datas, loading: false })
+      })
+  }
   render() {
     const cols = [
       {
-        Header: '', sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50,
+        Header: '', sortable: false, filterable: false, sortable: false, className: "text-center", fixed: "left", minWidth: 50,
         Cell: (e) => this.createSelection(e)
       },
       {
@@ -416,8 +433,14 @@ class IssuedDoc extends Component {
           data={this.state.data}
           editable={false}
           filterable={true}
+          multiSort={false}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} />
+          PaginationComponent={this.paginationButton}
+          onSortedChange={(sorted) => {
+            this.setState({ data: [], loading: true });
+            this.customSorting(sorted)
+          }}
+        />
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }}
