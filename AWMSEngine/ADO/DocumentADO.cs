@@ -478,7 +478,7 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
-        public List<SPOutDocItemCanMap> ListItemCanMap(string packCode, DocumentTypeID docTypeID, long? docID, string eventStatus, VOCriteria buVO)
+        public List<SPOutDocItemCanMap> ListItemCanMap(string packCode, DocumentTypeID docTypeID, long? docID, DocumentEventStatus eventStatus, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("packCode", packCode);
