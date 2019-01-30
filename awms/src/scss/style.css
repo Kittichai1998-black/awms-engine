@@ -10042,17 +10042,29 @@ body {
   text-decoration: none;
   background-color: #3a9d5d; }
 
-.badge-PICK {
+.badge-PICKING {
+  color: #2f353a;
+  background-color: #f0f3f5;
+  border: 2px solid #ffc107;
+  width: auto; }
+
+.badge-PICKED {
+  color: #2f353a;
+  background-color: #ffcf3d;
+  border: 1px solid #ffc107;
+  width: auto; }
+
+.badge-AUDITING {
   color: #2f353a;
   background-color: #f0f3f5;
   border: 2px solid #2f353a;
-  width: 3.5em; }
+  width: auto; }
 
-.badge-AUDIT {
-  color: #fff;
-  background-color: #2f353a;
-  border: 1px solid #fff;
-  width: 3.5em; }
+.badge-AUDITED {
+  color: #2f353a;
+  background-color: #f88a8a;
+  border: 1px solid #f86c6b;
+  width: auto; }
 
 .btn-info {
   color: #fff !important; }

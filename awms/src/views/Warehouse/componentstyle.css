@@ -130,3 +130,10 @@
 #pbottom{
   height: 5em;
 }
+
+#full {
+  height: inherit;  /* if more info comes on the page, it will stretch down*/
+  width: 100%; 
+  margin: 0;
+  padding: 0;  /*this will cause the div to be in the center*/
+}

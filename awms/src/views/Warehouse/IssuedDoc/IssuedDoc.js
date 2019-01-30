@@ -62,6 +62,7 @@ class IssuedDoc extends Component {
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
+    this.customSorting = this.customSorting.bind(this);
   }
 
   async componentWillMount() {
@@ -370,7 +371,22 @@ class IssuedDoc extends Component {
   createSapResModal(data) {
     this.setState({ errorstr: data }, () => this.openModal())
   }
-
+  customSorting(data) {
+    const select = this.state.select
+    select["s"] = JSON.stringify([{ 'f': data[0].id, 'od': data[0].desc === false ? 'asc' : 'desc' }])
+    let queryString = ""
+    this.setState({ currentPage: 1 })
+    if (this.props.url === undefined || null) {
+      queryString = createQueryString(select)
+    }
+    // else {
+    //   queryString = createQueryStringStorage(this.props.url, data[0].id, data[0].desc === false ? 'asc' : 'desc')
+    // }
+    Axios.get(queryString).then(
+      (res) => {
+        this.setState({ data: res.data.datas, loading: false })
+      })
+  }
   render() {
     const cols = [
       {
@@ -456,15 +472,6 @@ class IssuedDoc extends Component {
           </Row>
         </div>
 
-
-
-
-    
-
-
-
-
-
         <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
           minRows={5}
@@ -472,10 +479,15 @@ class IssuedDoc extends Component {
           columns={cols}
           data={this.state.data}
           editable={false}
+          multiSort={false}
           filterable={true}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} />
-
+          PaginationComponent={this.paginationButton} 
+          onSortedChange={(sorted) => {
+            this.setState({ data: [], loading: true });
+            this.customSorting(sorted)
+          }}
+          />
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>

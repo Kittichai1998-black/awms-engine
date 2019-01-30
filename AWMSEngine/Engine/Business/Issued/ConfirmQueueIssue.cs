@@ -129,8 +129,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
             }
 
-            var results = resultDocItemSto.GroupBy(n => new { n.stoi, n.dociID, n.baseCode, n.wareHouseID, n.areaID, n.priority }
-            , (key, g) => g.OrderBy(e => e.dociID).First()).ToList();
+            var results = resultDocItemSto.GroupBy(n => new { n.stoi, n.baseCode, n.wareHouseID, n.areaID, n.priority }
+            , (key, g) => g.OrderByDescending(e => new { e.dociID, e.priority }).First()).ToList();
 
 
             foreach (var result in results)
@@ -144,33 +144,48 @@ namespace AWMSEngine.Engine.Business.Issued
                     new SQLOrderByCriteria[] { }, null, null,
                     this.BuVO).FirstOrDefault();
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
+                var souAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, stoCriteria.areaID, this.BuVO);
+                var souAreaDefault = souAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
                 docItems.Add(docItem);
+
                 //create WorkQueue
-                SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
-
-                var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
-                baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                if (souAreaDefault.Sou_AreaMasterType_ID == 10)
                 {
-                    baseCode = result.baseCode,
-                    packInfos = null
-                };
+                    SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
+                    var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
+                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                    {
+                        baseCode = result.baseCode,
+                        packInfos = null
+                    };
 
-                queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
-                {
-                    queueID = xyz.ID,
-                    desWarehouseCode = "THIP",
-                    desAreaCode = "F",
-                    desLocationCode = null,
-                    priority = result.priority,
-                    baseInfo = baseInfo,
-                });
+                    queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
+                    {
+                        queueID = xyz.ID,
+                        desWarehouseCode = "THIP",
+                        desAreaCode = "F",
+                        desLocationCode = null,
+                        priority = result.priority,
+                        baseInfo = baseInfo,
+                    });
+                }
             }
-            queueWorkQueue.queueOut = queueWorkQueueOut;
             /*WCSQueueApi*/
+            foreach (var checkBaseInfo in queueWorkQueueOut)
+            {
+                if (checkBaseInfo.baseInfo.baseCode != null)
+                {
+                    queueWorkQueue.queueOut = queueWorkQueueOut;
+                }
+                else
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
+                }
+            }
             var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
             if (wcsAcceptRes._result.resultcheck == 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าจาก ASRS ได้");
             }
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Badge, Input, Card, CardBody, Button } from 'reactstrap';
+import { Row, Col, Badge, Input, Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table'
 import { apicall, createQueryString, DatePicker, GenerateDropDownStatus } from '../../ComponentCore'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -63,6 +63,7 @@ class AuditDoc extends Component {
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
+    this.customSorting = this.customSorting.bind(this);
   }
 
   async componentWillMount() {
@@ -160,19 +161,22 @@ class AuditDoc extends Component {
         postdata["docIDs"].push(rowdata.ID)
       })
       if (status === "accept") {
-        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => { 
+        Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then((res) => {
           this.getData()
-          this.setState({ resp: res.data._result.message }) })
+          this.setState({ resp: res.data._result.message })
+        })
       }
       else if (status === "reject") {
-        Axios.post(window.apipath + "/api/wm/audit/doc/Reject", postdata).then((res) => { 
+        Axios.post(window.apipath + "/api/wm/audit/doc/Reject", postdata).then((res) => {
           this.getData()
-          this.setState({ resp: res.data._result.message }) })
+          this.setState({ resp: res.data._result.message })
+        })
       }
       else if (status === "Close") {
-        Axios.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => { 
+        Axios.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => {
           this.getData()
-          this.setState({ resp: res.data._result.message }) })
+          this.setState({ resp: res.data._result.message })
+        })
       }
     }
   }
@@ -224,6 +228,18 @@ class AuditDoc extends Component {
       }
     }
     this.setState({ select }, () => { this.getData() })
+  }
+  DatePickerFilter(datetime) {
+    this.setState({ date: datetime })
+    let filter = this.state.datafilter
+    filter.forEach((x, index) => {
+      if (x.id === "DocumentDate")
+        filter.splice(index, 1);
+    });
+    if (datetime !== null) {
+      filter.push({ id: "DocumentDate", value: moment(datetime).format('YYYY-MM-DD'), type: "date" });
+    }
+    this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
   }
   createCustomFilter(name) {
     return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
@@ -341,10 +357,26 @@ class AuditDoc extends Component {
   createSapResModal(data) {
     this.setState({ errorstr: data }, () => this.openModal())
   }
+  customSorting(data) {
+    const select = this.state.select
+    select["s"] = JSON.stringify([{ 'f': data[0].id, 'od': data[0].desc === false ? 'asc' : 'desc' }])
+    let queryString = ""
+    this.setState({ currentPage: 1 })
+    if (this.props.url === undefined || null) {
+      queryString = createQueryString(select)
+    }
+    // else {
+    //   queryString = createQueryStringStorage(this.props.url, data[0].id, data[0].desc === false ? 'asc' : 'desc')
+    // }
+    Axios.get(queryString).then(
+      (res) => {
+        this.setState({ data: res.data.datas, loading: false })
+      })
+  }
   render() {
     const cols = [
       {
-        Header: '', sortable: false, filterable: false, className: "text-center", fixed: "left", minWidth: 50,
+        Header: '', sortable: false, filterable: false, sortable: false, className: "text-center", fixed: "left", minWidth: 50,
         Cell: (e) => this.createSelection(e)
       },
       {
@@ -393,28 +425,40 @@ class AuditDoc extends Component {
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
-        <div className="clearfix">
+        <div className="clearfix" style={{ paddingBottom: '3px' }}>
+          <Row style={{verticalAlign: 'baseline'}}>
 
-          <Button id="per_button_doc" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/sys/ad/create')}>Create Document</Button>
+            <Col xs="4"></Col>
+            <Col xs="4">
+              <div className="float-right" >
+                <span className="float-right" style={{ fontWeight: 'bold' }}>Doc.Date : </span>
+              </div>
+            </Col>
 
-          {/* <Button id="per_button_export" style={{ background: "#26c6da", borderColor: "#26c6da", width: '130px', marginLeft: '5px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => {
-            let data1 = { "exportName": "DocumentIssuedToShop", "whereValues": [this.state.date.format('YYYY-MM-DD')] }
-            let data2 = { "exportName": "DocumentIssuedToCD", "whereValues": [this.state.date.format('YYYY-MM-DD')] }
-            axois.post(window.apipath + "/api/report/export/fileServer", data1).then(res => {
-              if (res.data._result.status === 1) {
-                let resultPath = res.data.fileExport
-                axois.post(window.apipath + "/api/report/export/fileServer", data2).then(res2 => {
-                  window.success(resultPath + "<br/>" + res2.data.fileExport)
-                })
-              }
-            })
-          }}>Export Data</Button> */}
-          {/* <div id="per_button_date" className="float-right" style={{ display: this.state.showbutton }}>{this.dateTimePicker()}</div> */}
+            <DatePicker className="float-right" selected={this.state.date}
+              customInput={<Input />}
+              onChange={(e) => {
+                if (e === null) {
+                  this.DatePickerFilter(null)
+                }
+                else {
+                  if (e.isValid() && e !== null) {
+                    this.DatePickerFilter(e)
+                  }
+                }
+
+              }}
+              timeIntervals={1}
+              timeFormat="HH:mm"
+              timeCaption="Time"
+              showTimeSelect={false}
+              dateFormat={"DD-MM-YYYY"} />
+
+            <div className="clearfix">
+              <Button id="per_button_doc" style={{ width: '150px', marginLeft: '5px', marginBottom: '3px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/sys/ad/create')}>Create Document</Button>
+            </div>
+          </Row>
         </div>
-        {/* <TableGen column={cols} data={this.state.select} addbtn={true} filterable={true}
-          dropdownfilter={this.state.statuslist} getselection={this.getSelectionData} addbtn={false}
-          btn={btnfunc} defaultCondition={[{ 'f': 'DocumentType_ID', c: '=', 'v': 2004 }]}
-          accept={false} /> */}
         <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
           minRows={5}
@@ -423,9 +467,14 @@ class AuditDoc extends Component {
           data={this.state.data}
           editable={false}
           filterable={true}
+          multiSort={false}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} />
-
+          PaginationComponent={this.paginationButton}
+          onSortedChange={(sorted) => {
+            this.setState({ data: [], loading: true });
+            this.customSorting(sorted)
+          }}
+        />
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
@@ -434,7 +483,7 @@ class AuditDoc extends Component {
             {this.state.resp}
           </CardBody>
         </Card>
-        
+
         <Popup open={this.state.open} onClose={this.closeModal} closeOnDocumentClick >
           <div style={{ border: '2px solid red', borderRadius: '5px' }}>
             <a style={styleclose} onClick={this.closeModal}>
