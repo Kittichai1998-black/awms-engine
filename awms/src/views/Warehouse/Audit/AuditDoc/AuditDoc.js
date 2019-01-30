@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Row, Col, Badge, Input, Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table'
-import { apicall, createQueryString, DatePicker, GenerateDropDownStatus } from '../../ComponentCore'
+import { apicall, createQueryString, GenerateDropDownStatus } from '../../ComponentCore'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 import Popup from 'reactjs-popup'
 import { DocumentEventStatus } from '../../Status'
@@ -386,7 +388,7 @@ class AuditDoc extends Component {
       },
       {
         accessor: 'Code', Header: 'Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left",
-        Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gi/manage?ID=' + e.original.ID)} >{e.original.Code}</a>
+        Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/sys/ad/create?ID=' + e.original.ID)} >{e.original.Code}</a>
       },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: (e) => this.createCustomFilter(e), },

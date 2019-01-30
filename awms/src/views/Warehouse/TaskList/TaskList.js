@@ -39,7 +39,7 @@ class TaskList extends Component {
         g: "",
         s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'asc'},{'f':'IIF(Status = 3, Time, null)','od':'desc'}]",
         sk: 0,
-        l: 10,
+        l: 20,
         all: "",
       },
       TaskListselect: {
@@ -51,7 +51,7 @@ class TaskList extends Component {
         g: "",
         s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 0, Time, null)','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'desc'}]",
         sk: 0,
-        l: 10,
+        l: 20,
         all: "",
       }
     }
@@ -163,69 +163,65 @@ class TaskList extends Component {
         >
           <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1.5625em' } : {}} className="fullscreen">
             <div id="full">
-            <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
-              <Row>
-                <Col sm="1" xs="6" md="1" lg="1">{logoamw}</Col>
-                <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={1000} /></span></label></Col>
-                <Col sm="3" xs="3" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Area: </label></Col>
-                <Col sm="4" xs="7" md="4" lg="4">{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
-                  this.updateQueueData(res.value)
-                  {/*this.setState({ areavalue: e.value, areatext: e.label }, () => console.log(this.state.areavalue + " " + this.state.areatext))*/ }
-                }} />}</Col>
-                <Col sm="1" xs="2" md="1" lg="1"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
-              </Row>
-            </div>
+              <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
+                <Row>
+                  <Col sm="1" xs="6" md="1" lg="1">{logoamw}</Col>
+                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={1000} /></span></label></Col>
+                  <Col sm="3" xs="3" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Area: </label></Col>
+                  <Col sm="4" xs="7" md="4" lg="4">{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
+                    this.updateQueueData(res.value)
+                    {/*this.setState({ areavalue: e.value, areatext: e.label }, () => console.log(this.state.areavalue + " " + this.state.areatext))*/ }
+                  }} />}</Col>
+                  <Col sm="1" xs="2" md="1" lg="1"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
+                </Row>
+              </div>
 
-            <Row style={{position: 'relative'}}>
-              <Col>
-                <div id="Table1" className="styleTable">
-                  <p className="rightAlign" id="pbottom">Move Out</p>
-                  <div>
-                    <ReactTable
-                      columns={cols1}
-                      minRows={7}
-                      data={this.state.dataworkingout}
-                      sortable={false}
-                      style={{ background: 'white', fontSize: '1.125em', fontWeight: '450' }}
-                      filterable={false}
-                      showPagination={false}
-                      NoDataComponent={() => null}
-                      loading={this.state.loadingWorkingOut}
-                      getTrProps={(state, rowInfo, column) => {
-                        let result = false
-                        let rmv = false
-                        let classStatus = ""
-                        if (rowInfo && rowInfo.row) {
-                          result = true
-                          if (rowInfo.original.EventStatus === 11 || rowInfo.original.EventStatus === 12) {
-                            rmv = true
-                            classStatus = "inqueue"
-                          } else if (rowInfo.original.EventStatus === 31 || rowInfo.original.EventStatus === 32) {
-                            rmv = true
-                            classStatus = "success"
-                          } else { rmv = false }
-                        }
-                        if (result && rmv)
-                          return { className: classStatus }
-                        else
-                          return {}
-                      }}
-                    />
-                  </div>
+
+              <div id="Table1" className="styleTable">
+                <p className="rightAlign" id="pbottom">Move Out</p>
+                <div>
+                  <ReactTable
+                    columns={cols1}
+                    minRows={7}
+                    data={this.state.dataworkingout}
+                    sortable={false}
+                    style={{ background: 'white', fontSize: '1.125em', maxHeight: '20em', fontWeight: '450' }}
+                    filterable={false}
+                    showPagination={false}
+                    NoDataComponent={() => null}
+                    loading={this.state.loadingWorkingOut}
+                    getTrProps={(state, rowInfo, column) => {
+                      let result = false
+                      let rmv = false
+                      let classStatus = ""
+                      if (rowInfo && rowInfo.row) {
+                        result = true
+                        if (rowInfo.original.EventStatus === 11 || rowInfo.original.EventStatus === 12) {
+                          rmv = true
+                          classStatus = "inqueue"
+                        } else if (rowInfo.original.EventStatus === 31 || rowInfo.original.EventStatus === 32) {
+                          rmv = true
+                          classStatus = "success"
+                        } else { rmv = false }
+                      }
+                      if (result && rmv)
+                        return { className: classStatus }
+                      else
+                        return {}
+                    }}
+                  />
                 </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <div id="Table2" className="Table2 styleTable">
-                  <p className="rightAlign" id="pbottom">Task List</p>
-                  <div style={{ overflowY: 'auto'}}> 
+              </div>
+
+              <div id="Table2" className="Table2 styleTable">
+                <p className="rightAlign" id="pbottom">Task List</p>
+                <div style={{ overflowY: 'auto' }}>
                   <ReactTable
                     columns={cols2}
                     minRows={7}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white', fontSize: '1.125em', fontWeight: '450' }}
+                    style={{ background: 'white', fontSize: '1.125em', maxHeight: '20em', fontWeight: '450' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
@@ -233,10 +229,9 @@ class TaskList extends Component {
                   //defaultPageSize={15} 
                   />
                 </div>
-                </div>
-              </Col>
-            </Row >
-          </div>
+              </div>
+
+            </div>
           </div>
         </Fullscreen>
       </div >

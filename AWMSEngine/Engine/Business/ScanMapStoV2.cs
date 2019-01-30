@@ -214,7 +214,7 @@ namespace AWMSEngine.Engine.Business
                         var docItemCanMaps = ADO.DocumentADO.GetInstant().ListItemCanMap(pm.Code, DocumentTypeID.GOODS_RECEIVED, reqVO.batch, reqVO.lot, this.BuVO);
                         if (docItemCanMaps == null || docItemCanMaps.Count == 0)
                             throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Goods Recevie");
-                        var docItemCanMap = docItemCanMaps.FirstOrDefault(x => reqVO.amount <= (x.MaxQty - x.Qty));
+                        var docItemCanMap = docItemCanMaps.FirstOrDefault(x => reqVO.amount <= (x.MaxQty - x.NeedQty));
                         if(docItemCanMap == null)
                             throw new AMWException(this.Logger, AMWExceptionCode.V2001, "จำนวนรับเข้าคงเหลือจาก Goods Recevie ไม่ถูกต้อง");
                         docItemID = docItemCanMap.DocumentItem_ID;
