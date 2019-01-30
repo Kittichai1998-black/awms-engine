@@ -44,7 +44,8 @@ namespace AWMSEngine.Engine.Business.Auditor
 
             reqVO.workQueue.ForEach(x =>
             {
-                if(x.Sou_AreaMaster_ID == 5){
+                if (x.Sou_AreaMaster_ID == 5)
+                {
                     var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
@@ -73,12 +74,18 @@ namespace AWMSEngine.Engine.Business.Auditor
 
             reqVO.workQueue.ForEach(x =>
             {
-                var getStatusSto =  ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, false, this.BuVO);
+                var getStatusSto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, false, this.BuVO);
                 if (getStatusSto.eventStatus != StorageObjectEventStatus.RECEIVED)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าอยู่ในสถานะ" + getStatusSto.eventStatus + "ไม่สามารถเบิกสินค้าตรวจสอบได้");
-                
-                if(x.Sou_AreaMaster_ID == 5)
+
+                if (x.Sou_AreaMaster_ID == 5)//ASRS
                 {
+                    //ADD BY TOM
+                    var docItemAudits = ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { x.StorageObject_ID.Value }, DocumentTypeID.AUDIT, this.BuVO);
+                    var bsto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                    x.DocumentItemWorkQueues = AWMSEngine.Common.ConverterModel.ToDocumentItemWorkQueue(docItemAudits, bsto, x.ID.Value);
+                    //***
+
                     var resWorkQueue = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
 
                     var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
@@ -112,6 +119,7 @@ namespace AWMSEngine.Engine.Business.Auditor
             reqVO.disto.ForEach(x =>
             {
                 ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO);
+                ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(x.ID.Value, EntityStatus.INACTIVE, this.BuVO);//ADD BY TOM
                 var res = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
                 var resBase = ADO.StorageObjectADO.GetInstant().Get(res.parentID.Value, StorageObjectType.PACK, false, false, this.BuVO);
                 itemLists.Add(new TRes.ItemList { itemCode = res.code, palletCode = resBase.code });

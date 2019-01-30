@@ -17,11 +17,11 @@ namespace AWMSEngine.ADO
 {
     public class StorageObjectADO : BaseMSSQLAccess<StorageObjectADO>
     {
-        public StorageObjectCriteria UpdateLocation(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
+        public StorageObjectCriteria UpdateLocationToChild(StorageObjectCriteria baseInfo, long locationID, VOCriteria buVO)
         {
-            return UpdateLocation(baseInfo, baseInfo.eventStatus, locationID, buVO);
+            return UpdateLocationToChild(baseInfo, baseInfo.eventStatus, locationID, buVO);
         }
-        public StorageObjectCriteria UpdateLocation(StorageObjectCriteria baseInfo,StorageObjectEventStatus eventStatus, long locationID, VOCriteria buVO)
+        public StorageObjectCriteria UpdateLocationToChild(StorageObjectCriteria baseInfo,StorageObjectEventStatus eventStatus, long locationID, VOCriteria buVO)
         {
             var location = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(locationID, buVO);
 

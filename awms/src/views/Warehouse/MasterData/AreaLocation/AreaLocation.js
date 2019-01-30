@@ -15,7 +15,7 @@ class AreaLocation extends Component {
       data: null,
       autocomplete: [],
       cols1: [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center"},
         //{ accessor: 'Code', Header: 'Code', editable: false, Filter: "text" },
         { accessor: 'Name', Header: 'Name', editable: true, Filter: "text", filterable: true , minWidth: 150 },
@@ -278,7 +278,7 @@ class AreaLocation extends Component {
     const view = this.state.permissionView
     if (this.state.grouptype === 1) { //STORAGE
       return [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", filterable: true  },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 150, filterable: true  },
@@ -299,7 +299,7 @@ class AreaLocation extends Component {
 
     } else if (this.state.grouptype === 2) { //Gate
       return [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', editable: false, Filter: "text", fixed: "left", filterable: true  },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", minWidth: 135, filterable: true  },
@@ -317,12 +317,12 @@ class AreaLocation extends Component {
       ];
     } else { // STAGING
       return [
-        { Header: 'No.', fixed: "left", Type: 'numrows', filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
+        { Header: 'No.', fixed: "left", Type: 'numrows', sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45 },
         //{Header: '', Type:"selection", sortable:false, Filter:"select", className:"text-center", fixed: "left"},
         { accessor: 'Code', Header: 'Code', Type: "FLSareacode", editable: view, Filter: "text", filterable:true ,fixed: "left" },
         { accessor: 'Name', Header: 'Name', editable: view, Filter: "text", fixed: "left", filterable: true },
-        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", filterable: true , minWidth: 150 },
         { accessor: 'Gate', Header: 'Gate', editable: view, Filter: "text", filterable: true },
+        { accessor: 'Bank', Header: 'Bank', editable: view, Filter: "text", filterable: true , minWidth: 150 },
         { accessor: 'Bay', Header: 'Bay', editable: view, Filter: "text", datatype: "int", filterable: true },
         { accessor: 'Level', Header: 'Level', editable: view, Filter: "text", datatype: "int" },
         { accessor: 'ObjectSize_Code', Header: 'Location Type', updateable: view, Filter: "text", Type: "autocomplete", minWidth: 175, filterable: true },
@@ -398,7 +398,7 @@ class AreaLocation extends Component {
                   filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype}
                   btn={btnfunc} uneditcolumn={this.uneditcolumn} getselection={this.getSelectionData} defaultCondition={[{ 'f': 'Status', c:'<', 'v': 2},{ 'f':'AreaMaster_ID',c:'=','v':  this.state.areamaster}]}
                   table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} printbtn={view}/>*/}
-        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"Location"}
+        <TableGen column={this.state.cols1} data={this.state.data} dropdownfilter={this.state.statuslist} addExportbtn={view} expFilename={"AreaLocation"}
           filterable={true} autocomplete={this.state.autocomplete} areagrouptype={this.state.grouptype} exportfilebtn={view} searchURL={this.props.location.search}
           btn={btnfunc} uneditcolumn={this.uneditcolumn} defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'AreaMaster_ID', c: '=', 'v': this.state.areamaster }]}
           table="ams_AreaLocationMaster" autocode="@@sql_gen_area_location_code" areamaster={this.state.areamaster} accept={view} />

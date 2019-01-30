@@ -81,7 +81,9 @@
 .cancel .rt-td {
   background: rgba(200, 206, 211, 0.78) !important;
 }
-
+.worked .rt-td {
+  background: #63c2de !important;
+}
 .p_wrap {
   white-space: pre-wrap;
 }
@@ -93,4 +95,45 @@
 }
 .left {
   text-align: left;
+} 
+#Table1{
+  border: 3px solid #20c997;
+  position: relative;
 }
+#Table2{
+  border: 3px solid #17a2b8;
+  position: relative;
+}
+.styleTable {
+  border-radius: 9px;
+  background: white;
+  padding: 4px;
+  margin-bottom: 5px;
+  width: 100%; 
+  min-height: 50%;
+} 
+.styleTable p.rightAlign {
+  width:2em;
+  float: left;  
+  text-align: center;
+  font-size:1.25em;
+  bottom: 0; 
+  margin-top: 3.125em;
+  margin-bottom: 4.75em;
+  position: absolute;
+  white-space:nowrap;
+  font-weight: bold;
+  filter: flipv fliph;
+  -webkit-transform: rotate(-90deg); 
+  -moz-transform: rotate(-90deg); 
+  transform: rotate(-90deg); 
+}
+#pbottom{
+  height: 5em;
+}
+
+#full {
+  /* height: auto; if more info comes on the page, it will stretch down
+  width: auto; */
+  margin: 0 auto; /*this will cause the div to be in the center*/
+  }
