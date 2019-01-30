@@ -72,14 +72,14 @@ namespace AWMSEngine.Engine.Business.Picking
             if (reqVO.docID != null)
             {
                 docItemList = docItemList.Where(x => x.docID == reqVO.docID.Value).ToList();
-
                 var selectPallet = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, reqVO.warehouseID, reqVO.areaID, false, true, this.BuVO);
                 palletID = selectPallet.id.Value;
                 var selectPack = selectPallet.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Distinct().ToList();
 
                 foreach (var row in selectPack)
                 {
-                    var itemCanMap = (ADO.DocumentADO.GetInstant().ListItemCanMap(row.code, DocumentTypeID.GOODS_ISSUED, reqVO.docID, "11", this.BuVO));
+                    var itemCanMap = ADO.DocumentADO.GetInstant().ListItemCanMap(row.code, DocumentTypeID.GOODS_ISSUED, reqVO.docID, DocumentEventStatus.WORKING, this.BuVO)
+                        .Where(x => x.StorageObject_ID == row.id && x.Status == EntityStatus.INACTIVE).ToList();
                     var unitType = this.StaticValue.UnitTypes.FirstOrDefault(y => y.ID == row.unitID).Name;
 
                     if (itemCanMap.Count > 0)
@@ -94,9 +94,9 @@ namespace AWMSEngine.Engine.Business.Picking
                                 batch = row.batch,
                                 lot = row.lot,
                                 palletQty = row.qty,
-                                canPick = (x.MaxQty - x.Qty),
+                                canPick = x.NeedQty,
                                 pick = true,
-                                shouldPick = (x.MaxQty - x.Qty) > row.qty ? row.qty : (x.MaxQty - x.Qty),
+                                shouldPick = x.NeedQty > row.qty ? row.qty : x.NeedQty,
                                 unitType = unitType,
                                 item = row.options,
                             });
