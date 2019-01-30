@@ -329,10 +329,11 @@ namespace AWMSEngine.Engine.Business.Issued
                     var dataStoBranch = new List<dynamic>();
                     foreach (var stoDoc in dataDocItem.DocItemStos)
                     {
-                        var sto = ADO.StorageObjectADO.GetInstant().Get(stoDoc.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
-                        if (sto.batch != null)
+                        var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(stoDoc.StorageObject_ID, BuVO);
+                        //var sto = ADO.StorageObjectADO.GetInstant().Get(stoDoc.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                        if (sto.Batch != null)
                         {
-                            dataStoBranch.Add(sto.batch);
+                            dataStoBranch.Add(sto.Batch);
                         }
                     }
                     var stoBatch = dataStoBranch.Distinct().ToList();
