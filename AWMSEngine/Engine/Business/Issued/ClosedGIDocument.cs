@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             if(dataApi4 != null)
                             {
                                 var dataReturn = this.sendToApi4(dataApi4);
-                                if (dataReturn.docstatus == "0")
+                                if (dataReturn.docstatus != "0")
                                 {
                                     sandToSAPsuccess(docHs, docItem, dataReturn);
                                 }
@@ -140,7 +140,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     {
 
                                         var dataReturn = this.sendToApi4(dataApi4);
-                                        if (dataReturn.docstatus == "0")
+                                        if (dataReturn.docstatus != "0")
                                         {
                                             sandToSAPsuccess(docHs, docItem, dataReturn);
                                             this.ClosedDocAndParent(relation);
@@ -164,7 +164,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                                     var dataReturn = this.sendToApi9(dataApi9);
 
-                                    if(dataReturn.docstatus == "0")
+                                    if(dataReturn.docstatus != "0")
                                     {
                                         sandToSAPsuccess(docHs, docItem, dataReturn);
                                         this.ClosedDocAndParent(relation);
