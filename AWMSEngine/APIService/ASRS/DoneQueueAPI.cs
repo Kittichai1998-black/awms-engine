@@ -42,24 +42,24 @@ namespace AWMSEngine.APIService.ASRS
                     {
                         baseStoID = getQueue.StorageObject_ID
                     });
-                //this.CommitTransaction();
+                this.CommitTransaction();
 
                 if (resPick.docs.Any(x => x.EventStatus == DocumentEventStatus.WORKED))
                 {
-                    //this.BeginTransaction();
+                    this.BeginTransaction();
                     var resLocal = new ClosingGIDocument().Execute(this.Logger, this.BuVO, new ClosingGIDocument.TDocReq()
                     {
                         auto = 0,
                         docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
                     });
-                    //this.CommitTransaction();
+                    this.CommitTransaction();
 
-                    //this.BeginTransaction();
+                    this.BeginTransaction();
                     var resSAP = new ClosedGIDocument().Execute(this.Logger, this.BuVO, new ClosedGIDocument.TDocReq()
                     {
                         docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
                     });
-                    //this.CommitTransaction();
+                    this.CommitTransaction();
                 }
 
             }

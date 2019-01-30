@@ -15,27 +15,28 @@ namespace AWMSEngine.Engine.Business.Issued
 
         public class TReq
         {
+            public long? parentDocumentID;
             public string refID;
             public string ref1;
             public string ref2;
-            public int? forCustomerID;
+            public long? forCustomerID;
             public string forCustomerCode;
             public string batch;
             public string lot;
 
-            public int? souBranchID;
-            public int? souWarehouseID;
-            public int? souAreaMasterID;
+            public long? souBranchID;
+            public long? souWarehouseID;
+            public long? souAreaMasterID;
             public string souBranchCode;//สาขาต้นทาง
             public string souWarehouseCode;//คลังต้นทาง
             public string souAreaMasterCode;//พื้นที่วางสินสินค้าต้นทาง
             public int? transportID;
 
-            public int? desCustomerID;
-            public int? desSupplierID;
-            public int? desBranchID;
-            public int? desWarehouseID;
-            public int? desAreaMasterID;
+            public long? desCustomerID;
+            public long? desSupplierID;
+            public long? desBranchID;
+            public long? desWarehouseID;
+            public long? desAreaMasterID;
             public string desCustomerCode;//ผู้ผลิตต้นทาง
             public string desSupplierCode;//ผู้จัดจำหน่ายต้นทาง
             public string desBranchCode;
@@ -122,6 +123,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
             amt_Document doc = new amt_Document()
             {
+                ParentDocument_ID = reqVO.parentDocumentID,
                 RefID = reqVO.refID,
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,

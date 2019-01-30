@@ -42,7 +42,6 @@ namespace AMWUtil.Logger
 
         public void LogWrite(string logLV, string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "")
         {
-            return;
             className = string.IsNullOrWhiteSpace(className) ? _StackTrace.GetFrame(2).GetMethod().DeclaringType.FullName : className;
             methodName = string.IsNullOrWhiteSpace(methodName) ? _StackTrace.GetFrame(2).GetMethod().Name : methodName;
 

@@ -323,7 +323,7 @@ namespace AWMSEngine.ADO
             var res = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(whares.ToArray(), buVO);
             return res;
         }
-        public List<amt_DocumentItem> ListItemAndStoInDoc(long docID, VOCriteria buVO)
+        public List<amt_DocumentItem> ListItemAndDisto(long docID, VOCriteria buVO)
         {
             var res = this.ListItem(docID, buVO);
             var resSto = this.ListStoInDocs(docID, buVO);
@@ -561,6 +561,33 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public List<amt_Document> ListAndRelationSupper(List<long> childDocumentIDs, VOCriteria buVO)
+        {
+            var baseDocs = new List<amt_Document>();
+            childDocumentIDs.ToList().ForEach(docID => {
+                var doc = ADO.DocumentADO.GetInstant().ListParentLink(docID, buVO);
+                baseDocs.AddRange(doc);
+            });
+
+            List<long> docHIDs = new List<long>();
+            docHIDs.AddRange(childDocumentIDs);
+            baseDocs.ForEach(x =>
+            {
+                var ids = ADO.DocumentADO.GetInstant().ListItem(x.ID.Value, buVO).Select(y => y.LinkDocument_ID.Value).ToList();
+                docHIDs.AddRange(ids);
+            });
+            docHIDs = docHIDs.Distinct().ToList();
+
+            List<amt_Document> docHs = ADO.DocumentADO.GetInstant().List(docHIDs, buVO);
+            docHs.ForEach(docH =>
+            {
+                docH.ParentDocument = baseDocs.FirstOrDefault(x => x.ID == docH.ParentDocument_ID);
+                docH.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(docH.ID.Value, buVO);
+            });
+
+            return docHs;
+        }
+
         public amt_Document Put(amt_Document doc, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = this.CreateDynamicParameters(doc, 
