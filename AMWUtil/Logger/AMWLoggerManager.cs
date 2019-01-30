@@ -14,6 +14,7 @@ namespace AMWUtil.Logger
         public static List<KeyValuePair<string, string>> LogMessages = new List<KeyValuePair<string, string>>();
         public static List<KeyValuePair<string, string>> LogMessagesTMP = new List<KeyValuePair<string, string>>();
         public static object LogMessagesTMPLock = new object();
+        public static object InitLock = new object();
 
         private static Task LogTask = null;
 
@@ -75,41 +76,44 @@ namespace AMWUtil.Logger
         }
         public static AMWLogger GetLogger(string refID, string serviceName)
         {
-            AMWLoggerManager logManager = AMWLoggerManager.GetInstant();
-            string logUriFormat = logManager.LogUriFormat;
-            string logFileFormat = logManager.LogFileFormat;
-            Dictionary<string, string> dicMapKey = new Dictionary<string, string>();
-            dicMapKey.Add("{MachineName}", System.Environment.MachineName);
-            dicMapKey.Add("{Date}", DateTime.Now.ToString("yyyyMMdd"));
-            dicMapKey.Add("{RefID}", refID);
-            dicMapKey.Add("{ServiceName}", serviceName);
-
-            logManager.LogUri = logManager.LogUriFormat.EndsWith("/") || logUriFormat.EndsWith("\\") ? logUriFormat : logUriFormat + "/";
-            foreach (Match m in Regex.Matches(logUriFormat, "{[^}]+}"))
+            lock (InitLock)
             {
-                if (dicMapKey.ContainsKey(m.Value))
-                    logManager.LogUri = logManager.LogUri.Replace(m.Value, dicMapKey[m.Value]);
+
+                AMWLoggerManager logManager = AMWLoggerManager.GetInstant();
+                string logUriFormat = logManager.LogUriFormat;
+                string logFileFormat = logManager.LogFileFormat;
+                Dictionary<string, string> dicMapKey = new Dictionary<string, string>();
+                dicMapKey.Add("{MachineName}", System.Environment.MachineName);
+                dicMapKey.Add("{Date}", DateTime.Now.ToString("yyyyMMdd"));
+                dicMapKey.Add("{RefID}", refID);
+                dicMapKey.Add("{ServiceName}", serviceName);
+
+                logManager.LogUri = logManager.LogUriFormat.EndsWith("/") || logUriFormat.EndsWith("\\") ? logUriFormat : logUriFormat + "/";
+                foreach (Match m in Regex.Matches(logUriFormat, "{[^}]+}"))
+                {
+                    if (dicMapKey.ContainsKey(m.Value))
+                        logManager.LogUri = logManager.LogUri.Replace(m.Value, dicMapKey[m.Value]);
+                }
+                logManager.LogFileName = logFileFormat;
+                foreach (Match m in Regex.Matches(logFileFormat, "{[^}]+}"))
+                {
+                    if (dicMapKey.ContainsKey(m.Value))
+                        logManager.LogFileName = logManager.LogFileName.Replace(m.Value, dicMapKey[m.Value]);
+                }
+
+                if (!Directory.Exists(logManager.LogUri))
+                    Directory.CreateDirectory(logManager.LogUri);
+
+                //logManager.ClearLogUnWrite();
+                string keyFile = logManager.LogUri + logManager.LogFileName;
+                AMWLogger logger = new AMWLogger(keyFile, refID, serviceName);
+                return logger;
+
             }
-            logManager.LogFileName = logFileFormat;
-            foreach (Match m in Regex.Matches(logFileFormat, "{[^}]+}"))
-            {
-                if (dicMapKey.ContainsKey(m.Value))
-                    logManager.LogFileName = logManager.LogFileName.Replace(m.Value, dicMapKey[m.Value]);
-            }
-
-            if (!Directory.Exists(logManager.LogUri))
-                Directory.CreateDirectory(logManager.LogUri);
-
-            //logManager.ClearLogUnWrite();
-            string keyFile = logManager.LogUri + logManager.LogFileName;
-            AMWLogger logger = new AMWLogger(keyFile, refID, serviceName);
-            return logger;
-
         }
 
         private void RunWriteLog()
         {
-            return;
             if (LogTask == null || LogTask.IsCompleted)
             {
                 LogTask = Task.Run(() =>
