@@ -166,11 +166,15 @@ namespace AWMSEngine.Engine.Business.Received
 
                 if (!string.IsNullOrWhiteSpace(recItem.packCode)) {
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterByPack(recItem.packCode, recItem.unitType, this.BuVO);
+                    if (packMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลสินค้าใน SKU Master");
                     skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
                 }
                 else if(!string.IsNullOrWhiteSpace(recItem.skuCode))
                 {
                     skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(recItem.skuCode, this.BuVO);
+                    if(skuMst == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลสินค้าใน SKU Master");
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, recItem.unitType, this.BuVO);
                 }
                 else

@@ -150,7 +150,7 @@ namespace AWMSEngine.Engine.Business.Picking
                 {
                     var g = ADO.DataADO.GetInstant().SelectBy<dynamic>(
                         "amt_DocumentItemStorageObject",
-                        "sum(baseQuantity) s",
+                        "sum(Quantity) s",
                         "DocumentItem_ID",
                         new SQLConditionCriteria[] { new SQLConditionCriteria("DocumentItem_ID", y.ID, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS) },

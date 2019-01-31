@@ -161,8 +161,6 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 mapsto = new WCSMappingPallet().Execute(this.Logger, this.BuVO, reqMapping);
             }
-
-
             //mapsto.weiKG = reqVO.weight;
             mapsto.lengthM = reqVO.length;
             mapsto.heightM = reqVO.height;
@@ -172,15 +170,57 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             mapsto.parentID = _locationASRS.ID.Value;
             mapsto.parentType = StorageObjectType.LOCATION;
 
-            ADO.StorageObjectADO.GetInstant()
-                .PutV2(mapsto, this.BuVO);
+            this.SetWeiChildAndUpdateInfoToChild(mapsto, reqVO.weight ?? 0);
+
             ADO.StorageObjectADO.GetInstant()
                 .UpdateStatusToChild(mapsto.id.Value, StorageObjectEventStatus.IDLE, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
 
             return mapsto;
         }
 
-        
+        public void SetWeiChildAndUpdateInfoToChild(StorageObjectCriteria mapsto, decimal totalWeiKG)
+        {
+            var stoTreeList = mapsto.ToTreeList();
+            var packMasters = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
+                new SQLConditionCriteria(
+                    "ID",
+                    string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.PACK).Select(x => x.mstID.Value).Distinct().ToArray()),
+                    SQLOperatorType.IN),
+                this.BuVO);
+            var baseMasters = ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
+                new SQLConditionCriteria(
+                    "ID",
+                    string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.BASE).Select(x => x.mstID.Value).Distinct().ToArray()),
+                    SQLOperatorType.IN),
+                this.BuVO);
+            //*****SET WEI CODING
+
+            mapsto.weiKG = totalWeiKG;
+            var innerTotalWeiKG = totalWeiKG - (baseMasters.First(x => x.ID == mapsto.mstID).WeightKG.Value);
+
+            List<decimal> precenFromTotalWeis = new List<decimal>();
+            decimal totalWeiStd = packMasters
+                .Sum(x =>
+                    (x.WeightKG ?? 0) *
+                    mapsto.mapstos.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.ID).Sum(y => y.qty));
+
+            mapsto.mapstos.FindAll(x => x.type == StorageObjectType.PACK).ForEach(sto =>
+            {
+                decimal percentWeiStd =
+                (
+                    packMasters.First(x => x.ID == sto.mstID).WeightKG.Value *
+                    sto.qty
+                ) / totalWeiStd;
+                sto.weiKG = percentWeiStd * innerTotalWeiKG;
+            });
+
+            stoTreeList.ForEach(x =>
+            {
+                ADO.StorageObjectADO.GetInstant().PutV2(x, BuVO);
+            });
+        }
+
+
 
         //BEGIN*******************ProcessReceiving***********************
         private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, TReq reqVO)
