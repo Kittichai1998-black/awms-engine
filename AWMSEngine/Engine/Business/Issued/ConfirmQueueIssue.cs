@@ -90,7 +90,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     g.Key.areaID,
                     g.Key.priority
                 }).Where(x => x.stoi != null).ToList();
-            //check event status ของ storage object ว่าทั้งหมดต้อง 12 ก่อนทำงาน
+
             foreach (var list in reqVO.DocumentProcessed)
             {
                 if (list.stoi != null)
@@ -103,13 +103,14 @@ namespace AWMSEngine.Engine.Business.Issued
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.areaID + "'");
 
                     var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
+
                     if (getRootSTO.eventStatus != StorageObjectEventStatus.RECEIVED)
                         throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พาเลท " + getRootSTO.code + " ไม่อยู่ในสถานะพร้อมเบิก");
 
                     var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi ?? 0, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
                     var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(list.dociID, this.BuVO);
                     var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
-                    //insert DocItemSto
+                    /***********update insert DocItemSto**********/
                     var unitConvert = StaticValue.ConvertToNewUnitBySKU(docItem.SKUMaster_ID.Value, list.qty, getRootSTO.mapstos[0].baseUnitID, docItem.UnitType_ID.Value);
                     ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, stoPackID ?? 0, unitConvert.qty, unitConvert.unitType_ID, unitConvert.baseQty, unitConvert.baseUnitType_ID, this.BuVO);
                     /***********update Document EventStatus 10 --> 11**********/
