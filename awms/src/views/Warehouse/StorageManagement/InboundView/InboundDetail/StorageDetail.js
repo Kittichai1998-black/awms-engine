@@ -43,7 +43,6 @@ class IssuedDoc extends Component {
     var ID = values.docID.toString()
     if (values.docID) {
       Axios.get(window.apipath + "/api/wm/received/doc/?docID=" + ID + "&getMapSto=true").then(res => {
-        console.log(res)
         if (res.data._result.status === 1) {
           if (res.data.bstos.length === 0) {
             this.setState({ check: undefined })
@@ -58,7 +57,6 @@ class IssuedDoc extends Component {
 
           res.data.document.documentItems.forEach(x => {
 
-            console.log(x)
             this.setState({
               batch: x.batch,
               lot: x.lot,
@@ -89,10 +87,6 @@ class IssuedDoc extends Component {
           var groupPack = _.groupBy(res.data.bstos, "code")
           var groupdocItemID = _.groupBy(res.data.document.documentItems, "id")
 
-          console.log(groupPack)
-          console.log(groupdocItemID)
-
-          console.log(groupdocItemID)
           let sumArr = []
           let sumArr1 = []
 
@@ -111,7 +105,6 @@ class IssuedDoc extends Component {
 
             sumArr1.push(groupdocItemID[res1][groupdocItemID[res1].length - 1])
           }
-          console.log(sumArr1)
 
           for (let res1 in groupPack) {
             let sum = 0
@@ -149,14 +142,22 @@ class IssuedDoc extends Component {
           this.setState({ data: sumArr1 })
 
         }
-        console.log(this.state.data)
-        console.log(this.state.data2)
 
       })
     }
 
   }
 
+  OnhandleClickGetSAPRes(){
+    const values = queryString.parse(this.props.location.search)
+    var ID = values.docID.toString()
+
+    Axios.get(window.apipath + "/api/wm/received/doc/SAPRes?docID=" + ID).then(res => {
+      var json = JSON.stringify(res.data.datas)
+      let exwindow = window.open("data:application/json," + encodeURIComponent(json))
+      exwindow.document.write("<iframe width='100%' height='100%' src='data:application/json, " + encodeURIComponent(json)+ "' frameborder='0' style='border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;' allowfullscreen></iframe>")
+    });
+  }
 
   renderDocumentStatus() {
     const res = DocumentEventStatus.filter(row => {
@@ -247,6 +248,7 @@ class IssuedDoc extends Component {
           <Col xs="6"><div><label>Remark : </label> {this.state.Remark}</div></Col>
 
         </Row>
+        <div><Button color="primary" onClick={() => {this.OnhandleClickGetSAPRes()}}>SAP Log</Button></div>
         <ReactTableFixedColumns columns={cols} data={this.state.data} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} /><br />
 
