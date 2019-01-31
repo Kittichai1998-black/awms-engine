@@ -164,25 +164,30 @@ class IssuedDoc extends Component {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" id="off" onClick={() => { }}>OK</Button>
+        <Button color="primary" id="off" onClick={() =>{ this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>OK</Button>
       </ModalFooter>
     </Modal>
   }
 
 
   workingData(data, status) {
-    let postdata = { docIDs: [] }
+    console.log(data)
+    let postdata = { docIDs: [] ,AreaID:0 }
     if (data.length > 0) {
       data.forEach(rowdata => {
-        postdata["docIDs"].push(rowdata.ID)
+        postdata["docIDs"].push(rowdata.ID) 
+        postdata["AreaID"] = this.state.desAreaID    
       })
       if (status === "reject") {
-        this.toggle()
 
-        // Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {       
-        //   this.getData()
-        //   this.setState({ resp: res.data._result.message })         
-        // })
+        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {     
+          this.getData()
+          this.setState({ resp: res.data._result.message })   
+          console.log(res.data._result.status)
+          if(res.data._result.status !== 0){
+            alert("Success")
+          }      
+        })
       } else {
         Axios.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => {
           this.getData()
@@ -472,7 +477,7 @@ class IssuedDoc extends Component {
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }}
-              onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+              onClick={() => this.toggle()} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_close" style={{ width: '130px', display: this.state.showbutton }}
               onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
