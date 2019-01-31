@@ -156,7 +156,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 //create WorkQueue
                 if (xx.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
-                    SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Now, stoCriteria.areaID);
+                    SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, result.priority, DateTime.Now, stoCriteria.areaID);
                     var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
