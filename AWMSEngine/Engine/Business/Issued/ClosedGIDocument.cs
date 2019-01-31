@@ -25,13 +25,13 @@ namespace AWMSEngine.Engine.Business.Issued
         }
 
         protected override SAPInterfaceReturnvaluesDOPick ExecuteEngine(TDocReq reqVO)
-        {          
+        {
             foreach (var docId in reqVO.docIDs)
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(docId, this.BuVO);
                 var docHs = this.ListAllDocumentHeadID(reqVO);
 
-                if (doc.Ref2 == null || doc.Ref2 == "311")
+                if (doc.Ref2 == null || doc.Ref2 == "311" || doc.Ref2 == String.Empty)
                 {               
                     var DesWareDoc = ADO.DataADO.GetInstant().SelectByID<ams_Warehouse>(doc.Des_Warehouse_ID, this.BuVO);
 
@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         }
 
                         var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
-                        var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
+                        var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
                         if (checkClosed)
                         {
                             this.CloseDocAndDocItem(doc.ID.Value);
@@ -176,7 +176,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                   
                                 }
                                 var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
-                                var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
+                                var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED);
                                 if (checkClosed)
                                 {
                                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
