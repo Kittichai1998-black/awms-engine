@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Badge, Card, CardBody, Button, Row, Col } from 'reactstrap';
+import { Input, Badge, Card, CardBody, Button, Row, Col ,Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTable from 'react-table'
-import { apicall, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
+import { apicall,AutoSelect, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
@@ -48,6 +48,7 @@ class IssuedDoc extends Component {
         l: 100,
         all: "",
       },
+      modalstatus: false,
       sortstatus: 0,
       open: false,
       errorstr: null,
@@ -55,7 +56,8 @@ class IssuedDoc extends Component {
       defaultPageS: 100,
       currentPage: 1,
       loading: true,
-      datafilter: [{ "id": "DocumentType_ID", "value": 1001 }]
+      datafilter: [{ "id": "DocumentType_ID", "value": 1001 }],
+      
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
@@ -66,6 +68,9 @@ class IssuedDoc extends Component {
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
+    this.toggle = this.toggle.bind(this);
+    this.createModal = this.createModal.bind(this);
+    this.station = [{'label':"Front",'value':2},{'label':"Back",'value':3}];
   }
 
   async componentWillMount() {
@@ -146,7 +151,23 @@ class IssuedDoc extends Component {
       } />
   }
 
+  toggle() {
+    this.setState({ modalstatus: !this.state.modalstatus });
+  }
 
+  createModal() {
+    return <Modal isOpen={this.state.modalstatus}>
+      <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
+      <ModalBody>
+        <div>
+          <AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/>  
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="primary" id="off" onClick={() => { }}>OK</Button>
+      </ModalFooter>
+    </Modal>
+  }
 
 
   workingData(data, status) {
@@ -156,10 +177,12 @@ class IssuedDoc extends Component {
         postdata["docIDs"].push(rowdata.ID)
       })
       if (status === "reject") {
-        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {
-          this.getData()
-          this.setState({ resp: res.data._result.message })
-        })
+        this.toggle()
+
+        // Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {       
+        //   this.getData()
+        //   this.setState({ resp: res.data._result.message })         
+        // })
       } else {
         Axios.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => {
           this.getData()
@@ -393,7 +416,9 @@ class IssuedDoc extends Component {
       borderRadius: '18px',
     }
     return (
+      
       <div>
+        {this.createModal()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
 

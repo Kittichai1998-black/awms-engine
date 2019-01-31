@@ -150,7 +150,12 @@ class IssuedManage extends Component {
       Axios.get(window.apipath + "/api/wm/issued/doc/?docID=" + values.ID + "&getMapSto=true").then((rowselect1) => {
         if (rowselect1.data._result.status === 1) {
           //this.setState({ data: [] })
+          rowselect1.data.document.documentItems.forEach(x => {
+            var sumQty = 0;
+            rowselect1.data.bstos.filter(y => y.docItemID == x.id).forEach(y => { sumQty += y.distoQty});
+            x.sumQty2 = sumQty;
 
+          });
 
 
 
@@ -213,6 +218,7 @@ class IssuedManage extends Component {
               x.unitType_Name = x.unitType_Name
 
             }
+            
             x.batchsp = x.batch
             x.options = x.options
             x.quantity = x.quantity
@@ -220,6 +226,7 @@ class IssuedManage extends Component {
             x.status = x.status
             sumArr1.push(x);
           })
+          console.log(sumArr1)
 
 
 
@@ -235,16 +242,22 @@ class IssuedManage extends Component {
               
               sumArr1.forEach(x => {
                 if (x.id === res2.docItemID) {
-                  sum += res2.distoQty
+                  sum += res2.distoBaseQty
                   res2.sumQty1 = sum
                   //res2.quantity = x.quantity
                   res2.options = x.options
-                  res2.distoQtyMax 
+                  //res2.distoBaseQty 
                   // = res2.distoQtyMax
                   // console.log(res2.distoQtyMax)
                   // console.log(x.distoQtyMax)
                 }
               })
+
+              console.log(sum)
+
+          
+           
+
               sumArr.forEach(response => {
                 if (response.code === res2.code) {
                   res2.code = "";
@@ -722,8 +735,8 @@ class IssuedManage extends Component {
       { accessor: 'lot', Header: 'Lot', editable: false, },
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
-        accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
+        accessor: 'sumQty2', Header: 'Qty', editable: false,
+        Cell: (e) => <span className="float-left">{e.original.sumQty2 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty2 + ' / ' +
           (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
       { accessor: "unitType_Name", Header: "Unit" },

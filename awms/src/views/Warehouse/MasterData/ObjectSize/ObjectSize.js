@@ -44,7 +44,7 @@ class ObjectSize extends Component {
                 queryString: window.apipath + "/api/viw",
                 t: "ObjectSizeMaster",
                 q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ObjectType", "c":"=", "v": 2}]',
-                f: "ID,Code,Name,Description,ObjectType,MinWeigthKG,MaxWeigthKG,PercentWeightAccept,Status,Created,Modified,LastUpdate",
+                f: "ID,Code,Name,Description,ObjectType,PercentWeightAccept,Status,Created,Modified,LastUpdate",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
                 sk: 0,
@@ -54,7 +54,7 @@ class ObjectSize extends Component {
             selectObjectPallet: {
                 queryString: window.apipath + "/api/mst",
                 t: "ObjectSize",
-                q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 1}]",
+                q: "[{ 'f': 'Status', c:'<', 'v': 2},{ 'f': 'ObjectType', c:'=', 'v': 2}]",
                 f: "ID",
                 g: "",
                 s: "[{'f':'Code','od':'asc'}]",
@@ -80,7 +80,8 @@ class ObjectSize extends Component {
             selectMapData: [],
             dataUpdate: [],
             rowselect: [],
-            enumfield: ["ObjectType"]
+            enumfield: ["ObjectType"],
+            defaultValue: [{ "id": "ObjectType", "value": 2 }],
         };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
         this.filterList = this.filterList.bind(this)
@@ -425,7 +426,7 @@ class ObjectSize extends Component {
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"WeightValidate"}
                     btn={btnfunc} filterable={true} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
                     table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]}
-                    objectSizeMapPallet={this.state.objectPalletdata} searchURL={this.props.location.search} />
+                    objectSizeMapPallet={this.state.objectPalletdata} searchURL={this.props.location.search} defaultValue={this.state.defaultValue}/>
                 {/* autocomplete={this.state.autocomplete}  enumfield={this.state.enumfield}*/}
                 <Popup open={this.state.open} onClose={this.closeModal}>
                     <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
