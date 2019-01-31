@@ -18,13 +18,13 @@ class CreateQueue extends Component{
 
     this.initailstate = {
       zoneOutlist:[ {"value" : 1,"label" : "1: Side Gate"},
-                  {"value" : 2,"label" : "2 : Front Gate"},
-                  {"value" : 3,"label" : "3 : Rear Gate"}],
+                  {"value" : 2,"label" : "2 : Front Gate"}],
       orderlist:[ {"value" : 0,"label" : "FIFO"},
                   {"value" : 1,"label" : "LIFO"}],
       orderfieldlist:[{"value" : "CreateDate","label" : "Received Date"},
                       {"value" : "Lot","label" : "Lot"},
-                      {"value" : "Batch","label" : "Batch"}],
+                      {"value" : "Batch","label" : "Batch"},
+                      {"value" : "OrderNO","label" : "Order NO"}],
       prioritylist:[{"value" : 0,"label" : "Low"},
                     {"value" : 1,"label" : "Normal"},
                     {"value" : 2,"label" : "High"},
@@ -45,10 +45,12 @@ class CreateQueue extends Component{
       dataAdd:[],
       docItem:[],
       docID:null,
+      selectGateZone:2,
       docresult:"",
       SAPdoc:"",
       StampDate:"",
       MMType:"",
+      Remark:"",
       Batch:"",
       ForCus:"",
       PickOrderby:"",
@@ -79,7 +81,7 @@ class CreateQueue extends Component{
     this.docselect = {queryString:window.apipath + "/api/viw",
       t:"Document",
       q:"[{ 'f': 'DocumentType_ID', c:'=', 'v': 1002},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
-      f:"ID,Code,DesWarehouse,DesWarehouseName,RefID,Ref2,DesCustomer,DesCustomerName,Batch,Ref1",
+      f:"ID,Code,DesWarehouse,DesWarehouseName,RefID,Ref2,DesCustomer,DesCustomerName,Batch,Ref1,Remark",
       g:"",
       s:"[{'f':'ID','od':'asc'}]",
       sk:0,
@@ -97,6 +99,7 @@ class CreateQueue extends Component{
                         ,StampDate:row.Ref1
                         ,Batch:row.Batch
                         ,ForCus:row.DesCustomer + " : " + row.DesCustomerName
+                        ,Remark:row.Remark
                         ,label:row.Code + (row.DesWarehouseName?" : " + row.DesWarehouseName : "")
           })
         })
@@ -242,8 +245,9 @@ class CreateQueue extends Component{
           ,priority:0
           ,priority_label:null
           ,qty:datarow.baseQuantity
-          ,batchs:[]
+          ,batchs:[{value:datarow.batch,qty:datarow.baseQuantity,unit:datarow.baseUnitTypeCode}]
           ,defaultBatch:datarow.batch
+          ,baseUnitTypeCode:datarow.baseUnitTypeCode
         });
         this.onEditorValueChange(datarow.dociID, 0,"pickOrderby")
         this.onEditorValueChange(datarow.dociID, "CreateDate","orderByField")
@@ -288,12 +292,14 @@ class CreateQueue extends Component{
           if(checkBatchInput && checkDefaultBatch){
             datarow.batchs.push({
               value:datarow.defaultBatch,
-              qty:datarow.defaultBatch?datarow.qty:0
+              qty:datarow.defaultBatch?datarow.qty:0,
+              unit:datarow.baseUnitTypeCode
             })
           }else if(checkBatchInput){
             datarow.batchs.push({
               value:null,
-              qty:0
+              qty:0,
+              unit:datarow.baseUnitTypeCode
             })
           }
         }else{
@@ -504,12 +510,14 @@ class CreateQueue extends Component{
         </FormGroup>
         <FormGroup row>
           <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
-          <Col sm={7}><span>{datarow.SAPdoc?datarow.SAPdoc:""}</span></Col>
+          <Col sm={3}><span>{datarow.SAPdoc?datarow.SAPdoc:""}</span></Col>
+          <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Movement Type : </Label></Col>
+          <Col sm={3}><span>{datarow.MMType?datarow.MMType:""}</span></Col>
         </FormGroup>
         <FormGroup row>
-          <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Movement Type : </Label></Col>
-          <Col sm={7}><span>{datarow.MMType?datarow.MMType:""}</span></Col>
-        </FormGroup>
+          <Col sm={3} style={this.state.Remark?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>Remark : </Label></Col>
+          <Col sm={9} style={this.state.Remark?{display:"inline"}:{display:"none"}}><span>{this.state.Remark?this.state.Remark:""}</span></Col>
+        </FormGroup>        
         <FormGroup row>
           <Col sm={12}>
             <Card style={itemShowCards.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white"}:{"display":"none"}}>
@@ -554,6 +562,7 @@ class CreateQueue extends Component{
             ,"ForCus":""
             ,"StampDate":""
             ,"Batch":""
+            ,"Remark":""
             ,"docresult":""}, () => this.removeItemCard())  
 
           this.createAutoDocList();
@@ -629,7 +638,7 @@ class CreateQueue extends Component{
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>{index==0?"Batch :":""}</Label></Col>
         <Col sm={4}><span>{(datarow.value?datarow.value:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
-        <Col sm={4}><span>{(datarow.qty?datarow.qty:"")}</span></Col>
+        <Col sm={4}><span>{((datarow.qty?datarow.qty:"")+(datarow.unit?(" "+datarow.unit):""))}</span></Col>
       </FormGroup>
         {/* <FormGroup row>
           <Col sm={6}><span>{ datarow.value }</span></Col>
@@ -712,7 +721,7 @@ class CreateQueue extends Component{
     <ReactTable style={{width:"100%"}} data={datarow.data} editable={false} filterable={false} defaultPageSize={2000}
     editable={false} minRows={1} showPagination={false}
     columns={[{ accessor: "baseCode", Header: "Pallet"},{ accessor: "batch", Header: "Batch"},{ accessor: "lot", Header: "Lot"},{ accessor: "orderNo", Header: "Order No"}
-    ,{ Cell:(e)=> <span>{ (e.original.stoBaseQty?(e.original.qty?e.original.qty:""):"") + (e.original.stoPack?(e.original.stoPack.qty?" / "+ e.original.stoPack.qty:""):"") }</span>
+    ,{ Cell:(e)=> <span>{ (e.original.stoBaseQty?(e.original.qty?e.original.qty:""):"") + (e.original.stoPack?(e.original.stoPack.qty?" / "+ e.original.stoPack.baseQty:""):"") }</span>
     , Header: "Qty"},{ Cell:(e)=> <span>{e.original.stoPack?(e.original.stoPack.baseUnitCode?e.original.stoPack.baseUnitCode:""):""}</span>, Header: "unit"}]}/>
   </div>
   }
@@ -894,7 +903,7 @@ class CreateQueue extends Component{
     let dataConfirm = []
     const dataProcessed = this.state.dataProcessed
     dataProcessed.forEach(row => {
-      row.areaID = 2
+      row.areaID = this.state.selectGateZone;
     });
     let postdata = {
       DocumentProcessed:dataProcessed
@@ -906,6 +915,9 @@ class CreateQueue extends Component{
         //dataConfirm = res.data.DocumentProcessed
        }
     }) 
+  }
+  test(aaa){
+    this.setState({"selectGateZone":aaa})
   }
 
   render(){
@@ -921,7 +933,7 @@ class CreateQueue extends Component{
             <Form style={{"border-radius": "15px", "border": "1px solid #8080804f", "padding": "20px", background:"#FFFFFF"}}>
               <FormGroup row>
                 <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Document : </Label></Col>
-                <Col ><AutoSelect selectfirst={false} data={this.state.auto_doc} result={(e) => this.setState({"docID":e.value,"SAPdoc":e.SAPdoc,"MMType":e.MMType,"ForCus":e.ForCus,"StampDate":e.StampDate,"Batch":e.Batch,"docresult":e.label})}/></Col>
+                <Col ><AutoSelect selectfirst={false} data={this.state.auto_doc} result={(e) => this.setState({"docID":e.value,"SAPdoc":e.SAPdoc,"MMType":e.MMType,"ForCus":e.ForCus,"StampDate":e.StampDate,"Batch":e.Batch,"docresult":e.label,"Remark":e.Remark})}/></Col>
                 <Col sm={2} style={this.state.docID?{}:{"display":"none"}}> <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer'  }} onClick={() =>this.viewDetail(this.state.docID)} target="_blank" >Detail</a></Col>
               </FormGroup>
               <FormGroup row style={this.state.docID?{}:{"display":"none"}}>
@@ -929,12 +941,14 @@ class CreateQueue extends Component{
                 <Col sm={7}><div>{ this.genBtnGetDocItem() }</div></Col>
               </FormGroup>
               <FormGroup row>
-                <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document :</Label></Col>
-                <Col sm={7}><span>{this.state.SAPdoc?this.state.SAPdoc:""}</span></Col>
+                <Col sm={3} style={this.state.SAPdoc?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>SAP Document :</Label></Col>
+                <Col sm={3} style={this.state.SAPdoc?{display:"inline"}:{display:"none"}}><span>{this.state.SAPdoc?this.state.SAPdoc:""}</span></Col>
+                <Col sm={3} style={this.state.MMType?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>Movement Type : </Label></Col>
+                <Col sm={3} style={this.state.MMType?{display:"inline"}:{display:"none"}}><span>{this.state.MMType?this.state.MMType:""}</span></Col>
               </FormGroup>
               <FormGroup row>
-                <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Movement Type : </Label></Col>
-                <Col sm={7}><span>{this.state.MMType?this.state.MMType:""}</span></Col>
+                <Col sm={3} style={this.state.Remark?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>Remark : </Label></Col>
+                <Col sm={9} style={this.state.Remark?{display:"inline"}:{display:"none"}}><span>{this.state.Remark?this.state.Remark:""}</span></Col>
               </FormGroup>
               <FormGroup row>
                 <Col sm={12}>
@@ -957,14 +971,16 @@ class CreateQueue extends Component{
               <span style={{"padding-left":"15px", fontWeight:"bold", fontSize:"1.1em"}}>Document Issue List</span>
               { processCard }
               <Card style={processCard.length > 0?{"border-radius": "15px", "border": "1px solid #8080804f", background:"white", "margin":"5px"}:{"display":"none"}}>
-                <CardBody style={{float:"right"}}><Row ><Col>
-                  <Select defaultValue={this.state.zoneOutlist.filter(x => x.value===2)}
-                      options={this.state.zoneOutlist}>
-                  </Select></Col>
-                  <Col style={{float:"right"}}><Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: "130px", marginLeft: "5px" }} className="float-right">Process</Button>
-                  </Col><Col style={{float:"right"}}><Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px" }} className="float-right">Clear</Button>
-                  </Col></Row>
-                  </CardBody>
+                <CardBody >
+                      <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: "130px", marginLeft: "5px" }} className="float-right">Process</Button>
+                    
+                      <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px" }} className="float-right">Clear</Button>
+                      <div style={{width:"300px","margin-right":"5px"}} className="float-left">
+                      <Select  defaultValue={this.state.zoneOutlist.filter(x => x.value===2)}
+                          options={this.state.zoneOutlist}
+                          onChange={(e) => this.test(e.value)}>
+                      </Select></div>
+                </CardBody>
               </Card>
             </Card>
           </Col> 
