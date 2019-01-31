@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.Business.Issued
         }
 
         protected override SAPInterfaceReturnvaluesDOPick ExecuteEngine(TDocReq reqVO)
-        {          
+        {
             foreach (var docId in reqVO.docIDs)
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(docId, this.BuVO);

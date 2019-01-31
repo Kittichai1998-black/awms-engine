@@ -91,6 +91,8 @@ namespace AWMSEngine.Engine.Business.Received
 
                     res.sapDatas.Add(sapRes);
 
+                    var strSapRes = Newtonsoft.Json.JsonConvert.SerializeObject(sapRes);
+
                     if (sapRes.docstatus == "0")
                     {
                         groupDocH.docHIDs.ForEach(x => {
@@ -104,6 +106,8 @@ namespace AWMSEngine.Engine.Business.Received
                                 docH.EventStatus = DocumentEventStatus.CLOSED;
                                 ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
                             });
+
+                            ADO.DocumentADO.GetInstant().PutSAPResponse(strSapRes, "docID=" + docH.ID, this.BuVO);
                             //ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
                         });
                     }
@@ -120,6 +124,8 @@ namespace AWMSEngine.Engine.Business.Received
                                 di.Ref1 = sapRes.doc_year;
                                 ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
                             });
+
+                            ADO.DocumentADO.GetInstant().PutSAPResponse(strSapRes, "docID=" + docH.ID, this.BuVO);
                         });
                     }
                 }

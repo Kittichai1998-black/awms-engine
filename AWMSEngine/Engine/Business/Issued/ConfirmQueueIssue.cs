@@ -102,17 +102,22 @@ namespace AWMSEngine.Engine.Business.Issued
                     if (_areaASRS == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.areaID + "'");
 
-                    //update Document EventStatus 10 --> 11
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
-                    //update StorageObject EventStatus 12 --> 17
-                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi ?? 0, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
-
                     var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
-                    var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi ?? 0, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
 
+                    if (getRootSTO.eventStatus != StorageObjectEventStatus.RECEIVED)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พาเลท " + getRootSTO.code + " ไม่อยู่ในสถานะพร้อมเบิก");
+
+                    var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi ?? 0, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
+                    var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(list.dociID, this.BuVO);
                     var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
-                    //insert DocItemSto
-                    ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, stoPackID ?? 0, list.qty, getRootSTO.mapstos[0].unitID, list.qty, getRootSTO.mapstos[0].baseUnitID, this.BuVO);
+                    /***********update insert DocItemSto**********/
+                    var unitConvert = StaticValue.ConvertToNewUnitBySKU(docItem.SKUMaster_ID.Value, list.qty, getRootSTO.mapstos[0].baseUnitID, docItem.UnitType_ID.Value);
+                    ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, stoPackID ?? 0, unitConvert.qty, unitConvert.unitType_ID, unitConvert.baseQty, unitConvert.baseUnitType_ID, this.BuVO);
+                    /***********update Document EventStatus 10 --> 11**********/
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                    /***********update StorageObject EventStatus 12 --> 17**********/
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi ?? 0, StorageObjectEventStatus.RECEIVED, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
                 }
                 else
                 {
@@ -129,9 +134,10 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
             }
 
-            var results = resultDocItemSto.GroupBy(n => new { n.stoi, n.baseCode, n.wareHouseID, n.areaID, n.priority }
-            , (key, g) => g.OrderByDescending(e => new { e.dociID, e.priority }).First()).ToList();
-
+            var results = from element in resultDocItemSto
+                          group element by element.baseCode
+                  into groups
+                      select groups.OrderBy(p => p.stoi).First();
 
             foreach (var result in results)
             {
@@ -144,14 +150,13 @@ namespace AWMSEngine.Engine.Business.Issued
                     new SQLOrderByCriteria[] { }, null, null,
                     this.BuVO).FirstOrDefault();
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
-                var souAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.OUTPUT, stoCriteria.areaID, this.BuVO);
-                var souAreaDefault = souAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
+                var xx = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoCriteria.areaID);
                 docItems.Add(docItem);
 
                 //create WorkQueue
-                if (souAreaDefault.Sou_AreaMasterType_ID == 10)
+                if (xx.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
-                    SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Today, stoCriteria.areaID);
+                    SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Now, stoCriteria.areaID);
                     var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
@@ -162,15 +167,15 @@ namespace AWMSEngine.Engine.Business.Issued
                     queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
                     {
                         queueID = xyz.ID,
-                        desWarehouseCode = "THIP",
-                        desAreaCode = "F",
+                        desWarehouseCode = _warehouseASRS.Code,
+                        desAreaCode = _areaASRS.Code,
                         desLocationCode = null,
                         priority = result.priority,
                         baseInfo = baseInfo,
                     });
                 }
             }
-            /*WCSQueueApi*/
+
             foreach (var checkBaseInfo in queueWorkQueueOut)
             {
                 if (checkBaseInfo.baseInfo.baseCode != null)
@@ -182,10 +187,16 @@ namespace AWMSEngine.Engine.Business.Issued
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
                 }
             }
-            var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
-            if (wcsAcceptRes._result.resultcheck == 0)
+            /*****WCSQueueApi*****/
+            var chkMachineASRS = this.StaticValue.GetConfig("RUN_MACHINE_ASRS");
+
+            if (queueWorkQueue.queueOut.Count() > 0 && chkMachineASRS.ToUpper() == "TRUE")
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าจาก ASRS ได้");
+                var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+                if (wcsAcceptRes._result.resultcheck == 0)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าจาก ASRS ได้");
+                }
             }
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
@@ -223,7 +234,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 Sou_AreaLocationMaster_ID = souAreaDefault.Sou_AreaLocationMaster_ID,
 
                 EventStatus = WorkQueueEventStatus.IDLE,
-                Status = EntityStatus.ACTIVE,
+                Status = EntityStatus.INACTIVE,
                 StartTime = actualTime,
                 DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, mapsto)
             };

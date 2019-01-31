@@ -73,7 +73,6 @@ namespace AWMSEngine.Engine.Business.Issued
                     DocumentEventStatus.CLOSING,
                     this.BuVO);
                 }
-
             }
             return null;
         }

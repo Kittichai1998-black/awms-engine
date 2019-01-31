@@ -703,5 +703,21 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+
+        public void PutSAPResponse(string log, string options, VOCriteria buVO)
+        {
+            ADO.DataADO.GetInstant().Insert<aml_SAPLog>(buVO, new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("Description", log),
+                new KeyValuePair<string, object>("Options", options)
+            });
+        }
+
+        public List<aml_SAPLog> GetSAPResponse(string options ,VOCriteria buVO)
+        {
+            return ADO.DataADO.GetInstant().SelectBy<aml_SAPLog>(new SQLConditionCriteria[]{
+                new SQLConditionCriteria("Options", options, SQLOperatorType.LIKE)
+            }, buVO);
+        }
     }
 }

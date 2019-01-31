@@ -261,14 +261,6 @@ class IssuedManage extends Component {
       }
       this.setState({ data });
 
-
-      let res = this.state.autocompleteUpdate
-      this.state.data.forEach(datarow => {
-        res = res.filter(row => {
-          return datarow["SKU"] !== row.SKU && datarow["UnitTypeCode"] !== row.UnitTypeCode
-        })
-      })
-      this.setState({ autocomplete: res })
     }
     else if (rowdata.column.datatype !== "int") {
       data[rowdata.index][field] = "";
@@ -280,7 +272,7 @@ class IssuedManage extends Component {
     else if (rowdata.column.datatype === "int") {
       data[rowdata.index][field] = "";
     }
-    this.setState({ data });
+    this.setState({ data }, () => console.log(this.state.data));
   }
 
   createText(data) {
