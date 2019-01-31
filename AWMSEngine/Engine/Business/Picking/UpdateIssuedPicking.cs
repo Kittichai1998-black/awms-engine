@@ -83,7 +83,7 @@ namespace AWMSEngine.Engine.Business.Picking
 
                 ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
 
-                var chkQty = sto.Where(s => s.objectSizeID == 2).All(a => a.eventStatus == StorageObjectEventStatus.PICKED);
+                var chkQty = sto.FindAll(s => s.objectSizeID == 2).TrueForAll(a => a.eventStatus == StorageObjectEventStatus.PICKED);
                 if (chkQty)
                 {
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSTO.id.Value, StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
