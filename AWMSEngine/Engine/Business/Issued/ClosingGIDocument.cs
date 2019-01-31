@@ -29,12 +29,7 @@ namespace AWMSEngine.Engine.Business.Issued
             foreach (var num in reqVO.docIDs)
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(num, this.BuVO);
-
-                if (doc.Status == 0) {
-
-                    ADO.DocumentADO.GetInstant().UpdateEventStatus(num, DocumentEventStatus.REMOVED,this.BuVO);
-                }
-               
+                            
 
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + doc.ID +"Status : REMOVE");

@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.Business.Received
                                             batch = x.Batch,
                                             orderNo = x.OrderNo,
                                             unitType = StaticValue.UnitTypes.First(ut => ut.ID == x.UnitType_ID).Code,
-                                            quantity = x.Quantity,
+                                            quantity = rootStos.Where(y => y.docItemID == x.ID.Value).Sum(y => y.distoQty),
                                             packID = x.PackMaster_ID,
                                             options = x.Options ?? "" + "&doci_id=" + x.ID,
                                             productionDate = x.ProductionDate,
