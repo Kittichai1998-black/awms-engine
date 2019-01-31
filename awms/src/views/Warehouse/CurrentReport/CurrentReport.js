@@ -166,7 +166,7 @@ class CurrentReport extends Component {
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
-      return sumVal
+      return sumVal.toFixed(3)
   }
 
   sumFooter(value) {
@@ -174,7 +174,7 @@ class CurrentReport extends Component {
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
-      return sumVal
+      return sumVal.toFixed(3)
   }
 
   render() {
