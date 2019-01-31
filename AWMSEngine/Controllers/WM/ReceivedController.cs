@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.APIService.Doc;
+using AWMSEngine.APIService.WM;
 using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,14 @@ namespace AWMSEngine.Controllers.WM
         public dynamic ActionDocColse([FromBody] dynamic req)
         {
             CloseGRDocAPI exec = new CloseGRDocAPI(this);
+            var res = exec.Execute(req);
+            return res;
+        }
+        [HttpGet("doc/SAPRes")]
+        public dynamic SAPRes()
+        {
+            GetSAPLogAPI exec = new GetSAPLogAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
             var res = exec.Execute(req);
             return res;
         }
