@@ -336,10 +336,10 @@ class Pack extends Component {
             { accessor: 'Name', Header: 'SKU Name', updateable: false, Filter: (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 230 },
             { accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter: (e) => this.createCustomFilter(e), className: "right" },
 
-            { accessor: 'Quantity', Header: 'Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+            { accessor: 'Quantity', Header: 'Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e), className: "right" },
             { accessor: 'UnitTypeCode', Header: 'Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
 
-            { accessor: 'BaseQuantity', Header: 'Base Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e) },
+            { accessor: 'BaseQuantity', Header: 'Base Quantity', updateable: false, Filter: (e) => this.createCustomFilter(e), className: "right" },
             { accessor: 'BaseUnitTypeCode', Header: 'Base Unit Type', updateable: false, Filter: (e) => this.createCustomFilter(e) },
             //{ accessor: 'WeightKG', Header: 'Gross Weight (Kg.)', editable: false, Filter:  (e) => this.createCustomFilter(e), datatype: "int", className: "right", minWidth: 80, Cell:(e) => this.onCreateInputEditCell(e), },
             //{ accessor: 'UnitTypeCode', Header: 'Unit Converter', updateable: false, Filter:  (e) => this.createCustomFilter(e), Type: "autocomplete", minWidth: 80, className: "left", Cell:(e) => this.onCreateDropdownEdit(e, this.state.UnitType, "UnitType_ID") },

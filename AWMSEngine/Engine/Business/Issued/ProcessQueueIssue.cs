@@ -199,7 +199,6 @@ namespace AWMSEngine.Engine.Business.Issued
                         {
                             if (stoRoot.Count > 0)
                             {
-
                                 foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null || batch.value == "")) && x.packQty > 0))
                                 {
                                     if (sto.evtStatus == 12)
@@ -377,7 +376,7 @@ namespace AWMSEngine.Engine.Business.Issued
             }
             var chkMachineASRS = this.StaticValue.GetConfig("RUN_MACHINE_ASRS");
 
-            if (queueWorkQueue.queueOut.Count() > 0 && chkMachineASRS.ToUpper() == "TRUE")
+            if (queueWorkQueue.queueOut != null && chkMachineASRS.ToUpper() == "TRUE")
             {
                 var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
                 if (wcsAcceptRes._result.resultcheck == 0)
