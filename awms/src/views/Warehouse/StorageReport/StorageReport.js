@@ -26,7 +26,7 @@ class StoragReport extends Component {
         queryString: window.apipath + "/api/viw",
         t: "r_StorageObject",
         q: '',
-        f: "ID,Pallet,Warehouse,Area,Location,SKU_Code,SKU_Name,Batch,Lot,OrderNo,Qty,Base_Unit,Status,Receive_Time,Wei_PalletPack,Wei_Pack,concat(Wei_PalletPack, ' ','kg') AS WeiPallet,concat(Wei_Pack, ' ','kg') AS WeiPack,Receive_Date,Wei_PackStd,concat(FORMAT(Wei_PackStd, '0.000'), ' ','kg') AS WeiPackStd",
+        f: "ID,Pallet,Warehouse,Area,Location,SKU_Code,SKU_Name,Batch,Lot,OrderNo,Qty,concat(Qty, ' ','kg') AS BaseQty,Base_Unit,Status,Receive_Time,Wei_PalletPack,Wei_Pack,concat(Wei_PalletPack, ' ','kg') AS WeiPallet,concat(Wei_Pack, ' ','kg') AS WeiPack,Receive_Date,Wei_PackStd,concat(FORMAT(Wei_PackStd, '0.000'), ' ','kg') AS WeiPackStd",
         g: "",
         s: "[{'f':'Pallet','od':'asc'}]",
         sk: 0,
@@ -104,7 +104,7 @@ class StoragReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
     }
   }
 
@@ -174,14 +174,14 @@ class StoragReport extends Component {
       })
   }
 
-  sumFooterQty() {
+  sumFooterQty(value) {
     var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
-        parseFloat(x.Qty) : null)
+        parseFloat(x[value]) : null)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
-      return sumVal
+      return sumVal.toFixed(3)
   }
 
   sumFooter(value) {
@@ -189,7 +189,7 @@ class StoragReport extends Component {
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
-      return sumVal
+      return sumVal.toFixed(3)
   }
 
   render() {
@@ -217,7 +217,7 @@ class StoragReport extends Component {
         })
       },
       { accessor: 'Pallet', fixed: "left", Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, },
-      { accessor: 'SKU_Code', Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 115 },
+      { accessor: 'SKU_Code', fixed: "left", Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 115 },
       { accessor: 'SKU_Name', Header: 'SKU Name', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Area', Header: 'Area', Filter: (e) => this.createCustomFilter(e), sortable: true },
@@ -228,14 +228,14 @@ class StoragReport extends Component {
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
 
       {
-        accessor: 'Qty', Header: 'Base Qty', editable: false, filterable: false, className: "right",
+        accessor: 'BaseQty', Header: 'Base Qty', editable: false, filterable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty("Qty")}</span>)
       },
       { accessor: 'Base_Unit', Header: 'Base Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
@@ -271,7 +271,7 @@ class StoragReport extends Component {
 
       { accessor: 'Status', Header: 'Status', Filter: (e) => this.createCustomFilter(e), sortable: true },
       {
-        accessor: 'Receive_Date', Header: 'Received Date', filterable: false, sortable: true, minWidth: 150, maxWidth: 150, Cell: (e) =>
+        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 150, maxWidth: 150, Cell: (e) =>
           this.datetimeBody(e.value)
       },
     ];

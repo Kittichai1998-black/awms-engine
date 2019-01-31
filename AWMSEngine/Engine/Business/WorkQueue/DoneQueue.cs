@@ -117,8 +117,11 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             countDocItems.ForEach(cdi => {
                 if(cdi.BaseQuantity == docItems.Where(x => x.ID == cdi.DocumentItem_ID).Sum(x => x.BaseQuantity))
                 {
-                    ADO.DocumentADO.GetInstant().UpdateItemEventStatus(cdi.DocumentItem_ID, DocumentEventStatus.WORKED, this.BuVO);
-                    docIDs.AddRange(docItems.Where(x => x.ID == cdi.DocumentItem_ID).Select(x=>x.Document_ID));
+                    if(docItems.First(x=>x.ID == cdi.DocumentItem_ID).EventStatus == DocumentEventStatus.WORKING)
+                    {
+                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(cdi.DocumentItem_ID, DocumentEventStatus.WORKED, this.BuVO);
+                        docIDs.AddRange(docItems.Where(x => x.ID == cdi.DocumentItem_ID).Select(x => x.Document_ID));
+                    }
                 }
             });
             docIDs = docIDs.Distinct().ToList();

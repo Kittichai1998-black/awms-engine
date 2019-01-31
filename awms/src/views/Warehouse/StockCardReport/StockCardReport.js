@@ -206,12 +206,12 @@ class StockCardReport extends Component {
 
   sumFooterTotal(value) {
     var sumVal = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
         parseFloat(x[value]) : null)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
-      return sumVal
+      return sumVal.toFixed(3)
   }
 
   render() {
