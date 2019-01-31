@@ -448,6 +448,11 @@ class TableGen extends Component {
               }
             }
           }
+          if(this.props.defaultValue){
+            this.props.defaultValue.map(x => {
+              row[x.id] = x.value;
+            })
+          }
         })
 
         for (let col of this.props.uneditcolumn) {
@@ -869,7 +874,7 @@ class TableGen extends Component {
       let conv = value === '' ? 0 : value
       const type = isInt(conv)
       if (type) {
-        data[rowdata.index][field] = (conv === 0 ? null : conv);
+        data[rowdata.index][field] = (conv === 0 ? null : parseInt(conv));
       }
       else {
         window.warning("เฉพาะตัวเลขเท่านั้น")
