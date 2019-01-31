@@ -108,9 +108,50 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         private void UpdateDocumentWorked(SPworkQueue queueTrx, TReq reqVO)
         {
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(queueTrx.ID.Value, this.BuVO);
-            
+
             List<long> docIDs = new List<long>();
-            var countDocItems = ADO.DocumentADO.GetInstant().CountStoInDocItems(
+
+            if (queueTrx.IOType == IOType.INPUT)
+            {
+                foreach (var docItem in docItems)
+                {
+                    if (docItem.BaseQuantity.HasValue && docItem.EventStatus == DocumentEventStatus.WORKING)
+                    {
+                        var baseQty = ADO.DataADO.GetInstant().SumBy<amt_DocumentItemStorageObject>(
+                                        "BaseQuantity",
+                                        new SQLConditionCriteria[]{
+                                        new SQLConditionCriteria("documentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
+                                        new SQLConditionCriteria("status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                                        }, this.BuVO);
+                        if (docItem.BaseQuantity == baseQty)
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                            docIDs.Add(docItem.Document_ID);
+                        }
+                    }
+                }
+            }
+            else if (queueTrx.IOType == IOType.OUTPUT)
+            {
+                foreach (var docItem in docItems)
+                {
+                    if (docItem.EventStatus == DocumentEventStatus.WORKING)
+                    {
+                        var countInactive = ADO.DataADO.GetInstant().CountBy<amt_DocumentItemStorageObject>(
+                                        new SQLConditionCriteria[]{
+                                            new SQLConditionCriteria("documentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS) },
+                                        this.BuVO);
+                        if (countInactive == 0)
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                            docIDs.Add(docItem.Document_ID);
+                        }
+                    }
+                }
+            }
+
+            /*var countDocItems = ADO.DocumentADO.GetInstant().CountStoInDocItems(
                     docItems.Where(x => x.BaseQuantity.HasValue).GroupBy(x => x.ID.Value).Select(x => x.Key), 
                     new EntityStatus[] { EntityStatus.ACTIVE },
                     this.BuVO);
@@ -123,7 +164,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                         docIDs.AddRange(docItems.Where(x => x.ID == cdi.DocumentItem_ID).Select(x => x.Document_ID));
                     }
                 }
-            });
+            });*/
             docIDs = docIDs.Distinct().ToList();
             docIDs.ForEach(docID =>
             {
