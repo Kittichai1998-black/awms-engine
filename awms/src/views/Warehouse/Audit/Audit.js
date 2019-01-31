@@ -160,7 +160,7 @@ class Audit extends Component{
           {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}>
             <CardBody>
               {this.createAuditItem()}
-              {<Button color="primary" style={{width: '150px'}} onClick={() => {this.onHandleClickAudit()}}>Auditing</Button>}
+              {<Button color="primary" style={{width: '150px'}} onClick={() => {this.onHandleClickAudit()}}>Audit Confirm</Button>}
             </CardBody>
           </Card> : null}
         </Row>

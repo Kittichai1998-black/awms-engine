@@ -128,7 +128,7 @@ class TaskList extends Component {
       { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       { accessor: "AreaLoc_Code", Header: "Gate", minWidth: 50 },
       { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
-      { accessor: "Product", Header: "Product", minWidth: 300 },
+      { accessor: "Product", Header: "Product", minWidth: 250 },
       { accessor: "QtyUnit", Header: "Qty", minWidth: 120 },
       { accessor: "Destination", Header: "Destination", minWidth: 150 },
       { accessor: "Document_Code", Header: "Doc No.", minWidth: 105 },
@@ -145,7 +145,7 @@ class TaskList extends Component {
       { accessor: "LocationCode", Header: "Stage", minWidth: 100 },
       { accessor: "PalletCode", Header: "Pallet", minWidth: 100 },
       { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "Qty", Header: "Qty", minWidth: 150 },
+      { accessor: "Qty", Header: "Qty", minWidth: 120 },
       { accessor: "Destination", Header: "Destination", minWidth: 100 },
       { accessor: "DocNo", Header: "Doc No.", minWidth: 105 },
       { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
@@ -198,10 +198,10 @@ class TaskList extends Component {
                         result = true
                         if (rowInfo.original.EventStatus === 11 || rowInfo.original.EventStatus === 12) {
                           rmv = true
-                          classStatus = "inqueue"
+                          classStatus = "working"
                         } else if (rowInfo.original.EventStatus === 31 || rowInfo.original.EventStatus === 32) {
                           rmv = true
-                          classStatus = "success"
+                          classStatus = "inqueue"
                         } else { rmv = false }
                       }
                       if (result && rmv)
