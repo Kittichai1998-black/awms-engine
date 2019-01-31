@@ -17,8 +17,8 @@ class CreateQueue extends Component{
     //this.state = this.initailstate;
 
     this.initailstate = {
-      zoneOutlist:[ {"value" : 1,"label" : "1: Side Gate"},
-                  {"value" : 2,"label" : "2 : Front Gate"}],
+      zoneOutlist:[ {"value" : 2,"label" : "2: Front Gate"},
+                  {"value" : 3,"label" : "3 : Rear Gate"}],
       orderlist:[ {"value" : 0,"label" : "FIFO"},
                   {"value" : 1,"label" : "LIFO"}],
       orderfieldlist:[{"value" : "CreateDate","label" : "Received Date"},

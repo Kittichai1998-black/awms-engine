@@ -81,6 +81,9 @@ namespace AWMSEngine.Engine.Business.Issued
             public decimal? stoBaseQty;
         }
 
+        private ams_Warehouse _warehouseASRS;
+        private ams_AreaMaster _areaASRS;
+
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
@@ -340,6 +343,13 @@ namespace AWMSEngine.Engine.Business.Issued
             
             foreach (var processed in listDocProcessed.Where(w => w.areaID==5))
             {
+                this._warehouseASRS = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == processed.wareHouseID);
+                if (_warehouseASRS == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + processed.wareHouseID + "'");
+                this._areaASRS = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == processed.areaID && x.Warehouse_ID == _warehouseASRS.ID);
+                if (_areaASRS == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + processed.areaID + "'");
+
                 if (this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == processed.areaID).AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
                     var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
@@ -351,8 +361,8 @@ namespace AWMSEngine.Engine.Business.Issued
                     queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
                     {
                         queueID = null,
-                        desWarehouseCode = "5005",
-                        desAreaCode = "F",
+                        desWarehouseCode = _warehouseASRS.Code,
+                        desAreaCode = _areaASRS.Code,
                         desLocationCode = null,
                         priority = processed.priority,
                         baseInfo = baseInfo,
@@ -367,14 +377,16 @@ namespace AWMSEngine.Engine.Business.Issued
                     
                 }
             }
-            //if (queueWorkQueue.queueOut.Count() > 0)
-            //{
-            //    var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
-            //    if (wcsAcceptRes._result.resultcheck == 0)
-            //    {
-            //        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
-            //    }
-            //}
+            var chkMachineASRS = this.StaticValue.GetConfig("RUN_MACHINE_ASRS");
+
+            if (queueWorkQueue.queueOut.Count() > 0 && chkMachineASRS.ToUpper() == "TRUE")
+            {
+                var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+                if (wcsAcceptRes._result.resultcheck == 0)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
+                }
+            }
             res.DocumentProcessed = listDocProcessed;
             return res;
         }

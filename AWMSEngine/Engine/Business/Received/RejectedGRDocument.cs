@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.Business.Received
         public class TDocReq
         {
             public List<long> docIDs;
+            public long areaID=3;
         }
         public class TDocRes
         {
@@ -127,7 +128,7 @@ namespace AWMSEngine.Engine.Business.Received
                             docID = docIssue.ID.Value,
                             docCode = docIssue.Code,
                             dociID = docIssueItem.ID.Value,
-                            areaID = rtSto.Key.areaID,
+                            areaID = reqVO.areaID,
                             batch = rtSto.Key.batch,
                             lot = rtSto.Key.lot,
                             orderNo = rtSto.Key.orderNo,

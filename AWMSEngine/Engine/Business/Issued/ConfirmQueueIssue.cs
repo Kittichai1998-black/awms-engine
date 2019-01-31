@@ -90,7 +90,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     g.Key.areaID,
                     g.Key.priority
                 }).Where(x => x.stoi != null).ToList();
-
+            //check event status ของ storage object ว่าทั้งหมดต้อง 12 ก่อนทำงาน
             foreach (var list in reqVO.DocumentProcessed)
             {
                 if (list.stoi != null)
@@ -103,6 +103,9 @@ namespace AWMSEngine.Engine.Business.Issued
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.areaID + "'");
 
                     var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
+                    if (getRootSTO.eventStatus != StorageObjectEventStatus.RECEIVED)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พาเลท " + getRootSTO.code + " ไม่อยู่ในสถานะพร้อมเบิก");
+
                     var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi ?? 0, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
                     var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(list.dociID, this.BuVO);
                     var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
@@ -112,7 +115,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     /***********update Document EventStatus 10 --> 11**********/
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
                     /***********update StorageObject EventStatus 12 --> 17**********/
-                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi ?? 0, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi ?? 0, StorageObjectEventStatus.RECEIVED, null, StorageObjectEventStatus.PICKING, this.BuVO);
 
                 }
                 else
@@ -150,7 +153,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 docItems.Add(docItem);
 
                 //create WorkQueue
-                if (stoCriteria.areaID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
+                if (xx.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
                     SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, 1, DateTime.Now, stoCriteria.areaID);
                     var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
@@ -163,8 +166,8 @@ namespace AWMSEngine.Engine.Business.Issued
                     queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
                     {
                         queueID = xyz.ID,
-                        desWarehouseCode = "5005",
-                        desAreaCode = "F",
+                        desWarehouseCode = _warehouseASRS.Code,
+                        desAreaCode = _areaASRS.Code,
                         desLocationCode = null,
                         priority = result.priority,
                         baseInfo = baseInfo,
@@ -184,14 +187,16 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
             }
             /*****WCSQueueApi*****/
-            //if (queueWorkQueue.queueOut.Count() > 0)
-            //{
-            //    var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
-            //    if (wcsAcceptRes._result.resultcheck == 0)
-            //    {
-            //        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าจาก ASRS ได้");
-            //    }
-            //}
+            var chkMachineASRS = this.StaticValue.GetConfig("RUN_MACHINE_ASRS");
+
+            if (queueWorkQueue.queueOut.Count() > 0 && chkMachineASRS.ToUpper() == "TRUE")
+            {
+                var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+                if (wcsAcceptRes._result.resultcheck == 0)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าจาก ASRS ได้");
+                }
+            }
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;
