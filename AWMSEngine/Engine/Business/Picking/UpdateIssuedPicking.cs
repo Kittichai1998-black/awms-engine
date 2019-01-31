@@ -62,7 +62,19 @@ namespace AWMSEngine.Engine.Business.Picking
                 //var setSTO = listSto.Where(y => y.id == x.STOID).First();
                 var basePicked = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(setSTO.skuID.Value, x.picked, setSTO.unitID);
 
-                setSTO.eventStatus = setSTO.qty - x.picked == 0 ? StorageObjectEventStatus.PICKED : StorageObjectEventStatus.PICKING;
+
+                var getDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                {
+                    new SQLConditionCriteria("StorageObject_ID", setSTO.id, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("DocumentItem_ID", x.docItemID, SQLOperatorType.NOTEQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
+                }, this.BuVO);
+
+                if(getDiSto.Count() > 0)
+                    setSTO.eventStatus = StorageObjectEventStatus.RECEIVED;
+                else
+                    setSTO.eventStatus = setSTO.baseQty - basePicked.baseQty > 0 ? StorageObjectEventStatus.PICKING : StorageObjectEventStatus.PICKED;
+
                 setSTO.qty = setSTO.qty - x.picked;
                 setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
 
