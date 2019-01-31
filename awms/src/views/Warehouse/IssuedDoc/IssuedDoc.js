@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Badge, Row, Col, Input, Card, CardBody, Button } from 'reactstrap';
+import { Badge, Row, Col, Input, Card, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTable from 'react-table'
 import { apicall, createQueryString, GenerateDropDownStatus } from '../ComponentCore'
 import DatePicker from 'react-datepicker';
@@ -53,6 +53,7 @@ class IssuedDoc extends Component {
       defaultPageS: 100,
       currentPage: 1,
       loading: true,
+      modalstatus: false,
       datafilter: [{ "id": "DocumentType_ID", "value": 1002 }]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -163,9 +164,13 @@ class IssuedDoc extends Component {
             this.setState({ resp: res.data._result.message }) })
       }
       if (status === "reject") {
+     
         Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => { 
           this.getData()
-          this.setState({ resp: res.data._result.message }) })
+          this.setState({ resp: res.data._result.message })
+        })
+        this.toggle()
+
       }
       if (status === "Close") {
         Axios.post(window.apipath + "/api/wm/issued/doc/Closing", postdata).then((res) => { 
@@ -370,9 +375,11 @@ class IssuedDoc extends Component {
   closeModal() {
     this.setState({ open: false, errorstr: null })
   }
+
   createSapResModal(data) {
     this.setState({ errorstr: data }, () => this.openModal())
   }
+
   customSorting(data) {
     const select = this.state.select
     select["s"] = JSON.stringify([{ 'f': data[0].id, 'od': data[0].desc === false ? 'asc' : 'desc' }])
@@ -389,6 +396,30 @@ class IssuedDoc extends Component {
         this.setState({ data: res.data.datas, loading: false })
       })
   }
+
+
+  toggle() {
+    this.setState({ modalstatus: !this.state.modalstatus });
+  }
+
+  createModal() {
+    return <Modal isOpen={this.state.modalstatus}>
+      <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
+     
+      <ModalFooter>
+        <Button id="per_button_reject" color="primary" style={{ width: "130px" }} onClick={() => this.workingData(this.state.selectiondata, "reject")} >OK</Button>{' '}
+        <Button color="secondary" style={{ width: "130px"}} onClick={this.toggle}>Cancel</Button>
+    
+      </ModalFooter>
+    </Modal>
+  }
+
+
+
+
+
+
+
   render() {
     const cols = [
       {
@@ -439,6 +470,7 @@ class IssuedDoc extends Component {
     return (
       <div>
 
+        {this.createModal()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
 
@@ -492,11 +524,13 @@ class IssuedDoc extends Component {
           />
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.toggle()} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_close" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>
         </Card>
+
+
         <Popup open={this.state.open} onClose={this.closeModal} closeOnDocumentClick >
           <div style={{ border: '2px solid red', borderRadius: '5px' }}>
             <a style={styleclose} onClick={this.closeModal}>
@@ -510,6 +544,12 @@ class IssuedDoc extends Component {
             </div>
           </div>
         </Popup>
+
+
+
+
+
+ 
       </div>
     )
   }

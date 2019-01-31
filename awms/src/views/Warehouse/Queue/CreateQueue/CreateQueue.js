@@ -13,9 +13,6 @@ const imgClose = <img style={{ width: "28px", height: "auto" }} src="data:image/
 class CreateQueue extends Component{
   constructor(props) {
     super(props);
-    
-    //this.state = this.initailstate;
-
     this.initailstate = {
       zoneOutlist:[ {"value" : 2,"label" : "2: Front Gate"},
                   {"value" : 3,"label" : "3 : Rear Gate"}],
@@ -214,6 +211,7 @@ class CreateQueue extends Component{
                             ,orderNo:row.orderNo
                             ,lot:row.lot
                             ,BaseQuantity:row.baseQuantity
+                            ,baseUnitTypeCode:row.BaseUnitType_Code
               })
             })
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
@@ -252,6 +250,9 @@ class CreateQueue extends Component{
         this.onEditorValueChange(datarow.dociID, 0,"pickOrderby")
         this.onEditorValueChange(datarow.dociID, "CreateDate","orderByField")
         this.onEditorValueChange(datarow.dociID, 1,"priority")
+        if(datarow.batch){
+          this.genNewInputText(datarow.dociID,1)
+        }
       }
       else{      
       } 
@@ -263,10 +264,10 @@ class CreateQueue extends Component{
   genBtnNewBatch(dociID){
     return <Button id="per_button_doc" 
     style={{ background: "#66bb6a", borderColor: "#66bb6a", width: "130px",display:this.state.showbutton }} color="primary" 
-    className="float-left"  onClick={() => this.genNewInputText(dociID)}>Add New Batch</Button>
+    className="float-left"  onClick={() => this.genNewInputText(dociID,2)}>Add New Batch</Button>
   }
 
-  genNewInputText(dociID){
+  genNewInputText(dociID,chkFirstClick){
     const DocumentItemData = this.state.DocumentItemData;
     const dataProcessItems = this.state.dataProcessItems;
     let checkBatchInput = false;
@@ -274,7 +275,7 @@ class CreateQueue extends Component{
     if(dataProcessItems.length>0){
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
-          if(datarow.batchs.length>0){
+          //if(datarow.batchs.length>0){
             datarow.batchs.forEach(batchrow =>{
               if((batchrow.value === null && (batchrow.qty?batchrow.qty:0) === 0) ||
               (batchrow.value === null || batchrow.qty === 0)){
@@ -285,25 +286,25 @@ class CreateQueue extends Component{
               }
             });
           }
-          else{
+          /* else{
             checkDefaultBatch = true;
             checkBatchInput = true;
-          }
-          if(checkBatchInput && checkDefaultBatch){
+          } */
+          /* if(checkBatchInput && checkDefaultBatch){
             datarow.batchs.push({
               value:datarow.defaultBatch,
               qty:datarow.defaultBatch?datarow.qty:0,
               unit:datarow.baseUnitTypeCode
             })
-          }else if(checkBatchInput){
+          }else  */if(checkBatchInput && chkFirstClick!==1){
             datarow.batchs.push({
               value:null,
               qty:0,
               unit:datarow.baseUnitTypeCode
             })
           }
-        }else{
-        }
+        /* }else{
+        } */
       });
     }else{
       DocumentItemData.forEach((datarow) => {
@@ -719,8 +720,10 @@ class CreateQueue extends Component{
 
     return <div className= { datarow.type }>
     <ReactTable style={{width:"100%"}} data={datarow.data} editable={false} filterable={false} defaultPageSize={2000}
-    editable={false} minRows={1} showPagination={false}
-    columns={[{ accessor: "baseCode", Header: "Pallet"},{ accessor: "batch", Header: "Batch"},{ accessor: "lot", Header: "Lot"},{ accessor: "orderNo", Header: "Order No"}
+    editable={false} minRows={1} showPagination={false}//stoPack
+    columns={[{ accessor: "baseCode", Header: "Pallet"}
+    ,{ Cell:(e)=> <span>{(e.original.stoBaseQty?e.original.batch:"")}</span>, Header: "Batch"}
+    ,{ accessor: "lot", Header: "Lot"},{ accessor: "orderNo", Header: "Order No"}
     ,{ Cell:(e)=> <span>{ (e.original.stoBaseQty?(e.original.qty?e.original.qty:""):"") + (e.original.stoPack?(e.original.stoPack.qty?" / "+ e.original.stoPack.baseQty:""):"") }</span>
     , Header: "Qty"},{ Cell:(e)=> <span>{e.original.stoPack?(e.original.stoPack.baseUnitCode?e.original.stoPack.baseUnitCode:""):""}</span>, Header: "unit"}]}/>
   </div>

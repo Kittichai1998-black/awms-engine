@@ -504,18 +504,10 @@ class IssuedManage extends Component {
     if (value !== "") {
       if (rowdata.column.datatype === "int") {
         let conv = value === '' ? 0 : value
-        const type = isInt(conv)
-        //if(type){
-        //  data[rowdata.index][field] = (conv === 0 ? null : conv);
-        //}
-        //else{
-        //  alert("??")
-        //}
         data[rowdata.index][field] = (conv === 0 ? null : conv);
       }
       else if (rowdata.column.datatype === "text") {
         data[rowdata.index][field] = value;
-
       }
       else {
         data[rowdata.index][field] = value.Code;
@@ -527,15 +519,6 @@ class IssuedManage extends Component {
         data[rowdata.index]["id"] = value.id;
       }
       this.setState({ data });
-
-
-      let res = this.state.autocompleteUpdate
-      this.state.data.forEach(datarow => {
-        res = res.filter(row => {
-          return datarow[field] !== row.Code
-        })
-      })
-      this.setState({ autocomplete: res })
     }
     else if (rowdata.column.datatype !== "int") {
       data[rowdata.index][field] = "";
@@ -599,9 +582,9 @@ class IssuedManage extends Component {
         background: 'rgba(255, 255, 255, 0.9)',
         padding: '2px 0',
         fontSize: '90%',
-        //position: 'fixed',
-        //maxHeight:'50px',
-        //min:'20px',
+        position: 'fixed',
+        maxHeight:'50px',
+        min:'20px',
         overflow: 'auto',
         maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
         zIndex: '998',

@@ -199,8 +199,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         {
                             if (stoRoot.Count > 0)
                             {
-
-                                foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0))
+                                foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null || batch.value == "")) && x.packQty > 0))
                                 {
                                     if (sto.evtStatus == 12)
                                     {
@@ -338,9 +337,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     }
                 }
             }
-            //stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
-            //stoCriteria.areaID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS)
-            
+
             foreach (var processed in listDocProcessed.Where(w => w.areaID==5))
             {
                 this._warehouseASRS = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == processed.wareHouseID);
@@ -379,7 +376,7 @@ namespace AWMSEngine.Engine.Business.Issued
             }
             var chkMachineASRS = this.StaticValue.GetConfig("RUN_MACHINE_ASRS");
 
-            if (queueWorkQueue.queueOut.Count() > 0 && chkMachineASRS.ToUpper() == "TRUE")
+            if (queueWorkQueue.queueOut != null && chkMachineASRS.ToUpper() == "TRUE")
             {
                 var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
                 if (wcsAcceptRes._result.resultcheck == 0)
