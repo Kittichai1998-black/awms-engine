@@ -722,7 +722,7 @@ class CreateQueue extends Component{
     <ReactTable style={{width:"100%"}} data={datarow.data} editable={false} filterable={false} defaultPageSize={2000}
     editable={false} minRows={1} showPagination={false}//stoPack
     columns={[{ accessor: "baseCode", Header: "Pallet"}
-    ,{ Cell:(e)=> <span>{(e.original.stoBaseQty?e.original.batch:"")}</span>, Header: "Batch"}
+    ,{ Cell:(e)=> <span>{(e.original.stoPack?e.original.stoPack.batch:"")}</span>, Header: "Batch"}
     ,{ accessor: "lot", Header: "Lot"},{ accessor: "orderNo", Header: "Order No"}
     ,{ Cell:(e)=> <span>{ (e.original.stoBaseQty?(e.original.qty?e.original.qty:""):"") + (e.original.stoPack?(e.original.stoPack.qty?" / "+ e.original.stoPack.baseQty:""):"") }</span>
     , Header: "Qty"},{ Cell:(e)=> <span>{e.original.stoPack?(e.original.stoPack.baseUnitCode?e.original.stoPack.baseUnitCode:""):""}</span>, Header: "unit"}]}/>
