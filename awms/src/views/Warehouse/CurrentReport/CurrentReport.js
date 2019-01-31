@@ -258,7 +258,7 @@ class CurrentReport extends Component {
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty()}</span>)
       },
-
+      { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 100 },
       {
         accessor: 'Wei_Pack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
@@ -279,7 +279,6 @@ class CurrentReport extends Component {
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_PackStd")}</span>)
       },
-      { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 130 },
     ];
 
     return (
