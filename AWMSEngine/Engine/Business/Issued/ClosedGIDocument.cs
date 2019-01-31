@@ -31,7 +31,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(docId, this.BuVO);
                 var docHs = this.ListAllDocumentHeadID(reqVO);
 
-                if (doc.Ref2 == null || doc.Ref2 == "311")
+                if (string.IsNullOrWhiteSpace(doc.Ref2) || doc.Ref2 == "311")
                 {               
                     var DesWareDoc = ADO.DataADO.GetInstant().SelectByID<ams_Warehouse>(doc.Des_Warehouse_ID, this.BuVO);
 
@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             if(dataApi4 != null)
                             {
                                 var dataReturn = this.sendToApi4(dataApi4);
-                                if (dataReturn.docstatus != "0")
+                                if (dataReturn.docstatus == "0")
                                 {
                                     sandToSAPsuccess(docHs, docItem, dataReturn);
                                 }
@@ -79,9 +79,15 @@ namespace AWMSEngine.Engine.Business.Issued
 
 
                             var dataReturn = this.sendToApi9(dataApi9);
-                            if (dataReturn.docstatus != "0")
+                            if (dataReturn.docstatus == "0")
                             {
                                 sandToSAPsuccess(docHs, docItem, dataReturn);
+                                var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
+                                var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
+                                if (checkClosed)
+                                {
+                                    this.CloseDocAndDocItem(doc.ID.Value);
+                                }
                             }
                             else
                             {
@@ -89,13 +95,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             }
 
                         }
-
-                        var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
-                        var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
-                        if (checkClosed)
-                        {
-                            this.CloseDocAndDocItem(doc.ID.Value);
-                        }                                          
+                                     
                     }
                     else
                     {
@@ -140,7 +140,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     {
 
                                         var dataReturn = this.sendToApi4(dataApi4);
-                                        if (dataReturn.docstatus != "0")
+                                        if (dataReturn.docstatus == "0")
                                         {
                                             sandToSAPsuccess(docHs, docItem, dataReturn);
                                             this.ClosedDocAndParent(relation);
@@ -163,11 +163,22 @@ namespace AWMSEngine.Engine.Business.Issued
 
 
                                     var dataReturn = this.sendToApi9(dataApi9);
-
-                                    if(dataReturn.docstatus != "0")
+                                    //SAPResposneAPI dataReturn = new SAPResposneAPI() { docstatus = "4" };
+                                    if (dataReturn.docstatus == "0")
                                     {
                                         sandToSAPsuccess(docHs, docItem, dataReturn);
                                         this.ClosedDocAndParent(relation);
+
+                                        //Change By TOM
+                                        var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
+                                        var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
+                                        if (checkClosed)
+                                        {
+                                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
+                                                   null, null,
+                                                   DocumentEventStatus.CLOSED,
+                                                   this.BuVO);
+                                        }
                                     }
                                     else
                                     {
@@ -175,15 +186,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     }
                                   
                                 }
-                                var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
-                                var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
-                                if (checkClosed)
-                                {
-                                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,
-                                           null, null,
-                                           DocumentEventStatus.CLOSED,
-                                           this.BuVO);
-                                }                           
+                                                      
                             }
                         }
                     }
@@ -220,8 +223,8 @@ namespace AWMSEngine.Engine.Business.Issued
             foreach (var d in docHs )
             {
                 var docH = ADO.DataADO.GetInstant().SelectByID<amt_Document>(d.ID, this.BuVO);
-                docH.RefID = sapRes.mat_doc;
-                docH.Ref1 = sapRes.doc_year;
+                docH.RefID = !string.IsNullOrWhiteSpace(sapRes.mat_doc) ? sapRes.mat_doc : string.Empty;
+                docH.Ref1 = !string.IsNullOrWhiteSpace(sapRes.doc_year) ? sapRes.doc_year : string.Empty;
                 docH.EventStatus = DocumentEventStatus.CLOSED;
                 docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
                 ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
@@ -382,7 +385,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
                     {
                         DELIV_NUMB = RefID,
-                        DELIV_ITEM = dataDocItem.Options == null ? (decimal?)null : decimal.Parse(ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem")),
+                        DELIV_ITEM = ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem"),
                         MATERIAL = dataDocItem.Code,
                         PLANT = SouBranch,
                         STGE_LOC = "",
@@ -417,7 +420,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
                         {
                             DELIV_NUMB = RefID,
-                            DELIV_ITEM = dataDocItem.Options == null ? (decimal?)null : decimal.Parse(ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem")),
+                            DELIV_ITEM = ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem"),
                             MATERIAL = dataDocItem.Code,
                             PLANT = SouBranch,
                             STGE_LOC = SouWarehouse,

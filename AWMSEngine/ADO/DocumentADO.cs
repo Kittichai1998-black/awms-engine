@@ -347,9 +347,13 @@ namespace AWMSEngine.ADO
         }
         public List<SPOutCountStoInDocItem> CountStoInDocItems(IEnumerable<long> docItemIDs, VOCriteria buVO)
         {
+            return CountStoInDocItems(docItemIDs, new EntityStatus[] { EntityStatus.INACTIVE, EntityStatus.ACTIVE }, buVO);
+        }
+        public List<SPOutCountStoInDocItem> CountStoInDocItems(IEnumerable<long> docItemIDs, EntityStatus[] status, VOCriteria buVO)
+        {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentItem_ID", string.Join(',', docItemIDs.ToArray()), SQLOperatorType.IN));
-            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(status)), SQLOperatorType.IN));
 
             var res = ADO.DataADO.GetInstant().SelectBy<SPOutCountStoInDocItem>(
                 "amt_DocumentItemStorageObject",
