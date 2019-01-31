@@ -308,13 +308,10 @@ namespace AWMSEngine.ADO
 
             res.ForEach(x =>
             {
-                var unitConvertBase = StaticValue.StaticValueManager.GetInstant()
-                .ConvertToNewUnitByPack(x.packID, x.packBaseQty, x.packBaseUnitID, x.distoBaseUnitID);
                 var unitConvertSale = StaticValue.StaticValueManager.GetInstant()
-                .ConvertToNewUnitByPack(x.packID, x.packBaseQty, x.packBaseUnitID, x.distoUnitID);
+                .ConvertToNewUnitByPack(x.packID, x.distoBaseQtyMax, x.packBaseUnitID, x.distoUnitID);
 
                 x.distoQtyMax = unitConvertSale.qty;
-                x.distoBaseQtyMax = unitConvertBase.qty;
             });
 
             return res;
