@@ -111,7 +111,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             
             List<long> docIDs = new List<long>();
             var countDocItems = ADO.DocumentADO.GetInstant().CountStoInDocItems(
-                    docItems.Where(x => x.BaseQuantity.HasValue).GroupBy(x => x.ID.Value).Select(x => x.Key), this.BuVO);
+                    docItems.Where(x => x.BaseQuantity.HasValue).GroupBy(x => x.ID.Value).Select(x => x.Key), 
+                    new EntityStatus[] { EntityStatus.ACTIVE },
+                    this.BuVO);
             countDocItems.ForEach(cdi => {
                 if(cdi.BaseQuantity == docItems.Where(x => x.ID == cdi.DocumentItem_ID).Sum(x => x.BaseQuantity))
                 {

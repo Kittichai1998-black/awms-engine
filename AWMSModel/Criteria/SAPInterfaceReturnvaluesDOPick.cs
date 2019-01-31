@@ -10,7 +10,7 @@ namespace AWMSModel.Criteria
         public class items
         {
             public string DELIV_NUMB;
-            public decimal? DELIV_ITEM;
+            public string DELIV_ITEM;
             public string MATERIAL;
             public string PLANT;
             public string STGE_LOC;
