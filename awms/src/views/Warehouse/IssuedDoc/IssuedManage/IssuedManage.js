@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col } from 'reactstrap';
+import { Badge, Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import moment from 'moment';
 import { DocumentEventStatus } from '../../Status'
@@ -179,7 +179,7 @@ class IssuedManage extends Component {
           var groupPack = _.groupBy(rowselect1.data.bstos, "code")
           console.log(groupPack)
           var groupdocItem = rowselect1.data.document.documentItems
-          console.log(groupPack)
+          console.log(groupdocItem)
           let sumArr = []
           let sumArr1 = []
 
@@ -202,22 +202,22 @@ class IssuedManage extends Component {
             let pg = rowselect1.data.bstos.filter(y => { return y.docItemID === x.id });
             console.log(pg)
             if (pg.length > 0) {
-              x.sumQty1 = pg[0].distoBaseQty
+              x.sumQty1 = pg[0].distoQty
               //x.batch = pg[0].batch
               //x.options = pg[0].options
               //x.lot = pg[0].lot
               //x.orderNo = pg[0].orderNo
-              x.distoUnitCode = pg[0].distoUnitCode
+              // x.unitType_Name = pg[0].unitType_Name
             }
             else {
-              x.distoBaseUnitCode = x.distoBaseUnitCode
+              x.unitType_Name = x.unitType_Name
 
             }
             x.batchsp = x.batch
             x.options = x.options
-            x.baseQuantity = x.baseQuantity
-            x.distoBaseUnitCode = x.distoBaseUnitCode
-
+            x.quantity = x.quantity
+            x.unitType_Name = x.unitType_Name
+            x.status = x.status
             sumArr1.push(x);
           })
 
@@ -225,20 +225,24 @@ class IssuedManage extends Component {
 
           this.setState({ data3: sumArr1 });
 
-          console.log(sumArr1)
+          // console.log(sumArr1)
 
-          console.log(this.state.batch)
+          // console.log(this.state.batch)
 
           for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              res2.sumQty1 = res2.distoBaseQty
+              
               sumArr1.forEach(x => {
                 if (x.id === res2.docItemID) {
+                  sum += res2.distoQty
+                  res2.sumQty1 = sum
                   //res2.quantity = x.quantity
                   res2.options = x.options
-                  res2.baseQuantity = x.baseQuantity
-
+                  res2.distoQtyMax 
+                  // = res2.distoQtyMax
+                  // console.log(res2.distoQtyMax)
+                  // console.log(x.distoQtyMax)
                 }
               })
               sumArr.forEach(response => {
@@ -317,7 +321,7 @@ class IssuedManage extends Component {
           auto_supplier.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
         })
         this.setState({ auto_supplier })
-        console.log(this.state.auto_supplier)
+        // console.log(this.state.auto_supplier)
       })
     })
 
@@ -334,7 +338,7 @@ class IssuedManage extends Component {
     Axios.get(createQueryString(this.movementTypeselect)).then(movementTyperesult => {
       this.setState({ auto_movementType: movementTyperesult.data.datas, addstatus: false }, () => {
         const auto_movementType = []
-        console.log(this.state.auto_movementType)
+        // console.log(this.state.auto_movementType)
         this.state.auto_movementType.forEach(row => {
           auto_movementType.push({ value: row.ID, label: row.Code + ' : ' + row.Name, code: row.Code })
         })
@@ -378,6 +382,7 @@ class IssuedManage extends Component {
 
   createDocument() {
     let acceptdata = []
+   
     this.state.data.forEach(row => {
       let qty = row.PackQty === "" ? 0 : row.PackQty;
       if (row.id > 0 && qty > 0)
@@ -391,7 +396,10 @@ class IssuedManage extends Component {
           , lot: row.Lot
           , orderno: row.Orderno
         })
-
+      // console.log(row.id)
+      if (row.id == undefined ) {
+        alert("ไม่พบรายการ SKU ที่ต้องการ")
+      }
       if (row.id > 0 && qty <= 0) {
         alert("กรุณาใส่จำนวนสินค้า")
       }
@@ -454,7 +462,7 @@ class IssuedManage extends Component {
     // console.log(warehouse)
     Axios.get(createQueryString(warehouse)).then((res) => {
       const auto_warehouse = []
-      console.log(res)
+      // console.log(res)
       res.data.datas.forEach(row => {
 
         auto_warehouse.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
@@ -530,7 +538,7 @@ class IssuedManage extends Component {
     }
     this.setState({ data });
 
-    console.log(this.state.data)
+    // console.log(this.state.data)
 
   }
 
@@ -662,30 +670,41 @@ class IssuedManage extends Component {
 
   }
 
+  getStatus(value) {
+    // console.log(value)
+    if (value === 0)
+      return <Badge color="PENDING" style={{ fontSize: '0.825em', fontWeight: '500' }}>PENDING</Badge>
+    else if (value === 1)
+      return <Badge color="PICK" style={{ fontSize: '0.825em', fontWeight: '500' }}>PICK</Badge>
+    else
+      return null
+  }
 
   render() {
 
-    console.log(this.state.data3)
+    // console.log(this.state.data3)
 
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
 
     let cossdetail = [
-      { accessor: "code", Header: "Pallet"},
+      {
+        accessor: "status", Header: "Task", minWidth: 80, className: 'center',
+        Cell: (e) => this.getStatus(e.original.status)
+      },
+      { accessor: "code", Header: "Pallet" },
       {
         accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1].split("&")[0]}</span>
       },
-      { accessor: "packCode", Header: "SKU Code"},
-      { accessor: "packName", Header: "SKU Name"},
-
-
+      { accessor: "packCode", Header: "SKU Code" },
+      { accessor: "packName", Header: "SKU Name" },
       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
       { accessor: 'batch', Header: 'Batch', editable: false, },
       { accessor: 'lot', Header: 'Lot', editable: false, },
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.baseQuantity) : (e.original.sumQty1 + ' / ' +
-          (e.original.baseQuantity === null ? '-' : e.original.baseQuantity))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.distoQtyMax) : (e.original.sumQty1 + ' / ' +
+          (e.original.distoQtyMax === null ? '-' : e.original.distoQtyMax))}</span>,
       },
       { accessor: "distoUnitCode", Header: "Unit" },
     ]
@@ -704,10 +723,10 @@ class IssuedManage extends Component {
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
       {
         accessor: 'sumQty1', Header: 'Qty', editable: false,
-        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.baseQuantity) : (e.original.sumQty1 + ' / ' +
-          (e.original.baseQuantity === null ? '-' : e.original.baseQuantity))}</span>,
+        Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.quantity) : (e.original.sumQty1 + ' / ' +
+          (e.original.quantity === null ? '-' : e.original.quantity))}</span>,
       },
-      { accessor: "distoUnitCode", Header: "Unit" },
+      { accessor: "unitType_Name", Header: "Unit" },
 
 
     ]
@@ -835,7 +854,7 @@ class IssuedManage extends Component {
         {this.state.pageID != 0 ? null : <ReactTable columns={col} data={this.state.data.documentItems === undefined ? this.state.data : this.state.data.documentItems} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
-        {console.log(this.state.data2)}
+        {/* {console.log(this.state.data2)} */}
         {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 

@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 {               
                     var DesWareDoc = ADO.DataADO.GetInstant().SelectByID<ams_Warehouse>(doc.Des_Warehouse_ID, this.BuVO);
 
-                    var docItem = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+                    var docItem = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
 
                     var relation = ADO.DocumentADO.GetInstant().ListParentLink(doc.ID.Value, this.BuVO);
                     if (relation.Count == 0)
@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             if(dataApi4 != null)
                             {
                                 var dataReturn = this.sendToApi4(dataApi4);
-                                if (dataReturn.docstatus == "0")
+                                if (dataReturn.docstatus != "0")
                                 {
                                     sandToSAPsuccess(docHs, docItem, dataReturn);
                                 }
@@ -79,7 +79,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
 
                             var dataReturn = this.sendToApi9(dataApi9);
-                            if (dataReturn.docstatus == "0")
+                            if (dataReturn.docstatus != "0")
                             {
                                 sandToSAPsuccess(docHs, docItem, dataReturn);
                             }
@@ -90,7 +90,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         }
 
-                        var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+                        var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
                         var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
                         if (checkClosed)
                         {
@@ -116,7 +116,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                List<amt_DocumentItem> rootDocItems = new List<amt_DocumentItem>();
                                 root.IDs.ForEach(x =>
                                 {
-                                    var diList = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(x.Value, this.BuVO);
+                                    var diList = ADO.DocumentADO.GetInstant().ListItemAndDisto(x.Value, this.BuVO);
                                     rootDocItems.AddRange(diList);
 
                                 });
@@ -140,7 +140,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     {
 
                                         var dataReturn = this.sendToApi4(dataApi4);
-                                        if (dataReturn.docstatus == "0")
+                                        if (dataReturn.docstatus != "0")
                                         {
                                             sandToSAPsuccess(docHs, docItem, dataReturn);
                                             this.ClosedDocAndParent(relation);
@@ -164,7 +164,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                                     var dataReturn = this.sendToApi9(dataApi9);
 
-                                    if(dataReturn.docstatus == "0")
+                                    if(dataReturn.docstatus != "0")
                                     {
                                         sandToSAPsuccess(docHs, docItem, dataReturn);
                                         this.ClosedDocAndParent(relation);
@@ -175,7 +175,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                     }
                                   
                                 }
-                                var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docId, this.BuVO);
+                                var docItemCheckClosed = ADO.DocumentADO.GetInstant().ListItemAndDisto(docId, this.BuVO);
                                 var checkClosed = docItemCheckClosed.TrueForAll(check => check.EventStatus == DocumentEventStatus.CLOSED || check.EventStatus == DocumentEventStatus.CLOSING);
                                 if (checkClosed)
                                 {
@@ -222,13 +222,13 @@ namespace AWMSEngine.Engine.Business.Issued
                 var docH = ADO.DataADO.GetInstant().SelectByID<amt_Document>(d.ID, this.BuVO);
                 docH.RefID = sapRes.mat_doc;
                 docH.Ref1 = sapRes.doc_year;
-                //docH.EventStatus = DocumentEventStatus.CLOSED;
+                docH.EventStatus = DocumentEventStatus.CLOSED;
                 docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
                 ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
                 docItem.ForEach(di =>
                 {
                     di.RefID = sapRes.mat_doc; di.Ref1 = sapRes.doc_year;
-                    //docH.EventStatus = DocumentEventStatus.CLOSED;
+                    docH.EventStatus = DocumentEventStatus.CLOSED;
                     ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
 
                 });
@@ -329,10 +329,11 @@ namespace AWMSEngine.Engine.Business.Issued
                     var dataStoBranch = new List<dynamic>();
                     foreach (var stoDoc in dataDocItem.DocItemStos)
                     {
-                        var sto = ADO.StorageObjectADO.GetInstant().Get(stoDoc.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
-                        if (sto.batch != null)
+                        var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(stoDoc.StorageObject_ID, BuVO);
+                        //var sto = ADO.StorageObjectADO.GetInstant().Get(stoDoc.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                        if (sto.Batch != null)
                         {
-                            dataStoBranch.Add(sto.batch);
+                            dataStoBranch.Add(sto.Batch);
                         }
                     }
                     var stoBatch = dataStoBranch.Distinct().ToList();
@@ -453,7 +454,7 @@ namespace AWMSEngine.Engine.Business.Issued
             docHs.ForEach(docH =>
             {
                 docH.ParentDocument = baseDocs.FirstOrDefault(x => x.ID == docH.ParentDocument_ID);
-                docH.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docH.ID.Value, this.BuVO);
+                docH.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(docH.ID.Value, this.BuVO);
             });
 
             return docHs;

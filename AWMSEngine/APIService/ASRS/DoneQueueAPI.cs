@@ -32,11 +32,11 @@ namespace AWMSEngine.APIService.ASRS
             });
             var getQueue = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(req.queueID.Value, this.BuVO);
             var bsto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(getQueue.StorageObject_ID, this.BuVO);
-            this.CommitTransaction();
+            //this.CommitTransaction();
 
             if (getQueue.IOType == IOType.OUTPUT && bsto.EventStatus == StorageObjectEventStatus.PICKING)
             {
-                this.BeginTransaction();
+                //this.BeginTransaction();
                 var resPick = new PickBaseSto_WorkedDoc()
                     .Execute(this.Logger, this.BuVO, new PickBaseSto_WorkedDoc.TReq()
                     {

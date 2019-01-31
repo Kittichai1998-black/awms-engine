@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.Business.Received
         {
             TDocRes res = new TDocRes() { sapDatas = new List<SAPResposneAPI>() };
 
-            var docHs = this.ListAllDocumentHeadID(reqVO);
+            var docHs = this.ListAllDocumentHead(reqVO);
 
             foreach (var groupDocH in docHs
                                         .GroupBy(x => new {
@@ -137,7 +137,7 @@ namespace AWMSEngine.Engine.Business.Received
             return res;
         }
 
-        private List<amt_Document> ListAllDocumentHeadID(TDocReq reqVO)
+        private List<amt_Document> ListAllDocumentHead(TDocReq reqVO)
         {
             var baseDocs = new List<amt_Document>();
             reqVO.docIDs.ToList().ForEach(docID => {
@@ -158,7 +158,7 @@ namespace AWMSEngine.Engine.Business.Received
             docHs.ForEach(docH =>
             {
                 docH.ParentDocument = baseDocs.FirstOrDefault(x => x.ID == docH.ParentDocument_ID);
-                docH.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndStoInDoc(docH.ID.Value, this.BuVO);
+                docH.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(docH.ID.Value, this.BuVO);
             });
 
             return docHs;

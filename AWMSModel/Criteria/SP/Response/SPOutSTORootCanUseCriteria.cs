@@ -35,10 +35,12 @@ namespace AWMSModel.Criteria.SP.Response
         public string packBaseUnitCode;
 
         public decimal distoQty;
+        public decimal distoQtyMax;
         public long distoUnitID;
         public string distoUnitCode;
 
         public decimal distoBaseQty;
+        public decimal distoBaseQtyMax;
         public long distoBaseUnitID;
         public string distoBaseUnitCode;
 

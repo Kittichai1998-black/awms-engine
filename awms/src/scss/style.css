@@ -10054,6 +10054,18 @@ body {
   border: 1px solid #ffc107;
   width: auto; }
 
+.badge-PICK {
+  color: #2f353a;
+  background-color: #f0f3f5;
+  border: 2px solid #3d6dff;
+  width: auto; }
+
+.badge-PENDING {
+  color: #f0f3f5;
+  background-color: #3d6dff;
+  border: 2px solid #f0f3f5;
+  width: auto; }
+
 .badge-AUDITING {
   color: #2f353a;
   background-color: #f0f3f5;

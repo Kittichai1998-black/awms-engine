@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Card, CardBody, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter,Col } from 'reactstrap';
+import { Input, Card, CardBody, Button, Row,Col } from 'reactstrap';
 import ReactTable from 'react-table'
 import moment from 'moment';
 import { DocumentEventStatus } from '../../Status'
@@ -26,15 +26,6 @@ class IssuedManage extends Component {
 
     this.state = {
       data: [],
-      branch: [],
-      auto_branch: [],
-      auto_warehouse: [],
-      auto_customer: [],
-      auto_supplier: [],
-      auto_movementType: [],
-      branch: "",
-      customer: "",
-      warehouse: "",
       Batch: null,
       refID: null,
       ref1: null,
@@ -44,9 +35,9 @@ class IssuedManage extends Component {
       auditNo: "-",
       select2: {
         queryString: window.apipath + "/api/viw",
-        t: "PackMaster",
+        t: "SKUMaster",
         q: '[{ "f": "Status", "c":"=", "v": 1}]',
-        f: "id, Code, Name, concat(SKUCode, ' : ', SKUName, ' : ' , UnitTypeName) AS SKU, UnitTypeName AS UnitType, UnitTypeCode, SKUMaster_ID",
+        f: "ID, Code, Name, concat(Code, ' : ', Name) AS SKU, UnitTypeName, UnitTypeCode",
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
@@ -69,7 +60,6 @@ class IssuedManage extends Component {
       addstatus: false ,
       adddisplay: "none",
       basedisplay: "none",
-      modalstatus: false,
       storageObjectdata: []
 
     };
@@ -79,7 +69,7 @@ class IssuedManage extends Component {
     this.DateNow = moment()
     this.addIndex = 0
     //this.autoSelectData = this.autoSelectData.bind(this)
-    this.toggle = this.toggle.bind(this)
+    
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
   }
 
@@ -95,7 +85,6 @@ class IssuedManage extends Component {
           this.setState({ data: [] })
         }
         else {
-          console.log(rowselect1.data.document.documentItems)
           this.setState({
             data: rowselect1.data.document,
             data2: rowselect1.data.document.documentItems,
@@ -115,6 +104,7 @@ class IssuedManage extends Component {
               var qryStr = queryString.parse(x.options)
               x.palletCode = qryStr.palletCode === "undefined" ? null : qryStr.palletCode;
               x.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
+              x.code = x.skuMaster_Code + " : " + x.skuMaster_Name;
             })
 
             this.forceUpdate();
@@ -228,7 +218,7 @@ class IssuedManage extends Component {
   }
 
   dateTimePicker() {
-    return <DatePicker timeselect={true} onChange={(e) => { this.setState({ date: e }, () => console.log(this.state.date.format("YYYY/MM/DDTHH:mm:ss"))) }} dateFormat="DD-MM-YYYY HH:mm" />
+    return <DatePicker timeselect={true} onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD-MM-YYYY HH:mm" />
   }
 
   renderDocumentStatus() {
@@ -247,7 +237,7 @@ class IssuedManage extends Component {
 
   addData() {
     const data = this.state.data
-    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", ID: "" })
+    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitTypeName: "", ID: "" })
     this.addIndex -= 1
     this.setState({ data })
   }
@@ -266,8 +256,8 @@ class IssuedManage extends Component {
         data[rowdata.index][field] = value.Code;
         data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
-        data[rowdata.index]["unitType_Name"] = value.UnitType;
-        data[rowdata.index]["id"] = value.SKUMaster_ID;
+        data[rowdata.index]["UnitTypeName"] = value.UnitTypeName;
+        data[rowdata.index]["id"] = value.ID;
       }
       this.setState({ data });
 
@@ -275,7 +265,7 @@ class IssuedManage extends Component {
       let res = this.state.autocompleteUpdate
       this.state.data.forEach(datarow => {
         res = res.filter(row => {
-          return datarow["SKU"] !== row.SKU && datarow["UnitTypeCode"] !== row.UnitType
+          return datarow["SKU"] !== row.SKU && datarow["UnitTypeCode"] !== row.UnitTypeCode
         })
       })
       this.setState({ autocomplete: res })
@@ -284,7 +274,7 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = "";
       data[rowdata.index]["SKU"] = "";
       data[rowdata.index]["UnitTypeCode"] = "";
-      data[rowdata.index]["UnitType"] = "";
+      data[rowdata.index]["UnitTypeName"] = "";
       data[rowdata.index]["id"] = "";
     }
     else if (rowdata.column.datatype === "int") {
@@ -297,57 +287,25 @@ class IssuedManage extends Component {
     return <span>{data}</span>
   }
 
-
-  toggle() {
-    this.setState({ modalstatus: !this.state.modalstatus });
-  }
-
-  createModal() {
-    return <Modal isOpen={this.state.modalstatus}>
-      <ModalHeader toggle={this.toggle}> <span>Name : Pallet, Box</span></ModalHeader>
-      <ModalBody>
-        <div>
-          <AutoSelect data={this.state.storageObjectdata} result={e => this.setState({ codebase: e.label })} />
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="primary" id="off" onClick={() => { this.onClickSelect(this.state.codebase); this.toggle() }}>OK</Button>
-      </ModalFooter>
-    </Modal>
-  }
-
-  onClickSelect(code) {
-    this.setState({ code, remark: code, basedisplay: "block" })
-    if (code === undefined) {
-      return null
-    } else {
-      Axios.get(window.apipath + "/api/trx/mapsto?type=1&code=" + code + "&isToChild=true").then((res) => {
-        var resultToListTree = ToListTree(res.data.mapsto, "mapstos")
-        this.onClickGroup(resultToListTree)
-      })
-    }
-  }
-
   createAutoComplete(rowdata) {
     if (!this.state.readonly) {
       const style = {
         borderRadius: '3px',
-        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
-        background: 'rgba(255, 255, 255, 0.9)',
-        padding: '2px 0',
-        fontSize: '90%',
-        //position: 'fixed',
-        //maxHeight:'50px',
-        //min:'20px',
-        overflow: 'auto',
-        maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
-        zIndex: '998',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)',
+          background: 'rgba(255, 255, 255, 0.9)',
+          padding: '2px 0',
+          fontSize: '90%',
+          position: 'fixed',
+          overflow: 'auto',
+          maxHeight: '20%', // TODO: don't cheat, let it flow to the bottom
+          zIndex: '998',
       }
 
       return <ReactAutocomplete
         inputProps={{
           style: {
-            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
+            width: "100%", borderRadius: "1px", 
+            backgroundImage: 'url(' + arrimg + ')',
             backgroundPosition: "8px 8px",
             backgroundSize: "10px",
             backgroundRepeat: "no-repeat",
@@ -390,36 +348,6 @@ class IssuedManage extends Component {
     }
   }
 
-  onClickGroup(data) {
-    var arrType = data.filter((res) => {
-      return res.type === 2
-    })
-    var groupArray = require('group-array');
-    const groupItem = groupArray(arrType, 'code');
-    var arrdata = []
-    for (var datarow in groupItem) {
-      groupItem[datarow][0].id = groupItem[datarow][0].mstID
-      groupItem[datarow][0].PackItem = groupItem[datarow][0].code
-      groupItem[datarow][0].PackQty = groupItem[datarow].length
-      arrdata.forEach((row2, index) => {
-        if (row2.code === groupItem[datarow][0].code) {
-          arrdata.splice(index, 1)
-        }
-      });
-      let getUnit = this.state.autocomplete.filter(rowauto => {
-        return rowauto.Code === groupItem[datarow][0].code
-      })
-      groupItem[datarow][0].UnitType = getUnit[0].UnitType
-      groupItem[datarow][0].SKU = getUnit[0].SKU
-      arrdata.push(groupItem[datarow][0])
-
-
-    }
-    this.setState({ data: arrdata }, () => console.log(this.state.data))
-
-  }
-
-
   render() {
 
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
@@ -430,7 +358,7 @@ class IssuedManage extends Component {
        { accessor: "code", Header: "SKU Item",Cell: (e) => this.createAutoComplete(e),  width: 550 },
        //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
        { accessor: 'batch', Header: 'Batch', editable: false, Cell: e => this.inputCell("batch", e), datatype:"text" },
-       { accessor: "unitType_Name", Header: "Unit"},
+       { accessor: "UnitTypeName", Header: "Unit"},
        {
         Cell: (e) => <Button onClick={() => {
           const data = this.state.data;
@@ -456,10 +384,9 @@ class IssuedManage extends Component {
       { accessor: 'locationCode', Header: 'Location Code', editable: false },
       { accessor: "code", Header: "SKU Item",  width: 550 },
       { accessor: 'batch', Header: 'Batch', editable: false, },
-      { accessor: "unitType_Name", Header: "Unit", editable: false,},]
+      { accessor: "UnitTypeName", Header: "Unit", editable: false,},]
     return (
       <div>
-        {this.createModal()}
         <div className="clearfix">
           <Row>
             <Col xs="6"><div className="d-block" >SAP Document : <span style={{ marginLeft: '5px' }}>{this.state.auditNo}</span></div></Col>

@@ -1,8 +1,11 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
+using AWMSEngine.Engine.Business.Issued;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
+using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -16,7 +19,7 @@ namespace AWMSEngine.Engine.Business.Received
 
         public class TDocReq
         {
-            public long[] docIDs;
+            public List<long> docIDs;
         }
         public class TDocRes
         {
@@ -25,77 +28,122 @@ namespace AWMSEngine.Engine.Business.Received
 
         protected override TDocRes ExecuteEngine(TDocReq reqVO)
         {
-            TDocRes res = new TDocRes();
-            res.documents = new List<amt_Document>();
-            foreach (long id in reqVO.docIDs)
+            var docReceivs = ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
+            var docNotCloseds = docReceivs.Where(x => x.EventStatus != DocumentEventStatus.CLOSING && x.EventStatus != DocumentEventStatus.IDLE);
+            if (docNotCloseds.Count() > 0)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ IDLE หรือ CLOSING เท่านั้น");
+
+            List<SPOutSTORootCanUseCriteria> rootStos = new List<SPOutSTORootCanUseCriteria>();
+            List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
+            docReceivs.ForEach(doc =>
             {
-                amt_Document doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(id, this.BuVO);
+                var rtStos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID.Value, null, doc.DocumentType_ID, this.BuVO);
+                rootStos.AddRange(rtStos);
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+                //doc.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
+                docItems.AddRange(doc.DocumentItems);
+            });
 
-                if (doc == null || doc.Status == EntityStatus.REMOVE)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + id);
+            List<amt_Document> docIssues = new List<amt_Document>();
+            //List<long> bstoIDForReturns = rootStos.Select(x => x.id).Distinct().ToList();
+            foreach (var docRecv in docReceivs)
+            {
+                var docIssue = new Engine.Business.Issued.CreateDocument().Execute(
+                                this.Logger,
+                                this.BuVO,
+                                new Issued.CreateDocument.TReq()
+                                {
+                                    parentDocumentID = docRecv.ID,
+                                    souBranchID = docRecv.Des_Branch_ID,
+                                    souWarehouseID = docRecv.Des_Warehouse_ID,
+                                    souAreaMasterID = docRecv.Des_AreaMaster_ID,
+                                    desBranchID = docRecv.Sou_Branch_ID,
+                                    desWarehouseID = docRecv.Sou_Warehouse_ID,
+                                    desAreaMasterID = docRecv.Sou_AreaMaster_ID,
+                                    desCustomerID = docRecv.Sou_Customer_ID,
+                                    desSupplierID = docRecv.Sou_Supplier_ID,
+                                    eventStatus = DocumentEventStatus.WORKING,
+                                    batch = docRecv.Batch,
+                                    lot = docRecv.Lot,
 
+                                    actionTime = DateTime.Now,
+                                    documentDate = DateTime.Now,
+                                    remark = "Return by " + docRecv.Code,
+                                    refID = string.Empty,
+                                    ref2 = "RETURN",
 
-                if ( doc.EventStatus == DocumentEventStatus.WORKED)
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "สินค้าถูกรับเข้าเรียบร้อยแล้ว");
-                }
+                                    issueItems = docRecv.DocumentItems.Select(
+                                        x => new Issued.CreateDocument.TReq.IssueItem
+                                        {
+                                            lot = x.Lot,
+                                            batch = x.Batch,
+                                            orderNo = x.OrderNo,
+                                            unitType = StaticValue.UnitTypes.First(ut => ut.ID == x.UnitType_ID).Code,
+                                            quantity = x.Quantity,
+                                            packID = x.PackMaster_ID,
+                                            options = x.Options ?? "" + "&doci_id=" + x.ID,
+                                            productionDate = x.ProductionDate,
+                                            expireDate = x.ExpireDate,
+                                            refID = x.RefID,
+                                            ref1 = x.Ref1,
+                                            ref2 = x.Ref2,
+                                            eventStatus = DocumentEventStatus.WORKING
 
-                if (doc.EventStatus == DocumentEventStatus.CLOSING || doc.EventStatus == DocumentEventStatus.CLOSED)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารอยู่ในสถานะ " + doc.EventStatus);
+                                        }).ToList()
+                                });
 
-                if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDLE && doc.EventStatus != DocumentEventStatus.WORKING)
-                {
-                    var stos = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
-                    if (stos.Count > 0)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
-                }
+                docIssues.Add(docIssue);
 
-
-
-                List<amt_DocumentItem> linkDocItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
-                                                        new SQLConditionCriteria[] {
-                                                            new SQLConditionCriteria("LinkDocument_ID",doc.ID, SQLOperatorType.EQUALS),
-                                                            new SQLConditionCriteria("Status",2, SQLOperatorType.NOTEQUALS)
-                                                        }, this.BuVO);
-                if (linkDocItems.Count > 0)
-                {
-                    string[] docConfixs = ADO.DataADO.GetInstant().SelectBy<amt_Document>(
-                        new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("ID",string.Join(",",linkDocItems.Select(x=>x.Document_ID).ToArray()), SQLOperatorType.IN)
-                        }, this.BuVO).Select(x => x.Code).ToArray();
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "กรุณา Reject เอกสาร '" + string.Join(',', docConfixs) + "' ก่อน");
-
-                }
-
-
-                var stoToReceives = ADO.DocumentADO.GetInstant().ListStoInDocs(doc.ID.Value, this.BuVO);
-                var stoLasters = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
-                        new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("ID",string.Join(",",stoToReceives.Select(x=>x.StorageObject_ID).ToArray()), SQLOperatorType.IN)
-                        }, this.BuVO);
-                var rootStoToReceives = stoLasters.Where(x => x.Status == EntityStatus.ACTIVE || x.Status == EntityStatus.DONE)
-                    .GroupBy(x => x.ParentStorageObject_ID ?? x.ID)
-                    .Select(x => x.Key.Value);
-
-                rootStoToReceives.ToList().ForEach(x =>
-                {
-                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x, null, EntityStatus.DONE, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                });
-
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
-                    null, null,
-                    DocumentEventStatus.REJECTED,
-                    this.BuVO);
-
-
-                doc.EventStatus = DocumentEventStatus.REJECTED;
-                doc.Status = EntityStatus.REMOVE;
-                res.documents.Add(doc);
             }
 
-            return res;
-        }
+            ConfirmQueueIssue.TReq reqQueue = new ConfirmQueueIssue.TReq();
+            reqQueue.DocumentProcessed = new List<ConfirmQueueIssue.TReq.DocumentProcess>();
 
+            foreach(var docIssue in docIssues)
+            {
+                foreach(var docRecvItem in docReceivs.First(x=>x.ID == docIssue.ParentDocument_ID).DocumentItems)
+                {
+                    foreach (var rtSto in rootStos
+                        .FindAll(x => x.docItemID == docRecvItem.ID)
+                        .GroupBy(x => new {
+                            id = x.id,
+                            packCode = x.packCode,
+                            baseCode = x.code,
+                            areaID = x.areaID,
+                            batch = x.batch,
+                            lot = x.lot,
+                            orderNo = x.orderNo,
+                            distoBaseUnitID = x.distoBaseUnitID,
+                            warehouseID = x.warehouseID,
+                        }))
+                    {
+                        var docIssueItem = docIssue.DocumentItems.First(x =>
+                        AMWUtil.Common.ObjectUtil.QryStrGetValue(x.Options, "doci_id") == docRecvItem.ID.Value.ToString());
+                        reqQueue.DocumentProcessed.Add(new ConfirmQueueIssue.TReq.DocumentProcess()
+                        {
+                            stoi = rtSto.Key.id,
+                            baseCode = rtSto.Key.baseCode,
+                            itemCode = rtSto.Key.packCode,
+                            docID = docIssue.ID.Value,
+                            docCode = docIssue.Code,
+                            dociID = docIssueItem.ID.Value,
+                            areaID = rtSto.Key.areaID,
+                            batch = rtSto.Key.batch,
+                            lot = rtSto.Key.lot,
+                            orderNo = rtSto.Key.orderNo,
+                            priority = 2,
+                            qty = rtSto.Sum(x => x.distoQty),
+                            stoBaseQty = rtSto.Sum(x => x.distoBaseUnitID),
+                            wareHouseID = rtSto.Key.warehouseID,
+                        });
+                    }
+                }
+            }
+
+            var resQueue = new ConfirmQueueIssue().Execute(this.Logger, this.BuVO, reqQueue);
+            //if (true) throw new Exception("test");
+            return new TDocRes() { documents = docReceivs };
+        }
+        
     }
 }
