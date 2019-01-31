@@ -387,5 +387,33 @@ namespace AWMSEngine.Engine.Business.Issued
             res.DocumentProcessed = listDocProcessed;
             return res;
         }
+
+
+        public void CloseDocumentNotDisto(List<long> docIDs)
+        {
+            docIDs = docIDs.Distinct().ToList();
+            var docs = ADO.DocumentADO.GetInstant().ListAndItem(docIDs, this.BuVO);
+            docs.ForEach(doc =>
+            {
+                doc.DocumentItems.ForEach(doci =>
+                {
+                    var countInactive = ADO.DataADO.GetInstant().CountBy<amt_DocumentItemStorageObject>(
+                        new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("documentItem_ID",doci.ID.Value, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("status",EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
+                        },this.BuVO);
+                    if(countInactive == 0)
+                    {
+                        doci.EventStatus = DocumentEventStatus.WORKED;
+                        doci.Status = ADO.DocumentADO.GetInstant().UpdateItemEventStatus(doci.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                    }
+                });
+                if(doc.DocumentItems.TrueForAll(x=>x.EventStatus == DocumentEventStatus.WORKED))
+                {
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                }
+            });
+        }
     }
 }

@@ -141,6 +141,36 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public int CountBy<T>(SQLConditionCriteria[] wheres, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            var _count = SelectBy<dynamic>(
+                typeof(T).Name.Split('.').Last(),
+                "count(1) c",
+                "",
+                wheres,
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO).FirstOrDefault();
+            if (_count == null) return 0;
+            return (int)_count.c;
+        }
+        public decimal SumBy<T>(string field, SQLConditionCriteria[] wheres, VOCriteria buVO)
+             where T : IEntityModel
+        {
+            var _count = SelectBy<dynamic>(
+                typeof(T).Name.Split('.').Last(),
+                "sum("+field+") c",
+                "",
+                wheres,
+                new SQLOrderByCriteria[] { },
+                null,
+                null,
+                buVO).FirstOrDefault();
+            if (_count == null) return 0;
+            return (decimal)_count.c;
+        }
         public T SelectByID<T>(object value, VOCriteria buVO)
              where T : IEntityModel
         {
