@@ -70,13 +70,14 @@ namespace AWMSEngine.Engine.Business.Picking
                     new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
                 }, this.BuVO);
 
-                if(getDiSto.Count() > 0)
-                    setSTO.eventStatus = StorageObjectEventStatus.RECEIVED;
-                else
-                    setSTO.eventStatus = setSTO.baseQty - basePicked.baseQty > 0 ? StorageObjectEventStatus.PICKING : StorageObjectEventStatus.PICKED;
-
                 setSTO.qty = setSTO.qty - x.picked;
                 setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
+
+                if (getDiSto.Count() > 0)
+                    setSTO.eventStatus = StorageObjectEventStatus.RECEIVED;
+                else
+                    setSTO.eventStatus = setSTO.baseQty > 0 ? StorageObjectEventStatus.PICKING : StorageObjectEventStatus.PICKED;
+
 
                 if(x.picked > 0)
                     ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, reqVO.pickMode,  this.BuVO);
