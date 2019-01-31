@@ -146,18 +146,26 @@ class AuditReport extends Component {
       return <div>{date.format('DD-MM-YYYY')}</div>
     }
   }
-
-  sumFooterQty() {
-    return _.sumBy(this.state.data,
+  sumFooter(value) {
+    var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
-        parseFloat(x.BaseQuantity) : null)
+        parseFloat(x[value]) : null)
+    if (sumVal === 0 || sumVal === null || sumVal === undefined)
+      return '-'
+    else
+      return sumVal.toFixed(3)
   }
+  // sumFooterQty() {
+  //   return _.sumBy(this.state.data,
+  //     x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
+  //       parseFloat(x.BaseQuantity) : null)
+  // }
 
-  sumFooterBalance() {
-    return _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
-        parseFloat(x.Balance) : null)
-  }
+  // sumFooterBalance() {
+  //   return _.sumBy(this.state.data,
+  //     x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
+  //       parseFloat(x.Balance) : null)
+  // }
   paginationButton() {
     const notPageactive = {
       pointerEvents: 'none',
@@ -265,7 +273,7 @@ class AuditReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterQty() === null || this.sumFooterQty() === undefined || this.sumFooterQty() === 0 ? '-' : this.sumFooterQty()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("BaseQuantity")}</span>)
       },
 
       {
@@ -276,7 +284,7 @@ class AuditReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterBalance() === null || this.sumFooterBalance() === undefined || this.sumFooterBalance() === 0 ? '-' : this.sumFooterBalance()}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Balance")}</span>)
       },
 
       { accessor: 'UnitType_Code', Header: 'Unit', editable: false, sortable: true },
