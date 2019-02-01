@@ -49,6 +49,7 @@ class IssuedDoc extends Component {
         all: "",
       },
       modalstatus: false,
+      modalstatusData : false,
       sortstatus: 0,
       open: false,
       errorstr: null,
@@ -69,6 +70,7 @@ class IssuedDoc extends Component {
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.toggleData = this.toggleData.bind(this);
     this.createModal = this.createModal.bind(this);
     this.station = [{ 'label': "Front", 'value': 2 }, { 'label': "Back", 'value': 3 }];
   }
@@ -153,7 +155,10 @@ class IssuedDoc extends Component {
 
   toggle() {
     this.setState({ modalstatus: !this.state.modalstatus });
-    this.RejectCheck()
+  }
+
+  toggleData() {
+    this.setState({ modalstatusData: !this.state.modalstatusData });
   }
 
   createModal() {
@@ -165,15 +170,49 @@ class IssuedDoc extends Component {
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" id="off" onClick={() => { this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>OK</Button>
+      <Button color="primary" id="off" onClick={() =>{ this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>Comfirm</Button>
+        <Button color="" id="off" onClick={() =>this.toggle() }>Cancle</Button>
       </ModalFooter>
     </Modal>
   }
 
-  RejectCheck() {
-    this.state.selectiondata.forEach(x => {
+  createModalData() {
+    return <Modal isOpen={this.state.modalstatusData}>
+      <ModalHeader toggle={this.toggleData}> <span>Reject</span></ModalHeader>
+      <ModalFooter>
+        <Button color="primary" id="off" onClick={() =>{this.RejectIDLE(this.state.selectiondata); this.toggleData() }}>Comfirm</Button>
+        <Button color="" id="off" onClick={() =>this.toggleData() }>Cancle</Button>
+      </ModalFooter>
+    </Modal>
+  }
+
+
+  RejectIDLE(data){
+    let postdata = { docIDs: [] }
+    if (data.length > 0) {
+      data.forEach(rowdata => {
+        postdata["docIDs"].push(rowdata.ID)  
+      })
+console.log(postdata)
+        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {     
+          this.getData()
+          this.setState({ resp: res.data._result.message })   
+          console.log(res)    
+        })
+      
+    }
+  }
+
+
+
+  RejectCheck(){
+    this.state.selectiondata.forEach( x=>{
       console.log(x.EventStatus)
-      //if(x.EventStatus === 10){}
+      if(x.EventStatus === 10){
+        this. toggleData()
+      }else{
+        this.toggle()
+      }
     })
   }
 
@@ -186,16 +225,15 @@ class IssuedDoc extends Component {
         postdata["AreaID"] = this.state.desAreaID
       })
       if (status === "reject") {
+       
 
-        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {
+        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {     
           this.getData()
-          this.setState({ resp: res.data._result.message })
-          console.log(res.data._result.status)
-          if (res.data._result.status !== 0) {
-            alert("Success")
-          }
+          this.setState({ resp: res.data._result.message })   
+          console.log(res.data._result.status)    
         })
-      } else {
+      }
+      else {
         Axios.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => {
           this.getData()
           this.setState({ resp: res.data._result.message })
@@ -435,6 +473,7 @@ class IssuedDoc extends Component {
 
       <div>
         {this.createModal()}
+        {this.createModalData()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
 
@@ -488,7 +527,7 @@ class IssuedDoc extends Component {
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }}
-              onClick={() => this.toggle()} color="danger" className="float-right">Reject</Button>
+              onClick={() => this.RejectCheck()} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_close" style={{ width: '130px', display: this.state.showbutton }}
               onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
