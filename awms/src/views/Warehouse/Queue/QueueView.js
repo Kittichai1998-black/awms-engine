@@ -64,26 +64,22 @@ class QueueView extends Component {
     if (this.state.pathname) {
       if (this.state.locsearch === "IN") {
         if (this.state.pathname === "/sys/gr/progress") {
-          if (!CheckViewCreatePermission("ReProgress_view", dataGetPer)) {
-            this.props.history.push("/404")
-          } else {
-            document.title = "Receiving Progress : AWMS";
-          }
+          document.title = "Receiving Progress : AWMS";
+          // if (!CheckViewCreatePermission("ReProgress_view", dataGetPer)) {
+          //   this.props.history.push("/404")
+          // }
         } else {
           this.props.history.push("/404")
-
         }
       }
       if (this.state.locsearch === "OUT") {
         if (this.state.pathname === "/sys/gi/progress") {
-          if (!CheckViewCreatePermission("IssuProgress_view", dataGetPer)) {
-            this.props.history.push("/404")
-          } else {
-            document.title = "Issuing Progress : AWMS";
-          }
+          document.title = "Issuing Progress : AWMS";
+          // if (!CheckViewCreatePermission("IssuProgress_view", dataGetPer)) {
+          //   this.props.history.push("/404")
+          // }  
         } else {
           this.props.history.push("/404")
-
         }
       }
     }
@@ -136,44 +132,43 @@ class QueueView extends Component {
       {
         Header: "No.",
         id: "row",
-        maxWidth: 50,
+        width: 50,
         filterable: false,
+        className: 'center',
         Cell: (row) => {
-          return <div>{row.index+1}</div>;
+          return <div>{row.index + 1}</div>;
         }
       },
-    { accessor: "ActualTime", Header: "ActualTime",Cell: (e) =>
-      this.datetimeBody(e.value, "date")  },
-    // { accessor: "IOType", Header: "IOType", minWidth: 50, className: 'center' },
-    { accessor: "Priority", Header: "Priority", minWidth: 60, className: 'center' },   
-    { accessor: "StorageObject_Code", Header: "Pallet", minWidth: 95 },
-    { accessor: "Pack_Name", Header: "Pack", minWidth: 290 },
-    { accessor: "Des_Warehouse_Name", Header: "Destination" },
-    { accessor: "StartTime", Header: "Start",Cell: (e) =>
-      this.datetimeBody(e.value, "")  },
-    { accessor: "EndTime", Header: "End",Cell: (e) =>
-      this.datetimeBody(e.value, "") },
-    { accessor: "Document_Code", Header: "Document" },
-    { accessor: "RefID", Header: "SAP Document" },
-  ]
-    
+      {
+        accessor: "ActualTime", Header: "Actual Time", className: 'center', width: 100, Cell: (e) =>
+          this.datetimeBody(e.value, "date")
+      },
+      // { accessor: "IOType", Header: "IOType", minWidth: 50, className: 'center' },
+      { accessor: "Priority", Header: "Priority", width: 70, className: 'center' },
+      { accessor: "StorageObject_Code", Header: "Pallet", width: 100 },
+      { accessor: "Pack_Name", Header: "Product" },
+      { accessor: "Des_Warehouse_Name", Header: "Destination", width: 150 },
+      { accessor: "Document_Code", Header: "Doc No.", width: 130 },
+      { accessor: "RefID", Header: "SAP.Doc No.", width: 130 },
+    ]
+
     return (
       <div>
         <div className="clearfix">
-    
+
         </div>
-        <ReactTable columns={cols} data={this.state.data} minRows={100} defaultPageSize={10000} showPagination={false}
-          style={{ background: 'white', marginBottom: '10px' }} multiSort={false}
+        <ReactTable columns={cols} data={this.state.data} minRows={30} showPagination={false}
+          style={{ background: 'white', marginBottom: '10px', fontSize: '1.125em', maxHeight: '50em', fontWeight: '450' }} multiSort={false}
           getTrProps={(state, rowInfo) => {
             if (rowInfo !== undefined) {
               if (rowInfo.original.Status === 3) {
-                return { className: "success" }; //orange
+                return { className: "inqueue" }; //white
               }
               else if (rowInfo.original.Status === 1) {
-                return { className: "working" }; //blue
+                return { className: "working" }; //yellow
               }
               else if (rowInfo.original.Status === 0) {
-                return { className: "idle" }; //yellow
+                return { className: "working" }; //yellow
               }
               else {
                 return {}
