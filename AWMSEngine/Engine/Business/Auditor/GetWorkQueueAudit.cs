@@ -96,8 +96,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                         StorageObject_ID = sto.ID.Value,
                         BaseQuantity = (decimal?)null,
                         Quantity = (decimal?)null,
-                        BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                        UnitType_ID = docItem.UnitType_ID.Value,
+                        BaseUnitType_ID = sto.BaseUnitType_ID,
+                        UnitType_ID = sto.UnitType_ID,
                         Status = EntityStatus.INACTIVE
                     });
                 }

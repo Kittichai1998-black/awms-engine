@@ -25,5 +25,10 @@ namespace AWMSModel.Entity
         public string Batch;
         public string Lot;
         public string OrderNo;
+        public long BaseUnitType_ID;
+        public long UnitType_ID;
+        public decimal Quantity;
+        public decimal BaseQuantity;
+
     }
 }

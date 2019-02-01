@@ -153,6 +153,7 @@ class IssuedDoc extends Component {
 
   toggle() {
     this.setState({ modalstatus: !this.state.modalstatus });
+    this.RejectCheck()
   }
 
   createModal() {
@@ -169,6 +170,12 @@ class IssuedDoc extends Component {
     </Modal>
   }
 
+  RejectCheck(){
+    this.state.selectiondata.forEach( x=>{
+      console.log(x.EventStatus)
+      //if(x.EventStatus === 10){}
+    })
+  }
 
   workingData(data, status) {
     console.log(data)
