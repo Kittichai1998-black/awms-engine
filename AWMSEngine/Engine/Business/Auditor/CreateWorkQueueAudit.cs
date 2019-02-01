@@ -64,26 +64,41 @@ namespace AWMSEngine.Engine.Business.Auditor
                     });
                 }
             });
-            queueCheck.queueOut = queueOut;
+            //queueCheck.queueOut = queueOut;
 
-            var wcsRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
-            if (wcsRes._result.resultcheck == 0)
+            //var wcsRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
+            //if (wcsRes._result.resultcheck == 0)
+            //{
+            //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
+            //}
+
+            List<amt_DocumentItemStorageObject> distoList = new List<amt_DocumentItemStorageObject>();
+            reqVO.disto.ForEach(x =>
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
-            }
+                distoList.Add(ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO));
+                ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(x.ID.Value, EntityStatus.INACTIVE, this.BuVO);//ADD BY TOM
+                var res = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                var resBase = ADO.StorageObjectADO.GetInstant().Get(res.parentID.Value, StorageObjectType.PACK, false, false, this.BuVO);
+                itemLists.Add(new TRes.ItemList { itemCode = res.code, palletCode = resBase.code });
+            });
 
             reqVO.workQueue.ForEach(x =>
             {
-                var getStatusSto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, false, this.BuVO);
+                var getStatusSto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                var getStoList = getStatusSto.ToTreeList().Where(sto => sto.type == StorageObjectType.PACK).Select(sel => sel.id).ToArray();
                 if (getStatusSto.eventStatus != StorageObjectEventStatus.RECEIVED)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าอยู่ในสถานะ" + getStatusSto.eventStatus + "ไม่สามารถเบิกสินค้าตรวจสอบได้");
 
                 if (x.Sou_AreaMaster_ID == 5)//ASRS
                 {
+                    var distoItem = distoList.Where(dis => getStoList.Contains(dis.StorageObject_ID)).ToList();
+                    var getDocItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
+                            new SQLConditionCriteria("ID", distoList.Select(sto => sto.DocumentItem_ID ).ToList(), SQLOperatorType.IN)
+                        }, this.BuVO);
                     //ADD BY TOM
                     var docItemAudits = ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { x.StorageObject_ID.Value }, DocumentTypeID.AUDIT, this.BuVO);
                     var bsto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
-                    x.DocumentItemWorkQueues = AWMSEngine.Common.ConverterModel.ToDocumentItemWorkQueue(docItemAudits, bsto, x.ID.Value);
+                    x.DocumentItemWorkQueues = AWMSEngine.Common.ConverterModel.ToDocumentItemWorkQueue(docItemAudits.Count == 0 ? getDocItem : docItemAudits, bsto);
                     //***
 
                     var resWorkQueue = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
@@ -109,21 +124,12 @@ namespace AWMSEngine.Engine.Business.Auditor
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.StorageObject_ID.Value, null, null, StorageObjectEventStatus.AUDITING, this.BuVO);
             });
 
-            queueCheck.queueOut = queueOut2;
-            var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
-            if (wcsAcceptRes._result.resultcheck == 0)
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
-            }
-
-            reqVO.disto.ForEach(x =>
-            {
-                ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO);
-                ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(x.ID.Value, EntityStatus.INACTIVE, this.BuVO);//ADD BY TOM
-                var res = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
-                var resBase = ADO.StorageObjectADO.GetInstant().Get(res.parentID.Value, StorageObjectType.PACK, false, false, this.BuVO);
-                itemLists.Add(new TRes.ItemList { itemCode = res.code, palletCode = resBase.code });
-            });
+            //queueCheck.queueOut = queueOut2;
+            //var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
+            //if (wcsAcceptRes._result.resultcheck == 0)
+            //{
+            //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
+            //}
 
             ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
             listQueue.docID = reqVO.docID;
