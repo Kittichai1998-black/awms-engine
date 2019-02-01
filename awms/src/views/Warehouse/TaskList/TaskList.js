@@ -81,7 +81,7 @@ class TaskList extends Component {
   }
 
   GetListData() {
-    if (this._mounted) { 
+    if (this._mounted) {
       API.all([API.get(createQueryString(this.state.WorkingOutselect)),
       API.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
         + "&spname=DASHBOARD_TASK_ON_FLOOR")]).then((res) => {
@@ -130,30 +130,30 @@ class TaskList extends Component {
 
   render() {
     const cols1 = [
-      { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
-      { accessor: "AreaLoc_Code", Header: "Gate", minWidth: 50 },
-      { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
-      { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "QtyUnit", Header: "Qty", minWidth: 120 },
-      { accessor: "Destination", Header: "Destination", minWidth: 150 },
-      { accessor: "Document_Code", Header: "Doc No.", minWidth: 105 },
-      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
+      { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
+      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 180 },
+      { accessor: "Base_Code", Header: "Pallet", width: 100 },
+      { accessor: "Product", Header: "Product" },
+      { accessor: "QtyUnit", Header: "Qty", width: 130, className: 'right' },
+      { accessor: "Destination", Header: "Destination", width: 200 },
+      { accessor: "Document_Code", Header: "Doc No.", width: 105 },
+      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 110 },
     ]
     const cols2 = [
-      { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
+      { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       {
-        accessor: "TaskName", Header: "Task Name", minWidth: 80, className: 'center',
+        accessor: "TaskName", Header: "Task Name", width: 80, className: 'center',
         Cell: row => (
           <Badge color={row.value} style={{ fontSize: '0.825em', fontWeight: '500' }}>{row.value}</Badge>
         )
       },
-      { accessor: "LocationCode", Header: "Stage", minWidth: 100 },
-      { accessor: "PalletCode", Header: "Pallet", minWidth: 100 },
-      { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "Qty", Header: "Qty", minWidth: 120 },
-      { accessor: "Destination", Header: "Destination", minWidth: 100 },
-      { accessor: "DocNo", Header: "Doc No.", minWidth: 105 },
-      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
+      { accessor: "LocationCode", Header: "Stage", width: 100 },
+      { accessor: "PalletCode", Header: "Pallet", width: 100 },
+      { accessor: "Product", Header: "Product" },
+      { accessor: "Qty", Header: "Qty", width: 130, className: 'right' },
+      { accessor: "Destination", Header: "Destination", width: 200 },
+      { accessor: "DocNo", Header: "Doc No.", width: 105 },
+      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 110 },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
@@ -171,7 +171,7 @@ class TaskList extends Component {
               <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
                 <Row>
                   <Col sm="1" xs="6" md="1" lg="1">{logoamw}</Col>
-                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={1000} /></span></label></Col>
+                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
                   <Col sm="3" xs="3" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Area: </label></Col>
                   <Col sm="4" xs="7" md="4" lg="4">{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
                     this.updateQueueData(res.value)
