@@ -31,7 +31,10 @@ namespace AWMSEngine.Common
                                                         x.lot == di.Lot &&
                                                         x.orderNo == di.OrderNo)
                                                 .Sum(x => x.baseQty);
-                    var unitConvert = StaticValueManager.GetInstant().ConvertToNewUnitBySKU(di.SKUMaster_ID.Value, baseQty, di.BaseUnitType_ID.Value, di.UnitType_ID.Value);
+
+                    var getSto = mapstoTree.Where(x => x.type == StorageObjectType.PACK).FirstOrDefault();
+                    var unitConvert = StaticValueManager.GetInstant().ConvertToNewUnitBySKU(getSto.skuID.Value, baseQty, getSto.baseUnitID, getSto.unitID);
+
                     amt_WorkQueueDocumentItem r = new amt_WorkQueueDocumentItem()
                     {
                         BaseQuantity = unitConvert.baseQty,
