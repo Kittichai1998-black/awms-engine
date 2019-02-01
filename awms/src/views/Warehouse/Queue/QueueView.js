@@ -3,6 +3,7 @@ import "react-table/react-table.css";
 import { Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table';
 import queryString from 'query-string'
+import moment from 'moment';
 import { apicall, createQueryString } from '../ComponentCore';
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
@@ -20,12 +21,25 @@ class QueueView extends Component {
       queryString: window.apipath + "/api/viw",
       t: "WorkQueue",
       q: "",
-      f: "Row,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
+      f: "Status,ActualTime,StartTime,EndTime,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
         "Sou_Area_Name,Des_Area_Name,Sou_AreaLocation_Name,Des_AreaLocation_Name,UserName,CreateTime,Document_Code",
       g: "",
-      s: "[{'f':'Row','od':'desc'}]",
+      s: "[{'f':'CASE WHEN Status = 1 THEN Status END','od':'DESC'},{'f':'CASE WHEN Status = 3 THEN Status END','od':'ASC'},{'f':'CASE WHEN Status = 0 THEN Status END','od':'ASC'}]",
       sk: 0,
-      l: 20,
+      l: 100,
+      all: "",
+      //ORDER BY CASE WHEN wq.Status = 1 THEN wq.Status END ASC, 
+      //CASE WHEN wq.Status = 0 THEN wq.Status END DESC, CASE WHEN wq.Status = 3 THEN wq.Status END DESC
+    }
+    this.selectCheck = {
+      queryString: window.apipath + "/api/viw",
+      t: "WorkQueue",
+      q: "",
+      f: "*",
+      g: "",
+      s: "[{'f':'Status','od':'desc'}]",
+      sk: 0,
+      l: 1,
       all: "",
     }
 
@@ -80,6 +94,14 @@ class QueueView extends Component {
       var url = this.select;
       url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + this.state.locsearch + "'}]";
       this.GetQueueData(url)
+
+      // API.get(createQueryString(this.selectCheck)).then(check => {
+
+      //   console.log(check)
+
+      // })
+
+
       let interval = setInterval(() => { this.GetQueueData(url) }, 2000);
       this.setState({ interval: interval })
     }
@@ -95,40 +117,63 @@ class QueueView extends Component {
     })
   }
 
+  datetimeBody(value, format) {
+    if (value !== null) {
+      const date = moment(value);
+      if (format === "date") {
+        return <div>{date.format('HH:mm:ss')}</div>
+      } else if (format === "datelog") {
+        return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+      } else {
+        return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
+      }
+    }
+  }
+
   render() {
-    const cols = [{ accessor: "Row", Header: "No.", className: 'center', minWidth: 40 },
-    { accessor: "IOType", Header: "IOType", minWidth: 50, className: 'center' },
-    { accessor: "Priority", Header: "Priority", minWidth: 60, className: 'center' },
-    { accessor: "Document_Code", Header: "Document" },
-    { accessor: "RefID", Header: "SAP Document" },
+    const cols = [
+      // { accessor: "Row", Header: "No.", className: 'center', minWidth: 40 },
+      {
+        Header: "No.",
+        id: "row",
+        maxWidth: 50,
+        filterable: false,
+        Cell: (row) => {
+          return <div>{row.index+1}</div>;
+        }
+      },
+    { accessor: "ActualTime", Header: "ActualTime",Cell: (e) =>
+      this.datetimeBody(e.value, "date")  },
+    // { accessor: "IOType", Header: "IOType", minWidth: 50, className: 'center' },
+    { accessor: "Priority", Header: "Priority", minWidth: 60, className: 'center' },   
     { accessor: "StorageObject_Code", Header: "Pallet", minWidth: 95 },
     { accessor: "Pack_Name", Header: "Pack", minWidth: 290 },
-    { accessor: "Des_AreaLocation_Name", Header: "Destination" },
-    { accessor: "StartTime", Header: "Start",  },
-    { accessor: "EndTime", Header: "End",}]
+    { accessor: "Des_Warehouse_Name", Header: "Destination" },
+    { accessor: "StartTime", Header: "Start",Cell: (e) =>
+      this.datetimeBody(e.value, "")  },
+    { accessor: "EndTime", Header: "End",Cell: (e) =>
+      this.datetimeBody(e.value, "") },
+    { accessor: "Document_Code", Header: "Document" },
+    { accessor: "RefID", Header: "SAP Document" },
+  ]
+    
     return (
       <div>
         <div className="clearfix">
     
         </div>
-        <ReactTable columns={cols} data={this.state.data} minRows={10} defaultPageSize={10000} showPagination={false}
+        <ReactTable columns={cols} data={this.state.data} minRows={100} defaultPageSize={10000} showPagination={false}
           style={{ background: 'white', marginBottom: '10px' }} multiSort={false}
           getTrProps={(state, rowInfo) => {
             if (rowInfo !== undefined) {
-              if (rowInfo.original.EventStatus === 11) {
-                return { className: "working" }; //yellow
+              if (rowInfo.original.Status === 3) {
+                return { className: "success" }; //orange
               }
-              else if (rowInfo.original.EventStatus === 12) {
-                return { className: "worked" }; //blue
+              else if (rowInfo.original.Status === 1) {
+                return { className: "working" }; //blue
               }
-              else if (rowInfo.original.EventStatus === 32) {
-                return { className: "success" }; //green
-              }
-              else if (rowInfo.original.EventStatus === 90) {
-                return { className: "error" }; //red
-              }
-              else if (rowInfo.original.EventStatus === 24) {
-                return { className: "cancel" }; //gray
+              else if (rowInfo.original.Status === 0) {
+                return { className: "idle" }; //yellow
               }
               else {
                 return {}
