@@ -26,7 +26,7 @@ class StoragReport extends Component {
         queryString: window.apipath + "/api/viw",
         t: "r_StorageObject",
         q: '',
-        f: "ID,Pallet,Warehouse,Area,Location,SKU_Code,SKU_Name,Batch,Lot,OrderNo,Qty,concat(Qty, ' ','kg') AS BaseQty,Base_Unit,Status,Receive_Time,Wei_PalletPack,Wei_Pack,concat(Wei_PalletPack, ' ','kg') AS WeiPallet,concat(Wei_Pack, ' ','kg') AS WeiPack,Receive_Date,Wei_PackStd,concat(FORMAT(Wei_PackStd, '0.000'), ' ','kg') AS WeiPackStd",
+        f: "ID,Pallet,Warehouse,Area,Location,SKU_Code,SKU_Name,Batch,Lot,OrderNo,Qty,Base_Unit,Status,Receive_Time,Wei_PalletPack,Wei_Pack,concat(Wei_PalletPack, ' ','kg') AS WeiPallet,concat(Wei_Pack, ' ','kg') AS WeiPack,Receive_Date,Wei_PackStd,concat(FORMAT(Wei_PackStd, '0.000'), ' ','kg') AS WeiPackStd",
         g: "",
         s: "[{'f':'Pallet','od':'asc'}]",
         sk: 0,
@@ -228,7 +228,7 @@ class StoragReport extends Component {
       { accessor: 'OrderNo', Header: 'Order No.', Filter: (e) => this.createCustomFilter(e), sortable: true },
 
       {
-        accessor: 'BaseQty', Header: 'Base Qty', editable: false, filterable: false, className: "right",
+        accessor: 'Qty', Header: 'Base Qty', editable: false, filterable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
