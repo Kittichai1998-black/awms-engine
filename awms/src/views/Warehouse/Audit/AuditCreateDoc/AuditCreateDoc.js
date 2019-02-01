@@ -168,12 +168,16 @@ class IssuedManage extends Component {
         createOptions += "palletCode=" + row.palletCode;
       }
       if(row.locationCode !== undefined){
-        if(createOptions !== "")
-          if(row.locationCode !== "")
-          createOptions += "&locationCode=" + row.locationCode; 
-        else
-        if(row.locationCode !== "")
-          createOptions += "locationCode=" + row.locationCode;
+        if(createOptions !== ""){
+          if(row.locationCode !== ""){
+            createOptions += "&locationCode=" + row.locationCode;
+          }
+        }
+        else if (createOptions === ""){
+          if(row.locationCode !== ""){
+            createOptions += "&locationCode=" + row.locationCode;
+          }
+        }
       }
       listAudit.push({
         "skuCode":null,
