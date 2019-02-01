@@ -129,16 +129,16 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
                 else
                 {
-                    var xx = reqVO.DocumentProcessed.GroupBy(n => new { n.docID }).Select(g => new
-                    {
-                        g.Key.docID
-                    }).ToList();
-                    foreach (var c in xx)
-                    {
-                        bool allSame = reqVO.DocumentProcessed.Where(w => w.docID == xx[0].docID).All(item => item.stoi == null);
-                        //if (allSame)
-                            //ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.Key.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
-                    }
+                    //var xx = reqVO.DocumentProcessed.GroupBy(n => new { n.docID }).Select(g => new
+                    //{
+                    //    g.Key.docID
+                    //}).ToList();
+                    //foreach (var c in xx)
+                    //{
+                    //    bool allSame = reqVO.DocumentProcessed.Where(w => w.docID == xx[0].docID).All(item => item.stoi == null);
+                    //    //if (allSame)
+                    //        //ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.Key.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
+                    //}
                 }
             }
 
@@ -209,6 +209,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;
+
+            CloseDocumentNotDisto(reqVO.DocumentProcessed.Select(x => x.docID).ToList());
             return res;
         }
 
@@ -250,6 +252,35 @@ namespace AWMSEngine.Engine.Business.Issued
             res = ADO.WorkQueueADO.GetInstant().Create(workQ, this.BuVO);
 
             return res;
+        }
+        public void CloseDocumentNotDisto(List<long> docIDs)
+        {
+            docIDs = docIDs.Distinct().ToList();
+            var docs = ADO.DocumentADO.GetInstant().ListAndItem(docIDs, this.BuVO);
+            docs.ForEach(doc =>
+            {
+                doc.DocumentItems.ForEach(doci =>
+                {
+                    var countInactive = ADO.DataADO.GetInstant().CountBy<amt_DocumentItemStorageObject>(
+                        new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("documentItem_ID",doci.ID.Value, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("status",EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
+                        }, this.BuVO);
+                    if (countInactive == 0)
+                    {
+                        doci.EventStatus = DocumentEventStatus.WORKED;
+                        doci.Status = ADO.DocumentADO.GetInstant().UpdateItemEventStatus(doci.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                    }
+                });
+                if (doc.DocumentItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
+                {
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                }
+                else{
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(doc.ID.Value, DocumentEventStatus.WORKING,this.BuVO);
+                }
+            });
         }
     }
 }
