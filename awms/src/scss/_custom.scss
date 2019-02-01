@@ -125,21 +125,21 @@
 .badge-PICKING {
   color: #2f353a;
   background-color: #f0f3f5;
-  border: 2px solid #ffc107;
+  border: 3px solid #3d6dff;
   width: 100%;
 }
 
 .badge-PICKED {
   color: #2f353a;
-  background-color: rgb(255, 207, 61);
-  border: 1px solid #ffc107;
+  background-color: #3d6dff;
+  border: 1px solid #f0f3f5;
   width: 100%;
 }
 
 .badge-PICK {
   color: #f0f3f5;
   background-color: #3d6dff;
-  border: 2px solid #f0f3f5;
+  border: 1px solid #f0f3f5;
   width: 100%;
 }
 
@@ -153,7 +153,7 @@
 .badge-AUDITING {
   color: #2f353a;
   background-color: #f0f3f5;
-  border: 2px solid #2f353a;
+  border: 3px solid #08c249;
   width: 100%;
 }
 
@@ -161,6 +161,13 @@
   color: #2f353a;
   background-color: rgb(248, 138, 138);
   border: 1px solid #f86c6b;
+  width: 100%;
+}
+
+.badge-RETURN {
+  color: #2f353a;
+  background-color: #ffc107;
+  border: 1px solid #f0f3f5;
   width: 100%;
 }
 

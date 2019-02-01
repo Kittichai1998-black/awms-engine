@@ -260,6 +260,16 @@ class CurrentReport extends Component {
       },
       { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 100 },
       {
+        accessor: 'Wei_PalletPack', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right",
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_PalletPack")}</span>)
+      },
+      {
         accessor: 'Wei_Pack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {

@@ -144,7 +144,7 @@ class MoveLocation extends Component {
           <div><label style={{ fontWeight: "bolder" }}>Batch : </label> {list.batch} </div><br />
 
           <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateSto(list.id) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
-    <Button onClick={() => { this.Clear() }} color="#00701a" >Cancel</Button></div>
+    <Button onClick={() => { this.Clear() }} color="danger" >Cancel</Button></div>
         </CardBody>
       </Card>
 
@@ -180,12 +180,12 @@ class MoveLocation extends Component {
   render() {
     return (
       <div>
-        <Row>
-          <Col xs="4">
-            <label style={{ width: '100%', display: "inline-block", marginRight: "10px" }}>Location : </label>
+        <Row className="mb-2">
+          <Col xs="4" md="2" lg="2">
+            <label style={{ fontWeight: "bolder", width: '100%', display: "inline-block", marginRight: "10px" }}>Location : </label>
 
           </Col>
-          <Col xs="8">
+          <Col xs="8" md="10" lg="10">
             <Input id="barcodeLocation" style={{ textAlign: "center", width: '100%', display: 'inline-block' }} type="text"
               value={this.state.barcodeLocation} placeholder="BarCode Location"
               onChange={e => { this.setState({ barcodeLocation: e.target.value }) }}
@@ -197,12 +197,12 @@ class MoveLocation extends Component {
               }} />{' '}<br />
           </Col>
         </Row>
-        <Row>
-          <Col xs="4">
-            <label style={{ width: '100%', display: this.state.show, marginRight: "10px" }}>Barcode Pallet : </label>
+        <Row className="mb-2">
+          <Col xs="4" md="2" lg="2">
+            <label style={{ fontWeight: "bolder", width: '100%', display: this.state.show, marginRight: "10px" }}>Barcode Pallet : </label>
 
           </Col>
-          <Col xs="8">
+          <Col xs="8" md="10" lg="10">
             <Input id="barcodePallet" style={{ textAlign: "center", width: '100%', display: this.state.show }} type="text"
               value={this.state.barcodePallet} placeholder="Barcode Pallet"
               onChange={e => { this.setState({ barcodePallet: e.target.value }) }}

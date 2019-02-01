@@ -78,11 +78,11 @@ class AuditQueue extends Component{
     return this.state.document.documentItems.map(x => {
       return <Card style={{width:"100%", padding:'5px', margin:'5px 0'}}>
         <CardBody>
-          <div>Item : {x.code}</div>
-          <div>Unit : {x.unitType_Code}</div>
-          <div>Batch : {x.batch}</div>
-          {x.refID === null ? null : <div>SAP Document : {x.refID}</div>}
-          {x.locationCode !== undefined ? <div>Location : {x.locationCode}</div> : x.palletCode !== undefined ? <div>Pallet Code : {x.palletCode}</div> : null}
+          <div><label style={{fontWeight: "bolder"}}>Item : </label> {x.code}</div>
+          <div><label style={{fontWeight: "bolder"}}>Unit : </label> {x.unitType_Code}</div>
+          <div><label style={{fontWeight: "bolder"}}>Batch : </label> {x.batch}</div>
+          {x.refID === null ? null : <div><label style={{fontWeight: "bolder"}}>SAP Document : </label> {x.refID}</div>}
+          {x.locationCode !== undefined ? <div><label style={{fontWeight: "bolder"}}>Location : </label> {x.locationCode}</div> : x.palletCode !== undefined ? <div><label style={{fontWeight: "bolder"}}>Pallet Code : </label> {x.palletCode}</div> : null}
         </CardBody>
       </Card>
     })
@@ -133,19 +133,19 @@ class AuditQueue extends Component{
         <Row>
           <Col sm="6">
             <Card style={{padding:"30px", minHeight:"500px"}}>
-              <Row>
-                <Col sm="2" style={{paddingRight:0}}><span>Document : </span></Col>
-                <Col sm="10">
+              <Row className="mb-2">
+                <Col sm="3" style={{paddingRight:0}}><span style={{fontWeight: "bolder"}}>Document : </span></Col>
+                <Col sm="9">
                   <AutoSelect selectfirst={false} data={this.state.docSelection} result={e => {this.onHandleSelectionDoc(e.value)}}/>
                 </Col>
               </Row>
-              <Row>
-                {this.state.document === null ? null :this.createDocItemList()}
-              </Row>
-              <Row>
-                <Col sm="2"><span>Area : </span></Col><Col sm="10"><AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/></Col>
-                <Col sm="2"><span>Priority : </span></Col><Col sm="10"><AutoSelect data={this.priority} result={e => this.setState({priority:e.value})}/></Col>
-                <Col sm="2">Audit : </Col><Col sm="4"><Input style={{width:"150px"}} type="number" value={this.state.percent} onChange={(e) => this.setState({percent:e.target.value})}/></Col><Col sm="6"><AutoSelect data={this.auditType} result={e => this.setState({auditType:e.value})}/></Col>
+              
+                {this.state.document === null ? null : <Row className="mb-2">{this.createDocItemList()}</Row>}
+              
+              <Row className="mb-2">
+                <Col sm="3"><span style={{fontWeight: "bolder"}}>Area : </span></Col><Col sm="9" className="mb-2"><AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/></Col>
+                <Col sm="3"><span style={{fontWeight: "bolder"}}>Priority : </span></Col><Col sm="9" className="mb-2"><AutoSelect data={this.priority} result={e => this.setState({priority:e.value})}/></Col>
+                <Col sm="3"><span style={{fontWeight: "bolder"}}>Audit : </span></Col><Col sm="3" className="mb-2"><Input style={{width:"100%"}} type="number" value={this.state.percent} onChange={(e) => this.setState({percent:e.target.value})}/></Col><Col sm="6"><AutoSelect data={this.auditType} result={e => this.setState({auditType:e.value})}/></Col>
                 {this.state.document === null ? null : <Button style={{ width: "150px",marginTop:'20px' }} color="success" onClick={this.onHandleGetAuditQueue}>Process Queue</Button>}
               </Row>
             </Card>

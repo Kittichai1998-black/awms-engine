@@ -104,7 +104,7 @@ class StoragReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm')}</div>
     }
   }
 
@@ -271,7 +271,7 @@ class StoragReport extends Component {
 
       { accessor: 'Status', Header: 'Status', Filter: (e) => this.createCustomFilter(e), sortable: true },
       {
-        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 150, maxWidth: 150, Cell: (e) =>
+        accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 140, maxWidth: 140, Cell: (e) =>
           this.datetimeBody(e.value)
       },
     ];
