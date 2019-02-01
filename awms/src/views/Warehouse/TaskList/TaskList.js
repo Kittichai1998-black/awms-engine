@@ -66,8 +66,8 @@ class TaskList extends Component {
   async componentWillMount() {
     document.title = "Picking Progress : AWMS";
     //permission
-    let dataGetPer = await GetPermission()
-    CheckWebPermission("PickPro", dataGetPer, this.props.history);
+    // let dataGetPer = await GetPermission()
+    // CheckWebPermission("PickPro", dataGetPer, this.props.history);
   }
   componentDidMount() {
     this._mounted = true;
@@ -83,7 +83,7 @@ class TaskList extends Component {
   GetListData() {
     if (this._mounted) { 
       API.all([API.get(createQueryString(this.state.WorkingOutselect)),
-      API.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&AreaIDs=" + this.state.areaIDOnFloor
+      API.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
         + "&spname=DASHBOARD_TASK_ON_FLOOR")]).then((res) => {
           if (res) {
             this.setState({
