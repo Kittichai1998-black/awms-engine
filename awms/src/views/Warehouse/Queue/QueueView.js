@@ -24,10 +24,12 @@ class QueueView extends Component {
       f: "Status,ActualTime,StartTime,EndTime,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
         "Sou_Area_Name,Des_Area_Name,Sou_AreaLocation_Name,Des_AreaLocation_Name,UserName,CreateTime,Document_Code",
       g: "",
-      s: "[{'f':'Status','od':'desc'}]",
+      s: "[{'f':'CASE WHEN Status = 1 THEN Status END','od':'DESC'},{'f':'CASE WHEN Status = 3 THEN Status END','od':'ASC'},{'f':'CASE WHEN Status = 0 THEN Status END','od':'ASC'}]",
       sk: 0,
       l: 100,
       all: "",
+      //ORDER BY CASE WHEN wq.Status = 1 THEN wq.Status END ASC, 
+      //CASE WHEN wq.Status = 0 THEN wq.Status END DESC, CASE WHEN wq.Status = 3 THEN wq.Status END DESC
     }
     this.selectCheck = {
       queryString: window.apipath + "/api/viw",
