@@ -101,7 +101,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     x.DocumentItemWorkQueues = AWMSEngine.Common.ConverterModel.ToDocumentItemWorkQueue(docItemAudits.Count == 0 ? getDocItem : docItemAudits, bsto);
                     //***
 
-                    var resWorkQueue = ADO.WorkQueueADO.GetInstant().PUT(x, this.BuVO);
+                    var resWorkQueue = ADO.WorkQueueADO.GetInstant().Create(x, this.BuVO);
 
                     var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
