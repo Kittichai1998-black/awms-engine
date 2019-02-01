@@ -104,7 +104,7 @@ class IssuedManage extends Component {
               var qryStr = queryString.parse(x.options)
               x.palletCode = qryStr.palletCode === "undefined" ? null : qryStr.palletCode;
               x.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-              x.code = x.skuMaster_Code + " : " + x.skuMaster_Name;
+              x.code = x.skuMaster_Code === null ? "" : x.skuMaster_Code + " : " + x.skuMaster_Name;
             })
 
             this.forceUpdate();
@@ -168,17 +168,21 @@ class IssuedManage extends Component {
         createOptions += "palletCode=" + row.palletCode;
       }
       if(row.locationCode !== undefined){
-        if(createOptions !== "")
-          if(row.locationCode !== "")
-          createOptions += "&locationCode=" + row.locationCode; 
-        else
-        if(row.locationCode !== "")
-          createOptions += "locationCode=" + row.locationCode;
+        if(createOptions !== ""){
+          if(row.locationCode !== ""){
+            createOptions += "&locationCode=" + row.locationCode;
+          }
+        }
+        else if (createOptions === ""){
+          if(row.locationCode !== ""){
+            createOptions += "locationCode=" + row.locationCode;
+          }
+        }
       }
       listAudit.push({
         "skuCode":null,
         "packCode":null,
-        "skuID":row.id === undefined ? null : row.id,
+        "skuID":row.SKU_ID === undefined ? null : row.SKU_ID,
         "quantity":null,
         "unitType":row.UnitTypeCode === undefined ? null : row.UnitTypeCode,
         "expireDate":null,
@@ -257,6 +261,7 @@ class IssuedManage extends Component {
         data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
         data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
         data[rowdata.index]["UnitTypeName"] = value.UnitTypeName;
+        data[rowdata.index]["SKU_ID"] = value.ID;
         data[rowdata.index]["id"] = value.ID;
       }
       this.setState({ data });
@@ -267,6 +272,7 @@ class IssuedManage extends Component {
       data[rowdata.index]["SKU"] = "";
       data[rowdata.index]["UnitTypeCode"] = "";
       data[rowdata.index]["UnitTypeName"] = "";
+      data[rowdata.index]["SKU_ID"] = "";
       data[rowdata.index]["id"] = "";
     }
     else if (rowdata.column.datatype === "int") {

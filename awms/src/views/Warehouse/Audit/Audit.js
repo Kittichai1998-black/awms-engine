@@ -48,7 +48,7 @@ class Audit extends Component{
   palletScan() {
     return <Card style={this.style}>
       <CardBody>
-        <label className="float-left" style={{ paddingRight: "10px" }}>Pallet Code : </label>
+        <label className="float-left" style={{ paddingRight: "10px",fontWeight: "bolder" }}>Pallet Code : </label>
         <input style={{ width: "200px" }} id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
           if (e.key === "Enter") {
             this.onHandleSetPalletCode();
@@ -63,7 +63,7 @@ class Audit extends Component{
   palletDisplay() {
     return <Card style={this.style}>
       <CardBody style={{ background: "#ffffff" }}>
-        <div><label>Pallet Code : </label><span style={{ width: '100px' }} >{this.state.palletCode}</span></div>
+        <div><label style={{fontWeight: "bolder"}}>Pallet Code : </label><span style={{ width: '100px' }} > {this.state.palletCode}</span></div>
         <div>
           <Button style={{ width: "100px" }} color="success"
             onClick={() => { this.setState({ palletComponent: false, palletEdit: true }) }}>Edit</Button>
@@ -83,10 +83,10 @@ class Audit extends Component{
       }
       return <Card key={index} style={full_style}>
         <CardBody>
-          <div>Pack Code : {list.packCode}</div>
-          <div>Batch : {list.batch}</div>
-          <div>Pallet Quantity : {list.qty} {list.unitCode}</div>
-          <div>Audit : {this.createAuditEdit(list)} / {list.qty} {list.unitCode}</div>
+          <div><label style={{fontWeight: "bolder"}}>Pack Code : </label> {list.packCode}</div>
+          <div><label style={{fontWeight: "bolder"}}>Batch : </label> {list.batch}</div>
+          <div><label style={{fontWeight: "bolder"}}>Pallet Quantity : </label> {list.qty} {list.unitCode}</div>
+          <div><label style={{fontWeight: "bolder"}}>Audit : </label> {this.createAuditEdit(list)} / {list.qty} {list.unitCode}</div>
         </CardBody>
       </Card>
     })
