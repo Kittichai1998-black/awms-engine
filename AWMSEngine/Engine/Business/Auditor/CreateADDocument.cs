@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -176,27 +177,19 @@ namespace AWMSEngine.Engine.Business.Auditor
                     skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(docItem.skuCode, this.BuVO);
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, docItem.unitType, this.BuVO);
                 }
-                else
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode");
-                }
 
                 //var mainUnitType = this.StaticValue.UnitTypes.First(x => x.Code == recItem.packItemUnit);
-                var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, docItem.quantity ?? 1, packMst.UnitType_ID);
-                decimal? baseQuantity = null;
-                if (docItem.quantity.HasValue)
-                    baseQuantity = baseUnitTypeConvt.baseQty;
+                ConvertUnitCriteria baseUnitTypeConvt = packMst == null ? null : this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, docItem.quantity ?? 1, packMst.UnitType_ID);
+                
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
-                    Code = skuMst.Code,
-                    SKUMaster_ID = skuMst.ID.Value,
-                    PackMaster_ID = packMst.ID.Value,
+                    Code = skuMst != null ? skuMst.Code : string.Empty,
+                    SKUMaster_ID = skuMst != null ? skuMst.ID : null,
+                    PackMaster_ID = packMst != null ? packMst.ID : null,
 
-                    Quantity = docItem.quantity,
-                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
-                    BaseQuantity = baseQuantity,
-                    BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
+                    UnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.unitType_ID,
+                    BaseUnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.baseUnitType_ID,
 
                     OrderNo = docItem.orderNo,
                     Batch = docItem.batch,

@@ -52,7 +52,7 @@ class Picking extends Component {
   palletScan() {
     return <Card style={this.style}>
       <CardBody>
-        <label className="float-left" style={{ paddingRight: "10px" }}>Pallet Code : </label>
+        <label className="float-left" style={{ fontWeight: "bolder", paddingRight: "10px" }}>Pallet Code : </label>
         <input style={{ width: "200px" }} id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
           if (e.key === "Enter") {
             this.onHandleSetPalletCode();
@@ -68,7 +68,7 @@ class Picking extends Component {
 
     return <Card style={this.style}>
       <CardBody style={{ background: "#ffffff" }}>
-        <div><label>Pallet Code : </label><span style={{ width: '100px' }} >{this.state.palletCode}</span></div>
+        <div><label style={{ fontWeight: "bolder", paddingRight: "10px" }}>Pallet Code : </label><span style={{ width: '100px' }} > {this.state.palletCode}</span></div>
         <div>
           <Button style={{ width: "100px" }} color="success"
             onClick={() => { this.setState({ palletComponent: false, palletEdit: true }) }}>Edit</Button>
@@ -81,9 +81,9 @@ class Picking extends Component {
     let issuedlist = this.state.docItems.map((list, index) => {
       return <Button key={index} style={{ background: "rgb(116, 203, 147)", color: "#23282c", width: "100%", overflow: "hidden", marginBottom: "10px", textAlign: "left" }}
         onClick={() => this.setState({ issuedComponent: true, issuedSelect: list }, () => { this.onHandleClickSelectDocument(list.docID) })}>
-        <div>Document : {list.docCode}</div>
-        <div>Material No : {list.matDoc}</div>
-        <div>Destination : {list.destination}</div>
+        <div><label style={{fontWeight: "bolder"}}>Document : </label> {list.docCode}</div>
+        <div><label style={{fontWeight: "bolder"}}>Material No : </label> {list.matDoc}</div>
+        <div><label style={{fontWeight: "bolder"}}>Destination : </label> {list.destination}</div>
       </Button>
     })
 
@@ -117,9 +117,9 @@ class Picking extends Component {
     if (!this.state.toggle) {
       return <Card style={{ background: "#ffffff", width: "100%", overflow: "hidden", marginBottom: "10px", textAlign: "left" }}>
         <CardBody>
-          <div>Document : {issued.docCode}</div>
-          <div>Material No : {issued.matDoc}</div>
-          <div>Destination : {issued.destination}</div>
+          <div><label style={{fontWeight: "bolder"}}>Document : </label> {issued.docCode}</div>
+          <div><label style={{fontWeight: "bolder"}}>Material No : </label> {issued.matDoc}</div>
+          <div><label style={{fontWeight: "bolder"}}>Destination : </label> {issued.destination}</div>
           <div>
             <Button style={{ width: "100px" }} color="success"
               onClick={() => {
@@ -127,26 +127,26 @@ class Picking extends Component {
                 this.onHandleSetPalletCode()
               }}>{"Edit"}</Button>
             &nbsp;&nbsp;
-          <Button style={{ width: "100px" }} color="info" onClick={() => { this.setState({ toggle: !this.state.toggle }) }}>{"See More..."}</Button></div>
+          <Button style={{ width: "100px" }} color="info" onClick={() => { this.setState({ toggle: !this.state.toggle }) }}>{"Detail"}</Button></div>
         </CardBody>
       </Card>
     }
     else {
       return <Card style={{ background: "#ffffff", width: "100%", overflow: "hidden", marginBottom: "10px", textAlign: "left" }}>
         <CardBody>
-          <div>Document : {issued.docCode}</div>
-          <div>Material No : {issued.matDoc}</div>
-          <div>Destination : {issued.destination}</div>
-          <div>Product List : </div>
+        <div><label style={{fontWeight: "bolder"}}>Document : </label> {issued.docCode}</div>
+          <div><label style={{fontWeight: "bolder"}}>Material No : </label> {issued.matDoc}</div>
+          <div><label style={{fontWeight: "bolder"}}>Destination : </label> {issued.destination}</div>
+          <div><label style={{fontWeight: "bolder"}}>Product List : </label> </div>
           <ul>
             {issued.pickItems.map((row, index) => {
               return <div>{row.itemCode + " => " + row.picked + "/" + row.willPick}</div>
             })}
           </ul>
-          <div><Button style={{ width: "150px" }} color="success"
+          <div><Button style={{ width: "100px", marginRight: "5px" }} color="success"
             onClick={() => { this.setState({ issuedComponent: false }) }}>{"Edit"}</Button >
-            <Button style={{ width: "150px" }} color="info"
-              onClick={() => { this.setState({ toggle: !this.state.toggle }) }}>{"See Flew..."}</Button></div>
+            <Button style={{ width: "100px" }} color="info"
+              onClick={() => { this.setState({ toggle: !this.state.toggle }) }}>{"Hide"}</Button></div>
         </CardBody>
       </Card>
     }
@@ -163,10 +163,10 @@ class Picking extends Component {
         Object.assign(list.shouldPick == (list.canPick > list.palletQty ? list.palletQty : list.canPick) ? full_style : list.shouldPick == 0 ? no_style : som_style
           , this.style)}>
         <CardBody>
-          <div>Pack Code : {list.packCode}</div>
-          <div>Batch : {list.batch}</div>
-          <div>Pallet Quantity : {list.palletQty} {list.unitType}</div>
-          <div>Pick : {list.pick ? this.createPickEdit(list) : <span>0</span>} / {list.canPick > list.palletQty ? list.palletQty : list.canPick} {list.unitType}</div>
+          <div><label style={{fontWeight: "bolder"}}>Pack Code : </label> {list.packCode}</div>
+          <div><label style={{fontWeight: "bolder"}}>Batch : </label> {list.batch}</div>
+          <div><label style={{fontWeight: "bolder"}}>Pallet Quantity : </label> {list.palletQty} {list.unitType}</div>
+          <div><label style={{fontWeight: "bolder"}}>Pick : </label> {list.pick ? this.createPickEdit(list) : <span>0</span>} / {list.canPick > list.palletQty ? list.palletQty : list.canPick} {list.unitType}</div>
         </CardBody>
       </Card>
     })
@@ -252,7 +252,7 @@ class Picking extends Component {
           {this.state.issuedComponent && this.state.palletComponent ? <Card style={this.style}>
             <CardBody>
               {this.createPickItem()}
-              {<Button style={{ width: "150px" }} color="primary" onClick={() => { this.onHandleClickPicking() }}>Picking</Button>}
+              {<Button style={{ width: "150px" }} color="primary" onClick={() => { this.onHandleClickPicking() }}>Pick Confirm</Button>}
             </CardBody>
           </Card> : null}
         </Row>

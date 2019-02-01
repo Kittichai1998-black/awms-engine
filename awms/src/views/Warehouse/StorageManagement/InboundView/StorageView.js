@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Badge, Card, CardBody, Button, Row, Col ,Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Input, Badge, Card, CardBody, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTable from 'react-table'
-import { apicall,AutoSelect, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
+import { apicall, AutoSelect, GenerateDropDownStatus, createQueryString } from '../../ComponentCore'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
@@ -23,7 +23,7 @@ class IssuedDoc extends Component {
 
     this.state = {
       data: [],
-      date:null,
+      date: null,
       autocomplete: [],
       statuslist: [{
         'status': GenerateDropDownStatus("DocumentStatus"),
@@ -49,6 +49,7 @@ class IssuedDoc extends Component {
         all: "",
       },
       modalstatus: false,
+      modalstatusData : false,
       sortstatus: 0,
       open: false,
       errorstr: null,
@@ -57,7 +58,7 @@ class IssuedDoc extends Component {
       currentPage: 1,
       loading: true,
       datafilter: [{ "id": "DocumentType_ID", "value": 1001 }],
-      
+
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
     this.getSelectionData = this.getSelectionData.bind(this);
@@ -69,8 +70,9 @@ class IssuedDoc extends Component {
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.toggleData = this.toggleData.bind(this);
     this.createModal = this.createModal.bind(this);
-    this.station = [{'label':"Front",'value':2},{'label':"Back",'value':3}];
+    this.station = [{ 'label': "Front", 'value': 2 }, { 'label': "Back", 'value': 3 }];
   }
 
   async componentWillMount() {
@@ -155,40 +157,83 @@ class IssuedDoc extends Component {
     this.setState({ modalstatus: !this.state.modalstatus });
   }
 
+  toggleData() {
+    this.setState({ modalstatusData: !this.state.modalstatusData });
+  }
+
   createModal() {
     return <Modal isOpen={this.state.modalstatus}>
       <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
       <ModalBody>
         <div>
-          <AutoSelect data={this.station} result={e => this.setState({desAreaID:e.value})}/>  
+          <AutoSelect data={this.station} result={e => this.setState({ desAreaID: e.value })} />
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" id="off" onClick={() =>{ this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>OK</Button>
+      <Button color="primary" id="off" onClick={() =>{ this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>Comfirm</Button>
+        <Button color="" id="off" onClick={() =>this.toggle() }>Cancle</Button>
+      </ModalFooter>
+    </Modal>
+  }
+
+  createModalData() {
+    return <Modal isOpen={this.state.modalstatusData}>
+      <ModalHeader toggle={this.toggleData}> <span>Reject</span></ModalHeader>
+      <ModalFooter>
+        <Button color="primary" id="off" onClick={() =>{this.RejectIDLE(this.state.selectiondata); this.toggleData() }}>Comfirm</Button>
+        <Button color="" id="off" onClick={() =>this.toggleData() }>Cancle</Button>
       </ModalFooter>
     </Modal>
   }
 
 
-  workingData(data, status) {
-    console.log(data)
-    let postdata = { docIDs: [] ,AreaID:0 }
+  RejectIDLE(data){
+    let postdata = { docIDs: [] }
     if (data.length > 0) {
       data.forEach(rowdata => {
-        postdata["docIDs"].push(rowdata.ID) 
-        postdata["AreaID"] = this.state.desAreaID    
+        postdata["docIDs"].push(rowdata.ID)  
+      })
+console.log(postdata)
+        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {     
+          this.getData()
+          this.setState({ resp: res.data._result.message })   
+          console.log(res)    
+        })
+      
+    }
+  }
+
+
+
+  RejectCheck(){
+    this.state.selectiondata.forEach( x=>{
+      console.log(x.EventStatus)
+      if(x.EventStatus === 10){
+        this. toggleData()
+      }else{
+        this.toggle()
+      }
+    })
+  }
+
+  workingData(data, status) {
+    console.log(data)
+    let postdata = { docIDs: [], AreaID: 0 }
+    if (data.length > 0) {
+      data.forEach(rowdata => {
+        postdata["docIDs"].push(rowdata.ID)
+        postdata["AreaID"] = this.state.desAreaID
       })
       if (status === "reject") {
+       
 
         Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {     
           this.getData()
           this.setState({ resp: res.data._result.message })   
-          console.log(res.data._result.status)
-          if(res.data._result.status !== 0){
-            alert("Success")
-          }      
+          console.log(res.data._result.status)    
         })
-      } else {
+      }
+      else {
         Axios.post(window.apipath + "/api/wm/received/doc/close", postdata).then((res) => {
           this.getData()
           this.setState({ resp: res.data._result.message })
@@ -301,9 +346,13 @@ class IssuedDoc extends Component {
           if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
             var strSapRes = decodeURIComponent(arrayRes["SapRes"])
             var newSapRes = strSapRes.replace(/\+/g, ' ').replace(/\|/g, ' , ');
-            // console.log(newSapRes)
-            return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-              onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+            // console.log(strStatus)
+            if (strStatus === "CLOSING") {
+              return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+            } else {
+              return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+            }
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }
@@ -421,9 +470,10 @@ class IssuedDoc extends Component {
       borderRadius: '18px',
     }
     return (
-      
+
       <div>
         {this.createModal()}
+        {this.createModalData()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
 
@@ -477,7 +527,7 @@ class IssuedDoc extends Component {
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }}
-              onClick={() => this.toggle()} color="danger" className="float-right">Reject</Button>
+              onClick={() => this.RejectCheck()} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_close" style={{ width: '130px', display: this.state.showbutton }}
               onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}

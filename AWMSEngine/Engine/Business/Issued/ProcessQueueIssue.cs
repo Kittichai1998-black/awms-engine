@@ -201,7 +201,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             {
                                 foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null || batch.value == "")) && x.packQty > 0))
                                 {
-                                    if (sto.evtStatus == 12)
+                                    if (sto.evtStatus == Convert.ToInt16(StorageObjectEventStatus.RECEIVED))
                                     {
                                         var stoPack = ADO.StorageObjectADO.GetInstant().Get(sto.code, null, null, false, true, this.BuVO);
                                         
@@ -286,29 +286,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                         }
                                     }
                                 }
-                                if (listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
-                                {
-                                    listDocProcessed.Add(new DocumentProcess
-                                    {
-                                        docID = doc.docID,
-                                        document = document,
-                                        documentItem = documentItem,
-                                        stoPack = null,
-                                        docCode = document.Code,
-                                        dociID = docItem.docItemID,
-                                        stoi = null,
-                                        itemCode = docItem.itemCode,
-                                        qty = batch.qty,
-                                        batch = batch.value,
-                                        orderNo = null,
-                                        lot = null,
-                                        priority = docItem.priority,
-                                        wareHouseID = null,
-                                        areaID = null,
-                                        baseCode = null,
-                                        stoBaseQty = null
-                                    });
-                                }
+                                
                             }
                             else
                             {
@@ -333,6 +311,29 @@ namespace AWMSEngine.Engine.Business.Issued
                                     stoBaseQty = null
                                 });
                             }
+                        }
+                        if (listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
+                        {
+                            listDocProcessed.Add(new DocumentProcess
+                            {
+                                docID = doc.docID,
+                                document = document,
+                                documentItem = documentItem,
+                                stoPack = null,
+                                docCode = document.Code,
+                                dociID = docItem.docItemID,
+                                stoi = null,
+                                itemCode = docItem.itemCode,
+                                qty = null,
+                                batch = null,
+                                orderNo = null,
+                                lot = null,
+                                priority = docItem.priority,
+                                wareHouseID = null,
+                                areaID = null,
+                                baseCode = null,
+                                stoBaseQty = null
+                            });
                         }
                     }
                 }

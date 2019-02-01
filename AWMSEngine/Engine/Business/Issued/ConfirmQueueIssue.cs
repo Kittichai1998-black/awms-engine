@@ -91,46 +91,54 @@ namespace AWMSEngine.Engine.Business.Issued
                     g.Key.priority
                 }).Where(x => x.stoi != null).ToList();
 
-            foreach (var list in reqVO.DocumentProcessed)
+            foreach (var list in reqVO.DocumentProcessed.GroupBy(x=>new { baseCode = x.baseCode, stoi = x.stoi }))
             {
-                if (list.stoi != null)
+                if (list.Key.stoi != null)
                 {
-                    this._warehouseASRS = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == list.wareHouseID);
+                    if(list.Select(x=>x.wareHouseID).Distinct().Count() > 1)
+                    {
+                        //throw
+                    }
+                    this._warehouseASRS = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == list.First().wareHouseID);
                     if (_warehouseASRS == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + list.wareHouseID + "'");
-                    this._areaASRS = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == list.areaID && x.Warehouse_ID == _warehouseASRS.ID);
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Warehouse Code '" + list.First().wareHouseID + "'");
+                    this._areaASRS = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == list.First().areaID && x.Warehouse_ID == _warehouseASRS.ID);
                     if (_areaASRS == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.areaID + "'");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code '" + list.First().areaID + "'");
 
-                    var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.baseCode, list.wareHouseID, list.areaID, false, true, this.BuVO);
+                    var getRootSTO = ADO.StorageObjectADO.GetInstant().Get(list.Key.baseCode, list.First().wareHouseID, list.First().areaID, false, true, this.BuVO);
 
                     if (getRootSTO.eventStatus != StorageObjectEventStatus.RECEIVED)
                         throw new AMWException(this.Logger, AMWExceptionCode.B0001, "พาเลท " + getRootSTO.code + " ไม่อยู่ในสถานะพร้อมเบิก");
 
-                    var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.stoi ?? 0, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.stoi).Select(x => x.id).FirstOrDefault();
-                    var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(list.dociID, this.BuVO);
-                    var getSTO = getRootSTO.mapstos.Where(x => x.code == list.itemCode).Select(x => x.id).FirstOrDefault();
-                    /***********update insert DocItemSto**********/
-                    var unitConvert = StaticValue.ConvertToNewUnitBySKU(docItem.SKUMaster_ID.Value, list.qty, getRootSTO.mapstos[0].baseUnitID, docItem.UnitType_ID.Value);
-                    ADO.DocumentADO.GetInstant().CreateDocItemSto(list.dociID, stoPackID ?? 0, unitConvert.qty, unitConvert.unitType_ID, unitConvert.baseQty, unitConvert.baseUnitType_ID, this.BuVO);
-                    /***********update Document EventStatus 10 --> 11**********/
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                    var stoPackID = ADO.StorageObjectADO.GetInstant().Get(list.Key.stoi.Value, StorageObjectType.BASE, false, true, this.BuVO).mapstos.Where(x => x.parentID == list.Key.stoi).Select(x => x.id).FirstOrDefault();
+
+                    foreach(var docX in list.Select(x => new { x.dociID , x.docID, x.itemCode, x.qty, x.stoi})) { 
+
+                        var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docX.dociID, this.BuVO);
+                        var getSTO = getRootSTO.mapstos.Where(x => x.code == docX.itemCode).Select(x => x.id).FirstOrDefault();
+                        /***********update insert DocItemSto**********/
+                        var unitConvert = StaticValue.ConvertToNewUnitBySKU(docItem.SKUMaster_ID.Value, docX.qty, getRootSTO.mapstos[0].baseUnitID, docItem.UnitType_ID.Value);
+                        ADO.DocumentADO.GetInstant().CreateDocItemSto(docX.dociID, getRootSTO.mapstos.Where(x => x.parentID == docX.stoi).Select(x => x.id).FirstOrDefault().Value, unitConvert.qty, unitConvert.unitType_ID, unitConvert.baseQty, unitConvert.baseUnitType_ID, this.BuVO);
+                        /***********update Document EventStatus 10 --> 11**********/
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docX.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                    }
                     /***********update StorageObject EventStatus 12 --> 17**********/
-                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.stoi ?? 0, StorageObjectEventStatus.RECEIVED, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.Key.stoi ?? 0, StorageObjectEventStatus.RECEIVED, null, StorageObjectEventStatus.PICKING, this.BuVO);
 
                 }
                 else
                 {
-                    var xx = reqVO.DocumentProcessed.GroupBy(n => new { n.docID }).Select(g => new
-                    {
-                        g.Key.docID
-                    }).ToList();
-                    foreach (var c in xx)
-                    {
-                        bool allSame = reqVO.DocumentProcessed.Where(w => w.docID == xx[0].docID).All(item => item.stoi == null);
-                        if (allSame)
-                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
-                    }
+                    //var xx = reqVO.DocumentProcessed.GroupBy(n => new { n.docID }).Select(g => new
+                    //{
+                    //    g.Key.docID
+                    //}).ToList();
+                    //foreach (var c in xx)
+                    //{
+                    //    bool allSame = reqVO.DocumentProcessed.Where(w => w.docID == xx[0].docID).All(item => item.stoi == null);
+                    //    //if (allSame)
+                    //        //ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.Key.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
+                    //}
                 }
             }
 
@@ -190,7 +198,7 @@ namespace AWMSEngine.Engine.Business.Issued
             /*****WCSQueueApi*****/
             var chkMachineASRS = this.StaticValue.GetConfig("RUN_MACHINE_ASRS");
 
-            if (queueWorkQueue.queueOut.Count() > 0 && chkMachineASRS.ToUpper() == "TRUE")
+            if (queueWorkQueue.queueOut != null && chkMachineASRS.ToUpper() == "TRUE")
             {
                 var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
                 if (wcsAcceptRes._result.resultcheck == 0)
@@ -201,6 +209,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
             List<TRes.docItemStoageObject> DocItems = new List<TRes.docItemStoageObject>();
             res.dociSto = DocItems;
+
+            CloseDocumentNotDisto(reqVO.DocumentProcessed.Select(x => x.docID).ToList());
             return res;
         }
 
@@ -242,6 +252,35 @@ namespace AWMSEngine.Engine.Business.Issued
             res = ADO.WorkQueueADO.GetInstant().Create(workQ, this.BuVO);
 
             return res;
+        }
+        public void CloseDocumentNotDisto(List<long> docIDs)
+        {
+            docIDs = docIDs.Distinct().ToList();
+            var docs = ADO.DocumentADO.GetInstant().ListAndItem(docIDs, this.BuVO);
+            docs.ForEach(doc =>
+            {
+                doc.DocumentItems.ForEach(doci =>
+                {
+                    var countInactive = ADO.DataADO.GetInstant().CountBy<amt_DocumentItemStorageObject>(
+                        new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("documentItem_ID",doci.ID.Value, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("status",EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
+                        }, this.BuVO);
+                    if (countInactive == 0)
+                    {
+                        doci.EventStatus = DocumentEventStatus.WORKED;
+                        doci.Status = ADO.DocumentADO.GetInstant().UpdateItemEventStatus(doci.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                    }
+                });
+                if (doc.DocumentItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
+                {
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                }
+                else{
+                    ADO.DocumentADO.GetInstant().UpdateEventStatus(doc.ID.Value, DocumentEventStatus.WORKING,this.BuVO);
+                }
+            });
         }
     }
 }

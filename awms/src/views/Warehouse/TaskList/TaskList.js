@@ -42,18 +42,19 @@ class TaskList extends Component {
         l: 20,
         all: "",
       },
-      TaskListselect: {
-        queryString: window.apipath + "/api/viw",
-        t: "r_DashboardTaskOnFloor",
-        q: '',
-        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
-        f: "Time,TaskName,DocNo,LocationCode,PalletCode,Product,Destination,SAPRef,Qty,Status",
-        g: "",
-        s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 0, Time, null)','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'desc'}]",
-        sk: 0,
-        l: 20,
-        all: "",
-      }
+      areaIDOnFloor: "8,9"
+      // TaskListselect: {
+      //   queryString: window.apipath + "/api/viw",
+      //   t: "r_DashboardTaskOnFloor",
+      //   q: '',
+      //   q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
+      //   f: "Time,TaskName,DocNo,LocationCode,PalletCode,Product,Destination,SAPRef,Qty,Status",
+      //   g: "",
+      //   s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 0, Time, null)','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'desc'}]",
+      //   sk: 0,
+      //   l: 20,
+      //   all: "",
+      // },
     }
     this.timeout = null;
     this.updateQueueData = this.updateQueueData.bind(this)
@@ -65,8 +66,8 @@ class TaskList extends Component {
   async componentWillMount() {
     document.title = "Picking Progress : AWMS";
     //permission
-    let dataGetPer = await GetPermission()
-    CheckWebPermission("PickPro", dataGetPer, this.props.history);
+    // let dataGetPer = await GetPermission()
+    // CheckWebPermission("PickPro", dataGetPer, this.props.history);
   }
   componentDidMount() {
     this._mounted = true;
@@ -80,17 +81,19 @@ class TaskList extends Component {
   }
 
   GetListData() {
-    if (this._mounted) {
-      // console.log("loaddata")
+    if (this._mounted) { 
       API.all([API.get(createQueryString(this.state.WorkingOutselect)),
-      API.get(createQueryString(this.state.TaskListselect))]).then((res) => {
-        this.setState({
-          dataworkingout: res[0].data.datas, loadingWorkingOut: false,
-          datatasklist: res[1].data.datas, loadingTaskList: false
+      API.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
+        + "&spname=DASHBOARD_TASK_ON_FLOOR")]).then((res) => {
+          if (res) {
+            this.setState({
+              dataworkingout: res[0].data.datas, loadingWorkingOut: false,
+              datatasklist: res[1].data.datas, loadingTaskList: false
+            })
+          }
+        }).then(() => {
+          this.timeout = setTimeout(this.GetListData, 3000);
         })
-      }).then(() => {
-        this.timeout = setTimeout(this.GetListData, 3000);
-      })
     }
   }
 
@@ -102,25 +105,27 @@ class TaskList extends Component {
   }
   updateQueueData(selValue) {
     var areaWorkingOut = this.state.WorkingOutselect;
-    var areaTaskList = this.state.TaskListselect;
     let areawhere = [];
-    let taskwhere = [];
+    let taskwhere = '8,9';
     if (selValue !== undefined) {
       if (selValue !== "") {
         // console.log(selValue)
         areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': selValue }, { 'f': 'IOType', 'c': '=', 'v': 1 });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': selValue === 2 ? 8 : selValue === 3 ? 9 : '' });
+        if (selValue === '2') {
+          taskwhere = '8'
+        } else if (selValue === '3') {
+          taskwhere = '9'
+        } else {
+          taskwhere = '8,9'
+        }
         areaWorkingOut.q = JSON.stringify(areawhere)
-        areaTaskList.q = JSON.stringify(taskwhere)
       } else {
         areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }, { 'f': 'IOType', 'c': '=', 'v': 1 });
-        // areawhere.push({ 'f': 'AreaCode', 'c': '=', 'v': 'S' },{ 'f': 'IOType', 'c': '=', 'v': 0 });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' });
+        taskwhere = '8,9';
         areaWorkingOut.q = JSON.stringify(areawhere)
-        areaTaskList.q = JSON.stringify(taskwhere)
       }
     }
-    this.setState({ WorkingOutselect: areaWorkingOut, TaskListselect: areaTaskList })
+    this.setState({ WorkingOutselect: areaWorkingOut, areaIDOnFloor: taskwhere })
   }
 
   render() {
@@ -128,7 +133,7 @@ class TaskList extends Component {
       { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       { accessor: "AreaLoc_Code", Header: "Gate", minWidth: 50 },
       { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
-      { accessor: "Product", Header: "Product", minWidth: 300 },
+      { accessor: "Product", Header: "Product", minWidth: 250 },
       { accessor: "QtyUnit", Header: "Qty", minWidth: 120 },
       { accessor: "Destination", Header: "Destination", minWidth: 150 },
       { accessor: "Document_Code", Header: "Doc No.", minWidth: 105 },
@@ -145,7 +150,7 @@ class TaskList extends Component {
       { accessor: "LocationCode", Header: "Stage", minWidth: 100 },
       { accessor: "PalletCode", Header: "Pallet", minWidth: 100 },
       { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "Qty", Header: "Qty", minWidth: 150 },
+      { accessor: "Qty", Header: "Qty", minWidth: 120 },
       { accessor: "Destination", Header: "Destination", minWidth: 100 },
       { accessor: "DocNo", Header: "Doc No.", minWidth: 105 },
       { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
@@ -198,10 +203,10 @@ class TaskList extends Component {
                         result = true
                         if (rowInfo.original.EventStatus === 11 || rowInfo.original.EventStatus === 12) {
                           rmv = true
-                          classStatus = "inqueue"
+                          classStatus = "working"
                         } else if (rowInfo.original.EventStatus === 31 || rowInfo.original.EventStatus === 32) {
                           rmv = true
-                          classStatus = "success"
+                          classStatus = "inqueue"
                         } else { rmv = false }
                       }
                       if (result && rmv)

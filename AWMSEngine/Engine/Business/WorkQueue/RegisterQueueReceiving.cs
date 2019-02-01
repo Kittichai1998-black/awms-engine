@@ -214,8 +214,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 sto.weiKG = percentWeiStd * innerTotalWeiKG;
             });
 
+            long areaID = mapsto.areaID;
             stoTreeList.ForEach(x =>
             {
+                x.areaID = areaID;
                 ADO.StorageObjectADO.GetInstant().PutV2(x, BuVO);
             });
         }
