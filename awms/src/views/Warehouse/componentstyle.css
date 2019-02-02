@@ -68,6 +68,10 @@
 .inqueue .rt-td {
   background: white !important;
 }
+.idle .rt-td {
+  /* background: rgba(255, 193, 7, 0.78) !important; */
+  background: rgb(255, 207, 61) !important;
+}
 .working .rt-td {
   /* background: rgba(255, 193, 7, 0.78) !important; */
   background: rgb(255, 207, 61) !important;

@@ -223,14 +223,15 @@ namespace AWMSEngine.Engine.Business.Issued
             foreach (var d in docHs )
             {
                 var docH = ADO.DataADO.GetInstant().SelectByID<amt_Document>(d.ID, this.BuVO);
-                docH.RefID = !string.IsNullOrWhiteSpace(sapRes.mat_doc) ? sapRes.mat_doc : string.Empty;
-                docH.Ref1 = !string.IsNullOrWhiteSpace(sapRes.doc_year) ? sapRes.doc_year : string.Empty;
+                docH.RefID = !string.IsNullOrWhiteSpace(sapRes.mat_doc) ? sapRes.mat_doc : docH.RefID;
+                docH.Ref1 = !string.IsNullOrWhiteSpace(sapRes.doc_year) ? sapRes.doc_year : docH.Ref1;
                 docH.EventStatus = DocumentEventStatus.CLOSED;
                 docH.Options = AMWUtil.Common.ObjectUtil.QryStrSetValue(docH.Options, "SapRes", string.Join(", ", sapRes.@return.Select(y => y.message).ToArray()));
                 ADO.DocumentADO.GetInstant().Put(docH, this.BuVO);
                 docItem.ForEach(di =>
                 {
-                    di.RefID = sapRes.mat_doc; di.Ref1 = sapRes.doc_year;
+                    di.RefID = !string.IsNullOrWhiteSpace(sapRes.mat_doc) ? sapRes.mat_doc : di.RefID;
+                    di.Ref1 = !string.IsNullOrWhiteSpace(sapRes.mat_doc) ? sapRes.mat_doc : di.Ref1;
                     docH.EventStatus = DocumentEventStatus.CLOSED;
                     ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
 
@@ -384,7 +385,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
                     {
-                        DELIV_NUMB = RefID,
+                        DELIV_NUMB = dataDocItem.RefID,
                         DELIV_ITEM = ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem"),
                         MATERIAL = dataDocItem.Code,
                         PLANT = SouBranch,
@@ -419,7 +420,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
                         {
-                            DELIV_NUMB = RefID,
+                            DELIV_NUMB = dataDocItem.RefID,
                             DELIV_ITEM = ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem"),
                             MATERIAL = dataDocItem.Code,
                             PLANT = SouBranch,

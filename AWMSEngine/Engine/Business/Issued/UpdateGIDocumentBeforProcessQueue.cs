@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AWMSEngine.ADO.SAPApi;
 using AWMSEngine.APIService.Api2;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,13 @@ namespace AWMSEngine.Engine.Business.Issued
         }
         public class TRes
         {
-            public List<amt_DocumentItem> documentItems;
+            public List<amv_DocumentItem> documentItems;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            res.documentItems = new List<amt_DocumentItem>();
+            var documentItems = new List<amt_DocumentItem>();
 
             var docs = new List<amt_Document>();
             reqVO.docs.ForEach(doc => {
@@ -68,14 +69,17 @@ namespace AWMSEngine.Engine.Business.Issued
                     var sapDO = ADO.SAPApi.SAPInterfaceADO.GetInstant().MMI0008_1_DO_INFO(tReq, this.BuVO);
                     //sapDOs.Add(sapDO);
                     var docItems = this.UpdateGIDocBySapDO(sapDO, docs.FindAll(x => x.RefID == refID));
-                    res.documentItems.AddRange(docItems);
+                    documentItems.AddRange(docItems);
                 }
                 else
                 {
-                    docs.FindAll(x => x.RefID == refID).ForEach(doc => { res.documentItems.AddRange(doc.DocumentItems); });
+                    docs.FindAll(x => x.RefID == refID).ForEach(doc => { documentItems.AddRange(doc.DocumentItems); });
                 }
             }
-
+            res.documentItems = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new SQLConditionCriteria(
+                "id",
+                string.Join(',',documentItems.Select(x => x.ID.Value).ToArray()),
+                SQLOperatorType.IN), this.BuVO);
             return res;
         }
 

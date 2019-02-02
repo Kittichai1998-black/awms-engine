@@ -56,6 +56,11 @@ namespace AWMSEngine.Engine.Business.Auditor
                 null, null,
                 DocumentEventStatus.CLOSING,
                 this.BuVO);
+
+                var baseSto = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(docID, (long?)null, DocumentTypeID.AUDIT, this.BuVO).Where(x => x.areaID == 8 && (x.areaLocationCode != null || x.areaLocationCode == "")).ToList();
+                baseSto.ForEach(x => {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.id, StorageObjectEventStatus.AUDITED, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                });
             }
             return null;
         }

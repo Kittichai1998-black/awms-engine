@@ -42,18 +42,19 @@ class TaskList extends Component {
         l: 20,
         all: "",
       },
-      TaskListselect: {
-        queryString: window.apipath + "/api/viw",
-        t: "r_DashboardTaskOnFloor",
-        q: '',
-        q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
-        f: "Time,TaskName,DocNo,LocationCode,PalletCode,Product,Destination,SAPRef,Qty,Status",
-        g: "",
-        s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 0, Time, null)','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'desc'}]",
-        sk: 0,
-        l: 20,
-        all: "",
-      }
+      areaIDOnFloor: "8,9"
+      // TaskListselect: {
+      //   queryString: window.apipath + "/api/viw",
+      //   t: "r_DashboardTaskOnFloor",
+      //   q: '',
+      //   q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
+      //   f: "Time,TaskName,DocNo,LocationCode,PalletCode,Product,Destination,SAPRef,Qty,Status",
+      //   g: "",
+      //   s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 0, Time, null)','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'desc'}]",
+      //   sk: 0,
+      //   l: 20,
+      //   all: "",
+      // },
     }
     this.timeout = null;
     this.updateQueueData = this.updateQueueData.bind(this)
@@ -65,8 +66,8 @@ class TaskList extends Component {
   async componentWillMount() {
     document.title = "Picking Progress : AWMS";
     //permission
-    let dataGetPer = await GetPermission()
-    CheckWebPermission("PickPro", dataGetPer, this.props.history);
+    // let dataGetPer = await GetPermission()
+    // CheckWebPermission("PickPro", dataGetPer, this.props.history);
   }
   componentDidMount() {
     this._mounted = true;
@@ -81,16 +82,18 @@ class TaskList extends Component {
 
   GetListData() {
     if (this._mounted) {
-      // console.log("loaddata")
       API.all([API.get(createQueryString(this.state.WorkingOutselect)),
-      API.get(createQueryString(this.state.TaskListselect))]).then((res) => {
-        this.setState({
-          dataworkingout: res[0].data.datas, loadingWorkingOut: false,
-          datatasklist: res[1].data.datas, loadingTaskList: false
+      API.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
+        + "&spname=DASHBOARD_TASK_ON_FLOOR")]).then((res) => {
+          if (res) {
+            this.setState({
+              dataworkingout: res[0].data.datas, loadingWorkingOut: false,
+              datatasklist: res[1].data.datas, loadingTaskList: false
+            })
+          }
+        }).then(() => {
+          this.timeout = setTimeout(this.GetListData, 3000);
         })
-      }).then(() => {
-        this.timeout = setTimeout(this.GetListData, 3000);
-      })
     }
   }
 
@@ -102,53 +105,56 @@ class TaskList extends Component {
   }
   updateQueueData(selValue) {
     var areaWorkingOut = this.state.WorkingOutselect;
-    var areaTaskList = this.state.TaskListselect;
     let areawhere = [];
-    let taskwhere = [];
+    let taskwhere = '8,9';
     if (selValue !== undefined) {
       if (selValue !== "") {
         // console.log(selValue)
         areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': selValue }, { 'f': 'IOType', 'c': '=', 'v': 1 });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': selValue === 2 ? 8 : selValue === 3 ? 9 : '' });
+        if (selValue === '2') {
+          taskwhere = '8'
+        } else if (selValue === '3') {
+          taskwhere = '9'
+        } else {
+          taskwhere = '8,9'
+        }
         areaWorkingOut.q = JSON.stringify(areawhere)
-        areaTaskList.q = JSON.stringify(taskwhere)
       } else {
         areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }, { 'f': 'IOType', 'c': '=', 'v': 1 });
-        // areawhere.push({ 'f': 'AreaCode', 'c': '=', 'v': 'S' },{ 'f': 'IOType', 'c': '=', 'v': 0 });
-        taskwhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '8,9' });
+        taskwhere = '8,9';
         areaWorkingOut.q = JSON.stringify(areawhere)
-        areaTaskList.q = JSON.stringify(taskwhere)
       }
     }
-    this.setState({ WorkingOutselect: areaWorkingOut, TaskListselect: areaTaskList })
+    this.setState({ WorkingOutselect: areaWorkingOut, areaIDOnFloor: taskwhere })
   }
 
   render() {
     const cols1 = [
-      { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
-      { accessor: "AreaLoc_Code", Header: "Gate", minWidth: 50 },
-      { accessor: "Base_Code", Header: "Pallet", minWidth: 100 },
-      { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "QtyUnit", Header: "Qty", minWidth: 120 },
-      { accessor: "Destination", Header: "Destination", minWidth: 150 },
-      { accessor: "Document_Code", Header: "Doc No.", minWidth: 105 },
-      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
+      { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
+      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 100 },
+      { Header: "MVT.", width: 100 },
+      { accessor: "Base_Code", Header: "Pallet", width: 100 },
+      { accessor: "Product", Header: "Product" },
+      { accessor: "QtyUnit", Header: "Qty", width: 130, className: 'right' },
+      { accessor: "Destination", Header: "Destination", width: 200 },
+      { accessor: "Document_Code", Header: "Doc No.", width: 105 },
+      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 110 },
     ]
     const cols2 = [
-      { accessor: "Time", Header: "Time", minWidth: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
+      { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       {
-        accessor: "TaskName", Header: "Task Name", minWidth: 80, className: 'center',
+        accessor: "TaskName", Header: "Task Name", width: 100, className: 'center',
         Cell: row => (
           <Badge color={row.value} style={{ fontSize: '0.825em', fontWeight: '500' }}>{row.value}</Badge>
         )
       },
-      { accessor: "LocationCode", Header: "Stage", minWidth: 100 },
-      { accessor: "PalletCode", Header: "Pallet", minWidth: 100 },
-      { accessor: "Product", Header: "Product", minWidth: 250 },
-      { accessor: "Qty", Header: "Qty", minWidth: 120 },
-      { accessor: "Destination", Header: "Destination", minWidth: 100 },
-      { accessor: "DocNo", Header: "Doc No.", minWidth: 105 },
-      { accessor: "SAPRef", Header: "SAP Ref.", minWidth: 100 },
+      { accessor: "LocationCode", Header: "Stage", width: 100 },
+      { accessor: "PalletCode", Header: "Pallet", width: 100 },
+      { accessor: "Product", Header: "Product" },
+      { accessor: "Qty", Header: "Qty", width: 130, className: 'right' },
+      { accessor: "Destination", Header: "Destination", width: 200 },
+      { accessor: "DocNo", Header: "Doc No.", width: 105 },
+      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 110 },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
@@ -166,7 +172,7 @@ class TaskList extends Component {
               <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
                 <Row>
                   <Col sm="1" xs="6" md="1" lg="1">{logoamw}</Col>
-                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={1000} /></span></label></Col>
+                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
                   <Col sm="3" xs="3" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Area: </label></Col>
                   <Col sm="4" xs="7" md="4" lg="4">{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
                     this.updateQueueData(res.value)
