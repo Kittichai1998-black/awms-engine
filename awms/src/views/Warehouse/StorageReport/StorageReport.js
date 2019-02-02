@@ -9,6 +9,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
 import withFixedColumns from "react-table-hoc-fixed-columns";
+import {EventStatus } from '../Status'
 
 const Axios = new apicall()
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
@@ -70,7 +71,7 @@ class StoragReport extends Component {
   }
 
   createCustomFilter(name) {
-    return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
+    return <Input autoComplete="off" type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
       onKeyPress={(e) => {
         if (e.key === 'Enter') {
           let filter = this.state.datafilter
@@ -84,6 +85,31 @@ class StoragReport extends Component {
         }
       }
       } />
+  }
+
+
+  createStatusField(data) {
+    let strStatus = ""
+    const results = EventStatus.filter(row => {
+      return row.code === data.value
+    })
+  }
+
+  createDropdownFilter(columns) {
+    let list = EventStatus.map((x, idx) => {
+      return <option key={idx} value={x.status}>{x.status}</option>
+    });
+    return <select style={{ background: "#FAFAFA", width: '100%' }} onChange={(e) => {
+      let filter = this.state.datafilter
+      filter.forEach((x, index) => {
+        if (x.id === columns.column.id)
+          filter.splice(index, 1);
+      });
+      if (e.target.value !== "") {
+        filter.push({ id: columns.column.id, value: e.target.value });
+      }
+      this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
+    }}><option key="*" value="*">{"ALL"}</option>{list}</select>
   }
 
   onCheckFliter() {
@@ -269,7 +295,12 @@ class StoragReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_PackStd")}</span>)
       },
 
-      { accessor: 'Status', Header: 'Status', Filter: (e) => this.createCustomFilter(e), sortable: true },
+
+      {
+        accessor: 'Status', Header: 'Status', editable: false, Filter: (e) => this.createDropdownFilter(e), minWidth: 120,
+     
+      },
+
       {
         accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 140, maxWidth: 140, Cell: (e) =>
           this.datetimeBody(e.value)

@@ -208,6 +208,7 @@ class IssuedManage extends Component {
             console.log(pg)
             if (pg.length > 0) {
               x.sumQty1 = pg[0].distoQty
+              x.distoQtyMax = pg[0].distoQtyMax
               //x.batch = pg[0].batch
               //x.options = pg[0].options
               //x.lot = pg[0].lot
@@ -244,16 +245,18 @@ class IssuedManage extends Component {
                 if (x.id === res2.docItemID) {
                   sum += res2.distoBaseQty
                   res2.sumQty1 = sum
+                 
                   //res2.quantity = x.quantity
                   res2.options = x.options
                   //res2.distoBaseQty 
                   // = res2.distoQtyMax
-                  // console.log(res2.distoQtyMax)
+                   console.log(res2.distoQtyMax)
                   // console.log(x.distoQtyMax)
                 }
+           
               })
 
-              console.log(sum)
+             
 
           
            
