@@ -385,7 +385,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
                     {
-                        DELIV_NUMB = RefID,
+                        DELIV_NUMB = dataDocItem.RefID,
                         DELIV_ITEM = ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem"),
                         MATERIAL = dataDocItem.Code,
                         PLANT = SouBranch,
@@ -420,7 +420,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         data.ITEM_DATA.Add(new SAPInterfaceReturnvaluesDOPick.items()
                         {
-                            DELIV_NUMB = RefID,
+                            DELIV_NUMB = dataDocItem.RefID,
                             DELIV_ITEM = ObjectUtil.QryStrGetValue(dataDocItem.Options, "DocItem"),
                             MATERIAL = dataDocItem.Code,
                             PLANT = SouBranch,
