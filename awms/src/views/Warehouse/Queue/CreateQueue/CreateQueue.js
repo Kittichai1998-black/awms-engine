@@ -200,7 +200,7 @@ class CreateQueue extends Component{
             
           })
         })
-      /* }else{
+      }/* else{
         let postdata = 
         {
           "apiKey":"THIP_TEST",
@@ -229,8 +229,8 @@ class CreateQueue extends Component{
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
           }
         })
-      } */
-    }
+      } 
+    }*/
   }
 
   createItemCardsList(chk){
@@ -255,7 +255,7 @@ class CreateQueue extends Component{
           ,priority:0
           ,priority_label:null
           ,qty:datarow.baseQuantity
-          ,batchs:[{value:datarow.batch,qty:datarow.baseQuantity,unit:datarow.baseUnitTypeCode}]
+          ,batchs:datarow.batch?[{value:datarow.batch,qty:datarow.baseQuantity,unit:datarow.baseUnitTypeCode}]:[]
           ,defaultBatch:datarow.batch
           ,baseUnitTypeCode:datarow.baseUnitTypeCode
         });
@@ -305,7 +305,7 @@ class CreateQueue extends Component{
                 checkBatchInput = true;
               }
             });
-          }
+          
           /* else{
             checkDefaultBatch = true;
             checkBatchInput = true;
@@ -323,6 +323,7 @@ class CreateQueue extends Component{
               unit:datarow.baseUnitTypeCode
             })
           }
+        }
         /* }else{
         } */
       });
@@ -336,10 +337,11 @@ class CreateQueue extends Component{
         }
       })                 
     }
-    this.setState({ dataProcessItems },() => this.createItemCardsList(2),this.createBatchCardsList()) 
+    this.setState({ dataProcessItems },() => this.createItemCardsList(2), this.createBatchCardsList()) 
   }
 
   createBatchCardsList(){
+    let batchCard = []
     const dataProcessItems = this.state.dataProcessItems;
     let batch = [];
     
@@ -349,7 +351,7 @@ class CreateQueue extends Component{
           return {"dociID":item.dociID,"batchNo":(item.batchs.length-1),"value":row.value,"qty":row.qty}
         }))
     });
-    let batchCard = []
+
     batch.forEach((datarow,index) => {
       batchCard = batchCard.concat(this.addNewInputText(index,datarow));
     })
@@ -407,12 +409,20 @@ class CreateQueue extends Component{
     }else{
                  
     }
-   /*  let batchCard = this.state.batchCard
+    //let batchCard = []
+   /*  let batchCard = [...this.state.batchCard]
     batchCard.forEach(index => {
-      batchCard.splice(index, 1);
+      batchCard.splice(index,1)
     }); */
+/* 
+    this.setState({dataProcessItems}, 
+      () => this.setState({itemCard},
+       () => this.setState({ DocumentItemData },
+       () => this.createItemCardsList(1))))
+            */       
 
-    this.setState({ dataProcessItems }, () => this.createItemCardsList(2),this.createBatchCardsList()) 
+//this.setState({ dataProcessItems }, () => this.setState({batchCard}, () => this.createItemCardsList(2),this.createBatchCardsList())) 
+    this.setState({ dataProcessItems },  () => this.createItemCardsList(2),this.createBatchCardsList())
   }
 
   addNewInputText(index,datarow){
@@ -686,7 +696,7 @@ class CreateQueue extends Component{
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>{index==0?"Batch :":""}</Label></Col>
         <Col sm={4}><span>{(datarow.value?datarow.value:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
-        <Col sm={4}><span>{((datarow.qty?datarow.qty:"")+(datarow.unit?(" "+datarow.unit):""))}</span></Col>
+        <Col sm={4}><span>{(datarow.qty?datarow.qty:"")}</span><span>{(datarow.unit?(" "+datarow.unit):"")}</span></Col>
       </FormGroup>
         {/* <FormGroup row>
           <Col sm={6}><span>{ datarow.value }</span></Col>
