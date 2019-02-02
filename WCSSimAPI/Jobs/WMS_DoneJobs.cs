@@ -15,8 +15,15 @@ namespace WCSSimAPI.Jobs
             var req = ADO.DataADO.GetInstant().list_request_wms_done(null);
             if (!string.IsNullOrWhiteSpace(req.basecode))
             {
-                var res = AMWUtil.DataAccess.Http.RESTFulAccess.SendJson<dynamic>(null, ConstConfig.WMSApiURL + "/api/wm/asrs/queue/done", RESTFulAccess.HttpMethod.POST, req.sJson.Json<dynamic>());
-                //ADO.DataADO.GetInstant().set_response_wms_done(null, req.basecode, ObjectUtil.Json(res));
+                try
+                {
+                    var res = AMWUtil.DataAccess.Http.RESTFulAccess.SendJson<dynamic>(null, ConstConfig.WMSApiURL + "/api/wm/asrs/queue/done", RESTFulAccess.HttpMethod.POST, req.sJson.Json<dynamic>());
+                    ADO.DataADO.GetInstant().set_response_wms_done(null, req.basecode, ObjectUtil.Json(res));
+                }
+                catch
+                {
+
+                }
             }
             return null;
         }

@@ -21,12 +21,12 @@ namespace WCSSimAPI.ADO
         public TJsonRequest list_request_wms_register_queue(System.Data.SqlClient.SqlTransaction trans)
         {
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-            datas.Add("basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("@basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("@sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "api.ssp_post_receive_inbound",
                System.Data.CommandType.StoredProcedure,
-               datas, null, trans);
+               datas, null);
 
             var res = new TJsonRequest { basecode = datas.Get<string>("basecode"), sJson = datas.Get<string>("sJson") };
             return res;
@@ -34,8 +34,8 @@ namespace WCSSimAPI.ADO
         public TJsonRequest list_request_wms_working(System.Data.SqlClient.SqlTransaction trans)
         {
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-            datas.Add("basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "api.ssp_post_working_stage",
                System.Data.CommandType.StoredProcedure,
@@ -47,8 +47,8 @@ namespace WCSSimAPI.ADO
         public TJsonRequest list_request_wms_done(System.Data.SqlClient.SqlTransaction trans)
         {
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-            datas.Add("basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "[api].[ssp_post_complete]",
                System.Data.CommandType.StoredProcedure,
@@ -78,8 +78,8 @@ namespace WCSSimAPI.ADO
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
             datas.Add("_basecode", _basecode);
             datas.Add("_json", _json);
-            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "api.ssp_post_response_inbound",
                System.Data.CommandType.StoredProcedure,
@@ -93,8 +93,8 @@ namespace WCSSimAPI.ADO
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
             datas.Add("_basecode", _basecode);
             datas.Add("_json", _json);
-            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "api.ssp_post_response_working_stage",
                System.Data.CommandType.StoredProcedure,
@@ -108,8 +108,8 @@ namespace WCSSimAPI.ADO
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
             datas.Add("_basecode", _basecode);
             datas.Add("_json", _json);
-            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "api.ssp_post_response_complete",
                System.Data.CommandType.StoredProcedure,
@@ -123,8 +123,8 @@ namespace WCSSimAPI.ADO
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
             datas.Add("_basecode", _basecode);
             datas.Add("_json", _json);
-            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "api.ssp_post_response_get_location_info",
                System.Data.CommandType.StoredProcedure,
@@ -139,9 +139,9 @@ namespace WCSSimAPI.ADO
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
             //datas.Add("_basecode", _basecode);
             datas.Add("_json", _json);
-            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
-            datas.Add("_retjson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("_retchk", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("_retmsg", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
+            datas.Add("_retjson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output, 8000);
             this.Execute(
                "api.ssp_post_response_outbound",
                System.Data.CommandType.StoredProcedure,
