@@ -136,6 +136,7 @@ class Return extends Component {
       const IssueDocdata = []
       const IssueDocRefdata = []
       response.data.datas.forEach(row => {
+        console.log(row)
         IssueDocdata.push({ value: row.ID, label: row.Code })
         IssueDocRefdata.push({ ID: row.ID, refID: row.RefID })
       })
@@ -189,24 +190,24 @@ class Return extends Component {
     Axios.get(createQueryString(QueryDoc)).then((response) => {
       console.log(response)
       const DocItemSto = []
-      if (response.data.datas.length !== 0) {
+      // if (response.data.datas.length !== 0) {
         response.data.datas.forEach(x => {
           console.log(x)
           this.setState({ DocItemID: x.DocItem })
           this.setState({ BaseQtyRetuen: x.BaseQty })
-          DocItemSto.push({ value: x.DocItem, label: x.SKUCode, lot: x.Lot, batch: x.Batch, orderNo: x.OrderNo, Code: x.SKUCode })
+          DocItemSto.push({ value: x.DocItem, label: x.SKUCode+" : "+x.Batch, lot: x.Lot, batch: x.Batch, orderNo: x.OrderNo, Code: x.SKUCode,Unit:x.Unit,BaseQty:x.BaseQty})
         })
-      } else {
-        DocItemSto.push({ value: null, label: null })
-      }
+      // } else {
+      //   //DocItemSto.push({ value: null, label: null })
+      // }
       this.setState({ DocItemSto })
-      // this.genDataSto(DocItemSto)
+       this.genDataSto(DocItemSto)
 
     })
   }
 
   genDataSto(DocItemSto) {
-
+console.log(DocItemSto)
     DocItemSto.forEach(x => {
 
       let QueryDoc = this.state.StorageObject
@@ -224,8 +225,12 @@ class Return extends Component {
     })
   }
 
-  genDocItem(data) {
+  genDocItem(data,lot,batch,orderNo,SKUCode,BaseQty,Unit) {
     console.log(data)
+    console.log(lot)
+    console.log(orderNo)
+    console.log(SKUCode)
+    this.setState({lotPallet:lot,batchPallet:batch,orderNoPallet:orderNo,SKUCodePallet:SKUCode,BaseQtyPallet:BaseQty,UnitPallet:Unit})
     let QueryDoc = this.state.DocItem
     let JSONDoc = []
     JSONDoc.push({ "f": "ID", "c": "=", "v": data })
@@ -274,10 +279,11 @@ class Return extends Component {
             //==== แสดงข้อมูล ====
             const dataSKUinPallet = []
             res.data.mapstos.forEach(x => {
-              dataSKUinPallet.push({ id: x.parentID, sku: x.code, qty: x.qty })
+              dataSKUinPallet.push({ id: x.parentID, sku: x.code, qty: x.qty,batch:x.batch,lot:x.lot,orderNo:x.orderNo })
             })
             console.log(dataSKUinPallet)
-            this.createDataCard(dataSKUinPallet, true, null)
+            //this.createDataCard(dataSKUinPallet, true, null)
+
           }
         }
       })
@@ -287,6 +293,7 @@ class Return extends Component {
 
   createDataCard(data, flag, palletID) {
     //เพิ่มได้
+    console.log(this.state.DocItemReturn)
     let QueryDoc = this.state.DocumentItemSto
     let JSONDoc = []
     JSONDoc.push({ "f": "Status", "c": "=", "v": 1, "f": "ID", "c": "=", "v": this.state.DocID })
@@ -301,10 +308,11 @@ class Return extends Component {
             return <Card key={index} style={{ background: 'rgb(116, 203, 147)' }}>
               <CardBody>
                 <div style={{ textAlign: "center"}}><label style={{ fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>Pallet Detail</label></div>
-                <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>SKU in Pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label style={{ fontWeight: "bolder" }}>Qty : </label> {dataPallet.qty}</div>
+                <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>SKU in Pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label style={{ fontWeight: "bolder" }}>Qty : </label> {dataPallet.qty}</div>               
+                <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {dataPallet.lot}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {dataPallet.batch}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {dataPallet.orderNo}</div>
                 <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
                 <div><label style={{ fontWeight: "bolder" }}>Code : </label> {list.SKUCode}</div>
-                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"
+                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"
                   onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyRetuen}</div>
                 <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {list.Unit}</div><br />
                 <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(dataPallet.id) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
@@ -317,18 +325,18 @@ class Return extends Component {
         })
       })
     } else {
-      Axios.get(createQueryString(QueryDoc)).then((res) => {
-        var dataCard = res.data.datas.map((list, index) => {
+        var dataCard = this.state.DocItemReturn.map((list, index) => {
           console.log(list)
           return <Card key={index} style={{ background: 'rgb(255, 207, 61)' }}>
             <CardBody>
               <div style={{ textAlign: "center" }}><label style={{ fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>Pallet Detail</label></div>
               <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>SKU in Pallet : </label> {" - "} &nbsp;&nbsp;<label style={{ fontWeight: "bolder" }}>Qty : </label> {" - "}</div>
+              <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {this.state.lotPallet}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {this.state.batchPallet}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {this.state.orderNoPallet}</div>
               <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
-              <div><label style={{ fontWeight: "bolder" }}>Code : </label> {list.SKUCode}</div>
-              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input defaultValue={list.Quantity} style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"
-                onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {list.BaseQty}</div>
-              <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {list.Unit}</div><br />
+              <div><label style={{ fontWeight: "bolder" }}>Code : </label> {list.Code}</div>
+              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"
+                onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
+              <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
               <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(palletID) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
             <Button onClick={() => { this.Clear() }} color="danger" >Cancel</Button></div>
             </CardBody>
@@ -336,7 +344,6 @@ class Return extends Component {
 
         })
         this.setState({ displayDataCard: dataCard })
-      })
 
     }
   }
@@ -404,7 +411,7 @@ class Return extends Component {
         {this.dropdownAuto()}
 
         <label style={{ width: '100%', display: "inline-block", marginRight: "10px", fontWeight: "bold" }}>Item Return : </label><br />
-        <div style={{ textAlign: "center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.DocItemSto} result={(e) => this.genDocItem(e.value)} /></div><br />
+        <div style={{ textAlign: "center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.DocItemSto} result={(e) => this.genDocItem(e.value,e.lot,e.batch,e.orderNo,e.Code,e.BaseQty,e.Unit)} /></div><br />
 
         <label style={{ width: '100%', display: "inline-block", marginRight: "10px", fontWeight: "bold", marginTop: "6px" }}>Area : </label><br />
         <div style={{ textAlign: "center", display: "inline-block", width: "100%", }}><AutoSelect data={this.state.AreaData} result={(e) => this.setState({ "AreaID": e.value })} /></div><br />
