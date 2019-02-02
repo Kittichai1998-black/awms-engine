@@ -65,7 +65,7 @@ namespace WCSSimAPI.Controllers
             
     */
             var res = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(data));
-            return res;
+            return res._retjson;
         }
     }
 }
