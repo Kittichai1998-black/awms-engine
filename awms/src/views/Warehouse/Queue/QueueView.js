@@ -21,7 +21,7 @@ class QueueView extends Component {
       queryString: window.apipath + "/api/viw",
       t: "WorkQueue",
       q: "",
-      f: "Status,ActualTime,StartTime,EndTime,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
+      f: "Destination,Status,ActualTime,StartTime,EndTime,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
         "Sou_Area_Name,Des_Area_Name,Sou_AreaLocation_Name,Des_AreaLocation_Name,UserName,CreateTime,Document_Code",
       g: "",
       s: "[{'f':'CASE WHEN Status = 1 THEN Status END','od':'DESC'},{'f':'CASE WHEN Status = 3 THEN Status END','od':'ASC'},{'f':'CASE WHEN Status = 0 THEN Status END','od':'ASC'}]",
@@ -30,17 +30,6 @@ class QueueView extends Component {
       all: "",
       //ORDER BY CASE WHEN wq.Status = 1 THEN wq.Status END ASC, 
       //CASE WHEN wq.Status = 0 THEN wq.Status END DESC, CASE WHEN wq.Status = 3 THEN wq.Status END DESC
-    }
-    this.selectCheck = {
-      queryString: window.apipath + "/api/viw",
-      t: "WorkQueue",
-      q: "",
-      f: "*",
-      g: "",
-      s: "[{'f':'Status','od':'desc'}]",
-      sk: 0,
-      l: 1,
-      all: "",
     }
 
     this.GetQueueData = this.GetQueueData.bind(this)
@@ -91,13 +80,6 @@ class QueueView extends Component {
       url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + this.state.locsearch + "'}]";
       this.GetQueueData(url)
 
-      // API.get(createQueryString(this.selectCheck)).then(check => {
-
-      //   console.log(check)
-
-      // })
-
-
       let interval = setInterval(() => { this.GetQueueData(url) }, 2000);
       this.setState({ interval: interval })
     }
@@ -147,7 +129,7 @@ class QueueView extends Component {
       { accessor: "Priority", Header: "Priority", width: 70, className: 'center' },
       { accessor: "StorageObject_Code", Header: "Pallet", width: 100 },
       { accessor: "Pack_Name", Header: "Product" },
-      { accessor: "Des_Warehouse_Name", Header: "Destination", width: 150 },
+      { accessor: "Destination", Header: "Destination", width: 150 },
       { accessor: "Document_Code", Header: "Doc No.", width: 130 },
       { accessor: "RefID", Header: "SAP.Doc No.", width: 130 },
     ]
