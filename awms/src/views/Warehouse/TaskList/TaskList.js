@@ -145,7 +145,7 @@ class TaskList extends Component {
       {
         accessor: "TaskName", Header: "Task Name", width: 100, className: 'center',
         Cell: row => (
-          <Badge color={row.value} style={{ fontSize: '0.825em', fontWeight: '500' }}>{row.value}</Badge>
+          <Badge color={row.value} style={{ fontSize: '0.875em', fontWeight: '500' }}>{row.value}</Badge>
         )
       },
       { accessor: "LocationCode", Header: "Stage", width: 100 },
