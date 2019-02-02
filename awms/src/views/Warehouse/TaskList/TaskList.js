@@ -131,7 +131,8 @@ class TaskList extends Component {
   render() {
     const cols1 = [
       { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
-      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 180 },
+      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 100 },
+      { Header: "MVT.", width: 100 },
       { accessor: "Base_Code", Header: "Pallet", width: 100 },
       { accessor: "Product", Header: "Product" },
       { accessor: "QtyUnit", Header: "Qty", width: 130, className: 'right' },
@@ -142,7 +143,7 @@ class TaskList extends Component {
     const cols2 = [
       { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       {
-        accessor: "TaskName", Header: "Task Name", width: 80, className: 'center',
+        accessor: "TaskName", Header: "Task Name", width: 100, className: 'center',
         Cell: row => (
           <Badge color={row.value} style={{ fontSize: '0.825em', fontWeight: '500' }}>{row.value}</Badge>
         )

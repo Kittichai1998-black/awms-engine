@@ -245,8 +245,8 @@ class StockCardReport extends Component {
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
-      { accessor: 'Ref2', Header: 'MovementType', editable: false, sortable: true },
-      { accessor: 'RefID', Header: 'Ref.DO No.', editable: false, sortable: true },
+      { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: true },
+      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: true },
       {
         accessor: 'Debit', Header: 'Debit', editable: false, className: "right",
         getFooterProps: () => ({
