@@ -215,14 +215,14 @@ class CreateQueue extends Component{
             dataDocItem.forEach(row => {
               DocumentItemData.push({docID:doc_id
                             ,dociID:row.id
-                            ,itemCode:row.code
-                            ,itemName:row.SKUMaster_Name
+                            ,itemCode:row.packMaster_Code
+                            ,itemName:row.packMaster_Name
                             ,item:row.options
                             ,batch:row.batch
                             ,orderNo:row.orderNo
                             ,lot:row.lot
-                            ,BaseQuantity:row.baseQuantity
-                            ,baseUnitTypeCode:row.BaseUnitType_Code
+                            ,baseQuantity:row.baseQuantity
+                            ,baseUnitTypeCode:row.baseUnitType_Code
               })
             })
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))

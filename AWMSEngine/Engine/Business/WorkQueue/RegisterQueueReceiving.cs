@@ -49,9 +49,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
             var destinationLine = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID, this.BuVO);
 
-            if (!destinationLine.Any(x => x.Des_AreaMaster_ID == this._areaASRS.ID))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001,
-                    "ไม่สามารถสร้างคิวงาน จากต้นทาง '" + this.StaticValue.AreaMasters.First(x => x.ID == mapsto.areaID).Code + "' ไปที่ปลายทาง '" + this._areaASRS.Code + "' ได้");
+            //if (!destinationLine.Any(x => x.Des_AreaMaster_ID == this._areaASRS.ID))
+            //    throw new AMWException(this.Logger, AMWExceptionCode.V1001,
+            //        "ไม่สามารถสร้างคิวงาน จากต้นทาง '" + this.StaticValue.AreaMasters.First(x => x.ID == mapsto.areaID).Code + "' ไปที่ปลายทาง '" + this._areaASRS.Code + "' ได้");
 
             List<amt_DocumentItem> docItems = null;
             //รับสินค้าใหม่เข้าคลัง
