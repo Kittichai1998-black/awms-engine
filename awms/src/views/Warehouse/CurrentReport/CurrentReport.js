@@ -63,7 +63,7 @@ class CurrentReport extends Component {
   }
 
   createCustomFilter(name) {
-    return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
+    return <Input autoComplete="off" type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
       onKeyPress={(e) => {
         if (e.key === 'Enter') {
           let filter = this.state.datafilter
