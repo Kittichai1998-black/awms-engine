@@ -31,6 +31,17 @@ class QueueView extends Component {
       //ORDER BY CASE WHEN wq.Status = 1 THEN wq.Status END ASC, 
       //CASE WHEN wq.Status = 0 THEN wq.Status END DESC, CASE WHEN wq.Status = 3 THEN wq.Status END DESC
     }
+    this.selectCheck = {
+      queryString: window.apipath + "/api/trx",
+      t: "WorkQueue",
+      q: "",
+      f: "ID",
+      g: "",
+      s: "[{'f':'ID','od':'desc'}]",
+      sk: 0,
+      l: 1,
+      all: "",
+    }
 
     this.GetQueueData = this.GetQueueData.bind(this)
   }
@@ -80,7 +91,26 @@ class QueueView extends Component {
       url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + this.state.locsearch + "'}]";
       this.GetQueueData(url)
 
-      let interval = setInterval(() => { this.GetQueueData(url) }, 2000);
+      var urlCheck = this.selectCheck;
+      urlCheck.q = "[{ 'f': 'IOType', c:'=', 'v': '" + (this.state.locsearch === "IN" ? "0" : "1") + "'}]";
+      this.GetQueueData(urlCheck)
+
+      // API.get(createQueryString(this.selectCheck)).then(check => {
+
+      //   console.log(check)
+
+      // })
+
+      let interval = setInterval(() => { 
+        API.get(createQueryString(urlCheck)).then(res => {
+          
+          console.log(res.data.datas[0].ID)
+          if(this.state.queueID !== res.data.datas[0].ID){
+            this.GetQueueData(url)
+          }
+          this.setState({ queueID: res.data.datas[0].ID });
+        })
+      }, 2000);
       this.setState({ interval: interval })
     }
   }

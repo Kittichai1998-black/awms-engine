@@ -135,7 +135,6 @@ class CreateQueue extends Component{
       batchCard.splice(index, 1);
     });
     this.setState({ processCard}, () => this.setState({dataProcessSelected}, () => this.setState({dataProcessItems}, () => this.setState({DocumentItemData}, () => this.setState({batchCard}, () => this.createAutoDocList())))))
-    //this.createAutoDocList();
 }
 
   createAutoDocList(){
@@ -170,7 +169,7 @@ class CreateQueue extends Component{
         itemCard.splice(index, 1);
       });
 
-      //if(mmType !== ""){
+      if(mmType !== ""){
       const docItemselect = {queryString:window.apipath + "/api/viw",
         t:"DocumentItem",
         q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
@@ -200,7 +199,7 @@ class CreateQueue extends Component{
             
           })
         })
-      /* }else{
+      } else{
         let postdata = 
         {
           "apiKey":"THIP_TEST",
@@ -216,20 +215,20 @@ class CreateQueue extends Component{
             dataDocItem.forEach(row => {
               DocumentItemData.push({docID:doc_id
                             ,dociID:row.id
-                            ,itemCode:row.code
-                            ,itemName:row.SKUMaster_Name
+                            ,itemCode:row.packMaster_Code
+                            ,itemName:row.packMaster_Name
                             ,item:row.options
                             ,batch:row.batch
                             ,orderNo:row.orderNo
                             ,lot:row.lot
-                            ,BaseQuantity:row.baseQuantity
-                            ,baseUnitTypeCode:row.BaseUnitType_Code
+                            ,baseQuantity:row.baseQuantity
+                            ,baseUnitTypeCode:row.baseUnitType_Code
               })
             })
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
           }
         })
-      } */
+      } 
     }
   }
 
@@ -255,7 +254,7 @@ class CreateQueue extends Component{
           ,priority:0
           ,priority_label:null
           ,qty:datarow.baseQuantity
-          ,batchs:[{value:datarow.batch,qty:datarow.baseQuantity,unit:datarow.baseUnitTypeCode}]
+          ,batchs:datarow.batch?[{value:datarow.batch,qty:datarow.baseQuantity,unit:datarow.baseUnitTypeCode}]:[]
           ,defaultBatch:datarow.batch
           ,baseUnitTypeCode:datarow.baseUnitTypeCode
         });
@@ -287,7 +286,6 @@ class CreateQueue extends Component{
     if(dataProcessItems.length>0){
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
-          //if(datarow.batchs.length>0){
             if(datarow.batchs.length===0){
               datarow.batchs.push({
                 value:null,
@@ -305,26 +303,14 @@ class CreateQueue extends Component{
                 checkBatchInput = true;
               }
             });
-          }
-          /* else{
-            checkDefaultBatch = true;
-            checkBatchInput = true;
-          } */
-          /* if(checkBatchInput && checkDefaultBatch){
-            datarow.batchs.push({
-              value:datarow.defaultBatch,
-              qty:datarow.defaultBatch?datarow.qty:0,
-              unit:datarow.baseUnitTypeCode
-            })
-          }else  */if(checkBatchInput && chkFirstClick!==1){
+            if(checkBatchInput && chkFirstClick!==1){
             datarow.batchs.push({
               value:null,
               qty:0,
               unit:datarow.baseUnitTypeCode
             })
           }
-        /* }else{
-        } */
+        }
       });
     }else{
       DocumentItemData.forEach((datarow) => {
@@ -336,10 +322,11 @@ class CreateQueue extends Component{
         }
       })                 
     }
-    this.setState({ dataProcessItems },() => this.createItemCardsList(2),this.createBatchCardsList()) 
+    this.setState({ dataProcessItems },() => this.createItemCardsList(2), this.createBatchCardsList()) 
   }
 
   createBatchCardsList(){
+    let batchCard = []
     const dataProcessItems = this.state.dataProcessItems;
     let batch = [];
     
@@ -349,7 +336,7 @@ class CreateQueue extends Component{
           return {"dociID":item.dociID,"batchNo":(item.batchs.length-1),"value":row.value,"qty":row.qty}
         }))
     });
-    let batchCard = []
+
     batch.forEach((datarow,index) => {
       batchCard = batchCard.concat(this.addNewInputText(index,datarow));
     })
@@ -407,12 +394,7 @@ class CreateQueue extends Component{
     }else{
                  
     }
-   /*  let batchCard = this.state.batchCard
-    batchCard.forEach(index => {
-      batchCard.splice(index, 1);
-    }); */
-
-    this.setState({ dataProcessItems }, () => this.createItemCardsList(2),this.createBatchCardsList()) 
+    this.setState({ dataProcessItems },  () => this.createItemCardsList(2),this.createBatchCardsList())
   }
 
   addNewInputText(index,datarow){
@@ -625,8 +607,6 @@ class CreateQueue extends Component{
         itemrow.batchs.push({"value":null,"qty":itemrow.qty})
       }else{
         if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0)) > itemrow.qty){
-          alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
-          //checkMoreQty =true
         }else{
           itemrow.batchs.forEach(batchrow =>{
             if(batchrow.value===null && itemrow.qty>0){
@@ -648,11 +628,6 @@ class CreateQueue extends Component{
         }
       }
     });
-    /* if(checkMoreQty){
-      dataProcessItems.forEach((index) => {
-        dataProcessItems.splice(index,1)
-      });
-    } */
       return dataProcessItems
   }
  
@@ -686,7 +661,7 @@ class CreateQueue extends Component{
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>{index==0?"Batch :":""}</Label></Col>
         <Col sm={4}><span>{(datarow.value?datarow.value:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
-        <Col sm={4}><span>{((datarow.qty?datarow.qty:"")+(datarow.unit?(" "+datarow.unit):""))}</span></Col>
+        <Col sm={4}><span>{(datarow.qty?datarow.qty:"")}</span><span>{(datarow.unit?(" "+datarow.unit):"")}</span></Col>
       </FormGroup>
         {/* <FormGroup row>
           <Col sm={6}><span>{ datarow.value }</span></Col>

@@ -208,6 +208,7 @@ class IssuedManage extends Component {
             console.log(pg)
             if (pg.length > 0) {
               x.sumQty1 = pg[0].distoQty
+              x.distoQtyMax = pg[0].distoQtyMax
               //x.batch = pg[0].batch
               //x.options = pg[0].options
               //x.lot = pg[0].lot
@@ -244,16 +245,18 @@ class IssuedManage extends Component {
                 if (x.id === res2.docItemID) {
                   sum += res2.distoBaseQty
                   res2.sumQty1 = sum
+                 
                   //res2.quantity = x.quantity
                   res2.options = x.options
                   //res2.distoBaseQty 
                   // = res2.distoQtyMax
-                  // console.log(res2.distoQtyMax)
+                   console.log(res2.distoQtyMax)
                   // console.log(x.distoQtyMax)
                 }
+           
               })
 
-              console.log(sum)
+             
 
           
            
@@ -765,8 +768,8 @@ class IssuedManage extends Component {
         {this.createModal()}
         <div className="clearfix">
           <Row>
-            <Col xs="6"><div className="d-block" >Issued No : <span style={{ marginLeft: '5px' }}>{this.state.issuedNo}</span></div></Col>
-            <Col xs="6"><div>Document Date : <span style={{ marginLeft: '5px' }}>{this.state.documentDate}</span></div></Col>
+            <Col xs="6"><div className="d-block" ><label>Issued No : </label><span style={{ marginLeft: '5px' }}>{this.state.issuedNo}</span></div></Col>
+            <Col xs="6"><div><label>Document Date : <label></label></label><span style={{ marginLeft: '5px' }}>{this.state.documentDate}</span></div></Col>
           </Row>
 
           <Row>
@@ -793,36 +796,36 @@ class IssuedManage extends Component {
 
           <Row>
             <Col xs="6">
-              <div className="">
+              
                 <label>Destination Branch : </label>{this.state.pageID ? this.createText(this.state.desBranchName) :
-                  <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
-                    <div style={{ marginLeft: '5px', display: "inline-block" }}>{this.state.auto_branch}</div> </div>}</div>
+                 
+                    <div style={{ marginLeft: '5px', display: "inline-block" }}>{this.state.auto_branch}</div> }
             </Col>
-            <Col xs="6"><div className=""><label >Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.desWarehouseName) :
-              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}>
+            <Col xs="6"><label >Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.desWarehouseName) :
+              
                 <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} />
-              </div>}</div></Col>
+              }</Col>
           </Row>
 
 
           {this.state.pageID === 0 ? null : <Row>
             <Col xs="6">
-              <div className=""><label > Destination Supplier : </label>{this.createText(this.state.desSupplierName)}</div>
+              <div className=""><label >Destination Supplier : </label>{this.createText(this.state.desSupplierName)}</div>
             </Col>
             <Col xs="6">
-              <div className=""><label > Destination Customer : </label>{this.createText(this.state.desCustomerName)}</div>
+              <div className=""><label >Destination Customer : </label>{this.createText(this.state.desCustomerName)}</div>
             </Col>
           </Row>}
 
 
           {this.state.pageID === 0 ? null : <Row>
-            <Col xs="6"><div>SAP.Doc No : <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.refID) :
-              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.refID}</span>
-              </div>}</span></div></Col>
+            <Col xs="6"><label>SAP.Doc No : </label><span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.refID) :
+              <span> {this.state.refID}</span>
+              }</span></Col>
 
-            <Col xs="6"><div>SAP.Doc Years : <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.ref1) :
-              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.ref1}</span>
-              </div>}</span></div></Col>
+            <Col xs="6"><label>SAP.Doc Years : </label><span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.ref1) :
+              <span> {this.state.ref1}</span>
+              }</span></Col>
           </Row>}
 
 
@@ -831,12 +834,12 @@ class IssuedManage extends Component {
 
 
         <Row>
-          <Col xs="6"><div>Doc Status :<span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></div></Col>
-          <Col xs="6"><div className=""><label>Remark : </label>
+          <Col xs="6"><label>Doc Status :</label><span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></Col>
+          <Col xs="6"><label>Remark : </label>
             {this.state.pageID ? <span> {this.state.remark}</span> :
               <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '100px' }}
                 value={this.state.remark === undefined ? "" : this.state.remark} />}
-          </div></Col>
+          </Col>
         </Row>
 
 
