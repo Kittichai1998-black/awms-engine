@@ -31,22 +31,27 @@ namespace AMWUtil.DataAccess
             CommandType commandType,
             DynamicParameters parameter,
             AMWLogger logger,
-            SqlTransaction transaction = null)
+            SqlTransaction transaction = null,
+            SqlConnection conn = null)
         {
             IEnumerable<T> res = null;
-            if (logger != null) logger.LogDebug("START_EXEC_QUERY " + spName + " | " + this.DynamicParametersToString(parameter));
-            if (transaction == null)
+            if (logger != null) logger.LogDebug("[QUERY] " + spName + " | " + this.DynamicParametersToString(parameter));
+            if (transaction != null)
+            {
+                res = transaction.Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
+            }
+            else if(conn != null)
+            {
+                res = conn.Query<T>(spName, parameter, null, true, 60, commandType);
+            }
+            else
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
                     res = Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
                 }
             }
-            else
-            {
-                res = transaction.Connection.Query<T>(spName, parameter, transaction, true, 60, commandType);
-            }
-            if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
+            //if (logger != null) logger.LogDebug("END_EXEC_QUERY " + spName);
             return res;
         }
 
@@ -55,22 +60,27 @@ namespace AMWUtil.DataAccess
             CommandType commandType,
             DynamicParameters parameter,
             AMWLogger logger,
-            SqlTransaction transaction = null)
+            SqlTransaction transaction = null,
+            SqlConnection conn = null)
         {
             T res;
-            if (logger != null) logger.LogDebug("START_EXEC_SCALAR " + cmdTxt + " " + this.DynamicParametersToString(parameter));
-            if (transaction == null)
+            if (logger != null) logger.LogDebug("[SCALAR] " + cmdTxt + " " + this.DynamicParametersToString(parameter));
+            if (transaction != null)
+            {
+                res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
+            }
+            else if(conn != null)
+            {
+                res = conn.ExecuteScalar<T>(cmdTxt, parameter, null, 60, commandType);
+            }
+            else
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
                     res = Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
                 }
             }
-            else
-            {
-                res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
-            }
-            if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
+            //if (logger != null) logger.LogDebug("END_EXEC_SCALAR " + cmdTxt);
             return res;
         }
 
@@ -79,22 +89,27 @@ namespace AMWUtil.DataAccess
             CommandType commandType,
             DynamicParameters parameter,
             AMWLogger logger,
-            SqlTransaction transaction = null)
+            SqlTransaction transaction = null,
+            SqlConnection conn = null)
         {
             int res;
-            if (logger != null) logger.LogDebug("START_EXEC_NONE " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
-            if (transaction == null)
+            if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
+            if (transaction != null)
+            {
+                res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
+            }
+            else if(conn != null)
+            {
+                res = conn.Execute(cmdTxt, parameter, null, 60, commandType);
+            }
+            else
             {
                 using (SqlConnection Connection = new SqlConnection(this.ConnectionString))
                 {
                     res = Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
                 }
             }
-            else
-            {
-                res = transaction.Connection.Execute(cmdTxt, parameter, transaction, 60, commandType);
-            }
-            if (logger != null) logger.LogDebug("END_EXEC_NONE " + cmdTxt);
+            //if (logger != null) logger.LogDebug("[EXEC] " + cmdTxt);
             return res;
         }
 

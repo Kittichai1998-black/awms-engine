@@ -377,7 +377,7 @@ class Return extends Component {
 
   Clear() {
     this.setState({ displayDataCard: null })
-    window.location.reload()
+    this.setState({ barcode: "" })
   }
 
   ChangeData(e, dataValue) {

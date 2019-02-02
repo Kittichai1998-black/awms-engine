@@ -47,7 +47,11 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             if(mapsto.code != reqVO.baseCode)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ถูกต้อง");
 
+            var destinationLine = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID, this.BuVO);
 
+            if (!destinationLine.Any(x => x.Des_AreaMaster_ID == this._areaASRS.ID))
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001,
+                    "ไม่สามารถสร้างคิวงาน จากต้นทาง '" + this.StaticValue.AreaMasters.First(x => x.ID == mapsto.areaID).Code + "' ไปที่ปลายทาง '" + this._areaASRS.Code + "' ได้");
 
             List<amt_DocumentItem> docItems = null;
             //รับสินค้าใหม่เข้าคลัง
@@ -57,6 +61,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 if (docItems.Count() == 0)
                     throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Receive");
+            }
+            //Move สินค้าจาก Area อื่น
+            else if(mapsto.eventStatus == StorageObjectEventStatus.RECEIVED){
+                
             }
             //คืนเศษที่เหลือจากการ Picking
             else if (mapsto.eventStatus == StorageObjectEventStatus.PICKING)

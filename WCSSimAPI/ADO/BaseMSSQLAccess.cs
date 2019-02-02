@@ -20,7 +20,7 @@ namespace WCSSimAPI.ADO
         }
 
         protected BaseMSSQLAccess() 
-            : base(ConstConfig.ConnectionString)
+            : base(ConstConfig.DBConnection)
         {
 
         }
