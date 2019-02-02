@@ -12,8 +12,8 @@
 .badge-IDLE {
   color: #23282c;
   background-color: #fff;
-  border: 1px solid #c8ced3;
-  width: 6.5em;
+  border: 2px solid #c8ced3;
+  width: 100%;
 }
 
 .badge-IDLE[href]:hover, .badge-IDLE[href]:focus {
@@ -24,9 +24,9 @@
 
 .badge-WORKING {
   color: #ffc107;
-  background-color: #fff;
+  background-color: #fffbf1;
   border: 2px solid #ffc107;
-  width: 6.5em;
+  width: 100%;
 }
 
 .badge-WORKING[href]:hover, .badge-WORKING[href]:focus {
@@ -38,7 +38,8 @@
 .badge-WORKED {
   color: #fff;
   background-color: #ffc107;
-  width: 6.5em;
+  border: 2px solid #ffc107;
+  width: 100%;
 }
 
 .badge-WORKED[href]:hover, .badge-WORKED[href]:focus {
@@ -51,7 +52,7 @@
   color: #73818f;
   background-color: #f0f3f5;
   border: 2px solid #73818f;
-  width: 6.5em;
+  width: 100%;
 }
 
 .badge-REMOVING[href]:hover, .badge-REMOVING[href]:focus {
@@ -63,7 +64,8 @@
 .badge-REMOVED {
   color: #fff;
   background-color: #73818f;
-  width: 6.5em;
+  border: 2px solid #73818f;
+  width: 100%;
 }
 
 .badge-REMOVED[href]:hover, .badge-REMOVED[href]:focus {
@@ -72,11 +74,25 @@
   background-color: #73818f;
 }
 
+.badge-RECEIVED {
+  color: #2f353a;
+  background-color: #ffc107;
+  border: 2px solid #ffc107;
+  width: 100%;
+}
+
+.badge-RECEIVING {
+  color: #2f353a;
+  background-color: #fffbf1;
+  border: 2px solid #ffc107;
+  width: 100%;
+}
+
 .badge-REJECTING {
   color: #f86c6b;
   background-color: #fff;
   border: 2px solid #f86c6b;
-  width: 6.5em;
+  width: 100%;
 }
 
 .badge-REJECTING[href]:hover, .badge-REJECTING[href]:focus {
@@ -88,7 +104,8 @@
 .badge-REJECTED {
   color: #fff;
   background-color: #f86c6b;
-  width: 6.5em;
+  border: 2px solid #f86c6b;
+  width: 100%;
 }
 
 .badge-REJECTED[href]:hover, .badge-REJECTED[href]:focus {
@@ -99,9 +116,9 @@
 
 .badge-CLOSING {
   color: #3a9d5d;
-  background-color: #fff;
+  background-color: #effcf4;
   border: 2px solid #3a9d5d;
-  width: 6.5em;
+  width: 100%;
 }
 
 .badge-CLOSING[href]:hover, .badge-CLOSING[href]:focus {
@@ -113,7 +130,8 @@
 .badge-CLOSED {
   color: #fff;
   background-color: #4dbd74;
-  width: 6.5em;
+  border: 2px solid #4dbd74;
+  width: 100%;
 }
 
 .badge-CLOSED[href]:hover, .badge-CLOSED[href]:focus {
@@ -125,21 +143,14 @@
 .badge-PICKING {
   color: #2f353a;
   background-color: #f0f3f5;
-  border: 3px solid #3d6dff;
+  border: 2px solid #3d6dff;
   width: 100%;
 }
 
 .badge-PICKED {
-  color: #2f353a;
+  color: #fff;
   background-color: #3d6dff;
-  border: 1px solid #f0f3f5;
-  width: 100%;
-}
-
-.badge-PICK {
-  color: #f0f3f5;
-  background-color: #3d6dff;
-  border: 1px solid #f0f3f5;
+  border: 2px solid #3d6dff;
   width: 100%;
 }
 
@@ -152,27 +163,21 @@
 
 .badge-AUDITING {
   color: #2f353a;
-  background-color: #f0f3f5;
-  border: 3px solid #08c249;
+  background-color: #eafff1;
+  border: 2px solid #08c249;
   width: 100%;
 }
 .badge-AUDITED {
-  color: #2f353a;
+  color: #eafff1;
   background-color: #08c249;
-  border: 1px solid #f0f3f5;
+  border: 2px solid #08c249;
   width: 100%;
 }
-// .badge-AUDITED {
-//   color: #2f353a;
-//   background-color: rgb(248, 138, 138);
-//   border: 1px solid #f86c6b;
-//   width: 100%;
-// }
 
 .badge-RETURN {
   color: #2f353a;
-  background-color: #ffc107;
-  border: 1px solid #f0f3f5;
+  background-color: #ffc107; 
+  border: 2px solid #ffc107;
   width: 100%;
 }
 

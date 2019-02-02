@@ -4,12 +4,12 @@ import ReactTable from 'react-table'
 import moment from 'moment';
 import { apicall, createQueryString } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
-import { Input, Row, Col } from 'reactstrap';
+import { Badge, Input, Row, Col } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
 import withFixedColumns from "react-table-hoc-fixed-columns";
-import {EventStatus } from '../Status'
+import {StorageObjectEventStatus } from '../Status'
 
 const Axios = new apicall()
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
@@ -90,13 +90,13 @@ class StoragReport extends Component {
 
   createStatusField(data) {
     let strStatus = ""
-    const results = EventStatus.filter(row => {
+    const results = StorageObjectEventStatus.filter(row => {
       return row.code === data.value
     })
   }
 
   createDropdownFilter(columns) {
-    let list = EventStatus.map((x, idx) => {
+    let list = StorageObjectEventStatus.map((x, idx) => {
       return <option key={idx} value={x.status}>{x.status}</option>
     });
     return <select style={{ background: "#FAFAFA", width: '100%' }} onChange={(e) => {
@@ -242,7 +242,13 @@ class StoragReport extends Component {
           }
         })
       },
-      { accessor: 'Pallet', fixed: "left", Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, },
+      {
+        accessor: 'Status', Header: 'Status', fixed: "left", editable: false, width: 90, Filter: (e) => this.createDropdownFilter(e), minWidth: 120,
+        Cell: row => (
+          <h5><Badge color={row.value}>{row.value}</Badge></h5>
+        )
+      },
+      { accessor: 'Pallet', fixed: "left", Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 100 },
       { accessor: 'SKU_Code', fixed: "left", Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 115 },
       { accessor: 'SKU_Name', Header: 'SKU Name', Filter: (e) => this.createCustomFilter(e), sortable: true, },
       { accessor: 'Warehouse', Header: 'Warehouse', Filter: (e) => this.createCustomFilter(e), sortable: true, },
@@ -294,13 +300,6 @@ class StoragReport extends Component {
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_PackStd")}</span>)
       },
-
-
-      {
-        accessor: 'Status', Header: 'Status', editable: false, Filter: (e) => this.createDropdownFilter(e), minWidth: 120,
-     
-      },
-
       {
         accessor: 'Receive_Time', Header: 'Received Date', filterable: false, sortable: true, minWidth: 140, maxWidth: 140, Cell: (e) =>
           this.datetimeBody(e.value)
