@@ -135,7 +135,6 @@ class CreateQueue extends Component{
       batchCard.splice(index, 1);
     });
     this.setState({ processCard}, () => this.setState({dataProcessSelected}, () => this.setState({dataProcessItems}, () => this.setState({DocumentItemData}, () => this.setState({batchCard}, () => this.createAutoDocList())))))
-    //this.createAutoDocList();
 }
 
   createAutoDocList(){
@@ -170,7 +169,7 @@ class CreateQueue extends Component{
         itemCard.splice(index, 1);
       });
 
-      //if(mmType !== ""){
+      if(mmType !== ""){
       const docItemselect = {queryString:window.apipath + "/api/viw",
         t:"DocumentItem",
         q:"[{ 'f': 'Document_ID', c:'=', 'v': " + doc_id +"},{ 'f': 'EventStatus', c:'=', 'v': '10'}]",
@@ -200,7 +199,7 @@ class CreateQueue extends Component{
             
           })
         })
-      }/* else{
+      } else{
         let postdata = 
         {
           "apiKey":"THIP_TEST",
@@ -230,7 +229,7 @@ class CreateQueue extends Component{
           }
         })
       } 
-    }*/
+    }
   }
 
   createItemCardsList(chk){
@@ -287,7 +286,6 @@ class CreateQueue extends Component{
     if(dataProcessItems.length>0){
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
-          //if(datarow.batchs.length>0){
             if(datarow.batchs.length===0){
               datarow.batchs.push({
                 value:null,
@@ -305,18 +303,7 @@ class CreateQueue extends Component{
                 checkBatchInput = true;
               }
             });
-          
-          /* else{
-            checkDefaultBatch = true;
-            checkBatchInput = true;
-          } */
-          /* if(checkBatchInput && checkDefaultBatch){
-            datarow.batchs.push({
-              value:datarow.defaultBatch,
-              qty:datarow.defaultBatch?datarow.qty:0,
-              unit:datarow.baseUnitTypeCode
-            })
-          }else  */if(checkBatchInput && chkFirstClick!==1){
+            if(checkBatchInput && chkFirstClick!==1){
             datarow.batchs.push({
               value:null,
               qty:0,
@@ -324,8 +311,6 @@ class CreateQueue extends Component{
             })
           }
         }
-        /* }else{
-        } */
       });
     }else{
       DocumentItemData.forEach((datarow) => {
@@ -409,19 +394,6 @@ class CreateQueue extends Component{
     }else{
                  
     }
-    //let batchCard = []
-   /*  let batchCard = [...this.state.batchCard]
-    batchCard.forEach(index => {
-      batchCard.splice(index,1)
-    }); */
-/* 
-    this.setState({dataProcessItems}, 
-      () => this.setState({itemCard},
-       () => this.setState({ DocumentItemData },
-       () => this.createItemCardsList(1))))
-            */       
-
-//this.setState({ dataProcessItems }, () => this.setState({batchCard}, () => this.createItemCardsList(2),this.createBatchCardsList())) 
     this.setState({ dataProcessItems },  () => this.createItemCardsList(2),this.createBatchCardsList())
   }
 
@@ -635,8 +607,6 @@ class CreateQueue extends Component{
         itemrow.batchs.push({"value":null,"qty":itemrow.qty})
       }else{
         if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0)) > itemrow.qty){
-          alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
-          //checkMoreQty =true
         }else{
           itemrow.batchs.forEach(batchrow =>{
             if(batchrow.value===null && itemrow.qty>0){
@@ -658,11 +628,6 @@ class CreateQueue extends Component{
         }
       }
     });
-    /* if(checkMoreQty){
-      dataProcessItems.forEach((index) => {
-        dataProcessItems.splice(index,1)
-      });
-    } */
       return dataProcessItems
   }
  
