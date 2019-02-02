@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WCSSimAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/wcsOutbounds")]
     [ApiController]
     public class WCSOutboundsController : ControllerBase
     {
@@ -40,9 +40,31 @@ namespace WCSSimAPI.Controllers
 
 
         [HttpPost]
-        public dynamic RegisterOutbounds([FromBody] dynamic data)
+        public dynamic RegisterOutbounds([FromBody] TReq data)
         {
-            var res = ADO.DataADO.GetInstant().set_wcs_register_queue(null, data.queueOut.Json());
+            /*List<List<TReq.queueout>> putQueueList = new List<List<TReq.queueout>>();
+            List<List<TReq.queueout>> putQueueCheckList = new List<List<TReq.queueout>>();
+            List<TReq.queueout> putQueues = new List<TReq.queueout>();
+            foreach (var q in data.queueOut)
+            {
+                if(putQueues.Count < 10)
+                {
+                    putQueues.Add(q);
+                }
+                else
+                {
+                    putQueueList.Add(putQueues);
+                    var p = putQueues.Clone();
+                    p.ForEach(x => x.queueID = null);
+                    putQueueCheckList.Add(p);
+                    putQueues = new List<TReq.queueout>();
+                }
+            }
+            if(putQueues.Count > 0)
+                putQueueList.Add(putQueues);
+            
+    */
+            var res = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(data));
             return res;
         }
     }
