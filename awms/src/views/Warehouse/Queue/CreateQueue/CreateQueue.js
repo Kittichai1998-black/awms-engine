@@ -115,6 +115,9 @@ class CreateQueue extends Component{
   onHandleClickCancel() {
     const processCard = this.state.processCard;
     const dataProcessSelected = this.state.dataProcessSelected
+    const dataProcessItems = this.state.dataProcessItems
+    const DocumentItemData =this.state.DocumentItemData
+    const batchCard = this.state.batchCard
 
     processCard.forEach((index) => {
       processCard.splice(index, 1);
@@ -122,8 +125,17 @@ class CreateQueue extends Component{
     dataProcessSelected.forEach((index) => {
       dataProcessSelected.splice(index, 1);
     });
-    this.setState({ processCard,dataProcessSelected })
-    this.createAutoDocList();
+    dataProcessItems.forEach((index) => {
+      dataProcessItems.splice(index, 1);
+    });
+    DocumentItemData.forEach((index) => {
+      DocumentItemData.splice(index, 1);
+    });
+    batchCard.forEach((index) => {
+      batchCard.splice(index, 1);
+    });
+    this.setState({ processCard}, () => this.setState({dataProcessSelected}, () => this.setState({dataProcessItems}, () => this.setState({DocumentItemData}, () => this.setState({batchCard}, () => this.createAutoDocList())))))
+    //this.createAutoDocList();
 }
 
   createAutoDocList(){
@@ -250,7 +262,7 @@ class CreateQueue extends Component{
         this.onEditorValueChange(datarow.dociID, 0,"pickOrderby")
         this.onEditorValueChange(datarow.dociID, "CreateDate","orderByField")
         this.onEditorValueChange(datarow.dociID, 1,"priority")
-        if(datarow.batch){
+        if(datarow.batch !== null && datarow.batch !== undefined && datarow.batch !== ""){
           this.genNewInputText(datarow.dociID,1)
         }
       }
@@ -276,9 +288,17 @@ class CreateQueue extends Component{
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
           //if(datarow.batchs.length>0){
+            if(datarow.batchs.length===0){
+              datarow.batchs.push({
+                value:null,
+                qty:datarow.qty,
+                unit:datarow.baseUnitTypeCode
+              })
+            }
             datarow.batchs.forEach(batchrow =>{
               if((batchrow.value === null && (batchrow.qty?batchrow.qty:0) === 0) ||
-              (batchrow.value === null || batchrow.qty === 0)){
+              (batchrow.value === null || batchrow.qty === 0) ||
+              (batchrow.value === "" || batchrow.qty === 0)){
                 checkBatchInput = false;
               }
               else{
@@ -322,7 +342,8 @@ class CreateQueue extends Component{
   createBatchCardsList(){
     const dataProcessItems = this.state.dataProcessItems;
     let batch = [];
-
+    
+    
     dataProcessItems.map((item) => {
         batch = batch.concat(item.batchs.map(row => {
           return {"dociID":item.dociID,"batchNo":(item.batchs.length-1),"value":row.value,"qty":row.qty}
@@ -386,18 +407,23 @@ class CreateQueue extends Component{
     }else{
                  
     }
-    this.setState({ dataProcessItems },() => this.createItemCardsList(2),this.createBatchCardsList()) 
+   /*  let batchCard = this.state.batchCard
+    batchCard.forEach(index => {
+      batchCard.splice(index, 1);
+    }); */
+
+    this.setState({ dataProcessItems }, () => this.createItemCardsList(2),this.createBatchCardsList()) 
   }
 
   addNewInputText(index,datarow){
     const styleclose = { cursor: "pointer", position: "absolute", display: "inline", background: "#ffffff", borderRadius: "18px"}
     return <div className={[datarow.dociID,index]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
     <Row>
-      {/* <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(datarow.dociID,index)}>{ imgClose }</a></Col> */}
+      <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(datarow.dociID,index)}>{ imgClose }</a></Col>
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
-      <Col md="4"><div style={{display:"inline"}}><Input defaultValue={datarow.value?datarow.value:""} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index, e.target.value,"value") }} /></div></Col> 
+      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.value?datarow.value:""} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index, e.target.value,"value") }} /></div></Col> 
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
-      <Col md="4"><div style={{display:"inline"}}><Input defaultValue={datarow.qty?datarow.qty:0} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index,e.target.value,"qty") }} /></div></Col>
+      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.qty?datarow.qty:0} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index,e.target.value,"qty") }} /></div></Col>
     </Row>
   </div>
   }
@@ -510,14 +536,14 @@ class CreateQueue extends Component{
           onClick={() =>this.viewDetail(datarow.value)} target="_blank" >{datarow.label}</a></Col>
         </FormGroup>
         <FormGroup row>
-          <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
-          <Col sm={3}><span>{datarow.SAPdoc?datarow.SAPdoc:""}</span></Col>
-          <Col sm={3} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Movement Type : </Label></Col>
-          <Col sm={3}><span>{datarow.MMType?datarow.MMType:""}</span></Col>
+          <Col sm={3} style={datarow.SAPdoc?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>SAP Document : </Label></Col>
+          <Col sm={3} style={datarow.SAPdoc?{display:"inline"}:{display:"none"}}><span>{datarow.SAPdoc?datarow.SAPdoc:""}</span></Col>
+          <Col sm={3} style={datarow.MMType?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>Movement Type : </Label></Col>
+          <Col sm={3} style={datarow.MMType?{display:"inline"}:{display:"none"}}><span>{datarow.MMType?datarow.MMType:""}</span></Col>
         </FormGroup>
         <FormGroup row>
-          <Col sm={3} style={this.state.Remark?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>Remark : </Label></Col>
-          <Col sm={9} style={this.state.Remark?{display:"inline"}:{display:"none"}}><span>{this.state.Remark?this.state.Remark:""}</span></Col>
+          <Col sm={3} style={datarow.Remark?{textAlign:"right", "vertical-align": "middle"}:{display:"none"}}><Label>Remark : </Label></Col>
+          <Col sm={9} style={datarow.Remark?{display:"inline"}:{display:"none"}}><span>{datarow.Remark?datarow.Remark:""}</span></Col>
         </FormGroup>        
         <FormGroup row>
           <Col sm={12}>
@@ -535,25 +561,30 @@ class CreateQueue extends Component{
     const dataProcessItems = this.state.dataProcessItems;
     let DocumentData = this.state.DocumentData;
     const docID = this.state.docID
-    let checkQty = true;
+    let checkQty;
     if(this.state.docresult===""){
       alert("Document Item Not Found!")
     }else{
       if(this.state.DocumentItemData.length === 0){
       }else{
-        var xxx = this.validateProcessItemsData(dataProcessItems)
+        checkQty = this.validateQty(dataProcessItems)
+        var b = checkQty.every(function(item, index, array){
+          return item.chk === true;
+        });
+        if(b === true){
+          var xxx = this.validateProcessItemsData(dataProcessItems)
         
-        dataProcessSelected.push(DocumentData.find(x => x.value === docID))
-          dataProcessSelected.forEach((datarow) => {
-            if(datarow.value === docID){
-              datarow.items = [] 
-              xxx.forEach(itemrow => {
-                if(itemrow.docID === docID){
-                  datarow.items.push(itemrow)
-                }
-              })
-            }
-          });
+          dataProcessSelected.push(DocumentData.find(x => x.value === docID))
+            dataProcessSelected.forEach((datarow) => {
+              if(datarow.value === docID){
+                datarow.items = [] 
+                xxx.forEach(itemrow => {
+                  if(itemrow.docID === docID){
+                    datarow.items.push(itemrow)
+                  }
+                })
+              }
+            });
 
           this.createItemShowCardsList(docID)
           this.setState({dataProcessSelected
@@ -567,9 +598,25 @@ class CreateQueue extends Component{
             ,"docresult":""}, () => this.removeItemCard())  
 
           this.createAutoDocList();
-        
+        }
+        else{
+          alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
+        }
       }
     }
+  }
+  validateQty(dataProcessItems){
+    let xx = [];
+    dataProcessItems.forEach(itemrow =>{
+        if((itemrow.batchs.reduce( function(cnt,o){ return cnt + parseInt(o.qty, 10); }, 0)) > itemrow.qty){
+          alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
+          xx.push({"doci":itemrow.dociID, "chk":false})
+        }
+        else{
+          xx.push({"doci":itemrow.dociID, "chk":true})
+        }
+    });
+    return xx
   }
   validateProcessItemsData(dataProcessItems){
     let checkBatchNull = false;
@@ -634,7 +681,7 @@ class CreateQueue extends Component{
 
   addNewBatchCard(dociID,datarow,index){
     return <div className={[dociID,index]} >
-      <Form>
+      <Form style={datarow.value?{display:"inline"}:{display:"none"}}>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>{index==0?"Batch :":""}</Label></Col>
         <Col sm={4}><span>{(datarow.value?datarow.value:"")}</span></Col>
@@ -659,10 +706,22 @@ class CreateQueue extends Component{
         }
       });
     }
+
+    <Col>
+        <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() =>{window.open("/sys/sto/curinv?SKU_Code=" + datarow.itemCode)}} target="_blank" >
+        <span>{(datarow.itemCode?datarow.itemCode:"") +(datarow.itemName?" : "+ datarow.itemName:"")}</span>
+        </a>
+        </Col>
+
+
     return  <div className= { datarow.docID } style={{"border-radius": "15px", "border-bottom": "2px solid rgb(157, 174, 236)",  "padding": "20px",  background:"white", "margin":"5px"}}>
     <Form>
       <FormGroup row>
-        <Col sm={12}><span>{(datarow.itemCode?datarow.itemCode:"") + (datarow.itemName?" : "+datarow.itemName:"")}</span></Col>
+        <Col sm={12}>
+          <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() =>{window.open("/sys/sto/curinv?SKU_Code=" + datarow.itemCode)}} target="_blank" >
+            <span>{(datarow.itemCode?datarow.itemCode:"") + (datarow.itemName?" : "+datarow.itemName:"")}</span>
+          </a>
+        </Col>
       </FormGroup>
       <FormGroup row>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Pick by : </Label></Col>
@@ -978,7 +1037,7 @@ class CreateQueue extends Component{
                       <Button onClick={() => this.processQ()} color="primary" style={{ background: "#26c6da", borderColor: "#26c6da", width: "130px", marginLeft: "5px" }} className="float-right">Process</Button>
                     
                       <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ background: "#ef5350", borderColor: "#ef5350", width: "130px" }} className="float-right">Clear</Button>
-                      <div style={{width:"300px","margin-right":"5px"}} className="float-left">
+                      <div style={{width:"200px","margin-right":"5px"}} className="float-left">
                       <Select  defaultValue={this.state.zoneOutlist.filter(x => x.value===2)}
                           options={this.state.zoneOutlist}
                           onChange={(e) => this.test(e.value)}>

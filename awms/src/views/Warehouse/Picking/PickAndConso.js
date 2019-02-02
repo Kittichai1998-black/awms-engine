@@ -140,7 +140,7 @@ class Picking extends Component {
           <div><label style={{fontWeight: "bolder"}}>Product List : </label> </div>
           <ul>
             {issued.pickItems.map((row, index) => {
-              return <div>{row.itemCode + " => " + row.picked + "/" + row.willPick}</div>
+              return <div>{row.itemCode + " => " + row.picked}</div>
             })}
           </ul>
           <div><Button style={{ width: "100px", marginRight: "5px" }} color="success"

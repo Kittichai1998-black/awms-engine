@@ -159,13 +159,14 @@ class IssuedDoc extends Component {
       })
       if (status === "accept") {
         Axios.post(window.apipath + "/api/wm/issued/doc/working", postdata).then(
-          (res) => { 
+          (res) => {
             this.getData()
-            this.setState({ resp: res.data._result.message }) })
+            this.setState({ resp: res.data._result.message })
+          })
       }
       if (status === "reject") {
-     
-        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => { 
+
+        Axios.post(window.apipath + "/api/wm/issued/doc/rejected", postdata).then((res) => {
           this.getData()
           this.setState({ resp: res.data._result.message })
         })
@@ -173,9 +174,10 @@ class IssuedDoc extends Component {
 
       }
       if (status === "Close") {
-        Axios.post(window.apipath + "/api/wm/issued/doc/Closing", postdata).then((res) => { 
+        Axios.post(window.apipath + "/api/wm/issued/doc/Closing", postdata).then((res) => {
           this.getData()
-          this.setState({ resp: res.data._result.message }) })
+          this.setState({ resp: res.data._result.message })
+        })
       }
     }
   }
@@ -318,9 +320,13 @@ class IssuedDoc extends Component {
           if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
             var strSapRes = decodeURIComponent(arrayRes["SapRes"])
             var newSapRes = strSapRes.replace(/\+/g, ' ').replace(/\|/g, ' , ');
-            // console.log(newSapRes)
-            return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-              onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+            // console.log(strStatus)
+            if (strStatus === "CLOSING") {
+              return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+            } else {
+              return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+            }
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }
@@ -405,11 +411,11 @@ class IssuedDoc extends Component {
   createModal() {
     return <Modal isOpen={this.state.modalstatus}>
       <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
-     
+
       <ModalFooter>
         <Button id="per_button_reject" color="primary" style={{ width: "130px" }} onClick={() => this.workingData(this.state.selectiondata, "reject")} >OK</Button>{' '}
-        <Button color="secondary" style={{ width: "130px"}} onClick={this.toggle}>Cancel</Button>
-    
+        <Button color="secondary" style={{ width: "130px" }} onClick={this.toggle}>Cancel</Button>
+
       </ModalFooter>
     </Modal>
   }
@@ -516,12 +522,12 @@ class IssuedDoc extends Component {
           multiSort={false}
           filterable={true}
           defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton} 
+          PaginationComponent={this.paginationButton}
           onSortedChange={(sorted) => {
             this.setState({ data: [], loading: true });
             this.customSorting(sorted)
           }}
-          />
+        />
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.toggle()} color="danger" className="float-right">Reject</Button>
@@ -549,7 +555,7 @@ class IssuedDoc extends Component {
 
 
 
- 
+
       </div>
     )
   }

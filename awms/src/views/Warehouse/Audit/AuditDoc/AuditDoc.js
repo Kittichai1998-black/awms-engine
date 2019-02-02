@@ -299,9 +299,13 @@ class AuditDoc extends Component {
           if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
             var strSapRes = decodeURIComponent(arrayRes["SapRes"])
             var newSapRes = strSapRes.replace(/\+/g, ' ').replace(/\|/g, ' , ');
-            // console.log(newSapRes)
-            return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-              onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+            // console.log(strStatus)
+            if (strStatus === "CLOSING") {
+              return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+            } else {
+              return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+            }
           } else {
             return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
           }

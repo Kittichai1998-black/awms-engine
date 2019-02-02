@@ -110,7 +110,8 @@ class MoveLocation extends Component {
     console.log(this.state.barcodePallet)
     Axios.get(window.apipath + "/api/trx/mapsto?type=1&code=" + this.state.barcodePallet + "&isToRoot=false&isToChild=true").then((rowselect) => {
       if (rowselect.data._result.status === 1) {
-        if (rowselect.data.mapsto.length != 0) {
+        console.log(rowselect.data)
+        if (rowselect.data.mapsto != null) {
           console.log(rowselect.data.mapsto.mapstos)
           const dataCard = []
           // rowselect.data.mapsto.forEach(row => {
@@ -125,6 +126,7 @@ class MoveLocation extends Component {
 
         } else {
           alert("Not found")
+          this.Clear()
         }
       }
     })
@@ -174,7 +176,8 @@ class MoveLocation extends Component {
   Clear() {
 
     this.setState({ displayDataCard: null })
-    window.location.reload()
+    this.setState({ barcodeLocation: "" })
+    this.setState({ barcodePallet: "" })
 
   }
   render() {
