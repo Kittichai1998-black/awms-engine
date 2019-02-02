@@ -42,7 +42,7 @@ namespace WCSSimAPI.Controllers
         [HttpPost]
         public dynamic RegisterOutbounds([FromBody] TReq data)
         {
-            /*List<List<TReq.queueout>> putQueueList = new List<List<TReq.queueout>>();
+            List<List<TReq.queueout>> putQueueList = new List<List<TReq.queueout>>();
             List<List<TReq.queueout>> putQueueCheckList = new List<List<TReq.queueout>>();
             List<TReq.queueout> putQueues = new List<TReq.queueout>();
             foreach (var q in data.queueOut)
@@ -61,9 +61,14 @@ namespace WCSSimAPI.Controllers
                 }
             }
             if(putQueues.Count > 0)
+            {
                 putQueueList.Add(putQueues);
+                var p = putQueues.Clone();
+                p.ForEach(x => x.queueID = null);
+                putQueueCheckList.Add(p);
+            }
             
-    */
+    
             var res = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(data));
             return res;
         }
