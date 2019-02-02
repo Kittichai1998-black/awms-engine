@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.WM
 
         protected override dynamic ExecuteEngineManual()
         {
-            string options = "docItem=" + this.RequestVO.docID;
+            string options = "docID=" + this.RequestVO.docID;
             return ADO.DocumentADO.GetInstant().GetSAPResponse(options, this.BuVO);
         }
     }
