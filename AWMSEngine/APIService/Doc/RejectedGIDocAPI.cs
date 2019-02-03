@@ -18,7 +18,7 @@ namespace AWMSEngine.APIService.Doc
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<RejectedGIDocumnet.TDocReq>(this.RequestVO);
+            var req = ObjectUtil.DynamicToModel<RejectedGIDocumnet.TReq>(this.RequestVO);
             var res = new RejectedGIDocumnet().Execute(this.Logger, this.BuVO, req);
 
             return res;
