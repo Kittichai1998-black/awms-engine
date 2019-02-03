@@ -82,7 +82,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             {
                 List<long> packIDs = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList();
                 docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(packIDs, DocumentTypeID.AUDIT, this.BuVO);
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                //ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVING, this.BuVO);
                 if (docItems.Count() == 0)
                     throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Audit");
 
