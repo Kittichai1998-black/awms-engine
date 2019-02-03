@@ -73,77 +73,65 @@ namespace AWMSEngine.Engine.Business.Auditor
                         COUNT_DATE = doc.ModifyTime.Value.ToString("yyyyMMdd", new CultureInfo("en-US")),
                         PHYSICAL_YEAR = doc.CreateTime.ToString("yyyy", new CultureInfo("en-US"))
                     };
-                    var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(docID, this.BuVO)
-                        .GroupBy(g => new { g.StorageObject_ID, g.DocumentItem_ID })
-                        .Select(x => new
-                        {
-                            documentItem_ID = x.Key.DocumentItem_ID,
-                            storageObject_ID = x.Key.StorageObject_ID,
-                            quantity = x.Sum(y => y.Quantity)
-                        }).ToList();
-
-                    var distogroup = ADO.DocumentADO.GetInstant().ListStoInDocs(docID, this.BuVO)
-                        .GroupBy(g => new { g.DocumentItem_ID })
-                        .Select(x => new
-                        {
-                            documentItem_ID = x.Key.DocumentItem_ID,
-                            quantity = x.Sum(y => y.Quantity)
-                        }).ToList();
 
                     docItems.ForEach(i =>
                     {
-                        var distores = disto.Where(x => i.ID == x.documentItem_ID).ToList();
-                        if (distores.Count > 0)
-                        {
-                            disto.ForEach(x =>
-                            {
-                                if (x.documentItem_ID == i.ID)
-                                {
-                                    var sto = ADO.StorageObjectADO.GetInstant().Get(x.storageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
-                                    var countQty = sto.qty;
+                        dynamic getSto;
 
-                                    var sapLists = sapItems.Where(sap => sap.MATERIAL == sto.code && sap.BATCH == sto.batch).FirstOrDefault();
-                                    if (sapLists != null)
-                                    {
-                                        var newQty = Convert.ToDecimal(sapLists.ENTRY_QNT) + sto.qty;
-                                        sapLists.ENTRY_QNT = newQty.ToString();
-                                        sapLists.ZERO_COUNT = "";
-                                    }
-                                    else
-                                    {
-                                        sapItems.Add(new SAPReq.Item
-                                        {
-                                            PHYSINVENTORY = doc.RefID,
-                                            PHYSICAL_YEAR = doc.Ref1,
-                                            ITEM = i.Options.Split("=")[1],
-                                            MATERIAL = sto.code,
-                                            PLANT = branch,
-                                            STGE_LOC = warehouse,
-                                            BATCH = sto.batch,
-                                            STOCK_TYPE = "1",
-                                            ENTRY_QNT = countQty.ToString(),
-                                            ENTRY_UOM = sto.unitCode,
-                                            ZERO_COUNT = sto == null ? "X" : sto.qty == 0 ? "X" : "",
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                        else
+                        if(i.Batch == null)
                         {
-                            var unitType = this.StaticValue.UnitTypes.Where(x => x.ID == i.UnitType_ID).FirstOrDefault().Code;
+                            getSto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
+                                            new SQLConditionCriteria("Code", i.Code, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                                        }, this.BuVO)
+                            .GroupBy(s => new { s.Code, s.Batch })
+                            .Select(s => new { s.Key.Code, s.Key.Batch, Qty = s.Sum(xx => (decimal)xx.Quantity) })
+                            .FirstOrDefault();
+                        }
+
+                        else
+                            getSto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
+                                            new SQLConditionCriteria("Code", i.Code, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Batch", i.Batch, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                                        }, this.BuVO)
+                            .GroupBy(s => new { s.Code, s.Batch })
+                            .Select(s => new { s.Key.Code, s.Key.Batch, Qty = s.Sum(xx => (decimal)xx.Quantity) })
+                            .FirstOrDefault();
+
+                        var unit = this.StaticValue.UnitTypes.Where(un => un.ID == i.UnitType_ID).FirstOrDefault();
+
+                        if(getSto != null)
+                        {
                             sapItems.Add(new SAPReq.Item
                             {
                                 PHYSINVENTORY = doc.RefID,
                                 PHYSICAL_YEAR = doc.Ref1,
-                                ITEM = i.Options.Split("=")[1],
+                                ITEM = i.Options == null || i.Options=="" ? "" : i.Options.Split("=")[1],
+                                MATERIAL = (string)getSto.Code,
+                                PLANT = branch,
+                                STGE_LOC = warehouse,
+                                BATCH = (string)getSto.Batch,
+                                STOCK_TYPE = "1",
+                                ENTRY_QNT = getSto.Qty.ToString(),
+                                ENTRY_UOM = unit.Code,
+                                ZERO_COUNT = getSto == null ? "X" : (decimal)getSto.Qty == 0 ? "X" : "",
+                            });
+                        }
+                        else
+                        {
+                            sapItems.Add(new SAPReq.Item
+                            {
+                                PHYSINVENTORY = doc.RefID,
+                                PHYSICAL_YEAR = doc.Ref1,
+                                ITEM = i.Options == null || i.Options == "" ? "" : i.Options.Split("=")[1],
                                 MATERIAL = i.Code,
                                 PLANT = branch,
                                 STGE_LOC = warehouse,
                                 BATCH = i.Batch,
                                 STOCK_TYPE = "1",
                                 ENTRY_QNT = "0",
-                                ENTRY_UOM = unitType,
+                                ENTRY_UOM = unit.Code,
                                 ZERO_COUNT = "X",
                             });
                         }
