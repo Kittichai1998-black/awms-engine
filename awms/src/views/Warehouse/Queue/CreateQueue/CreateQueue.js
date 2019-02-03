@@ -323,8 +323,9 @@ class CreateQueue extends Component{
         }
       })                 
     }
-    this.setState({ dataProcessItems },() => this.createItemCardsList(2), this.createBatchCardsList()) 
+    this.setState({ dataProcessItems }, () => this.setState({batchCard:[]}, () => this.createItemCardsList(2), this.createBatchCardsList())) 
   }
+
 
   createBatchCardsList(){
     let batchCard = []
