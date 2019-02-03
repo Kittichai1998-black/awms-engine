@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Input, Card, CardBody, Button, Row,Col } from 'reactstrap';
+import { Input, Card, CardBody, Button, Row,Col, Badge } from 'reactstrap';
 import ReactTable from 'react-table'
 import moment from 'moment';
 import { DocumentEventStatus } from '../../Status'
 import queryString from 'query-string'
-import { AutoSelect, NumberInput, apicall, createQueryString, DatePicker, ToListTree, Clone } from '../../ComponentCore'
-import Downshift from 'downshift'
+import { apicall, createQueryString, DatePicker, Clone } from '../../ComponentCore'
 import ReactAutocomplete from 'react-autocomplete'
 import arrimg from '../../../../img/arrowhead.svg'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
@@ -88,6 +87,7 @@ class IssuedManage extends Component {
           this.setState({
             data: rowselect1.data.document,
             data2: rowselect1.data.document.documentItems,
+            data3: rowselect1.data.bstos,
             remark: rowselect1.data.document.remark,
             documentStatus: rowselect1.data.document.eventStatus,
             documentDate: moment(rowselect1.data.document.documentDate).format("DD-MM-YYYY"),
@@ -346,86 +346,117 @@ class IssuedManage extends Component {
     }
   }
 
+  getStatus(value) {
+    // console.log(value)
+    if (value === 0)
+      return <Badge color="AUDITING" style={{ fontSize: '0.825em', fontWeight: '500' }}>AUDITING</Badge>
+    else if (value === 1)
+      return <Badge color="AUDITED" style={{ fontSize: '0.825em', fontWeight: '500' }}>AUDITED</Badge>
+    else
+      return null
+  }
+
   render() {
 
     const style = { width: "200px", textAlign: "right", paddingRight: "10px" }
 
      let cols = [
         { accessor: 'palletCode', Header: 'Pallet Code', editable: false, Cell: e => this.inputCell("palletCode", e), datatype:"text" },
-       { accessor: 'locationCode', Header: 'Location Code', editable: false, Cell: e => this.inputCell("locationCode", e), datatype:"text" },
-       { accessor: "code", Header: "SKU Item",Cell: (e) => this.createAutoComplete(e),  width: 550 },
-       //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
-       { accessor: 'batch', Header: 'Batch', editable: false, Cell: e => this.inputCell("batch", e), datatype:"text" },
-       { accessor: "UnitTypeName", Header: "Unit"},
-       {
-        Cell: (e) => <Button onClick={() => {
-          const data = this.state.data;
-          data.forEach((row, index) => {
-            if (row.id === e.original.id) {
-              data.splice(index, 1)
-            }
-          })
-          this.setState({ data }, () => {
-            let res = this.state.autocompleteUpdate
-            this.state.data.forEach((datarow, index) => {
-              res = res.filter(row => {
-                return datarow.Code !== row.Code
-              })
+        { accessor: 'locationCode', Header: 'Location Code', editable: false, Cell: e => this.inputCell("locationCode", e), datatype:"text" },
+        { accessor: "code", Header: "SKU Item",Cell: (e) => this.createAutoComplete(e),  width: 550 },
+        //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
+        { accessor: 'batch', Header: 'Batch', editable: false, Cell: e => this.inputCell("batch", e), datatype:"text" },
+        { accessor: "UnitTypeName", Header: "Unit"},
+        {
+          Cell: (e) => <Button onClick={() => {
+            const data = this.state.data;
+            data.forEach((row, index) => {
+              if (row.id === e.original.id) {
+                data.splice(index, 1)
+              }
             })
-            this.setState({ autocomplete: res })
-          })
-        }} color="danger">Remove</Button>
-      },
+            this.setState({ data }, () => {
+              let res = this.state.autocompleteUpdate
+              this.state.data.forEach((datarow, index) => {
+                res = res.filter(row => {
+                  return datarow.Code !== row.Code
+                })
+              })
+              this.setState({ autocomplete: res })
+            })
+          }} color="danger">Remove</Button>
+        },
       ];
 
       let colsview = [{ accessor: 'palletCode', Header: 'Pallet Code', editable: false, },
       { accessor: 'locationCode', Header: 'Location Code', editable: false },
       { accessor: "code", Header: "SKU Item",  width: 550 },
       { accessor: 'batch', Header: 'Batch', editable: false, },
-      { accessor: "UnitTypeName", Header: "Unit", editable: false,},]
+      { accessor: "UnitTypeName", Header: "Unit", editable: false,},];
+
+      let coldetail = [
+        {
+          accessor: "status", Header: "Task", minWidth: 80, className: 'center',
+          Cell: (e) => this.getStatus(e.original.status)
+        },
+        { accessor: "code", Header: "Pallet" },
+        {
+          accessor: "options", Header: "Item Number", Cell: (e) => <span> {e.original.options === undefined ? null : e.original.options === null ? null : e.original.options.split("=")[1].split("&")[0]}</span>
+        },
+        { accessor: "packCode", Header: "SKU Code" },
+        { accessor: "packName", Header: "SKU Name" },
+        //{accessor:"skuMaster_Code",Header:"SKU", Cell: (e) => <span>{e.original.skuMaster_Code + ' : ' + e.original.skuMaster_Name}</span>},
+        { accessor: 'batch', Header: 'Batch', editable: false, },
+        { accessor: 'lot', Header: 'Lot', editable: false, },
+        { accessor: 'orderNo', Header: 'Order No', editable: false, },
+        {
+          accessor: 'sumQty1', Header: 'Qty', editable: false,
+          Cell: (e) => <span className="float-left">{e.original.distoQtyMax === null ? '-' : e.original.distoQtyMax}</span>,
+        },
+        { accessor: "distoUnitCode", Header: "Unit" },
+      ]
     return (
       <div>
         <div className="clearfix">
           <Row>
-            <Col xs="6"><div className="d-block" >SAP Document : <span style={{ marginLeft: '5px' }}>{this.state.auditNo}</span></div></Col>
-            <Col xs="6"><div>Document Date : <span style={{ marginLeft: '5px' }}>{this.state.documentDate}</span></div></Col>
+            <Col xs="6"><label>SAP Document : </label><span style={{ marginLeft: '5px' }}>{this.state.auditNo}</span></Col>
+            <Col xs="6"><label>Document Date : </label><span style={{ marginLeft: '5px' }}>{this.state.documentDate}</span></Col>
           </Row>
 
           <Row>
-            <Col xs="6"> <div className="d-block"><label>Action Time : </label><div style={{ display: "inline-block", width: "300px", marginLeft: '10px' }}>{this.state.pageID ? <span>{this.state.date.format("DD-MM-YYYY HH:mm:ss")}</span> : this.dateTimePicker()}</div>
-            </div></Col>
+            <Col xs="6"> <label>Action Time : </label>
+              <span style={{ width: "300px", marginLeft: '10px' }}>
+              {this.state.pageID ? this.state.date.format("DD-MM-YYYY HH:mm:ss") : this.dateTimePicker()}
+              </span>
+            </Col>
           </Row>
 
           <Row>
-            <Col xs="6"> <div className=""><label >Source Branch : </label>{this.state.pageID ? this.createText("THIP") :
-              <div style={{ width: "300px", display: "inline-block" }}><label>1100 : THIP</label></div>}</div>
+            <Col xs="6"> <label >Source Branch : </label>{this.state.pageID ? this.createText("THIP") :
+              <span style={{ width: "300px" }}><label>1100 : THIP</label></span>}
             </Col>
             <Col xs="6">
-              <div className=""><label>Source Warehouse : </label>{this.state.pageID ? this.createText("ASRS") :
-                <div style={{ width: "300px", display: "inline-block" }}><label>5005 : ASRS</label></div>}</div>
+              <label>Source Warehouse : </label>{this.state.pageID ? <span>ASRS</span> :<label>5005 : ASRS</label>}
             </Col>
           </Row>
 
           {this.state.pageID === 0 ? null : <Row>
-            <Col xs="6"><div>SAP.Doc No : <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.refID) :
-              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.refID}</span>
-              </div>}</span></div></Col>
+            <Col xs="6"><label>SAP.Doc No : </label><span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.refID) :
+              <span style={{ width: "300px", marginLeft: '5px' }}> {this.state.refID}</span>}</span></Col>
 
-            <Col xs="6"><div>SAP.Doc Years : <span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.ref1) :
-              <div style={{ width: "300px", display: "inline-block", marginLeft: '5px' }}><span> {this.state.ref1}</span>
-              </div>}</span></div></Col>
+            <Col xs="6"><label>SAP.Doc Years : </label><span style={{ marginLeft: '5px' }}>{this.state.pageID ? this.createText(this.state.ref1) :
+              <span style={{ width: "300px", marginLeft: '5px' }}> {this.state.ref1}</span>}</span></Col>
           </Row>}
+          <Row>
+            <Col xs="6"><label>Remark : </label>
+              {this.state.pageID ? <span> {this.state.remark}</span> :
+                <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '10px' }}
+                  value={this.state.remark === undefined ? "" : this.state.remark} />}
+            </Col>       
+            <Col xs="6"><label>Doc Status :</label><span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></Col>
+          </Row>
 
         </div>
-
-        <Row>
-          <Col xs="6"><div className=""><label>Remark : </label>
-            {this.state.pageID ? <span> {this.state.remark}</span> :
-              <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '10px' }}
-                value={this.state.remark === undefined ? "" : this.state.remark} />}
-          </div>
-          </Col>       
-        </Row>
 
         <div className="clearfix" style={{ marginTop: '3px', marginBottom: '3px' }}>
           <Button className="float-right" onClick={() => this.addData()} color="success" disabled={this.state.addstatus} style={{ width: "130px", display: this.state.adddisplay }}>Add</Button>
@@ -437,6 +468,9 @@ class IssuedManage extends Component {
 
         {this.state.pageID === 0 ? null : <ReactTable columns={colsview} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
+          
+          {this.state.pageID === 0 ? null : <ReactTable columns={coldetail} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
+            sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
  
         <Card>
           <CardBody>

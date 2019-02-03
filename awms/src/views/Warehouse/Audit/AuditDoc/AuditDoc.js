@@ -302,18 +302,18 @@ class AuditDoc extends Component {
             // console.log(strStatus)
             if (strStatus === "CLOSING") {
               return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge>{imgExclamation1}</a></h5>
             } else {
-              return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+              return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
             }
           } else {
-            return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+            return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
           }
         } else {
-          return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+          return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
         }
       } else {
-        return <h5><Badge color={strStatus}>{strStatus}</Badge></h5>
+        return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
       }
     }
     else {

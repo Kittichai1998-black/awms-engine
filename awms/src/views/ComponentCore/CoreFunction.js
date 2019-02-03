@@ -1,4 +1,6 @@
+import React, { Component } from 'react';
 import Axios from 'axios';
+import {Redirect} from 'react-router-dom'
 import moment from 'moment';
 import * as Status from '../Warehouse/Status';
 import queryString from 'query-string'
@@ -7,7 +9,14 @@ class apicall {
     get(url) {
         return Axios.get(url + "&_token=" + localStorage.getItem("Token")).then((res) => {
             if (res.data._result.status === 0) {
-                alert(res.data._result.message)
+                if(res.data._result.code === "A0001"){
+                    alert(res.data._result.message)
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    <Redirect to="/Login"/>
+                }
+                else
+                    alert(res.data._result.message)
             }
             return res
         });
@@ -20,7 +29,14 @@ class apicall {
         }
         return Axios.post(url, data).then((res) => {
             if (res.data._result.status === 0) {
-                alert(res.data._result.message)
+                if(res.data._result.code === "A0001"){
+                    alert(res.data._result.message)
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    <Redirect to="/Login"/>
+                }
+                else
+                    alert(res.data._result.message)
             }
             return res
         });
@@ -30,7 +46,14 @@ class apicall {
         data._token = localStorage.getItem("Token")
         return Axios.put(url, data).then((res) => {
             if (res.data._result.status === 0) {
-                alert(res.data._result.message)
+                if(res.data._result.code === "A0001"){
+                    alert(res.data._result.message)
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    <Redirect to="/Login"/>
+                }
+                else
+                    alert(res.data._result.message)
             }
             return res
         });
@@ -40,7 +63,14 @@ class apicall {
         data._token = localStorage.getItem("Token")
         return Axios.delete(url, data).then((res) => {
             if (res.data._result.status === 0) {
-                alert(res.data._result.message)
+                if(res.data._result.code === "A0001"){
+                    alert(res.data._result.message)
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    <Redirect to="/Login"/>
+                }
+                else
+                    alert(res.data._result.message)
             }
             return res
         });
