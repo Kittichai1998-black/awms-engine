@@ -101,7 +101,7 @@ class AuditReport extends Component {
         let orderno = this.state.Orderno
 
 
-        Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuCode=" + skuCode
+        Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&skuCode=" + skuCode
           + "&startDate=" + formatDateFrom
           + "&endDate=" + formatDateTo
           + "&batch=" + (batch === undefined ? '' : batch)

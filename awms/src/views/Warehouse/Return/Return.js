@@ -312,7 +312,7 @@ console.log(DocItemSto)
                 <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {dataPallet.lot}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {dataPallet.batch}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {dataPallet.orderNo}</div>
                 <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
                 <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCode}</div>
-                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"
+                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "80px",display: "inline-block" }} max="" type="number"
                   onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
                 <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
                 <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(dataPallet.id) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
@@ -334,7 +334,7 @@ console.log(DocItemSto)
               <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {this.state.lotPallet}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {this.state.batchPallet}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {this.state.orderNoPallet}</div>
               <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
               <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCode}</div>
-              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "60px", background: "#FFFFE0", display: "inline-block" }} max="" type="number"
+              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "80px", display: "inline-block" }} max="" type="number"
                 onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
               <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
               <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(palletID) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
@@ -390,7 +390,7 @@ console.log(DocItemSto)
   }
 
   ChangeData(e, dataValue) {
-    e.target.style.background = "yellow"
+    e.target.style.background = "#fff56e"
     this.setState({ dataValue })
     console.log(dataValue)
   }
