@@ -8,24 +8,27 @@ using System.Threading.Tasks;
 
 namespace WCSSimAPI.Jobs
 {
-    public class WMS_RegisterJobs : IJob
+    public class WMS_RegisterJobs
     {
-        public Task Execute(IJobExecutionContext context)
+        public string Execute(AMWUtil.Logger.AMWLogger logger)
         {
-            var req = ADO.DataADO.GetInstant().list_request_wms_register_queue(null);
-            if (!string.IsNullOrWhiteSpace(req.basecode))
+            try
             {
-                try
+                var req = ADO.DataADO.GetInstant().list_request_wms_register_queue(null);
+                if (!string.IsNullOrWhiteSpace(req.basecode))
                 {
+                    logger.LogInfo("Call API WMS : " + req.basecode);
                     var res = AMWUtil.DataAccess.Http.RESTFulAccess.SendJson<dynamic>(null, ConstConfig.WMSApiURL + "/api/wm/asrs/queue/register", RESTFulAccess.HttpMethod.POST, req.sJson.Json<dynamic>());
                     ADO.DataADO.GetInstant().set_response_wms_register_queue(null, req.basecode, ObjectUtil.Json(res));
                 }
-                catch
-                {
-
-                }
+                logger.LogInfo("OK");
+                return DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " => OK";
             }
-            return null;
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " => " + ex.Message;
+            }
         }
     }
 }
