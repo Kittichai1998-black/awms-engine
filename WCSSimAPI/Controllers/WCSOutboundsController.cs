@@ -42,32 +42,35 @@ namespace WCSSimAPI.Controllers
         [HttpPost]
         public dynamic RegisterOutbounds([FromBody] TReq data)
         {
-            List<List<TReq.queueout>> putQueueList = new List<List<TReq.queueout>>();
-            List<List<TReq.queueout>> putQueueCheckList = new List<List<TReq.queueout>>();
+            List<TReq> putQueueList = new List<TReq>();
+            List<TReq> putQueueCheckList = new List<TReq>();
             List<TReq.queueout> putQueues = new List<TReq.queueout>();
             foreach (var q in data.queueOut)
             {
-                if(putQueues.Count < 10)
+                putQueues.Add(q);
+                if (putQueues.Count == 10)
                 {
-                    putQueues.Add(q);
-                }
-                else
-                {
-                    putQueueList.Add(putQueues);
+                    TReq r = new TReq() { queueOut = putQueues.Where(x => x.queueID.HasValue).ToList() };
+                    putQueueList.Add(r);
+
                     var p = putQueues.Clone();
                     p.ForEach(x => x.queueID = null);
-                    putQueueCheckList.Add(p);
+                    r = new TReq() { queueOut = p };
+                    putQueueCheckList.Add(r);
                     putQueues = new List<TReq.queueout>();
                 }
             }
             if(putQueues.Count > 0)
             {
-                putQueueList.Add(putQueues);
+                TReq r = new TReq() { queueOut = putQueues.Where(x => x.queueID.HasValue).ToList() };
+                putQueueList.Add(r);
+
                 var p = putQueues.Clone();
                 p.ForEach(x => x.queueID = null);
-                putQueueCheckList.Add(p);
+                r = new TReq() { queueOut = p };
+                putQueueCheckList.Add(r);
             }
-            bool isCheckOnly = !putQueueList.First().First().queueID.HasValue;
+           // bool isCheckOnly = !putQueueList.First().First().queueID.HasValue;
 
             dynamic resJson = null;
             foreach (var p in putQueueCheckList)
@@ -81,9 +84,12 @@ namespace WCSSimAPI.Controllers
 
             foreach(var p in putQueueList)
             {
-                var resExec = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
-                string resJsonStr = resExec._retjson;
-                resJson = Newtonsoft.Json.JsonConvert.DeserializeObject(resJsonStr);
+                if (p.queueOut.Count > 0)
+                {
+                    var resExec = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
+                    string resJsonStr = resExec._retjson;
+                    resJson = Newtonsoft.Json.JsonConvert.DeserializeObject(resJsonStr);
+                }
             }
 
             return resJson;

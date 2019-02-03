@@ -331,7 +331,6 @@ class CreateQueue extends Component{
     const dataProcessItems = this.state.dataProcessItems;
     let batch = [];
     
-    
     dataProcessItems.map((item) => {
         batch = batch.concat(item.batchs.map(row => {
           return {"dociID":item.dociID,"batchNo":(item.batchs.length-1),"value":row.value,"qty":row.qty}
@@ -363,7 +362,7 @@ class CreateQueue extends Component{
           row.priority=value
         }else if(field==="value"){
           if(dociID.toString().includes(",")){
-          row.batchs[dociID.toString().split(",")[1]].value=value
+            row.batchs[dociID.toString().split(",")[1]].value=value
           }else{
             row.batchs[dociID.toString()].value=value
           }
@@ -582,9 +581,9 @@ class CreateQueue extends Component{
 
           this.createAutoDocList();
         }
-        else{
+        /* else{
           alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
-        }
+        } */
       }
     }
   }
