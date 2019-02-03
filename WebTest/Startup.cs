@@ -12,10 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using WCSSimAPI.Controllers;
-using WCSSimAPI.Jobs;
+using WebTest.Controllers;
+using WebTest.Jobs;
 
-namespace WCSSimAPI
+namespace WebTest
 {
     public class Startup
     {
@@ -29,6 +29,19 @@ namespace WCSSimAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowCors", builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    //.WithMethods("GET", "PUT", "POST", "DELETE")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithExposedHeaders("x-custom-header");
+                });
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -36,17 +49,18 @@ namespace WCSSimAPI
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
-            PropertyFileManager.GetInstant().AddPropertyFile("app", env.ContentRootPath + "/app.conf");
-            var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary("app");
+            //PropertyFileManager.GetInstant().AddPropertyFile("app", env.ContentRootPath + "/app.conf");
+            //var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary("app");
 
-            ConstConfig.DBConnection = appProperty.GetValueOrDefault("DBConnection");
-            ConstConfig.CronEx = appProperty.GetValueOrDefault("CronEx");
-            ConstConfig.WMSApiURL = appProperty.GetValueOrDefault("WMSApiURL");
+            //ConstConfig.DBConnection = appProperty.GetValueOrDefault("DBConnection");
+            //ConstConfig.CronEx = appProperty.GetValueOrDefault("CronEx");
+            //ConstConfig.WMSApiURL = appProperty.GetValueOrDefault("WMSApiURL");
 
-            AMWUtil.Logger.AMWLoggerManager.InitInstant(appProperty.GetValueOrDefault("logger.rootpath"), appProperty.GetValueOrDefault("logger.filename"));
+     
+            AMWUtil.Logger.AMWLoggerManager.InitInstant("D:/wcs_log/{MachineName}/{Date}/", "{ServiceName}.{Date}.log");
 
             this.JobRun();
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -56,9 +70,12 @@ namespace WCSSimAPI
                 app.UseHsts();
             }
 
+            app.UseCors("AllowCors");
             app.UseHttpsRedirection();
             app.UseMvc();
         }
+        
+
 
         private void JobRun()
         {

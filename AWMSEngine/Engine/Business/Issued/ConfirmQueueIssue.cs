@@ -129,16 +129,6 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
                 else
                 {
-                    //var xx = reqVO.DocumentProcessed.GroupBy(n => new { n.docID }).Select(g => new
-                    //{
-                    //    g.Key.docID
-                    //}).ToList();
-                    //foreach (var c in xx)
-                    //{
-                    //    bool allSame = reqVO.DocumentProcessed.Where(w => w.docID == xx[0].docID).All(item => item.stoi == null);
-                    //    //if (allSame)
-                    //        //ADO.DocumentADO.GetInstant().UpdateStatusToChild(list.Key.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.CLOSED, this.BuVO);
-                    //}
                 }
             }
 

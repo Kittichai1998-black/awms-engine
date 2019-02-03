@@ -128,7 +128,7 @@ class IssuedManage extends Component {
     this.setState({date:tomorrow}) */
   }
   async componentWillMount() {
-    document.title = "Goods Issue Manage : AWMS";
+    document.title = "Audit Document : AWMS";
     let dataGetPer = await GetPermission()
     this.displayButtonByPermission(dataGetPer)
   }

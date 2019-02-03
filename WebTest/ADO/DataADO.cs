@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WCSSimAPI.ADO
+namespace WebTest.ADO
 {
     public class DataADO : BaseMSSQLAccess<DataADO>
     {
@@ -60,8 +60,8 @@ namespace WCSSimAPI.ADO
         public TJsonRequest list_request_wms_location_info(System.Data.SqlClient.SqlTransaction trans)
         {
             Dapper.DynamicParameters datas = new Dapper.DynamicParameters();
-            datas.Add("basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output,8000);
-            datas.Add("sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output,8000);
+            datas.Add("basecode", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
+            datas.Add("sJson", null, System.Data.DbType.String, System.Data.ParameterDirection.Output);
             this.Execute(
                "[api].[ssp_post_get_location_info]",
                System.Data.CommandType.StoredProcedure,
