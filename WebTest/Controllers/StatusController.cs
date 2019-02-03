@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WCSSimAPI.Controllers
+namespace WebTest.Controllers
 {
     [Route("status")]
     [ApiController]
@@ -16,7 +16,7 @@ namespace WCSSimAPI.Controllers
         public static string doneQueueStatus { get; set; }
         public static string locationInfoQueueStatus { get; set; }
 
-        [HttpGet("2")]
+        [HttpGet]
         [Produces("text/html")]
         public string GetStatus()
         {
@@ -51,18 +51,6 @@ namespace WCSSimAPI.Controllers
                 </tr>
             </table>
             ";
-            return responseString;
-
-        }
-
-        [HttpGet]
-        public string GetStatus2()
-        {
-            string responseString = @"
-                Register Queue => " + registerQueueStatus + @"
-                Working Queue => " + workingQueueStatus + @"
-                Done Queue => " + doneQueueStatus + @"
-                Location Info Queue => " + locationInfoQueueStatus;
             return responseString;
 
         }
