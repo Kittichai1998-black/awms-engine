@@ -195,7 +195,7 @@ class Return extends Component {
           console.log(x)
           this.setState({ DocItemID: x.DocItem })
           this.setState({ BaseQtyRetuen: x.BaseQty })
-          DocItemSto.push({ value: x.DocItem, label: x.SKUCode+" : "+x.Batch, lot: x.Lot, batch: x.Batch, orderNo: x.OrderNo, Code: x.SKUCode,Unit:x.Unit,BaseQty:x.BaseQty})
+          DocItemSto.push({ value: x.DocItem, label: (x.ItemNo?"[" + x.ItemNo +"] ":"")+x.SKUCode+" : "+x.Batch, lot: x.Lot, batch: x.Batch, orderNo: x.OrderNo, Code: x.SKUCode,Unit:x.Unit,BaseQty:x.BaseQty})
         })
       // } else {
       //   //DocItemSto.push({ value: null, label: null })
@@ -230,6 +230,7 @@ console.log(DocItemSto)
     console.log(lot)
     console.log(orderNo)
     console.log(SKUCode)
+    this.setState({dataValue:BaseQty})
     this.setState({lotPallet:lot,batchPallet:batch,orderNoPallet:orderNo,SKUCodePallet:SKUCode,BaseQtyPallet:BaseQty,UnitPallet:Unit})
     let QueryDoc = this.state.DocItem
     let JSONDoc = []
@@ -334,7 +335,7 @@ console.log(DocItemSto)
               <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {this.state.lotPallet}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {this.state.batchPallet}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {this.state.orderNoPallet}</div>
               <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
               <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCode}</div>
-              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "80px", display: "inline-block" }} max="" type="number"
+              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "150px", display: "inline-block" }} max="" type="number" defaultValue={this.state.BaseQtyPallet}
                 onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
               <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
               <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(palletID) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
@@ -360,7 +361,7 @@ console.log(DocItemSto)
         let postdata = {
           docItemID: this.state.DocItemID
           , baseID: data
-          , packCode: this.state.SKUCode
+          , packCode: this.state.SKUCodePallet
           , batch: this.state.batchPallet
           , lot: this.state.lotPallet
           , orderNo: this.state.orderNoPallet

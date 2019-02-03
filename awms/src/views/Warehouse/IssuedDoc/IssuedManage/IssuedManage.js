@@ -11,6 +11,7 @@ import ReactAutocomplete from 'react-autocomplete'
 import arrimg from '../../../../img/arrowhead.svg'
 import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../../ComponentCore/Permission';
 import _ from 'lodash'
+import { array } from 'prop-types';
 
 function isInt(value) {
   return !isNaN(value) &&
@@ -157,6 +158,23 @@ class IssuedManage extends Component {
 
           });
 
+          let data5 = [];
+          rowselect1.data.bstos.forEach(bsto=>{
+            let d5 = data5.filter(x=>x.id==bsto.id);
+            if(d5.length > 0){
+              d5[0].distoQty+=bsto.distoQty;
+              if(d5[0].distoQtyMax<bsto.distoQtyMax)
+                d5[0].distoQtyMax = bsto.distoQtyMax
+            }
+            else{
+              data5.push(JSON.parse(JSON.stringify(bsto)));
+            }
+          });
+          data5.forEach(x=>{
+            x.displayQty = x.distoQty + '/' +x.distoQtyMax
+          });
+          this.setState({data5:data5});
+
 
 
 
@@ -237,11 +255,13 @@ class IssuedManage extends Component {
 
           // console.log(this.state.batch)
 
-          for (let res1 in groupPack) {
+          /*for (let res1 in groupPack) {
             let sum = 0
             groupPack[res1].forEach(res2 => {
-              
+              res2.displayQty = 'yyyy'//rowselect1.data.document.documentItems
+              console.log('ttttttttttttttttt')
               sumArr1.forEach(x => {
+                
                 if (x.id === res2.docItemID) {
                   sum += res2.distoBaseQty
                   res2.sumQty1 = sum
@@ -255,7 +275,6 @@ class IssuedManage extends Component {
                 }
            
               })
-
              
 
           
@@ -270,8 +289,9 @@ class IssuedManage extends Component {
             })
             sumArr.push(groupPack[res1][groupPack[res1].length - 1])
           }
+*/
 
-
+/*
           var sumQTYPack = 0
           var result = rowselect1.data.document.documentItems
 
@@ -296,7 +316,7 @@ class IssuedManage extends Component {
           })
 
           this.setState({ data3: sumArr1 })
-
+*/
           //**************************************8
         }
 
@@ -700,11 +720,12 @@ class IssuedManage extends Component {
       { accessor: 'batch', Header: 'Batch', editable: false, },
       { accessor: 'lot', Header: 'Lot', editable: false, },
       { accessor: 'orderNo', Header: 'Order No', editable: false, },
-      {
+      /*{
         accessor: 'sumQty1', Header: 'Qty', editable: false,
         Cell: (e) => <span className="float-left">{e.original.sumQty1 === undefined ? ('0' + ' / ' + e.original.distoQtyMax) : (e.original.sumQty1 + ' / ' +
           (e.original.distoQtyMax === null ? '-' : e.original.distoQtyMax))}</span>,
-      },
+      },*/
+      { accessor: 'displayQty', Header: 'Qty', editable: false, },
       { accessor: "distoUnitCode", Header: "Unit" },
     ]
 
@@ -857,7 +878,7 @@ class IssuedManage extends Component {
         {this.state.pageID === 0 ? null : <ReactTable columns={cols} data={this.state.data3} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
-        {this.state.pageID === 0 ? null : <ReactTable columns={cossdetail} data={this.state.data2} NoDataComponent={() => null} style={{ background: "white" }}
+        {this.state.pageID === 0 ? null : <ReactTable columns={cossdetail} data={this.state.data5} NoDataComponent={() => null} style={{ background: "white" }}
           sortable={false} defaultPageSize={1000} filterable={false} editable={false} minRows={5} showPagination={false} />}
 
 
