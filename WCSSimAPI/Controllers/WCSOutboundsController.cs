@@ -67,10 +67,26 @@ namespace WCSSimAPI.Controllers
                 p.ForEach(x => x.queueID = null);
                 putQueueCheckList.Add(p);
             }
-            
-    
-            var res = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(data));
-            return res;
+            bool isCheckOnly = !putQueueList.First().First().queueID.HasValue;
+
+            dynamic resJson = null;
+            foreach (var p in putQueueCheckList)
+            {
+                var resExec = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
+                string resJsonStr = resExec._retjson;
+                resJson = Newtonsoft.Json.JsonConvert.DeserializeObject(resJsonStr);
+                if (resJson._result.resultcheck != 1)
+                    return resJson;
+            }
+
+            foreach(var p in putQueueList)
+            {
+                var resExec = ADO.DataADO.GetInstant().set_wcs_register_queue(null, Newtonsoft.Json.JsonConvert.SerializeObject(p));
+                string resJsonStr = resExec._retjson;
+                resJson = Newtonsoft.Json.JsonConvert.DeserializeObject(resJsonStr);
+            }
+
+            return resJson;
         }
     }
 }
