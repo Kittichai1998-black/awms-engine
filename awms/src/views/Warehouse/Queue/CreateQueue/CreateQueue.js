@@ -105,6 +105,7 @@ class CreateQueue extends Component{
     })
   }
   componentWillMount(){
+    document.title = "Create Queue Issue : AWMS";
     this.setState(this.initailstate)
   }
     
