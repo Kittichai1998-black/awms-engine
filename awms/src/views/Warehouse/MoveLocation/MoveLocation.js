@@ -184,12 +184,9 @@ class MoveLocation extends Component {
     return (
       <div>
         <Row className="mb-2">
-          <Col xs="4" md="2" lg="2">
-            <label style={{ fontWeight: "bolder", width: '100%', display: "inline-block", marginRight: "10px" }}>Location : </label>
-
-          </Col>
-          <Col xs="8" md="10" lg="10">
-            <Input id="barcodeLocation" style={{ textAlign: "center", width: '100%', display: 'inline-block' }} type="text"
+         
+            <label style={{ width: '100%', display: "inline-block", marginRight: "10px", fontWeight: "bold", marginTop: "6px" }}>Location : </label>
+            <Input id="barcodeLocation" type="text" style={{ textAlign: "center", width: '100%', display: 'inline-block' }}
               value={this.state.barcodeLocation} placeholder="BarCode Location"
               onChange={e => { this.setState({ barcodeLocation: e.target.value }) }}
               onKeyPress={(e) => {
@@ -197,24 +194,23 @@ class MoveLocation extends Component {
                   this.checkAreaLocation()
 
                 }
-              }} />{' '}<br />
-          </Col>
+                }} />
+           
+         
         </Row>
         <Row className="mb-2">
-          <Col xs="4" md="2" lg="2">
+        
             <label style={{ fontWeight: "bolder", width: '100%', display: this.state.show, marginRight: "10px" }}>Barcode Pallet : </label>
 
-          </Col>
-          <Col xs="8" md="10" lg="10">
-            <Input id="barcodePallet" style={{ textAlign: "center", width: '100%', display: this.state.show }} type="text"
+                   <Input id="barcodePallet" style={{ textAlign: "center", width: '100%', display: this.state.show }} type="text"
               value={this.state.barcodePallet} placeholder="Barcode Pallet"
               onChange={e => { this.setState({ barcodePallet: e.target.value }) }}
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && this.state.barcodePallet !== "") {
                   this.checkPallet()
                 }
-              }} />{' '}<br />
-          </Col>
+              }} />
+        
         </Row>
         {this.state.displayDataCard}
       </div>
