@@ -384,6 +384,8 @@ class IssuedManage extends Component {
 
   }
   async componentWillMount() {
+    console.log("load")
+    console.log(this.props.location.search)
     document.title = "Issue Document : AWMS";
     let dataGetPer = await GetPermission()
     this.displayButtonByPermission(dataGetPer)
@@ -395,6 +397,8 @@ class IssuedManage extends Component {
     }
   }
   componentDidMount() {
+    console.log("load")
+    console.log(this.props.location.search)
     this.initialData()
     Axios.get(createQueryString(this.state.StorageObject)).then((response) => {
       const storageObjectdata = []

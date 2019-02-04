@@ -50,7 +50,7 @@ class TaskList extends Component {
       t: "WorkQueue",
       q: '',
       q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 }]",
-      f: "ID",
+      f: "ID,ActualTime",
       g: "",
       s: "[{'f':'ActualTime','od':'desc'}]",
       sk: 0,
@@ -62,7 +62,7 @@ class TaskList extends Component {
       t: "StorageObject",
       q: '',
       q: "[{ 'f': 'AreaMaster_ID', 'c': 'in', 'v': '8,9' }]",
-      f: "ID",
+      f: "ID,ModifyTime",
       g: "",
       s: "[{'f':'ModifyTime','od':'desc'}]",
       sk: 0,
@@ -92,12 +92,13 @@ class TaskList extends Component {
         if (res) {
           if (res.data.datas.length  > 0) {
             if (this.state.dataworkingout.length > 0) {
-              console.log(this.state.dataworkingout[0].ID)
-              if (this.state.queueID !== this.state.dataworkingout[0].ID) {
+              console.log(res.data.datas[0].ActualTime)
+              console.log(this.state.dataworkingout[0].Time)
+              if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
                 this.getDataMoveOut()
-              }
+              } 
             }
-            this.setState({ queueID: res.data.datas[0].ID }, () => console.log(this.state.queueID));
+            this.setState({ ActualTime: res.data.datas[0].ActualTime });
           }
         }
       })
@@ -109,12 +110,13 @@ class TaskList extends Component {
         if (res) {
           if (res.data.datas.length > 0) {
             if (this.state.datatasklist.length > 0) {
-              console.log(this.state.datatasklist[0].ID)
-              if (this.state.StoID !== this.state.datatasklist[0].ID) {
+              console.log(res.data.datas[0].ModifyTime)
+              console.log(this.state.datatasklist[0].Time)
+              if (this.state.ModifyTime !== this.state.datatasklist[0].Time) {
                 this.getDataTasklist()
               }
             }
-            this.setState({ StoID: res.data.datas[0].ID }, () => console.log(this.state.StoID));
+            this.setState({ ModifyTime: res.data.datas[0].ModifyTime });
           }
         }
       })
