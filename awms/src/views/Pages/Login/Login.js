@@ -98,51 +98,61 @@ class Login extends Component {
   }
 
   render() {
+    const style={marginLeft:"5px", marginTop:"5px"}
     return (
-      <div className="app flex-row align-items-center">
-        <Container>
-          <Row className="justify-content-center">
-            <Col md="6">
-              <CardGroup>
-                <Card className="p-4">
-                  <CardBody>
-                    <h1>Login</h1>
-                    <InputGroup className="mb-3">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="icon-user"></i>&nbsp;&nbsp;Username
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input type="text" placeholder="Username" onChange={this.handleUsernameChange}/>
-                    </InputGroup>
-                    <InputGroup className="mb-4">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <i className="icon-lock"></i>&nbsp;&nbsp;Password
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input type="password" placeholder="Password" onChange={this.handlePasswordChange} onKeyPress={e =>{
-                        if(e.key === "Enter"){
-                          this.Authorize()
-                        }
-                      }}/>
-                    </InputGroup>
-                    <Row>
-                      <Col xs="12">
-                        <Button color="primary" className="float-right" style={{width: '130px'}} onClick={this.Authorize} type="submit">Login</Button>
-                      </Col>
-                      {/* <Col xs="6" className="text-right">
-                        <Button color="link" className="px-0">Forgot password?</Button>
-                      </Col> */}
-                    </Row>
-                  </CardBody>
-                </Card>
-              </CardGroup>
-            </Col>
-          </Row>
-        </Container>
-        {this.redirect()}
+      <div>
+        <div className="float-right">
+          <Link to="/Dashboard"><Button style={style} color="danger">TaskList</Button></Link>
+          <Link to="/Queue?IOType=IN" ><Button style={style} color="danger">Queue In</Button></Link>
+          <Link to="/Queue?IOType=OUT" ><Button style={style} color="danger">Queue Out</Button></Link>
+        </div>
+        <div className="clearfix"></div>
+        <div className="app flex-row align-items-center">
+          <Container>
+            <Row className="justify-content-center">
+              <Col md="6">
+                <CardGroup>
+                  <Card className="p-4">
+                    <CardBody>
+                      <h1>Login</h1>
+                      <InputGroup className="mb-3">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="icon-user"></i>&nbsp;&nbsp;Username
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="text" placeholder="Username" onChange={this.handleUsernameChange}/>
+                      </InputGroup>
+                      <InputGroup className="mb-4">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="icon-lock"></i>&nbsp;&nbsp;Password
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="password" placeholder="Password" onChange={this.handlePasswordChange} onKeyPress={e =>{
+                          if(e.key === "Enter"){
+                            this.Authorize()
+                          }
+                        }}/>
+                      </InputGroup>
+                      <Row>
+                        <Col xs="12">
+                          <Button color="primary" className="float-right" style={{width: '130px'}} onClick={this.Authorize} type="submit">Login</Button>
+                        </Col>
+                        {/* <Col xs="6" className="text-right">
+                          <Button color="link" className="px-0">Forgot password?</Button>
+                        </Col> */}
+                      </Row>
+                    </CardBody>
+                  </Card>
+                </CardGroup>
+              </Col>
+            </Row>
+          </Container>
+          {this.redirect()}
+        </div>
       </div>
+      
     );
   }
 }

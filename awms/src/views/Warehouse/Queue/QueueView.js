@@ -47,15 +47,8 @@ class QueueView extends Component {
   }
 
   async componentWillMount() {
-    if (this.props.location.search) {
-      const search = queryString.parse(this.props.location.search)
-      this.setState({ locsearch: search.IOType }, () =>
-        this.setState({ pathname: this.props.location.pathname }))
-    } else {
-      this.props.history.push("/404")
-    }
-    let dataGetPer = await GetPermission()
-    this.displayButtonByPermission(dataGetPer)
+    const search = queryString.parse(this.props.location.search)
+    this.setState({ locsearch: search.IOType, pathname: this.props.location.pathname })
   }
 
   displayButtonByPermission(dataGetPer) {
