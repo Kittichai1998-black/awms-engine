@@ -525,36 +525,21 @@ class IssuedManage extends Component {
 
   editData(rowdata, value, field) {
     const data = this.state.data;
-    if (value !== "") {
-      if (rowdata.column.datatype === "int") {
-        let conv = value === '' ? 0 : value
-        data[rowdata.index][field] = (conv === 0 ? null : conv);
-      }
-      else if (rowdata.column.datatype === "text") {
-        data[rowdata.index][field] = value;
-      }
-      else {
-        data[rowdata.index][field] = value.Code;
-        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
-        data[rowdata.index]["UnitType"] = value.UnitType;
-        data[rowdata.index]["Lot"] = value.lot;
-        data[rowdata.index]["Orderno"] = value.orderno;
-        data[rowdata.index]["Batch"] = value.batch;
-        data[rowdata.index]["id"] = value.id;
-      }
-      this.setState({ data });
+    if (rowdata.column.datatype === "int") {
+      let conv = value === '' ? 0 : value
+      data[rowdata.index][field] = (conv === 0 ? null : conv);
     }
-    else if (rowdata.column.datatype !== "int") {
-      data[rowdata.index][field] = "";
-      data[rowdata.index]["SKU"] = "";
-      data[rowdata.index]["UnitType"] = "";
-      data[rowdata.index]["Lot"] = "";
-      data[rowdata.index]["Orderno"] = "";
-      data[rowdata.index]["Batch"] = "";
-      data[rowdata.index]["id"] = "";
+    else if (rowdata.column.datatype === "text") {
+      data[rowdata.index][field] = value;
     }
-    else if (rowdata.column.datatype === "int") {
-      data[rowdata.index][field] = "";
+    else {
+      data[rowdata.index][field] = value.Code;
+      data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
+      data[rowdata.index]["UnitType"] = value.UnitType;
+      data[rowdata.index]["Lot"] = value.lot;
+      data[rowdata.index]["Orderno"] = value.orderno;
+      data[rowdata.index]["Batch"] = value.batch;
+      data[rowdata.index]["id"] = value.id;
     }
     this.setState({ data });
 
@@ -755,7 +740,7 @@ class IssuedManage extends Component {
 
     let col = [
 
-      { accessor: "PackItem", Header: "SKU", editable: true, Cell: (e) => this.createAutoComplete(e), width: 550 },
+      { accessor: "PackItem", Header: "SKU", editable: true, Cell: (e) => this.createAutoComplete(e), width: 400 },
       //{accessor:"SKU",Header:"SKU",},
       { accessor: "Batch", Header: "Batch", editable: true, Cell: e => this.inputCell("Batch", e), datatype: "text" },
       { accessor: "Lot", Header: "Lot", editable: true, Cell: e => this.inputCell("Lot", e), datatype: "text" },
