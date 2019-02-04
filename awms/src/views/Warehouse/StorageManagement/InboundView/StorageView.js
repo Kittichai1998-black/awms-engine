@@ -477,15 +477,15 @@ console.log(postdata)
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
 
-            <Col xs="5"></Col>
-            <Col xs="5">
+            <Col xs="4"></Col>
+            <Col xs="6">
               <div className="float-right" >
-                <span className="float-right" style={{ fontWeight: 'bold' }}>Doc.Date : </span>
+                <span style={{ fontWeight: 'bold' }}>Doc.Date : </span>
               </div>
             </Col>
-
-            <DatePicker className="float-right" selected={this.state.date}
-              customInput={<Input />}
+            <Col xs="2">
+            <DatePicker  selected={this.state.date}
+              customInput={<Input style ={{width:"100%"}} />}
               onChange={(e) => {
                 if (e === null) {
                   this.DatePickerFilter(null)
@@ -502,6 +502,9 @@ console.log(postdata)
               timeCaption="Time"
               showTimeSelect={false}
               dateFormat={"DD-MM-YYYY"} />
+            </Col>
+
+            
           </Row>
         </div>
 

@@ -265,7 +265,8 @@ namespace AWMSEngine.Engine.Business.Issued
                 });
                 if (doc.DocumentItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                    //ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                    new ClosedGIDocument().Execute(this.Logger, this.BuVO, new ClosedGIDocument.TDocReq() { docIDs = new long[] { doc.ID.Value } });
                 }
                 else{
                     ADO.DocumentADO.GetInstant().UpdateEventStatus(doc.ID.Value, DocumentEventStatus.WORKING,this.BuVO);
