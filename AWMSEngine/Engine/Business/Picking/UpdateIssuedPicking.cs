@@ -84,7 +84,7 @@ namespace AWMSEngine.Engine.Business.Picking
 
                 ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
 
-                var selectSto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                var selectSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
                     new SQLConditionCriteria("StorageObject_ID", x.STOID, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", 0, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_ISSUED, SQLOperatorType.EQUALS),
