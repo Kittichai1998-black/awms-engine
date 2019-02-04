@@ -89,13 +89,16 @@ class TaskList extends Component {
 
     let interval1 = setInterval(() => {
       API.get(createQueryString(this.WorkQselect)).then(res => {
-
-        //console.log(res.data.datas[0].ID)
-        if (res.data.datas.lenght > 0) {
-          if (this.state.queueID !== res.data.datas[0].ID) {
-            this.getDataMoveOut()
+        if (res) {
+          if (res.data.datas.length  > 0) {
+            if (this.state.dataworkingout.length > 0) {
+              console.log(this.state.dataworkingout[0].ID)
+              if (this.state.queueID !== this.state.dataworkingout[0].ID) {
+                this.getDataMoveOut()
+              }
+            }
+            this.setState({ queueID: res.data.datas[0].ID }, () => console.log(this.state.queueID));
           }
-          this.setState({ queueID: res.data.datas[0].ID },() => console.log(this.state.queueID));
         }
       })
     }, 2000);
@@ -103,14 +106,17 @@ class TaskList extends Component {
 
     let interval2 = setInterval(() => {
       API.get(createQueryString(this.StoSelect)).then(res => {
-
-        //console.log(res.data.datas[0].ID)
-        if (res.data.datas.lenght > 0) {
-          if (this.state.StoID !== res.data.datas[0].ID) {
-            this.getDataTasklist()
+        if (res) {
+          if (res.data.datas.length > 0) {
+            if (this.state.datatasklist.length > 0) {
+              console.log(this.state.datatasklist[0].ID)
+              if (this.state.StoID !== this.state.datatasklist[0].ID) {
+                this.getDataTasklist()
+              }
+            }
+            this.setState({ StoID: res.data.datas[0].ID }, () => console.log(this.state.StoID));
           }
-          this.setState({ StoID: res.data.datas[0].ID },() => console.log(this.state.StoID));
-        } 
+        }
       })
     }, 2000);
     this.setState({ interval2: interval2 })

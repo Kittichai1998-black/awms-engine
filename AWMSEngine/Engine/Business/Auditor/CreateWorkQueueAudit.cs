@@ -18,8 +18,14 @@ namespace AWMSEngine.Engine.Business.Auditor
         public class TReq
         {
             public long docID;
-            public List<SPworkQueue> workQueue;
+            public List<WorkQueue> workQueue;
             public List<amt_DocumentItemStorageObject> disto;
+        }
+
+        public class WorkQueue : SPworkQueue
+        {
+            public long docItemID;
+            public bool QueueStatus;
         }
 
         public class TRes
@@ -44,24 +50,27 @@ namespace AWMSEngine.Engine.Business.Auditor
 
             reqVO.workQueue.ForEach(x =>
             {
-                if (x.Sou_AreaMaster_ID == 5)
+                if (x.QueueStatus == true)
                 {
-                    var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
-                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                    if (x.Sou_AreaMaster_ID == 5)
                     {
-                        baseCode = x.StorageObject_Code,
-                        packInfos = null
-                    };
+                        var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
+                        baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                        {
+                            baseCode = x.StorageObject_Code,
+                            packInfos = null
+                        };
 
-                    queueOut.Add(new WCSQueueApi.TReq.queueout()
-                    {
-                        queueID = null,
-                        baseInfo = baseInfo,
-                        desAreaCode = this.StaticValue.AreaMasters.Where(y => y.ID == x.Des_AreaMaster_ID).FirstOrDefault().Code,
-                        desLocationCode = null,
-                        desWarehouseCode = this.StaticValue.Warehouses.Where(y => y.ID == x.Des_Warehouse_ID).FirstOrDefault().Code,
-                        priority = x.Priority
-                    });
+                        queueOut.Add(new WCSQueueApi.TReq.queueout()
+                        {
+                            queueID = null,
+                            baseInfo = baseInfo,
+                            desAreaCode = this.StaticValue.AreaMasters.Where(y => y.ID == x.Des_AreaMaster_ID).FirstOrDefault().Code,
+                            desLocationCode = null,
+                            desWarehouseCode = this.StaticValue.Warehouses.Where(y => y.ID == x.Des_Warehouse_ID).FirstOrDefault().Code,
+                            priority = x.Priority
+                        });
+                    }
                 }
             });
             queueCheck.queueOut = queueOut;
@@ -84,43 +93,46 @@ namespace AWMSEngine.Engine.Business.Auditor
 
             reqVO.workQueue.ForEach(x =>
             {
-                var getStatusSto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
-                var getStoList = getStatusSto.ToTreeList().Where(sto => sto.type == StorageObjectType.PACK).Select(sel => sel.id).ToArray();
-                if (getStatusSto.eventStatus != StorageObjectEventStatus.RECEIVED)
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าอยู่ในสถานะ" + getStatusSto.eventStatus + "ไม่สามารถเบิกสินค้าตรวจสอบได้");
-
-                if (x.Sou_AreaMaster_ID == 5)//ASRS
+                if(x.QueueStatus == true)
                 {
-                    var distoItem = distoList.Where(dis => getStoList.Contains(dis.StorageObject_ID)).ToList();
-                    var getDocItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
+                    var getStatusSto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                    var getStoList = getStatusSto.ToTreeList().Where(sto => sto.type == StorageObjectType.PACK).Select(sel => sel.id).ToArray();
+                    if (getStatusSto.eventStatus != StorageObjectEventStatus.RECEIVED)
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "สินค้าอยู่ในสถานะ" + getStatusSto.eventStatus + "ไม่สามารถเบิกสินค้าตรวจสอบได้");
+
+                    if (x.Sou_AreaMaster_ID == 5)//ASRS
+                    {
+                        var distoItem = distoList.Where(dis => getStoList.Contains(dis.StorageObject_ID)).ToList();
+                        var getDocItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
                             new SQLConditionCriteria("ID", distoList.Select(sto => sto.DocumentItem_ID ).ToList(), SQLOperatorType.IN)
                         }, this.BuVO);
-                    //ADD BY TOM
-                    var docItemAudits = ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { x.StorageObject_ID.Value }, DocumentTypeID.AUDIT, this.BuVO);
-                    var bsto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
-                    x.DocumentItemWorkQueues = AWMSEngine.Common.ConverterModel.ToDocumentItemWorkQueue(docItemAudits.Count == 0 ? getDocItem : docItemAudits, bsto);
-                    //***
+                        //ADD BY TOM
+                        var docItemAudits = ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { x.StorageObject_ID.Value }, DocumentTypeID.AUDIT, this.BuVO);
+                        var bsto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
+                        x.DocumentItemWorkQueues = AWMSEngine.Common.ConverterModel.ToDocumentItemWorkQueue(docItemAudits.Count == 0 ? getDocItem : docItemAudits, bsto);
+                        //***
 
-                    var resWorkQueue = ADO.WorkQueueADO.GetInstant().Create(x, this.BuVO);
+                        var resWorkQueue = ADO.WorkQueueADO.GetInstant().Create(x, this.BuVO);
 
-                    var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
-                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
-                    {
-                        baseCode = resWorkQueue.StorageObject_Code,
-                        packInfos = null
-                    };
+                        var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
+                        baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                        {
+                            baseCode = resWorkQueue.StorageObject_Code,
+                            packInfos = null
+                        };
 
-                    queueOut2.Add(new WCSQueueApi.TReq.queueout()
-                    {
-                        queueID = resWorkQueue.ID,
-                        baseInfo = baseInfo,
-                        desAreaCode = this.StaticValue.AreaMasters.Where(y => y.ID == resWorkQueue.Des_AreaMaster_ID).FirstOrDefault().Code,
-                        desLocationCode = null,
-                        desWarehouseCode = this.StaticValue.Warehouses.Where(y => y.ID == resWorkQueue.Des_Warehouse_ID).FirstOrDefault().Code,
-                        priority = resWorkQueue.Priority
-                    });
+                        queueOut2.Add(new WCSQueueApi.TReq.queueout()
+                        {
+                            queueID = resWorkQueue.ID,
+                            baseInfo = baseInfo,
+                            desAreaCode = this.StaticValue.AreaMasters.Where(y => y.ID == resWorkQueue.Des_AreaMaster_ID).FirstOrDefault().Code,
+                            desLocationCode = null,
+                            desWarehouseCode = this.StaticValue.Warehouses.Where(y => y.ID == resWorkQueue.Des_Warehouse_ID).FirstOrDefault().Code,
+                            priority = resWorkQueue.Priority
+                        });
+                    }
                 }
-
+                
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.StorageObject_ID.Value, null, null, StorageObjectEventStatus.AUDITING, this.BuVO);
             });
 
