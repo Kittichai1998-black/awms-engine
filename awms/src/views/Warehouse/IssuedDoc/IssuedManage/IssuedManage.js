@@ -159,14 +159,17 @@ class IssuedManage extends Component {
           });
 
           let data5 = [];
-          rowselect1.data.bstos.forEach(bsto=>{
+          rowselect1.data.bstos.forEach(bsto => {
+            let docItems = rowselect1.data.document.documentItems.filter(y => y.id === bsto.docItemID)
             let d5 = data5.filter(x=>x.id==bsto.id);
-            if(d5.length > 0){
+            if (d5.length > 0) {
+              d5[0].options = docItems[0].options
               d5[0].distoQty+=bsto.distoQty;
               if(d5[0].distoQtyMax<bsto.distoQtyMax)
                 d5[0].distoQtyMax = bsto.distoQtyMax
             }
-            else{
+            else {
+              bsto.options = docItems[0].options
               data5.push(JSON.parse(JSON.stringify(bsto)));
             }
           });
@@ -174,12 +177,6 @@ class IssuedManage extends Component {
             x.displayQty = x.distoQty + '/' +x.distoQtyMax
           });
           this.setState({data5:data5});
-
-
-
-
-          console.log(rowselect1)
-
 
           this.setState({
             //data: rowselect1.data.document,
@@ -239,11 +236,15 @@ class IssuedManage extends Component {
             }
             
             x.batchsp = x.batch
+            x.lot = x.lot
+            x.orderNo = x.orderNo
             x.options = x.options
             x.quantity = x.quantity
             x.unitType_Name = x.unitType_Name
             x.status = x.status
             sumArr1.push(x);
+            console.log(pg)
+            console.log(x)
           })
           console.log(sumArr1)
 
@@ -823,8 +824,8 @@ class IssuedManage extends Component {
                     <div style={{ marginLeft: '5px', display: "inline-block" }}>{this.state.auto_branch}</div> }
             </Col>
             <Col xs="6"><label >Destination Warehouse : </label>{this.state.pageID ? this.createText(this.state.desWarehouseName) :
-              
-                <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} />
+
+              <div style={{ width: "300px", display: "inline-block"}}>   <AutoSelect data={this.state.auto_warehouse} result={(e) => this.setState({ "warehouse": e.value, "warehouseresult": e.label })} /></div>
               }</Col>
           </Row>
 

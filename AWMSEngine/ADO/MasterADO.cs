@@ -73,5 +73,10 @@ namespace AWMSEngine.ADO
             var skuMst = DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.ID.Value, buVO);
             return skuMst;
         }
+        public AWMSModel.Entity.ams_SKUMaster GetSKUMasterByCode(string skuCode, VOCriteria buVO)
+        {
+            var skuMst = DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(skuCode, buVO);
+            return skuMst;
+        }
     }
 }

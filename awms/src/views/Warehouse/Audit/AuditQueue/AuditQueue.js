@@ -118,7 +118,7 @@ class AuditQueue extends Component{
               palletCode:x.storageObject_Code
             }
           });
-
+          
           var queueTable = <ReactTable style={{width:"100%"}} data={queueList} editable={false} filterable={false} defaultPageSize={2000}
           editable={false} minRows={5} showPagination={false}
           columns={[{ accessor: 'palletCode', Header: 'Pallet Code'}]}/>
