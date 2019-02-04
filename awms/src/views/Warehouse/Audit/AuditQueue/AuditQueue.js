@@ -112,7 +112,8 @@ class AuditQueue extends Component{
         if(res.data._result.status === 1)
         {
           var docID = res.data.docID;
-          var queueList = res.data.workQueue.map(x=> {
+          console.log(res.data.workQueue)
+          var queueList = res.data.workQueue.filter(x => x.queueStatus === true).map(x=> {
             return {
               palletCode:x.storageObject_Code
             }
