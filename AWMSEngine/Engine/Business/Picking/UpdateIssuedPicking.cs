@@ -65,31 +65,21 @@ namespace AWMSEngine.Engine.Business.Picking
 
                 var getDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                 {
-                    new SQLConditionCriteria("StorageObject_ID", setSTO.id, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("DocumentItem_ID", x.docItemID, SQLOperatorType.NOTEQUALS),
-                    new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
-                }, this.BuVO);
-
-                setSTO.qty = setSTO.qty - x.picked;
-                setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
-
-                if (getDiSto.Count() > 0)
-                    setSTO.eventStatus = StorageObjectEventStatus.RECEIVED;
-                else
-                    setSTO.eventStatus = setSTO.baseQty > 0 ? StorageObjectEventStatus.PICKING : StorageObjectEventStatus.PICKED;
-
-
-                if(x.picked > 0)
-                    ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, reqVO.pickMode,  this.BuVO);
-
-                ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
-
-                var selectSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
                     new SQLConditionCriteria("StorageObject_ID", x.STOID, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", 0, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_ISSUED, SQLOperatorType.EQUALS),
                 }, this.BuVO);
 
+                setSTO.qty = setSTO.qty - x.picked;
+                setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
+
+                setSTO.eventStatus = setSTO.baseQty > 0 ? StorageObjectEventStatus.PICKING : StorageObjectEventStatus.PICKED;
+
+                if (x.picked > 0)
+                    ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, reqVO.pickMode,  this.BuVO);
+
+                ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
+                
                 var chkQty = sto.FindAll(s => s.type == StorageObjectType.PACK).TrueForAll(a => a.eventStatus == StorageObjectEventStatus.PICKED);
                 if (chkQty)
                 {
@@ -97,7 +87,7 @@ namespace AWMSEngine.Engine.Business.Picking
                 }
                 else
                 {
-                    if(selectSto.Count == 0)
+                    if(getDiSto.Count == 0)
                     {
                         if (palletSTO.parentType == StorageObjectType.LOCATION)
                         {
