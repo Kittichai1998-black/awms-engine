@@ -375,6 +375,7 @@ class Pack extends Component {
 
 
                 <ReactTableFixedColumns
+                    className="-highlight"
                     style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
                     data={this.state.data} columns={cols} filterable={true} minRows={5}
                     multiSort={false}

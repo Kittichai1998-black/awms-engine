@@ -1460,7 +1460,7 @@ class TableGen extends Component {
         {this.AddGenerate()}
         <div className="clearfix"></div>
         <ReactTableFixedColumns
-          className="-striped"
+          className="-highlight"
           data={this.state.data}
           ref={ref => this.tableComponent = ref}
           style={{ marginTop: '3px', backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
