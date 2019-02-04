@@ -52,18 +52,38 @@ namespace AWMSEngine.Engine.Business.Issued
                 
                 if (packInfo == null)
                 {
-                    StorageObjectCriteria newSto = newSto = ADO.StorageObjectADO.GetInstant()
+                    /*StorageObjectCriteria newSto = newSto = ADO.StorageObjectADO.GetInstant()
                         .Get(mapstoCanReturns.First().ID.Value, StorageObjectType.PACK, false, false, this.BuVO)
-                        .Clone();
-                    newSto.id = null;
-                    newSto.baseQty = reqVO.baseQty;
-                    var converUnit = StaticValue.ConvertToNewUnitBySKU(newSto.skuID.Value, reqVO.baseQty, newSto.baseUnitID, newSto.unitID);
-                    newSto.qty = converUnit.qty;
-                    newSto.weiKG = converUnit.weiKg;
-                    newSto.eventStatus = StorageObjectEventStatus.RECEIVED;
-                    newSto.parentID = baseInfo.id;
-                    newSto.parentType = baseInfo.type;
-
+                        .Clone();*/
+                    var skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(reqVO.packCode, this.BuVO);
+                    var unitBaseMst = this.StaticValue.UnitTypes.First(x => x.ID == skuMst.UnitType_ID);
+                    var packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, unitBaseMst.Code, this.BuVO);
+                    var converUnit = StaticValue.ConvertToNewUnitBySKU(skuMst.ID.Value, reqVO.baseQty, skuMst.UnitType_ID.Value, docItem.UnitType_ID.Value);
+                    StorageObjectCriteria newSto = new StorageObjectCriteria()
+                    {
+                        id = null,
+                        code = reqVO.packCode,
+                        baseQty = reqVO.baseQty,
+                        baseUnitID = converUnit.baseUnitType_ID,
+                        qty = converUnit.qty,
+                        unitID = converUnit.unitType_ID,
+                        areaID = baseInfo.areaID,
+                        batch = reqVO.batch,
+                        lot = reqVO.lot,
+                        orderNo = reqVO.orderNo,
+                        weiKG = converUnit.weiKg,
+                        eventStatus = StorageObjectEventStatus.RECEIVED,
+                        parentID = baseInfo.id,
+                        parentType = baseInfo.type,
+                        type = StorageObjectType.PACK,
+                        mstID = packMst.ID.Value,
+                        mapstos = new List<StorageObjectCriteria>(),
+                        objectSizeID = packMst.ObjectSize_ID,
+                        skuID = skuMst.ID,
+                        warehouseID = baseInfo.warehouseID,
+                        name = packMst.Name,
+                        
+                    };
                     if (baseInfo.eventStatus == StorageObjectEventStatus.IDLE)
                     {
                         baseInfo.eventStatus = StorageObjectEventStatus.RECEIVED;
