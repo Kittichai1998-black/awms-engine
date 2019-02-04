@@ -214,6 +214,23 @@ class StockCardReport extends Component {
       return sumVal.toFixed(3)
   }
 
+  getTotal(value) {
+    var sumDebit = _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
+        parseFloat(x.Debit) : null)
+    var sumCredit = _.sumBy(this.state.data,
+      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
+        parseFloat(x.Credit) : null)
+    if (sumDebit === 0 && sumCredit === 0) {
+      return '-'
+    } else {
+      var sumVal = Math.abs(sumDebit - sumCredit)
+      if (sumVal === 0 || sumVal === null || sumVal === undefined)
+        return '-'
+      else
+        return sumVal.toFixed(3)
+    }
+  }
   render() {
     const cols = [
       {
@@ -242,7 +259,6 @@ class StockCardReport extends Component {
           this.datetimeBody(e.value)
       },
       { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: true },
-      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
       { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: true },
@@ -277,26 +293,8 @@ class StockCardReport extends Component {
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal("Total")}</span>)
-      },
-      // {
-      //   accessor: 'Debit', Header: 'Debit', editable: false, sortable: true, Footer:
-      //     (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-      //       x => _.every(this.state.data, ["Unit", x.Base_Unit]) == true ?
-      //         parseFloat(x.Debit) : null)}</span>)
-      // },
-      // {
-      //   accessor: 'Credit', Header: 'Credit', editable: false, sortable: true, Footer:
-      //     (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-      //       x => _.every(this.state.data, ["Unit", x.Base_Unit]) == true ?
-      //         parseFloat(x.Credit) : null)}</span>)
-      // },
-      // {
-      //   accessor: 'Total', Header: 'Balance', editable: false, sortable: true, Footer:
-      //     (<span><label>Sum :</label>{" "}{_.sumBy(this.state.data,
-      //       x => _.every(this.state.data, ["Unit", x.Base_Unit]) == true ?
-      //         parseFloat(x.Total) : null)}</span>)
-      // },
+          (<span style={{ fontWeight: 'bold' }}>{this.getTotal("Total")}</span>)
+      }, 
       { accessor: 'Unit', Header: 'Unit', editable: false, sortable: true },
     ];
     return (

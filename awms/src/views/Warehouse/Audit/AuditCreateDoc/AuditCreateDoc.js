@@ -249,37 +249,22 @@ class IssuedManage extends Component {
 
   editData(rowdata, value, field) {
     const data = this.state.data;
-    if (value !== "") {
-      if (rowdata.column.datatype === "int") {
-        let conv = value === '' ? 0 : value
-        data[rowdata.index][field] = (conv === 0 ? null : conv);
-      }
-      else if(rowdata.column.datatype == "text"){
-        data[rowdata.index][field] = value;
-      }
-      else {
-        data[rowdata.index][field] = value.Code;
-        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
-        data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
-        data[rowdata.index]["UnitTypeName"] = value.UnitTypeName;
-        data[rowdata.index]["SKU_ID"] = value.ID;
-        data[rowdata.index]["id"] = value.ID;
-      }
-      this.setState({ data });
-
+    if(rowdata.column.datatype === "int") {
+      let conv = value === '' ? 0 : value
+      data[rowdata.index][field] = (conv === 0 ? null : conv);
     }
-    else if (rowdata.column.datatype !== "int") {
-      data[rowdata.index][field] = "";
-      data[rowdata.index]["SKU"] = "";
-      data[rowdata.index]["UnitTypeCode"] = "";
-      data[rowdata.index]["UnitTypeName"] = "";
-      data[rowdata.index]["SKU_ID"] = "";
-      data[rowdata.index]["id"] = "";
+      else if (rowdata.column.datatype == "text") {
+      data[rowdata.index][field] = value;
     }
-    else if (rowdata.column.datatype === "int") {
-      data[rowdata.index][field] = "";
+    else {
+      data[rowdata.index][field] = value.Code;
+      data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
+      data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
+      data[rowdata.index]["UnitTypeName"] = value.UnitTypeName;
+      data[rowdata.index]["SKU_ID"] = value.ID;
+      data[rowdata.index]["id"] = value.ID;
     }
-    this.setState({ data }, () => console.log(this.state.data));
+    this.setState({ data });
   }
 
   createText(data) {
