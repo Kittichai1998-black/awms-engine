@@ -84,6 +84,12 @@ namespace AWMSEngine.Engine.Business.Picking
 
                 ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
 
+                var selectSto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("StorageObject_ID", x.STOID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", 0, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_ISSUED, SQLOperatorType.EQUALS),
+                }, this.BuVO);
+
                 var chkQty = sto.FindAll(s => s.type == StorageObjectType.PACK).TrueForAll(a => a.eventStatus == StorageObjectEventStatus.PICKED);
                 if (chkQty)
                 {
@@ -91,9 +97,12 @@ namespace AWMSEngine.Engine.Business.Picking
                 }
                 else
                 {
-                    if(palletSTO.parentType == StorageObjectType.LOCATION)
+                    if(selectSto.Count == 0)
                     {
-                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSTO.id.Value, StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                        if (palletSTO.parentType == StorageObjectType.LOCATION)
+                        {
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSTO.id.Value, StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                        }
                     }
                 }
 

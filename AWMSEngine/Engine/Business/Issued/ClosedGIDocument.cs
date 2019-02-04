@@ -67,6 +67,10 @@ namespace AWMSEngine.Engine.Business.Issued
                                     sandToSAPfail(docHs, docItem, dataReturn);
                                 }
                             }
+                            else
+                            {
+                                ADO.DocumentADO.GetInstant().UpdateEventStatus(doc.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                            }
                         }
                         else
                         {

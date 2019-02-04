@@ -365,6 +365,7 @@ const routes = [
   { path: '/doc/gr/manage', exact: true, name: 'Receive Document', component: ReceiveManage },
   { path: '/doc/gi/list', exact: true, name: 'Issue / Search Issue', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Issue / Issue Document', component: IssuedManage },
+  { path: '/doc/gi/create', exact: true, name: 'Issue / Create Issue Document', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Issue / Picking', component: PickConso },
   { path: '/wm/sto/return', exact: true, name: 'Issue / Return Issue', component: Return },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
@@ -398,7 +399,8 @@ const routes = [
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
   { path: '/sys/ad/queueaudit', exact: true, name: 'Create Queue Audit', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
-  { path: '/sys/ad/create', exact: true, name: 'Audit Document', component: AuditCreate },
+  { path: '/sys/ad/manage', exact: true, name: 'Audit Document', component: AuditCreate },
+  { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
   { path: '/sys/ad/report', exact: true, name: 'Report / Audit Report', component: ReportAudit },
 ];
 

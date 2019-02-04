@@ -9,10 +9,8 @@ import '../componentstyle.css'
 import Clock from 'react-live-clock';
 import Fullscreen from "react-full-screen";
 import moment from 'moment';
-import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 import Axios from 'axios';
 import logo from '../../../assets/img/brand/Logo-AMW2.png'
-const API = new apicall()
 
 const iconexpand = <img style={{ width: "auto", height: "auto" }} src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ4OS4zIDQ4OS4zIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0ODkuMyA0ODkuMzsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik00NzYuOTUsMEgxMi4zNWMtNi44LDAtMTIuMiw1LjUtMTIuMiwxMi4yVjIzNWMwLDYuOCw1LjUsMTIuMiwxMi4yLDEyLjJzMTIuMy01LjUsMTIuMy0xMi4yVjI0LjVoNDQwLjJ2NDQwLjJoLTIxMS45ICAgIGMtNi44LDAtMTIuMyw1LjUtMTIuMywxMi4zczUuNSwxMi4zLDEyLjMsMTIuM2gyMjRjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zVjEyLjNDNDg5LjI1LDUuNSw0ODMuNzUsMCw0NzYuOTUsMHoiIGZpbGw9IiMxMTU5OGMiLz4KCQk8cGF0aCBkPSJNMC4wNSw0NzYuOWMwLDYuOCw1LjUsMTIuMywxMi4yLDEyLjNoMTcwLjRjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zVjMwNi42YzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM0gxMi4zNSAgICBjLTYuOCwwLTEyLjIsNS41LTEyLjIsMTIuM3YxNzAuM0gwLjA1eiBNMjQuNTUsMzE4LjhoMTQ1Ljl2MTQ1LjlIMjQuNTVWMzE4Ljh6IiBmaWxsPSIjMTE1OThjIi8+CgkJPHBhdGggZD0iTTIyMi45NSwyNjYuM2MyLjQsMi40LDUuNSwzLjYsOC43LDMuNnM2LjMtMS4yLDguNy0zLjZsMTM4LjYtMTM4Ljd2NzkuOWMwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNzMTIuMy01LjUsMTIuMy0xMi4zICAgIFY5OC4xYzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM2gtMTA5LjVjLTYuOCwwLTEyLjMsNS41LTEyLjMsMTIuM3M1LjUsMTIuMywxMi4zLDEyLjNoNzkuOUwyMjIuOTUsMjQ5ICAgIEMyMTguMTUsMjUzLjgsMjE4LjE1LDI2MS41LDIyMi45NSwyNjYuM3oiIGZpbGw9IiMxMTU5OGMiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />;
 const iconmin = <img style={{ width: "auto", height: "auto" }} src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ4OS4zIDQ4OS4zIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0ODkuMyA0ODkuMzsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik0wLDEyLjI1MXY0NjQuN2MwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNoMjI0YzYuOCwwLDEyLjMtNS41LDEyLjMtMTIuM3MtNS41LTEyLjMtMTIuMy0xMi4zSDI0LjV2LTQ0MC4yaDQ0MC4ydjIxMC41ICAgIGMwLDYuOCw1LjUsMTIuMiwxMi4zLDEyLjJzMTIuMy01LjUsMTIuMy0xMi4ydi0yMjIuN2MwLTYuOC01LjUtMTIuMi0xMi4zLTEyLjJIMTIuM0M1LjUtMC4wNDksMCw1LjQ1MSwwLDEyLjI1MXoiIGZpbGw9IiMxMTU5OGMiLz4KCQk8cGF0aCBkPSJNNDc2LjksNDg5LjE1MWM2LjgsMCwxMi4zLTUuNSwxMi4zLTEyLjN2LTE3MC4zYzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM0gzMDYuNmMtNi44LDAtMTIuMyw1LjUtMTIuMywxMi4zdjE3MC40ICAgIGMwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNoMTcwLjNWNDg5LjE1MXogTTMxOC44LDMxOC43NTFoMTQ1Ljl2MTQ1LjlIMzE4LjhWMzE4Ljc1MXoiIGZpbGw9IiMxMTU5OGMiLz4KCQk8cGF0aCBkPSJNMTM1LjksMjU3LjY1MWMwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNoMTA5LjVjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zdi0xMDkuNWMwLTYuOC01LjUtMTIuMy0xMi4zLTEyLjMgICAgcy0xMi4zLDUuNS0xMi4zLDEyLjN2NzkuOWwtMTM4LjctMTM4LjdjLTQuOC00LjgtMTIuNS00LjgtMTcuMywwYy00LjgsNC44LTQuOCwxMi41LDAsMTcuM2wxMzguNywxMzguN2gtNzkuOSAgICBDMTQxLjQsMjQ1LjM1MSwxMzUuOSwyNTAuODUxLDEzNS45LDI1Ny42NTF6IiBmaWxsPSIjMTE1OThjIi8+Cgk8L2c+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPC9zdmc+Cg==" />;
@@ -50,7 +48,7 @@ class TaskList extends Component {
       t: "WorkQueue",
       q: '',
       q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 }]",
-      f: "ID",
+      f: "ID,ActualTime",
       g: "",
       s: "[{'f':'ActualTime','od':'desc'}]",
       sk: 0,
@@ -62,7 +60,7 @@ class TaskList extends Component {
       t: "StorageObject",
       q: '',
       q: "[{ 'f': 'AreaMaster_ID', 'c': 'in', 'v': '8,9' }]",
-      f: "ID",
+      f: "ID,ModifyTime",
       g: "",
       s: "[{'f':'ModifyTime','od':'desc'}]",
       sk: 0,
@@ -88,16 +86,17 @@ class TaskList extends Component {
     this.getDataTasklist()
 
     let interval1 = setInterval(() => {
-      API.get(createQueryString(this.WorkQselect)).then(res => {
+      Axios.get(createQueryString(this.WorkQselect) + "&apikey=FREE03").then(res => {
         if (res) {
           if (res.data.datas.length  > 0) {
             if (this.state.dataworkingout.length > 0) {
-              console.log(this.state.dataworkingout[0].ID)
-              if (this.state.queueID !== this.state.dataworkingout[0].ID) {
+              console.log(res.data.datas[0].ActualTime)
+              console.log(this.state.dataworkingout[0].Time)
+              if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
                 this.getDataMoveOut()
-              }
+              } 
             }
-            this.setState({ queueID: res.data.datas[0].ID }, () => console.log(this.state.queueID));
+            this.setState({ ActualTime: res.data.datas[0].ActualTime });
           }
         }
       })
@@ -105,16 +104,17 @@ class TaskList extends Component {
     this.setState({ interval1: interval1 })
 
     let interval2 = setInterval(() => {
-      API.get(createQueryString(this.StoSelect)).then(res => {
+      Axios.get(createQueryString(this.StoSelect) + "&apikey=FREE03").then(res => {
         if (res) {
           if (res.data.datas.length > 0) {
             if (this.state.datatasklist.length > 0) {
-              console.log(this.state.datatasklist[0].ID)
-              if (this.state.StoID !== this.state.datatasklist[0].ID) {
+              console.log(res.data.datas[0].ModifyTime)
+              console.log(this.state.datatasklist[0].Time)
+              if (this.state.ModifyTime !== this.state.datatasklist[0].Time) {
                 this.getDataTasklist()
               }
             }
-            this.setState({ StoID: res.data.datas[0].ID }, () => console.log(this.state.StoID));
+            this.setState({ ModifyTime: res.data.datas[0].ModifyTime });
           }
         }
       })
@@ -127,7 +127,7 @@ class TaskList extends Component {
   }
 
   getDataMoveOut() {
-    API.get(createQueryString(this.state.WorkingOutselect)).then((res) => {
+    Axios.get(createQueryString(this.state.WorkingOutselect) + "&apikey=FREE03").then((res) => {
       if (res) {
         this.setState({
           dataworkingout: res.data.datas, loadingWorkingOut: false
@@ -136,7 +136,7 @@ class TaskList extends Component {
     })
   }
   getDataTasklist() {
-    API.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
+    Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
       + "&spname=DASHBOARD_TASK_ON_FLOOR").then((res) => {
         if (res) {
           this.setState({

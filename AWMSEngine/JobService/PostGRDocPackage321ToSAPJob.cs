@@ -19,7 +19,8 @@ namespace AWMSEngine.JobService
                     new SQLConditionCriteria[]{
                         new SQLConditionCriteria("DocumentType_ID","1001",SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status","1",SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("Ref2","321",SQLOperatorType.EQUALS)
+                        new SQLConditionCriteria("Ref2","321",SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("EventStatus","31",SQLOperatorType.NOTEQUALS)
                     }, new VOCriteria());
 
             APIService.Doc.CloseGRDocAPI api = new CloseGRDocAPI(null);
