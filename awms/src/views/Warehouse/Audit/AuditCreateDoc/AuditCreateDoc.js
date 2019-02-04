@@ -104,7 +104,8 @@ class IssuedManage extends Component {
               var qryStr = queryString.parse(x.options)
               x.palletCode = qryStr.palletCode === "undefined" ? null : qryStr.palletCode;
               x.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-              x.code = x.skuMaster_Code === null ? "" : x.skuMaster_Code + " : " + x.skuMaster_Name;
+              x.code = x.skuMaster_Code === null ? "" : x.skuMaster_Code;
+              x.skuName = x.skuMaster_Name === null ? "" : x.skuMaster_Name
             })
 
             this.forceUpdate();
@@ -390,7 +391,8 @@ class IssuedManage extends Component {
 
       let colsview = [{ accessor: 'palletCode', Header: 'Pallet Code', editable: false, },
       { accessor: 'locationCode', Header: 'Location Code', editable: false },
-      { accessor: "code", Header: "SKU Item",  width: 550 },
+      { accessor: "code", Header: "SKU Code",  width: 200 },
+      { accessor: "skuName", Header: "SKU Name",  width: 250 },
       { accessor: 'batch', Header: 'Batch', editable: false, },
       { accessor: "UnitTypeName", Header: "Unit", editable: false,},];
 

@@ -52,7 +52,7 @@ class TaskList extends Component {
       q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 }]",
       f: "ID",
       g: "",
-      s: "[{'f':'ID','od':'desc'}]",
+      s: "[{'f':'ActualTime','od':'desc'}]",
       sk: 0,
       l: 1,
       all: "",
@@ -89,24 +89,34 @@ class TaskList extends Component {
 
     let interval1 = setInterval(() => {
       API.get(createQueryString(this.WorkQselect)).then(res => {
-
-        //console.log(res.data.datas[0].ID)
-        if (this.state.queueID !== res.data.datas[0].ID) {
-          this.getDataMoveOut()
+        if (res) {
+          if (res.data.datas.length  > 0) {
+            if (this.state.dataworkingout.length > 0) {
+              console.log(this.state.dataworkingout[0].ID)
+              if (this.state.queueID !== this.state.dataworkingout[0].ID) {
+                this.getDataMoveOut()
+              }
+            }
+            this.setState({ queueID: res.data.datas[0].ID }, () => console.log(this.state.queueID));
+          }
         }
-        this.setState({ queueID: res.data.datas[0].ID });
       })
     }, 2000);
     this.setState({ interval1: interval1 })
 
     let interval2 = setInterval(() => {
       API.get(createQueryString(this.StoSelect)).then(res => {
-
-        //console.log(res.data.datas[0].ID)
-        if (this.state.StoID !== res.data.datas[0].ID) {
-          this.getDataTasklist()
+        if (res) {
+          if (res.data.datas.length > 0) {
+            if (this.state.datatasklist.length > 0) {
+              console.log(this.state.datatasklist[0].ID)
+              if (this.state.StoID !== this.state.datatasklist[0].ID) {
+                this.getDataTasklist()
+              }
+            }
+            this.setState({ StoID: res.data.datas[0].ID }, () => console.log(this.state.StoID));
+          }
         }
-        this.setState({ StoID: res.data.datas[0].ID });
       })
     }, 2000);
     this.setState({ interval2: interval2 })
@@ -157,13 +167,25 @@ class TaskList extends Component {
         areaWorkingOut.q = "[{ 'f': 'IOType', c:'=', 'v': 1},{ 'f': 'AreaID', c:'in', 'v': '2,3'}]";
         // taskwhere = '8,9';
       }
-      console.log(taskwhere)
-      console.log(areaWorkingOut)
+      // console.log(taskwhere)
+      // console.log(areaWorkingOut)
     }
     this.setState({ WorkingOutselect: areaWorkingOut, areaIDOnFloor: taskwhere })
 
   }
-
+  // this.getStatus(e.original.TaskName)
+  // getStatus(value) {
+  //   if (value.includes("/n")) {
+  //     const data = value.split("/n");
+  //     console.log(data)
+  //     const items = data.map((value) => 
+  //     <li><Badge color={value} style={{ fontSize: '0.875em', fontWeight: '500' }}>{value}</Badge></li>
+  //     ); 
+  //     return <ul>{items}</ul> 
+  //   } else {
+  //     return <Badge color={value} style={{ fontSize: '0.875em', fontWeight: '500' }}>{value}</Badge>
+  //   }
+  // }
   render() {
     const cols1 = [
       { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
@@ -181,7 +203,7 @@ class TaskList extends Component {
       {
         accessor: "TaskName", Header: "Task Name", width: 100, className: 'center',
         Cell: row => (
-          <Badge color={row.value} style={{ fontSize: '0.875em', fontWeight: '500' }}>{row.value}</Badge>
+          <Badge color={row.value} style={{ fontSize: '0.825em', fontWeight: '500' }}>{row.value}</Badge>
         )
       },
       { accessor: "LocationCode", Header: "Stage", width: 100 },

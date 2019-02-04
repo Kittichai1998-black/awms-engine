@@ -32,7 +32,18 @@ class AuditReport extends Component {
         l: 0,
         all: "",
       },
-
+      Document: {
+        queryString: window.apipath + "/api/trx",
+        t: "Document",
+        q: '[{ "f": "DocumentType_ID", "c":"=", "v": 2004}]',
+        f: "*",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 0,
+        all: "",
+      },
+      DocAudit:[],
       PackMasterdata: [],
       batch: "",
       defaultPageS: 100,
@@ -59,6 +70,18 @@ class AuditReport extends Component {
       })
       this.setState({ PackMasterdata })
     })
+//=======================================================================================
+    Axios.get(createQueryString(this.state.Document)).then((res) => {
+      const DocAudit = []
+      console.log(res)
+      res.data.datas.forEach(row => {
+        console.log(row)
+        DocAudit.push({ label: row.Code, value: row.ID, Code: row.Code })
+      })
+      this.setState({ DocAudit })
+    })
+
+    
 
   }
 
@@ -70,44 +93,17 @@ class AuditReport extends Component {
   }
 
   onGetDocument() {
-    // console.log(this.state.Code)
-    // console.log(this.state.PackMasterdata)
-    // console.log(this.state.dateFrom)
-    // console.log(this.state.dateTo)
-    if (this.state.dateFrom === undefined || this.state.dateTo === undefined || this.state.Code === undefined) {
-      alert("Please select data")
-    } else if (this.state.data === []) {
+    console.log(this.state.auditID)
+
+    if (this.state.data === []) {
       alert("DATA NOT FOUND")
     } else {
-      let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
-      let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
-      // console.log(formatDateFrom)
-      // console.log(formatDateTo)
 
-      if (formatDateFrom > formatDateTo) {
-        alert("Choose the wrong information")
-      } else {
-        let namefileDateFrom = formatDateFrom.toString();
-        let namefileDateTo = formatDateTo.toString();
-        let nameFlie = "STC :" + this.state.Code + " " + namefileDateTo + " to " + namefileDateFrom
-        this.setState({ name: nameFlie.toString() })
-        // console.log(this.state.ID)
-        // console.log(formatDateFrom)
-        // console.log(formatDateTo)
-
-        let skuCode = this.state.Code
-        let batch = this.state.Batch
-        let lot = this.state.Lot
-        let orderno = this.state.Orderno
+        let auditID = this.state.auditID
 
 
-        Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&skuCode=" + skuCode
-          + "&startDate=" + formatDateFrom
-          + "&endDate=" + formatDateTo
-          + "&batch=" + (batch === undefined ? '' : batch)
-          + "&lot=" + (lot === undefined ? '' : lot)
-          + "&orderno=" + (orderno === undefined ? '' : orderno)
-          + "&spname=STOCK_AUDIT").then((rowselect1) => {
+        Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&documentID=" + auditID
+          + "&spname=STOCK_AUDIT_2").then((rowselect1) => {
             if (rowselect1) {
               // console.log(rowselect1)
               if (rowselect1.data._result.status !== 0) {
@@ -116,19 +112,18 @@ class AuditReport extends Component {
                 countpages = Math.ceil(counts / this.state.defaultPageS);
                 rowselect1.data.datas.forEach(x => {
                   this.setState({
-                    ID: x.ID,
-                    Code: x.Code,
-                    ActionTime: x.ActionTime,
-                    RefID: x.RefID,
-                    StorageObject_Code: x.StorageObject_Code,
-                    StorageObject_Name: x.StorageObject_Name,
-                    StorageObject_Batch: x.StorageObject_Batch,
-                    StorageObject_Lot: x.StorageObject_Lot,
-                    StorageObject_OrderNo: x.StorageObject_OrderNo,
-                    DistoID: x.DistoID,
-                    BaseQuantity: x.BaseQuantity,
-                    Balance: x.Balance,
-                    UnitType_Code: x.UnitType_Code
+                    BaseCode: x.BaseCode,
+                    PackCode: x.PackCode,
+                    PackName: x.PackName,
+                    Batch: x.Batch,
+                    Lot: x.Lot,
+                    OrderNo: x.OrderNo,
+                    AuditQty: x.AuditQty,
+                    OriginQty: x.OriginQty,
+                    TotalQty: x.TotalQty,
+                    AuditBy: x.AuditBy,
+                    AuditTime: x.AuditTime,
+                    UnitCode: x.UnitCode
                   })
                 })
                 this.setState({
@@ -137,7 +132,6 @@ class AuditReport extends Component {
               }
             }
           })
-      }
     }
   }
   datetimeBody(value) {
@@ -155,17 +149,7 @@ class AuditReport extends Component {
     else
       return sumVal.toFixed(3)
   }
-  // sumFooterQty() {
-  //   return _.sumBy(this.state.data,
-  //     x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
-  //       parseFloat(x.BaseQuantity) : null)
-  // }
 
-  // sumFooterBalance() {
-  //   return _.sumBy(this.state.data,
-  //     x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
-  //       parseFloat(x.Balance) : null)
-  // }
   paginationButton() {
     const notPageactive = {
       pointerEvents: 'none',
@@ -255,94 +239,61 @@ class AuditReport extends Component {
         })
       },
       {
-        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
+        accessor: 'AuditTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
           this.datetimeBody(e.value)
       },
-      { accessor: 'Code', Header: 'Doc No.', editable: false, sortable: true },
-      { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, sortable: true },
-      { accessor: 'StorageObject_Code', Header: 'SKU Code', editable: false, sortable: true },
-      { accessor: 'StorageObject_Name', Header: 'SKU Name', editable: false, sortable: true },
-      { accessor: 'StorageObject_Batch', Header: 'Batch', editable: false, sortable: true },
-      { accessor: 'StorageObject_Lot', Header: 'Lot', editable: false, sortable: true },
-      { accessor: 'StorageObject_OrderNo', Header: 'Order No.', editable: false, sortable: true },
+      { accessor: 'BaseCode', Header: 'Pallet', editable: false, sortable: true },
+      //{ accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: true },
+      { accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: true },
+      { accessor: 'PackName', Header: 'SKU Name', editable: false, sortable: true },
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true },
+      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: true },
+      { accessor: 'OrderNo', Header: 'Order No.', editable: false, sortable: true },
       {
-        accessor: 'BaseQuantity', Header: 'Qty', editable: false, className: "right",
+        accessor: 'AuditQty', Header: 'AuditQty', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("BaseQuantity")}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("AuditQty")}</span>)
       },
-
       {
-        accessor: 'Balance', Header: 'Balance', editable: false, className: "right", 
+        accessor: 'OriginQty', Header: 'OriginQty', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
           }
         }),
         Footer:
-          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Balance")}</span>)
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("OriginQty")}</span>)
       },
 
-      { accessor: 'UnitType_Code', Header: 'Unit', editable: false, sortable: true },
+      {
+        accessor: 'TotalQty', Header: 'TotalQty', editable: false, className: "right", 
+        getFooterProps: () => ({
+          style: {
+            backgroundColor: '#c8ced3'
+          }
+        }),
+        Footer:
+          (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("TotalQty")}</span>)
+      },    
+      { accessor: 'UnitCode', Header: 'Unit', editable: false, sortable: true },
+      { accessor: 'AuditBy', Header: 'AuditBy', editable: false, sortable: true },
 
     ];
     return (
       <div>
         <div>
-          <Row>
-            <Col xs="6">
               <div>
-                <label style={{ marginRight: "10px" }} >SKU : </label>
+                <label style={{ marginRight: "10px" }} >Document Audit : </label>
                 <div style={{ display: "inline-block", width: "300px", marginLeft: '36px' }}>
-                  <AutoSelect data={this.state.PackMasterdata} result={e => this.setState({ Code: e.Code })} />
+                  <AutoSelect data={this.state.DocAudit} result={e => this.setState({ auditID: e.value })} />
 
                 </div>
               </div>
-            </Col>
-            <Col xs="6">
-              <div className=""><label>Batch : </label>
-                <Input onChange={(e) => this.setState({ Batch: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '28px' }}
-                  value={this.state.Batch} />
-              </div>
-            </Col>
-
-          </Row>
-          <Row>
-            <Col xs="6">
-              <div className=""><label>Lot : </label>
-                <Input onChange={(e) => this.setState({ Lot: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '50px' }}
-                  value={this.state.Lot} />
-              </div>
-            </Col>
-            <Col xs="6">
-              <div className=""><label>Order No : </label>
-                <Input onChange={(e) => this.setState({ Orderno: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}
-                  value={this.state.Orderno} />
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs="6">
-              <div >
-                <label>Date From : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
-                  {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
-                </div></div>
-            </Col>
-
-            <Col xs="6">
-              <div>
-                <label >Date To : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
-                  {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
-                </div>
-              </div>
-            </Col>
-          </Row>
 
           <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
           <Col xs="6"></Col>
