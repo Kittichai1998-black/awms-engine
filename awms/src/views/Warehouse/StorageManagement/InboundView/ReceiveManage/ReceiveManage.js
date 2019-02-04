@@ -113,7 +113,7 @@ class ReceiveManage extends Component {
     }
   }
   async componentWillMount() {
-    document.title = "Receive Document Manage : AWMS";
+    document.title = "Receive Document : AWMS";
     let dataGetPer = await GetPermission()
     //CheckWebPermission("CreateGR", dataGetPer, this.props.history);
     this.displayButtonByPermission(dataGetPer)

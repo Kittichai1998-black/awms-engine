@@ -476,7 +476,7 @@ namespace AWMSEngine.ADO
             return this.Target(docIDs, docTypeID, buVO);
         }
 
-        public int UpdateStatusToChild(long docID,
+        public EntityStatus UpdateStatusToChild(long docID,
             DocumentEventStatus? fromEventStatus, EntityStatus? fromStatus, DocumentEventStatus? toEventStatus, VOCriteria buVO)
         {
             EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(toEventStatus);
@@ -487,10 +487,11 @@ namespace AWMSEngine.ADO
             param.Add("@fromEventStatus", fromEventStatus);
             param.Add("@toEventStatus", toEventStatus);
             param.Add("@actionBy", buVO.ActionBy);
-            return this.Execute("SP_DOC_UPDATE_STATUS_TO_CHILD",
+            this.Execute("SP_DOC_UPDATE_STATUS_TO_CHILD",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction);
+            return toStatus.Value;
         }
 
         public List<SPOutDocItemCanMap> ListItemCanMap(string packCode, DocumentTypeID docTypeID, long? docID, DocumentEventStatus eventStatus, VOCriteria buVO)

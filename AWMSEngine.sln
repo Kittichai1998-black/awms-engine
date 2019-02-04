@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMWUtil", "AMWUtil\AMWUtil.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSModel", "AWMSModel\AWMSModel.csproj", "{C212334F-94B2-4902-ADBB-D4E1B38BC63E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCSSimAPI", "WCSSimAPI\WCSSimAPI.csproj", "{F11D4D96-C910-4EBA-A938-6DCF5B78153C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WCSSimAPI", "WCSSimAPI\WCSSimAPI.csproj", "{F11D4D96-C910-4EBA-A938-6DCF5B78153C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTest", "WebTest\WebTest.csproj", "{79C9A428-68D6-4078-BB77-C2EEE7468F6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{F11D4D96-C910-4EBA-A938-6DCF5B78153C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F11D4D96-C910-4EBA-A938-6DCF5B78153C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F11D4D96-C910-4EBA-A938-6DCF5B78153C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79C9A428-68D6-4078-BB77-C2EEE7468F6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79C9A428-68D6-4078-BB77-C2EEE7468F6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79C9A428-68D6-4078-BB77-C2EEE7468F6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79C9A428-68D6-4078-BB77-C2EEE7468F6C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

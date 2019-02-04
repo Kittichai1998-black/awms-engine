@@ -95,7 +95,7 @@ class StockCardReport extends Component {
         let lot = this.state.Lot
         let orderno = this.state.Orderno
 
-        Axios.get(window.apipath + "/api/report/sp?apikey=WCS_KEY&skuid=" + skuid
+        Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&skuid=" + skuid
           + "&startDate=" + formatDateFrom
           + "&endDate=" + formatDateTo
           + "&batch=" + (batch === undefined ? '' : batch)

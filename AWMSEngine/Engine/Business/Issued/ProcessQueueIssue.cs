@@ -174,7 +174,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                 foreach (var doc in reqVO.documentsProcess)
                 {
-                    var document = ADO.DataADO.GetInstant().SelectBy<amt_Document>("amt_Document", "ID,ParentDocument_ID,code", null,
+                    var document = ADO.DataADO.GetInstant().SelectBy<amt_Document>("amt_Document", "ID,ParentDocument_ID,code,RefID", null,
                     new SQLConditionCriteria[]
                     {
                         new SQLConditionCriteria("ID", doc.docID, SQLOperatorType.EQUALS),

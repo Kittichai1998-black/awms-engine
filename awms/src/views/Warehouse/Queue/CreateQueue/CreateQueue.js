@@ -105,6 +105,7 @@ class CreateQueue extends Component{
     })
   }
   componentWillMount(){
+    document.title = "Create Queue Issue : AWMS";
     this.setState(this.initailstate)
   }
     
@@ -322,14 +323,14 @@ class CreateQueue extends Component{
         }
       })                 
     }
-    this.setState({ dataProcessItems },() => this.createItemCardsList(2), this.createBatchCardsList()) 
+    this.setState({ dataProcessItems }, () => this.setState({batchCard:[]}, () => this.createItemCardsList(2), this.createBatchCardsList())) 
   }
+
 
   createBatchCardsList(){
     let batchCard = []
     const dataProcessItems = this.state.dataProcessItems;
     let batch = [];
-    
     
     dataProcessItems.map((item) => {
         batch = batch.concat(item.batchs.map(row => {
@@ -362,7 +363,7 @@ class CreateQueue extends Component{
           row.priority=value
         }else if(field==="value"){
           if(dociID.toString().includes(",")){
-          row.batchs[dociID.toString().split(",")[1]].value=value
+            row.batchs[dociID.toString().split(",")[1]].value=value
           }else{
             row.batchs[dociID.toString()].value=value
           }
@@ -581,9 +582,9 @@ class CreateQueue extends Component{
 
           this.createAutoDocList();
         }
-        else{
+        /* else{
           alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
-        }
+        } */
       }
     }
   }

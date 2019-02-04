@@ -13,7 +13,7 @@ const Dashboard = Loadable({
   loading: Loading,
 });
 
- const Products = Loadable({
+const Products = Loadable({
   loader: () => import('./views/Warehouse/MasterData/Product'),
   loading: Loading,
 });
@@ -206,10 +206,10 @@ const Stockview = Loadable({
   loader: () => import('./views/Warehouse/Stockview'),
   loading: Loading,
 });
- const StockCard = Loadable({
-     loader: () => import('./views/Warehouse/StockCardReport/StockCardReport'),
-     loading: Loading,
- });
+const StockCard = Loadable({
+  loader: () => import('./views/Warehouse/StockCardReport/StockCardReport'),
+  loading: Loading,
+});
 
 const CurrentInv = Loadable({
   loader: () => import('./views/Warehouse/CurrentReport/CurrentReport'),
@@ -358,13 +358,13 @@ const routes = [
   // { path: '/mst/webcontrol/manage', exact: true, name: 'Setting / Web Control', component: WebControl },
   // { path: '/mst/webpage/manage', exact: true, name: 'Setting / Web Page', component: WebPage },
   // { path: '/mst/webpagegroup/manage', exact: true, name: 'Setting / Web Page Group', component: WebPageGroup },
-  { path: '/wm/sto/move', exact: true, name: 'Move Location', component: MoveLocation },
+  { path: '/wm/sto/move', exact: true, name: 'Issue / Move Location', component: MoveLocation },
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Receive / Search Receive', component: InboundView },
-  { path: '/doc/gr/manage', exact: true, name: 'Receive Document Manage', component: ReceiveManage },
+  { path: '/doc/gr/manage', exact: true, name: 'Receive Document', component: ReceiveManage },
   { path: '/doc/gi/list', exact: true, name: 'Issue / Search Issue', component: IssuedDoc },
-  { path: '/doc/gi/manage', exact: true, name: 'Issue / Create Issue', component: IssuedManage },
+  { path: '/doc/gi/manage', exact: true, name: 'Issue / Issue Document', component: IssuedManage },
   { path: '/wm/sto/picking', exact: true, name: 'Issue / Picking', component: PickConso },
   { path: '/wm/sto/return', exact: true, name: 'Issue / Return Issue', component: Return },
   { path: '/doc/ld/manage', exact: true, name: 'Loading Manage', component: LoadingDocument },
@@ -376,10 +376,10 @@ const routes = [
   { path: '/wm/sto/loading', exact: true, name: 'Loading Checklist', component: LoadingChecklist },
   { path: '/doc/stc/manage', exact: true, name: 'Stock Correction Manage ', component: Stock },
   { path: '/doc/stc/list', exact: true, name: 'Stock Correction Document', component: Stockview },
-    { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
+  { path: '/sys/sto/stccard', exact: true, name: 'Report / Stock Card', component: StockCard },
   //{ path: '/doc/gr/manage', exact: true, name: 'Goods Receive Manage', component: GoodsReceiveManage },
   { path: '/sys/sto/curinv', exact: true, name: 'Report / Current Inventory', component: CurrentInv },
-  { path: '/doc/gr/view', exact: true, name: 'Receive Document', component: StorageDetail },
+  { path: '/doc/gr/view', exact: true, name: 'Receive / Receive Document', component: StorageDetail },
   // { path: '/mst/APIKey/manage', exact: true, name: 'Setting / APIKey', component: APIKey },
   // { path: '/mst/cs/manage', exact: true, name: 'Setting / Client Secret', component: ClientSecret },
   // { path: '/mst/conf/manage', exact: true, name: 'Setting / Config', component: Config },
@@ -388,17 +388,17 @@ const routes = [
   // { path: '/mst/jobs/manage', exact: true, name: 'Setting / Job Schedule', component: JobSchedule },
   { path: '/mst/role/manage', exact: true, name: 'Setting / Role', component: Role },
   // { path: '/mst/tp/manage', exact: true, name: 'Setting / Transport', component: Transport },
-  { path: '/wm/issue/manage', exact: true, name: 'Issue / Create Queue', component: CreateQueue },
+  { path: '/wm/issue/manage', exact: true, name: 'Issue / Create Queue Issue', component: CreateQueue },
   //{ path: '/wm/sto/loading', exact: true, name: 'Loading', component: Loading },
   { path: '/sys/sto/progress', exact: true, name: 'Dashboard / Picking Progress', component: TaskList },
-  { path: '/sys/gr/progress', exact: true, name: 'Receiving Progress', component: QueueView },
-  { path: '/sys/gi/progress', exact: true, name: 'Issuing Progress', component: QueueView },
+  { path: '/sys/gr/progress', exact: true, name: 'Dashboard / Receiving Progress', component: QueueView },
+  { path: '/sys/gi/progress', exact: true, name: 'Dashboard / Issuing Progress', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
   { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
-  { path: '/sys/ad/queueaudit', exact: true, name: 'Audit Queue Process', component: AuditQueue },
+  { path: '/sys/ad/queueaudit', exact: true, name: 'Create Queue Audit', component: AuditQueue },
   { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
-  { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
+  { path: '/sys/ad/create', exact: true, name: 'Audit Document', component: AuditCreate },
   { path: '/sys/ad/report', exact: true, name: 'Report / Audit Report', component: ReportAudit },
 ];
 

@@ -35,30 +35,44 @@ class TaskList extends Component {
         t: "r_DashboardMoveOut",
         // q: "[{ 'f': 'IOType', 'c': '=', 'v': 0 },{ 'f': 'AreaCode', 'c': '=', 'v': 'S' }]",
         q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 },{ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }]",
-        f: "Time,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,MVT,SAPRef,QtyUnit,EventStatus",
+        f: "ID,Time,Document_Code,AreaID,AreaLoc_Code,Base_Code,Pack_Code,Pack_Name,Product,Destination,MVT,SAPRef,QtyUnit,EventStatus",
         g: "",
         s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'asc'},{'f':'IIF(Status = 3, Time, null)','od':'desc'}]",
         sk: 0,
         l: 20,
         all: "",
       },
-      areaIDOnFloor: "8,9"
-      // TaskListselect: {
-      //   queryString: window.apipath + "/api/viw",
-      //   t: "r_DashboardTaskOnFloor",
-      //   q: '',
-      //   q: "[{ 'f': 'AreaID', 'c': 'in', 'v': '8,9' }]",
-      //   f: "Time,TaskName,DocNo,LocationCode,PalletCode,Product,Destination,SAPRef,Qty,Status",
-      //   g: "",
-      //   s: "[{'f':'Status','od':'asc'},{'f':'IIF(Status = 0, Time, null)','od':'asc'},{'f':'IIF(Status = 1, Time, null)','od':'desc'}]",
-      //   sk: 0,
-      //   l: 20,
-      //   all: "",
-      // },
+      areaIDOnFloor: "8,9",
+
     }
-    this.timeout = null;
+    this.WorkQselect = {
+      queryString: window.apipath + "/api/trx",
+      t: "WorkQueue",
+      q: '',
+      q: "[{ 'f': 'IOType', 'c': '=', 'v': 1 }]",
+      f: "ID",
+      g: "",
+      s: "[{'f':'ActualTime','od':'desc'}]",
+      sk: 0,
+      l: 1,
+      all: "",
+    }
+    this.StoSelect = {
+      queryString: window.apipath + "/api/trx",
+      t: "StorageObject",
+      q: '',
+      q: "[{ 'f': 'AreaMaster_ID', 'c': 'in', 'v': '8,9' }]",
+      f: "ID",
+      g: "",
+      s: "[{'f':'ModifyTime','od':'desc'}]",
+      sk: 0,
+      l: 1,
+      all: "",
+    }
+    // this.timeout = null;
     this.updateQueueData = this.updateQueueData.bind(this)
-    this.GetListData = this.GetListData.bind(this)
+    this.getDataTasklist = this.getDataTasklist.bind(this)
+    this.getDataMoveOut = this.getDataMoveOut.bind(this)
   }
   //   ID	Code	Name
   // 3,8	Fด้านหน้า
@@ -70,33 +84,61 @@ class TaskList extends Component {
     // CheckWebPermission("PickPro", dataGetPer, this.props.history);
   }
   componentDidMount() {
-    this._mounted = true;
-    this.GetListData()
+    this.getDataMoveOut()
+    this.getDataTasklist()
+
+    let interval1 = setInterval(() => {
+      API.get(createQueryString(this.WorkQselect)).then(res => {
+
+        //console.log(res.data.datas[0].ID)
+        if (res.data.datas.lenght > 0) {
+          if (this.state.queueID !== res.data.datas[0].ID) {
+            this.getDataMoveOut()
+          }
+          this.setState({ queueID: res.data.datas[0].ID },() => console.log(this.state.queueID));
+        }
+      })
+    }, 2000);
+    this.setState({ interval1: interval1 })
+
+    let interval2 = setInterval(() => {
+      API.get(createQueryString(this.StoSelect)).then(res => {
+
+        //console.log(res.data.datas[0].ID)
+        if (res.data.datas.lenght > 0) {
+          if (this.state.StoID !== res.data.datas[0].ID) {
+            this.getDataTasklist()
+          }
+          this.setState({ StoID: res.data.datas[0].ID },() => console.log(this.state.StoID));
+        } 
+      })
+    }, 2000);
+    this.setState({ interval2: interval2 })
   }
   componentWillUnmount() {
-    this._mounted = false;
-    if (this.timeout) {
-      clearTimeout(this.timeout)
-    }
+    clearInterval(this.state.interval1)
+    clearInterval(this.state.interval2)
   }
 
-  GetListData() {
-    if (this._mounted) {
-      API.all([API.get(createQueryString(this.state.WorkingOutselect)),
-      API.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
-        + "&spname=DASHBOARD_TASK_ON_FLOOR")]).then((res) => {
-          if (res) {
-            this.setState({
-              dataworkingout: res[0].data.datas, loadingWorkingOut: false,
-              datatasklist: res[1].data.datas, loadingTaskList: false
-            })
-          }
-        }).then(() => {
-          this.timeout = setTimeout(this.GetListData, 3000);
+  getDataMoveOut() {
+    API.get(createQueryString(this.state.WorkingOutselect)).then((res) => {
+      if (res) {
+        this.setState({
+          dataworkingout: res.data.datas, loadingWorkingOut: false
         })
-    }
+      }
+    })
   }
-
+  getDataTasklist() {
+    API.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
+      + "&spname=DASHBOARD_TASK_ON_FLOOR").then((res) => {
+        if (res) {
+          this.setState({
+            datatasklist: res.data.datas, loadingTaskList: false
+          })
+        }
+      })
+  }
   goFull = () => {
     this.setState({ isFull: true });
   }
@@ -105,29 +147,39 @@ class TaskList extends Component {
   }
   updateQueueData(selValue) {
     var areaWorkingOut = this.state.WorkingOutselect;
-    let areawhere = [];
     let taskwhere = '8,9';
     if (selValue !== undefined) {
       if (selValue !== "") {
-        // console.log(selValue)
-        areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': selValue }, { 'f': 'IOType', 'c': '=', 'v': 1 });
+
+        areaWorkingOut.q = "[{ 'f': 'IOType', c:'=', 'v': 1},{ 'f': 'AreaID', c:'in', 'v': '" + selValue + "'}]";
         if (selValue === '2') {
           taskwhere = '8'
         } else if (selValue === '3') {
           taskwhere = '9'
-        } else {
-          taskwhere = '8,9'
         }
-        areaWorkingOut.q = JSON.stringify(areawhere)
       } else {
-        areawhere.push({ 'f': 'AreaID', 'c': 'in', 'v': '2,3' }, { 'f': 'IOType', 'c': '=', 'v': 1 });
-        taskwhere = '8,9';
-        areaWorkingOut.q = JSON.stringify(areawhere)
+        areaWorkingOut.q = "[{ 'f': 'IOType', c:'=', 'v': 1},{ 'f': 'AreaID', c:'in', 'v': '2,3'}]";
+        // taskwhere = '8,9';
       }
+      // console.log(taskwhere)
+      // console.log(areaWorkingOut)
     }
     this.setState({ WorkingOutselect: areaWorkingOut, areaIDOnFloor: taskwhere })
-  }
 
+  }
+  // this.getStatus(e.original.TaskName)
+  // getStatus(value) {
+  //   if (value.includes("/n")) {
+  //     const data = value.split("/n");
+  //     console.log(data)
+  //     const items = data.map((value) => 
+  //     <li><Badge color={value} style={{ fontSize: '0.875em', fontWeight: '500' }}>{value}</Badge></li>
+  //     ); 
+  //     return <ul>{items}</ul> 
+  //   } else {
+  //     return <Badge color={value} style={{ fontSize: '0.875em', fontWeight: '500' }}>{value}</Badge>
+  //   }
+  // }
   render() {
     const cols1 = [
       { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
