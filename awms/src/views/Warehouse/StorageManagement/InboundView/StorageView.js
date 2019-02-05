@@ -49,7 +49,7 @@ class IssuedDoc extends Component {
         all: "",
       },
       modalstatus: false,
-      modalstatusData : false,
+      modalstatusData: false,
       sortstatus: 0,
       open: false,
       errorstr: null,
@@ -170,8 +170,8 @@ class IssuedDoc extends Component {
         </div>
       </ModalBody>
       <ModalFooter>
-      <Button color="primary" id="off" onClick={() =>{ this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>Comfirm</Button>
-        <Button color="" id="off" onClick={() =>this.toggle() }>Cancle</Button>
+        <Button color="primary" id="off" onClick={() => { this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>Comfirm</Button>
+        <Button color="" id="off" onClick={() => this.toggle()}>Cancle</Button>
       </ModalFooter>
     </Modal>
   }
@@ -180,37 +180,37 @@ class IssuedDoc extends Component {
     return <Modal isOpen={this.state.modalstatusData}>
       <ModalHeader toggle={this.toggleData}> <span>Reject</span></ModalHeader>
       <ModalFooter>
-        <Button color="primary" id="off" onClick={() =>{this.RejectIDLE(this.state.selectiondata); this.toggleData() }}>Comfirm</Button>
-        <Button color="" id="off" onClick={() =>this.toggleData() }>Cancle</Button>
+        <Button color="primary" id="off" onClick={() => { this.RejectIDLE(this.state.selectiondata); this.toggleData() }}>Comfirm</Button>
+        <Button color="" id="off" onClick={() => this.toggleData()}>Cancle</Button>
       </ModalFooter>
     </Modal>
   }
 
 
-  RejectIDLE(data){
+  RejectIDLE(data) {
     let postdata = { docIDs: [] }
     if (data.length > 0) {
       data.forEach(rowdata => {
-        postdata["docIDs"].push(rowdata.ID)  
+        postdata["docIDs"].push(rowdata.ID)
       })
-console.log(postdata)
-        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {     
-          this.getData()
-          this.setState({ resp: res.data._result.message })   
-          console.log(res)    
-        })
-      
+      console.log(postdata)
+      Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {
+        this.getData()
+        this.setState({ resp: res.data._result.message })
+        console.log(res)
+      })
+
     }
   }
 
 
 
-  RejectCheck(){
-    this.state.selectiondata.forEach( x=>{
+  RejectCheck() {
+    this.state.selectiondata.forEach(x => {
       console.log(x.EventStatus)
-      if(x.EventStatus === 10){
-        this. toggleData()
-      }else{
+      if (x.EventStatus === 10) {
+        this.toggleData()
+      } else {
         this.toggle()
       }
     })
@@ -225,12 +225,12 @@ console.log(postdata)
         postdata["AreaID"] = this.state.desAreaID
       })
       if (status === "reject") {
-       
 
-        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {     
+
+        Axios.post(window.apipath + "/api/wm/received/doc/rejected", postdata).then((res) => {
           this.getData()
-          this.setState({ resp: res.data._result.message })   
-          console.log(res.data._result.status)    
+          this.setState({ resp: res.data._result.message })
+          console.log(res.data._result.status)
         })
       }
       else {
@@ -349,18 +349,18 @@ console.log(postdata)
             // console.log(strStatus)
             if (strStatus === "CLOSING") {
               return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge>{imgExclamation1}</a></h5>
             } else {
-              return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+              return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
             }
           } else {
-            return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+            return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
           }
         } else {
-          return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+          return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
         }
       } else {
-        return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+        return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
       }
     }
     else {
@@ -437,7 +437,11 @@ console.log(postdata)
         Cell: (e) =>
           this.createStatusField(e)
       },
-      { accessor: 'Code', Header: 'Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left", Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/doc/gr/view?docID=' + e.original.ID)} >{e.original.DocumentType_ID === 1101 ? e.original.CodeDocItem : e.original.Code}</a> },
+      {
+        accessor: 'Code', Header: 'Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left",
+        Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} target="_blank"
+          onClick={() => { window.open('/doc/gr/view?docID=' + e.original.ID) }} >{e.original.DocumentType_ID === 1101 ? e.original.CodeDocItem : e.original.Code}</a>
+      },
       { accessor: 'Super', Header: 'AWMS Ref.', editable: false, Filter: (e) => this.createCustomFilter(e) },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: (e) => this.createCustomFilter(e), },
@@ -484,27 +488,27 @@ console.log(postdata)
               </div>
             </Col>
             <Col xs="2">
-            <DatePicker  selected={this.state.date}
-              customInput={<Input style ={{width:"100%"}} />}
-              onChange={(e) => {
-                if (e === null) {
-                  this.DatePickerFilter(null)
-                }
-                else {
-                  if (e.isValid() && e !== null) {
-                    this.DatePickerFilter(e)
+              <DatePicker selected={this.state.date}
+                customInput={<Input style={{ width: "100%" }} />}
+                onChange={(e) => {
+                  if (e === null) {
+                    this.DatePickerFilter(null)
                   }
-                }
+                  else {
+                    if (e.isValid() && e !== null) {
+                      this.DatePickerFilter(e)
+                    }
+                  }
 
-              }}
-              timeIntervals={1}
-              timeFormat="HH:mm"
-              timeCaption="Time"
-              showTimeSelect={false}
-              dateFormat={"DD-MM-YYYY"} />
+                }}
+                timeIntervals={1}
+                timeFormat="HH:mm"
+                timeCaption="Time"
+                showTimeSelect={false}
+                dateFormat={"DD-MM-YYYY"} />
             </Col>
 
-            
+
           </Row>
         </div>
 

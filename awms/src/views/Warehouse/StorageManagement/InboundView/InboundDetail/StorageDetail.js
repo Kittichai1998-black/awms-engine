@@ -28,7 +28,7 @@ class IssuedDoc extends Component {
     this.dateTimePicker = this.dateTimePicker.bind(this)
   }
   async componentWillMount() {
-    document.title = "Storage Detail : AWMS";
+    document.title = "Receive Document : AWMS";
     let dataGetPer = await GetPermission()
     this.displayButtonByPermission(dataGetPer)
   }
