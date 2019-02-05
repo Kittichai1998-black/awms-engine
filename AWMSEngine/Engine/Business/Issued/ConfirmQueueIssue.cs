@@ -148,13 +148,13 @@ namespace AWMSEngine.Engine.Business.Issued
                     new SQLOrderByCriteria[] { }, null, null,
                     this.BuVO).FirstOrDefault();
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
-                var xx = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoCriteria.areaID);
+                var getArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoCriteria.areaID);
                 docItems.Add(docItem);
 
                 //create WorkQueue
-                if (xx.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
+                if (getArea.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
-                    SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, result.priority, DateTime.Now, stoCriteria.areaID);
+                    SPworkQueue workQ = CreateQIssue(docItems, stoCriteria, result.priority, DateTime.Now, stoCriteria.areaID);
                     var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
@@ -164,7 +164,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                     queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
                     {
-                        queueID = xyz.ID,
+                        queueID = workQ.ID,
                         desWarehouseCode = _warehouseASRS.Code,
                         desAreaCode = _areaASRS.Code,
                         desLocationCode = null,
