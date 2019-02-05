@@ -147,7 +147,6 @@ namespace AWMSEngine.Engine.Business.Issued
                     },
                     new SQLOrderByCriteria[] { }, null, null,
                     this.BuVO).FirstOrDefault();
-                //var xxx = reqVO.DocumentProcessed.Select(x => x.baseCode == result.baseCode);
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
                 var getArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoCriteria.areaID);
                 docItems.Add(docItem);
@@ -268,7 +267,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 if (doc.DocumentItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
                 {
                     
-                    //ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
                     new ClosedGIDocument().Execute(this.Logger, this.BuVO, new ClosedGIDocument.TDocReq() { docIDs = new long[] { doc.ID.Value } });
                 }
                 else{

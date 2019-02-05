@@ -113,7 +113,10 @@ namespace AWMSEngine.Engine.Business.Auditor
                 Random rnd = new Random();
                 for(int i = 0; i < percent; i++)
                 {
-                    var idx = rnd.Next(0, getPalletLength - (i + 1));
+                    var idx = 0;
+                    do {
+                        idx = rnd.Next() % listWorkQueue.Count;
+                    } while (listWorkQueue[idx].QueueStatus);
                     listWorkQueue[idx].QueueStatus = true;
                 }
             }

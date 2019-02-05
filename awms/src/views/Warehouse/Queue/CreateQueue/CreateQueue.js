@@ -232,7 +232,7 @@ class CreateQueue extends Component{
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
           }
         })
-      } 
+      }
     }
   }
 
@@ -761,7 +761,8 @@ class CreateQueue extends Component{
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
         <Col sm={4}><span>{(datarow.data[0].document.refID?datarow.data[0].document.refID:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
-        <Col sm={4}><span>{(datarow.sumBaseQty?(datarow.sumBaseQty > datarow.sumQty?datarow.sumQty:datarow.sumBaseQty):0) + " / " + (datarow.data[0].documentItem.baseQuantity?datarow.data[0].documentItem.baseQuantity:0)
+        <Col sm={4}><span>{(datarow.sumBaseQty?(datarow.sumBaseQty > datarow.sumQty?datarow.sumQty:datarow.sumBaseQty):0) 
+        + " / " + (datarow.data[0].documentItem.baseQuantity?datarow.data[0].documentItem.baseQuantity:0)
         + " " + (datarow.data[0].documentItem.baseUnitType_Code?datarow.data[0].documentItem.baseUnitType_Code:"")
         +(" ( " + datarow.data[0].documentItem.quantity + " " + datarow.data[0].documentItem.unitType_Code + " ) ")}</span></Col>
       </FormGroup>
@@ -794,14 +795,17 @@ class CreateQueue extends Component{
           newItem, i, j, cur, sumQty = 0, sumBaseQty = 0;
       for (i = 0, j = arr.length; i < j; i++) {
           cur = arr[i];
-          if (!(cur[key] in Keys)) {
-              Keys[cur[key]] = { type: cur[key], data: [], sumQty: 0, sumBaseQty: 0 };
-              sumQty = 0;
-              sumBaseQty = 0;
-              newArr.push(Keys[cur[key]]);
-          }
-          sumQty = sumQty+cur["qty"]
-          sumBaseQty = sumBaseQty+cur["stoBaseQty"]
+          
+            if (!(cur[key] in Keys)) {
+                Keys[cur[key]] = { type: cur[key], data: [], sumQty: 0, sumBaseQty: 0 };
+                sumQty = 0;
+                sumBaseQty = 0;
+                newArr.push(Keys[cur[key]]);
+            }
+            if(cur["stoPack"] !== null){
+              sumQty = sumQty+cur["qty"]
+              sumBaseQty = sumBaseQty+cur["stoBaseQty"]
+            }
           Keys[cur[key]].sumQty = sumQty;
           Keys[cur[key]].sumBaseQty = sumBaseQty;
           Keys[cur[key]].data.push(cur);
@@ -954,6 +958,10 @@ class CreateQueue extends Component{
     const dataProcessed = this.state.dataProcessed
     dataProcessed.forEach(row => {
       row.areaID = this.state.selectGateZone;
+      if(!row.qty){
+        row.qty=0
+      }
+
     });
     let postdata = {
       DocumentProcessed:dataProcessed

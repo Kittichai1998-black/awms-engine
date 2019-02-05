@@ -70,7 +70,7 @@ namespace AWMSEngine.Engine.Business.Issued
             public long dociID;
             public long? stoi;
             public string itemCode;
-            public decimal? qty;
+            public decimal qty;
             public string batch;
             public string orderNo;
             public string lot;
@@ -323,7 +323,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                 dociID = docItem.docItemID,
                                 stoi = null,
                                 itemCode = docItem.itemCode,
-                                qty = null,
+                                qty = 0,
                                 batch = null,
                                 orderNo = null,
                                 lot = null,
