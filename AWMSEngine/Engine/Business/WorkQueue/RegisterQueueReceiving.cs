@@ -284,8 +284,28 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 }
                 else if(isAutoCreate)
                 {
-                    var doc = ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, souWarehouseID, null, null, null, this.BuVO)
-                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
+                    var docs = ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, souWarehouseID, null, null, null, this.BuVO)
+                        .FindAll(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
+                    amt_Document doc = null;
+                    var skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packH.skuID, this.BuVO);
+                    //var skuType = this.StaticValue.SKUMasterTypes.First(x => x.ID == skuMst.SKUMasterType_ID);
+
+                    foreach (var _doc in docs)
+                    {
+                        var _docItems = ADO.DocumentADO.GetInstant().ListItem(doc.ID.Value, this.BuVO);
+                        var _docItem = _docItems.FirstOrDefault();
+                        if (_docItem != null)
+                        {
+                            var _skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(_docItem.SKUMaster_ID, this.BuVO);
+                            //var _skuType = this.StaticValue.SKUMasterTypes.First(x => x.ID == _skuMst.SKUMasterType_ID);
+                            if(_skuMst.SKUMasterType_ID == skuMst.SKUMasterType_ID)
+                            {
+                                doc = _doc;
+                                break;
+                            }
+                        }
+                    }
+
                     //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                     if (doc == null)
                     {
