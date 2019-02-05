@@ -392,7 +392,8 @@ class AuditDoc extends Component {
       },
       {
         accessor: 'Code', Header: 'Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left",
-        Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() => this.props.history.push('/sys/ad/create?ID=' + e.original.ID)} >{e.original.Code}</a>
+        Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} target="_blank"
+        onClick={() => {window.open('/sys/ad/create?ID=' + e.original.ID)}} >{e.original.Code}</a>
       },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: (e) => this.createCustomFilter(e), },
@@ -467,6 +468,7 @@ class AuditDoc extends Component {
         </div>
         <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+          className="-highlight"
           minRows={5}
           loading={this.state.loading}
           columns={cols}

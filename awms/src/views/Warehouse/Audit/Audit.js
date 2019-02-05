@@ -48,7 +48,7 @@ class Audit extends Component{
   palletScan() {
     return <Card style={this.style}>
       <CardBody>
-        <label className="float-left" style={{ paddingRight: "10px",fontWeight: "bolder" }}>Pallet Code : </label>
+        <label style={{ width: '100%', display: "inline-block", marginRight: "10px", fontWeight: "bold", marginTop: "6px" }}>Pallet Code : </label><br />
         <input style={{ width: "200px" }} id="txtBarcode" type="text" onChange={this.onHandlePalletChange} onKeyPress={e => {
           if (e.key === "Enter") {
             this.onHandleSetPalletCode();

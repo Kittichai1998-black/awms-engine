@@ -148,7 +148,7 @@ class Pack extends Component {
                 return { "f": x.id, "c": "!=", "v": x.value }
             }
             else {
-                return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+                return { "f": x.id, "c": "like", "v": x.value }
             }
         })
         let strCondition = JSON.stringify(listFilter);
@@ -319,7 +319,7 @@ class Pack extends Component {
                     if (this.state.currentPage !== undefined) {
                         if (this.state.currentPage > 1) {
                             // e.index + 1 + (2*100)  
-                            numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+                            numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
                         } else {
                             numrow = e.index + 1;
                         }
@@ -360,7 +360,7 @@ class Pack extends Component {
 
                     <Col xs="6">
                         <div className="float-right" style={{ marginBottom: '3px' }} >
-                            <ExportFile style={{ width: "130px" }} column={cols} dataxls={this.state.data} filename={"SKUUnit"} />
+                            <ExportFile style={{ width: "130px" }} column={cols} dataselect={this.state.select} filename={"SKUUnit"} />
                         </div>
                         <div className="float-right">
                             <span style={{ fontWeight: 'bold' }} >Edit Weight Verify : </span>
@@ -375,9 +375,11 @@ class Pack extends Component {
 
 
                 <ReactTableFixedColumns
+                    className="-highlight"
                     style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
                     data={this.state.data} columns={cols} filterable={true} minRows={5}
                     multiSort={false}
+                    defaultPageSize={this.state.defaultPageS}
                     getTrProps={(state, rowInfo) => {
                         let result = false
                         let rmv = false

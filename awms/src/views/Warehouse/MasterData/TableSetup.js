@@ -255,7 +255,7 @@ class TableGen extends Component {
               filterlist.push({ "f": data["id"], "c": "!=", "v": 2 })
             }
             else {
-              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
+              filterlist.push({ "f": data["id"], "c": "like", "v": encodeURIComponent(data["value"])})
             }
           }
           else if (data["value"].includes("%")) {
@@ -269,7 +269,7 @@ class TableGen extends Component {
               filterlist.push({ "f": data["id"], "c": "!=", "v": 2 })
             }
             else {
-              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
+              filterlist.push({ "f": data["id"], "c": "like", "v": encodeURIComponent(data["value"]) })
             }
           }
           else {
@@ -295,7 +295,7 @@ class TableGen extends Component {
               });
               //}
             } else {
-              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
+              filterlist.push({ "f": data["id"], "c": "like", "v": encodeURIComponent(data["value"]) })
             }
           }
         }
@@ -1333,7 +1333,7 @@ class TableGen extends Component {
           if (this.state.currentPage !== undefined) {
             if (this.state.currentPage > 1) {
               // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
             } else {
               numrow = e.index + 1;
             }
@@ -1460,7 +1460,7 @@ class TableGen extends Component {
         {this.AddGenerate()}
         <div className="clearfix"></div>
         <ReactTableFixedColumns
-          className="-striped"
+          className="-highlight"
           data={this.state.data}
           ref={ref => this.tableComponent = ref}
           style={{ marginTop: '3px', backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}

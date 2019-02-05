@@ -244,13 +244,13 @@ class AuditReport extends Component {
       },
       { accessor: 'BaseCode', Header: 'Pallet', editable: false, sortable: true },
       //{ accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: true },
-      { accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: true },
+      { accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: true, minWidth: 115 },
       { accessor: 'PackName', Header: 'SKU Name', editable: false, sortable: true },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true },
       { accessor: 'Lot', Header: 'Lot', editable: false, sortable: true },
       { accessor: 'OrderNo', Header: 'Order No.', editable: false, sortable: true },
       {
-        accessor: 'AuditQty', Header: 'AuditQty', editable: false, className: "right",
+        accessor: 'AuditQty', Header: 'Audit Qty', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -260,7 +260,7 @@ class AuditReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("AuditQty")}</span>)
       },
       {
-        accessor: 'OriginQty', Header: 'OriginQty', editable: false, className: "right",
+        accessor: 'OriginQty', Header: 'Origin Qty', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -271,7 +271,7 @@ class AuditReport extends Component {
       },
 
       {
-        accessor: 'TotalQty', Header: 'TotalQty', editable: false, className: "right", 
+        accessor: 'TotalQty', Header: 'Total Qty', editable: false, className: "right", 
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'

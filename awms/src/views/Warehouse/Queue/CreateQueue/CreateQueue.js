@@ -4,7 +4,7 @@ import {Input, Card, CardBody, Button, Row, Col, Form,FormGroup,FormText,Label} 
 import moment from "moment";
 import ReactTable from "react-table"
 import Select from "react-select";
-import {AutoSelect, apicall, createQueryString} from "../../ComponentCore"
+import {AutoSelect, apicall, createQueryString , NumberInput} from "../../ComponentCore"
 import Popup from "reactjs-popup"
 
 const Axios = new apicall()
@@ -135,7 +135,8 @@ class CreateQueue extends Component{
     batchCard.forEach((index) => {
       batchCard.splice(index, 1);
     });
-    this.setState({ processCard}, () => this.setState({dataProcessSelected}, () => this.setState({dataProcessItems}, () => this.setState({DocumentItemData}, () => this.setState({batchCard}, () => this.createAutoDocList())))))
+    this.setState({ processCard:[]}, () => this.setState({dataProcessSelected:[]}, () => this.setState({dataProcessItems:[]}, () => this.setState({DocumentItemData:[]}, () => this.setState({batchCard:[]}, () => this.createAutoDocList())))))
+    this.setState(this.initailstate, () => {this.initialData()})
 }
 
   createAutoDocList(){
@@ -151,7 +152,9 @@ class CreateQueue extends Component{
   }
 
   genBtnGetDocItem(){
-    return <Button className="float-left" type="button" color="primary" onClick={() => this.getDocItemData(this.state.docID,(this.state.MMType!==""||this.state.MMType!==null||this.state.MMType!==undefined)?this.state.MMType:"")}>Check Document From SAP</Button>
+    return <Button className="float-left" type="button" color="primary" 
+    onClick={() => this.getDocItemData(this.state.docID,(this.state.MMType!==""||this.state.MMType!==null||this.state.MMType!==undefined)?this.state.MMType:"")}>
+    Check Document From SAP</Button>
   }
 
   getDocItemData(doc_id,mmType){
@@ -229,7 +232,7 @@ class CreateQueue extends Component{
             this.setState({dataProcessItems}, () => this.setState({itemCard}, () => this.setState({ DocumentItemData }, () => this.createItemCardsList(1))))
           }
         })
-      } 
+      }
     }
   }
 
@@ -323,25 +326,7 @@ class CreateQueue extends Component{
         }
       })                 
     }
-    this.setState({ dataProcessItems }, () => this.setState({batchCard:[]}, () => this.createItemCardsList(2), this.createBatchCardsList())) 
-  }
-
-
-  createBatchCardsList(){
-    let batchCard = []
-    const dataProcessItems = this.state.dataProcessItems;
-    let batch = [];
-    
-    dataProcessItems.map((item) => {
-        batch = batch.concat(item.batchs.map(row => {
-          return {"dociID":item.dociID,"batchNo":(item.batchs.length-1),"value":row.value,"qty":row.qty}
-        }))
-    });
-
-    batch.forEach((datarow,index) => {
-      batchCard = batchCard.concat(this.addNewInputText(index,datarow));
-    })
-    this.setState({ batchCard });
+    this.setState({ dataProcessItems }, () => this.createItemCardsList(2), this.createBatchCardsList())
   }
 
   onEditorValueChange(dociID, value, field) {
@@ -368,17 +353,17 @@ class CreateQueue extends Component{
             row.batchs[dociID.toString()].value=value
           }
         }else if(field==="qty"){
-          row.batchs[dociID.toString().split(",")[1]].qty=value
+          row.batchs[dociID.toString().split(",")[1]].qty=parseInt(value)
         }
       }
     });
     this.setState({ dataProcessItems });
   }
+
   clearBatchInput(dociID,batchNo){
     const DocumentItemData = this.state.DocumentItemData;
     const dataProcessItems = this.state.dataProcessItems;
-    let checkBatchInput = false;
-    let checkDefaultBatch = false;
+    let batchCard = this.state.batchCard;
     if(dataProcessItems.length>0){
       dataProcessItems.forEach(datarow => {
         if(datarow.dociID===dociID){
@@ -398,15 +383,58 @@ class CreateQueue extends Component{
     this.setState({ dataProcessItems },  () => this.createItemCardsList(2),this.createBatchCardsList())
   }
 
+  createBatchCardsList(){
+    let batchCard = []
+    const dataProcessItems = this.state.dataProcessItems;
+    let batch = [];
+    
+    dataProcessItems.map((item) => {
+        batch = batch.concat(item.batchs.map(row => {
+          return {"dociID":item.dociID,"batchNo":(item.batchs.length-1),"value":row.value,"qty":row.qty}
+        }))
+    });
+    dataProcessItems.forEach((rowdata,index1) =>{
+      rowdata.batchs.forEach((batch,index2) => {
+        batchCard = batchCard.concat(this.addNewInputText2(index1,index2));
+      });
+    });
+    
+    this.setState({ batchCard },() => this.forceUpdate());
+  }
+
   addNewInputText(index,datarow){
     const styleclose = { cursor: "pointer", position: "absolute", display: "inline", background: "#ffffff", borderRadius: "18px"}
     return <div className={[datarow.dociID,index]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
     <Row>
       <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(datarow.dociID,index)}>{ imgClose }</a></Col>
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
-      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.value?datarow.value:""} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index, e.target.value,"value") }} /></div></Col> 
+      <Col md="3"><div style={{display:"inline"}}><Input 
+        defaultValue={this.state.dataProcessItems[0].batchs[index].value} 
+        value={null} 
+        onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index, e.target.value,"value") }} /></div></Col> 
       <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
-      <Col md="3"><div style={{display:"inline"}}><Input defaultValue={datarow.qty?datarow.qty:0} onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index,e.target.value,"qty") }} /></div></Col>
+      <Col md="3"><div style={{display:"inline"}}><Input type="number"
+        defaultValue={this.state.dataProcessItems[0].batchs[index].qty} 
+        value={null} 
+        onChange={(e) => { this.onEditorValueChange(datarow.dociID+","+index,e.target.value,"qty") }} /></div></Col>
+    </Row>
+  </div>
+  }
+
+  addNewInputText2(dataProcessIndex,batchIndex){
+    const styleclose = { cursor: "pointer", position: "absolute", display: "inline", background: "#ffffff", borderRadius: "18px"}
+    return <div className={[this.state.dataProcessItems[dataProcessIndex].dociID,batchIndex]} style={{"border-radius": "15px", "border": "1px solid white",  "padding": "5px",  background:"white", "margin":"5px"}}>
+    <Row>
+      <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(this.state.dataProcessItems[dataProcessIndex].dociID,batchIndex)}>{ imgClose }</a></Col>
+      <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Batch :  </label></Col>
+      <Col md="3"><div style={{display:"inline"}}><Input 
+        value={this.state.dataProcessItems[dataProcessIndex].batchs[batchIndex].value} 
+        onChange={(e) => { this.onEditorValueChange(this.state.dataProcessItems[dataProcessIndex].dociID+","+batchIndex, e.target.value,"value") }} /></div></Col> 
+      <Col md="2" style={{textAlign:"right", "vertical-align": "middle"}}><label>Qty :  </label></Col>
+      <Col md="3"><div style={{display:"inline"}}>
+        <NumberInput value={this.state.dataProcessItems[dataProcessIndex].batchs[batchIndex].qty}
+          onChange={(e) => { this.onEditorValueChange((this.state.dataProcessItems[dataProcessIndex].dociID+","+batchIndex),e,"qty") }} />
+      </div></Col>
     </Row>
   </div>
   }
@@ -582,9 +610,6 @@ class CreateQueue extends Component{
 
           this.createAutoDocList();
         }
-        /* else{
-          alert("จำนวนที่ระบุเกินจำนวนขอเบิก")
-        } */
       }
     }
   }
@@ -664,10 +689,6 @@ class CreateQueue extends Component{
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
         <Col sm={4}><span>{(datarow.qty?datarow.qty:"")}</span><span>{(datarow.unit?(" "+datarow.unit):"")}</span></Col>
       </FormGroup>
-        {/* <FormGroup row>
-          <Col sm={6}><span>{ datarow.value }</span></Col>
-          <Col sm={2}><span>{ "Qty : " + datarow.qty}</span></Col>
-        </FormGroup> */}
       </Form>
     </div>
   }
@@ -682,7 +703,6 @@ class CreateQueue extends Component{
         }
       });
     }
-
     <Col>
         <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} onClick={() =>{window.open("/sys/sto/curinv?SKU_Code=" + datarow.itemCode)}} target="_blank" >
         <span>{(datarow.itemCode?datarow.itemCode:"") +(datarow.itemName?" : "+ datarow.itemName:"")}</span>
@@ -741,7 +761,8 @@ class CreateQueue extends Component{
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>SAP Document : </Label></Col>
         <Col sm={4}><span>{(datarow.data[0].document.refID?datarow.data[0].document.refID:"")}</span></Col>
         <Col sm={2} style={{textAlign:"right", "vertical-align": "middle"}}><Label>Qty : </Label></Col>
-        <Col sm={4}><span>{(datarow.sumBaseQty?(datarow.sumBaseQty > datarow.sumQty?datarow.sumQty:datarow.sumBaseQty):0) + " / " + (datarow.data[0].documentItem.baseQuantity?datarow.data[0].documentItem.baseQuantity:0)
+        <Col sm={4}><span>{(datarow.sumBaseQty?(datarow.sumBaseQty > datarow.sumQty?datarow.sumQty:datarow.sumBaseQty):0) 
+        + " / " + (datarow.data[0].documentItem.baseQuantity?datarow.data[0].documentItem.baseQuantity:0)
         + " " + (datarow.data[0].documentItem.baseUnitType_Code?datarow.data[0].documentItem.baseUnitType_Code:"")
         +(" ( " + datarow.data[0].documentItem.quantity + " " + datarow.data[0].documentItem.unitType_Code + " ) ")}</span></Col>
       </FormGroup>
@@ -752,9 +773,9 @@ class CreateQueue extends Component{
    </div>
   }
   genStoRootCardConfirm(datarow){
-
     return <div className= { datarow.type }>
-    <ReactTable style={{width:"100%"}} data={datarow.data} editable={false} filterable={false} defaultPageSize={2000}
+    <ReactTable style={{width:"100%"}} data={ datarow.data.filter(x => x.stoPack !== null).length>0?(datarow.data.filter(x => x.stoPack)):([{}]) } 
+    filterable={false} defaultPageSize={2000}
     editable={false} minRows={1} showPagination={false}//stoPack
     columns={[{ accessor: "baseCode", Header: "Pallet"}
     ,{ Cell:(e)=> <span>{(e.original.stoPack?e.original.stoPack.batch:"")}</span>, Header: "Batch"}
@@ -774,14 +795,17 @@ class CreateQueue extends Component{
           newItem, i, j, cur, sumQty = 0, sumBaseQty = 0;
       for (i = 0, j = arr.length; i < j; i++) {
           cur = arr[i];
-          if (!(cur[key] in Keys)) {
-              Keys[cur[key]] = { type: cur[key], data: [], sumQty: 0, sumBaseQty: 0 };
-              sumQty = 0;
-              sumBaseQty = 0;
-              newArr.push(Keys[cur[key]]);
-          }
-          sumQty = sumQty+cur["qty"]
-          sumBaseQty = sumBaseQty+cur["stoBaseQty"]
+          
+            if (!(cur[key] in Keys)) {
+                Keys[cur[key]] = { type: cur[key], data: [], sumQty: 0, sumBaseQty: 0 };
+                sumQty = 0;
+                sumBaseQty = 0;
+                newArr.push(Keys[cur[key]]);
+            }
+            if(cur["stoPack"] !== null){
+              sumQty = sumQty+cur["qty"]
+              sumBaseQty = sumBaseQty+cur["stoBaseQty"]
+            }
           Keys[cur[key]].sumQty = sumQty;
           Keys[cur[key]].sumBaseQty = sumBaseQty;
           Keys[cur[key]].data.push(cur);
@@ -792,7 +816,7 @@ class CreateQueue extends Component{
     var yy =groupBy(dataProcessed, 'dociID'); 
     dataGroupProcessed = yy
     yy.forEach((datarow) => {
-      processedCard = processedCard.concat(this.genStoRootCardConfirm(datarow));
+          processedCard = processedCard.concat(this.genStoRootCardConfirm(datarow));
     })
     this.setState({ dataGroupProcessed }, () => this.setState({ processedCard },()=>this.createDocCardConfirmList()));
   }
@@ -802,15 +826,7 @@ class CreateQueue extends Component{
     const dataGroupProcessed = this.state.dataGroupProcessed
     let processedDocCard = []
     dataGroupProcessed.forEach((datarow) => {
-     /*  if(processedDocCard.length>0){
-        processedDocCard.forEach(row => {
-          if(row.props.className !== datarow.docID){
-            processedDocCard = processedDocCard.concat(this.genDocCardConfirm(datarow));
-          }
-        });
-      }else{ */
         processedDocCard = processedDocCard.concat(this.genDocCardConfirm(datarow));
-      //}
     })
     this.setState({ processedDocCard },()=>this.openModal());
   }
@@ -942,6 +958,10 @@ class CreateQueue extends Component{
     const dataProcessed = this.state.dataProcessed
     dataProcessed.forEach(row => {
       row.areaID = this.state.selectGateZone;
+      if(!row.qty){
+        row.qty=0
+      }
+
     });
     let postdata = {
       DocumentProcessed:dataProcessed
@@ -949,10 +969,10 @@ class CreateQueue extends Component{
      Axios.post(window.apipath + "/api/wm/issued/queue/confirm", postdata).then((res) => {
       if (res.data._result.status === 1) { 
         window.success("สร้างคิวงานเบิกสำเร็จ")
+        this.onHandleClickCancel()
         this.setState(this.initailstate, () => {this.initialData()})
-        //dataConfirm = res.data.DocumentProcessed
        }
-    }) 
+    })
   }
   test(aaa){
     this.setState({"selectGateZone":aaa})

@@ -136,7 +136,7 @@ class Return extends Component {
       const IssueDocdata = []
       const IssueDocRefdata = []
       response.data.datas.forEach(row => {
-        console.log(row)
+        // console.log(row)
         IssueDocdata.push({ value: row.ID, label: row.Code })
         IssueDocRefdata.push({ ID: row.ID, refID: row.RefID })
       })
@@ -164,8 +164,9 @@ class Return extends Component {
         const Base = []
         response.data.datas.forEach(row => {
           //==== มี pallet ====
-          console.log(row)
+          // console.log(row)
           Base.push({ value: row.ID, UnitType_ID: row.UnitType_ID })
+          //this.mappingPallet(true)
         })
         this.setState({ Base })
         this.mappingPallet(true)
@@ -188,11 +189,11 @@ class Return extends Component {
     JSONDoc.push({ "f": "ID", "c": "=", "v": data })
     QueryDoc.q = JSON.stringify(JSONDoc)
     Axios.get(createQueryString(QueryDoc)).then((response) => {
-      console.log(response)
+      // console.log(response)
       const DocItemSto = []
       // if (response.data.datas.length !== 0) {
         response.data.datas.forEach(x => {
-          console.log(x)
+          // console.log(x)
           this.setState({ DocItemID: x.DocItem })
           this.setState({ BaseQtyRetuen: x.BaseQty })
           DocItemSto.push({ value: x.DocItem, label: (x.ItemNo?"[" + x.ItemNo +"] ":"")+x.SKUCode+" : "+x.Batch, lot: x.Lot, batch: x.Batch, orderNo: x.OrderNo, Code: x.SKUCode,Unit:x.Unit,BaseQty:x.BaseQty})
@@ -207,7 +208,7 @@ class Return extends Component {
   }
 
   genDataSto(DocItemSto) {
-console.log(DocItemSto)
+// console.log(DocItemSto)
     DocItemSto.forEach(x => {
 
       let QueryDoc = this.state.StorageObject
@@ -215,7 +216,7 @@ console.log(DocItemSto)
       JSONDoc.push({ "f": "ID", "c": "=", "v": x.StoObID })
       QueryDoc.q = JSON.stringify(JSONDoc)
       Axios.get(createQueryString(QueryDoc)).then((res) => {
-        console.log(res)
+        // console.log(res)
         const DataReturn = []
         res.data.datas.forEach(row => {
           DataReturn.push({ value: row.Code, lot: row.Lot, OrderNo: row.OrderNo, Batch: row.Batch })
@@ -226,10 +227,10 @@ console.log(DocItemSto)
   }
 
   genDocItem(data,lot,batch,orderNo,SKUCode,BaseQty,Unit) {
-    console.log(data)
-    console.log(lot)
-    console.log(orderNo)
-    console.log(SKUCode)
+    // console.log(data)
+    // console.log(lot)
+    // console.log(orderNo)
+    // console.log(SKUCode)
     this.setState({dataValue:BaseQty})
     this.setState({lotPallet:lot,batchPallet:batch,orderNoPallet:orderNo,SKUCodePallet:SKUCode,BaseQtyPallet:BaseQty,UnitPallet:Unit})
     let QueryDoc = this.state.DocItem
@@ -239,10 +240,10 @@ console.log(DocItemSto)
     Axios.get(createQueryString(QueryDoc)).then((response) => {
       const DocItemReturn = []
       response.data.datas.forEach(x => {
-        console.log(x)
+        // console.log(x)
         DocItemReturn.push({ value: x.ID, Code: x.Code, Lot: x.Lot, OrderNo: x.OrderNo, Batch: x.Batch })
       })
-      console.log(DocItemReturn)
+      // console.log(DocItemReturn)
       this.setState({ DocItemReturn })
     })
 
@@ -253,7 +254,7 @@ console.log(DocItemSto)
 
   mappingPallet(flag) {
 
-    console.log(flag)
+    // console.log(flag)
     if (flag === true) {
       let postdata = {
         scanCode: this.state.barcode
@@ -267,23 +268,24 @@ console.log(DocItemSto)
         , mapsto: null
         , isRoot: true
       }
-      console.log(postdata)
+      // console.log(postdata)
       Axios.post(window.apipath + "/api/wm/VRMapSTO", postdata).then((res) => {
 
-        console.log(res)
+        // console.log(res)
         if (res.data._result.status === 1) {
 
           if (res.data.mapstos.length === 0) {
             // ==== Pallet ใหม่ ไม่เช็ค ===
-            console.log(res.data.id)
+            // console.log(res.data.id)
             this.createDataCard(null, false, res.data.id)
           } else {
             //==== แสดงข้อมูล ====
             const dataSKUinPallet = []
             res.data.mapstos.forEach(x => {
+              // console.log(x)
               dataSKUinPallet.push({ id: x.parentID, sku: x.code, qty: x.qty,batch:x.batch,lot:x.lot,orderNo:x.orderNo })
             })
-            console.log(dataSKUinPallet)
+            // console.log(dataSKUinPallet)
             this.createDataCard(dataSKUinPallet, true, null)
 
           }
@@ -295,7 +297,7 @@ console.log(DocItemSto)
 
   createDataCard(data, flag, palletID) {
     //เพิ่มได้
-    console.log(palletID)
+    // console.log(palletID)
     let QueryDoc = this.state.DocumentItemSto
     let JSONDoc = []
     JSONDoc.push({ "f": "Status", "c": "=", "v": 1, "f": "ID", "c": "=", "v": this.state.DocID })
@@ -303,17 +305,16 @@ console.log(DocItemSto)
     let Doc = []
     if (flag === true) {
 
-      
-       
-          var dataCard = data.forEach(dataPallet => {
-            return <Card style={{ background: 'rgb(116, 203, 147)' }}>
+          var dataCard = data.map((dataPallet, index) => {
+            // console.log(dataPallet)
+            return <Card key={index} style={{ background: 'rgb(116, 203, 147)' }}>
               <CardBody>
                 <div style={{ textAlign: "center"}}><label style={{ fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>Pallet Detail</label></div>
                 <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>SKU in Pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label style={{ fontWeight: "bolder" }}>Qty : </label> {dataPallet.qty}</div>               
                 <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {dataPallet.lot}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {dataPallet.batch}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {dataPallet.orderNo}</div>
                 <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
-                <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCode}</div>
-                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "80px",display: "inline-block" }} max="" type="number"
+                <div><label style={{ fontWeight: "bolder" }}>Code : </label> {dataPallet.sku}</div>
+                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input defaultValue={this.state.BaseQtyPallet} style={{ height: "30px", width: "80px",display: "inline-block" }} max="" type="number"
                   onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
                 <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
                 <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(dataPallet.id) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
@@ -327,7 +328,7 @@ console.log(DocItemSto)
      
     } else {
         var dataCard = this.state.DocItemReturn.map((list, index) => {
-          console.log(list)
+        
           return <Card key={index} style={{ background: 'rgb(255, 207, 61)' }}>
             <CardBody>
               <div style={{ textAlign: "center" }}><label style={{ fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>Pallet Detail</label></div>
@@ -350,16 +351,16 @@ console.log(DocItemSto)
   }
 
   updateDocItemSto(data) {
-    console.log(this.state.dataValue)
-    console.log(this.state.DocID)
-    console.log(this.state.dataValue)
-    console.log(this.state.DocItemReturn)
+    // console.log(this.state.dataValue)
+    // console.log(this.state.DocID)
+    // console.log(this.state.dataValue)
+    // console.log(this.state.DocItemReturn)
     if (this.state.dataValue !== undefined) {
-      console.log("xxx")
-      console.log(this.state.DocItemID)
+      // console.log("xxx")
+      // console.log(this.state.DocItemID)
 
         let postdata = {
-          docItemID: this.state.DocItemID
+          docItemID: this.state.DocItemReturn[0].value
           , baseID: data
           , packCode: this.state.SKUCodePallet
           , batch: this.state.batchPallet
@@ -367,10 +368,10 @@ console.log(DocItemSto)
           , orderNo: this.state.orderNoPallet
           , baseQty: this.state.dataValue
         }
-        console.log(postdata)
-        console.log(window.apipath + "/api/wm/issued/sto/return")
+        // console.log(postdata)
+        // console.log(window.apipath + "/api/wm/issued/sto/return")
         Axios.post(window.apipath + "/api/wm/issued/sto/return", postdata).then((res) => {
-          console.log(res)
+          // console.log(res)
          if(res.data._result.status === 1){
           window.success("Success")
           
@@ -388,12 +389,13 @@ console.log(DocItemSto)
   Clear() {
     this.setState({ displayDataCard: null })
     this.setState({ barcode: "" })
+    this.setState({ dataValue: "" })
+    
   }
 
   ChangeData(e, dataValue) {
     e.target.style.background = "#fff56e"
     this.setState({ dataValue })
-    console.log(dataValue)
   }
 
   dropdownAuto() {

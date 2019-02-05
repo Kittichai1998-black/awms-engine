@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Card, CardBody, Button } from 'reactstrap';
+import { Row, Col, Card, CardBody, Button } from 'reactstrap';
 import ReactTable from 'react-table';
 import queryString from 'query-string'
 import moment from 'moment';
 import { apicall, createQueryString } from '../ComponentCore';
-import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
+import Fullscreen from "react-full-screen";
+import Clock from 'react-live-clock';
+import logo from '../../../assets/img/brand/Logo-AMW2.png'
+import API from 'axios';
 
-const API = new apicall()
+const iconexpand = <img style={{ width: "3em", height: "auto" }} src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ4OS4zIDQ4OS4zIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0ODkuMyA0ODkuMzsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik00NzYuOTUsMEgxMi4zNWMtNi44LDAtMTIuMiw1LjUtMTIuMiwxMi4yVjIzNWMwLDYuOCw1LjUsMTIuMiwxMi4yLDEyLjJzMTIuMy01LjUsMTIuMy0xMi4yVjI0LjVoNDQwLjJ2NDQwLjJoLTIxMS45ICAgIGMtNi44LDAtMTIuMyw1LjUtMTIuMywxMi4zczUuNSwxMi4zLDEyLjMsMTIuM2gyMjRjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zVjEyLjNDNDg5LjI1LDUuNSw0ODMuNzUsMCw0NzYuOTUsMHoiIGZpbGw9IiMxMTU5OGMiLz4KCQk8cGF0aCBkPSJNMC4wNSw0NzYuOWMwLDYuOCw1LjUsMTIuMywxMi4yLDEyLjNoMTcwLjRjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zVjMwNi42YzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM0gxMi4zNSAgICBjLTYuOCwwLTEyLjIsNS41LTEyLjIsMTIuM3YxNzAuM0gwLjA1eiBNMjQuNTUsMzE4LjhoMTQ1Ljl2MTQ1LjlIMjQuNTVWMzE4Ljh6IiBmaWxsPSIjMTE1OThjIi8+CgkJPHBhdGggZD0iTTIyMi45NSwyNjYuM2MyLjQsMi40LDUuNSwzLjYsOC43LDMuNnM2LjMtMS4yLDguNy0zLjZsMTM4LjYtMTM4Ljd2NzkuOWMwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNzMTIuMy01LjUsMTIuMy0xMi4zICAgIFY5OC4xYzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM2gtMTA5LjVjLTYuOCwwLTEyLjMsNS41LTEyLjMsMTIuM3M1LjUsMTIuMywxMi4zLDEyLjNoNzkuOUwyMjIuOTUsMjQ5ICAgIEMyMTguMTUsMjUzLjgsMjE4LjE1LDI2MS41LDIyMi45NSwyNjYuM3oiIGZpbGw9IiMxMTU5OGMiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />;
+const iconmin = <img style={{ width: "3em", height: "auto" }} src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ4OS4zIDQ4OS4zIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA0ODkuMyA0ODkuMzsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSIxNnB4IiBoZWlnaHQ9IjE2cHgiPgo8Zz4KCTxnPgoJCTxwYXRoIGQ9Ik0wLDEyLjI1MXY0NjQuN2MwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNoMjI0YzYuOCwwLDEyLjMtNS41LDEyLjMtMTIuM3MtNS41LTEyLjMtMTIuMy0xMi4zSDI0LjV2LTQ0MC4yaDQ0MC4ydjIxMC41ICAgIGMwLDYuOCw1LjUsMTIuMiwxMi4zLDEyLjJzMTIuMy01LjUsMTIuMy0xMi4ydi0yMjIuN2MwLTYuOC01LjUtMTIuMi0xMi4zLTEyLjJIMTIuM0M1LjUtMC4wNDksMCw1LjQ1MSwwLDEyLjI1MXoiIGZpbGw9IiMxMTU5OGMiLz4KCQk8cGF0aCBkPSJNNDc2LjksNDg5LjE1MWM2LjgsMCwxMi4zLTUuNSwxMi4zLTEyLjN2LTE3MC4zYzAtNi44LTUuNS0xMi4zLTEyLjMtMTIuM0gzMDYuNmMtNi44LDAtMTIuMyw1LjUtMTIuMywxMi4zdjE3MC40ICAgIGMwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNoMTcwLjNWNDg5LjE1MXogTTMxOC44LDMxOC43NTFoMTQ1Ljl2MTQ1LjlIMzE4LjhWMzE4Ljc1MXoiIGZpbGw9IiMxMTU5OGMiLz4KCQk8cGF0aCBkPSJNMTM1LjksMjU3LjY1MWMwLDYuOCw1LjUsMTIuMywxMi4zLDEyLjNoMTA5LjVjNi44LDAsMTIuMy01LjUsMTIuMy0xMi4zdi0xMDkuNWMwLTYuOC01LjUtMTIuMy0xMi4zLTEyLjMgICAgcy0xMi4zLDUuNS0xMi4zLDEyLjN2NzkuOWwtMTM4LjctMTM4LjdjLTQuOC00LjgtMTIuNS00LjgtMTcuMywwYy00LjgsNC44LTQuOCwxMi41LDAsMTcuM2wxMzguNywxMzguN2gtNzkuOSAgICBDMTQxLjQsMjQ1LjM1MSwxMzUuOSwyNTAuODUxLDEzNS45LDI1Ny42NTF6IiBmaWxsPSIjMTE1OThjIi8+Cgk8L2c+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPC9zdmc+Cg==" />;
+const logoamw = <img className="float-left" style={{ position: 'absolute', width: "6em" }} src={logo} />
+
+// const API = new apicall()
 
 class QueueView extends Component {
   constructor() {
@@ -15,6 +22,9 @@ class QueueView extends Component {
 
     this.state = {
       data: [],
+      icon: iconexpand,
+      isFull: false,
+      fullstyle: {},
     }
 
     this.select = {
@@ -24,7 +34,7 @@ class QueueView extends Component {
       f: "Destination,Status,ActualTime,StartTime,EndTime,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
         "Sou_Area_Name,Des_Area_Name,Sou_AreaLocation_Name,Des_AreaLocation_Name,UserName,CreateTime,Document_Code",
       g: "",
-      s: "[{'f':'CASE WHEN Status = 1 THEN Status END','od':'DESC'},{'f':'CASE WHEN Status = 3 THEN Status END','od':'ASC'},{'f':'CASE WHEN Status = 0 THEN Status END','od':'ASC'}]",
+      s: "[{'f':'ActualTime','od':'DESC'}]",
       sk: 0,
       l: 100,
       all: "",
@@ -35,57 +45,49 @@ class QueueView extends Component {
       queryString: window.apipath + "/api/trx",
       t: "WorkQueue",
       q: "",
-      f: "ID",
+      f: "ID,ActualTime",
       g: "",
-      s: "[{'f':'ID','od':'desc'}]",
+      s: "[{'f':'ActualTime','od':'DESC'}]",
       sk: 0,
       l: 1,
       all: "",
     }
 
     this.GetQueueData = this.GetQueueData.bind(this)
+    this.setTitle = this.setTitle.bind(this)
   }
 
   async componentWillMount() {
-    if (this.props.location.search) {
-      const search = queryString.parse(this.props.location.search)
-      this.setState({ locsearch: search.IOType }, () =>
-        this.setState({ pathname: this.props.location.pathname }))
-    } else {
-      this.props.history.push("/404")
-    }
-    let dataGetPer = await GetPermission()
-    this.displayButtonByPermission(dataGetPer)
+    const search = queryString.parse(this.props.location.search)
+    this.setState({ locsearch: search.IOType, pathname: this.props.location.pathname })
   }
 
-  displayButtonByPermission(dataGetPer) {
-    //   // 57	ReProgress_view
-    //   // 60	IssuProgress_view
+  setTitle() {
     if (this.state.pathname) {
       if (this.state.locsearch === "IN") {
         if (this.state.pathname === "/sys/gr/progress") {
           document.title = "Receiving Progress : AWMS";
-          // if (!CheckViewCreatePermission("ReProgress_view", dataGetPer)) {
-          //   this.props.history.push("/404")
-          // }
-        } else {
-          this.props.history.push("/404")
+          this.setState({title: "Receiving Progress"}) 
+        }else{
+          document.title = "Receiving Progress : AWMS";
+          this.setState({title: "Receiving Progress"}) 
         }
       }
       if (this.state.locsearch === "OUT") {
         if (this.state.pathname === "/sys/gi/progress") {
           document.title = "Issuing Progress : AWMS";
-          // if (!CheckViewCreatePermission("IssuProgress_view", dataGetPer)) {
-          //   this.props.history.push("/404")
-          // }  
-        } else {
-          this.props.history.push("/404")
+          this.setState({title: "Issuing Progress"}) 
+        } else{
+          document.title = "Issuing Progress : AWMS";
+          this.setState({title: "Issuing Progress"}) 
         }
       }
     }
   }
 
   componentDidMount() {
+    this.setTitle()
+
     if (this.state.locsearch) {
       var url = this.select;
       url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + this.state.locsearch + "'}]";
@@ -101,14 +103,17 @@ class QueueView extends Component {
 
       // })
 
-      let interval = setInterval(() => { 
-        API.get(createQueryString(urlCheck)).then(res => {
-          
-          console.log(res.data.datas[0].ID)
-          if(this.state.queueID !== res.data.datas[0].ID){
-            this.GetQueueData(url)
+      let interval = setInterval(() => {
+        API.get(createQueryString(urlCheck) + "&apikey=FREE03").then(res => {
+          if (res) {
+            if (res.data.datas.length > 0) {
+              console.log(res.data.datas[0].ActualTime)
+              if (this.state.ActualTime !== res.data.datas[0].ActualTime) {
+                this.GetQueueData(url)
+              }
+              this.setState({ ActualTime: res.data.datas[0].ActualTime });
+            }
           }
-          this.setState({ queueID: res.data.datas[0].ID });
         })
       }, 2000);
       this.setState({ interval: interval })
@@ -120,7 +125,7 @@ class QueueView extends Component {
   }
 
   GetQueueData(url) {
-    API.get(createQueryString(url)).then(res => {
+    API.get(createQueryString(url) + "&apikey=FREE03").then(res => {
       this.setState({ data: res.data.datas });
     })
   }
@@ -137,59 +142,80 @@ class QueueView extends Component {
       }
     }
   }
-
+  goFull = () => {
+    this.setState({ isFull: true });
+  }
+  goMin = () => {
+    this.setState({ isFull: false });
+  }
   render() {
     const cols = [
       // { accessor: "Row", Header: "No.", className: 'center', minWidth: 40 },
       {
         Header: "No.",
         id: "row",
-        width: 50,
+        width: 90,
         filterable: false,
         className: 'center',
         Cell: (row) => {
-          return <div>{row.index + 1}</div>;
+          return <span style={{ fontWeight: 'bold' }}>{row.index + 1}</span>;
         }
       },
       {
-        accessor: "ActualTime", Header: "Actual Time", className: 'center', width: 100, Cell: (e) =>
+        accessor: "ActualTime", Header: "Actual Time", className: 'center', width: 170, Cell: (e) =>
           this.datetimeBody(e.value, "date")
       },
       // { accessor: "IOType", Header: "IOType", minWidth: 50, className: 'center' },
-      { accessor: "Priority", Header: "Priority", width: 70, className: 'center' },
-      { accessor: "StorageObject_Code", Header: "Pallet", width: 100 },
+      { accessor: "Priority", Header: "Priority", width: 130, className: 'center' },
+      { accessor: "StorageObject_Code", Header: "Pallet", width: 170 },
       { accessor: "Pack_Name", Header: "Product" },
-      { accessor: "Destination", Header: "Destination", width: 150 },
-      { accessor: "Document_Code", Header: "Doc No.", width: 130 },
-      { accessor: "RefID", Header: "SAP.Doc No.", width: 130 },
+      { accessor: "Destination", Header: "Destination", width: 250 },
+      { accessor: "Document_Code", Header: "Doc No.", width: 200 },
+      { accessor: "RefID", Header: "SAP.Doc No.", width: 200 },
     ]
 
     return (
       <div>
-        <div className="clearfix">
+        <div className="clearfix" style={{ paddingTop: '.2rem' }}>
 
         </div>
-        <ReactTable columns={cols} data={this.state.data} minRows={30} showPagination={false}
-          style={{ background: 'white', marginBottom: '10px', fontSize: '1.125em', maxHeight: '50em', fontWeight: '450' }} multiSort={false}
-          getTrProps={(state, rowInfo) => {
-            if (rowInfo !== undefined) {
-              if (rowInfo.original.Status === 3) {
-                return { className: "inqueue" }; //white
-              }
-              else if (rowInfo.original.Status === 1) {
-                return { className: "working" }; //yellow
-              }
-              else if (rowInfo.original.Status === 0) {
-                return { className: "working" }; //yellow
-              }
-              else {
-                return {}
-              }
-            }
-            else {
-              return {}
-            }
-          }} />
+        <Fullscreen
+          enabled={this.state.isFull}
+          onChange={isFull => this.setState({ isFull })}
+        >
+          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1.8em' } : {}} className="fullscreen">
+            <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
+              <Row>
+                <Col sm="1" xs="2" md="1" lg="1">{logoamw}</Col>
+                <Col sm="3" xs="4" md="3" lg="3"><label className="align-items-center" style={{ fontSize: '2.25em', fontWeight: "bold", borderTop: "0.2em solid #35c366", borderBottom: "0.2em solid #35c366", padding: '3px 8px 3px 8px'}}> {this.state.title} </label></Col>
+                <Col sm="5" xs="5" md="5" lg="5"><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
+                <Col sm="1" xs="1" md="1" lg="1"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
+              </Row>
+            </div>
+            <ReactTable columns={cols} data={this.state.data} minRows={20} showPagination={false}
+              style={{ background: 'white', marginBottom: '10px', fontSize: '2em', maxHeight: '33.75em', fontWeight: '800', paddingBottom: '5px' }} multiSort={false}
+              getTrProps={(state, rowInfo) => {
+                if (rowInfo !== undefined) {
+                  if (rowInfo.original.Status === 3) {
+                    return { className: "inqueue" }; //white
+                  }
+                  else if (rowInfo.original.Status === 1) {
+                    return { className: "working" }; //yellow
+                  }
+                  else if (rowInfo.original.Status === 0) {
+                    return { className: "working" }; //yellow
+                  }
+                  else {
+                    return {}
+                  }
+                }
+                else {
+                  return {}
+                }
+              }} />
+          </div>
+
+        </Fullscreen>
       </div>
     )
   }
