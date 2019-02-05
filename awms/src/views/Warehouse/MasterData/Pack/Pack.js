@@ -148,7 +148,7 @@ class Pack extends Component {
                 return { "f": x.id, "c": "!=", "v": x.value }
             }
             else {
-                return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+                return { "f": x.id, "c": "like", "v": x.value }
             }
         })
         let strCondition = JSON.stringify(listFilter);

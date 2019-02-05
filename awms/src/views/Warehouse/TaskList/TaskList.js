@@ -40,8 +40,7 @@ class TaskList extends Component {
         l: 20,
         all: "",
       },
-      areaIDOnFloor: "8,9",
-
+      areaIDOnFloor: "8,9"
     }
     this.WorkQselect = {
       queryString: window.apipath + "/api/trx",
@@ -60,9 +59,9 @@ class TaskList extends Component {
       t: "StorageObject",
       q: '',
       q: "[{ 'f': 'AreaMaster_ID', 'c': 'in', 'v': '8,9' }]",
-      f: "ID,ModifyTime",
+      f: "ID,isnull(ModifyTime, CreateTime) AS Time",
       g: "",
-      s: "[{'f':'ModifyTime','od':'desc'}]",
+      s: "[{'f':'Time','od':'desc'}]",
       sk: 0,
       l: 1,
       all: "",
@@ -90,8 +89,8 @@ class TaskList extends Component {
         if (res) {
           if (res.data.datas.length  > 0) {
             if (this.state.dataworkingout.length > 0) {
-              console.log(res.data.datas[0].ActualTime)
-              console.log(this.state.dataworkingout[0].Time)
+              // console.log(res.data.datas[0].ActualTime)
+              // console.log(this.state.dataworkingout[0].Time)
               if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
                 this.getDataMoveOut()
               } 
@@ -108,13 +107,13 @@ class TaskList extends Component {
         if (res) {
           if (res.data.datas.length > 0) {
             if (this.state.datatasklist.length > 0) {
-              console.log(res.data.datas[0].ModifyTime)
-              console.log(this.state.datatasklist[0].Time)
-              if (this.state.ModifyTime !== this.state.datatasklist[0].Time) {
+              // console.log(res.data.datas[0].Time)
+              // console.log(this.state.datatasklist[0].Time)
+              if (this.state.Time !== this.state.datatasklist[0].Time) {
                 this.getDataTasklist()
               }
             }
-            this.setState({ ModifyTime: res.data.datas[0].ModifyTime });
+            this.setState({ Time: res.data.datas[0].Time });
           }
         }
       })
@@ -125,16 +124,18 @@ class TaskList extends Component {
     clearInterval(this.state.interval1)
     clearInterval(this.state.interval2)
   }
-
   getDataMoveOut() {
     Axios.get(createQueryString(this.state.WorkingOutselect) + "&apikey=FREE03").then((res) => {
       if (res) {
+        if(res.data.datas.length > 0){
+          
+        }
         this.setState({
           dataworkingout: res.data.datas, loadingWorkingOut: false
         })
       }
     })
-  }
+  } 
   getDataTasklist() {
     Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
       + "&spname=DASHBOARD_TASK_ON_FLOOR").then((res) => {
@@ -188,31 +189,31 @@ class TaskList extends Component {
   // }
   render() {
     const cols1 = [
-      { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
-      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 100 },
-      { accessor: "MVT", Header: "MVT.", width: 100, className: 'center' },
-      { accessor: "Base_Code", Header: "Pallet", width: 100 },
+      { accessor: "Time", Header: "Time", width: 130, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
+      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 130, style: {fontWeight: '900'} },
+      { accessor: "MVT", Header: "Mvt.", width: 130, className: 'center' },
+      { accessor: "Base_Code", Header: "Pallet", width: 130 },
       { accessor: "Product", Header: "Product" },
-      { accessor: "QtyUnit", Header: "Qty", width: 130, className: 'right' },
+      { accessor: "QtyUnit", Header: "Qty", width: 130, className: 'right', style: {fontWeight: '900'} },
       { accessor: "Destination", Header: "Destination", width: 200 },
-      { accessor: "Document_Code", Header: "Doc No.", width: 105 },
-      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 110 },
+      { accessor: "Document_Code", Header: "Doc No.", width: 150 },
+      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 150 },
     ]
     const cols2 = [
-      { accessor: "Time", Header: "Time", width: 80, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
+      { accessor: "Time", Header: "Time", width: 130, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
       {
-        accessor: "TaskName", Header: "Task Name", width: 100, className: 'center',
+        accessor: "TaskName", Header: "Task", width: 130, className: 'center',
         Cell: row => (
-          <Badge color={row.value} style={{ fontSize: '0.825em', fontWeight: '500' }}>{row.value}</Badge>
+          <Badge color={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</Badge>
         )
       },
-      { accessor: "LocationCode", Header: "Stage", width: 100 },
-      { accessor: "PalletCode", Header: "Pallet", width: 100 },
+      { accessor: "LocationCode", Header: "Stage", width: 130, style: {fontWeight: '900'} },
+      { accessor: "PalletCode", Header: "Pallet", width: 130 },
       { accessor: "Product", Header: "Product" },
-      { accessor: "Qty", Header: "Qty", width: 130, className: 'right' },
+      { accessor: "Qty", Header: "Qty", width: 130, className: 'right', style: {fontWeight: '900'} },
       { accessor: "Destination", Header: "Destination", width: 200 },
-      { accessor: "DocNo", Header: "Doc No.", width: 105 },
-      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 110 },
+      { accessor: "DocNo", Header: "Doc No.", width: 150 },
+      { accessor: "SAPRef", Header: "SAP.Doc No.", width: 150 },
     ]
     const optionsArea = [
       { value: '', label: 'All Area' },
@@ -225,14 +226,14 @@ class TaskList extends Component {
           enabled={this.state.isFull}
           onChange={isFull => this.setState({ isFull })}
         >
-          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1.5625em' } : {}} className="fullscreen">
+          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1.8em' } : {}} className="fullscreen">
             <div id="full">
               <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
                 <Row>
                   <Col sm="1" xs="6" md="1" lg="1">{logoamw}</Col>
-                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
-                  <Col sm="3" xs="3" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontWeight: "bold" }}>Area: </label></Col>
-                  <Col sm="4" xs="7" md="4" lg="4">{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
+                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '1.525em',fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
+                  <Col sm="3" xs="3" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontSize: '1.525em', fontWeight: "bold" }}>Area: </label></Col>
+                  <Col sm="4" xs="7" md="4" lg="4" style={{ fontSize: '1.525em' }}>{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
                     this.updateQueueData(res.value)
                     {/*this.setState({ areavalue: e.value, areatext: e.label }, () => console.log(this.state.areavalue + " " + this.state.areatext))*/ }
                   }} />}</Col>
@@ -242,14 +243,14 @@ class TaskList extends Component {
 
 
               <div id="Table1" className="styleTable">
-                <p className="rightAlign" id="pbottom">Move Out</p>
+                <p className="rightAlign" id="pbottom" style={{fontSize: '1.525em'}}>Move Out</p>
                 <div>
                   <ReactTable
                     columns={cols1}
                     minRows={7}
                     data={this.state.dataworkingout}
                     sortable={false}
-                    style={{ background: 'white', fontSize: '1.125em', maxHeight: '20em', fontWeight: '450' }}
+                    style={{ background: 'white', fontSize: '1.525em', maxHeight: '17em', fontWeight: '500' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
@@ -278,14 +279,14 @@ class TaskList extends Component {
               </div>
 
               <div id="Table2" className="Table2 styleTable">
-                <p className="rightAlign" id="pbottom">Task List</p>
+                <p className="rightAlign" id="pbottom" style={{fontSize: '1.525em'}}>Task List</p>
                 <div style={{ overflowY: 'auto' }}>
                   <ReactTable
                     columns={cols2}
                     minRows={7}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white', fontSize: '1.125em', maxHeight: '20em', fontWeight: '450' }}
+                    style={{ background: 'white', fontSize: '1.525em', maxHeight: '17em', fontWeight: '500' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}

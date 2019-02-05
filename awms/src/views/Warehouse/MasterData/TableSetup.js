@@ -255,7 +255,7 @@ class TableGen extends Component {
               filterlist.push({ "f": data["id"], "c": "!=", "v": 2 })
             }
             else {
-              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
+              filterlist.push({ "f": data["id"], "c": "like", "v": encodeURIComponent(data["value"])})
             }
           }
           else if (data["value"].includes("%")) {
@@ -269,7 +269,7 @@ class TableGen extends Component {
               filterlist.push({ "f": data["id"], "c": "!=", "v": 2 })
             }
             else {
-              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
+              filterlist.push({ "f": data["id"], "c": "like", "v": encodeURIComponent(data["value"]) })
             }
           }
           else {
@@ -295,7 +295,7 @@ class TableGen extends Component {
               });
               //}
             } else {
-              filterlist.push({ "f": data["id"], "c": "like", "v": "*" + encodeURIComponent(data["value"]) + "*" })
+              filterlist.push({ "f": data["id"], "c": "like", "v": encodeURIComponent(data["value"]) })
             }
           }
         }

@@ -103,8 +103,8 @@ class Login extends Component {
       <div>
         <div className="float-right">
           <Link to="/Dashboard"><Button style={style} color="danger">TaskList</Button></Link>
-          <Link to="/Queue?IOType=IN" ><Button style={style} color="danger">Queue In</Button></Link>
-          <Link to="/Queue?IOType=OUT" ><Button style={style} color="danger">Queue Out</Button></Link>
+          {/* <Link to="/Queue?IOType=IN" ><Button style={style} color="danger">Queue In</Button></Link>
+          <Link to="/Queue?IOType=OUT" ><Button style={style} color="danger">Queue Out</Button></Link> */}
         </div>
         <div className="clearfix"></div>
         <div className="app flex-row align-items-center">
