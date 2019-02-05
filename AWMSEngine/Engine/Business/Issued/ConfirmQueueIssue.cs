@@ -117,7 +117,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docX.dociID, this.BuVO);
                         var getSTO = getRootSTO.mapstos.Where(x => x.code == docX.itemCode).Select(x => x.id).FirstOrDefault();
-                        /***********update insert DocItemSto**********/
+                        /***********insert DocItemSto**********/
                         var unitConvert = StaticValue.ConvertToNewUnitBySKU(docItem.SKUMaster_ID.Value, docX.qty, getRootSTO.mapstos[0].baseUnitID, docItem.UnitType_ID.Value);
                         ADO.DocumentADO.GetInstant().CreateDocItemSto(docX.dociID, getRootSTO.mapstos.Where(x => x.parentID == docX.stoi).Select(x => x.id).FirstOrDefault().Value, unitConvert.qty, unitConvert.unitType_ID, unitConvert.baseQty, unitConvert.baseUnitType_ID, this.BuVO);
                         /***********update Document EventStatus 10 --> 11**********/
@@ -147,6 +147,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     },
                     new SQLOrderByCriteria[] { }, null, null,
                     this.BuVO).FirstOrDefault();
+                //var xxx = reqVO.DocumentProcessed.Select(x => x.baseCode == result.baseCode);
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
                 var getArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoCriteria.areaID);
                 docItems.Add(docItem);
@@ -154,6 +155,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 //create WorkQueue
                 if (getArea.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
+                    
                     SPworkQueue workQ = CreateQIssue(docItems, stoCriteria, result.priority, DateTime.Now, stoCriteria.areaID);
                     var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
