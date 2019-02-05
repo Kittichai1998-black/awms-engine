@@ -166,7 +166,7 @@ class Return extends Component {
           //==== มี pallet ====
           // console.log(row)
           Base.push({ value: row.ID, UnitType_ID: row.UnitType_ID })
-          this.mappingPallet(true)
+          //this.mappingPallet(true)
         })
         this.setState({ Base })
         this.mappingPallet(true)
@@ -360,7 +360,7 @@ class Return extends Component {
       // console.log(this.state.DocItemID)
 
         let postdata = {
-          docItemID: this.state.DocItemID
+          docItemID: this.state.DocItemReturn[0].value
           , baseID: data
           , packCode: this.state.SKUCodePallet
           , batch: this.state.batchPallet

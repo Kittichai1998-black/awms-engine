@@ -117,7 +117,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                         var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docX.dociID, this.BuVO);
                         var getSTO = getRootSTO.mapstos.Where(x => x.code == docX.itemCode).Select(x => x.id).FirstOrDefault();
-                        /***********update insert DocItemSto**********/
+                        /***********insert DocItemSto**********/
                         var unitConvert = StaticValue.ConvertToNewUnitBySKU(docItem.SKUMaster_ID.Value, docX.qty, getRootSTO.mapstos[0].baseUnitID, docItem.UnitType_ID.Value);
                         ADO.DocumentADO.GetInstant().CreateDocItemSto(docX.dociID, getRootSTO.mapstos.Where(x => x.parentID == docX.stoi).Select(x => x.id).FirstOrDefault().Value, unitConvert.qty, unitConvert.unitType_ID, unitConvert.baseQty, unitConvert.baseUnitType_ID, this.BuVO);
                         /***********update Document EventStatus 10 --> 11**********/
@@ -148,13 +148,14 @@ namespace AWMSEngine.Engine.Business.Issued
                     new SQLOrderByCriteria[] { }, null, null,
                     this.BuVO).FirstOrDefault();
                 stoCriteria = ADO.StorageObjectADO.GetInstant().Get(result.baseCode, result.wareHouseID, result.areaID, false, true, this.BuVO);
-                var xx = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoCriteria.areaID);
+                var getArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == stoCriteria.areaID);
                 docItems.Add(docItem);
 
                 //create WorkQueue
-                if (xx.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
+                if (getArea.AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
-                    SPworkQueue xyz = CreateQIssue(docItems, stoCriteria, result.priority, DateTime.Now, stoCriteria.areaID);
+                    
+                    SPworkQueue workQ = CreateQIssue(docItems, stoCriteria, result.priority, DateTime.Now, stoCriteria.areaID);
                     var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
@@ -164,7 +165,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
                     queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
                     {
-                        queueID = xyz.ID,
+                        queueID = workQ.ID,
                         desWarehouseCode = _warehouseASRS.Code,
                         desAreaCode = _areaASRS.Code,
                         desLocationCode = null,
@@ -266,7 +267,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 if (doc.DocumentItems.TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
                 {
                     
-                    //ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
                     new ClosedGIDocument().Execute(this.Logger, this.BuVO, new ClosedGIDocument.TDocReq() { docIDs = new long[] { doc.ID.Value } });
                 }
                 else{

@@ -70,7 +70,7 @@ namespace AWMSEngine.Engine.Business.Issued
             public long dociID;
             public long? stoi;
             public string itemCode;
-            public decimal? qty;
+            public decimal qty;
             public string batch;
             public string orderNo;
             public string lot;
@@ -90,7 +90,6 @@ namespace AWMSEngine.Engine.Business.Issued
             var queueWorkQueue = new WCSQueueApi.TReq();
             var queueWorkQueueOut = new List<WCSQueueApi.TReq.queueout>();
             List<SPOutSTOProcesQueueIssue> stoRoot = new List<SPOutSTOProcesQueueIssue>();
-            StorageObjectCriteria rtrt = new StorageObjectCriteria();
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             DocumentEventStatus[] DocEventStatuses = new DocumentEventStatus[] { DocumentEventStatus.IDLE, DocumentEventStatus.WORKING };
 
@@ -267,10 +266,10 @@ namespace AWMSEngine.Engine.Business.Issued
                                 }
                                 if (batch.qty > 0)
                                 {
-                                    var xx = stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0 && x.evtStatus != 12);
-                                    foreach (var y in xx)
+                                    var stoNotReceived = stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null)) && x.packQty > 0 && x.evtStatus != 12);
+                                    foreach (var sto in stoNotReceived)
                                     {
-                                        var stoPackID = ADO.StorageObjectADO.GetInstant().Get(y.code, null, null, false, true, this.BuVO).ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault();
+                                        var stoPackID = ADO.StorageObjectADO.GetInstant().Get(sto.code, null, null, false, true, this.BuVO).ToTreeList().Where(x => x.code == docItem.itemCode).FirstOrDefault();
                                         var listDociSTO = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>("amt_DocumentItemStorageObject", "*", null,
                                             new SQLConditionCriteria[]
                                             {
@@ -282,7 +281,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                         stoPackID.baseQty = stoPackID.baseQty - sumQty.Value;
                                         if (stoPackID.baseQty > 0)
                                         {
-                                            throw new AMWException(this.Logger, AMWExceptionCode.V2001, "สินค้า " + docItem.itemCode + " ไม่อยู่ในสถานะพร้อมประมวลผล");
+                                            throw new AMWException(this.Logger, AMWExceptionCode.V2001, docItem.itemCode + " ไม่อยู่ในสถานะพร้อมประมวลผล");
                                         }
                                     }
                                 }
@@ -324,7 +323,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                 dociID = docItem.docItemID,
                                 stoi = null,
                                 itemCode = docItem.itemCode,
-                                qty = null,
+                                qty = 0,
                                 batch = null,
                                 orderNo = null,
                                 lot = null,
