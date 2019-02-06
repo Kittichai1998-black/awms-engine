@@ -228,7 +228,7 @@ class StockCardReport extends Component {
     if (sumDebit === 0 && sumCredit === 0) {
       return '-'
     } else {
-      var sumVal = _.sumBy(this.state.data, "Total");
+      var sumVal = sumDebit - (sumCredit <= 0 ? -sumCredit : sumCredit)
       if (sumVal === 0 || sumVal === null || sumVal === undefined)
         return '-'
       else
