@@ -94,6 +94,8 @@ class StockCardReport extends Component {
         let batch = this.state.Batch
         let lot = this.state.Lot
         let orderno = this.state.Orderno
+        let movementtype = this.state.Movementtype
+        let sapdoc = this.state.Sapdoc
 
         Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&skuid=" + skuid
           + "&startDate=" + formatDateFrom
@@ -101,6 +103,8 @@ class StockCardReport extends Component {
           + "&batch=" + (batch === undefined ? '' : batch)
           + "&lot=" + (lot === undefined ? '' : lot)
           + "&orderno=" + (orderno === undefined ? '' : orderno)
+          + "&movementType=" + (movementtype === undefined ? '' : movementtype)
+          + "&sapDoc=" + (sapdoc === undefined ? '' : sapdoc)
           + "&spname=STOCK_CARD").then((rowselect1) => {
             if (rowselect1) {
               if (rowselect1.data._result.status !== 0) {
@@ -135,7 +139,7 @@ class StockCardReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
     }
   }
   paginationButton() {
@@ -259,8 +263,14 @@ class StockCardReport extends Component {
           this.datetimeBody(e.value)
       },
       { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: true },
+      { accessor: 'SKU_Code', Header: 'SKU Code', editable: false, sortable: true, },
+      { accessor: 'SKU_Name', Header: 'SKU Name', editable: false, sortable: true, },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
+      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: true, },
+      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: true, },
       { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
+      { accessor: 'Sou', Header: 'Sou.', editable: false, sortable: true },
+      { accessor: 'Des', Header: 'Des.', editable: false, sortable: true },
       { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: true },
       { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: true },
       {
@@ -304,7 +314,7 @@ class StockCardReport extends Component {
             <Col xs="6">
               <div>
                 <label style={{ marginRight: "10px" }} >SKU : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '36px' }}>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '85px' }}>
                   <AutoSelect data={this.state.PackMasterdata} result={e => this.setState({ ID: e.value })} />
 
                 </div>
@@ -321,7 +331,7 @@ class StockCardReport extends Component {
           <Row>
             <Col xs="6">
               <div className=""><label>Lot : </label>
-                <Input onChange={(e) => this.setState({ Lot: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '50px' }}
+                <Input onChange={(e) => this.setState({ Lot: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '100px' }}
                   value={this.state.Lot} />
               </div>
             </Col>
@@ -334,9 +344,23 @@ class StockCardReport extends Component {
           </Row>
           <Row>
             <Col xs="6">
+              <div className=""><label>Movement Type : </label>
+                <Input onChange={(e) => this.setState({ Movementtype: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '20px' }}
+                  value={this.state.Movementtype} />
+              </div>
+            </Col>
+            <Col xs="6">
+              <div className=""><label>SAP Doc. : </label>
+                <Input onChange={(e) => this.setState({ Sapdoc: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}
+                  value={this.state.Sapdoc} />
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="6">
               <div >
                 <label>Date From : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '55px' }}>
                   {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
                 </div></div>
             </Col>

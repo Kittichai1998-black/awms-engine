@@ -137,7 +137,7 @@ class AuditReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
     }
   }
   sumFooter(value) {
