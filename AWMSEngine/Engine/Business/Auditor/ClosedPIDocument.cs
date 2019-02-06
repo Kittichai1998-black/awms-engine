@@ -96,9 +96,9 @@ namespace AWMSEngine.Engine.Business.Auditor
                                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                                         }, this.BuVO)
                             .GroupBy(s => new { s.Code, s.Batch })
-                            .Select(s => new { s.Key.Code, s.Key.Batch, Qty = s.Sum(xx => (decimal)xx.Quantity) })
+                            .Select(s => new { s.Key.Code, s.Key.Batch, Qty = s.Sum(xx => ADO.StaticValue.StaticValueManager.GetInstant().ConvertToNewUnitByPack(i.Code, xx.Quantity, xx.UnitType_ID, i.UnitType_ID.Value).qty) })
                             .FirstOrDefault();
-
+                        
                         var unit = this.StaticValue.UnitTypes.Where(un => un.ID == i.UnitType_ID).FirstOrDefault();
 
                         if(getSto != null)
