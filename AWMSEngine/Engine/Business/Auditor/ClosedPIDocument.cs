@@ -91,14 +91,14 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                         else
                             getSto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
-                                            new SQLConditionCriteria("PackMaster_ID", i.PackMaster_ID, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Code", i.Code, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Batch", i.Batch, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                                         }, this.BuVO)
                             .GroupBy(s => new { s.Code, s.Batch })
-                            .Select(s => new { s.Key.Code, s.Key.Batch, Qty = s.Sum(xx => (decimal)xx.Quantity) })
+                            .Select(s => new { s.Key.Code, s.Key.Batch, Qty = s.Sum(xx => ADO.StaticValue.StaticValueManager.GetInstant().ConvertToNewUnitByPack(i.Code, xx.Quantity, xx.UnitType_ID, i.UnitType_ID.Value).qty) })
                             .FirstOrDefault();
-
+                        
                         var unit = this.StaticValue.UnitTypes.Where(un => un.ID == i.UnitType_ID).FirstOrDefault();
 
                         if(getSto != null)
