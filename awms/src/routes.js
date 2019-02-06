@@ -325,6 +325,11 @@ const ReportAudit = Loadable({
   loading: Loading,
 });
 
+const CheckInventory = Loadable({
+  loader: () => import('./views/Warehouse/CheckInventory/CheckInventory'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -402,6 +407,7 @@ const routes = [
   { path: '/sys/ad/manage', exact: true, name: 'Audit Document', component: AuditCreate },
   { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
   { path: '/sys/ad/report', exact: true, name: 'Report / Audit Report', component: ReportAudit },
+  { path: '/sys/ad/check', exact: true, name: 'Check Audit', component: CheckInventory },
 ];
 
 export default routes;
