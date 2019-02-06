@@ -91,7 +91,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                         else
                             getSto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
-                                            new SQLConditionCriteria("Code", i.Code, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("PackMaster_ID", i.PackMaster_ID, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Batch", i.Batch, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                                         }, this.BuVO)
