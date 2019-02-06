@@ -125,10 +125,10 @@ class CheckInventory extends Component {
   render() {
     const cols = [
       { Header: 'No.', fixed: "left", sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45,},
-      { accessor: 'docItemCode', Header: 'Document Item', editable: false, sortable: false },
-      { accessor: 'docItembatch', Header: 'Document Item Batch', editable: false, sortable: false },
-      { accessor: 'stoCode', Header: 'Stock Code', editable: false, sortable: false },
-      { accessor: 'stobatch', Header: 'Stock Batch', editable: false, sortable: false },
+      { accessor: 'docItemCode', Header: 'Audit Item Code', editable: false, sortable: false },
+      { accessor: 'docItembatch', Header: 'Audit Item Batch', editable: false, sortable: false },
+      { accessor: 'stoCode', Header: 'Stock Item Code', editable: false, sortable: false },
+      { accessor: 'stobatch', Header: 'Stock Item Batch', editable: false, sortable: false },
     ];
     return (
       <div>
