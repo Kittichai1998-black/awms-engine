@@ -133,7 +133,8 @@ class Pack extends Component {
                         if (x.id === columns.column.id)
                             filter.splice(index, 1);
                     });
-                    filter.push({ id: columns.column.id, value: e.target.value });
+                    if(e.target.value !== "")
+                        filter.push({ id: columns.column.id, value: e.target.value });
                     this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
                 }
             }
@@ -148,6 +149,7 @@ class Pack extends Component {
                 return { "f": x.id, "c": "!=", "v": x.value }
             }
             else {
+                
                 return { "f": x.id, "c": "like", "v": x.value }
             }
         })
