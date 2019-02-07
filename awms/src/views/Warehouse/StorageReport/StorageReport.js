@@ -10,6 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import { StorageObjectEventStatus } from '../Status'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
@@ -40,9 +41,12 @@ class StoragReport extends Component {
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.customSorting = this.customSorting.bind(this);
   }
-
-  componentDidMount() {
+  async componentWillMount() {
     document.title = "Storage Object - AWMS";
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Storage", dataGetPer, this.props.history);
+  }
+  componentDidMount() {
     this.getData();
 
     console.log(this.state.date)

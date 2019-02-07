@@ -131,11 +131,12 @@ class IssuedManage extends Component {
   async componentWillMount() {
     document.title = "Audit Document : AWMS";
     let dataGetPer = await GetPermission()
+    //CAudit
     this.displayButtonByPermission(dataGetPer)
   }
   displayButtonByPermission(dataGetPer) {
-    // 27	TransGID_create&modify
-    if (!CheckViewCreatePermission("TransGID_create&modify", dataGetPer)) {
+    // 53	Audit_create&modify 52 Audit_view
+    if (!CheckViewCreatePermission("Audit_view", dataGetPer) || !CheckViewCreatePermission("Audit_create&modify", dataGetPer)) {
       this.props.history.push("/404")
     }
   }

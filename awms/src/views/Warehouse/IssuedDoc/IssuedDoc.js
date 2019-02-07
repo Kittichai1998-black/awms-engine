@@ -79,45 +79,21 @@ class IssuedDoc extends Component {
   //permission
   // 26	TransGID_view
   // 27	TransGID_create&modify
-  // 28	TransGID_execute
 
   displayButtonByPermission(dataGetPer) {
-    let check = 0
+    let checkview = true
     if (CheckViewCreatePermission("TransGID_view", dataGetPer)) {
-      check = 0 //แสดงข้อมูล26
+      checkview = true //แสดงข้อมูล 
     }
     if (CheckViewCreatePermission("TransGID_create&modify", dataGetPer)) {
-      check = 1 //แก้ไข27
+      checkview = false //แก้ไข
     }
-    if (CheckViewCreatePermission("TransGID_execute", dataGetPer)) {
-      //แก้ไข28
-      if (CheckViewCreatePermission("Administrator", dataGetPer)) {
-        check = 3
-      } else {
-        check = 2
-      }
-    }
-    if (check === 0) {
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
-      var PerButtonWorking = document.getElementById("per_button_close")
-      PerButtonWorking.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-
-    } else if (check === 1) {
+    if (checkview === true) {
       this.setState({ showbutton: "block" })
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-    } else if (check === 2) {
-      this.setState({ showbutton: "block" })
-      var PerButtonWorking = document.getElementById("per_button_close")
-      PerButtonWorking.remove()
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
       var PerButtonDoc = document.getElementById("per_button_doc")
       PerButtonDoc.remove()
-    } else if (check === 3) {
+
+    } else if (checkview === false) {
       this.setState({ showbutton: "block" })
     }
   }

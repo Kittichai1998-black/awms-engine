@@ -86,21 +86,22 @@ class IssuedDoc extends Component {
 
   //permission 21-TransGRD_view 20-TransGRD_execute
   displayButtonByPermission(dataGetPer) {
-    let checkview = true
+    // let checkview = true
     if (CheckViewCreatePermission("TransGRD_view", dataGetPer)) {
-      checkview = true //แสดงข้อมูล
-    }
-    if (CheckViewCreatePermission("TransGRD_execute", dataGetPer)) {
-      checkview = false //แก้ไข
-    }
-    if (checkview === true) {
-      var PerButtonExport = document.getElementById("per_button_export")
-      PerButtonExport.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-    } else if (checkview === false) {
+      // checkview = true //แสดงข้อมูล 
       this.setState({ showbutton: "block" })
     }
+    // if (CheckViewCreatePermission("TransGRD_execute", dataGetPer)) {
+    //   checkview = false //แก้ไข
+    // }
+    // if (checkview === true) {
+    //   var PerButtonExport = document.getElementById("per_button_export")
+    //   PerButtonExport.remove()
+    //   var PerButtonDate = document.getElementById("per_button_date")
+    //   PerButtonDate.remove()
+    // } else if (checkview === false) {
+    //   this.setState({ showbutton: "block" })
+    // }
   }
 
   onHandleClickCancel(event) {
@@ -299,7 +300,7 @@ class IssuedDoc extends Component {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
       else
-        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        return { "f": x.id, "c": "like", "v": x.value }
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;

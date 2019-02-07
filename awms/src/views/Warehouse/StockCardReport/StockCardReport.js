@@ -47,7 +47,7 @@ class StockCardReport extends Component {
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //41	WarehouseCI_execute
+    //80	STC_view
     Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
       const PackMasterdata = []
       response.data.datas.forEach(row => {

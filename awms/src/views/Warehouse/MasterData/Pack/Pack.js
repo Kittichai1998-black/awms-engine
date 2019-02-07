@@ -314,6 +314,7 @@ class Pack extends Component {
             })
     }
     render() {
+        const view = this.state.permissionView
         const cols = [
             {
                 Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,

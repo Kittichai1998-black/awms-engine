@@ -7,6 +7,7 @@ import { Row, Col, Input } from 'reactstrap';
 import _ from 'lodash';
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import '../../Warehouse/componentstyle.css'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
@@ -39,8 +40,12 @@ class CurrentReport extends Component {
     this.customSorting = this.customSorting.bind(this);
   }
 
-  componentDidMount() {
+  async componentWillMount() {
     document.title = "Current Inventory - AWMS";
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("CUR_INV", dataGetPer, this.props.history);
+  }
+  componentDidMount() {
     if (this.props.location.search) {
       let select = FilterURL(this.props.location.search, this.queryString)
       this.setState({ select: select }, () => this.getData())
