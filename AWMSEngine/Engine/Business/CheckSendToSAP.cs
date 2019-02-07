@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.Business
             {
                 GOODSMVT_HEADER = new SAPInterfaceReturnvalues.header()
                 {
-
+                    HEADER_TXT = "ASRS Test Condition"
                 },
                 GOODSMVT_ITEM = new List<SAPInterfaceReturnvalues.items>()
             };
@@ -53,8 +53,8 @@ namespace AWMSEngine.Engine.Business
             {
                 HEADER_DATA = new ADO.SAPApi.TREQ_MMI0008_1_DO_INFO.THeader()
                 {
-                    DELIV_NUMB = "",
-                    DELIV_ITEM = ""
+                    DELIV_NUMB = "ASRS Test Condition",
+                    DELIV_ITEM = "ASRS Test Condition"
                 }
             };
 
