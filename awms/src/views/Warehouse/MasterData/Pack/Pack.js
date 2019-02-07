@@ -229,19 +229,20 @@ class Pack extends Component {
     onClickUpdateData() {
         let dataedit = this.state.dataedit.map(x => {
             return {
-                "ID": x.SKUMaster_ID,
+                "ID": x.ID,
                 "ObjectSize_ID": x.ObjectSize_ID
             }
         });
 
         let updjson = {
-            "t": "ams_SKUMaster",
+            "t": "ams_PackMaster",
             "pk": "ID",
             "datas": dataedit,
             "nr": false
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
-            console.log(res.data)
+            this.getData()
+            this.setState({dataedit:[]})
         });
     }
 
