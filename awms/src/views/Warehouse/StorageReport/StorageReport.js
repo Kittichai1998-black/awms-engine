@@ -9,7 +9,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
 import withFixedColumns from "react-table-hoc-fixed-columns";
-import {StorageObjectEventStatus } from '../Status'
+import { StorageObjectEventStatus } from '../Status'
 
 const Axios = new apicall()
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
@@ -45,7 +45,7 @@ class StoragReport extends Component {
     document.title = "Storage Object - AWMS";
     this.getData();
 
-     console.log(this.state.date) 
+    console.log(this.state.date)
   }
 
   getData() {
@@ -79,7 +79,8 @@ class StoragReport extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -119,7 +120,7 @@ class StoragReport extends Component {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
       else
-        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        return { "f": x.id, "c": "like", "v": x.value }
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;

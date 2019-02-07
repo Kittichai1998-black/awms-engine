@@ -145,7 +145,8 @@ class IssuedDoc extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -290,22 +291,7 @@ class IssuedDoc extends Component {
     }
     this.setState({ select }, () => { this.getData() })
   }
-  createCustomFilter(name) {
-    return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
-      onKeyPress={(e) => {
-        if (e.key === 'Enter') {
-          let filter = this.state.datafilter
-          filter.forEach((x, index) => {
-            if (x.id === name.column.id)
-              filter.splice(index, 1);
-          });
-          filter.push({ id: name.column.id, value: e.target.value });
-          this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
-        }
-      }
-      } />
-  }
   onCheckFliter() {
     this.setState({ loading: true })
     let getFilter = this.state.datafilter;
