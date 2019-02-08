@@ -142,7 +142,7 @@ class AuditReport extends Component {
   }
   sumFooter(value) {
     var sumVal = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["UnitType_Code", x.UnitType_Code]) == true ?
+      x => _.every(this.state.data, ["UnitCode", x.UnitCode]) == true ?
         parseFloat(x[value]) : null)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'

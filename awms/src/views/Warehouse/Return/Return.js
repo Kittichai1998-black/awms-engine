@@ -356,7 +356,7 @@ class Return extends Component {
 
      console.log(this.state.dataValue)
 
-    if (this.state.dataValue !== undefined || this.state.dataValue !== ""  ) {
+    if (this.state.dataValue !== undefined || this.state.dataValue !== 0  ) {
         let postdata = {
           docItemID: this.state.DocItemReturn[0].value
           , baseID: data
@@ -364,7 +364,7 @@ class Return extends Component {
           , batch: this.state.batchPallet
           , lot: this.state.lotPallet
           , orderNo: this.state.orderNoPallet
-          , baseQty: this.state.dataValue === ""?this.state.BaseQtyPallet:this.state.dataValue
+          , baseQty: this.state.dataValue === 0?this.state.BaseQtyPallet:this.state.dataValue
         }
        console.log(postdata)
         Axios.post(window.apipath + "/api/wm/issued/sto/return", postdata).then((res) => {
