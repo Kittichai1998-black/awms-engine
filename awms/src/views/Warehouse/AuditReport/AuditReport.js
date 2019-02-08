@@ -57,8 +57,8 @@ class AuditReport extends Component {
   async componentWillMount() {
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //41	WarehouseCI_execute
+    CheckWebPermission("AudReport", dataGetPer, this.props.history);
+    // 52 Audit_view
     document.title = "Audit Report : AWMS";
     Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
       const PackMasterdata = []
