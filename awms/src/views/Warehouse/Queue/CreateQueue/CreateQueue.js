@@ -1001,14 +1001,13 @@ class CreateQueue extends Component {
     this.setState({ "selectGateZone": aaa })
   }
 
-  render() {
-    const processCard = this.state.processCard
-    const itemCards = this.state.itemCard
-    const processedDocCard = this.state.processedDocCard
-    const styleclose = {
-      cursor: "pointer", position: "absolute", display: "block", right: "-10px", top: "-10px", background: "#ffffff", borderRadius: "18px",
-    }
-    return (
+  render(){
+    const processCard = this.state.processCard?this.state.processCard:[]
+    const itemCards = this.state.itemCard?this.state.itemCard:[]
+    const processedDocCard = this.state.processedDocCard?this.state.processedDocCard:[]
+    const styleclose = {cursor: "pointer", position: "absolute", display: "block", right: "-10px", top: "-10px", background: "#ffffff", borderRadius: "18px",
+  }
+    return(
       <div>
         <Row style={{ "marginBottom": "10px" }}>
           <Col lg="6">
