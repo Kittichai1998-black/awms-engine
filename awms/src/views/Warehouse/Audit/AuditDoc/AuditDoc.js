@@ -79,49 +79,20 @@ class AuditDoc extends Component {
   //permission
   // 52	Audit_view	เอกสารตรวจสอบสินค้า
   // 53	Audit_create&modify	เอกสารตรวจสอบสินค้า
-  // 55	Audit_execute	เอกสารตรวจสอบสินค้า
 
   displayButtonByPermission(dataGetPer) {
-    let check = 0
+    let checkview = true
     if (CheckViewCreatePermission("Audit_view", dataGetPer)) {
-      check = 0 //แสดงข้อมูล52
+      checkview = true //แสดงข้อมูล 
     }
     if (CheckViewCreatePermission("Audit_create&modify", dataGetPer)) {
-      check = 1 //แก้ไข53
+      checkview = false //สร้างเอกสาร
     }
-    if (CheckViewCreatePermission("Audit_execute", dataGetPer)) {
-      //แก้ไข55
-      if (CheckViewCreatePermission("Administrator", dataGetPer)) {
-        check = 3
-      } else {
-        check = 2
-      }
-    }
-    if (check === 0) {
-      var PerButtonWorking = document.getElementById("per_button_working")
-      PerButtonWorking.remove()
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
-      var PerButtonExport = document.getElementById("per_button_export")
-      PerButtonExport.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-
-    } else if (check === 1) {
+    if (checkview === true) {
       this.setState({ showbutton: "block" })
-      var PerButtonExport = document.getElementById("per_button_export")
-      PerButtonExport.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-    } else if (check === 2) {
-      this.setState({ showbutton: "block" })
-      var PerButtonWorking = document.getElementById("per_button_working")
-      PerButtonWorking.remove()
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
       var PerButtonDoc = document.getElementById("per_button_doc")
       PerButtonDoc.remove()
-    } else if (check === 3) {
+    } else if (checkview === false) {
       this.setState({ showbutton: "block" })
     }
   }
@@ -252,7 +223,8 @@ class AuditDoc extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -266,7 +238,7 @@ class AuditDoc extends Component {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
       else
-        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        return { "f": x.id, "c": "like", "v": x.value }
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;
@@ -486,7 +458,6 @@ class AuditDoc extends Component {
         <Card>
           <CardBody>
             <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
-            {/* <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button> */}
             <Button id="per_button_working" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>

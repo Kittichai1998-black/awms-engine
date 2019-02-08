@@ -133,7 +133,8 @@ class Pack extends Component {
                         if (x.id === columns.column.id)
                             filter.splice(index, 1);
                     });
-                    filter.push({ id: columns.column.id, value: e.target.value });
+                    if(e.target.value !== "")
+                        filter.push({ id: columns.column.id, value: e.target.value });
                     this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
                 }
             }
@@ -148,6 +149,7 @@ class Pack extends Component {
                 return { "f": x.id, "c": "!=", "v": x.value }
             }
             else {
+                
                 return { "f": x.id, "c": "like", "v": x.value }
             }
         })
@@ -229,19 +231,20 @@ class Pack extends Component {
     onClickUpdateData() {
         let dataedit = this.state.dataedit.map(x => {
             return {
-                "ID": x.SKUMaster_ID,
+                "ID": x.ID,
                 "ObjectSize_ID": x.ObjectSize_ID
             }
         });
 
         let updjson = {
-            "t": "ams_SKUMaster",
+            "t": "ams_PackMaster",
             "pk": "ID",
             "datas": dataedit,
             "nr": false
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
-            console.log(res.data)
+            this.getData()
+            this.setState({dataedit:[]})
         });
     }
 
@@ -311,6 +314,7 @@ class Pack extends Component {
             })
     }
     render() {
+        const view = this.state.permissionView
         const cols = [
             {
                 Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
