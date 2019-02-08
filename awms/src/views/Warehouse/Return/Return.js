@@ -335,7 +335,7 @@ class Return extends Component {
               <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>SKU in Pallet : </label> {" - "} &nbsp;&nbsp;<label style={{ fontWeight: "bolder" }}>Qty : </label> {" - "}</div>
               <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {this.state.lotPallet}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {this.state.batchPallet}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {this.state.orderNoPallet}</div>
               <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
-              <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCode}</div>
+              <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCodePallet}</div>
               <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "150px", display: "inline-block" }} max="" type="number" defaultValue={this.state.BaseQtyPallet}
                 onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
               <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
