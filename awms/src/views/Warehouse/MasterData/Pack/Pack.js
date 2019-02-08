@@ -70,8 +70,9 @@ class Pack extends Component {
     }
 
     onHandleClickCancel(event) {
-        this.forceUpdate();
-        event.preventDefault();
+        this.setState({ dataedit: [] })
+        this.getData();
+        window.scrollTo(0, 0);
     }
 
     async componentWillMount() {
@@ -133,7 +134,7 @@ class Pack extends Component {
                         if (x.id === columns.column.id)
                             filter.splice(index, 1);
                     });
-                    if(e.target.value !== "")
+                    if (e.target.value !== "")
                         filter.push({ id: columns.column.id, value: e.target.value });
                     this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
                 }
@@ -149,7 +150,7 @@ class Pack extends Component {
                 return { "f": x.id, "c": "!=", "v": x.value }
             }
             else {
-                
+
                 return { "f": x.id, "c": "like", "v": x.value }
             }
         })
@@ -200,12 +201,16 @@ class Pack extends Component {
     }
 
     onCreateDropdownEdit(rowdata, data, field) {
-        let list = data.map((x, idx) => {
-            return <option key={idx} value={x.ID}>{x.Code}</option>
-        });
-        return <Input value={rowdata.original[field]} type="select" style={{ background: "#FAFAFA" }} onChange={(e) => {
-            this.onHandleEditData(e.target.value, rowdata, field)
-        }}>{list}</Input>
+        if (this.state.permissionView === false) {
+            return <span>{rowdata.original.ObjectSizeCode}</span>
+        } else {
+            let list = data.map((x, idx) => {
+                return <option key={idx} value={x.ID}>{x.Code}</option>
+            });
+            return <Input value={rowdata.original[field]} type="select" style={{ background: "#FAFAFA" }} onChange={(e) => {
+                this.onHandleEditData(e.target.value, rowdata, field)
+            }}>{list}</Input>
+        }
     }
 
     onCreateDropdownEditAll(data) {
@@ -243,8 +248,13 @@ class Pack extends Component {
             "nr": false
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
-            this.getData()
-            this.setState({dataedit:[]})
+            if (res) {
+                if (res.data._result.status === 1) {
+                    window.success("แก้ไข ข้อมูลสำเร็จ");
+                    this.getData()
+                    this.setState({ dataedit: [] })
+                }
+            }
         });
     }
 
@@ -313,8 +323,10 @@ class Pack extends Component {
                 this.setState({ data: res.data.datas, loading: false })
             })
     }
+    
     render() {
         const view = this.state.permissionView
+
         const cols = [
             {
                 Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
@@ -366,13 +378,15 @@ class Pack extends Component {
                         <div className="float-right" style={{ marginBottom: '3px' }} >
                             <ExportFile style={{ width: "130px" }} column={cols} dataselect={this.state.select} filename={"SKUUnit"} />
                         </div>
-                        <div className="float-right">
-                            <span style={{ fontWeight: 'bold' }} >Edit Weight Verify : </span>
+                        {view === true ?
+                            <div className="float-right">
+                                <span style={{ fontWeight: 'bold' }} >Edit Weight Verify : </span>
 
 
-                            {this.onCreateDropdownEditAll(this.state.ObjSize)}
-                            <Button style={{ width: "130px", marginRight: "5px" }} color="primary" onClick={() => { this.onClickEditAllWeight() }}>Update Weight</Button>
-                        </div>
+                                {this.onCreateDropdownEditAll(this.state.ObjSize)}
+                                <Button style={{ width: "130px", marginRight: "5px" }} color="success" onClick={() => { this.onClickEditAllWeight() }}>Update Weight</Button>
+                            </div>
+                            : null}
                     </Col>
 
                 </Row>
@@ -412,12 +426,14 @@ class Pack extends Component {
                         this.customSorting(sorted)
                     }}
                 />
-                <Card>
-                    <CardBody>
-                        <Button onClick={() => this.onClickUpdateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-
-                    </CardBody>
-                </Card>
+                {view === true ?
+                    <Card>
+                        <CardBody>
+                            <Button onClick={() => this.onClickUpdateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+                            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ width: '130px' }} className="float-right">Cancel</Button>
+                        </CardBody>
+                    </Card>
+                    : null}
             </div>
         )
     }

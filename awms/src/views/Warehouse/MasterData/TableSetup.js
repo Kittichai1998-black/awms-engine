@@ -206,6 +206,7 @@ class TableGen extends Component {
   onHandleClickCancel(event) {
     this.setState({ dataedit: [] })
     this.queryInitialData(this.state.dataselect);
+    window.scrollTo(0, 0);
   }
 
   removedata(rowdata) {
