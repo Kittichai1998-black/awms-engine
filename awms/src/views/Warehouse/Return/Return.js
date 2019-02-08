@@ -154,6 +154,7 @@ class Return extends Component {
   }
 
   checkBase() {
+    
     let QueryDoc = this.state.BaseMaster
     let JSONDoc = []
     JSONDoc.push({ "f": "Code", "c": "=", "v": this.state.barcode })
@@ -165,6 +166,7 @@ class Return extends Component {
         response.data.datas.forEach(row => {
           //==== มี pallet ====
           // console.log(row)
+          
           Base.push({ value: row.ID, UnitType_ID: row.UnitType_ID })
           //this.mappingPallet(true)
         })
@@ -311,10 +313,10 @@ class Return extends Component {
               <CardBody>
                 <div style={{ textAlign: "center"}}><label style={{ fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>Pallet Detail</label></div>
                 <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>SKU in Pallet : </label> {dataPallet.sku} &nbsp;&nbsp;<label style={{ fontWeight: "bolder" }}>Qty : </label> {dataPallet.qty}</div>               
-                <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {dataPallet.lot}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {dataPallet.batch}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {dataPallet.orderNo}</div>
+                <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {dataPallet.lot}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {dataPallet.batch}<br/><label style={{ fontWeight: "bolder" }}>Order No. : </label> {dataPallet.orderNo}</div>
                 <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
                 <div><label style={{ fontWeight: "bolder" }}>Code : </label> {dataPallet.sku}</div>
-                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input defaultValue={this.state.BaseQtyPallet} style={{ height: "30px", width: "80px",display: "inline-block" }} max="" type="number"
+                <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "80px",display: "inline-block" }} max="" type="number"
                   onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
                 <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
                 <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(dataPallet.id) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
@@ -333,10 +335,10 @@ class Return extends Component {
             <CardBody>
               <div style={{ textAlign: "center" }}><label style={{ fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>Pallet Detail</label></div>
               <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>SKU in Pallet : </label> {" - "} &nbsp;&nbsp;<label style={{ fontWeight: "bolder" }}>Qty : </label> {" - "}</div>
-              <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {this.state.lotPallet}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {this.state.batchPallet}<br/><label style={{ fontWeight: "bolder" }}>OrderNo : </label> {this.state.orderNoPallet}</div>
+              <div><label style={{ fontWeight: "bolder", marginTop: "5px" }}>Lot : </label> {this.state.lotPallet}<br/><label style={{ fontWeight: "bolder" }}>Batch : </label> {this.state.batchPallet}<br/><label style={{ fontWeight: "bolder" }}>Order No. : </label> {this.state.orderNoPallet}</div>
               <div style={{ textAlign: "center" }}><label style={{ textAlign: "center", fontWeight: "bolder", fontSize: "1.125em", borderBottom: "solid 3px rgba(255, 255, 255, 0.418)" }}>SKU for Return</label></div>
-              <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCode}</div>
-              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "150px", display: "inline-block" }} max="" type="number" defaultValue={this.state.BaseQtyPallet}
+              <div><label style={{ fontWeight: "bolder" }}>Code : </label> {this.state.SKUCodePallet}</div>
+              <div><label style={{ fontWeight: "bolder" }}>Qty for Return / Qty for Doc : </label> <Input style={{ height: "30px", width: "80px", display: "inline-block" }} max="" type="number" 
                 onChange={(e) => { this.ChangeData(e, e.target.value) }} /> / {this.state.BaseQtyPallet}</div>
               <div><label style={{ fontWeight: "bolder" }}>Unit Type : </label> {this.state.UnitPallet}</div><br />
               <div style={{ textAlign: "center", width: "100%" }}><Button onClick={() => { this.updateDocItemSto(palletID) }} color="primary" >Confirm</Button>&nbsp;&nbsp;
@@ -351,14 +353,10 @@ class Return extends Component {
   }
 
   updateDocItemSto(data) {
-    // console.log(this.state.dataValue)
-    // console.log(this.state.DocID)
-    // console.log(this.state.dataValue)
-    // console.log(this.state.DocItemReturn)
-    if (this.state.dataValue !== undefined) {
-      // console.log("xxx")
-      // console.log(this.state.DocItemID)
 
+     console.log(this.state.dataValue)
+
+    if (this.state.dataValue !== undefined || this.state.dataValue !== ""  ) {
         let postdata = {
           docItemID: this.state.DocItemReturn[0].value
           , baseID: data
@@ -366,10 +364,9 @@ class Return extends Component {
           , batch: this.state.batchPallet
           , lot: this.state.lotPallet
           , orderNo: this.state.orderNoPallet
-          , baseQty: this.state.dataValue
+          , baseQty: this.state.dataValue === ""?this.state.BaseQtyPallet:this.state.dataValue
         }
-        // console.log(postdata)
-        // console.log(window.apipath + "/api/wm/issued/sto/return")
+       console.log(postdata)
         Axios.post(window.apipath + "/api/wm/issued/sto/return", postdata).then((res) => {
           // console.log(res)
          if(res.data._result.status === 1){
@@ -389,13 +386,16 @@ class Return extends Component {
   Clear() {
     this.setState({ displayDataCard: null })
     this.setState({ barcode: "" })
-    this.setState({ dataValue: "" })
+    this.setState({ dataValue: 0 })
     
   }
 
   ChangeData(e, dataValue) {
+    
     e.target.style.background = "#fff56e"
-    this.setState({ dataValue })
+
+    this.setState({dataValue })
+
   }
 
   dropdownAuto() {
@@ -428,6 +428,7 @@ class Return extends Component {
           onKeyPress={(e) => {
             if (e.key === 'Enter' && this.state.barcode !== "") {
               this.checkBase()
+              
             }
           }} />{' '}<br />
         <br />

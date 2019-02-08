@@ -83,10 +83,10 @@ const User = Loadable({
   loading: Loading,
 });
 
-// const Warehouse = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Warehouse'),
-//   loading: Loading,
-// });
+const Warehouse = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Warehouse'),
+  loading: Loading,
+});
 
 // const Permission = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/Permission'),
@@ -353,7 +353,7 @@ const routes = [
   // { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/branch/manage', exact: true, name: 'Setting / Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'Setting / User Account', component: User },
-  // { path: '/mst/warehouse/manage', exact: true, name: 'Setting / Warehouse', component: Warehouse },
+  { path: '/mst/warehouse/manage', exact: true, name: 'Setting / Warehouse', component: Warehouse },
   // { path: '/mst/permission/manage', exact: true, name: 'Setting / Permission', component: Permission },
   // { path: '/mst/apiservicegroup/manage', exact: true, name: 'Setting / API Service Group', component: APIServiceGroup },
   // { path: '/mst/apiservice/manage', exact: true, name: 'Setting / API Service', component: APIService },
@@ -401,11 +401,11 @@ const routes = [
   { path: '/sys/gi/progress', exact: true, name: 'Dashboard / Issuing Progress', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
-  { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
-  { path: '/sys/ad/queueaudit', exact: true, name: 'Create Queue Audit', component: AuditQueue },
-  { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
-  { path: '/sys/ad/manage', exact: true, name: 'Audit Document', component: AuditCreate },
-  { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
+  { path: '/sys/ad/audit', exact: true, name: 'Audit / Audit', component: Audit },
+  { path: '/sys/ad/queueaudit', exact: true, name: 'Audit / Create Queue Audit', component: AuditQueue },
+  { path: '/sys/ad/search', exact: true, name: 'Audit / Search Audit', component: AuditDoc },
+  { path: '/sys/ad/manage', exact: true, name: 'Audit / Audit Document', component: AuditCreate },
+  { path: '/sys/ad/create', exact: true, name: 'Audit / Create Audit Document', component: AuditCreate },
   { path: '/sys/ad/report', exact: true, name: 'Report / Audit Report', component: ReportAudit },
   { path: '/sys/ad/check', exact: true, name: 'Check Audit', component: CheckInventory },
 ];
