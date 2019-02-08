@@ -367,7 +367,7 @@ const routes = [
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Receive / Search Receive', component: InboundView },
-  { path: '/doc/gr/manage', exact: true, name: 'Receive Document', component: ReceiveManage },
+  { path: '/doc/gr/manage', exact: true, name: 'Receive / Create Receive Document', component: ReceiveManage },
   { path: '/doc/gi/list', exact: true, name: 'Issue / Search Issue', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Issue / Issue Document', component: IssuedManage },
   { path: '/doc/gi/create', exact: true, name: 'Issue / Create Issue Document', component: IssuedManage },

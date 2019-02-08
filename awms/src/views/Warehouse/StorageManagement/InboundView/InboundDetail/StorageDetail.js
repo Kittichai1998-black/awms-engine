@@ -34,7 +34,7 @@ class IssuedDoc extends Component {
   }
   displayButtonByPermission(dataGetPer) {
     // 20 TransGRD_execute
-    if (!CheckViewCreatePermission("TransGRD_execute", dataGetPer)) {
+    if (!CheckViewCreatePermission("TransGRD_view", dataGetPer)) {
       this.props.history.push("/404")
     }
   }
