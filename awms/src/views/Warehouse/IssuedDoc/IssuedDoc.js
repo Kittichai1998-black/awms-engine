@@ -50,7 +50,7 @@ class IssuedDoc extends Component {
       open: false,
       errorstr: null,
       selectiondata: [],
-      defaultPageS: 20,
+      defaultPageS: 100,
       currentPage: 1,
       loading: true,
       modalstatus: false,
