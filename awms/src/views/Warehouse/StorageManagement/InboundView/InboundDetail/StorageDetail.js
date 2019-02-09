@@ -155,8 +155,10 @@ class IssuedDoc extends Component {
     Axios.get(window.apipath + "/api/wm/received/doc/SAPRes?docID=" + ID).then(res => {
       if( res.data.datas.length > 0){
         var json = res.data.datas[0].description
-        let exwindow = window.open("data:application/json," + encodeURIComponent(json))
-        exwindow.document.write("<iframe width='100%' height='100%' src='data:application/json, " + encodeURIComponent(json)+ "' frameborder='0' style='border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;' allowfullscreen></iframe>")
+        var xwindow = window.open("","_blank")
+        if(xwindow !== null){
+          xwindow.document.write("<iframe width='100%' height='100%' src='data:application/json, " + encodeURIComponent(json)+ "' frameborder='0' style='border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;' allowfullscreen></iframe>")
+        }      
       }else{
         alert("No data log from SAP")
       }
