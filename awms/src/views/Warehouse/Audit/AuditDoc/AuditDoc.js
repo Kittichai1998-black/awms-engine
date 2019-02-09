@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Row, Col, Badge, Input, Card, CardBody, Button } from 'reactstrap';
+import { Row, Col, Badge, Input, Card, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTable from 'react-table'
 import { apicall, createQueryString, GenerateDropDownStatus } from '../../ComponentCore'
 import DatePicker from 'react-datepicker';
@@ -54,6 +54,7 @@ class AuditDoc extends Component {
       defaultPageS: 100,
       currentPage: 1,
       loading: true,
+      modalstatus: false,
       datafilter: [{ "id": "DocumentType_ID", "value": 2004 }]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -144,6 +145,7 @@ class AuditDoc extends Component {
           this.getData()
           this.setState({ resp: res.data._result.message })
         })
+        this.toggle()
       }
       else if (status === "Close") {
         Axios.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => {
@@ -325,6 +327,22 @@ class AuditDoc extends Component {
       onChange={(e) => this.onHandleSelection(rowdata, e.target.checked)} />
   }
 
+  createModal() {
+    return <Modal isOpen={this.state.modalstatus}>
+      <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
+
+      <ModalFooter>
+        <Button id="per_button_reject" color="primary" style={{ width: "130px" }} onClick={() => this.workingData(this.state.selectiondata, "reject")} >OK</Button>{' '}
+        <Button color="secondary" style={{ width: "130px" }} onClick={this.toggle}>Cancel</Button>
+
+      </ModalFooter>
+    </Modal>
+  }
+
+  toggle() {
+    this.setState({ modalstatus: !this.state.modalstatus });
+  }
+
   openModal() {
     this.setState({ open: true })
   }
@@ -404,6 +422,8 @@ class AuditDoc extends Component {
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
+
+        {this.createModal()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row style={{verticalAlign: 'baseline'}}>
 
