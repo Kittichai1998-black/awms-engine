@@ -67,7 +67,7 @@ const Status = [
 ]
 
 const StorageObjectEventStatus = [
-    {status: "IDEL",code: 10},
+    {status: "IDLE",code: 10},
     {status: "RECEIVING",code: 11},
     {status: "RECEIVED",code: 12},
     {status: "AUDITING",code: 13},
