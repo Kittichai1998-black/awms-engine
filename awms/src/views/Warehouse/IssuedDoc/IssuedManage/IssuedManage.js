@@ -682,7 +682,7 @@ class IssuedManage extends Component {
   getStatus(value) {
     // console.log(value)
     if (value === 0)
-      return <Badge color="PENDING" style={{ fontSize: '0.825em', fontWeight: '500' }}>PENDING</Badge>
+      return <Badge color="PICKING" style={{ fontSize: '0.825em', fontWeight: '500' }}>PICKING</Badge>
     else if (value === 1)
       return <Badge color="PICKED" style={{ fontSize: '0.825em', fontWeight: '500' }}>PICKED</Badge>
     else

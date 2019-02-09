@@ -234,7 +234,7 @@ class StoragReport extends Component {
           if (this.state.currentPage !== undefined) {
             if (this.state.currentPage > 1) {
               // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
             } else {
               numrow = e.index + 1;
             }
