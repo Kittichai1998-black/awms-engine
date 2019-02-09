@@ -50,7 +50,7 @@ class IssuedDoc extends Component {
       open: false,
       errorstr: null,
       selectiondata: [],
-      defaultPageS: 100,
+      defaultPageS: 20,
       currentPage: 1,
       loading: true,
       modalstatus: false,
@@ -388,7 +388,7 @@ class IssuedDoc extends Component {
 
   createModal() {
     return <Modal isOpen={this.state.modalstatus}>
-      <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
+      <ModalHeader toggle={this.toggle}> <span>Confirm Reject</span></ModalHeader>
 
       <ModalFooter>
         <Button id="per_button_reject" color="primary" style={{ width: "130px" }} onClick={() => this.workingData(this.state.selectiondata, "reject")} >OK</Button>{' '}
