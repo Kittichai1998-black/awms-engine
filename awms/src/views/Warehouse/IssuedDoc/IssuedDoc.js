@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Badge, Row, Col, Input, Card, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTable from 'react-table'
-import { apicall, createQueryString, GenerateDropDownStatus } from '../ComponentCore'
+import { apicall, AutoSelect, createQueryString, GenerateDropDownStatus } from '../ComponentCore'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { DocumentEventStatus } from '../Status'
@@ -50,7 +50,7 @@ class IssuedDoc extends Component {
       open: false,
       errorstr: null,
       selectiondata: [],
-      defaultPageS: 20,
+      defaultPageS: 100,
       currentPage: 1,
       loading: true,
       modalstatus: false,
@@ -66,6 +66,9 @@ class IssuedDoc extends Component {
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
+    this.toggle = this.toggle.bind(this);
+
+    this.station = [{ 'label': "Front", 'value': 2 }, { 'label': "Back", 'value': 3 }];
   }
 
   async componentWillMount() {
@@ -389,7 +392,7 @@ class IssuedDoc extends Component {
   createModal() {
     return <Modal isOpen={this.state.modalstatus}>
       <ModalHeader toggle={this.toggle}> <span>Confirm Reject</span></ModalHeader>
-
+ 
       <ModalFooter>
         <Button id="per_button_reject" color="primary" style={{ width: "130px" }} onClick={() => this.workingData(this.state.selectiondata, "reject")} >OK</Button>{' '}
         <Button color="secondary" style={{ width: "130px" }} onClick={this.toggle}>Cancel</Button>
