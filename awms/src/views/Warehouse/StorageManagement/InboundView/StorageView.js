@@ -173,7 +173,7 @@ class IssuedDoc extends Component {
       </ModalBody>
       <ModalFooter>
         <Button color="primary" id="off" onClick={() => { this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>Comfirm</Button>
-        <Button color="" id="off" onClick={() => this.toggle()}>Cancle</Button>
+        <Button color="" id="off" onClick={() => this.toggle()}>Cancel</Button>
       </ModalFooter>
     </Modal>
   }
@@ -183,7 +183,7 @@ class IssuedDoc extends Component {
       <ModalHeader toggle={this.toggleData}> <span>Reject</span></ModalHeader>
       <ModalFooter>
         <Button color="primary" id="off" onClick={() => { this.RejectIDLE(this.state.selectiondata); this.toggleData() }}>Comfirm</Button>
-        <Button color="" id="off" onClick={() => this.toggleData()}>Cancle</Button>
+        <Button color="" id="off" onClick={() => this.toggleData()}>Cancel</Button>
       </ModalFooter>
     </Modal>
   }
