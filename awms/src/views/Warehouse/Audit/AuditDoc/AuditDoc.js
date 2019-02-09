@@ -67,6 +67,7 @@ class AuditDoc extends Component {
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
+    this.toggle = this.toggle.bind(this);
   }
 
   async componentWillMount() {
@@ -477,7 +478,7 @@ class AuditDoc extends Component {
         />
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
+            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.toggle()} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_working" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>
