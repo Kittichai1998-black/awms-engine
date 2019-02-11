@@ -62,6 +62,7 @@ class CurrentReport extends Component {
     Axios.get(createQueryString(this.state.select)).then((response) => {
       let countpages = null;
       let counts = response.data.counts;
+      console.log(counts)
       countpages = Math.ceil(counts / this.state.defaultPageS);
       this.setState({ data: response.data.datas, countpages: countpages, loading: false })
     })
@@ -306,7 +307,7 @@ class CurrentReport extends Component {
             </Col>
             <Col xs="6">
               <div className="float-right">
-                <ExportFile column={cols} dataxls={this.state.data} filename={"CurrentInventory"} />
+                <ExportFile column={cols} dataselect={this.state.select} filename={"CurrentInventory"} />
               </div>
             </Col>
 

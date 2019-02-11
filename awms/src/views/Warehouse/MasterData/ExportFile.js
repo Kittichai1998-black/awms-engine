@@ -72,18 +72,18 @@ class ExportFile extends Component {
               let datasbook = res.data.datas
               datasbook.forEach((datarow, index) => {
                 for (var xfield in datarow) {
-                  if (xfield === "Status") {
-                    if (datarow[xfield] === 1)
-                      datarow[xfield] = "Active";
-                    else
-                      datarow[xfield] = "Inactive";
-                  }
-                  if (xfield !== "Status") {
+                  // if (xfield === "Status") {
+                  //   if (datarow[xfield] === 1)
+                  //     datarow[xfield] = "Active";
+                  //   else
+                  //     datarow[xfield] = "Inactive";
+                  // }
+                  // if (xfield !== "Status") {
                     if (!isNaN(datarow[xfield])) {
                       if (datarow[xfield] != null)
                         datarow[xfield] = datarow[xfield].toString();
                     }
-                  }
+                  // }
                   if (this.props.enums && this.props.autocomp) {
                     const enums = [...this.props.enum];
                     const autocomps = [...this.props.autocomp];

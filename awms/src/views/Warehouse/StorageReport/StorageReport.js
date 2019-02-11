@@ -344,7 +344,7 @@ class StoragReport extends Component {
               dateFormat={"DD-MM-YYYY"} />
 
             <Col xs="1">
-              <ExportFile column={cols} dataxls={this.state.data} filename={"StorageReport"} />
+              <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
             </Col>
           </Row>
         </div>

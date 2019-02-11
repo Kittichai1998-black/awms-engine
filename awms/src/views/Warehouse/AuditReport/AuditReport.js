@@ -300,7 +300,7 @@ class AuditReport extends Component {
             <Col xs="6">
             <div>
                 <div className="float-right">
-              <ExportFile column={cols} dataxls={this.state.data} filename={"AuditReport"} />
+              <ExportFile column={cols} dataselect={this.state.select} filename={"AuditReport"} />
               </div>
               <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
               </div>
