@@ -152,11 +152,12 @@ class TableGen extends Component {
           (res) => {
             let countpages = null;
             let counts = res.data.counts;
+            console.log(counts)
             countpages = Math.ceil(counts / this.state.defaultPageS);
             this.setState({ data: res.data.datas, countpages: countpages, loading: false })
           })
       }
-      else {
+      else { 
         Axios.get(this.props.url).then(
           (res) => {
             this.setState({ data: res.data.datas, loading: false })
@@ -312,7 +313,11 @@ class TableGen extends Component {
         console.log(queryString)
         Axios.get(queryString).then(
           (res) => {
-            this.setState({ data: res.data.datas, loading: false });
+            let countpages = null;
+            let counts = res.data.counts;
+            countpages = Math.ceil(counts / this.state.defaultPageS);
+            this.setState({ data: res.data.datas, countpages: countpages, loading: false })
+            // this.setState({ data: res.data.datas, loading: false });
           }
         )
       }
@@ -329,7 +334,11 @@ class TableGen extends Component {
         let queryString = createQueryString(select)
         Axios.get(queryString).then(
           (res) => {
-            this.setState({ data: res.data.datas, loading: false });
+            let countpages = null;
+            let counts = res.data.counts;
+            countpages = Math.ceil(counts / this.state.defaultPageS);
+            this.setState({ data: res.data.datas, countpages: countpages, loading: false })
+            // this.setState({ data: res.data.datas, loading: false });
           }
         )
       }
