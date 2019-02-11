@@ -32,7 +32,7 @@ class StoragReport extends Component {
         g: "",
         s: "[{'f':'Pallet','od':'asc'}]",
         sk: 0,
-        l: 0,
+        l: 100,
         all: "",
       },
       datafilter: [],

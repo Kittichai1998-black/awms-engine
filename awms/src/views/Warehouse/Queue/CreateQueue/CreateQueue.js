@@ -413,33 +413,14 @@ class CreateQueue extends Component {
     });
     dataProcessItems.forEach((rowdata, index1) => {
       rowdata.batchs.forEach((batch, index2) => {
-        batchCard = batchCard.concat(this.addNewInputText2(index1, index2));
+        batchCard = batchCard.concat(this.addNewInputText(index1, index2));
       });
     });
 
     this.setState({ batchCard }, () => this.forceUpdate());
   }
 
-  addNewInputText(index, datarow) {
-    const styleclose = { cursor: "pointer", position: "absolute", display: "inline", background: "#ffffff", borderRadius: "18px" }
-    return <div className={[datarow.dociID, index]} style={{ "border-radius": "15px", "border": "1px solid white", "padding": "5px", background: "white", "margin": "5px" }}>
-      <Row>
-        <Col md="1"><a style={styleclose} onClick={() => this.clearBatchInput(datarow.dociID, index)}>{imgClose}</a></Col>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Batch :  </label></Col>
-        <Col md="3"><div style={{ display: "inline" }}><Input
-          defaultValue={this.state.dataProcessItems[0].batchs[index].value}
-          value={null}
-          onChange={(e) => { this.onEditorValueChange(datarow.dociID + "," + index, e.target.value, "value") }} /></div></Col>
-        <Col md="2" style={{ textAlign: "right", "vertical-align": "middle" }}><label>Qty :  </label></Col>
-        <Col md="3"><div style={{ display: "inline" }}><Input type="number"
-          defaultValue={this.state.dataProcessItems[0].batchs[index].qty}
-          value={null}
-          onChange={(e) => { this.onEditorValueChange(datarow.dociID + "," + index, e.target.value, "qty") }} /></div></Col>
-      </Row>
-    </div>
-  }
-
-  addNewInputText2(dataProcessIndex, batchIndex) {
+  addNewInputText(dataProcessIndex, batchIndex) {
     const styleclose = { cursor: "pointer", position: "absolute", display: "inline", background: "#ffffff", borderRadius: "18px" }
     return <div className={[this.state.dataProcessItems[dataProcessIndex].dociID, batchIndex]} style={{ "border-radius": "15px", "border": "1px solid white", "padding": "5px", background: "white", "margin": "5px" }}>
       <Row>
