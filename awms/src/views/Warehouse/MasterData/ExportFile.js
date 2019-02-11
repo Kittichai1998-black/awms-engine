@@ -63,6 +63,7 @@ class ExportFile extends Component {
     }else if (this.props.dataselect) {
       let dataselect = this.props.dataselect
       dataselect["l"] = 0
+      dataselect["sk"] = 0
       let queryString = createQueryString(dataselect)
       await Axios.get(queryString).then(
         (res) => {

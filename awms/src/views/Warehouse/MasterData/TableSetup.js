@@ -538,16 +538,17 @@ class TableGen extends Component {
   }
 
   NextLastPage(position){
+    this.setState({ loading: true })
     let queryString = "";
     const select = this.state.dataselect
      if (position === 'next') {   
        select.sk = ((this.state.countpages*100)-100)
-       console.log(select)
+      //  console.log(select)
       queryString = createQueryString(select)
     }
     else {
      select.sk = 0 
-     console.log(select)
+    //  console.log(select)
       queryString = createQueryString(select)
     }
 
