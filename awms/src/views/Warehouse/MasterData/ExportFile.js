@@ -55,7 +55,13 @@ class ExportFile extends Component {
     if(this.props.dataxls){
       let datasxls = Clone(this.props.dataxls);
       datasxls.forEach((datarow, index) => {
-        datarow["No."] = (index + 1).toString();
+        for (var xfield in datarow) {
+          if (!isNaN(datarow[xfield])) {
+            if (datarow[xfield] != null)
+              datarow[xfield] = datarow[xfield].toString();
+          }
+          datarow["No."] = (index + 1).toString();
+        }
       })
       this.setState({ dataxls: datasxls }, () => {
         document.getElementById("btnLoad").click();
@@ -111,7 +117,7 @@ class ExportFile extends Component {
         })
     }
   }
-
+ 
   onHandleClick(event) {
     event.preventDefault();
     console.log("genbtnload");
