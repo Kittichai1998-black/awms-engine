@@ -41,6 +41,7 @@ class Pack extends Component {
         this.filterList = this.filterList.bind(this);
         this.onClickUpdateData = this.onClickUpdateData.bind(this)
         this.customSorting = this.customSorting.bind(this);
+        this.NextLastPage = this.NextLastPage.bind(this)
         this.UnitTypeSelect = {
             queryString: window.apipath + "/api/mst",
             t: "UnitType",
@@ -258,6 +259,39 @@ class Pack extends Component {
         });
     }
 
+    NextLastPage(position){
+        let queryString = "";
+        const select = this.state.select
+         if (position === 'next') {   
+           select.sk = ((this.state.countpages*100)-100)
+           console.log(select)
+          queryString = createQueryString(select)
+        }
+        else {
+         select.sk = 0 
+         console.log(select)
+          queryString = createQueryString(select)
+        }
+    
+        Axios.get(queryString).then(
+          (res) => {
+            if (res.data.datas.length > 0) {
+              if (position === 'next') {
+                this.setState({currentPage:(this.state.countpages)})
+              }
+              else {
+                this.setState({currentPage:1})
+              }
+              this.setState({ data: res.data.datas })
+            }
+            else {
+              select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+            }
+            this.setState({ loading: false })
+          }
+        )
+      }
+
     paginationButton() {
         const notPageactive = {
             pointerEvents: 'none',
@@ -273,6 +307,15 @@ class Pack extends Component {
             background: '#cfd8dc',
             minWidth: '90px'
         }
+        const notPageactiveLast = {
+            pointerEvents: 'none',
+            cursor: 'default',
+            textDecoration: 'none',
+          }
+          const pageactiveLast = {
+            textDecoration: 'none',
+      
+          }
         return (
             <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
                 <nav>
@@ -286,6 +329,8 @@ class Pack extends Component {
                             Next</a></li>
                     </ul>
                 </nav>
+                <Button style={this.state.currentPage === 1 ? notPageactiveLast : pageactiveLast}  outline color="success" onClick={() => this.NextLastPage("prev")}>{"<"}</Button>{' '}
+        <Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactiveLast : pageactiveLast} outline color="success" onClick={() => this.NextLastPage("next")}>{">"}</Button>{' '}
             </div>
         )
     }

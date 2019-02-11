@@ -105,6 +105,7 @@ class TableGen extends Component {
     this.printbarcodeall = this.printbarcodeall.bind(this)
     this.AddGenerate = this.AddGenerate.bind(this)
     this.Notification = this.Notification.bind(this)
+    this.NextLastPage = this.NextLastPage.bind(this)
     this.data = []
     this.sortstatus = 0
     this.order = 0
@@ -527,13 +528,49 @@ class TableGen extends Component {
       })
   }
 
+  NextLastPage(position){
+    let queryString = "";
+    const select = this.state.dataselect
+     if (position === 'next') {   
+       select.sk = ((this.state.countpages*100)-100)
+       console.log(select)
+      queryString = createQueryString(select)
+    }
+    else {
+     select.sk = 0 
+     console.log(select)
+      queryString = createQueryString(select)
+    }
+
+    Axios.get(queryString).then(
+      (res) => {
+        if (res.data.datas.length > 0) {
+          if (position === 'next') {
+            this.setState({currentPage:(this.state.countpages)})
+          }
+          else {
+            this.setState({currentPage:1})
+          }
+          this.setState({ data: res.data.datas })
+        }
+        else {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+        }
+        this.setState({ loading: false })
+      }
+    )
+  }
+
+
+
+
   pageOnHandleClick(position) {
     if (this.props.url === undefined || this.props.url === null) {
       let queryString = "";
       this.setState({ loading: true })
       const select = this.state.dataselect
       if (position === 'next') {
-        select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
+        select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)       
         queryString = createQueryString(select)
       }
       else {
@@ -542,6 +579,7 @@ class TableGen extends Component {
         }
         queryString = createQueryString(select)
       }
+
       Axios.get(queryString).then(
         (res) => {
           if (res.data.datas.length > 0) {
@@ -603,6 +641,15 @@ class TableGen extends Component {
       background: '#cfd8dc',
       minWidth: '90px'
     }
+    const notPageactiveLast = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+    }
+    const pageactiveLast = {
+      textDecoration: 'none',
+
+    }
     return (
       <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
         <nav>
@@ -613,10 +660,13 @@ class TableGen extends Component {
             <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
             <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
+              Next</a></li> 
           </ul>
         </nav>
+        <Button style={this.state.currentPage === 1 ? notPageactiveLast : pageactiveLast}  outline color="success" onClick={() => this.NextLastPage("prev")}>{"<"}</Button>{' '}
+        <Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactiveLast : pageactiveLast} outline color="success" onClick={() => this.NextLastPage("next")}>{">"}</Button>{' '}
       </div>
+      
     )
   }
 
