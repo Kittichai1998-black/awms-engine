@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AMWUtil.Logger;
 using AMWUtil.PropertyFile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,15 +37,27 @@ namespace WCSSimAPI
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
-            PropertyFileManager.GetInstant().AddPropertyFile("app", env.ContentRootPath + "/app.conf");
-            var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary("app");
+            //PropertyFileManager.GetInstant().AddPropertyFile("app", env.ContentRootPath + "/app.conf");
+            //var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary("app");
 
-            ConstConfig.DBConnection = appProperty.GetValueOrDefault("DBConnection");
-            ConstConfig.CronEx = appProperty.GetValueOrDefault("CronEx");
-            ConstConfig.WMSApiURL = appProperty.GetValueOrDefault("WMSApiURL");
+            //ConstConfig.DBConnection = appProperty.GetValueOrDefault("DBConnection");
+            //ConstConfig.CronEx = appProperty.GetValueOrDefault("CronEx");
+            //ConstConfig.WMSApiURL = appProperty.GetValueOrDefault("WMSApiURL");
 
-            AMWUtil.Logger.AMWLoggerManager.InitInstant(appProperty.GetValueOrDefault("logger.rootpath"), appProperty.GetValueOrDefault("logger.filename"));
+            //string logPath = appProperty.GetValueOrDefault("logger.rootpath");
+            //string logFile = appProperty.GetValueOrDefault("logger.filename");
 
+
+            /*AMWUtil.Logger.AMWLoggerManager.InitInstant(@"D:/wcs_log/{Date}/",@"{ServiceName}.{Date}.log");
+            using(System.IO.StreamWriter fw = new System.IO.StreamWriter(@"D:\test.log"))
+            {
+                fw.WriteLine("TEST::" + DateTime.Now);
+            }
+            var logStartUp = AMWLoggerManager.GetLogger("Start Up");
+            logStartUp.LogInfo("##################");
+            logStartUp.LogInfo("DBConnection : " + ConstConfig.DBConnection);
+            logStartUp.LogInfo("CronEx : " + ConstConfig.CronEx);
+            logStartUp.LogInfo("WMSApiURL : " + ConstConfig.WMSApiURL);*/
             this.JobRun();
 
             if (env.IsDevelopment())
@@ -67,10 +80,18 @@ namespace WCSSimAPI
             WMS_WorkingJobs jobWorking = new WMS_WorkingJobs();
             WMS_LocationInfoJobs jobLocationInfo = new WMS_LocationInfoJobs();
 
-            var registerLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("RegisterQueue");
-            var workingLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("WorkingQueue");
-            var doneLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("DoneQueue");
-            var locationLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("LocationInfoQueue");
+            AMWLogger registerLog = null;// AMWUtil.Logger.AMWLoggerManager.GetLogger("RegisterQueue");
+            AMWLogger workingLog = null;// AMWUtil.Logger.AMWLoggerManager.GetLogger("WorkingQueue");
+            AMWLogger doneLog = null;// AMWUtil.Logger.AMWLoggerManager.GetLogger("DoneQueue");
+            AMWLogger locationLog = null;// AMWUtil.Logger.AMWLoggerManager.GetLogger("LocationInfoQueue");
+
+
+            /*var logStartUp = AMWLoggerManager.GetLogger("Start Up");
+            logStartUp.LogInfo("##################");
+            logStartUp.LogInfo("DBConnection : " + ConstConfig.DBConnection);
+            logStartUp.LogInfo("CronEx : " + ConstConfig.CronEx);
+            logStartUp.LogInfo("WMSApiURL : " + ConstConfig.WMSApiURL);*/
+
             Task.Run(() =>
             {
                 while (true)
