@@ -40,7 +40,7 @@ class IssuedManage extends Component {
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
-        l: 0,
+        l: 25,
         all: "",
       },
       StorageObject: {
@@ -59,7 +59,8 @@ class IssuedManage extends Component {
       addstatus: false ,
       adddisplay: "none",
       basedisplay: "none",
-      storageObjectdata: []
+      storageObjectdata: [],
+      autocomplete:[],
 
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -114,13 +115,7 @@ class IssuedManage extends Component {
 
       })
     }else {
-      this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY') })
-      Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
-        this.setState({
-          autocomplete: rowselect2.data.datas, autocompleteUpdate: Clone(rowselect2.data.datas),
-          adddisplay: "inline-block"
-        })
-      })
+      this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY'), adddisplay: "inline-block" })
     }
 
     this.renderDocumentStatus();
@@ -209,7 +204,7 @@ class IssuedManage extends Component {
         "souAreaMasterID": null,
         "desCustomerID": null,
         "desSupplierID": null,
-        "actionTime": this.state.date,
+        "actionTime": this.state.date.format("YYYY/MM/DDThh:mm:ss"),
         "documentDate": this.DateNow.format("YYYY/MM/DD"),
         "docItems": listAudit
     };
@@ -310,18 +305,31 @@ class IssuedManage extends Component {
         }
         value={rowdata.original.SKU}
         onChange={(e) => {
-          const res = this.state.autocomplete.filter(row => {
-            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
-          });
-          if (res.length === 1) {
-            if (res[0].SKU === e.target.value)
-              this.editData(rowdata, res[0].SKU, rowdata.column.id)
-            else
-              this.editData(rowdata, e.target.value, rowdata.column.id)
+          clearTimeout(this.tid);
+          let autoQuery = this.state.select2;
+          let value = e.target.value === "" ? "" : e.target.value;
+          autoQuery.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "SKU", "c":"like", "v": "'+ value +'%"}]';
+          if(value === "")
+            this.setState({autocomplete:[]})
+          else{
+            this.tid = setTimeout(() => {
+              Axios.get(createQueryString(autoQuery)).then((rowselect2) => {
+                this.setState({
+                  autocomplete: rowselect2.data.datas, autocompleteUpdate: Clone(rowselect2.data.datas),
+                }, ()=> {
+                  const res = this.state.autocomplete.filter(row => {
+                    return row.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1
+                  });
+                  if (res.length === 1) {
+                    if (res[0].SKU === value)
+                      this.editData(rowdata, res[0], rowdata.column.id)
+                  }
+                })
+              })
+            }, 1500)
           }
-          else {
-            this.editData(rowdata, e.target.value, rowdata.column.id)
-          }
+          
+          this.editData(rowdata, value, rowdata.column.id)
         }}
         onSelect={(val, row) => {
           this.editData(rowdata, row, rowdata.column.id)
@@ -361,15 +369,6 @@ class IssuedManage extends Component {
               if (row.id === e.original.id) {
                 data.splice(index, 1)
               }
-            })
-            this.setState({ data }, () => {
-              let res = this.state.autocompleteUpdate
-              this.state.data.forEach((datarow, index) => {
-                res = res.filter(row => {
-                  return datarow.Code !== row.Code
-                })
-              })
-              this.setState({ autocomplete: res })
             })
           }} color="danger">Remove</Button>
         },
