@@ -129,7 +129,7 @@ class StockCardReport extends Component {
                 })
                 this.setState({
                   data: rowselect1.data.datas, countpages: countpages, loading: false
-                }, () => console.log(this.state.data))
+                })
               }
             }
           })
@@ -259,22 +259,22 @@ class StockCardReport extends Component {
         })
       },
       {
-        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
+        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: false, Cell: (e) =>
           this.datetimeBody(e.value)
       },
-      { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: true },
-      { accessor: 'SKU_Code', Header: 'SKU Code', editable: false, sortable: true, },
-      { accessor: 'SKU_Name', Header: 'SKU Name', editable: false, sortable: true, },
-      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
-      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: true, },
-      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: true, },
-      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
-      { accessor: 'Sou', Header: 'Sou.', editable: false, sortable: true },
-      { accessor: 'Des', Header: 'Des.', editable: false, sortable: true },
-      { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: true },
-      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: true },
+      { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: false },
+      { accessor: 'SKU_Code', Header: 'SKU Code', editable: false, sortable: false, },
+      { accessor: 'SKU_Name', Header: 'SKU Name', editable: false, sortable: false, },
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: false, },
+      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: false, },
+      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: false, },
+      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: false },
+      { accessor: 'Sou', Header: 'Sou.', editable: false, sortable: false },
+      { accessor: 'Des', Header: 'Des.', editable: false, sortable: false },
+      { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: false },
+      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: false },
       {
-        accessor: 'Debit', Header: 'Debit', editable: false, className: "right",
+        accessor: 'Debit', Header: 'Debit', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -285,7 +285,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Credit', Header: 'Credit', editable: false, className: "right",
+        accessor: 'Credit', Header: 'Credit', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -296,7 +296,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Total', Header: 'Total', editable: false, className: "right",
+        accessor: 'Total', Header: 'Total', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -305,7 +305,7 @@ class StockCardReport extends Component {
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.getTotal("Total")}</span>)
       }, 
-      { accessor: 'Unit', Header: 'Unit', editable: false, sortable: true },
+      { accessor: 'Unit', Header: 'Unit', editable: false, sortable: false },
     ];
     return (
       <div>
@@ -398,10 +398,10 @@ class StockCardReport extends Component {
           className="-highlight"
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
-          onSortedChange={(sorted) => {
-            this.setState({ data: [], loading: true });
-            this.customSorting(sorted)
-          }}
+          // onSortedChange={(sorted) => {
+          //   this.setState({ data: [], loading: true });
+          //   this.customSorting(sorted)
+          // }}
         />
       </div>
     )
