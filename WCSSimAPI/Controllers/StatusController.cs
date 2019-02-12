@@ -62,7 +62,10 @@ namespace WCSSimAPI.Controllers
                 Register Queue => " + registerQueueStatus + @"
                 Working Queue => " + workingQueueStatus + @"
                 Done Queue => " + doneQueueStatus + @"
-                Location Info Queue => " + locationInfoQueueStatus;
+                Location Info Queue => " + locationInfoQueueStatus + @"
+                DBConnection => " + ConstConfig.DBConnection + @"
+                CronEx => " + ConstConfig.CronEx + @"
+                WMSApiURL => " + ConstConfig.WMSApiURL;
             return responseString;
 
         }

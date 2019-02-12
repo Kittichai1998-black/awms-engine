@@ -17,7 +17,7 @@ namespace WCSSimAPI.Jobs
                 var req = ADO.DataADO.GetInstant().list_request_wms_register_queue(null);
                 if (!string.IsNullOrWhiteSpace(req.basecode))
                 {
-                    logger.LogInfo("WMS Request[" + req.basecode + "] : " + req.sJson);
+                    if (logger != null) logger.LogInfo("WMS Request[" + req.basecode + "] : " + req.sJson);
                     var res = AMWUtil.DataAccess.Http.RESTFulAccess.SendJson<dynamic>(null, ConstConfig.WMSApiURL + "/api/wm/asrs/queue/register", RESTFulAccess.HttpMethod.POST, req.sJson.Json<dynamic>());
                     ADO.DataADO.GetInstant().set_response_wms_register_queue(null, req.basecode, ObjectUtil.Json(res));
                 }
@@ -25,7 +25,8 @@ namespace WCSSimAPI.Jobs
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                if (logger != null) logger.LogError(ex.Message);
+                if (logger != null) logger.LogError(ex.StackTrace);
                 return DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " => " + ex.Message;
             }
         }
