@@ -412,8 +412,9 @@ class IssuedManage extends Component {
           </Row>
 
           <Row>
+            <Col xs="6"></Col>
             <Col xs="6"> <label>Action Time : </label>
-              <span style={{ width: "300px", marginLeft: '10px' }}>
+              <span style={{ display: "inline-block",width: "300px", marginLeft: '10px' }}>
               {this.state.pageID ? this.state.date.format("DD-MM-YYYY HH:mm:ss") : this.dateTimePicker()}
               </span>
             </Col>
@@ -436,12 +437,13 @@ class IssuedManage extends Component {
               <span style={{ width: "300px", marginLeft: '5px' }}> {this.state.ref1}</span>}</span></Col>
           </Row>}
           <Row>
+          
+            <Col xs="6"><label>Doc Status :</label><span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></Col>
             <Col xs="6"><label>Remark : </label>
               {this.state.pageID ? <span> {this.state.remark}</span> :
                 <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '10px' }}
                   value={this.state.remark === undefined ? "" : this.state.remark} />}
             </Col>       
-            <Col xs="6"><label>Doc Status :</label><span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></Col>
           </Row>
 
         </div>
