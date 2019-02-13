@@ -272,6 +272,8 @@ class IssuedDoc extends Component {
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;
+    getSelect["sk"] = 0
+        this.setState({currentPage:1})
     getSelect.q = strCondition;
     this.setState({ select: getSelect }, () => { this.getData() })
   }
