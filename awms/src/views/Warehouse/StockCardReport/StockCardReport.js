@@ -96,6 +96,7 @@ class StockCardReport extends Component {
         let orderno = this.state.Orderno
         let movementtype = this.state.Movementtype
         let sapdoc = this.state.Sapdoc
+        this.setState({loading: true})
 
         Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&skuid=" + skuid
           + "&startDate=" + formatDateFrom

@@ -254,7 +254,7 @@ class TaskList extends Component {
                     minRows={7}
                     data={this.state.dataworkingout}
                     sortable={false}
-                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.2em', fontWeight: '700' }}
+                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.2em', fontWeight: '700', zIndex: 0 }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
@@ -290,7 +290,7 @@ class TaskList extends Component {
                     minRows={7}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.2em', fontWeight: '700' }}
+                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.2em', zIndex: 0, fontWeight: '700' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
