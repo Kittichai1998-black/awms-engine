@@ -46,11 +46,11 @@ class AuditReport extends Component {
       DocAudit:[],
       PackMasterdata: [],
       batch: "",
-      defaultPageS: 100,
-      currentPage: 1,
+      // defaultPageS: 100,
+      // currentPage: 1,
       loading: false,
     }
-    this.paginationButton = this.paginationButton.bind(this)
+    // this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.customSorting = this.customSorting.bind(this);
   }
@@ -107,9 +107,9 @@ class AuditReport extends Component {
             if (rowselect1) {
               // console.log(rowselect1)
               if (rowselect1.data._result.status !== 0) {
-                let countpages = null;
-                let counts = rowselect1.data.datas.length;
-                countpages = Math.ceil(counts / this.state.defaultPageS);
+                // let countpages = null;
+                // let counts = rowselect1.data.datas.length;
+                // countpages = Math.ceil(counts / this.state.defaultPageS);
                 rowselect1.data.datas.forEach(x => {
                   this.setState({
                     BaseCode: x.BaseCode,
@@ -127,7 +127,7 @@ class AuditReport extends Component {
                   })
                 })
                 this.setState({
-                  data: rowselect1.data.datas, countpages: countpages, loading: false
+                  data: rowselect1.data.datas, loading: false
                 })
               }
             }
@@ -220,18 +220,22 @@ class AuditReport extends Component {
       {
         Header: 'No.', fixed: "left", sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
-        Cell: (e) => {
-          let numrow = 0;
-          if (this.state.currentPage !== undefined) {
-            if (this.state.currentPage > 1) {
-              // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
-            } else {
-              numrow = e.index + 1;
-            }
-          }
-          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        id: "row",
+        Cell: (row) => {
+          return <span style={{ fontWeight: 'bold' }}>{row.index + 1}</span>;
         },
+        // Cell: (e) => {
+        //   let numrow = 0;
+        //   if (this.state.currentPage !== undefined) {
+        //     if (this.state.currentPage > 1) {
+        //       // e.index + 1 + (2*100)  
+        //       numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
+        //     } else {
+        //       numrow = e.index + 1;
+        //     }
+        //   }
+        //   return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        // },
         getProps: (state, rowInfo) => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -316,8 +320,9 @@ class AuditReport extends Component {
           multiSort={false}
           filterable={false}
           className="-highlight"
-          defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton}
+          showPagination={false}
+          // defaultPageSize={this.state.defaultPageS}
+          // PaginationComponent={this.paginationButton}
           // onSortedChange={(sorted) => {
           //   this.setState({ data: [], loading: true });
           //   this.customSorting(sorted)

@@ -40,7 +40,7 @@ class IssuedManage extends Component {
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
-        l: 0,
+        l: 25,
         all: "",
       },
       StorageObject: {
@@ -59,7 +59,8 @@ class IssuedManage extends Component {
       addstatus: false ,
       adddisplay: "none",
       basedisplay: "none",
-      storageObjectdata: []
+      storageObjectdata: [],
+      autocomplete:[],
 
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -114,13 +115,7 @@ class IssuedManage extends Component {
 
       })
     }else {
-      this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY') })
-      Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
-        this.setState({
-          autocomplete: rowselect2.data.datas, autocompleteUpdate: Clone(rowselect2.data.datas),
-          adddisplay: "inline-block"
-        })
-      })
+      this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY'), adddisplay: "inline-block" })
     }
 
     this.renderDocumentStatus();
@@ -209,7 +204,7 @@ class IssuedManage extends Component {
         "souAreaMasterID": null,
         "desCustomerID": null,
         "desSupplierID": null,
-        "actionTime": this.state.date,
+        "actionTime": this.state.date.format("YYYY/MM/DDThh:mm:ss"),
         "documentDate": this.DateNow.format("YYYY/MM/DD"),
         "docItems": listAudit
     };
@@ -289,14 +284,19 @@ class IssuedManage extends Component {
       return <ReactAutocomplete
         inputProps={{
           style: {
-            width: "100%", borderRadius: "1px", 
-            backgroundImage: 'url(' + arrimg + ')',
-            backgroundPosition: "8px 8px",
-            backgroundSize: "10px",
-            backgroundRepeat: "no-repeat",
-            paddingLeft: "25px",
+            width: "100%",
+            borderRadius: "1px",
+            height: "auto",
+            //backgroundImage: 'url(' + arrimg + ')',
+            //backgroundPosition: "8px 8px",
+            //backgroundSize: "10px",
+            //backgroundRepeat: "no-repeat",
+            //paddingLeft: "25px",
             position: 'relative'
-          }
+          },
+          className: "form-control",
+          placeHolder: "Input SKU"
+
         }}
         wrapperStyle={{ width: "100%" }}
         menuStyle={style}
@@ -310,18 +310,31 @@ class IssuedManage extends Component {
         }
         value={rowdata.original.SKU}
         onChange={(e) => {
-          const res = this.state.autocomplete.filter(row => {
-            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
-          });
-          if (res.length === 1) {
-            if (res[0].SKU === e.target.value)
-              this.editData(rowdata, res[0].SKU, rowdata.column.id)
-            else
-              this.editData(rowdata, e.target.value, rowdata.column.id)
+          clearTimeout(this.tid);
+          let autoQuery = this.state.select2;
+          let value = e.target.value === "" ? "" : e.target.value;
+          autoQuery.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "SKU", "c":"like", "v": "'+ value +'%"}]';
+          if(value === "")
+            this.setState({autocomplete:[]})
+          else{
+            this.tid = setTimeout(() => {
+              Axios.get(createQueryString(autoQuery)).then((rowselect2) => {
+                this.setState({
+                  autocomplete: rowselect2.data.datas, autocompleteUpdate: Clone(rowselect2.data.datas),
+                }, ()=> {
+                  const res = this.state.autocomplete.filter(row => {
+                    return row.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1
+                  });
+                  if (res.length === 1) {
+                    if (res[0].SKU === value)
+                      this.editData(rowdata, res[0], rowdata.column.id)
+                  }
+                })
+              })
+            }, 1500)
           }
-          else {
-            this.editData(rowdata, e.target.value, rowdata.column.id)
-          }
+          
+          this.editData(rowdata, value, rowdata.column.id)
         }}
         onSelect={(val, row) => {
           this.editData(rowdata, row, rowdata.column.id)
@@ -361,15 +374,6 @@ class IssuedManage extends Component {
               if (row.id === e.original.id) {
                 data.splice(index, 1)
               }
-            })
-            this.setState({ data }, () => {
-              let res = this.state.autocompleteUpdate
-              this.state.data.forEach((datarow, index) => {
-                res = res.filter(row => {
-                  return datarow.Code !== row.Code
-                })
-              })
-              this.setState({ autocomplete: res })
             })
           }} color="danger">Remove</Button>
         },
@@ -412,8 +416,9 @@ class IssuedManage extends Component {
           </Row>
 
           <Row>
+            <Col xs="6"></Col>
             <Col xs="6"> <label>Action Time : </label>
-              <span style={{ width: "300px", marginLeft: '10px' }}>
+              <span style={{ display: "inline-block",width: "300px", marginLeft: '10px' }}>
               {this.state.pageID ? this.state.date.format("DD-MM-YYYY HH:mm:ss") : this.dateTimePicker()}
               </span>
             </Col>
@@ -436,12 +441,13 @@ class IssuedManage extends Component {
               <span style={{ width: "300px", marginLeft: '5px' }}> {this.state.ref1}</span>}</span></Col>
           </Row>}
           <Row>
+          
+            <Col xs="6"><label>Doc Status :</label><span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></Col>
             <Col xs="6"><label>Remark : </label>
               {this.state.pageID ? <span> {this.state.remark}</span> :
                 <Input onChange={(e) => this.setState({ remark: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '10px' }}
                   value={this.state.remark === undefined ? "" : this.state.remark} />}
             </Col>       
-            <Col xs="6"><label>Doc Status :</label><span style={{ marginLeft: '5px' }}> {this.renderDocumentStatus()}</span></Col>
           </Row>
 
         </div>

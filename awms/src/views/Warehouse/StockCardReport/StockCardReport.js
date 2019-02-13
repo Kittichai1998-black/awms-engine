@@ -211,28 +211,25 @@ class StockCardReport extends Component {
   sumFooterTotal(value) {
     var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x[value]) : null)
-    if (sumVal === 0 || sumVal === null || sumVal === undefined)
+        parseFloat(x[value] === null ? 0 : x[value]) : null)
+    if (sumVal === 0 || sumVal === null || sumVal === undefined || isNaN(sumVal))
       return '-'
     else
       return sumVal.toFixed(3)
   }
 
   getTotal(value) {
-    var sumDebit = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x.Debit) : null)
-    var sumCredit = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x.Credit) : null)
-    if (sumDebit === 0 && sumCredit === 0) {
-      return '-'
-    } else {
-      var sumVal = sumDebit - (sumCredit <= 0 ? -sumCredit : sumCredit)
-      if (sumVal === 0 || sumVal === null || sumVal === undefined)
+    if (this.state.data.length > 0) {
+      var sumVal = this.state.data[this.state.data.length - 1].Total
+      if (sumVal === 0) {
+        return 0
+      } else if (sumVal === null || sumVal === undefined || isNaN(sumVal)) {
         return '-'
-      else
+      } else {
         return sumVal.toFixed(3)
+      }
+    } else {
+      return '-'
     }
   }
   render() {
@@ -240,18 +237,22 @@ class StockCardReport extends Component {
       {
         Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
-        Cell: (e) => {
-          let numrow = 0;
-          if (this.state.currentPage !== undefined) {
-            if (this.state.currentPage > 1) {
-              // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
-            } else {
-              numrow = e.index + 1;
-            }
-          }
-          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        id: "row",
+        Cell: (row) => {
+          return <span style={{ fontWeight: 'bold' }}>{row.index + 1}</span>;
         },
+        // Cell: (e) => {
+        //   let numrow = 0;
+        //   if (this.state.currentPage !== undefined) {
+        //     if (this.state.currentPage > 1) {
+        //       // e.index + 1 + (2*100)  
+        //       numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
+        //     } else {
+        //       numrow = e.index + 1;
+        //     }
+        //   }
+        //   return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        // },
         getProps: (state, rowInfo) => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -304,7 +305,7 @@ class StockCardReport extends Component {
         }),
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.getTotal("Total")}</span>)
-      }, 
+      },
       { accessor: 'Unit', Header: 'Unit', editable: false, sortable: false },
     ];
     return (
@@ -396,12 +397,13 @@ class StockCardReport extends Component {
           filterable={false}
           multiSort={false}
           className="-highlight"
-          defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton}
-          // onSortedChange={(sorted) => {
-          //   this.setState({ data: [], loading: true });
-          //   this.customSorting(sorted)
-          // }}
+          showPagination={false}
+        // defaultPageSize={this.state.defaultPageS}
+        // PaginationComponent={this.paginationButton}
+        // onSortedChange={(sorted) => {
+        //   this.setState({ data: [], loading: true });
+        //   this.customSorting(sorted)
+        // }}
         />
       </div>
     )

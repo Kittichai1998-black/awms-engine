@@ -325,6 +325,12 @@ const ReportAudit = Loadable({
   loading: Loading,
 });
 
+const ReceiveReport = Loadable({
+  loader: () => import('./views/Warehouse/ReceiveReport/ReceiveReport'),
+  loading: Loading,
+});
+
+
 const CheckInventory = Loadable({
   loader: () => import('./views/Warehouse/CheckInventory/CheckInventory'),
   loading: Loading,
@@ -408,6 +414,8 @@ const routes = [
   { path: '/sys/ad/create', exact: true, name: 'Audit / Create Audit Document', component: AuditCreate },
   { path: '/sys/ad/report', exact: true, name: 'Report / Audit Report', component: ReportAudit },
   { path: '/sys/ad/check', exact: true, name: 'Check Audit', component: CheckInventory },
+  { path: '/sys/gr/report', exact: true, name: 'Receive Report', component: ReceiveReport},
+  { path: '/sys/gi/report', exact: true, name: 'Issue Report', component: ReceiveReport},
 ];
 
 export default routes;
