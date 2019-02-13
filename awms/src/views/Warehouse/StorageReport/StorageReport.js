@@ -62,16 +62,24 @@ class StoragReport extends Component {
     })
   }
 
-  DatePickerFilter(datetime) {
-    this.setState({ date: datetime })
+  DatePickerFilter() {
     let filter = this.state.datafilter
+
     filter.forEach((x, index) => {
-      if (x.id === "Receive_Date")
+      if (x.type === "gt") {
         filter.splice(index, 1);
-    });
-    if (datetime !== null) {
-      filter.push({ id: "Receive_Date", value: moment(datetime).format('YYYY-MM-DD'), type: "date" });
-    }
+      }
+      if (x.type === "lt") {
+        filter.splice(index, 1);
+      }
+    })
+
+
+    if (this.state.dateFrom)
+      filter.push({ id: "Receive_Date", value: moment(this.state.dateFrom).format('YYYY-MM-DD'), type: "gt" });
+    if (this.state.dateTo)
+      filter.push({ id: "Receive_Date", value: moment(this.state.dateTo).format('YYYY-MM-DD'), type: "lt" });
+    
     this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
   }
 
@@ -121,9 +129,17 @@ class StoragReport extends Component {
   onCheckFliter() {
     this.setState({ loading: true })
     let getFilter = this.state.datafilter;
-    let listFilter = getFilter.map(x => {
+    console.log(getFilter)
+    let listFilter = getFilter.map((x,index) => {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
+      else if (x.type === "gt") {
+        return { "f": x.id, "c": ">=", "v": x.value }
+      }
+      else if (x.type === "lt") {
+
+        return { "f": x.id, "c": "<=", "v": x.value }
+      }
       else
         return { "f": x.id, "c": "like", "v": x.value }
     })
@@ -181,6 +197,16 @@ class StoragReport extends Component {
       </div>
     )
   }
+
+  dateTimePickerFrom() {
+    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateFrom}/>
+  }
+  dateTimePickerTo() {
+    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo}/>
+  }
+
+
+
 
   NextLastPage(position){
     this.setState({ loading: true })
@@ -361,6 +387,26 @@ class StoragReport extends Component {
       <div>
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
+            <Col xs="6">
+              <div >
+                <label>Date From : </label>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '55px' }}>
+                  {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
+                </div></div>
+            </Col>
+
+            <Col xs="6">
+              <div>
+                <label >Date To : </label>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
+                  {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
+                </div>
+              </div>
+            </Col>
+          </Row>
+
+
+          <Row>
 
             <Col xs="6"></Col>
             <Col xs="2">
@@ -369,25 +415,8 @@ class StoragReport extends Component {
               </div>
             </Col>
 
-            <DatePicker className="float-right" selected={this.state.date}
-              customInput={<Input />}
-              onChange={(e) => {
-                if (e === null) {
-                  this.DatePickerFilter(null)
-                }
-                else {
-                  if (e.isValid() && e !== null) {
-                    this.DatePickerFilter(e)
-                  }
-                }
-
-              }}
-              timeIntervals={1}
-              timeFormat="HH:mm"
-              timeCaption="Time"
-              showTimeSelect={false}
-              dateFormat={"DD-MM-YYYY"} />
-
+            <button onClick={() => { this.DatePickerFilter() }}>Click</button>
+             
             <Col xs="1">
               <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
             </Col>
