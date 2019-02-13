@@ -30,12 +30,10 @@ class ReceiveReport extends Component {
     this.sumFooterTotal = this.sumFooterTotal.bind(this)
   }
   async componentWillMount() {
-    document.title = "Receive Report : AWMS";
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //80	STC_view
-
+    CheckWebPermission("AudReport", dataGetPer, this.props.history);
+    // 52 Audit_view
   }
 
   dateTimePicker() {
@@ -51,7 +49,7 @@ class ReceiveReport extends Component {
   setTitle() {
 
     const values = this.props.location.pathname.split('/')
-    console.log(values)
+    // console.log(values)
     if (values[2].toLowerCase() === 'gr') {
       document.title = "Receive Report : AWMS";
       this.setState({ Mode: 1001 })
@@ -73,7 +71,7 @@ class ReceiveReport extends Component {
       alert("Please select data")   
     } else {
       let formatDate = this.state.date.format("YYYY-MM-DD")
-      console.log(formatDate)
+      // console.log(formatDate)
 
         // let namefileDate = formatDate.toString();
         // //let nameFlie = "STC :" + this.state.CodePack + " " + namefileDateTo + " to " + namefileDateFrom
@@ -121,7 +119,7 @@ class ReceiveReport extends Component {
     var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["UnitType", x.UnitType]) == true ?
         parseFloat(x[value]) : null)
-        console.log(sumVal)
+        // console.log(sumVal)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
@@ -190,7 +188,7 @@ class ReceiveReport extends Component {
           </Row>
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px", maxHeight: '550px' }}
           minRows={5}
           loading={this.state.loading}
           defaultPageSize={100000}

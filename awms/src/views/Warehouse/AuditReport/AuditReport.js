@@ -312,7 +312,7 @@ class AuditReport extends Component {
           </Row>
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px", maxHeight: '550px' }}
           minRows={5}
           loading={this.state.loading}
           columns={cols}

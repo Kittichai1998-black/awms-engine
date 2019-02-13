@@ -260,8 +260,8 @@ class Pack extends Component {
     }
 
     NextLastPage(position) {
-    this.setState({ loading: true })
-    let queryString = "";
+        this.setState({ loading: true })
+        let queryString = "";
         const select = this.state.select
         if (position === 'next') {
             select.sk = ((this.state.countpages * 100) - 100)
@@ -437,7 +437,7 @@ class Pack extends Component {
 
                 <ReactTableFixedColumns
                     className="-highlight"
-                    style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+                    style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}
                     data={this.state.data} columns={cols} filterable={true} minRows={5}
                     multiSort={false}
                     defaultPageSize={this.state.defaultPageS}
