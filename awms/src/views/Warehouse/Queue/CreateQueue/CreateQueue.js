@@ -220,7 +220,6 @@ class CreateQueue extends Component {
       } else {
         let postdata =
         {
-          "apiKey": "THIP_TEST",
           "docs": [{
             "docID": doc_id,
             "docType": 1002
