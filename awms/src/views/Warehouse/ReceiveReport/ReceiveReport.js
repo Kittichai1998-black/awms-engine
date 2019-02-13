@@ -30,18 +30,18 @@ class ReceiveReport extends Component {
     this.sumFooterTotal = this.sumFooterTotal.bind(this)
   }
   async componentWillMount() {
-    document.title = "Receive Report : AWMS";
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //80	STC_view
-
+    CheckWebPermission("AudReport", dataGetPer, this.props.history);
+    // 52 Audit_view
   }
 
-  dateTimePicker() {
-    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ date: e }) }} dateFormat="DD/MM/YYYY" />
+  dateTimePickerFrom() {
+    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" />
   }
-
+  dateTimePickerTo() {
+    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" />
+  }
   componentDidMount() {
     this.setTitle()
   }
@@ -51,7 +51,7 @@ class ReceiveReport extends Component {
   setTitle() {
 
     const values = this.props.location.pathname.split('/')
-    console.log(values)
+    // console.log(values)
     if (values[2].toLowerCase() === 'gr') {
       document.title = "Receive Report : AWMS";
       this.setState({ Mode: 1001 })
@@ -69,17 +69,22 @@ class ReceiveReport extends Component {
   onGetDocument() {
     // console.log(this.state.ID)
     // console.log(this.state.PackMasterdata)
-    if (this.state.date === undefined) {
-      alert("Please select data")   
+    if (this.state.dateFrom === undefined || this.state.dateTo === undefined) {
+      alert("Please select data")
     } else {
-      let formatDate = this.state.date.format("YYYY-MM-DD")
-      console.log(formatDate)
+      let formatDateFrom = this.state.dateFrom.format("YYYY-MM-DD")
+      let formatDateTo = this.state.dateTo.format("YYYY-MM-DD")
+      // console.log(formatDate)
 
-        // let namefileDate = formatDate.toString();
-        // //let nameFlie = "STC :" + this.state.CodePack + " " + namefileDateTo + " to " + namefileDateFrom
-        // this.setState({ name: nameFlie.toString() })
-
-        Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&date=" + formatDate
+      // let namefileDate = formatDate.toString();
+      // //let nameFlie = "STC :" + this.state.CodePack + " " + namefileDateTo + " to " + namefileDateFrom
+      // this.setState({ name: nameFlie.toString() })
+      if (formatDateFrom > formatDateTo) {
+        alert("Choose the wrong information")
+      } else {
+        this.setState({loading: true})
+        Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&datefrom=" + formatDateFrom
+          + "&dateto=" + formatDateTo
           + "&doctype=" + this.state.Mode
           + "&spname=STOCK_DAY").then((rowselect1) => {
             if (rowselect1) {
@@ -98,7 +103,9 @@ class ReceiveReport extends Component {
                     OrderNo: x.OrderNo,
                     UnitType: x.UnitType,
                     RefID: x.RefID,
-                    Quantity: x.Quantity
+                    Quantity: x.Quantity,
+                    PalletCode: x.PalletCode,
+                    CreateDate: x.CreateDate
                   })
                 })
                 this.setState({
@@ -107,6 +114,7 @@ class ReceiveReport extends Component {
               }
             }
           })
+      }
     }
   }
   datetimeBody(value) {
@@ -121,7 +129,7 @@ class ReceiveReport extends Component {
     var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["UnitType", x.UnitType]) == true ?
         parseFloat(x[value]) : null)
-        console.log(sumVal)
+    // console.log(sumVal)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
@@ -143,7 +151,13 @@ class ReceiveReport extends Component {
           }
         })
       },
-      { accessor: 'Code', Header: 'Code', editable: false, sortable: false },
+      {
+        accessor: 'CreateDate', Header: 'Date', editable: false, sortable: false,
+        Cell: (e) =>
+          this.datetimeBody(e.value)
+      },
+      { accessor: 'PalletCode', Header: 'Pallet', editable: false, sortable: false },
+      { accessor: 'Code', Header: 'Doc No.', editable: false, sortable: false },
       { accessor: 'SKUCode', Header: 'SKU Code', editable: false, sortable: false, },
       { accessor: 'Name', Header: 'SKU Name', editable: false, sortable: false, },
       { accessor: 'Batch', Header: 'Batch', editable: false, sortable: false, },
@@ -152,7 +166,7 @@ class ReceiveReport extends Component {
       { accessor: 'AreaLocationMaster', Header: 'Location', editable: false, sortable: false },
       { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: false },
       {
-        accessor: 'Quantity', Header: 'Quantity', editable: false, className: "right",
+        accessor: 'Quantity', Header: 'Qty', editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -167,11 +181,19 @@ class ReceiveReport extends Component {
       <div>
         <div>
           <Row>
-            <Col xs="6">
+            <Col xs="6" md="6">
               <div>
-                <label >Date : </label>
+                <label >Date From: </label>
                 <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
-                  {this.state.pageID ? <span>{this.state.date.format("DD-MM-YYYY")}</span> : this.dateTimePicker()}
+                  {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
+                </div>
+              </div>
+            </Col>
+            <Col xs="6" md="6">
+              <div>
+                <label >Date To: </label>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
+                  {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
                 </div>
               </div>
             </Col>
@@ -190,7 +212,7 @@ class ReceiveReport extends Component {
           </Row>
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px", maxHeight: '550px' }}
           minRows={5}
           loading={this.state.loading}
           defaultPageSize={100000}

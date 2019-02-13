@@ -29,6 +29,9 @@ namespace AWMSEngine.Engine.Business.Issued
             foreach (var docId in reqVO.docIDs)
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(docId, this.BuVO);
+                if (doc.EventStatus == DocumentEventStatus.CLOSED)
+                    continue;
+
                 var docHs = this.ListAllDocumentHeadID(reqVO);
 
                 if (string.IsNullOrWhiteSpace(doc.Ref2) || doc.Ref2 == "311")

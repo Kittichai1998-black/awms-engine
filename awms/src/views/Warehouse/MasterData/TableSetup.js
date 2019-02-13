@@ -1522,7 +1522,7 @@ class TableGen extends Component {
           className="-highlight"
           data={this.state.data}
           ref={ref => this.tableComponent = ref}
-          style={{ marginTop: '3px', backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+          style={{ marginTop: '3px', backgroundColor: 'white', maxHeight:'550px', border: '0.5px solid #eceff1', zIndex: 0 }}
           loading={this.state.loading}
           filterable={this.props.filterable}
           columns={col}
