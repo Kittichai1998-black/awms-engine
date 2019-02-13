@@ -22,23 +22,18 @@ class ReceiveReport extends Component {
       data1: [],
       data: [],
       batch: "",
-      defaultPageS: 100,
-      currentPage: 1,
       loading: false,
       Mode: 1,
     }
-    this.paginationButton = this.paginationButton.bind(this)
-    this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
-    this.customSorting = this.customSorting.bind(this);
+
     this.setTitle = this.setTitle.bind(this)
+    this.sumFooterTotal = this.sumFooterTotal.bind(this)
   }
   async componentWillMount() {
-    document.title = "Receive Report : AWMS";
     //permission
     let dataGetPer = await GetPermission()
-    CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //80	STC_view
-
+    CheckWebPermission("AudReport", dataGetPer, this.props.history);
+    // 52 Audit_view
   }
 
   dateTimePicker() {
@@ -54,7 +49,7 @@ class ReceiveReport extends Component {
   setTitle() {
 
     const values = this.props.location.pathname.split('/')
-    console.log(values)
+    // console.log(values)
     if (values[2].toLowerCase() === 'gr') {
       document.title = "Receive Report : AWMS";
       this.setState({ Mode: 1001 })
@@ -76,6 +71,7 @@ class ReceiveReport extends Component {
       alert("Please select data")   
     } else {
       let formatDate = this.state.date.format("YYYY-MM-DD")
+      // console.log(formatDate)
 
         // let namefileDate = formatDate.toString();
         // //let nameFlie = "STC :" + this.state.CodePack + " " + namefileDateTo + " to " + namefileDateFrom
@@ -117,76 +113,13 @@ class ReceiveReport extends Component {
       return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
     }
   }
-  paginationButton() {
-    const notPageactive = {
-      pointerEvents: 'none',
-      cursor: 'default',
-      textDecoration: 'none',
-      color: 'black',
-      background: '#eceff1',
-      minWidth: '90px'
-    }
-    const pageactive = {
-      textDecoration: 'none',
-      color: 'black',
-      background: '#cfd8dc',
-      minWidth: '90px'
-    }
-    return (
-      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
-        <nav>
-          <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("prev")}>
-              Previous</a></li>
-            <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
-          </ul>
-        </nav>
-      </div>
-    )
-  }
 
-  pageOnHandleClick(position) {
-    this.setState({ loading: true })
-    const select = this.state.select
-    if (position === 'next') {
-      select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) + parseInt(select.l, 10)
-      ++this.state.currentPage
-    }
-    else {
-      if (select.sk - select.l >= 0) {
-        select.sk = select.sk - select.l
-        if (this.state.currentPage !== 1)
-          --this.state.currentPage
-      }
-    }
-    this.setState({ select }, () => { this.getData() })
-  }
-
-  customSorting(data) {
-    const select = this.state.select
-    select["s"] = JSON.stringify([{ 'f': data[0].id, 'od': data[0].desc === false ? 'asc' : 'desc' }])
-    let queryString = ""
-    this.setState({ currentPage: 1 })
-    if (this.props.url === undefined || null) {
-      queryString = createQueryString(select)
-    }
-    // else {
-    //   queryString = createQueryStringStorage(this.props.url, data[0].id, data[0].desc === false ? 'asc' : 'desc')
-    // }
-    Axios.get(queryString).then(
-      (res) => {
-        this.setState({ data: res.data.datas, loading: false })
-      })
-  }
 
   sumFooterTotal(value) {
     var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["UnitType", x.UnitType]) == true ?
         parseFloat(x[value]) : null)
+        // console.log(sumVal)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
     else
@@ -198,17 +131,9 @@ class ReceiveReport extends Component {
       {
         Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
-        Cell: (e) => {
-          let numrow = 0;
-          if (this.state.currentPage !== undefined) {
-            if (this.state.currentPage > 1) {
-              // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
-            } else {
-              numrow = e.index + 1;
-            }
-          }
-          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        id: "row",
+        Cell: (row) => {
+          return <span style={{ fontWeight: 'bold' }}>{row.index + 1}</span>;
         },
         getProps: (state, rowInfo) => ({
           style: {
@@ -216,14 +141,14 @@ class ReceiveReport extends Component {
           }
         })
       },
-      { accessor: 'Code', Header: 'Code', editable: false, sortable: true },
-      { accessor: 'SKUCode', Header: 'SKU Code', editable: false, sortable: true, },
-      { accessor: 'Name', Header: 'SKU Name', editable: false, sortable: true, },
-      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
-      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: true, },
-      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: true, },
-      { accessor: 'AreaLocationMaster', Header: 'Location', editable: false, sortable: true },
-      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: true },
+      { accessor: 'Code', Header: 'Code', editable: false, sortable: false },
+      { accessor: 'SKUCode', Header: 'SKU Code', editable: false, sortable: false, },
+      { accessor: 'Name', Header: 'SKU Name', editable: false, sortable: false, },
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: false, },
+      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: false, },
+      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: false, },
+      { accessor: 'AreaLocationMaster', Header: 'Location', editable: false, sortable: false },
+      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: false },
       {
         accessor: 'Quantity', Header: 'Quantity', editable: false, className: "right",
         getFooterProps: () => ({
@@ -234,7 +159,7 @@ class ReceiveReport extends Component {
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooterTotal("Quantity")}</span>)
       },
-      { accessor: 'UnitType', Header: 'Unit', editable: false, sortable: true, },
+      { accessor: 'UnitType', Header: 'Unit', editable: false, sortable: false, },
     ];
     return (
       <div>
@@ -255,7 +180,7 @@ class ReceiveReport extends Component {
             <Col xs="6">
               <div>
                 <div className="float-right">
-                  <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} />
+                  <ExportFile column={cols} dataxls={this.state.data} filename={this.state.Mode === 1001 ? "ReceiveReport" : "IssueReport"} />
                 </div>
                 <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
               </div>
@@ -263,20 +188,17 @@ class ReceiveReport extends Component {
           </Row>
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px", maxHeight: '550px' }}
           minRows={5}
           loading={this.state.loading}
+          defaultPageSize={100000}
           columns={cols}
           data={this.state.data}
           filterable={false}
           multiSort={false}
           className="-highlight"
-          defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton}
-          onSortedChange={(sorted) => {
-            this.setState({ data: [], loading: true });
-            this.customSorting(sorted)
-          }}
+          showPagination={false}
+
         />
       </div>
     )

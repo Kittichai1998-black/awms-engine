@@ -87,13 +87,13 @@ class TaskList extends Component {
     let interval1 = setInterval(() => {
       Axios.get(createQueryString(this.WorkQselect) + "&apikey=FREE03").then(res => {
         if (res) {
-          if (res.data.datas.length  > 0) {
+          if (res.data.datas.length > 0) {
             if (this.state.dataworkingout.length > 0) {
               // console.log(res.data.datas[0].ActualTime)
               // console.log(this.state.dataworkingout[0].Time)
               if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
                 this.getDataMoveOut()
-              } 
+              }
             }
             this.setState({ ActualTime: res.data.datas[0].ActualTime });
           }
@@ -132,7 +132,7 @@ class TaskList extends Component {
         })
       }
     })
-  } 
+  }
   getDataTasklist() {
     Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&AreaIDs=" + this.state.areaIDOnFloor
       + "&spname=DASHBOARD_TASK_ON_FLOOR").then((res) => {
@@ -187,11 +187,11 @@ class TaskList extends Component {
   render() {
     const cols1 = [
       { accessor: "Time", Header: "Time", width: 130, className: 'center', Cell: (e) => e.original.Time ? moment(e.original.Time).format('HH:mm:ss') : "" },
-      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 160, style: {fontWeight: '900'} },
+      { accessor: "AreaLoc_Code", Header: "Gate", className: 'center', width: 160, style: { fontWeight: '900' } },
       { accessor: "MVT", Header: "Mvt.", width: 170, className: 'center' },
       { accessor: "Base_Code", Header: "Pallet", width: 160 },
       { accessor: "Product", Header: "Product" },
-      { accessor: "QtyUnit", Header: "Qty", width: 140, className: 'right', style: {fontWeight: '900'} },
+      { accessor: "QtyUnit", Header: "Qty", width: 140, className: 'right', style: { fontWeight: '900' } },
       { accessor: "Destination", Header: "Destination", width: 230 },
       { accessor: "Document_Code", Header: "Doc No.", width: 180 },
       { accessor: "SAPRef", Header: "SAP.Doc No.", width: 180 },
@@ -204,11 +204,11 @@ class TaskList extends Component {
           <Badge color={row.value} style={{ fontSize: '1em', fontWeight: '600' }}>{row.value}</Badge>
         )
       },
-      { accessor: "LocationCode", Header: "Stage", width: 170, style: {fontWeight: '900'} },
+      { accessor: "LocationCode", Header: "Stage", width: 170, style: { fontWeight: '900' } },
       { accessor: "PalletCode", Header: "Pallet", width: 160 },
       { accessor: "Product", Header: "Product" },
-      { accessor: "Qty", Header: "Qty", width: 140, className: 'right', style: {fontWeight: '900'} },
-      { accessor: "Destination", Header: "Destination", width: 230},
+      { accessor: "Qty", Header: "Qty", width: 140, className: 'right', style: { fontWeight: '900' } },
+      { accessor: "Destination", Header: "Destination", width: 230 },
       { accessor: "DocNo", Header: "Doc No.", width: 180 },
       { accessor: "SAPRef", Header: "SAP.Doc No.", width: 180 },
     ]
@@ -223,31 +223,38 @@ class TaskList extends Component {
           enabled={this.state.isFull}
           onChange={isFull => this.setState({ isFull })}
         >
-          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1.8em' } : {}} className="fullscreen">
+          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1em 1.8em 1.8em 1em' } : {}} className="fullscreen">
             <div id="full">
+              <div className="clearfix" style={{ display: 'block', fontSize: '1.5em', height: 'auto', padding: '0em 0.5em 0.1em 0em', marginBottom: '0.4em', backgroundColor: '#C8CED3' }}>
+                <div className="float-right">
+                  <a style={{ color: '#2f353a', cursor: 'pointer' }} onClick={() => { this.props.history.push('/Queue?IOType=IN'); window.location.reload(); }}>Receiving Progress</a>{' | '}
+                  <a style={{ color: '#2f353a', cursor: 'pointer' }} onClick={() => { this.props.history.push('/Queue?IOType=OUT'); window.location.reload(); }}>Issuing Progress</a>{' | '}
+                  <a style={{ color: '#2f353a', cursor: 'pointer', fontSize: '1.3em', fontWeight: "bold", textDecoration: 'underline' }} onClick={() => { this.props.history.push('/Dashboard') }}>Picking Progress</a>
+                </div>
+              </div>
               <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
                 <Row>
-                  <Col sm="1" xs="6" md="1" lg="1">{logoamw}</Col>
-                  <Col sm="3" xs="6" md="4" lg="4"><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em',fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
-                  <Col sm="3" xs="3" md="2" lg="2"><label className="float-right" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Area: </label></Col>
-                  <Col sm="4" xs="7" md="4" lg="4" style={{ fontSize: '2.25em' }}>{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
+                  <Col sm="1">{logoamw}</Col>
+                  <Col sm="5" ><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
+                  <Col sm="1" ><label className="float-right" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Area: </label></Col>
+                  <Col sm="4"  style={{ fontSize: '2.25em' }}>{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
                     this.updateQueueData(res.value)
                     {/*this.setState({ areavalue: e.value, areatext: e.label }, () => console.log(this.state.areavalue + " " + this.state.areatext))*/ }
                   }} />}</Col>
-                  <Col sm="1" xs="2" md="1" lg="1"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
+                  <Col sm="1" ><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
                 </Row>
               </div>
 
 
-              <div id="Table1" className="styleTable" style={{marginLeft:'0.5em'}}>
-                <p className="rightAlign" id="pbottom" style={{fontSize: '2.25em', fontWeight: '900'}}>Move Out</p>
+              <div id="Table1" className="styleTable" style={{ marginLeft: '0.5em' }}>
+                <p className="rightAlign" id="pbottom" style={{ fontSize: '2.25em', fontWeight: '900' }}>Move Out</p>
                 <div>
                   <ReactTable
                     columns={cols1}
                     minRows={7}
                     data={this.state.dataworkingout}
                     sortable={false}
-                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.25em', fontWeight: '700' }}
+                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.2em', fontWeight: '700' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}
@@ -275,15 +282,15 @@ class TaskList extends Component {
                 </div>
               </div>
 
-              <div id="Table2" className="Table2 styleTable" style={{marginLeft:'0.5em'}}>
-                <p className="rightAlign" id="pbottom" style={{fontSize: '2.25em', fontWeight: '900'}}>Task List</p>
+              <div id="Table2" className="Table2 styleTable" style={{ marginLeft: '0.5em' }}>
+                <p className="rightAlign" id="pbottom" style={{ fontSize: '2.25em', fontWeight: '900' }}>Task List</p>
                 <div style={{ overflowY: 'auto' }}>
                   <ReactTable
                     columns={cols2}
                     minRows={7}
                     data={this.state.datatasklist}
                     sortable={false}
-                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.25em', fontWeight: '700' }}
+                    style={{ background: 'white', fontSize: '1.925em', maxHeight: '17.2em', fontWeight: '700' }}
                     filterable={false}
                     showPagination={false}
                     NoDataComponent={() => null}

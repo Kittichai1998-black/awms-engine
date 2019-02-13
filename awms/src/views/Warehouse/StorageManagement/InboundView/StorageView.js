@@ -503,7 +503,7 @@ class IssuedDoc extends Component {
 
 
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}
           className="-highlight"
           minRows={5}
           loading={this.state.loading}

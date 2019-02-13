@@ -40,6 +40,7 @@
   vertical-align:bottom !important;
   font-weight: 500 !important;
 }
+ 
 .heading {
   font-weight: 500;
  
@@ -140,4 +141,15 @@
   width: 100%; 
   margin: 0;
   padding: 0;  /*this will cause the div to be in the center*/
+}
+
+.ReactTable .rt-thead.-filters{
+  top:45px !important;
+  max-height: 45px !important;
+}
+.ReactTable .rt-thead.-header{
+  max-height: 45px !important;
+}
+.ReactTable .rt-tfoot{
+  max-height: 34.8px !important;
 }

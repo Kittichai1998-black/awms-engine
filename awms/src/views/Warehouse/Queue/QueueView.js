@@ -189,19 +189,23 @@ class QueueView extends Component {
           enabled={this.state.isFull}
           onChange={isFull => this.setState({ isFull })}
         >
-          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1.8em' } : {}} className="fullscreen">
+          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '0em 0.5em 0.1em 0em' } : {}} className="fullscreen">
+            <div className="clearfix" style={{ display: 'block', fontSize: '1.5em', height: 'auto', paddingBottom: '0.1em', marginBottom: '0.4em', backgroundColor: '#C8CED3' }}>
+              <div className="float-right">
+                <a style={this.state.locsearch === 'IN' ? { color: '#2f353a', cursor: 'pointer', fontSize: '1.3em', fontWeight: "bold", textDecoration: 'underline' } : { color: '#2f353a', cursor: 'pointer' }} onClick={() => { this.props.history.push('/Queue?IOType=IN'); window.location.reload(); }}>Receiving Progress</a>{' | '}
+                <a style={this.state.locsearch === 'OUT' ? { color: '#2f353a', cursor: 'pointer', fontSize: '1.3em', fontWeight: "bold", textDecoration: 'underline' } : { color: '#2f353a', cursor: 'pointer' }} onClick={() => { this.props.history.push('/Queue?IOType=OUT'); window.location.reload(); }}>Issuing Progress</a>{' | '}
+                <a style={{ color: '#2f353a', cursor: 'pointer' }} onClick={() => { this.props.history.push('/Dashboard') }}>Picking Progress</a>
+              </div>
+            </div>
             <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
               <Row>
                 <Col sm="1" xs="1" md="1" lg="1">{logoamw}</Col>
-                <Col sm="4" xs="4" md="4" lg="4">
-                  <label className="float-left" style={{ fontSize: '2.25em', fontWeight: "bold", borderTop: "0.2em solid #35c366", borderBottom: "0.2em solid #35c366", padding: '3px 8px 3px 8px' }}> {this.state.title} </label>
-                </Col>
-                <Col sm="5" xs="5" md="5" lg="5"><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
+                <Col sm="9"><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
                 <Col sm="2" xs="2" md="2" lg="2"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
               </Row>
             </div>
-            <ReactTable columns={cols} data={this.state.data} minRows={20} showPagination={false}
-              style={{ background: 'white', marginBottom: '10px', fontSize: '2em', maxHeight: '33.75em', fontWeight: '800', paddingBottom: '5px' }} multiSort={false}
+            <ReactTable columns={cols} data={this.state.data} minRows={17} showPagination={false}
+              style={{ background: 'white', marginBottom: '10px', fontSize: '2em', maxHeight: '33.55em', fontWeight: '800', paddingBottom: '5px' }} multiSort={false}
               getTrProps={(state, rowInfo) => {
                 if (rowInfo !== undefined) {
                   if (rowInfo.original.Status === 3) {
