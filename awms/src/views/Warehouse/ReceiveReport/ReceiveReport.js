@@ -182,7 +182,7 @@ class ReceiveReport extends Component {
             <Col xs="6">
               <div>
                 <div className="float-right">
-                  <ExportFile column={cols} dataxls={this.state.data} filename={"StockCard"} />
+                  <ExportFile column={cols} dataxls={this.state.data} filename={this.state.Mode === 1001 ? "ReceiveReport" : "IssueReport"} />
                 </div>
                 <Button className="float-right" style={{ width: "130px", marginRight: '5px' }} color="primary" id="off" onClick={() => { this.onGetDocument() }}>Select</Button>
               </div>
