@@ -129,7 +129,7 @@ class StockCardReport extends Component {
                 })
                 this.setState({
                   data: rowselect1.data.datas, countpages: countpages, loading: false
-                }, () => console.log(this.state.data))
+                })
               }
             }
           })
@@ -211,28 +211,25 @@ class StockCardReport extends Component {
   sumFooterTotal(value) {
     var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x[value]) : null)
-    if (sumVal === 0 || sumVal === null || sumVal === undefined)
+        parseFloat(x[value] === null ? 0 : x[value]) : null)
+    if (sumVal === 0 || sumVal === null || sumVal === undefined || isNaN(sumVal))
       return '-'
     else
       return sumVal.toFixed(3)
   }
 
   getTotal(value) {
-    var sumDebit = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x.Debit) : null)
-    var sumCredit = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x.Credit) : null)
-    if (sumDebit === 0 && sumCredit === 0) {
-      return '-'
-    } else {
-      var sumVal = sumDebit - (sumCredit <= 0 ? -sumCredit : sumCredit)
-      if (sumVal === 0 || sumVal === null || sumVal === undefined)
+    if (this.state.data.length > 0) {
+      var sumVal = this.state.data[this.state.data.length - 1].Total
+      if (sumVal === 0) {
+        return 0
+      } else if (sumVal === null || sumVal === undefined || isNaN(sumVal)) {
         return '-'
-      else
+      } else {
         return sumVal.toFixed(3)
+      }
+    } else {
+      return '-'
     }
   }
   render() {
@@ -240,18 +237,22 @@ class StockCardReport extends Component {
       {
         Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
-        Cell: (e) => {
-          let numrow = 0;
-          if (this.state.currentPage !== undefined) {
-            if (this.state.currentPage > 1) {
-              // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
-            } else {
-              numrow = e.index + 1;
-            }
-          }
-          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        id: "row",
+        Cell: (row) => {
+          return <span style={{ fontWeight: 'bold' }}>{row.index + 1}</span>;
         },
+        // Cell: (e) => {
+        //   let numrow = 0;
+        //   if (this.state.currentPage !== undefined) {
+        //     if (this.state.currentPage > 1) {
+        //       // e.index + 1 + (2*100)  
+        //       numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
+        //     } else {
+        //       numrow = e.index + 1;
+        //     }
+        //   }
+        //   return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        // },
         getProps: (state, rowInfo) => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -259,22 +260,22 @@ class StockCardReport extends Component {
         })
       },
       {
-        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
+        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: false, Cell: (e) =>
           this.datetimeBody(e.value)
       },
-      { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: true },
-      { accessor: 'SKU_Code', Header: 'SKU Code', editable: false, sortable: true, },
-      { accessor: 'SKU_Name', Header: 'SKU Name', editable: false, sortable: true, },
-      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
-      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: true, },
-      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: true, },
-      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
-      { accessor: 'Sou', Header: 'Sou.', editable: false, sortable: true },
-      { accessor: 'Des', Header: 'Des.', editable: false, sortable: true },
-      { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: true },
-      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: true },
+      { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: false },
+      { accessor: 'SKU_Code', Header: 'SKU Code', editable: false, sortable: false, },
+      { accessor: 'SKU_Name', Header: 'SKU Name', editable: false, sortable: false, },
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: false, },
+      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: false, },
+      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: false, },
+      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: false },
+      { accessor: 'Sou', Header: 'Sou.', editable: false, sortable: false },
+      { accessor: 'Des', Header: 'Des.', editable: false, sortable: false },
+      { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: false },
+      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: false },
       {
-        accessor: 'Debit', Header: 'Debit', editable: false, className: "right",
+        accessor: 'Debit', Header: 'Debit', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -285,7 +286,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Credit', Header: 'Credit', editable: false, className: "right",
+        accessor: 'Credit', Header: 'Credit', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -296,7 +297,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Total', Header: 'Total', editable: false, className: "right",
+        accessor: 'Total', Header: 'Total', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -304,8 +305,8 @@ class StockCardReport extends Component {
         }),
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.getTotal("Total")}</span>)
-      }, 
-      { accessor: 'Unit', Header: 'Unit', editable: false, sortable: true },
+      },
+      { accessor: 'Unit', Header: 'Unit', editable: false, sortable: false },
     ];
     return (
       <div>
@@ -396,12 +397,13 @@ class StockCardReport extends Component {
           filterable={false}
           multiSort={false}
           className="-highlight"
-          defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton}
-          onSortedChange={(sorted) => {
-            this.setState({ data: [], loading: true });
-            this.customSorting(sorted)
-          }}
+          showPagination={false}
+        // defaultPageSize={this.state.defaultPageS}
+        // PaginationComponent={this.paginationButton}
+        // onSortedChange={(sorted) => {
+        //   this.setState({ data: [], loading: true });
+        //   this.customSorting(sorted)
+        // }}
         />
       </div>
     )

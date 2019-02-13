@@ -46,11 +46,11 @@ class AuditReport extends Component {
       DocAudit:[],
       PackMasterdata: [],
       batch: "",
-      defaultPageS: 100,
-      currentPage: 1,
+      // defaultPageS: 100,
+      // currentPage: 1,
       loading: false,
     }
-    this.paginationButton = this.paginationButton.bind(this)
+    // this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.customSorting = this.customSorting.bind(this);
   }
@@ -73,9 +73,9 @@ class AuditReport extends Component {
 //=======================================================================================
     Axios.get(createQueryString(this.state.Document)).then((res) => {
       const DocAudit = []
-      console.log(res)
+      // console.log(res)
       res.data.datas.forEach(row => {
-        console.log(row)
+        // console.log(row)
         DocAudit.push({ label: row.Code, value: row.ID, Code: row.Code })
       })
       this.setState({ DocAudit })
@@ -93,7 +93,7 @@ class AuditReport extends Component {
   }
 
   onGetDocument() {
-    console.log(this.state.auditID)
+    // console.log(this.state.auditID)
 
     if (this.state.data === []) {
       alert("DATA NOT FOUND")
@@ -107,9 +107,9 @@ class AuditReport extends Component {
             if (rowselect1) {
               // console.log(rowselect1)
               if (rowselect1.data._result.status !== 0) {
-                let countpages = null;
-                let counts = rowselect1.data.datas.length;
-                countpages = Math.ceil(counts / this.state.defaultPageS);
+                // let countpages = null;
+                // let counts = rowselect1.data.datas.length;
+                // countpages = Math.ceil(counts / this.state.defaultPageS);
                 rowselect1.data.datas.forEach(x => {
                   this.setState({
                     BaseCode: x.BaseCode,
@@ -127,8 +127,8 @@ class AuditReport extends Component {
                   })
                 })
                 this.setState({
-                  data: rowselect1.data.datas, countpages: countpages, loading: false
-                }, () => console.log(this.state.data))
+                  data: rowselect1.data.datas, loading: false
+                })
               }
             }
           })
@@ -220,18 +220,22 @@ class AuditReport extends Component {
       {
         Header: 'No.', fixed: "left", sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
-        Cell: (e) => {
-          let numrow = 0;
-          if (this.state.currentPage !== undefined) {
-            if (this.state.currentPage > 1) {
-              // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
-            } else {
-              numrow = e.index + 1;
-            }
-          }
-          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        id: "row",
+        Cell: (row) => {
+          return <span style={{ fontWeight: 'bold' }}>{row.index + 1}</span>;
         },
+        // Cell: (e) => {
+        //   let numrow = 0;
+        //   if (this.state.currentPage !== undefined) {
+        //     if (this.state.currentPage > 1) {
+        //       // e.index + 1 + (2*100)  
+        //       numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
+        //     } else {
+        //       numrow = e.index + 1;
+        //     }
+        //   }
+        //   return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        // },
         getProps: (state, rowInfo) => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -239,18 +243,18 @@ class AuditReport extends Component {
         })
       },
       {
-        accessor: 'AuditTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
+        accessor: 'AuditTime', Header: 'Date', editable: false, sortable: false, Cell: (e) =>
           this.datetimeBody(e.value)
       },
-      { accessor: 'BaseCode', Header: 'Pallet', editable: false, sortable: true },
+      { accessor: 'BaseCode', Header: 'Pallet', editable: false, sortable: false },
       //{ accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: true },
-      { accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: true, minWidth: 115 },
-      { accessor: 'PackName', Header: 'SKU Name', editable: false, sortable: true },
-      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true },
-      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: true },
-      { accessor: 'OrderNo', Header: 'Order No.', editable: false, sortable: true },
+      { accessor: 'PackCode', Header: 'SKU Code', editable: false, sortable: false, minWidth: 115 },
+      { accessor: 'PackName', Header: 'SKU Name', editable: false, sortable: false },
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: false },
+      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: false },
+      { accessor: 'OrderNo', Header: 'Order No.', editable: false, sortable: false },
       {
-        accessor: 'AuditQty', Header: 'Audit Qty', editable: false, className: "right",
+        accessor: 'AuditQty', Header: 'Audit Qty', sortable: false, editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -260,7 +264,7 @@ class AuditReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("AuditQty")}</span>)
       },
       {
-        accessor: 'OriginQty', Header: 'Origin Qty', editable: false, className: "right",
+        accessor: 'OriginQty', Header: 'Origin Qty', sortable: false, editable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -271,7 +275,7 @@ class AuditReport extends Component {
       },
 
       {
-        accessor: 'TotalQty', Header: 'Total Qty', editable: false, className: "right", 
+        accessor: 'TotalQty', Header: 'Total Qty', sortable: false, editable: false, className: "right", 
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -280,8 +284,8 @@ class AuditReport extends Component {
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("TotalQty")}</span>)
       },    
-      { accessor: 'UnitCode', Header: 'Unit', editable: false, sortable: true },
-      { accessor: 'AuditBy', Header: 'AuditBy', editable: false, sortable: true },
+      { accessor: 'UnitCode', Header: 'Unit', editable: false, sortable: false },
+      { accessor: 'AuditBy', Header: 'AuditBy', editable: false, sortable: false },
 
     ];
     return (
@@ -316,12 +320,13 @@ class AuditReport extends Component {
           multiSort={false}
           filterable={false}
           className="-highlight"
-          defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton}
-          onSortedChange={(sorted) => {
-            this.setState({ data: [], loading: true });
-            this.customSorting(sorted)
-          }}
+          showPagination={false}
+          // defaultPageSize={this.state.defaultPageS}
+          // PaginationComponent={this.paginationButton}
+          // onSortedChange={(sorted) => {
+          //   this.setState({ data: [], loading: true });
+          //   this.customSorting(sorted)
+          // }}
         />
       </div>
     )

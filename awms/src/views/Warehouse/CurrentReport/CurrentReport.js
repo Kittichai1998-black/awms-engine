@@ -3,7 +3,7 @@ import "react-table/react-table.css";
 import ReactTable from 'react-table'
 import { apicall, createQueryString, FilterURL } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
-import { Row, Col, Input } from 'reactstrap';
+import { Button, Row, Col, Input } from 'reactstrap';
 import _ from 'lodash';
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import '../../Warehouse/componentstyle.css'
@@ -37,6 +37,7 @@ class CurrentReport extends Component {
     }
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
+    this.NextLastPage = this.NextLastPage.bind(this)
     this.customSorting = this.customSorting.bind(this);
   }
 
@@ -62,6 +63,7 @@ class CurrentReport extends Component {
     Axios.get(createQueryString(this.state.select)).then((response) => {
       let countpages = null;
       let counts = response.data.counts;
+      console.log(counts)
       countpages = Math.ceil(counts / this.state.defaultPageS);
       this.setState({ data: response.data.datas, countpages: countpages, loading: false })
     })
@@ -115,20 +117,62 @@ class CurrentReport extends Component {
       background: '#cfd8dc',
       minWidth: '90px'
     }
+    const notPageactiveLast = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+    }
+    const pageactiveLast = {
+      textDecoration: 'none',
+    }
     return (
-      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+            <li className="page-item" style={{display:"flex"}}><Button style={this.state.currentPage === 1 ? {...notPageactiveLast,marginRight:"5px"} : {pageactiveLast,marginRight:"5px"}}  outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
             <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
+            <li className="page-item" style={{display:"flex"}}> <a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")} >
+              Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? {...notPageactiveLast,marginLeft:"5px"} : {...pageactiveLast,marginLeft:"5px"}} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li> 
           </ul>
         </nav>
       </div>
+    )
+  }
+
+  NextLastPage(position){
+    this.setState({ loading: true })
+    let queryString = "";
+    const select = this.state.select
+     if (position === 'next') {   
+       select.sk = ((this.state.countpages * 100) - 100)
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+    else {
+     select.sk = 0 
+    //  console.log(select)
+      queryString = createQueryString(select)
+    }
+
+    Axios.get(queryString).then(
+      (res) => {
+        if (res.data.datas.length > 0) {
+          if (position === 'next') {
+            this.setState({currentPage:(this.state.countpages)})
+          }
+          else {
+            this.setState({currentPage:1})
+          }
+          this.setState({ data: res.data.datas })
+        }
+        else {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+        }
+        this.setState({ loading: false })
+      }
     )
   }
 
@@ -306,7 +350,7 @@ class CurrentReport extends Component {
             </Col>
             <Col xs="6">
               <div className="float-right">
-                <ExportFile column={cols} dataxls={this.state.data} filename={"CurrentInventory"} />
+                <ExportFile column={cols} dataselect={this.state.select} filename={"CurrentInventory"} />
               </div>
             </Col>
 

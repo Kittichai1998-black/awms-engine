@@ -153,11 +153,12 @@ class TableGen extends Component {
           (res) => {
             let countpages = null;
             let counts = res.data.counts;
+            console.log(counts)
             countpages = Math.ceil(counts / this.state.defaultPageS);
             this.setState({ data: res.data.datas, countpages: countpages, loading: false })
           })
       }
-      else {
+      else { 
         Axios.get(this.props.url).then(
           (res) => {
             this.setState({ data: res.data.datas, loading: false })
@@ -313,7 +314,11 @@ class TableGen extends Component {
         console.log(queryString)
         Axios.get(queryString).then(
           (res) => {
-            this.setState({ data: res.data.datas, loading: false });
+            let countpages = null;
+            let counts = res.data.counts;
+            countpages = Math.ceil(counts / this.state.defaultPageS);
+            this.setState({ data: res.data.datas, countpages: countpages, loading: false })
+            // this.setState({ data: res.data.datas, loading: false });
           }
         )
       }
@@ -330,7 +335,11 @@ class TableGen extends Component {
         let queryString = createQueryString(select)
         Axios.get(queryString).then(
           (res) => {
-            this.setState({ data: res.data.datas, loading: false });
+            let countpages = null;
+            let counts = res.data.counts;
+            countpages = Math.ceil(counts / this.state.defaultPageS);
+            this.setState({ data: res.data.datas, countpages: countpages, loading: false })
+            // this.setState({ data: res.data.datas, loading: false });
           }
         )
       }
@@ -529,16 +538,17 @@ class TableGen extends Component {
   }
 
   NextLastPage(position){
+    this.setState({ loading: true })
     let queryString = "";
     const select = this.state.dataselect
      if (position === 'next') {   
        select.sk = ((this.state.countpages*100)-100)
-       console.log(select)
+      //  console.log(select)
       queryString = createQueryString(select)
     }
     else {
      select.sk = 0 
-     console.log(select)
+    //  console.log(select)
       queryString = createQueryString(select)
     }
 

@@ -259,38 +259,39 @@ class Pack extends Component {
         });
     }
 
-    NextLastPage(position){
-        let queryString = "";
+    NextLastPage(position) {
+    this.setState({ loading: true })
+    let queryString = "";
         const select = this.state.select
-         if (position === 'next') {   
-           select.sk = ((this.state.countpages*100)-100)
-           console.log(select)
-          queryString = createQueryString(select)
+        if (position === 'next') {
+            select.sk = ((this.state.countpages * 100) - 100)
+            //    console.log(select)
+            queryString = createQueryString(select)
         }
         else {
-         select.sk = 0 
-         console.log(select)
-          queryString = createQueryString(select)
+            select.sk = 0
+            //  console.log(select)
+            queryString = createQueryString(select)
         }
-    
+
         Axios.get(queryString).then(
-          (res) => {
-            if (res.data.datas.length > 0) {
-              if (position === 'next') {
-                this.setState({currentPage:(this.state.countpages)})
-              }
-              else {
-                this.setState({currentPage:1})
-              }
-              this.setState({ data: res.data.datas })
+            (res) => {
+                if (res.data.datas.length > 0) {
+                    if (position === 'next') {
+                        this.setState({ currentPage: (this.state.countpages) })
+                    }
+                    else {
+                        this.setState({ currentPage: 1 })
+                    }
+                    this.setState({ data: res.data.datas })
+                }
+                else {
+                    select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+                }
+                this.setState({ loading: false })
             }
-            else {
-              select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
-            }
-            this.setState({ loading: false })
-          }
         )
-      }
+    }
 
     paginationButton() {
         const notPageactive = {
@@ -311,22 +312,21 @@ class Pack extends Component {
             pointerEvents: 'none',
             cursor: 'default',
             textDecoration: 'none',
-          }
-          const pageactiveLast = {
+        }
+        const pageactiveLast = {
             textDecoration: 'none',
-      
-          }
+        }
         return (
             <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
                 <nav>
                     <ul className="pagination">
-                        <li className="page-item" style={{display:"flex"}}><Button style={this.state.currentPage === 1 ? {...notPageactiveLast,marginRight:"5px"} : {pageactiveLast,marginRight:"5px"}}  outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+                        <li className="page-item" style={{ display: "flex" }}><Button style={this.state.currentPage === 1 ? { ...notPageactiveLast, marginRight: "5px" } : { pageactiveLast, marginRight: "5px" }} outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
                             onClick={() => this.pageOnHandleClick("prev")}>
                             Previous</a></li>
                         <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-                        <li className="page-item" style={{display:"flex"}}><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+                        <li className="page-item" style={{ display: "flex" }}><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
                             onClick={() => this.pageOnHandleClick("next")}>
-                            Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? {...notPageactiveLast,marginLeft:"5px"} : {...pageactiveLast,marginLeft:"5px"}} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li>
+                            Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? { ...notPageactiveLast, marginLeft: "5px" } : { ...pageactiveLast, marginLeft: "5px" }} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li>
                     </ul>
                 </nav>
             </div>
@@ -366,7 +366,7 @@ class Pack extends Component {
                 this.setState({ data: res.data.datas, loading: false })
             })
     }
-    
+
     render() {
         const view = this.state.permissionView
 

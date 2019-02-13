@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             if (mapsto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Base Code '" + reqVO.baseCode + "'");
 
-            if(mapsto.code != reqVO.baseCode)
+            if (mapsto.code != reqVO.baseCode)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ถูกต้อง");
 
             var destinationLine = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID, this.BuVO);
@@ -63,8 +63,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบเอกสาร Receive");
             }
             //Move สินค้าจาก Area อื่น
-            else if(mapsto.eventStatus == StorageObjectEventStatus.RECEIVED){
-                
+            else if (mapsto.eventStatus == StorageObjectEventStatus.RECEIVED)
+            {
+
             }
             //คืนเศษที่เหลือจากการ Picking
             else if (mapsto.eventStatus == StorageObjectEventStatus.PICKING)
@@ -92,7 +93,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับ Base Code '" + reqVO.baseCode + "' เข้าคลังได้ เนื่องจากมีสถานะ '" + mapsto.eventStatus + "'");
             }
 
-            var workQ = this.ProcessRegisterWorkQueue(docItems,mapsto, reqVO);
+            var workQ = this.ProcessRegisterWorkQueue(docItems, mapsto, reqVO);
 
             this.ValidateObjectSizeLimit(mapsto);
 
@@ -124,7 +125,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         {
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                 null, null, false, true, this.BuVO);
-            
+
             if (mapsto == null || mapsto.eventStatus == StorageObjectEventStatus.IDLE)
             {
                 if (mapsto != null && mapsto.eventStatus == StorageObjectEventStatus.IDLE)
@@ -264,7 +265,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             foreach (var packH in packs)
             {
                 var docItem = ADO.DocumentADO.GetInstant()
-                    .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souWarehouseID, null, packH.unitID, packH.baseUnitID, null, packH.batch,null, this.BuVO)
+                    .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souWarehouseID, null, packH.unitID, packH.baseUnitID, null, packH.batch, null, this.BuVO)
                     .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
 
 
@@ -274,7 +275,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     ADO.DocumentADO.GetInstant().MappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
 
                     var doc = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
-                    if(doc.EventStatus == DocumentEventStatus.IDLE)
+                    if (doc.EventStatus == DocumentEventStatus.IDLE)
                     {
                         ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
                         if (doc.ParentDocument_ID.HasValue)
@@ -282,30 +283,10 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     }
                     docItems.Add(docItem);
                 }
-                else if(isAutoCreate)
+                else if (isAutoCreate)
                 {
-                    var docs = ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, souWarehouseID, null, null, null, this.BuVO)
-                        .FindAll(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
-                    amt_Document doc = null;
-                    var skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packH.skuID, this.BuVO);
-                    //var skuType = this.StaticValue.SKUMasterTypes.First(x => x.ID == skuMst.SKUMasterType_ID);
-
-                    foreach (var _doc in docs)
-                    {
-                        var _docItems = ADO.DocumentADO.GetInstant().ListItem(doc.ID.Value, this.BuVO);
-                        var _docItem = _docItems.FirstOrDefault();
-                        if (_docItem != null)
-                        {
-                            var _skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(_docItem.SKUMaster_ID, this.BuVO);
-                            //var _skuType = this.StaticValue.SKUMasterTypes.First(x => x.ID == _skuMst.SKUMasterType_ID);
-                            if(_skuMst.SKUMasterType_ID == skuMst.SKUMasterType_ID)
-                            {
-                                doc = _doc;
-                                break;
-                            }
-                        }
-                    }
-
+                    var doc = ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, souWarehouseID, null, null, null, this.BuVO)
+                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
                     //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                     if (doc == null)
                     {
