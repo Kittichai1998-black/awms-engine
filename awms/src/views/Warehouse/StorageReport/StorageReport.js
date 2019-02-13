@@ -319,7 +319,7 @@ class StoragReport extends Component {
       },
       { accessor: 'Base_Unit', Header: 'Base Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
-        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_PalletPack', Header: 'Weight Pallet (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -329,7 +329,7 @@ class StoragReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("WeiPallet")}</span>)
       },
       {
-        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_Pack', Header: 'Weight Pack (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -339,7 +339,7 @@ class StoragReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("WeiPack")}</span>)
       },
       {
-        accessor: 'WeiPackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_PackStd', Header: 'Weight Standard (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'

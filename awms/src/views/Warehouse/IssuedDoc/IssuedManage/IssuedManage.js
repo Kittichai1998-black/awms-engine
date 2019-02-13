@@ -483,7 +483,7 @@ class IssuedManage extends Component {
         padding: '2px 0',
         fontSize: '90%',
         position: 'fixed',
-        maxHeight:'50px',
+        maxHeight:'20%',
         min:'20px',
         overflow: 'auto',
         maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
@@ -493,14 +493,18 @@ class IssuedManage extends Component {
       return <ReactAutocomplete
         inputProps={{
           style: {
-            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
-            backgroundPosition: "8px 8px",
-            backgroundSize: "10px",
-            backgroundRepeat: "no-repeat",
-            paddingLeft: "25px",
+            width: "100%",
+            borderRadius: "1px",
+            height:"auto",
+            //backgroundImage: 'url(' + arrimg + ')',
+            //backgroundPosition: "8px 8px",
+            //backgroundSize: "10px",
+            //backgroundRepeat: "no-repeat",
+            //paddingLeft: "25px",
             position: 'relative'
-
-          }
+          },
+          className: "form-control",
+          placeHolder: "Input Pack"
         }}
         wrapperStyle={{ width: "100%" }}
         menuStyle={style}

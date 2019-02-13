@@ -236,7 +236,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     di.RefID = !string.IsNullOrWhiteSpace(sapRes.mat_doc) ? sapRes.mat_doc : di.RefID;
                     di.Ref1 = !string.IsNullOrWhiteSpace(sapRes.mat_doc) ? sapRes.mat_doc : di.Ref1;
-                    docH.EventStatus = DocumentEventStatus.CLOSED;
+                    di.EventStatus = DocumentEventStatus.CLOSED;
                     ADO.DocumentADO.GetInstant().PutItem(di, this.BuVO);
 
                 });
