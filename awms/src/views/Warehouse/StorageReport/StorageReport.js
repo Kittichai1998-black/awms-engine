@@ -63,24 +63,19 @@ class StoragReport extends Component {
   }
 
   DatePickerFilter() {
-    let filter = this.state.datafilter
+    let filter = this.state.datafilter.filter(x => {
+      return x.type !== "gt" && x.type !== "lt";
+    });
 
-    filter.forEach((x, index) => {
-      if (x.type === "gt") {
-        filter.splice(index, 1);
-      }
-      if (x.type === "lt") {
-        filter.splice(index, 1);
-      }
-    })
+    if (this.state.dateFrom && this.state.dateTo) {
+      if (this.state.dateFrom)
+        filter.push({ id: "Receive_Date", value: moment(this.state.dateFrom).format('YYYY-MM-DD'), type: "gt" });
+      if (this.state.dateTo)
+        filter.push({ id: "Receive_Date", value: moment(this.state.dateTo).format('YYYY-MM-DD'), type: "lt" });
 
-
-    if (this.state.dateFrom)
-      filter.push({ id: "Receive_Date", value: moment(this.state.dateFrom).format('YYYY-MM-DD'), type: "gt" });
-    if (this.state.dateTo)
-      filter.push({ id: "Receive_Date", value: moment(this.state.dateTo).format('YYYY-MM-DD'), type: "lt" });
+      this.setState({ datafilter: filter }, () => { this.onCheckFliter(); });
+    }
     
-    this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
   }
 
   createCustomFilter(name) {
@@ -278,7 +273,7 @@ class StoragReport extends Component {
 
   sumFooterQty(value) {
     var sumVal = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) === true ?
         parseFloat(x[value]) : null)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
@@ -415,7 +410,7 @@ class StoragReport extends Component {
               </div>
             </Col>
 
-            <button onClick={() => { this.DatePickerFilter() }}>Click</button>
+            <Button color="primary" onClick={() => { this.DatePickerFilter() }}>Click</Button>
              
             <Col xs="1">
               <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
