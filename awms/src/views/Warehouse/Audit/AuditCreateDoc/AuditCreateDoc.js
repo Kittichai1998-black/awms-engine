@@ -284,14 +284,19 @@ class IssuedManage extends Component {
       return <ReactAutocomplete
         inputProps={{
           style: {
-            width: "100%", borderRadius: "1px", 
-            backgroundImage: 'url(' + arrimg + ')',
-            backgroundPosition: "8px 8px",
-            backgroundSize: "10px",
-            backgroundRepeat: "no-repeat",
-            paddingLeft: "25px",
+            width: "100%",
+            borderRadius: "1px",
+            height: "auto",
+            //backgroundImage: 'url(' + arrimg + ')',
+            //backgroundPosition: "8px 8px",
+            //backgroundSize: "10px",
+            //backgroundRepeat: "no-repeat",
+            //paddingLeft: "25px",
             position: 'relative'
-          }
+          },
+          className: "form-control",
+          placeHolder: "Input SKU"
+
         }}
         wrapperStyle={{ width: "100%" }}
         menuStyle={style}
