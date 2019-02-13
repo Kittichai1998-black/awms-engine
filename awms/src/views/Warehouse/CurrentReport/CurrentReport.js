@@ -310,7 +310,7 @@ class CurrentReport extends Component {
       },
       { accessor: 'Base_Unit', Header: 'Unit', filterable: true, Filter: (e) => this.createCustomFilter(e), sortable: false, minWidth: 100 },
       {
-        accessor: 'Wei_PalletPack', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_PalletPack', Header: 'Weight Pallet (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -320,7 +320,7 @@ class CurrentReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_PalletPack")}</span>)
       },
       {
-        accessor: 'Wei_Pack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_Pack', Header: 'Weight Pack (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -330,7 +330,7 @@ class CurrentReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("Wei_Pack")}</span>)
       },
       {
-        accessor: 'Wei_PackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_PackStd', Header: 'Weight Standard (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
