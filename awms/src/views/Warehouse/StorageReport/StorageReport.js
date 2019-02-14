@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import ReactTable from 'react-table'
 import moment from 'moment';
-import { apicall, DatePicker, createQueryString } from '../ComponentCore';
+import { apicall, createQueryString } from '../ComponentCore';
+import DatePicker from 'react-datepicker'
 import ExportFile from '../MasterData/ExportFile';
 import { Button, Badge, Input, Row, Col } from 'reactstrap';
 
@@ -194,10 +195,49 @@ class StoragReport extends Component {
   }
 
   dateTimePickerFrom() {
-    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateFrom}/>
+    return <DatePicker selected={this.state.dateFrom}
+      customInput={<Input />}
+      onChange={(e) => {
+        if (e === null) {
+          this.setState({ dateFrom: null })
+        }
+        else {
+          if (e.isValid() && e !== null) {
+            this.setState({ dateFrom: e })
+          }
+        }
+
+      }}
+      timeIntervals={1}
+      timeFormat="HH:mm"
+      timeCaption="Time"
+      showTimeSelect={false}
+      dateFormat={"DD-MM-YYYY"} />
+
+    //<DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateFrom} />
   }
   dateTimePickerTo() {
-    return <DatePicker style={{ width: "300px", }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo}/>
+    return <DatePicker selected={this.state.dateTo}
+      
+      customInput={<Input/>}
+      onChange={(e) => {
+        console.log(e)
+        if (e === null) {
+          this.setState({ dateFrom: null })
+        }
+        else {
+          if (e.isValid() && e !== null) {
+            this.setState({ dateTo: e })
+          }
+        }
+
+      }}
+      timeIntervals={1}
+      timeFormat="HH:mm"
+      timeCaption="Time"
+      showTimeSelect={false}
+      dateFormat={"DD-MM-YYYY"} />
+    //<DatePicker style={{ width: "300px", }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo} />
   }
 
 
@@ -382,21 +422,19 @@ class StoragReport extends Component {
       <div>
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
-            <Col xs="6">
-              <div >
-                <label> Received Date From : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
-                  {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
-                </div></div>
+            <Col xs="4.2">
+              <span >Received Date From: </span>
+              <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
+                {this.dateTimePickerFrom()}
+              </div>
             </Col>
 
-            <Col xs="6">
-              <div>
-                <label >Received  Date To : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
-                  {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
-                </div>
-              </div>
+
+            <Col xs="4.2">
+              <span >Received Date To: </span>
+              <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
+                {this.dateTimePickerTo()}
+              </div>      
             </Col>
           </Row>
 
@@ -423,7 +461,6 @@ class StoragReport extends Component {
           className="-highlight"
           multiSort={false}
           filterable={true}
-          showPagination={false}
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
           onSortedChange={(sorted) => {

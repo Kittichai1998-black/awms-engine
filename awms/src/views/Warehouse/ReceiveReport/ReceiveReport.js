@@ -181,7 +181,7 @@ class ReceiveReport extends Component {
       <div>
         <div>
           <Row>
-            <Col xs="6" md="6">
+            <Col xs="4.2">
               <div>
                 <label >Date From: </label>
                 <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
@@ -189,7 +189,7 @@ class ReceiveReport extends Component {
                 </div>
               </div>
             </Col>
-            <Col xs="6" md="6">
+            <Col xs="4.2" >
               <div>
                 <label >Date To: </label>
                 <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
