@@ -65,6 +65,7 @@ class AuditDoc extends Component {
     this.closeModal = this.closeModal.bind(this)
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
+    this.NextLastPage = this.NextLastPage.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
     this.toggle = this.toggle.bind(this);
@@ -172,23 +173,64 @@ class AuditDoc extends Component {
       background: '#cfd8dc',
       minWidth: '90px'
     }
+    const notPageactiveLast = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+    }
+    const pageactiveLast = {
+      textDecoration: 'none',
+    }
     return (
-      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+            <li className="page-item" style={{ display: "flex" }}><Button style={this.state.currentPage === 1 ? { ...notPageactiveLast, marginRight: "5px" } : { pageactiveLast, marginRight: "5px" }} outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
             <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
+            <li className="page-item" style={{ display: "flex" }}> <a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")} >
+              Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? { ...notPageactiveLast, marginLeft: "5px" } : { ...pageactiveLast, marginLeft: "5px" }} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li>
           </ul>
         </nav>
       </div>
     )
   }
 
+  NextLastPage(position) {
+    this.setState({ loading: true })
+    let queryString = "";
+    const select = this.state.select
+    if (position === 'next') {
+      select.sk = ((this.state.countpages * 100) - 100)
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+    else {
+      select.sk = 0
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+
+    Axios.get(queryString).then(
+      (res) => {
+        if (res.data.datas.length > 0) {
+          if (position === 'next') {
+            this.setState({ currentPage: (this.state.countpages) })
+          }
+          else {
+            this.setState({ currentPage: 1 })
+          }
+          this.setState({ data: res.data.datas })
+        }
+        else {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+        }
+        this.setState({ loading: false })
+      }
+    )
+  }
   pageOnHandleClick(position) {
     this.setState({ loading: true })
     const select = this.state.select
@@ -246,7 +288,7 @@ class AuditDoc extends Component {
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;
     getSelect["sk"] = 0
-    this.setState({currentPage:1})
+    this.setState({ currentPage: 1 })
     getSelect.q = strCondition;
     this.setState({ select: getSelect }, () => { this.getData() })
   }
@@ -279,18 +321,18 @@ class AuditDoc extends Component {
             // console.log(strStatus)
             if (strStatus === "CLOSING") {
               return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge>{imgExclamation1}</a></h5>
             } else {
-              return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+              return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
             }
           } else {
-            return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+            return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
           }
         } else {
-          return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+          return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
         }
       } else {
-        return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+        return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
       }
     }
     else {
@@ -386,7 +428,7 @@ class AuditDoc extends Component {
       {
         accessor: 'Code', Header: 'Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left",
         Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} target="_blank"
-        onClick={() => {window.open('/sys/ad/create?ID=' + e.original.ID)}} >{e.original.Code}</a>
+          onClick={() => { window.open('/sys/ad/create?ID=' + e.original.ID) }} >{e.original.Code}</a>
       },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: (e) => this.createCustomFilter(e), },
@@ -428,7 +470,7 @@ class AuditDoc extends Component {
 
         {this.createModal()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
-          <Row style={{verticalAlign: 'baseline'}}>
+          <Row style={{ verticalAlign: 'baseline' }}>
 
             <Col xs="4"></Col>
             <Col xs="4">
