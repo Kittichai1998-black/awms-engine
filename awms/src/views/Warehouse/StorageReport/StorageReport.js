@@ -37,6 +37,7 @@ class StoragReport extends Component {
       },
       datafilter: [],
       selectiondata: [],
+      rowselect:[],
     }
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
@@ -54,8 +55,6 @@ class StoragReport extends Component {
   }
   componentDidMount() {
     this.getData();
-
-    console.log(this.state.date)
   }
 
   getData() {
@@ -224,7 +223,6 @@ class StoragReport extends Component {
       
       customInput={<Input/>}
       onChange={(e) => {
-        console.log(e)
         if (e === null) {
           this.setState({ dateFrom: null })
         }
@@ -335,15 +333,20 @@ class StoragReport extends Component {
   createSelection(rowdata) {
     return <input
       className="selection"
-      type="radio"
+      type="checkbox"
       name="selection"
       onChange={(e) => this.onHandleSelection(rowdata, e.target.checked)} />
   }
 
   onHandleSelection(rowdata, value) {
-    let rowselect = [];
+    let rowselect = this.state.rowselect;
     if (value) {
       rowselect.push(rowdata.original)
+    }
+    else{
+      rowselect = rowselect.filter(x => {
+        return rowdata.original.ID !== x.ID
+      });
     }
     this.setState({ rowselect: rowselect }, () => { this.getSelectionData(this.state.rowselect) })
   }
@@ -353,12 +356,14 @@ class StoragReport extends Component {
   }
 
   holdData(data, status) {
-    let postdata = { bstosID : 0 ,type: ""}
+    let bstosID = []
+
     if (data.length > 0) {
       data.forEach(rowdata => {
-        postdata["bstosID"] = rowdata.ID
-        postdata["type"] = status
+        bstosID.push(rowdata.ID)
       })
+      let postdata = { bstosID : bstosID ,type: status}
+
       if (status === "hold") {
         Axios.post(window.apipath + "/api/wm/VRMapSTO/hold", postdata).then((res) => {
           this.setState({ resp: res.data._result.message })
