@@ -15,41 +15,45 @@ namespace AWMSEngine.Engine.Business
     {
         public class TDocReq
         {
-            public long bstosID;
+            public long[] bstosID;
             public string type;
         }
         public class TDocRes
         {
-            public amt_StorageObject data;
+            public List<amt_StorageObject> data;
         }
 
         protected override TDocRes ExecuteEngine(TDocReq reqVO)
         {
 
-            TDocRes res = new TDocRes();
-
-            var stoData = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(reqVO.bstosID, this.BuVO).EventStatus;
-           
-
-            if (reqVO.type == "hold")
+            TDocRes allRes = new TDocRes();
+            List<amt_StorageObject> res = new List<amt_StorageObject>();
+            foreach (var bstoid in reqVO.bstosID)
             {
-                if (stoData != StorageObjectEventStatus.RECEIVED)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED");
+                var stoData = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO).EventStatus;
 
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(reqVO.bstosID, null, null, StorageObjectEventStatus.HOLD, this.BuVO);
+
+                if (reqVO.type == "hold")
+                {
+                    if (stoData != StorageObjectEventStatus.RECEIVED)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED");
+
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.HOLD, this.BuVO);
+                }
+                else
+                {
+                    if (stoData != StorageObjectEventStatus.HOLD)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data is not Hold");
+
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                }
+
+
+                res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
+
             }
-            else
-            {
-                if (stoData != StorageObjectEventStatus.HOLD)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data is not Hold");
-
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(reqVO.bstosID, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-            }
-
-
-            res.data = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(reqVO.bstosID, this.BuVO);
-
-            return res;
+            allRes.data = res;
+            return allRes;
         }
     }
 }
