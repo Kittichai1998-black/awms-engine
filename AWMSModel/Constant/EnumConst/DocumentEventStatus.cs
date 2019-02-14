@@ -10,6 +10,9 @@ namespace AWMSModel.Constant.EnumConst
         WORKING = 11,
         WORKED = 12,
 
+        APPROVING = 13,
+        APPROVED = 14,
+
         REMOVING = 21,
         REMOVED = 22,
         REJECTING = 23,

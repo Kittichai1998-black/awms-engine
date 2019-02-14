@@ -15,6 +15,12 @@ namespace WCSSimAPI.Controllers
         public static string workingQueueStatus { get; set; }
         public static string doneQueueStatus { get; set; }
         public static string locationInfoQueueStatus { get; set; }
+        public static string locationMoveQueueStatus { get; set; }
+        public static List<string> errorListsRegister = new List<string>();
+        public static List<string> errorListsWorking = new List<string>();
+        public static List<string> errorListsDone = new List<string>();
+        public static List<string> errorListsLocInfo = new List<string>();
+        public static List<string> errorListsLocMove = new List<string>();
 
         [HttpGet("2")]
         [Produces("text/html")]
@@ -56,13 +62,31 @@ namespace WCSSimAPI.Controllers
         }
 
         [HttpGet]
-        public string GetStatus2()
+        public string GetStatus2(string log)
         {
+
             string responseString = @"
                 Register Queue => " + registerQueueStatus + @"
                 Working Queue => " + workingQueueStatus + @"
                 Done Queue => " + doneQueueStatus + @"
                 Location Info Queue => " + locationInfoQueueStatus;
+            int c = 0;
+
+            if (string.IsNullOrWhiteSpace(log) || log.ToUpper() == "REGISTER")
+                responseString += "\n\n#######LOG REGISTER############\n" + string.Join("\n", errorListsRegister.Select(x => (++c).ToString("000") + ">" + x).ToArray());
+
+            if (string.IsNullOrWhiteSpace(log) || log.ToUpper() == "WORKING")
+                responseString += "\n\n#######LOG WORKING############\n" + string.Join("\n", errorListsWorking.Select(x => (++c).ToString("000") + ">" + x).ToArray());
+
+            if (string.IsNullOrWhiteSpace(log) || log.ToUpper() == "DONE")
+                responseString += "\n\n#######LOG DONE############\n" + string.Join("\n", errorListsDone.Select(x => (++c).ToString("000") + ">" + x).ToArray());
+
+            if (string.IsNullOrWhiteSpace(log) || log.ToUpper() == "LOCATIONINFO")
+                responseString += "\n\n#######LOG LOCATIONINFO############\n" + string.Join("\n", errorListsLocInfo.Select(x => (++c).ToString("000") + ">" + x).ToArray());
+
+            if (string.IsNullOrWhiteSpace(log) || log.ToUpper() == "LOCATIONMOVE")
+                responseString += "\n\n#######LOG LOCATIONMOVE############\n" + string.Join("\n", errorListsLocMove.Select(x => (++c).ToString("000") + ">" + x).ToArray());
+
             return responseString;
 
         }

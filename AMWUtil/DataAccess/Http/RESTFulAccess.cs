@@ -133,7 +133,7 @@ namespace AMWUtil.DataAccess.Http
                 catch (System.Exception ex)
                 {
                     result = null;
-                    if (retry == 0 && logger != null)
+                    if (retry <= 0 && logger != null)
                         throw new AMWException(logger, AMWExceptionCode.S0002, ex.Message);
                 }
             } while (result == null);

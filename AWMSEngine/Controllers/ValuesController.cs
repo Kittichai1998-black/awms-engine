@@ -27,6 +27,14 @@ namespace AWMSEngine.Controllers
 
             return new { api = "1.1", build_version = version, build_date = linkTime.ToString("yyyy-MM-ddThh:mm") };
         }
+        [HttpGet("saptest")]
+        public string GetSAPTest()
+        {
+            var res = new APIService.TestConnectionSAPAPI(this, false).Execute(new { });
+            List<string> datas = res.datas;
+            return string.Join('\n', datas.ToArray());
+        }
+
         [HttpGet("jobs")]
         public dynamic GetJobs()
         {

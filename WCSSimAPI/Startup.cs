@@ -32,6 +32,7 @@ namespace WCSSimAPI
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
+        static object lockJobs = new object();
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -42,8 +43,6 @@ namespace WCSSimAPI
             ConstConfig.DBConnection = appProperty.GetValueOrDefault("DBConnection");
             ConstConfig.CronEx = appProperty.GetValueOrDefault("CronEx");
             ConstConfig.WMSApiURL = appProperty.GetValueOrDefault("WMSApiURL");
-
-            AMWUtil.Logger.AMWLoggerManager.InitInstant(appProperty.GetValueOrDefault("logger.rootpath"), appProperty.GetValueOrDefault("logger.filename"));
 
             this.JobRun();
 
@@ -66,40 +65,64 @@ namespace WCSSimAPI
             WMS_DoneJobs jobDone = new WMS_DoneJobs();
             WMS_WorkingJobs jobWorking = new WMS_WorkingJobs();
             WMS_LocationInfoJobs jobLocationInfo = new WMS_LocationInfoJobs();
+            WMS_MoveLocationJobs jobMoveLocation = new WMS_MoveLocationJobs();
 
-            var registerLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("RegisterQueue");
-            var workingLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("WorkingQueue");
-            var doneLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("DoneQueue");
-            var locationLog = AMWUtil.Logger.AMWLoggerManager.GetLogger("LocationInfoQueue");
             Task.Run(() =>
             {
                 while (true)
                 {
-                    StatusController.registerQueueStatus = jobRegister.Execute(registerLog);
+                    lock (lockJobs)
+                    {
+                        StatusController.registerQueueStatus = jobRegister.Execute();
+                    }
                     Thread.Sleep(1000);
                 }
             });
+            Thread.Sleep(200);
             Task.Run(() =>
             {
                 while (true)
                 {
-                    StatusController.workingQueueStatus = jobWorking.Execute(workingLog);
+                    lock (lockJobs)
+                    {
+                        StatusController.workingQueueStatus = jobWorking.Execute();
+                    }
                     Thread.Sleep(1000);
                 }
             });
+            Thread.Sleep(200);
             Task.Run(() =>
             {
                 while (true)
                 {
-                    StatusController.doneQueueStatus = jobDone.Execute(doneLog);
+                    lock (lockJobs)
+                    {
+                        StatusController.doneQueueStatus = jobDone.Execute();
+                    }
                     Thread.Sleep(1000);
                 }
             });
+            Thread.Sleep(200);
             Task.Run(() =>
             {
                 while (true)
                 {
-                    StatusController.locationInfoQueueStatus = jobLocationInfo.Execute(locationLog);
+                    lock (lockJobs)
+                    {
+                        StatusController.locationInfoQueueStatus = jobLocationInfo.Execute();
+                    }
+                    Thread.Sleep(1000);
+                }
+            });
+            Thread.Sleep(200);
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    lock (lockJobs)
+                    {
+                        StatusController.locationMoveQueueStatus = jobMoveLocation.Execute();
+                    }
                     Thread.Sleep(1000);
                 }
             });
