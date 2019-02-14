@@ -137,7 +137,8 @@ namespace AMWUtil.DataAccess
         {
             var conn = CreateConnection();
             conn.Open();
-            return conn.BeginTransaction(transName);
+            var trans =  conn.BeginTransaction(IsolationLevel.ReadCommitted,transName);
+            return trans;
         }
     }
 }
