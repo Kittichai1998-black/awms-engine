@@ -201,7 +201,7 @@ class StoragReport extends Component {
     return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateFrom}/>
   }
   dateTimePickerTo() {
-    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo}/>
+    return <DatePicker style={{ width: "300px", }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo}/>
   }
 
 
@@ -436,16 +436,16 @@ class StoragReport extends Component {
           <Row>
             <Col xs="6">
               <div >
-                <label>Date From : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '55px' }}>
+                <label> Received Date From : </label>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
                   {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
                 </div></div>
             </Col>
 
             <Col xs="6">
               <div>
-                <label >Date To : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
+                <label >Received  Date To : </label>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
                   {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
                 </div>
               </div>
@@ -453,19 +453,15 @@ class StoragReport extends Component {
           </Row>
 
 
-          <Row>
-
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
             <Col xs="6"></Col>
-            <Col xs="2">
-              <div className="float-right" >
-                <span className="float-right" style={{ fontWeight: 'bold' }}>Received Date : </span>
+            <Col xs="6">
+              <div>
+                <div className="float-right">
+               <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
+                </div>
+                <Button color="primary" className="float-right" style={{ width: "130px", marginRight: '5px' }} onClick={() => { this.DatePickerFilter() }}>Select</Button>
               </div>
-            </Col>
-
-            <Button color="primary" onClick={() => { this.DatePickerFilter() }}>Click</Button>
-             
-            <Col xs="1">
-              <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
             </Col>
           </Row>
          
@@ -480,6 +476,7 @@ class StoragReport extends Component {
           className="-highlight"
           multiSort={false}
           filterable={true}
+          showPagination={false}
           defaultPageSize={this.state.defaultPageS}
           PaginationComponent={this.paginationButton}
           onSortedChange={(sorted) => {
