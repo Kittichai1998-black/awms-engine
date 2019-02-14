@@ -56,8 +56,11 @@ namespace AWMSEngine
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             ADO.StaticValue.StaticValueManager.GetInstant();
 
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDoc311ToSAPJob>("0 0/15 * * * ?");
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDocPackage321ToSAPJob>("0 0/15 * * * ?");
+
+            string cronEx311 = appProperty[PropertyConst.APP_KEY_CRONEX_311];
+            string cronEx321 = appProperty[PropertyConst.APP_KEY_CRONEX_321];
+            AMWUtil.Common.SchedulerUtil.Start<PostGRDoc311ToSAPJob>(cronEx311);
+            AMWUtil.Common.SchedulerUtil.Start<PostGRDocPackage321ToSAPJob>(cronEx321);
 
             if (env.IsDevelopment())
             {
