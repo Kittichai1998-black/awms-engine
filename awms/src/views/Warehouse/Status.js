@@ -92,6 +92,7 @@ const StorageObjectEventStatus = [
     // {status: "MOVED",code: 114},
     // {status: "TRANSFERING",code: 115},
     // {status: "TRANSFERED",code: 116}
+     {status: "HOLD", code: 99}
     
 ]
 

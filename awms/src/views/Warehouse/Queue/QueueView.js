@@ -35,7 +35,7 @@ class QueueView extends Component {
       f: "Destination,Status,ActualTime,StartTime,EndTime,Seq,IOType,StorageObject_Code,RefID,Priority,EventStatus,Pack_Name,Sou_Warehouse_Name,Des_Warehouse_Name," +
         "Sou_Area_Name,Des_Area_Name,Sou_AreaLocation_Name,Des_AreaLocation_Name,UserName,CreateTime,Document_Code",
       g: "",
-      s: "[{'f':'ActualTime','od':'DESC'},{'f':'Status','od':'ASC'}]",
+      s: "[{'f':'Status','od':'ASC'},{'f':'ActualTime','od':'DESC'}]",
       sk: 0,
       l: 100,
       all: "",

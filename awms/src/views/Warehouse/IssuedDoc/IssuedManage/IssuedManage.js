@@ -361,6 +361,7 @@ class IssuedManage extends Component {
       , issueItems: acceptdata
     }
     if (acceptdata.length > 0) {
+      console.log(postdata)
       Axios.post(window.apipath + "/api/wm/issued/doc", postdata).then((res) => {
         if (res.data._result.status === 1) {
           this.props.history.push('/doc/gi/manage?ID=' + res.data.ID)
@@ -427,9 +428,9 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = value.Code;
       data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
       data[rowdata.index]["UnitType"] = value.UnitType;
-      data[rowdata.index]["Lot"] = value.lot;
-      data[rowdata.index]["Orderno"] = value.orderno;
-      data[rowdata.index]["Batch"] = value.batch;
+      data[rowdata.index]["Lot"] = value.lot !== undefined ? data[rowdata.index]["Lot"] : value.lot;
+      data[rowdata.index]["Orderno"] = value.orderno !== undefined ? data[rowdata.index]["Orderno"] : value.orderno;
+      data[rowdata.index]["Batch"] = value.batch !== undefined ? data[rowdata.index]["Batch"] : value.batch;
       data[rowdata.index]["id"] = value.id;
     }
     this.setState({ data });

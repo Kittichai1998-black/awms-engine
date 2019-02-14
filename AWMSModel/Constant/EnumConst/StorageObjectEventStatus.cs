@@ -32,6 +32,8 @@ namespace AWMSModel.Constant.EnumConst
         LOADING = 31,
         LOADED = 32,
         SHIPPING = 33,
-        SHIPPED = 34
+        SHIPPED = 34,
+
+        HOLD = 99
     }
 }

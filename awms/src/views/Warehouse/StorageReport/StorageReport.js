@@ -4,7 +4,7 @@ import ReactTable from 'react-table'
 import moment from 'moment';
 import { apicall, createQueryString } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
-import { Button, Badge, Input, Row, Col } from 'reactstrap';
+import { Button, Badge, Input, Row, Col ,Card,CardBody} from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
@@ -36,11 +36,16 @@ class StoragReport extends Component {
         all: "",
       },
       datafilter: [],
+      selectiondata: [],
     }
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
     this.NextLastPage = this.NextLastPage.bind(this)
     this.customSorting = this.customSorting.bind(this);
+    this.onHandleSelection = this.onHandleSelection.bind(this)
+    this.getSelectionData = this.getSelectionData.bind(this);
+    this.holdData = this.holdData.bind(this);
+
   }
   async componentWillMount() {
     document.title = "Storage Object - AWMS";
@@ -106,7 +111,7 @@ class StoragReport extends Component {
 
   createDropdownFilter(columns) {
     let list = StorageObjectEventStatus.map((x, idx) => {
-      return <option key={idx} value={x.status}>{x.status}</option>
+    return <option key={idx} value={x.status}>{x.status}</option>
     });
     return <select style={{ background: "#FAFAFA", width: '100%' }} onChange={(e) => {
       let filter = this.state.datafilter
@@ -124,7 +129,6 @@ class StoragReport extends Component {
   onCheckFliter() {
     this.setState({ loading: true })
     let getFilter = this.state.datafilter;
-    console.log(getFilter)
     let listFilter = getFilter.map((x,index) => {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
@@ -194,10 +198,49 @@ class StoragReport extends Component {
   }
 
   dateTimePickerFrom() {
-    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateFrom}/>
+    return <DatePicker selected={this.state.dateFrom}
+      customInput={<Input />}
+      onChange={(e) => {
+        if (e === null) {
+          this.setState({ dateFrom: null })
+        }
+        else {
+          if (e.isValid() && e !== null) {
+            this.setState({ dateFrom: e })
+          }
+        }
+
+      }}
+      timeIntervals={1}
+      timeFormat="HH:mm"
+      timeCaption="Time"
+      showTimeSelect={false}
+      dateFormat={"DD-MM-YYYY"} />
+
+    //<DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateFrom} />
   }
   dateTimePickerTo() {
-    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo}/>
+    return <DatePicker selected={this.state.dateTo}
+      
+      customInput={<Input/>}
+      onChange={(e) => {
+        console.log(e)
+        if (e === null) {
+          this.setState({ dateFrom: null })
+        }
+        else {
+          if (e.isValid() && e !== null) {
+            this.setState({ dateTo: e })
+          }
+        }
+
+      }}
+      timeIntervals={1}
+      timeFormat="HH:mm"
+      timeCaption="Time"
+      showTimeSelect={false}
+      dateFormat={"DD-MM-YYYY"} />
+    //<DatePicker style={{ width: "300px", }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo} />
   }
 
 
@@ -289,9 +332,55 @@ class StoragReport extends Component {
       return sumVal.toFixed(3)
   }
 
+  createSelection(rowdata) {
+    return <input
+      className="selection"
+      type="radio"
+      name="selection"
+      onChange={(e) => this.onHandleSelection(rowdata, e.target.checked)} />
+  }
+
+  onHandleSelection(rowdata, value) {
+    let rowselect = [];
+    if (value) {
+      rowselect.push(rowdata.original)
+    }
+    this.setState({ rowselect: rowselect }, () => { this.getSelectionData(this.state.rowselect) })
+  }
+
+  getSelectionData(data) {
+    this.setState({ selectiondata: data })
+  }
+
+  holdData(data, status) {
+    let postdata = { bstosID : 0 ,type: ""}
+    if (data.length > 0) {
+      data.forEach(rowdata => {
+        postdata["bstosID"] = rowdata.ID
+        postdata["type"] = status
+      })
+      if (status === "hold") {
+        Axios.post(window.apipath + "/api/wm/VRMapSTO/hold", postdata).then((res) => {
+          this.setState({ resp: res.data._result.message })
+          this.getData();
+        })
+      }
+      else {
+        Axios.post(window.apipath + "/api/wm/VRMapSTO/hold", postdata).then((res) => {
+          this.setState({ resp: res.data._result.message })
+          this.getData();
+        })
+      }
+    }
+  }
+
   render() {
 
     let cols = [
+      {
+        Header: '', sortable: false, filterable: false, sortable: false, className: "text-center", fixed: "left", minWidth: 50,
+        Cell: (e) => this.createSelection(e)
+      },
       {
         Header: 'No.', fixed: "left", sortable: false, filterable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
@@ -315,9 +404,11 @@ class StoragReport extends Component {
       },
       {
         accessor: 'Status', Header: 'Status', fixed: "left", editable: false, width: 90, Filter: (e) => this.createDropdownFilter(e), minWidth: 120,
-        Cell: row => (
-          <h5><Badge color={row.value}>{row.value}</Badge></h5>
-        )
+        Cell: row => {
+          return  <h5><Badge color={row.value}>{row.value}</Badge></h5> 
+        }
+          
+        
       },
       { accessor: 'Pallet', fixed: "left", Header: 'Pallet', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 100 },
       { accessor: 'SKU_Code', fixed: "left", Header: 'SKU Code', Filter: (e) => this.createCustomFilter(e), sortable: true, minWidth: 115 },
@@ -382,43 +473,38 @@ class StoragReport extends Component {
       <div>
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
-            <Col xs="6">
-              <div >
-                <label>Date From : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '55px' }}>
-                  {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
-                </div></div>
+            <Col xs="4.2">
+              <span >Received Date From: </span>
+              <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
+                {this.dateTimePickerFrom()}
+              </div>
             </Col>
 
+
+            <Col xs="4.2">
+              <span >Received Date To: </span>
+              <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
+                {this.dateTimePickerTo()}
+              </div>      
+            </Col>
+          </Row>
+
+
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+            <Col xs="6"></Col>
             <Col xs="6">
               <div>
-                <label >Date To : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
-                  {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
+                <div className="float-right">
+               <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
                 </div>
+                <Button color="primary" className="float-right" style={{ width: "130px", marginRight: '5px' }} onClick={() => { this.DatePickerFilter() }}>Select</Button>
               </div>
             </Col>
           </Row>
-
-
-          <Row>
-
-            <Col xs="6"></Col>
-            <Col xs="2">
-              <div className="float-right" >
-                <span className="float-right" style={{ fontWeight: 'bold' }}>Received Date : </span>
-              </div>
-            </Col>
-
-            <Button color="primary" onClick={() => { this.DatePickerFilter() }}>Click</Button>
-             
-            <Col xs="1">
-              <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
-            </Col>
-          </Row>
+         
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1',  marginBottom: "20px", maxHeight: '550px' }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1',maxHeight: '550px' }}
           minRows={5}
           loading={this.state.loading}
           columns={cols}
@@ -434,6 +520,15 @@ class StoragReport extends Component {
             this.customSorting(sorted)
           }}
         />
+         <Card>
+          <CardBody>
+            <Button style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }}
+              onClick={() => this.holdData(this.state.selectiondata, "unhold")} color="danger" className="float-right">UnHold</Button>
+            <Button style={{ width: '130px', display: this.state.showbutton }}
+              onClick={() => this.holdData(this.state.selectiondata, "hold")} color="success" className="float-right">Hold</Button>
+            {this.state.resp}
+          </CardBody>
+        </Card>
       </div>
 
     )
