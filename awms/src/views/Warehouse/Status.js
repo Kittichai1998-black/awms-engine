@@ -45,9 +45,9 @@ const DocumentEventStatus = [
     {status:'IDLE' , code:10,},
     {status:'WORKING' , code:11,},
     {status:'WORKED' , code:12,},
-    {status:'REMOVING' , code:21,},
-    {status:'REMOVED' , code:22,},
-    {status:'REJECTING' , code:23,},
+    // {status:'REMOVING' , code:21,},
+    // {status:'REMOVED' , code:22,},
+    // {status:'REJECTING' , code:23,},
     {status:'REJECTED' , code:24,},
     {status:'CLOSING' , code:31,},
     {status:'CLOSED' , code:32,}
@@ -67,7 +67,7 @@ const Status = [
 ]
 
 const StorageObjectEventStatus = [
-    {status: "IDEL",code: 10},
+    {status: "IDLE",code: 10},
     {status: "RECEIVING",code: 11},
     {status: "RECEIVED",code: 12},
     {status: "AUDITING",code: 13},

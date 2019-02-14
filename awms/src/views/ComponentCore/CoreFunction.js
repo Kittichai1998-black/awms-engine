@@ -22,8 +22,8 @@ class apicall {
         });
     }
 
-    post(url, data) {
-
+    post(url, dataR) {
+    let data = trimObj(dataR)
         if (data !== undefined) {
             data._token = localStorage.getItem("Token")
         }
@@ -42,7 +42,8 @@ class apicall {
         });
     }
 
-    put(url, data) {
+    put(url, dataR) {
+        let data = trimObj(dataR)
         data._token = localStorage.getItem("Token")
         return Axios.put(url, data).then((res) => {
             if (res.data._result.status === 0) {
@@ -59,7 +60,8 @@ class apicall {
         });
     }
 
-    delete(url, data) {
+    delete(url, dataR) {
+        let data = trimObj(dataR)
         data._token = localStorage.getItem("Token")
         return Axios.delete(url, data).then((res) => {
             if (res.data._result.status === 0) {
@@ -161,5 +163,17 @@ function FilterURL(seacrhlocation, select) {
     url["q"] = JSON.stringify(sel)
     return url;
 }
+
+function trimObj(obj) {
+    if(obj === null){
+        return null
+    }
+
+    if (!Array.isArray(obj) && typeof obj != 'object') return obj;
+    return Object.keys(obj).reduce(function(acc, key) {
+      acc[key.trim()] = typeof obj[key] == 'string'? obj[key].trim() : trimObj(obj[key]);
+      return acc;
+    }, Array.isArray(obj)? []:{});
+  }
 
 export { apicall, createQueryString, Clone, DateTimeConverter, GenerateDropDownStatus, FilterURL }

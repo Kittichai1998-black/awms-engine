@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "react-table/react-table.css";
 import { Badge, Row, Col, Input, Card, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTable from 'react-table'
-import { apicall, createQueryString, GenerateDropDownStatus } from '../ComponentCore'
+import { apicall, AutoSelect, createQueryString, GenerateDropDownStatus } from '../ComponentCore'
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { DocumentEventStatus } from '../Status'
@@ -64,8 +64,12 @@ class IssuedDoc extends Component {
     this.closeModal = this.closeModal.bind(this)
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
+    this.NextLastPage = this.NextLastPage.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
+    this.toggle = this.toggle.bind(this);
+
+    this.station = [{ 'label': "Front", 'value': 2 }, { 'label': "Back", 'value': 3 }];
   }
 
   async componentWillMount() {
@@ -79,45 +83,21 @@ class IssuedDoc extends Component {
   //permission
   // 26	TransGID_view
   // 27	TransGID_create&modify
-  // 28	TransGID_execute
 
   displayButtonByPermission(dataGetPer) {
-    let check = 0
+    let checkview = true
     if (CheckViewCreatePermission("TransGID_view", dataGetPer)) {
-      check = 0 //แสดงข้อมูล26
+      checkview = true //แสดงข้อมูล 
     }
     if (CheckViewCreatePermission("TransGID_create&modify", dataGetPer)) {
-      check = 1 //แก้ไข27
+      checkview = false //แก้ไข
     }
-    if (CheckViewCreatePermission("TransGID_execute", dataGetPer)) {
-      //แก้ไข28
-      if (CheckViewCreatePermission("Administrator", dataGetPer)) {
-        check = 3
-      } else {
-        check = 2
-      }
-    }
-    if (check === 0) {
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
-      var PerButtonWorking = document.getElementById("per_button_close")
-      PerButtonWorking.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-
-    } else if (check === 1) {
+    if (checkview === true) {
       this.setState({ showbutton: "block" })
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-    } else if (check === 2) {
-      this.setState({ showbutton: "block" })
-      var PerButtonWorking = document.getElementById("per_button_close")
-      PerButtonWorking.remove()
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
       var PerButtonDoc = document.getElementById("per_button_doc")
       PerButtonDoc.remove()
-    } else if (check === 3) {
+
+    } else if (checkview === false) {
       this.setState({ showbutton: "block" })
     }
   }
@@ -197,20 +177,62 @@ class IssuedDoc extends Component {
       background: '#cfd8dc',
       minWidth: '90px'
     }
+    const notPageactiveLast = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+    }
+    const pageactiveLast = {
+      textDecoration: 'none',
+    }
     return (
-      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+            <li className="page-item" style={{ display: "flex" }}><Button style={this.state.currentPage === 1 ? { ...notPageactiveLast, marginRight: "5px" } : { pageactiveLast, marginRight: "5px" }} outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
             <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
+            <li className="page-item" style={{ display: "flex" }}> <a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")} >
+              Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? { ...notPageactiveLast, marginLeft: "5px" } : { ...pageactiveLast, marginLeft: "5px" }} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li>
           </ul>
         </nav>
       </div>
+    )
+  }
+
+  NextLastPage(position) {
+    this.setState({ loading: true })
+    let queryString = "";
+    const select = this.state.select
+    if (position === 'next') {
+      select.sk = ((this.state.countpages * 100) - 100)
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+    else {
+      select.sk = 0
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+
+    Axios.get(queryString).then(
+      (res) => {
+        if (res.data.datas.length > 0) {
+          if (position === 'next') {
+            this.setState({ currentPage: (this.state.countpages) })
+          }
+          else {
+            this.setState({ currentPage: 1 })
+          }
+          this.setState({ data: res.data.datas })
+        }
+        else {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+        }
+        this.setState({ loading: false })
+      }
     )
   }
 
@@ -239,7 +261,8 @@ class IssuedDoc extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -269,7 +292,8 @@ class IssuedDoc extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -287,10 +311,12 @@ class IssuedDoc extends Component {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
       else
-        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        return { "f": x.id, "c": "like", "v": x.value }
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;
+    getSelect["sk"] = 0
+    this.setState({ currentPage: 1 })
     getSelect.q = strCondition;
     this.setState({ select: getSelect }, () => { this.getData() })
   }
@@ -323,18 +349,18 @@ class IssuedDoc extends Component {
             // console.log(strStatus)
             if (strStatus === "CLOSING") {
               return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge>{imgExclamation1}</a></h5>
             } else {
-              return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+              return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
             }
           } else {
-            return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+            return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
           }
         } else {
-          return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+          return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
         }
       } else {
-        return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+        return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
       }
     }
     else {
@@ -410,7 +436,7 @@ class IssuedDoc extends Component {
 
   createModal() {
     return <Modal isOpen={this.state.modalstatus}>
-      <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
+      <ModalHeader toggle={this.toggle}> <span>Confirm Reject</span></ModalHeader>
 
       <ModalFooter>
         <Button id="per_button_reject" color="primary" style={{ width: "130px" }} onClick={() => this.workingData(this.state.selectiondata, "reject")} >OK</Button>{' '}
@@ -439,7 +465,7 @@ class IssuedDoc extends Component {
       },
       {
         accessor: 'Code', Header: 'Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left",
-        Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} target="_blank" onClick={() => {window.open('/doc/gi/manage?ID=' + e.original.ID)}} >{e.original.Code}</a>
+        Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} target="_blank" onClick={() => { window.open('/doc/gi/manage?ID=' + e.original.ID) }} >{e.original.Code}</a>
       },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: (e) => this.createCustomFilter(e), },
@@ -513,7 +539,7 @@ class IssuedDoc extends Component {
         </div>
 
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}
           className="-highlight"
           minRows={5}
           loading={this.state.loading}

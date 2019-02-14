@@ -39,7 +39,7 @@ function Nodisplay(perID, perView, props) {
   })
   console.log(view)
   if (!view) {
-    props.push("/403")
+    props.push("/404")
   }
 }
 async function CheckWebPermission(wpCode, dataGetPer, props) {

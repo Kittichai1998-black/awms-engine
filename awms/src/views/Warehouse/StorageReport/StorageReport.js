@@ -4,12 +4,13 @@ import ReactTable from 'react-table'
 import moment from 'moment';
 import { apicall, createQueryString } from '../ComponentCore';
 import ExportFile from '../MasterData/ExportFile';
-import { Badge, Input, Row, Col } from 'reactstrap';
+import { Button, Badge, Input, Row, Col } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import _ from "lodash";
 import withFixedColumns from "react-table-hoc-fixed-columns";
-import {StorageObjectEventStatus } from '../Status'
+import { StorageObjectEventStatus } from '../Status'
+import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '../../ComponentCore/Permission';
 
 const Axios = new apicall()
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
@@ -31,21 +32,25 @@ class StoragReport extends Component {
         g: "",
         s: "[{'f':'Pallet','od':'asc'}]",
         sk: 0,
-        l: 0,
+        l: 100,
         all: "",
       },
       datafilter: [],
     }
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
+    this.NextLastPage = this.NextLastPage.bind(this)
     this.customSorting = this.customSorting.bind(this);
   }
-
-  componentDidMount() {
+  async componentWillMount() {
     document.title = "Storage Object - AWMS";
+    let dataGetPer = await GetPermission()
+    CheckWebPermission("Storage", dataGetPer, this.props.history);
+  }
+  componentDidMount() {
     this.getData();
 
-     console.log(this.state.date) 
+    console.log(this.state.date)
   }
 
   getData() {
@@ -57,17 +62,20 @@ class StoragReport extends Component {
     })
   }
 
-  DatePickerFilter(datetime) {
-    this.setState({ date: datetime })
-    let filter = this.state.datafilter
-    filter.forEach((x, index) => {
-      if (x.id === "Receive_Date")
-        filter.splice(index, 1);
+  DatePickerFilter() {
+    let filter = this.state.datafilter.filter(x => {
+      return x.type !== "gt" && x.type !== "lt";
     });
-    if (datetime !== null) {
-      filter.push({ id: "Receive_Date", value: moment(datetime).format('YYYY-MM-DD'), type: "date" });
+
+    if (this.state.dateFrom && this.state.dateTo) {
+      if (this.state.dateFrom)
+        filter.push({ id: "Receive_Date", value: moment(this.state.dateFrom).format('YYYY-MM-DD'), type: "gt" });
+      if (this.state.dateTo)
+        filter.push({ id: "Receive_Date", value: moment(this.state.dateTo).format('YYYY-MM-DD'), type: "lt" });
+
+      this.setState({ datafilter: filter }, () => { this.onCheckFliter(); });
     }
-    this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
+    
   }
 
   createCustomFilter(name) {
@@ -79,7 +87,8 @@ class StoragReport extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -115,14 +124,24 @@ class StoragReport extends Component {
   onCheckFliter() {
     this.setState({ loading: true })
     let getFilter = this.state.datafilter;
-    let listFilter = getFilter.map(x => {
+    console.log(getFilter)
+    let listFilter = getFilter.map((x,index) => {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
+      else if (x.type === "gt") {
+        return { "f": x.id, "c": ">=", "v": x.value }
+      }
+      else if (x.type === "lt") {
+
+        return { "f": x.id, "c": "<=", "v": x.value }
+      }
       else
-        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        return { "f": x.id, "c": "like", "v": x.value }
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;
+    getSelect["sk"] = 0
+    this.setState({currentPage:1})
     getSelect.q = strCondition;
     this.setState({ select: getSelect }, () => { this.getData() })
   }
@@ -149,20 +168,72 @@ class StoragReport extends Component {
       background: '#cfd8dc',
       minWidth: '90px'
     }
+    const notPageactiveLast = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+    }
+    const pageactiveLast = {
+      textDecoration: 'none',
+    }
     return (
-      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+            <li className="page-item" style={{display:"flex"}}><Button style={this.state.currentPage === 1 ? {...notPageactiveLast,marginRight:"5px"} : {pageactiveLast,marginRight:"5px"}}  outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
             <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
+            <li className="page-item" style={{display:"flex"}}> <a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")} >
+              Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? {...notPageactiveLast,marginLeft:"5px"} : {...pageactiveLast,marginLeft:"5px"}} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li> 
           </ul>
         </nav>
       </div>
+    )
+  }
+
+  dateTimePickerFrom() {
+    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateFrom: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateFrom}/>
+  }
+  dateTimePickerTo() {
+    return <DatePicker style={{ width: "300px" }} defaultDate={moment()} onChange={(e) => { this.setState({ dateTo: e }) }} dateFormat="DD/MM/YYYY" selected={this.state.dateTo}/>
+  }
+
+
+
+
+  NextLastPage(position){
+    this.setState({ loading: true })
+    let queryString = "";
+    const select = this.state.select
+     if (position === 'next') {   
+       select.sk = ((this.state.countpages * 100 ) - 100)
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+    else {
+     select.sk = 0 
+    //  console.log(select)
+      queryString = createQueryString(select)
+    }
+
+    Axios.get(queryString).then(
+      (res) => {
+        if (res.data.datas.length > 0) {
+          if (position === 'next') {
+            this.setState({currentPage:(this.state.countpages)})
+          }
+          else {
+            this.setState({currentPage:1})
+          }
+          this.setState({ data: res.data.datas })
+        }
+        else {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+        }
+        this.setState({ loading: false })
+      }
     )
   }
 
@@ -202,7 +273,7 @@ class StoragReport extends Component {
 
   sumFooterQty(value) {
     var sumVal = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) == true ?
+      x => _.every(this.state.data, ["Base_Unit", x.Base_Unit]) === true ?
         parseFloat(x[value]) : null)
     if (sumVal === 0 || sumVal === null || sumVal === undefined)
       return '-'
@@ -229,7 +300,7 @@ class StoragReport extends Component {
           if (this.state.currentPage !== undefined) {
             if (this.state.currentPage > 1) {
               // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
+              numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
             } else {
               numrow = e.index + 1;
             }
@@ -271,7 +342,7 @@ class StoragReport extends Component {
       },
       { accessor: 'Base_Unit', Header: 'Base Unit', Filter: (e) => this.createCustomFilter(e), sortable: false, },
       {
-        accessor: 'WeiPallet', Header: 'Weight Pallet', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_PalletPack', Header: 'Weight Pallet (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -281,7 +352,7 @@ class StoragReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("WeiPallet")}</span>)
       },
       {
-        accessor: 'WeiPack', Header: 'Weight Pack', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_Pack', Header: 'Weight Pack (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -291,7 +362,7 @@ class StoragReport extends Component {
           (<span style={{ fontWeight: 'bold' }}>{this.sumFooter("WeiPack")}</span>)
       },
       {
-        accessor: 'WeiPackStd', Header: 'Weight Standard', filterable: false, sortable: false, className: "right",
+        accessor: 'Wei_PackStd', Header: 'Weight Standard (kg)', filterable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -311,40 +382,43 @@ class StoragReport extends Component {
       <div>
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
           <Row>
+            <Col xs="6">
+              <div >
+                <label>Date From : </label>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '55px' }}>
+                  {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
+                </div></div>
+            </Col>
+
+            <Col xs="6">
+              <div>
+                <label >Date To : </label>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '14px' }}>
+                  {this.state.pageID ? <span>{this.state.dateTo.format("DD-MM-YYYY")}</span> : this.dateTimePickerTo()}
+                </div>
+              </div>
+            </Col>
+          </Row>
+
+
+          <Row>
 
             <Col xs="6"></Col>
             <Col xs="2">
               <div className="float-right" >
-                <span className="float-right" style={{ fontWeight: 'bold' }}>Recieved Date : </span>
+                <span className="float-right" style={{ fontWeight: 'bold' }}>Received Date : </span>
               </div>
             </Col>
 
-            <DatePicker className="float-right" selected={this.state.date}
-              customInput={<Input />}
-              onChange={(e) => {
-                if (e === null) {
-                  this.DatePickerFilter(null)
-                }
-                else {
-                  if (e.isValid() && e !== null) {
-                    this.DatePickerFilter(e)
-                  }
-                }
-
-              }}
-              timeIntervals={1}
-              timeFormat="HH:mm"
-              timeCaption="Time"
-              showTimeSelect={false}
-              dateFormat={"DD-MM-YYYY"} />
-
+            <Button color="primary" onClick={() => { this.DatePickerFilter() }}>Click</Button>
+             
             <Col xs="1">
-              <ExportFile column={cols} dataxls={this.state.data} filename={"StorageReport"} />
+              <ExportFile column={cols} dataselect={this.state.select} filename={"StorageReport"} />
             </Col>
           </Row>
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1',  marginBottom: "20px", maxHeight: '550px' }}
           minRows={5}
           loading={this.state.loading}
           columns={cols}

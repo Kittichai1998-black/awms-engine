@@ -47,7 +47,7 @@ class StockCardReport extends Component {
     //permission
     let dataGetPer = await GetPermission()
     CheckWebPermission("STK_CARD", dataGetPer, this.props.history);
-    //41	WarehouseCI_execute
+    //80	STC_view
     Axios.get(createQueryString(this.state.PackMaster)).then((response) => {
       const PackMasterdata = []
       response.data.datas.forEach(row => {
@@ -94,6 +94,9 @@ class StockCardReport extends Component {
         let batch = this.state.Batch
         let lot = this.state.Lot
         let orderno = this.state.Orderno
+        let movementtype = this.state.Movementtype
+        let sapdoc = this.state.Sapdoc
+        this.setState({loading: true})
 
         Axios.get(window.apipath + "/api/report/sp?apikey=FREE03&skuid=" + skuid
           + "&startDate=" + formatDateFrom
@@ -101,6 +104,8 @@ class StockCardReport extends Component {
           + "&batch=" + (batch === undefined ? '' : batch)
           + "&lot=" + (lot === undefined ? '' : lot)
           + "&orderno=" + (orderno === undefined ? '' : orderno)
+          + "&movementType=" + (movementtype === undefined ? '' : movementtype)
+          + "&sapDoc=" + (sapdoc === undefined ? '' : sapdoc)
           + "&spname=STOCK_CARD").then((rowselect1) => {
             if (rowselect1) {
               if (rowselect1.data._result.status !== 0) {
@@ -125,7 +130,7 @@ class StockCardReport extends Component {
                 })
                 this.setState({
                   data: rowselect1.data.datas, countpages: countpages, loading: false
-                }, () => console.log(this.state.data))
+                })
               }
             }
           })
@@ -135,7 +140,7 @@ class StockCardReport extends Component {
   datetimeBody(value) {
     if (value !== null) {
       const date = moment(value);
-      return <div>{date.format('DD-MM-YYYY')}</div>
+      return <div>{date.format('DD-MM-YYYY HH:mm:ss')}</div>
     }
   }
   paginationButton() {
@@ -207,28 +212,25 @@ class StockCardReport extends Component {
   sumFooterTotal(value) {
     var sumVal = _.sumBy(this.state.data,
       x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x[value]) : null)
-    if (sumVal === 0 || sumVal === null || sumVal === undefined)
+        parseFloat(x[value] === null ? 0 : x[value]) : null)
+    if (sumVal === 0 || sumVal === null || sumVal === undefined || isNaN(sumVal))
       return '-'
     else
       return sumVal.toFixed(3)
   }
 
   getTotal(value) {
-    var sumDebit = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x.Debit) : null)
-    var sumCredit = _.sumBy(this.state.data,
-      x => _.every(this.state.data, ["Unit", x.Unit]) == true ?
-        parseFloat(x.Credit) : null)
-    if (sumDebit === 0 && sumCredit === 0) {
-      return '-'
-    } else {
-      var sumVal = Math.abs(sumDebit - sumCredit)
-      if (sumVal === 0 || sumVal === null || sumVal === undefined)
+    if (this.state.data.length > 0) {
+      var sumVal = this.state.data[this.state.data.length - 1].Total
+      if (sumVal === 0) {
+        return 0
+      } else if (sumVal === null || sumVal === undefined || isNaN(sumVal)) {
         return '-'
-      else
+      } else {
         return sumVal.toFixed(3)
+      }
+    } else {
+      return '-'
     }
   }
   render() {
@@ -236,18 +238,22 @@ class StockCardReport extends Component {
       {
         Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
         Footer: <span style={{ fontWeight: 'bold' }}>Total</span>,
-        Cell: (e) => {
-          let numrow = 0;
-          if (this.state.currentPage !== undefined) {
-            if (this.state.currentPage > 1) {
-              // e.index + 1 + (2*100)  
-              numrow = e.index + 1 + (parseInt(this.state.currentPage) * parseInt(this.state.defaultPageS));
-            } else {
-              numrow = e.index + 1;
-            }
-          }
-          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        id: "row",
+        Cell: (row) => {
+          return <span style={{ fontWeight: 'bold' }}>{row.index + 1}</span>;
         },
+        // Cell: (e) => {
+        //   let numrow = 0;
+        //   if (this.state.currentPage !== undefined) {
+        //     if (this.state.currentPage > 1) {
+        //       // e.index + 1 + (2*100)  
+        //       numrow = e.index + 1 + ((parseInt(this.state.currentPage) - 1) * parseInt(this.state.defaultPageS));
+        //     } else {
+        //       numrow = e.index + 1;
+        //     }
+        //   }
+        //   return <span style={{ fontWeight: 'bold' }}>{numrow}</span>
+        // },
         getProps: (state, rowInfo) => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -255,16 +261,22 @@ class StockCardReport extends Component {
         })
       },
       {
-        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: true, Cell: (e) =>
+        accessor: 'ActionTime', Header: 'Date', editable: false, sortable: false, Cell: (e) =>
           this.datetimeBody(e.value)
       },
-      { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: true },
-      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: true, },
-      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: true },
-      { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: true },
-      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: true },
+      { accessor: 'Doc_Code', Header: 'Doc No.', editable: false, sortable: false },
+      { accessor: 'SKU_Code', Header: 'SKU Code', editable: false, sortable: false, },
+      { accessor: 'SKU_Name', Header: 'SKU Name', editable: false, sortable: false, },
+      { accessor: 'Batch', Header: 'Batch', editable: false, sortable: false, },
+      { accessor: 'Lot', Header: 'Lot', editable: false, sortable: false, },
+      { accessor: 'OrderNo', Header: 'Order No', editable: false, sortable: false, },
+      { accessor: 'MovementType', Header: 'Description', editable: false, sortable: false },
+      { accessor: 'Sou', Header: 'Sou.', editable: false, sortable: false },
+      { accessor: 'Des', Header: 'Des.', editable: false, sortable: false },
+      { accessor: 'Ref2', Header: 'Movement', editable: false, sortable: false },
+      { accessor: 'RefID', Header: 'SAP.Doc/DO No.', editable: false, sortable: false },
       {
-        accessor: 'Debit', Header: 'Debit', editable: false, className: "right",
+        accessor: 'Debit', Header: 'Debit', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -275,7 +287,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Credit', Header: 'Credit', editable: false, className: "right",
+        accessor: 'Credit', Header: 'Credit', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -286,7 +298,7 @@ class StockCardReport extends Component {
       },
 
       {
-        accessor: 'Total', Header: 'Total', editable: false, className: "right",
+        accessor: 'Total', Header: 'Total', editable: false, sortable: false, className: "right",
         getFooterProps: () => ({
           style: {
             backgroundColor: '#c8ced3'
@@ -294,8 +306,8 @@ class StockCardReport extends Component {
         }),
         Footer:
           (<span style={{ fontWeight: 'bold' }}>{this.getTotal("Total")}</span>)
-      }, 
-      { accessor: 'Unit', Header: 'Unit', editable: false, sortable: true },
+      },
+      { accessor: 'Unit', Header: 'Unit', editable: false, sortable: false },
     ];
     return (
       <div>
@@ -304,7 +316,7 @@ class StockCardReport extends Component {
             <Col xs="6">
               <div>
                 <label style={{ marginRight: "10px" }} >SKU : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '36px' }}>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '85px' }}>
                   <AutoSelect data={this.state.PackMasterdata} result={e => this.setState({ ID: e.value })} />
 
                 </div>
@@ -321,7 +333,7 @@ class StockCardReport extends Component {
           <Row>
             <Col xs="6">
               <div className=""><label>Lot : </label>
-                <Input onChange={(e) => this.setState({ Lot: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '50px' }}
+                <Input onChange={(e) => this.setState({ Lot: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '100px' }}
                   value={this.state.Lot} />
               </div>
             </Col>
@@ -334,9 +346,23 @@ class StockCardReport extends Component {
           </Row>
           <Row>
             <Col xs="6">
+              <div className=""><label>Movement Type : </label>
+                <Input onChange={(e) => this.setState({ Movementtype: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '20px' }}
+                  value={this.state.Movementtype} />
+              </div>
+            </Col>
+            <Col xs="6">
+              <div className=""><label>SAP Doc. : </label>
+                <Input onChange={(e) => this.setState({ Sapdoc: e.target.value })} style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}
+                  value={this.state.Sapdoc} />
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="6">
               <div >
                 <label>Date From : </label>
-                <div style={{ display: "inline-block", width: "300px", marginLeft: '5px' }}>
+                <div style={{ display: "inline-block", width: "300px", marginLeft: '55px' }}>
                   {this.state.pageID ? <span>{this.state.dateFrom.format("DD-MM-YYYY")}</span> : this.dateTimePickerFrom()}
                 </div></div>
             </Col>
@@ -364,7 +390,7 @@ class StockCardReport extends Component {
           </Row>
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px" }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, marginBottom: "20px", maxHeight: '550px' }}
           minRows={5}
           loading={this.state.loading}
           columns={cols}
@@ -372,12 +398,13 @@ class StockCardReport extends Component {
           filterable={false}
           multiSort={false}
           className="-highlight"
-          defaultPageSize={this.state.defaultPageS}
-          PaginationComponent={this.paginationButton}
-          onSortedChange={(sorted) => {
-            this.setState({ data: [], loading: true });
-            this.customSorting(sorted)
-          }}
+          showPagination={false}
+        // defaultPageSize={this.state.defaultPageS}
+        // PaginationComponent={this.paginationButton}
+        // onSortedChange={(sorted) => {
+        //   this.setState({ data: [], loading: true });
+        //   this.customSorting(sorted)
+        // }}
         />
       </div>
     )

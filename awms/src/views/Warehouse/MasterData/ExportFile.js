@@ -55,7 +55,13 @@ class ExportFile extends Component {
     if(this.props.dataxls){
       let datasxls = Clone(this.props.dataxls);
       datasxls.forEach((datarow, index) => {
-        datarow["No."] = (index + 1).toString();
+        for (var xfield in datarow) {
+          if (!isNaN(datarow[xfield])) {
+            if (datarow[xfield] != null)
+              datarow[xfield] = datarow[xfield].toString();
+          }
+          datarow["No."] = (index + 1).toString();
+        }
       })
       this.setState({ dataxls: datasxls }, () => {
         document.getElementById("btnLoad").click();
@@ -63,6 +69,7 @@ class ExportFile extends Component {
     }else if (this.props.dataselect) {
       let dataselect = this.props.dataselect
       dataselect["l"] = 0
+      dataselect["sk"] = 0
       let queryString = createQueryString(dataselect)
       await Axios.get(queryString).then(
         (res) => {
@@ -71,18 +78,18 @@ class ExportFile extends Component {
               let datasbook = res.data.datas
               datasbook.forEach((datarow, index) => {
                 for (var xfield in datarow) {
-                  if (xfield === "Status") {
-                    if (datarow[xfield] === 1)
-                      datarow[xfield] = "Active";
-                    else
-                      datarow[xfield] = "Inactive";
-                  }
-                  if (xfield !== "Status") {
+                  // if (xfield === "Status") {
+                  //   if (datarow[xfield] === 1)
+                  //     datarow[xfield] = "Active";
+                  //   else
+                  //     datarow[xfield] = "Inactive";
+                  // }
+                  // if (xfield !== "Status") {
                     if (!isNaN(datarow[xfield])) {
                       if (datarow[xfield] != null)
                         datarow[xfield] = datarow[xfield].toString();
                     }
-                  }
+                  // }
                   if (this.props.enums && this.props.autocomp) {
                     const enums = [...this.props.enum];
                     const autocomps = [...this.props.autocomp];
@@ -110,7 +117,7 @@ class ExportFile extends Component {
         })
     }
   }
-
+ 
   onHandleClick(event) {
     event.preventDefault();
     console.log("genbtnload");

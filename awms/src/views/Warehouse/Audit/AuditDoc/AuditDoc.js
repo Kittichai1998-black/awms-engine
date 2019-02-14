@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import "react-table/react-table.css";
-import { Row, Col, Badge, Input, Card, CardBody, Button } from 'reactstrap';
+import { Row, Col, Badge, Input, Card, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactTable from 'react-table'
 import { apicall, createQueryString, GenerateDropDownStatus } from '../../ComponentCore'
 import DatePicker from 'react-datepicker';
@@ -54,6 +54,7 @@ class AuditDoc extends Component {
       defaultPageS: 100,
       currentPage: 1,
       loading: true,
+      modalstatus: false,
       datafilter: [{ "id": "DocumentType_ID", "value": 2004 }]
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -64,8 +65,10 @@ class AuditDoc extends Component {
     this.closeModal = this.closeModal.bind(this)
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
+    this.NextLastPage = this.NextLastPage.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
+    this.toggle = this.toggle.bind(this);
   }
 
   async componentWillMount() {
@@ -79,49 +82,20 @@ class AuditDoc extends Component {
   //permission
   // 52	Audit_view	เอกสารตรวจสอบสินค้า
   // 53	Audit_create&modify	เอกสารตรวจสอบสินค้า
-  // 55	Audit_execute	เอกสารตรวจสอบสินค้า
 
   displayButtonByPermission(dataGetPer) {
-    let check = 0
+    let checkview = true
     if (CheckViewCreatePermission("Audit_view", dataGetPer)) {
-      check = 0 //แสดงข้อมูล52
+      checkview = true //แสดงข้อมูล 
     }
     if (CheckViewCreatePermission("Audit_create&modify", dataGetPer)) {
-      check = 1 //แก้ไข53
+      checkview = false //สร้างเอกสาร
     }
-    if (CheckViewCreatePermission("Audit_execute", dataGetPer)) {
-      //แก้ไข55
-      if (CheckViewCreatePermission("Administrator", dataGetPer)) {
-        check = 3
-      } else {
-        check = 2
-      }
-    }
-    if (check === 0) {
-      var PerButtonWorking = document.getElementById("per_button_working")
-      PerButtonWorking.remove()
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
-      var PerButtonExport = document.getElementById("per_button_export")
-      PerButtonExport.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-
-    } else if (check === 1) {
+    if (checkview === true) {
       this.setState({ showbutton: "block" })
-      var PerButtonExport = document.getElementById("per_button_export")
-      PerButtonExport.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-    } else if (check === 2) {
-      this.setState({ showbutton: "block" })
-      var PerButtonWorking = document.getElementById("per_button_working")
-      PerButtonWorking.remove()
-      var PerButtonReject = document.getElementById("per_button_reject")
-      PerButtonReject.remove()
       var PerButtonDoc = document.getElementById("per_button_doc")
       PerButtonDoc.remove()
-    } else if (check === 3) {
+    } else if (checkview === false) {
       this.setState({ showbutton: "block" })
     }
   }
@@ -173,6 +147,7 @@ class AuditDoc extends Component {
           this.getData()
           this.setState({ resp: res.data._result.message })
         })
+        this.toggle()
       }
       else if (status === "Close") {
         Axios.post(window.apipath + "/api/wm/audit/doc/Closing", postdata).then((res) => {
@@ -198,23 +173,64 @@ class AuditDoc extends Component {
       background: '#cfd8dc',
       minWidth: '90px'
     }
+    const notPageactiveLast = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+    }
+    const pageactiveLast = {
+      textDecoration: 'none',
+    }
     return (
-      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+            <li className="page-item" style={{ display: "flex" }}><Button style={this.state.currentPage === 1 ? { ...notPageactiveLast, marginRight: "5px" } : { pageactiveLast, marginRight: "5px" }} outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
             <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
+            <li className="page-item" style={{ display: "flex" }}> <a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")} >
+              Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? { ...notPageactiveLast, marginLeft: "5px" } : { ...pageactiveLast, marginLeft: "5px" }} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li>
           </ul>
         </nav>
       </div>
     )
   }
 
+  NextLastPage(position) {
+    this.setState({ loading: true })
+    let queryString = "";
+    const select = this.state.select
+    if (position === 'next') {
+      select.sk = ((this.state.countpages * 100) - 100)
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+    else {
+      select.sk = 0
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+
+    Axios.get(queryString).then(
+      (res) => {
+        if (res.data.datas.length > 0) {
+          if (position === 'next') {
+            this.setState({ currentPage: (this.state.countpages) })
+          }
+          else {
+            this.setState({ currentPage: 1 })
+          }
+          this.setState({ data: res.data.datas })
+        }
+        else {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+        }
+        this.setState({ loading: false })
+      }
+    )
+  }
   pageOnHandleClick(position) {
     this.setState({ loading: true })
     const select = this.state.select
@@ -252,7 +268,8 @@ class AuditDoc extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -266,10 +283,12 @@ class AuditDoc extends Component {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
       else
-        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        return { "f": x.id, "c": "like", "v": x.value }
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;
+    getSelect["sk"] = 0
+    this.setState({ currentPage: 1 })
     getSelect.q = strCondition;
     this.setState({ select: getSelect }, () => { this.getData() })
   }
@@ -302,18 +321,18 @@ class AuditDoc extends Component {
             // console.log(strStatus)
             if (strStatus === "CLOSING") {
               return <h5><a style={{ textDecorationLine: 'underline', cursor: 'pointer' }}
-                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge>{imgExclamation1}</a></h5>
+                onClick={() => this.createSapResModal(newSapRes)} ><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge>{imgExclamation1}</a></h5>
             } else {
-              return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+              return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
             }
           } else {
-            return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+            return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
           }
         } else {
-          return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+          return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
         }
       } else {
-        return <h5><Badge color={strStatus} style={{width: '6.5em'}}>{strStatus}</Badge></h5>
+        return <h5><Badge color={strStatus} style={{ width: '6.5em' }}>{strStatus}</Badge></h5>
       }
     }
     else {
@@ -351,6 +370,22 @@ class AuditDoc extends Component {
       type="radio"
       name="selection"
       onChange={(e) => this.onHandleSelection(rowdata, e.target.checked)} />
+  }
+
+  createModal() {
+    return <Modal isOpen={this.state.modalstatus}>
+      <ModalHeader toggle={this.toggle}> <span>Reject</span></ModalHeader>
+
+      <ModalFooter>
+        <Button id="per_button_reject" color="primary" style={{ width: "130px" }} onClick={() => this.workingData(this.state.selectiondata, "reject")} >OK</Button>{' '}
+        <Button color="secondary" style={{ width: "130px" }} onClick={this.toggle}>Cancel</Button>
+
+      </ModalFooter>
+    </Modal>
+  }
+
+  toggle() {
+    this.setState({ modalstatus: !this.state.modalstatus });
   }
 
   openModal() {
@@ -393,7 +428,7 @@ class AuditDoc extends Component {
       {
         accessor: 'Code', Header: 'Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), fixed: "left",
         Cell: (e) => <a style={{ color: '#20a8d8', textDecorationLine: 'underline', cursor: 'pointer' }} target="_blank"
-        onClick={() => {window.open('/sys/ad/create?ID=' + e.original.ID)}} >{e.original.Code}</a>
+          onClick={() => { window.open('/sys/ad/create?ID=' + e.original.ID) }} >{e.original.Code}</a>
       },
       { accessor: 'RefID', Header: 'SAP.Doc No.', editable: false, Filter: (e) => this.createCustomFilter(e), },
       { accessor: 'Ref1', Header: 'SAP.Doc Year', editable: false, Filter: (e) => this.createCustomFilter(e), },
@@ -432,8 +467,10 @@ class AuditDoc extends Component {
         accept = สถานะของในการสั่ง update หรือ insert 
     
       */}
+
+        {this.createModal()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
-          <Row style={{verticalAlign: 'baseline'}}>
+          <Row style={{ verticalAlign: 'baseline' }}>
 
             <Col xs="4"></Col>
             <Col xs="4">
@@ -467,7 +504,7 @@ class AuditDoc extends Component {
           </Row>
         </div>
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}
           className="-highlight"
           minRows={5}
           loading={this.state.loading}
@@ -485,8 +522,7 @@ class AuditDoc extends Component {
         />
         <Card>
           <CardBody>
-            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "reject")} color="danger" className="float-right">Reject</Button>
-            {/* <Button id="per_button_working" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "accept")} color="warning" className="float-right">Working</Button> */}
+            <Button id="per_button_reject" style={{ width: '130px', marginLeft: '5px', display: this.state.showbutton }} onClick={() => this.toggle()} color="danger" className="float-right">Reject</Button>
             <Button id="per_button_working" style={{ width: '130px', display: this.state.showbutton }} onClick={() => this.workingData(this.state.selectiondata, "Close")} color="success" className="float-right">Close</Button>
             {this.state.resp}
           </CardBody>

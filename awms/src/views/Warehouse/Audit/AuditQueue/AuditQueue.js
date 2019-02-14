@@ -140,7 +140,7 @@ class AuditQueue extends Component{
                   <AutoSelect selectfirst={false} data={this.state.docSelection} result={e => {this.onHandleSelectionDoc(e.value)}}/>
                 </Col>
               </Row>
-              
+                {this.state.docID !== undefined ? <Button color="primary" onClick={() => window.open('/sys/ad/check?docID=' + this.state.docID)}>Check Inventory</Button> : null}
                 {this.state.document === null ? null : <Row className="mb-2">{this.createDocItemList()}</Row>}
               
               <Row className="mb-2">

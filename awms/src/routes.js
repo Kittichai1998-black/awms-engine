@@ -83,10 +83,10 @@ const User = Loadable({
   loading: Loading,
 });
 
-// const Warehouse = Loadable({
-//   loader: () => import('./views/Warehouse/MasterData/Warehouse'),
-//   loading: Loading,
-// });
+const Warehouse = Loadable({
+  loader: () => import('./views/Warehouse/MasterData/Warehouse'),
+  loading: Loading,
+});
 
 // const Permission = Loadable({
 //   loader: () => import('./views/Warehouse/MasterData/Permission'),
@@ -325,6 +325,17 @@ const ReportAudit = Loadable({
   loading: Loading,
 });
 
+const ReceiveReport = Loadable({
+  loader: () => import('./views/Warehouse/ReceiveReport/ReceiveReport'),
+  loading: Loading,
+});
+
+
+const CheckInventory = Loadable({
+  loader: () => import('./views/Warehouse/CheckInventory/CheckInventory'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -348,7 +359,7 @@ const routes = [
   // { path: '/mst/pallet/manage/barcode', exact: true, name: 'Barcode', component: Barcode },
   // { path: '/mst/branch/manage', exact: true, name: 'Setting / Branch', component: Branch },
   { path: '/mst/user/manage', exact: true, name: 'Setting / User Account', component: User },
-  // { path: '/mst/warehouse/manage', exact: true, name: 'Setting / Warehouse', component: Warehouse },
+  { path: '/mst/warehouse/manage', exact: true, name: 'Setting / Warehouse', component: Warehouse },
   // { path: '/mst/permission/manage', exact: true, name: 'Setting / Permission', component: Permission },
   // { path: '/mst/apiservicegroup/manage', exact: true, name: 'Setting / API Service Group', component: APIServiceGroup },
   // { path: '/mst/apiservice/manage', exact: true, name: 'Setting / API Service', component: APIService },
@@ -362,7 +373,7 @@ const routes = [
   { path: '/wm/sto/revmap', exact: true, name: 'Receive Mapping', component: InboundManagement },
   { path: '/wm/sto/transfer', exact: true, name: 'Transfer', component: InboundManagement },
   { path: '/doc/gr/list', exact: true, name: 'Receive / Search Receive', component: InboundView },
-  { path: '/doc/gr/manage', exact: true, name: 'Receive Document', component: ReceiveManage },
+  { path: '/doc/gr/manage', exact: true, name: 'Receive / Create Receive Document', component: ReceiveManage },
   { path: '/doc/gi/list', exact: true, name: 'Issue / Search Issue', component: IssuedDoc },
   { path: '/doc/gi/manage', exact: true, name: 'Issue / Issue Document', component: IssuedManage },
   { path: '/doc/gi/create', exact: true, name: 'Issue / Create Issue Document', component: IssuedManage },
@@ -396,12 +407,15 @@ const routes = [
   { path: '/sys/gi/progress', exact: true, name: 'Dashboard / Issuing Progress', component: QueueView },
   { path: '/changepassword', exact: true, name: 'Change Password', component: ChangePass },
   { path: '/profile', exact: true, name: 'Profile', component: Profile },
-  { path: '/sys/ad/audit', exact: true, name: 'Audit', component: Audit },
-  { path: '/sys/ad/queueaudit', exact: true, name: 'Create Queue Audit', component: AuditQueue },
-  { path: '/sys/ad/search', exact: true, name: 'Search Audit', component: AuditDoc },
-  { path: '/sys/ad/manage', exact: true, name: 'Audit Document', component: AuditCreate },
-  { path: '/sys/ad/create', exact: true, name: 'Create Audit Document', component: AuditCreate },
+  { path: '/sys/ad/audit', exact: true, name: 'Audit / Audit', component: Audit },
+  { path: '/sys/ad/queueaudit', exact: true, name: 'Audit / Create Queue Audit', component: AuditQueue },
+  { path: '/sys/ad/search', exact: true, name: 'Audit / Search Audit', component: AuditDoc },
+  { path: '/sys/ad/manage', exact: true, name: 'Audit / Audit Document', component: AuditCreate },
+  { path: '/sys/ad/create', exact: true, name: 'Audit / Create Audit Document', component: AuditCreate },
   { path: '/sys/ad/report', exact: true, name: 'Report / Audit Report', component: ReportAudit },
+  { path: '/sys/ad/check', exact: true, name: 'Check Audit', component: CheckInventory },
+  { path: '/sys/gr/report', exact: true, name: 'Receive Report', component: ReceiveReport},
+  { path: '/sys/gi/report', exact: true, name: 'Issue Report', component: ReceiveReport},
 ];
 
 export default routes;

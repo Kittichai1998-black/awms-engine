@@ -67,6 +67,7 @@ class IssuedDoc extends Component {
     this.closeModal = this.closeModal.bind(this)
     this.paginationButton = this.paginationButton.bind(this)
     this.pageOnHandleClick = this.pageOnHandleClick.bind(this)
+    this.NextLastPage = this.NextLastPage.bind(this)
     this.onHandleSelection = this.onHandleSelection.bind(this)
     this.customSorting = this.customSorting.bind(this);
     this.toggle = this.toggle.bind(this);
@@ -86,21 +87,22 @@ class IssuedDoc extends Component {
 
   //permission 21-TransGRD_view 20-TransGRD_execute
   displayButtonByPermission(dataGetPer) {
-    let checkview = true
+    // let checkview = true
     if (CheckViewCreatePermission("TransGRD_view", dataGetPer)) {
-      checkview = true //แสดงข้อมูล
-    }
-    if (CheckViewCreatePermission("TransGRD_execute", dataGetPer)) {
-      checkview = false //แก้ไข
-    }
-    if (checkview === true) {
-      var PerButtonExport = document.getElementById("per_button_export")
-      PerButtonExport.remove()
-      var PerButtonDate = document.getElementById("per_button_date")
-      PerButtonDate.remove()
-    } else if (checkview === false) {
+      // checkview = true //แสดงข้อมูล 
       this.setState({ showbutton: "block" })
     }
+    // if (CheckViewCreatePermission("TransGRD_execute", dataGetPer)) {
+    //   checkview = false //แก้ไข
+    // }
+    // if (checkview === true) {
+    //   var PerButtonExport = document.getElementById("per_button_export")
+    //   PerButtonExport.remove()
+    //   var PerButtonDate = document.getElementById("per_button_date")
+    //   PerButtonDate.remove()
+    // } else if (checkview === false) {
+    //   this.setState({ showbutton: "block" })
+    // }
   }
 
   onHandleClickCancel(event) {
@@ -145,7 +147,8 @@ class IssuedDoc extends Component {
             if (x.id === name.column.id)
               filter.splice(index, 1);
           });
-          filter.push({ id: name.column.id, value: e.target.value });
+          if (e.target.value !== "")
+            filter.push({ id: name.column.id, value: e.target.value });
           this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
         }
@@ -171,7 +174,7 @@ class IssuedDoc extends Component {
       </ModalBody>
       <ModalFooter>
         <Button color="primary" id="off" onClick={() => { this.workingData(this.state.selectiondata, "reject"); this.toggle() }}>Comfirm</Button>
-        <Button color="" id="off" onClick={() => this.toggle()}>Cancle</Button>
+        <Button color="" id="off" onClick={() => this.toggle()}>Cancel</Button>
       </ModalFooter>
     </Modal>
   }
@@ -181,7 +184,7 @@ class IssuedDoc extends Component {
       <ModalHeader toggle={this.toggleData}> <span>Reject</span></ModalHeader>
       <ModalFooter>
         <Button color="primary" id="off" onClick={() => { this.RejectIDLE(this.state.selectiondata); this.toggleData() }}>Comfirm</Button>
-        <Button color="" id="off" onClick={() => this.toggleData()}>Cancle</Button>
+        <Button color="" id="off" onClick={() => this.toggleData()}>Cancel</Button>
       </ModalFooter>
     </Modal>
   }
@@ -257,23 +260,64 @@ class IssuedDoc extends Component {
       background: '#cfd8dc',
       minWidth: '90px'
     }
+    const notPageactiveLast = {
+      pointerEvents: 'none',
+      cursor: 'default',
+      textDecoration: 'none',
+    }
+    const pageactiveLast = {
+      textDecoration: 'none',
+    }
     return (
-      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+      <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
         <nav>
           <ul className="pagination">
-            <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+            <li className="page-item" style={{display:"flex"}}><Button style={this.state.currentPage === 1 ? {...notPageactiveLast,marginRight:"5px"} : {pageactiveLast,marginRight:"5px"}}  outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
               onClick={() => this.pageOnHandleClick("prev")}>
               Previous</a></li>
             <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-            <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
-              onClick={() => this.pageOnHandleClick("next")}>
-              Next</a></li>
+            <li className="page-item" style={{display:"flex"}}> <a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+              onClick={() => this.pageOnHandleClick("next")} >
+              Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? {...notPageactiveLast,marginLeft:"5px"} : {...pageactiveLast,marginLeft:"5px"}} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li> 
           </ul>
         </nav>
       </div>
     )
   }
 
+  NextLastPage(position){
+    this.setState({ loading: true })
+    let queryString = "";
+    const select = this.state.select
+     if (position === 'next') {   
+       select.sk = ((this.state.countpages * 100) - 100)
+      //  console.log(select)
+      queryString = createQueryString(select)
+    }
+    else {
+     select.sk = 0 
+    //  console.log(select)
+      queryString = createQueryString(select)
+    }
+
+    Axios.get(queryString).then(
+      (res) => {
+        if (res.data.datas.length > 0) {
+          if (position === 'next') {
+            this.setState({currentPage:(this.state.countpages)})
+          }
+          else {
+            this.setState({currentPage:1})
+          }
+          this.setState({ data: res.data.datas })
+        }
+        else {
+          select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+        }
+        this.setState({ loading: false })
+      }
+    )
+  }
   pageOnHandleClick(position) {
     this.setState({ loading: true })
     const select = this.state.select
@@ -290,22 +334,7 @@ class IssuedDoc extends Component {
     }
     this.setState({ select }, () => { this.getData() })
   }
-  createCustomFilter(name) {
-    return <Input type="text" id={name.column.id} style={{ background: "#FAFAFA" }} placeholder="filter..."
-      onKeyPress={(e) => {
-        if (e.key === 'Enter') {
-          let filter = this.state.datafilter
-          filter.forEach((x, index) => {
-            if (x.id === name.column.id)
-              filter.splice(index, 1);
-          });
-          filter.push({ id: name.column.id, value: e.target.value });
-          this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
 
-        }
-      }
-      } />
-  }
   onCheckFliter() {
     this.setState({ loading: true })
     let getFilter = this.state.datafilter;
@@ -313,10 +342,12 @@ class IssuedDoc extends Component {
       if (x.type === "date")
         return { "f": x.id, "c": "=", "v": x.value }
       else
-        return { "f": x.id, "c": "like", "v": "*" + x.value + "*" }
+        return { "f": x.id, "c": "like", "v": x.value }
     })
     let strCondition = JSON.stringify(listFilter);
     let getSelect = this.state.select;
+    getSelect["sk"] = 0
+        this.setState({currentPage:1})
     getSelect.q = strCondition;
     this.setState({ select: getSelect }, () => { this.getData() })
   }
@@ -516,7 +547,7 @@ class IssuedDoc extends Component {
 
 
         <ReactTableFixedColumns
-          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+          style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}
           className="-highlight"
           minRows={5}
           loading={this.state.loading}

@@ -84,7 +84,7 @@ class ObjectSize extends Component {
             defaultValue: [{ "id": "ObjectType", "value": 2 }],
         };
         this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
-        this.filterList = this.filterList.bind(this)
+        // this.filterList = this.filterList.bind(this)
         this.uneditcolumn = ["Created", "Modified", "LastUpdate"]
         this.createSelection = this.createSelection.bind(this)
         this.onHandleSelection = this.onHandleSelection.bind(this)
@@ -94,7 +94,7 @@ class ObjectSize extends Component {
         this.getObjectSizePallet = this.getObjectSizePallet.bind(this)
         this.openModal = this.openModal.bind(this)
         this.closeModal = this.closeModal.bind(this)
-        this.createMapBtn = this.createMapBtn.bind(this)
+        // this.createMapBtn = this.createMapBtn.bind(this)
         this.inputTextEditor = this.inputTextEditor.bind(this)
         this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
     }
@@ -114,7 +114,7 @@ class ObjectSize extends Component {
         CheckWebPermission("ObjectSize", dataGetPer, this.props.history);
         this.displayButtonByPermission(dataGetPer)
         document.title = "Weight Validate : AWMS";
-        this.filterList()
+        // this.filterList()
         this.getObjectSizePallet()
     }
     // 76	WeightVal_view
@@ -133,26 +133,26 @@ class ObjectSize extends Component {
             this.setState({ permissionView: true })
         }
     }
-    filterList() {
-        const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
-        const objType = []
-        Axios.all([Axios.get(createQueryString(objTypeSelect) + "&_token=" + localStorage.getItem("Token"))]).then(
-            (Axios.spread((result) => {
-                result.data.forEach(row => {
-                    objType.push({ ID: row.value, Code: row.name })
-                })
+    // filterList() {
+    //     const objTypeSelect = { queryString: window.apipath + "/api/enum/StorageObjectType" }
+    //     const objType = []
+    //     Axios.all([Axios.get(createQueryString(objTypeSelect) + "&_token=" + localStorage.getItem("Token"))]).then(
+    //         (Axios.spread((result) => {
+    //             result.data.forEach(row => {
+    //                 objType.push({ ID: row.value, Code: row.name })
+    //             })
 
-                let ddl = [...this.state.autocomplete]
-                let objTypeList = {}
-                objTypeList["data"] = objType
-                objTypeList["field"] = "ObjectType"
-                objTypeList["pair"] = "ObjectType"
-                objTypeList["mode"] = "Dropdown"
-                ddl = ddl.concat(objTypeList)
-                this.setState({ autocomplete: ddl })
-            })))
+    //             let ddl = [...this.state.autocomplete]
+    //             let objTypeList = {}
+    //             objTypeList["data"] = objType
+    //             objTypeList["field"] = "ObjectType"
+    //             objTypeList["pair"] = "ObjectType"
+    //             objTypeList["mode"] = "Dropdown"
+    //             ddl = ddl.concat(objTypeList)
+    //             this.setState({ autocomplete: ddl })
+    //         })))
 
-    }
+    // }
 
     getData(Root_ID) {
         const selectdata = []
@@ -238,14 +238,14 @@ class ObjectSize extends Component {
         this.setState({ barcodeObj: ObjStr })
     }
 
-    createMapBtn(rowdata) {
-        if (rowdata.ID <= 0) {
-            return null
-        } else {
-            return <Button type="button" color="info" style={{ width: '80px' }}
-                onClick={() => this.getData(rowdata.ID)}>Map Size</Button>
-        }
-    }
+    // createMapBtn(rowdata) {
+    //     if (rowdata.ID <= 0) {
+    //         return null
+    //     } else {
+    //         return <Button type="button" color="info" style={{ width: '80px' }}
+    //             onClick={() => this.getData(rowdata.ID)}>Map Size</Button>
+    //     }
+    // }
 
     updateObjSizeMap() {
         const dataUpdate = this.state.dataUpdate
@@ -386,7 +386,7 @@ class ObjectSize extends Component {
             // { accessor: 'Created', Header: 'Create', editable: false, filterable: false },
             // { accessor: 'Modified', Header: 'Modify', editable: false, filterable: false },
             // { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Map", btntext: "Map" },
-            { Show: view, Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" },
+            view === true ? { Header: '', Aggregated: "button", Type: "button", filterable: false, sortable: false, btntype: "Remove", btntext: "Remove" } : {width: 0 ,filterable: false}
         ];
 
         const btnfunc = [{
@@ -394,41 +394,41 @@ class ObjectSize extends Component {
             func: this.createMapBtn
         }]
 
-        const col = this.state.colsMap
-        col.forEach((row) => {
-            if (row.Type === "selection") {
-                row.Cell = (e) => this.createSelection(e, "checkbox")
-                row.className = "text-center"
-            }
-            if (row.editable && row.insertable) {
-                row.Cell = (e) => {
-                    if (e.original.ID < 1)
-                        return this.inputTextEditor(e)
-                    else
-                        return <span>{e.value}</span>
-                }
-            }
-            else if (row.editable && (row.body === undefined || !row.body)) {
-                row.Cell = (e) => (this.inputTextEditor(e))
-            }
-        })
-        const styleclose = {
-            cursor: 'pointer',
-            position: 'absolute',
-            display: 'block',
-            right: '-10px',
-            top: '-10px',
-            background: '#ffffff',
-            borderRadius: '18px',
-        }
+        // const col = this.state.colsMap
+        // col.forEach((row) => {
+        //     if (row.Type === "selection") {
+        //         row.Cell = (e) => this.createSelection(e, "checkbox")
+        //         row.className = "text-center"
+        //     }
+        //     if (row.editable && row.insertable) {
+        //         row.Cell = (e) => {
+        //             if (e.original.ID < 1)
+        //                 return this.inputTextEditor(e)
+        //             else
+        //                 return <span>{e.value}</span>
+        //         }
+        //     }
+        //     else if (row.editable && (row.body === undefined || !row.body)) {
+        //         row.Cell = (e) => (this.inputTextEditor(e))
+        //     }
+        // })
+        // const styleclose = {
+        //     cursor: 'pointer',
+        //     position: 'absolute',
+        //     display: 'block',
+        //     right: '-10px',
+        //     top: '-10px',
+        //     background: '#ffffff',
+        //     borderRadius: '18px',
+        // }
         return (
             <div>
                 <TableGen column={cols} data={this.state.select} dropdownfilter={this.state.statuslist} expFilename={"WeightValidate"}
-                    btn={btnfunc} filterable={true} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
-                    table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]}
+                   filterable={true} accept={view} uneditcolumn={this.uneditcolumn} exportfilebtn={view} addExportbtn={view}
+                   btn={btnfunc} table="ams_ObjectSize" defaultCondition={[{ 'f': 'Status', c: '<', 'v': 2 }, { 'f': 'ObjectType', c: '=', 'v': 2 }]}
                     objectSizeMapPallet={this.state.objectPalletdata} searchURL={this.props.location.search} defaultValue={this.state.defaultValue}/>
                 {/* autocomplete={this.state.autocomplete}  enumfield={this.state.enumfield}*/}
-                <Popup open={this.state.open} onClose={this.closeModal}>
+                {/* <Popup open={this.state.open} onClose={this.closeModal}>
                     <div style={{ border: '2px solid #007bff', borderRadius: '5px' }}>
                         <a style={styleclose} onClick={this.closeModal}>
                             {imgClose}
@@ -444,7 +444,7 @@ class ObjectSize extends Component {
                             </div>
                         </div>
                     </div>
-                </Popup>
+                </Popup> */}
             </div>
         )
     }

@@ -7,6 +7,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AWMSEngine.JobService;
 using Microsoft.AspNetCore.Mvc;
+using AWMSEngine.APIService.API2;
+using AWMSEngine.APIService.WM;
+using AMWUtil.Common;
 
 namespace AWMSEngine.Controllers
 {
@@ -71,6 +74,15 @@ namespace AWMSEngine.Controllers
             var localTime = TimeZoneInfo.ConvertTimeFromUtc(linkTimeUtc, tz);
 
             return localTime;
+        }
+
+        [HttpGet("checkAPI")]
+        public dynamic CheckAPI()
+        {
+            CheckAPI exec = new CheckAPI(this);
+            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var res = exec.Execute(req);
+            return res;
         }
     }
 }

@@ -51,7 +51,7 @@ class IssuedManage extends Component {
         g: "",
         s: "[{'f':'Code','od':'asc'}]",
         sk: 0,
-        l: 0,
+        l: 20,
         all: "",
       },
       StorageObject: {
@@ -71,7 +71,8 @@ class IssuedManage extends Component {
       adddisplay: "none",
       basedisplay: "none",
       modalstatus: false,
-      storageObjectdata: []
+      storageObjectdata: [],
+      autocomplete:[]
 
     };
     this.onHandleClickCancel = this.onHandleClickCancel.bind(this);
@@ -83,7 +84,7 @@ class IssuedManage extends Component {
     //this.autoSelectData = this.autoSelectData.bind(this)
     this.toggle = this.toggle.bind(this)
     this.displayButtonByPermission = this.displayButtonByPermission.bind(this)
-
+    this.tid = "";
     this.branchselect = {
       queryString: window.apipath + "/api/mst",
       t: "Branch",
@@ -197,38 +198,17 @@ class IssuedManage extends Component {
           })
 
           var groupPack = _.groupBy(rowselect1.data.bstos, "code")
-          console.log(groupPack)
           var groupdocItem = rowselect1.data.document.documentItems
-          console.log(groupdocItem)
           let sumArr = []
           let sumArr1 = []
 
-          //for (let res1 in groupPack) {
-          //  let gpf = groupPack[res1][0];
-          //  let di = groupdocItem.filter(x => {
-          //    return x.id = gpf.docItemID;
-          //  })
-          //  di.sumQty1 = gpf.distoQty
-          //  di.batch = gpf.batch
-          //  di.options = gpf.options
-          //  di.quantityDoc = gpf.quantity
-          //  di.lot = gpf.lot
-          //  di.orderNo = gpf.orderNo
-
-          //  sumArr1.push(di);
-          //}
+          
 
           groupdocItem.forEach(x => {
             let pg = rowselect1.data.bstos.filter(y => { return y.docItemID === x.id });
-            console.log(pg)
             if (pg.length > 0) {
               x.sumQty1 = pg[0].distoQty
               x.distoQtyMax = pg[0].distoQtyMax
-              //x.batch = pg[0].batch
-              //x.options = pg[0].options
-              //x.lot = pg[0].lot
-              //x.orderNo = pg[0].orderNo
-              // x.unitType_Name = pg[0].unitType_Name
             }
             else {
               x.unitType_Name = x.unitType_Name
@@ -243,113 +223,25 @@ class IssuedManage extends Component {
             x.unitType_Name = x.unitType_Name
             x.status = x.status
             sumArr1.push(x);
-            console.log(pg)
-            console.log(x)
           })
-          console.log(sumArr1)
 
 
 
           this.setState({ data3: sumArr1 });
 
-          // console.log(sumArr1)
-
-          // console.log(this.state.batch)
-
-          /*for (let res1 in groupPack) {
-            let sum = 0
-            groupPack[res1].forEach(res2 => {
-              res2.displayQty = 'yyyy'//rowselect1.data.document.documentItems
-              console.log('ttttttttttttttttt')
-              sumArr1.forEach(x => {
-                
-                if (x.id === res2.docItemID) {
-                  sum += res2.distoBaseQty
-                  res2.sumQty1 = sum
-                 
-                  //res2.quantity = x.quantity
-                  res2.options = x.options
-                  //res2.distoBaseQty 
-                  // = res2.distoQtyMax
-                   console.log(res2.distoQtyMax)
-                  // console.log(x.distoQtyMax)
-                }
-           
-              })
-             
-
-          
-           
-
-              sumArr.forEach(response => {
-                if (response.code === res2.code) {
-                  res2.code = "";
-                }
-              })
-
-            })
-            sumArr.push(groupPack[res1][groupPack[res1].length - 1])
-          }
-*/
-
-/*
-          var sumQTYPack = 0
-          var result = rowselect1.data.document.documentItems
-
-
-
-
-          this.setState({ data2: sumArr }, () => {
-
-            result.forEach(row1 => {
-              sumQTYPack = 0
-              row1.batch = this.state.batch
-
-              this.state.data2.forEach(row2 => {
-
-                if (row1.packMaster_Code === row2.packCode) {
-                  sumQTYPack += row2.sumQty
-                  row1.sumQty = sumQTYPack
-
-                }
-              })
-            })
-          })
-
-          this.setState({ data3: sumArr1 })
-*/
-          //**************************************8
         }
 
       })
     } else {
-      this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY') })
-      Axios.get(createQueryString(this.state.select2)).then((rowselect2) => {
-        this.setState({
-          autocomplete: rowselect2.data.datas, autocompleteUpdate: Clone(rowselect2.data.datas),
-          adddisplay: "inline-block"
-        })
-      })
+      this.setState({ documentDate: this.DateNow.format('DD-MM-YYYY'), adddisplay: "inline-block" })
     }
 
     this.renderDocumentStatus();
-    /* var today = moment();
-    var tomorrow = moment(today).add(1, 'days');
-    this.setState({date:tomorrow}) */
-
     Axios.get(createQueryString(this.branchselect)).then(branchresult => {
       this.setState(
         { auto_branch: branchresult.data.datas[0].Code + ' : ' + branchresult.data.datas[0].Name, addstatus: false, values: branchresult.data.datas[0].ID })
 
 
-
-      //  this.setState({ auto_branch: branchresult.data.datas, addstatus: false }, () => {
-      //    const auto_branch = []    
-      //    this.state.auto_branch.forEach(row => {
-      //      auto_branch.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
-      // })
-      //    this.setState({ auto_branch })
-      //  })
     })
     Axios.get(createQueryString(this.supplierselect)).then(supplierresult => {
       this.setState({ auto_supplier: supplierresult.data.datas, addstatus: false }, () => {
@@ -358,7 +250,6 @@ class IssuedManage extends Component {
           auto_supplier.push({ value: row.ID, label: row.Code + ' : ' + row.Name })
         })
         this.setState({ auto_supplier })
-        // console.log(this.state.auto_supplier)
       })
     })
 
@@ -385,8 +276,6 @@ class IssuedManage extends Component {
 
   }
   async componentWillMount() {
-    console.log("load")
-    console.log(this.props.location.search)
     document.title = "Issue Document : AWMS";
     let dataGetPer = await GetPermission()
     this.displayButtonByPermission(dataGetPer)
@@ -398,8 +287,6 @@ class IssuedManage extends Component {
     }
   }
   componentDidMount() {
-    console.log("load")
-    console.log(this.props.location.search)
     this.initialData()
     Axios.get(createQueryString(this.state.StorageObject)).then((response) => {
       const storageObjectdata = []
@@ -596,7 +483,7 @@ class IssuedManage extends Component {
         padding: '2px 0',
         fontSize: '90%',
         position: 'fixed',
-        maxHeight:'50px',
+        maxHeight:'20%',
         min:'20px',
         overflow: 'auto',
         maxHeight: '200px', // TODO: don't cheat, let it flow to the bottom
@@ -606,14 +493,18 @@ class IssuedManage extends Component {
       return <ReactAutocomplete
         inputProps={{
           style: {
-            width: "100%", borderRadius: "1px", backgroundImage: 'url(' + arrimg + ')',
-            backgroundPosition: "8px 8px",
-            backgroundSize: "10px",
-            backgroundRepeat: "no-repeat",
-            paddingLeft: "25px",
+            width: "100%",
+            borderRadius: "1px",
+            height:"auto",
+            //backgroundImage: 'url(' + arrimg + ')',
+            //backgroundPosition: "8px 8px",
+            //backgroundSize: "10px",
+            //backgroundRepeat: "no-repeat",
+            //paddingLeft: "25px",
             position: 'relative'
-
-          }
+          },
+          className: "form-control",
+          placeHolder: "Input Pack"
         }}
         wrapperStyle={{ width: "100%" }}
         menuStyle={style}
@@ -627,18 +518,32 @@ class IssuedManage extends Component {
         }
         value={rowdata.original.SKU}
         onChange={(e) => {
-          const res = this.state.autocomplete.filter(row => {
-            return row.SKU.toLowerCase().indexOf(e.target.value.toLowerCase()) > -1
-          });
-          if (res.length === 1) {
-            if (res[0].SKU === e.target.value)
-              this.editData(rowdata, res[0], rowdata.column.id)
-            else
-              this.editData(rowdata, e.target.value, rowdata.column.id)
+          
+          clearTimeout(this.tid);
+          let autoQuery = this.state.select2;
+          let value = e.target.value === "" ? "" : e.target.value;
+          autoQuery.q = '[{ "f": "Status", "c":"=", "v": 1},{ "f": "ItemQty", "c":"=", "v": 1},{ "f": "SKU_Code", "c":"like", "v": "'+ value +'%"}]';
+          if(value === "")
+            this.setState({autocomplete:[]})
+          else{
+            this.tid = setTimeout(() => {
+              Axios.get(createQueryString(autoQuery)).then((rowselect2) => {
+                this.setState({
+                  autocomplete: rowselect2.data.datas, autocompleteUpdate: Clone(rowselect2.data.datas),
+                }, ()=> {
+                  const res = this.state.autocomplete.filter(row => {
+                    return row.SKU.toLowerCase().indexOf(value.toLowerCase()) > -1
+                  });
+                  if (res.length === 1) {
+                    if (res[0].SKU === value)
+                      this.editData(rowdata, res[0], rowdata.column.id)
+                  }
+                })
+              })
+            }, 1500)
           }
-          else {
-            this.editData(rowdata, e.target.value, rowdata.column.id)
-          }
+          
+          this.editData(rowdata, value, rowdata.column.id)
         }}
         onSelect={(val, row) => {
           this.editData(rowdata, row, rowdata.column.id)
@@ -682,7 +587,7 @@ class IssuedManage extends Component {
   getStatus(value) {
     // console.log(value)
     if (value === 0)
-      return <Badge color="PENDING" style={{ fontSize: '0.825em', fontWeight: '500' }}>PENDING</Badge>
+      return <Badge color="PICKING" style={{ fontSize: '0.825em', fontWeight: '500' }}>PICKING</Badge>
     else if (value === 1)
       return <Badge color="PICKED" style={{ fontSize: '0.825em', fontWeight: '500' }}>PICKED</Badge>
     else
@@ -760,15 +665,6 @@ class IssuedManage extends Component {
             if (row.id === e.original.id) {
               data.splice(index, 1)
             }
-          })
-          this.setState({ data }, () => {
-            let res = this.state.autocompleteUpdate
-            this.state.data.forEach((datarow, index) => {
-              res = res.filter(row => {
-                return datarow.Code !== row.Code
-              })
-            })
-            this.setState({ autocomplete: res })
           })
         }} color="danger">Remove</Button>
       }

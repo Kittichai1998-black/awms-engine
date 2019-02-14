@@ -41,6 +41,7 @@ class Pack extends Component {
         this.filterList = this.filterList.bind(this);
         this.onClickUpdateData = this.onClickUpdateData.bind(this)
         this.customSorting = this.customSorting.bind(this);
+        this.NextLastPage = this.NextLastPage.bind(this)
         this.UnitTypeSelect = {
             queryString: window.apipath + "/api/mst",
             t: "UnitType",
@@ -70,8 +71,9 @@ class Pack extends Component {
     }
 
     onHandleClickCancel(event) {
-        this.forceUpdate();
-        event.preventDefault();
+        this.setState({ dataedit: [] })
+        this.getData();
+        window.scrollTo(0, 0);
     }
 
     async componentWillMount() {
@@ -133,7 +135,8 @@ class Pack extends Component {
                         if (x.id === columns.column.id)
                             filter.splice(index, 1);
                     });
-                    filter.push({ id: columns.column.id, value: e.target.value });
+                    if (e.target.value !== "")
+                        filter.push({ id: columns.column.id, value: e.target.value });
                     this.setState({ datafilter: filter }, () => { this.onCheckFliter() });
                 }
             }
@@ -148,11 +151,14 @@ class Pack extends Component {
                 return { "f": x.id, "c": "!=", "v": x.value }
             }
             else {
+
                 return { "f": x.id, "c": "like", "v": x.value }
             }
         })
         let strCondition = JSON.stringify(listFilter);
         let getSelect = this.state.select;
+        getSelect["sk"] = 0
+        this.setState({currentPage:1})
         getSelect.q = strCondition;
         this.setState({ select: getSelect }, () => { this.getData() })
     }
@@ -198,12 +204,16 @@ class Pack extends Component {
     }
 
     onCreateDropdownEdit(rowdata, data, field) {
-        let list = data.map((x, idx) => {
-            return <option key={idx} value={x.ID}>{x.Code}</option>
-        });
-        return <Input value={rowdata.original[field]} type="select" style={{ background: "#FAFAFA" }} onChange={(e) => {
-            this.onHandleEditData(e.target.value, rowdata, field)
-        }}>{list}</Input>
+        if (this.state.permissionView === false) {
+            return <span>{rowdata.original.ObjectSizeCode}</span>
+        } else {
+            let list = data.map((x, idx) => {
+                return <option key={idx} value={x.ID}>{x.Code}</option>
+            });
+            return <Input value={rowdata.original[field]} type="select" style={{ background: "#FAFAFA" }} onChange={(e) => {
+                this.onHandleEditData(e.target.value, rowdata, field)
+            }}>{list}</Input>
+        }
     }
 
     onCreateDropdownEditAll(data) {
@@ -229,20 +239,60 @@ class Pack extends Component {
     onClickUpdateData() {
         let dataedit = this.state.dataedit.map(x => {
             return {
-                "ID": x.SKUMaster_ID,
+                "ID": x.ID,
                 "ObjectSize_ID": x.ObjectSize_ID
             }
         });
 
         let updjson = {
-            "t": "ams_SKUMaster",
+            "t": "ams_PackMaster",
             "pk": "ID",
             "datas": dataedit,
             "nr": false
         }
         Axios.put(window.apipath + "/api/mst", updjson).then((res) => {
-            console.log(res.data)
+            if (res) {
+                if (res.data._result.status === 1) {
+                    window.success("แก้ไข ข้อมูลสำเร็จ");
+                    this.getData()
+                    this.setState({ dataedit: [] })
+                }
+            }
         });
+    }
+
+    NextLastPage(position) {
+        this.setState({ loading: true })
+        let queryString = "";
+        const select = this.state.select
+        if (position === 'next') {
+            select.sk = ((this.state.countpages * 100) - 100)
+            //    console.log(select)
+            queryString = createQueryString(select)
+        }
+        else {
+            select.sk = 0
+            //  console.log(select)
+            queryString = createQueryString(select)
+        }
+
+        Axios.get(queryString).then(
+            (res) => {
+                if (res.data.datas.length > 0) {
+                    if (position === 'next') {
+                        this.setState({ currentPage: (this.state.countpages) })
+                    }
+                    else {
+                        this.setState({ currentPage: 1 })
+                    }
+                    this.setState({ data: res.data.datas })
+                }
+                else {
+                    select.sk = parseInt(select.sk === "" ? 0 : select.sk, 10) - parseInt(select.l, 10)
+                }
+                this.setState({ loading: false })
+            }
+        )
     }
 
     paginationButton() {
@@ -260,17 +310,25 @@ class Pack extends Component {
             background: '#cfd8dc',
             minWidth: '90px'
         }
+        const notPageactiveLast = {
+            pointerEvents: 'none',
+            cursor: 'default',
+            textDecoration: 'none',
+        }
+        const pageactiveLast = {
+            textDecoration: 'none',
+        }
         return (
-            <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "300px", maxWidth: "300px" }}>
+            <div style={{ paddingTop: '3px', textAlign: 'center', margin: 'auto', minWidth: "450px", maxWidth: "450px" }}>
                 <nav>
                     <ul className="pagination">
-                        <li className="page-item"><a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
+                        <li className="page-item" style={{ display: "flex" }}><Button style={this.state.currentPage === 1 ? { ...notPageactiveLast, marginRight: "5px" } : { pageactiveLast, marginRight: "5px" }} outline color="success" onClick={() => this.NextLastPage("prev")}>{"<<"}</Button>{' '}<a className="page-link" style={this.state.currentPage === 1 ? notPageactive : pageactive}
                             onClick={() => this.pageOnHandleClick("prev")}>
                             Previous</a></li>
                         <p style={{ margin: 'auto', minWidth: "60px", paddingRight: "10px", paddingLeft: "10px", verticalAlign: "middle" }}>Page : {this.state.currentPage} of {this.state.countpages === 0 || this.state.countpages === undefined ? '1' : this.state.countpages}</p>
-                        <li className="page-item"><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
+                        <li className="page-item" style={{ display: "flex" }}><a className="page-link" style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? notPageactive : pageactive}
                             onClick={() => this.pageOnHandleClick("next")}>
-                            Next</a></li>
+                            Next</a><Button style={this.state.currentPage >= this.state.countpages || this.state.countpages === undefined ? { ...notPageactiveLast, marginLeft: "5px" } : { ...pageactiveLast, marginLeft: "5px" }} outline color="success" onClick={() => this.NextLastPage("next")}>{">>"}</Button>{' '} </li>
                     </ul>
                 </nav>
             </div>
@@ -310,7 +368,10 @@ class Pack extends Component {
                 this.setState({ data: res.data.datas, loading: false })
             })
     }
+
     render() {
+        const view = this.state.permissionView
+
         const cols = [
             {
                 Header: 'No.', fixed: "left", filterable: false, sortable: false, className: 'center', minWidth: 45, maxWidth: 45,
@@ -362,13 +423,15 @@ class Pack extends Component {
                         <div className="float-right" style={{ marginBottom: '3px' }} >
                             <ExportFile style={{ width: "130px" }} column={cols} dataselect={this.state.select} filename={"SKUUnit"} />
                         </div>
-                        <div className="float-right">
-                            <span style={{ fontWeight: 'bold' }} >Edit Weight Verify : </span>
+                        {view === true ?
+                            <div className="float-right">
+                                <span style={{ fontWeight: 'bold' }} >Edit Weight Verify : </span>
 
 
-                            {this.onCreateDropdownEditAll(this.state.ObjSize)}
-                            <Button style={{ width: "130px", marginRight: "5px" }} color="primary" onClick={() => { this.onClickEditAllWeight() }}>Update Weight</Button>
-                        </div>
+                                {this.onCreateDropdownEditAll(this.state.ObjSize)}
+                                <Button style={{ width: "130px", marginRight: "5px" }} color="success" onClick={() => { this.onClickEditAllWeight() }}>Update Weight</Button>
+                            </div>
+                            : null}
                     </Col>
 
                 </Row>
@@ -376,7 +439,7 @@ class Pack extends Component {
 
                 <ReactTableFixedColumns
                     className="-highlight"
-                    style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0 }}
+                    style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}
                     data={this.state.data} columns={cols} filterable={true} minRows={5}
                     multiSort={false}
                     defaultPageSize={this.state.defaultPageS}
@@ -408,12 +471,14 @@ class Pack extends Component {
                         this.customSorting(sorted)
                     }}
                 />
-                <Card>
-                    <CardBody>
-                        <Button onClick={() => this.onClickUpdateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
-
-                    </CardBody>
-                </Card>
+                {view === true ?
+                    <Card>
+                        <CardBody>
+                            <Button onClick={() => this.onClickUpdateData()} color="primary" style={{ width: '130px', marginLeft: '5px' }} className="float-right">Accept</Button>
+                            <Button onClick={() => this.onHandleClickCancel()} color="danger" style={{ width: '130px' }} className="float-right">Cancel</Button>
+                        </CardBody>
+                    </Card>
+                    : null}
             </div>
         )
     }
