@@ -153,3 +153,6 @@
 .ReactTable .rt-tfoot{
   max-height: 34.8px !important;
 }
+.react-datepicker-popper{
+  z-index:100 !important;
+}
