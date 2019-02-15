@@ -375,6 +375,7 @@ class IssuedManage extends Component {
                 data.splice(index, 1)
               }
             })
+            this.setState({data})
           }} color="danger">Remove</Button>
         },
       ];
