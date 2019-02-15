@@ -253,12 +253,13 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = value;
     }
     else {
-      data[rowdata.index][field] = value.Code;
-      data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
-      data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
-      data[rowdata.index]["UnitTypeName"] = value.UnitTypeName;
-      data[rowdata.index]["SKU_ID"] = value.ID;
-      data[rowdata.index]["id"] = value.ID;
+      if(value){
+        data[rowdata.index][field] = value.Code;
+        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
+        data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
+        data[rowdata.index]["UnitTypeName"] = value.UnitTypeName;
+        data[rowdata.index]["SKU_ID"] = value.ID;
+      }
     }
     this.setState({ data });
   }
@@ -331,7 +332,7 @@ class IssuedManage extends Component {
                   }
                 })
               })
-            }, 1500)
+            }, 1200)
           }
           
           this.editData(rowdata, value, rowdata.column.id)
@@ -371,6 +372,10 @@ class IssuedManage extends Component {
           Cell: (e) => <Button onClick={() => {
             const data = this.state.data;
             data.forEach((row, index) => {
+              console.log("---------------------")
+              console.log(row.id)
+              console.log(e.original.id)
+              console.log("---------------------")
               if (row.id === e.original.id) {
                 data.splice(index, 1)
               }

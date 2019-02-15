@@ -410,7 +410,7 @@ class IssuedManage extends Component {
 
   addData() {
     const data = this.state.data
-    data.push({ id: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", ID: "", Batch: "", Lot: "", Orderno: "" })
+    data.push({ idx: this.addIndex, PackItem: "", PackQty: 1, SKU: "", UnitType: "", ID: "", Batch: "", Lot: "", Orderno: "" })
     this.addIndex -= 1
     this.setState({ data })
   }
@@ -425,10 +425,13 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = value;
     }
     else {
-      data[rowdata.index][field] = value.Code;
-      data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
-      data[rowdata.index]["UnitType"] = value.UnitType;
-      data[rowdata.index]["id"] = value.id;
+      
+      if(value){
+        data[rowdata.index][field] = value.Code;
+        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
+        data[rowdata.index]["UnitType"] = value.UnitType;
+        data[rowdata.index]["id"] = value.id;
+      }
     }
     this.setState({ data });
 
@@ -538,7 +541,7 @@ class IssuedManage extends Component {
                   }
                 })
               })
-            }, 1500)
+            }, 1200)
           }
           
           this.editData(rowdata, value, rowdata.column.id)
@@ -659,8 +662,9 @@ class IssuedManage extends Component {
       {
         Cell: (e) => <Button onClick={() => {
           const data = this.state.data;
+          console.log(data)
           data.forEach((row, index) => {
-            if (row.id === e.original.id) {
+            if (row.idx === e.original.idx) {
               data.splice(index, 1)
             }
           })
