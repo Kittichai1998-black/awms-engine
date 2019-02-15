@@ -56,6 +56,7 @@ class QueueView extends Component {
     this.toggle = this.toggle.bind(this);
     this.GetQueueData = this.GetQueueData.bind(this)
     this.setTitle = this.setTitle.bind(this)
+    this.runningCurrentDate = this.runningCurrentDate.bind(this)
   }
 
   async componentWillMount() {
@@ -86,9 +87,28 @@ class QueueView extends Component {
     }
   }
 
+  setCurrentDate(){
+    var newDate = new Date()
+    API.get(window.apipath + "/api/values/time").then((res) => {
+        if (res) {
+          this.setState({currentDateClientStart : newDate,currentDateServerStart : new Date(res.data.dbTime)}, () => {
+            this.runningCurrentDate()
+          });
+        }
+      })
+  }
+
+  runningCurrentDate(){
+      let currentDateTime = new Date(
+      this.state.currentDateServerStart.getTime() + ( new Date().getTime() - this.state.currentDateClientStart.getTime()));
+      this.setState({currentDate : moment(currentDateTime).format('DD-MM-YYYY')});
+      this.setState({currentTime : moment(currentDateTime).format('HH:mm:ss')});
+      setTimeout(this.runningCurrentDate,250);
+  }
+
   componentDidMount() {
     this.setTitle()
-
+    this.setCurrentDate()
     if (this.state.locsearch) {
       var url = this.select;
       url.q = "[{ 'f': 'IOType', c:'=', 'v': '" + this.state.locsearch + "'}]";
@@ -200,7 +220,7 @@ class QueueView extends Component {
             <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
               <Row>
                 <Col sm="1" xs="1" md="1" lg="1">{logoamw}</Col>
-                <Col sm="9"><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
+                <Col sm="9"><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{this.state.currentDate}</span> Time: <span style={{ fontWeight: "normal" }}>{this.state.currentTime}</span></label></Col>
                 <Col sm="2" xs="2" md="2" lg="2"><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
               </Row>
             </div>

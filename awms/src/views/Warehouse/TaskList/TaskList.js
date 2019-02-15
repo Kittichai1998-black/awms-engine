@@ -8,7 +8,7 @@ import _ from 'lodash'
 import '../componentstyle.css'
 import Clock from 'react-live-clock';
 import Fullscreen from "react-full-screen";
-import moment from 'moment';
+import moment, { relativeTimeThreshold } from 'moment';
 import Axios from 'axios';
 import logo from '../../../assets/img/brand/Logo-AMW2.png'
 
@@ -39,6 +39,7 @@ class TaskList extends Component {
         sk: 0,
         l: 20,
         all: "",
+        setMomentDate: "",
       },
       areaIDOnFloor: "8,9"
     }
@@ -70,6 +71,7 @@ class TaskList extends Component {
     this.updateQueueData = this.updateQueueData.bind(this)
     this.getDataTasklist = this.getDataTasklist.bind(this)
     this.getDataMoveOut = this.getDataMoveOut.bind(this)
+    this.runningCurrentDate = this.runningCurrentDate.bind(this)
   }
   //   ID	Code	Name
   // 3,8	Fด้านหน้า
@@ -80,22 +82,45 @@ class TaskList extends Component {
     // let dataGetPer = await GetPermission()
     // CheckWebPermission("PickPro", dataGetPer, this.props.history);
   }
+
+  setCurrentDate() {
+    var newDate = new Date()
+    Axios.get(window.apipath + "/api/values/time").then((res) => {
+      if (res) {
+        this.setState({ currentDateClientStart: newDate, currentDateServerStart: new Date(res.data.dbTime) }, () => {
+          this.runningCurrentDate()
+        });
+      }
+    })
+  }
+
+  runningCurrentDate() {
+    let currentDateTime = new Date(
+      this.state.currentDateServerStart.getTime() + (new Date().getTime() - this.state.currentDateClientStart.getTime()));
+    this.setState({ currentDate: moment(currentDateTime).format('DD-MM-YYYY') });
+    this.setState({ currentTime: moment(currentDateTime).format('HH:mm:ss') });
+    setTimeout(this.runningCurrentDate, 250);
+  }
+
   componentDidMount() {
     this.getDataMoveOut()
     this.getDataTasklist()
+    this.setCurrentDate()
 
     let interval1 = setInterval(() => {
       Axios.get(createQueryString(this.WorkQselect) + "&apikey=FREE03").then(res => {
         if (res) {
-          if (res.data.datas.length > 0) {
-            if (this.state.dataworkingout.length > 0) {
-              // console.log(res.data.datas[0].ActualTime)
-              // console.log(this.state.dataworkingout[0].Time)
-              if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
-                this.getDataMoveOut()
+          if (res.data.datas) {
+            if (res.data.datas.length > 0) {
+              if (this.state.dataworkingout.length > 0) {
+                // console.log(res.data.datas[0].ActualTime)
+                // console.log(this.state.dataworkingout[0].Time)
+                if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
+                  this.getDataMoveOut()
+                }
               }
+              this.setState({ ActualTime: res.data.datas[0].ActualTime });
             }
-            this.setState({ ActualTime: res.data.datas[0].ActualTime });
           }
         }
       })
@@ -105,15 +130,17 @@ class TaskList extends Component {
     let interval2 = setInterval(() => {
       Axios.get(createQueryString(this.StoSelect) + "&apikey=FREE03").then(res => {
         if (res) {
-          if (res.data.datas.length > 0) {
-            if (this.state.datatasklist.length > 0) {
-              // console.log(res.data.datas[0].Time)
-              // console.log(this.state.datatasklist[0].Time)
-              if (this.state.Time !== this.state.datatasklist[0].Time) {
-                this.getDataTasklist()
+          if (res.data.datas) {
+            if (res.data.datas.length > 0) {
+              if (this.state.datatasklist.length > 0) {
+                // console.log(res.data.datas[0].Time)
+                // console.log(this.state.datatasklist[0].Time)
+                if (this.state.Time !== this.state.datatasklist[0].Time) {
+                  this.getDataTasklist()
+                }
               }
+              this.setState({ Time: res.data.datas[0].Time });
             }
-            this.setState({ Time: res.data.datas[0].Time });
           }
         }
       })
@@ -235,16 +262,15 @@ class TaskList extends Component {
               <div className="clearfix" style={{ paddingBottom: '.5rem' }}>
                 <Row>
                   <Col sm="1">{logoamw}</Col>
-                  <Col sm="5" ><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{moment().format('DD-MM-YYYY')}</span> Time: <span style={{ fontWeight: "normal" }}><Clock format="HH:mm:ss" ticking={true} interval={250} /></span></label></Col>
+                  <Col sm="5" ><label className="float-left" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Date <span style={{ fontWeight: "normal" }}>{this.state.currentDate}</span> Time: <span style={{ fontWeight: "normal" }}>{this.state.currentTime}</span></label></Col>
                   <Col sm="1" ><label className="float-right" style={{ paddingTop: ".5rem", fontSize: '2.25em', fontWeight: "bold" }}>Area: </label></Col>
-                  <Col sm="4"  style={{ fontSize: '2.25em' }}>{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
+                  <Col sm="4" style={{ fontSize: '2.25em' }}>{<AutoSelect className="float-right" data={optionsArea} result={(res) => {
                     this.updateQueueData(res.value)
                     {/*this.setState({ areavalue: e.value, areatext: e.label }, () => console.log(this.state.areavalue + " " + this.state.areatext))*/ }
                   }} />}</Col>
                   <Col sm="1" ><Button className="float-right" outline color="secondary" style={{ paddingBottom: "0.625em" }} onClick={this.state.isFull ? this.goMin : this.goFull}><span>{this.state.isFull ? iconmin : iconexpand}</span></Button></Col>
                 </Row>
               </div>
-
 
               <div id="Table1" className="styleTable" style={{ marginLeft: '0.5em' }}>
                 <p className="rightAlign" id="pbottom" style={{ fontSize: '2.25em', fontWeight: '900' }}>Move Out</p>
