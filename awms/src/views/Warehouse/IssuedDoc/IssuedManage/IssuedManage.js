@@ -428,9 +428,6 @@ class IssuedManage extends Component {
       data[rowdata.index][field] = value.Code;
       data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
       data[rowdata.index]["UnitType"] = value.UnitType;
-      data[rowdata.index]["Lot"] = value.lot !== undefined ? data[rowdata.index]["Lot"] : value.lot;
-      data[rowdata.index]["Orderno"] = value.orderno !== undefined ? data[rowdata.index]["Orderno"] : value.orderno;
-      data[rowdata.index]["Batch"] = value.batch !== undefined ? data[rowdata.index]["Batch"] : value.batch;
       data[rowdata.index]["id"] = value.id;
     }
     this.setState({ data });
