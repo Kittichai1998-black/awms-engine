@@ -118,6 +118,8 @@ class TaskList extends Component {
                 if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
                   this.getDataMoveOut()
                 }
+              }else{
+                this.getDataMoveOut()
               }
               this.setState({ ActualTime: res.data.datas[0].ActualTime });
             }
@@ -138,7 +140,10 @@ class TaskList extends Component {
                 if (this.state.Time !== this.state.datatasklist[0].Time) {
                   this.getDataTasklist()
                 }
+              }else{
+                  this.getDataTasklist()
               }
+              // console.log(res.data.datas[0].Time)
               this.setState({ Time: res.data.datas[0].Time });
             }
           }
@@ -192,7 +197,7 @@ class TaskList extends Component {
         areaWorkingOut.q = "[{ 'f': 'IOType', c:'=', 'v': 1},{ 'f': 'AreaID', c:'in', 'v': '2,3'}]";
         // taskwhere = '8,9';
       }
-      // console.log(taskwhere)
+      console.log(taskwhere)
       // console.log(areaWorkingOut)
     }
     this.setState({ WorkingOutselect: areaWorkingOut, areaIDOnFloor: taskwhere })
