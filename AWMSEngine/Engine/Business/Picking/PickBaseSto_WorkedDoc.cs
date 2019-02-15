@@ -34,7 +34,10 @@ namespace AWMSEngine.Engine.Business.Picking
             var stoTree = bsto.ToTreeList();
             var docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(
                 stoTree.Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList(), 
-                DocumentTypeID.GOODS_ISSUED, this.BuVO);
+                DocumentTypeID.GOODS_ISSUED, this.BuVO)
+                .FindAll(x => x.EventStatus != DocumentEventStatus.CLOSING && x.EventStatus != DocumentEventStatus.CLOSED);
+
+
             List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
 
             //Set DISTO ให้ทั้ง DocItem

@@ -92,6 +92,8 @@ class TaskList extends Component {
           });
         }
       })
+    
+      
   }
 
   runningCurrentDate(){
@@ -99,7 +101,9 @@ class TaskList extends Component {
       this.state.currentDateServerStart.getTime() + ( new Date().getTime() - this.state.currentDateClientStart.getTime()));
       this.setState({currentDate : moment(currentDateTime).format('DD-MM-YYYY')});
       this.setState({currentTime : moment(currentDateTime).format('HH:mm:ss')});
+
       setTimeout(this.runningCurrentDate,250);
+      
   }
   
   componentDidMount() {
