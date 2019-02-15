@@ -509,5 +509,10 @@ namespace AWMSEngine.ADO
             List<T> res = this.Query<T>(sqlComm, CommandType.Text, parameters, buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public List<T> QueryString<T>(string sqlComm, Dapper.DynamicParameters parameters)
+        {
+            List<T> res = this.Query<T>(sqlComm, CommandType.Text, parameters, null, null).ToList();
+            return res;
+        }
     }
 }

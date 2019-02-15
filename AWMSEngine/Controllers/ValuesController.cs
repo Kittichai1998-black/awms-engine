@@ -37,7 +37,13 @@ namespace AWMSEngine.Controllers
             List<string> datas = res.datas;
             return string.Join('\n', datas.ToArray());
         }
-
+        [HttpGet("time")]
+        public dynamic GetTime()
+        {
+            var val = ADO.DataADO.GetInstant().QueryString<dynamic>("select getdate() dt",null).FirstOrDefault();
+            DateTime dt = val.dt;
+            return new { serverTime = DateTime.Now, dbTime = dt };
+        }
         [HttpGet("jobs")]
         public dynamic GetJobs()
         {

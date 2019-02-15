@@ -123,10 +123,13 @@ namespace AMWUtil.Logger
                         for (KeyValuePair<string, string>? msg = LogMessages.FirstOrDefault();
                                 msg.HasValue && msg.Value.Key != null;)
                         {
-                            using (var fw = new StreamWriter(msg.Value.Key, true))
+                            if (!msg.Value.Key.StartsWith("FREE"))
                             {
-                                fw.WriteLine(msg.Value.Value);
-                                fw.Flush();
+                                using (var fw = new StreamWriter(msg.Value.Key, true))
+                                {
+                                    fw.WriteLine(msg.Value.Value);
+                                    fw.Flush();
+                                }
                             }
                             LogMessages.RemoveAt(0);
                             msg = LogMessages.FirstOrDefault();
