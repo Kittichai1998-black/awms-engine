@@ -87,7 +87,7 @@ class TaskList extends Component {
     var newDate = new Date()
     Axios.get(window.apipath + "/api/values/time").then((res) => {
       if (res) {
-        this.setState({ currentDateClientStart: newDate, currentDateServerStart: new Date(res.data.dbTime) }, () => {
+        this.setState({ currentDateClientStart: newDate, currentDateServerStart: new Date(res.data.dbTime+"07:00") }, () => {
           this.runningCurrentDate()
         });
       }
@@ -112,13 +112,17 @@ class TaskList extends Component {
         if (res) {
           if (res.data.datas) {
             if (res.data.datas.length > 0) {
-              if (this.state.dataworkingout.length > 0) {
-                // console.log(res.data.datas[0].ActualTime)
-                // console.log(this.state.dataworkingout[0].Time)
-                if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
+              if (this.state.dataworkingout !== undefined) {
+                if (this.state.dataworkingout.length > 0) {
+                  // console.log(res.data.datas[0].ActualTime)
+                  // console.log(this.state.dataworkingout[0].Time)
+                  if (this.state.ActualTime !== this.state.dataworkingout[0].Time) {
+                    this.getDataMoveOut()
+                  }
+                } else {
                   this.getDataMoveOut()
                 }
-              }else{
+              } else {
                 this.getDataMoveOut()
               }
               this.setState({ ActualTime: res.data.datas[0].ActualTime });
@@ -134,14 +138,18 @@ class TaskList extends Component {
         if (res) {
           if (res.data.datas) {
             if (res.data.datas.length > 0) {
-              if (this.state.datatasklist.length > 0) {
-                // console.log(res.data.datas[0].Time)
-                // console.log(this.state.datatasklist[0].Time)
-                if (this.state.Time !== this.state.datatasklist[0].Time) {
+              if (this.state.datatasklist !== undefined) {
+                if (this.state.datatasklist.length > 0) {
+                  // console.log(res.data.datas[0].Time)
+                  // console.log(this.state.datatasklist[0].Time)
+                  if (this.state.Time !== this.state.datatasklist[0].Time) {
+                    this.getDataTasklist()
+                  }
+                } else {
                   this.getDataTasklist()
                 }
-              }else{
-                  this.getDataTasklist()
+              } else {
+                this.getDataTasklist()
               }
               // console.log(res.data.datas[0].Time)
               this.setState({ Time: res.data.datas[0].Time });
@@ -183,7 +191,7 @@ class TaskList extends Component {
   }
   updateQueueData(selValue) {
     var areaWorkingOut = this.state.WorkingOutselect;
-    let taskwhere = '8,9';
+    let taskwhere = "8,9";
     if (selValue !== undefined) {
       if (selValue !== "") {
 
@@ -255,7 +263,7 @@ class TaskList extends Component {
           enabled={this.state.isFull}
           onChange={isFull => this.setState({ isFull })}
         >
-          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1em 1.8em 1.8em 1em' } : {}} className="fullscreen">
+          <div style={this.state.isFull ? { backgroundColor: '#e4e7ea', height: '100%', padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
             <div id="full">
               <div className="clearfix" style={{ display: 'block', fontSize: '1.5em', height: 'auto', padding: '0em 0.5em 0.1em 0em', marginBottom: '0.4em', backgroundColor: '#C8CED3' }}>
                 <div className="float-right">
