@@ -72,7 +72,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             }
                             else
                             {
-                                ADO.DocumentADO.GetInstant().UpdateEventStatus(doc.ID.Value, DocumentEventStatus.CLOSED, this.BuVO);
+                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value,null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
                             }
                         }
                         else
