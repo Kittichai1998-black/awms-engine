@@ -33,6 +33,13 @@ namespace AWMSEngine.Controllers.WM
             return exec.Execute(datas);
         }
 
+        [HttpPost("hold")]
+        public dynamic hold(dynamic datas)
+        {
+            HoldStorageObjectAPI exec = new HoldStorageObjectAPI(this);
+            return exec.Execute(datas);
+        }
+
         [HttpGet("price")]
         public dynamic GetPrice()
         {

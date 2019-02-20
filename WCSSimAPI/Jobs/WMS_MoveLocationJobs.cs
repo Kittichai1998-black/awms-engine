@@ -13,14 +13,21 @@ namespace WCSSimAPI.Jobs
     {
         public string Execute()
         {
+            DateTime stDate = DateTime.Now;
             try
             {
                 var req = ADO.DataADO.GetInstant().list_request_wms_move_location(null);
                 if (!string.IsNullOrWhiteSpace(req.basecode))
                 {
+                    DateTime stDate2 = DateTime.Now;
                     var res = AMWUtil.DataAccess.Http.RESTFulAccess.SendJson<dynamic>(null, ConstConfig.WMSApiURL + "/api/wm/asrs/sto/location", RESTFulAccess.HttpMethod.PUT, req.sJson.Json<dynamic>(), null, 1, 60000);
+                    DateTime stDate3 = DateTime.Now;
                     ADO.DataADO.GetInstant().set_response_wms_move_location(null, req.basecode, ObjectUtil.Json(res));
-                    StatusController.errorListsLocMove.Insert(0, DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " :: " + req.basecode);
+                    StatusController.errorListsDone.Insert(0,
+                        stDate.ToString("hh:mm:ss") + " > " +
+                        stDate2.ToString("hh:mm:ss") + " > " +
+                        stDate3.ToString("hh:mm:ss") + " > " +
+                        DateTime.Now.ToString("hh:mm:ss") + " :: " + req.basecode);
                 }
                 //StatusController.errorListsLocInfo.Add(DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " :: " + "OK");
                 return DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss") + " => OK";

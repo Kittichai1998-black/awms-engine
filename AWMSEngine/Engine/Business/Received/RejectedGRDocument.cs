@@ -87,7 +87,7 @@ namespace AWMSEngine.Engine.Business.Received
                                             expireDate = x.ExpireDate,
                                             refID = x.RefID,
                                             ref1 = x.Ref1,
-                                            ref2 = x.Ref2,
+                                            ref2 = "RETURN",
                                             eventStatus = DocumentEventStatus.WORKING
 
                                         }).ToList()

@@ -155,9 +155,16 @@
 }
 
 .badge-PENDING {
-  color: #2f353a;
+  color: #e3e6e9;
   background-color: #f0f3f5;
   border: 2px solid #3d6dff;
+  width: 100%;
+}
+
+.badge-HOLD {
+  color: #ffffff;
+  background-color: #000000;
+  border: 2px solid #a19f9f;
   width: 100%;
 }
 

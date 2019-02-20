@@ -29,10 +29,10 @@ namespace AWMSEngine.Engine.Business.Issued
             foreach (var num in reqVO.docIDs)
             {
                 var doc = ADO.DataADO.GetInstant().SelectByID<amv_Document>(num, this.BuVO);
-                            
 
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + doc.ID +"Status : REMOVE");
+
 
                 if (reqVO.auto == 0)
                 {
@@ -53,9 +53,9 @@ namespace AWMSEngine.Engine.Business.Issued
                 }
                 else
                 {
-                    if (doc.EventStatus != DocumentEventStatus.WORKING && doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING && doc.EventStatus != DocumentEventStatus.CLOSED)
+                    if (doc.EventStatus != DocumentEventStatus.WORKED && doc.EventStatus != DocumentEventStatus.CLOSING && doc.EventStatus != DocumentEventStatus.CLOSED)
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKING และ WORKED ไม่สามารถ Close เอกสารได้ ");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "เอกสารไม่อยู่ในสถานะ WORKED และ CLOSING ไม่สามารถ CLOSE เอกสารได้ ");
                     }
 
                     var docItem = ADO.DataADO.GetInstant().SelectBy<amv_DocumentItem>(new KeyValuePair<string, object>[] {
