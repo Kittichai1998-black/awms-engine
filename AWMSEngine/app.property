@@ -4,4 +4,4 @@ logger.filename = {RefID}.{Date}.log
 cronex.311=0 0/10 * * * ?
 cronex.321=0 0/10 * * * ?
 
-database.mssql.connection = Server=localhost\SQLEXPRESS;Uid=sa;PASSWORD=@mwte@mp@55;database=AWMS_THIP;Max Pool Size=400;Connect Timeout=600;
+database.mssql.connection = Server=191.20.80.120\SQLEXPRESS;Uid=sa;PASSWORD=@mwte@mp@55;database=AWMS_THIP_TEST_2;Max Pool Size=400;Connect Timeout=600;
