@@ -45,7 +45,7 @@ class CheckPallet extends Component {
   }
 
   async componentWillMount() {
-    document.title = "Check pallet : AWMS";
+    document.title = "Check Pallet : AWMS";
     //permission
     let dataGetPer = await GetPermission()
     this.displayButtonByPermission(dataGetPer)
