@@ -20,7 +20,7 @@ namespace AMWUtil.DataAccess.Http
             DELETE,
             PATCH
         }
-        public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 2, int timeout = 5000)
+        public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 10000)
             where T : class, new()
         {
             T result = null;
@@ -67,7 +67,7 @@ namespace AMWUtil.DataAccess.Http
                 }
                 catch (System.Exception ex)
                 {
-                    if (retry == 0 && logger != null)
+                    if (retry < 0 && logger != null)
                         throw new AMWException(logger, AMWExceptionCode.S0002, ex.Message);
                 }
             } while (result == null);
@@ -75,7 +75,7 @@ namespace AMWUtil.DataAccess.Http
             return result;
         }
 
-        public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 2, int timeout = 5000)
+        public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 10000)
             where T : class, new()
         {
             T result = null;
@@ -133,7 +133,7 @@ namespace AMWUtil.DataAccess.Http
                 catch (System.Exception ex)
                 {
                     result = null;
-                    if (retry <= 0 && logger != null)
+                    if (retry < 0 && logger != null)
                         throw new AMWException(logger, AMWExceptionCode.S0002, ex.Message);
                 }
             } while (result == null);
