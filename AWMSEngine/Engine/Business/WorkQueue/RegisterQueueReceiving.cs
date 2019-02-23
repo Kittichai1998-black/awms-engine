@@ -264,8 +264,11 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             foreach (var packH in packs)
             {
+                long? souWH = null;
+                if (isAutoCreate) souWH = souWarehouseID;
+                long souBranchID = StaticValue.Warehouses.First(x => x.ID == souWarehouseID).Branch_ID.Value;
                 var docItem = ADO.DocumentADO.GetInstant()
-                    .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souWarehouseID, null, packH.unitID, packH.baseUnitID, null, packH.batch, null, this.BuVO)
+                    .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souBranchID, souWH, null, null, packH.unitID, packH.baseUnitID, null, packH.batch, null, this.BuVO)
                     .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
 
 
