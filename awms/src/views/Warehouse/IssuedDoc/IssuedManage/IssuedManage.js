@@ -432,6 +432,12 @@ class IssuedManage extends Component {
         data[rowdata.index]["UnitType"] = value.UnitType;
         data[rowdata.index]["id"] = value.id;
       }
+      else{
+        data[rowdata.index][field] = "";
+        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
+        data[rowdata.index]["UnitType"] = "";
+        data[rowdata.index]["id"] = "";
+      }
     }
     this.setState({ data });
 
