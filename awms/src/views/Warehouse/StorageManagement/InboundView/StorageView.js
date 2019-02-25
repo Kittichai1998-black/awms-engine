@@ -372,10 +372,22 @@ class IssuedDoc extends Component {
     if (results.length > 0) {
       strStatus = results[0].status
       if (data.original.Options !== undefined) {
+
         if (data.original.Options !== null) {
-          var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
-          if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
-            var strSapRes = decodeURIComponent(arrayRes["SapRes"])
+
+          //var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
+          var msg = data.original.Options
+          var SapRes1 = msg.split("&")
+          var SapRes3 = {}
+          SapRes1.forEach(x=> {
+            var SapRes2 = x.split("=")
+            if(SapRes2[0] === "SapRes"){
+              SapRes3[SapRes2[0]] = decodeURIComponent(SapRes2[1].replace("/n", " "))
+            }
+          })
+          if (SapRes3.SapRes !== undefined && SapRes3.SapRes.length > 0) {
+            console.log("ccc")
+            var strSapRes = decodeURIComponent(SapRes3["SapRes"])
             var newSapRes = strSapRes.replace(/\+/g, ' ').replace(/\|/g, ' , ');
             // console.log(strStatus)
             if (strStatus === "CLOSING") {

@@ -336,6 +336,11 @@ const CheckInventory = Loadable({
   loading: Loading,
 });
 
+const CheckPallet = Loadable({
+  loader: () => import('./views/Warehouse/CheckPallet/CheckPallet'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -416,6 +421,7 @@ const routes = [
   { path: '/sys/ad/check', exact: true, name: 'Check Audit', component: CheckInventory },
   { path: '/sys/gr/report', exact: true, name: 'Receive Report', component: ReceiveReport},
   { path: '/sys/gi/report', exact: true, name: 'Issue Report', component: ReceiveReport},
+  { path: '/sys/sto/checkpallet', exact: true, name: 'Receive / Check Pallet', component: CheckPallet},
 ];
 
 export default routes;
