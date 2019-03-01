@@ -10,6 +10,7 @@ import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '..
 import Popup from 'reactjs-popup'
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import { DocumentEventStatus } from '../../Status'
+import ExportFile from '../../MasterData/ExportFile';
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
@@ -522,17 +523,13 @@ class IssuedDoc extends Component {
         {this.createModal()}
         {this.createModalData()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
-          <Row>
+          <div className="clearfix" >
+            <label style={{ marginRight: "10px" }}>Document Date : </label>
 
-            <Col xs="4"></Col>
-            <Col xs="6">
-              <div className="float-right" >
-                <span style={{ fontWeight: 'bold' }}>Doc.Date : </span>
-              </div>
-            </Col>
-            <Col xs="2">
+            <div style={{ display: "inline-block", width: "300px" }}>
+
               <DatePicker selected={this.state.date}
-                customInput={<Input style={{ width: "100%" }} />}
+                customInput={<Input />}
                 onChange={(e) => {
                   if (e === null) {
                     this.DatePickerFilter(null)
@@ -549,14 +546,19 @@ class IssuedDoc extends Component {
                 timeCaption="Time"
                 showTimeSelect={false}
                 dateFormat={"DD-MM-YYYY"} />
+            </div>
+          </div>
+
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+            <Col xs="6"></Col>
+            <Col xs="6">
+              <div className="float-right">
+                  <ExportFile column={cols} dataxls={this.state.data} filename={"SearchReceive"} />
+              </div>
             </Col>
-
-
           </Row>
+
         </div>
-
-
-
 
         <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}

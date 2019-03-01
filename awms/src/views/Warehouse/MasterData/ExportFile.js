@@ -4,6 +4,7 @@ import Workbook from 'react-excel-workbook'
 import { apicall, createQueryString, Clone } from '../ComponentCore'
 import { Button, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import moment from 'moment';
+import { DocumentEventStatus } from '../Status'
 const Axios = new apicall()
 
 const iconprint = <img style={{ width: "17px", height: "inherit" }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJCSURBVHhe7dq9rwxRHMbxJRHxEkKiEAn/gERPIfEXqCWiEwrRuQoUIqiIjqCgErXOH6BU0bgd8ZLce2lQEHx/m3OScfLsntm7szPnnvye5FPs3HNmTp6dfbmzM/J41pWtWCrIcfSa3fhbkFvoNV4A4sHvYs9Aiiig94M34gUEXsD4UY/xAuAFBF6AbRgoXkDgBYwf9RgvAF5A4AXYhoHS+Ro24RzeYG2Kr4gH/xm2DaHtGr7gOQ5hau4h7rRG9sQdhMwR/IGaWJNnkLkANaE29nKQuQw1oTbfIOMFQE3YKD7hOq7gXdimVFnACvYjZieWocZWWcBDpLkKNbbKAp4izQ2osVUW8B2HEXMAn6HGVvsmaCXYmfAIq2GbUm0BbXkBkPECoCbUxguAjBcANaE2nRdQwg0Ss+i8gBIuis7CC4BMlwXsgDpl57EZadR6chZewHks4uKqXeTYhmbUuJyFF3Afaty8fqN50cOixuUsvIBdsLNA3dG5XpdwFGnUenImFmAHUhNyqnkTPAU1IWejFfAWMvaD53uoSdOkBZzGD6ixbb2E/U6Zi5qbcxETcwwfoSZOkhbwGGrcLH5hO3JRc6extamP0/+yF2dxE7cnsK+/cadpAftg1+bVvDZsfyfQJnENr6D2Fdl67MntLH6DBLyAID34SXyAulFhHi+wBc0UWcATxL91Lb25IW4vqgC7DeUOHnTsDNIUWUCf8QICL2D8qMc0C3gN9ZrtQxEFlKD3Aux/fvVZPZRr8Hg8s2Y0+gdjHjQ2tEQyPwAAAABJRU5ErkJggg==" />;
@@ -55,6 +56,9 @@ class ExportFile extends Component {
     if(this.props.dataxls){
       let datasxls = Clone(this.props.dataxls);
       datasxls.forEach((datarow, index) => {
+        if (datarow.EventStatus) {
+          datarow.EventStatus = DocumentEventStatus.filter(x => x.code === datarow.EventStatus)[0].status
+        }
         for (var xfield in datarow) {
           if (!isNaN(datarow[xfield])) {
             if (datarow[xfield] != null)

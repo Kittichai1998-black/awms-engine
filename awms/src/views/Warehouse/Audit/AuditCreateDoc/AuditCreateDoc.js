@@ -204,6 +204,7 @@ class IssuedManage extends Component {
         "souAreaMasterID": null,
         "desCustomerID": null,
         "desSupplierID": null,
+        "remark": this.state.remark,
         "actionTime": this.state.date.format("YYYY/MM/DDThh:mm:ss"),
         "documentDate": this.DateNow.format("YYYY/MM/DD"),
         "docItems": listAudit
