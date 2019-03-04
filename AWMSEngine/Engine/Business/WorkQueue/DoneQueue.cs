@@ -55,8 +55,8 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 }, this.BuVO).FirstOrDefault();
 
             if (wm.ID.Value == queueTrx.Des_Warehouse_ID
-                && am.ID.Value == queueTrx.Des_AreaMaster_ID
-                && lm.ID.Value == (queueTrx.Des_AreaLocationMaster_ID ?? lm.ID.Value)
+                //&& am.ID.Value == queueTrx.Des_AreaMaster_ID
+                //&& lm.ID.Value == (queueTrx.Des_AreaLocationMaster_ID ?? lm.ID.Value)
                 )
             {
                 if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED || queueTrx.EventStatus == WorkQueueEventStatus.WORKING)

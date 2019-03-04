@@ -19,6 +19,7 @@ namespace AWMSEngine.Engine.Business.Issued
         {
             public List<Document> documentsProcess;
             public DateTime actualTime;
+            public bool is_reject;
             public class Document
             {
                 public long docID;
@@ -152,9 +153,9 @@ namespace AWMSEngine.Engine.Business.Issued
                         }
                         else
                         {
-                            foreach (var item in listItems.Where(x => x.itemCode == docItemsProcess.itemCode && x.batch == batch.value))
+                            foreach (var item in listItems.Where(x => x.itemCode == docItemsProcess.itemCode && x.batch == batch.value)) 
                             {
-                                item.qty = item.qty + qtQty;
+                                item.qty = batch.qty + qtQty;
                             }
                         }
                     }
@@ -170,6 +171,10 @@ namespace AWMSEngine.Engine.Business.Issued
                 item.lot,
                 item.orderNo,
                 this.BuVO);
+                if(listDocProcessed.Count > 0)
+                {
+                    stoRoot = stoRoot.Where(x => !listDocProcessed.Any(y => y.stoi == x.id)).ToList();
+                }
 
                 foreach (var doc in reqVO.documentsProcess)
                 {
@@ -198,12 +203,12 @@ namespace AWMSEngine.Engine.Business.Issued
                         {
                             if (stoRoot.Count > 0)
                             {
-                                foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null || batch.value == "")) && x.packQty > 0))
+                                foreach (var sto in stoRoot.Where(x => ((x.batch == batch.value) || (batch.value == null || batch.value == "")) 
+                                && x.packQty > 0))
                                 {
                                     if (sto.evtStatus == Convert.ToInt16(StorageObjectEventStatus.RECEIVED))
                                     {
                                         var stoPack = ADO.StorageObjectADO.GetInstant().Get(sto.code, null, null, false, true, this.BuVO);
-                                        
                                         if (batch.qty > 0)
                                         {
                                             if (sto.packQty >= batch.qty)
@@ -229,6 +234,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                                     stoBaseQty = sto.packQty
 
                                                 });
+                                                
                                                 sto.packQty = sto.packQty - batch.qty;
                                                 batch.qty = 0;
                                             }
@@ -285,7 +291,6 @@ namespace AWMSEngine.Engine.Business.Issued
                                         }
                                     }
                                 }
-                                
                             }
                             else
                             {
@@ -384,7 +389,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");
                 }
             }
-            res.DocumentProcessed = listDocProcessed;
+            res.DocumentProcessed = listDocProcessed.OrderBy(x => x.docID).ToList();
             return res;
         }
     }

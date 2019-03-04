@@ -91,7 +91,7 @@ class QueueView extends Component {
     var newDate = new Date()
     API.get(window.apipath + "/api/values/time").then((res) => {
         if (res) {
-          this.setState({currentDateClientStart : newDate,currentDateServerStart : new Date(res.data.dbTime+"07:00")}, () => {
+          this.setState({currentDateClientStart : newDate,currentDateServerStart : new Date(res.data.dbTime+"+07:00")}, () => {
             this.runningCurrentDate()
           });
         }

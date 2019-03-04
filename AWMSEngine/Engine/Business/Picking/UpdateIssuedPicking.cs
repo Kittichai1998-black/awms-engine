@@ -95,8 +95,17 @@ namespace AWMSEngine.Engine.Business.Picking
                     }
                 }
 
-                var docTarget = ADO.DocumentADO.GetInstant().Target(reqVO.docID, DocumentTypeID.GOODS_ISSUED, this.BuVO);
-                var target = docTarget.All(z => z.needPackQty <= 0);
+                itemList.ForEach(doci =>
+                {
+                    doci.DocItemStos = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(doci.ID.Value, this.BuVO).DocItemStos;
+                    if (doci.DocItemStos.TrueForAll(disto => disto.Status == EntityStatus.ACTIVE))
+                    {
+                        doci.EventStatus = DocumentEventStatus.WORKED;
+                        doci.Status = ADO.DocumentADO.GetInstant().UpdateItemEventStatus(doci.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                    }
+                });
+
+                var target = itemList.TrueForAll(z => z.EventStatus == DocumentEventStatus.WORKED);
                 if (target)
                 {
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);

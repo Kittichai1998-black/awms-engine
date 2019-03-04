@@ -805,12 +805,14 @@ class CreateQueue extends Component {
           newArr.push(Keys[cur[key]]);
         }
         if (cur["stoPack"] !== null) {
-          sumQty = sumQty + cur["qty"]
-          sumBaseQty = sumBaseQty + cur["stoBaseQty"]
+          //sumQty = sumQty + cur["qty"]
+          //sumBaseQty = sumBaseQty + cur["stoBaseQty"]
+
+          Keys[cur[key]].sumQty = Keys[cur[key]].sumQty+cur["qty"];
+          Keys[cur[key]].sumBaseQty = Keys[cur[key]].sumBaseQty+cur["stoBaseQty"];
+          Keys[cur[key]].data.push(cur);
         }
-        Keys[cur[key]].sumQty = sumQty;
-        Keys[cur[key]].sumBaseQty = sumBaseQty;
-        Keys[cur[key]].data.push(cur);
+        
       }
       return newArr;
     }
