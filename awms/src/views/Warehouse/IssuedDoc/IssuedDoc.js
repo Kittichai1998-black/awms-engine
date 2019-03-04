@@ -10,6 +10,7 @@ import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '..
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import Popup from 'reactjs-popup'
 import moment from 'moment';
+import ExportFile from '../MasterData/ExportFile';
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
@@ -504,16 +505,12 @@ class IssuedDoc extends Component {
 
         {this.createModal()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
-          <Row>
+            <div className="clearfix" >
+            <label style={{ marginRight: "10px" }}>Document Date : </label>
+            
+            <div style={{ display: "inline-block", width: "300px" }}>
 
-            <Col xs="4"></Col>
-            <Col xs="4">
-              <div className="float-right" >
-                <span className="float-right" style={{ fontWeight: 'bold' }}>Doc.Date : </span>
-              </div>
-            </Col>
-
-            <DatePicker className="float-right" selected={this.state.date}
+            <DatePicker selected={this.state.date}
               customInput={<Input />}
               onChange={(e) => {
                 if (e === null) {
@@ -530,12 +527,24 @@ class IssuedDoc extends Component {
               timeFormat="HH:mm"
               timeCaption="Time"
               showTimeSelect={false}
-              dateFormat={"DD-MM-YYYY"} />
+                dateFormat={"DD-MM-YYYY"} />
+              </div>
+          </div>
+         
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+            <Col xs="6"></Col>
+            <Col xs="6">
+              <div>
+                <div className="float-right">
+                  <ExportFile column={cols} dataxls={this.state.data} filename={"SearchIssue"} />
 
-            <div className="clearfix">
-              <Button id="per_button_doc" style={{ width: '150px', marginLeft: '5px', marginBottom: '3px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
-            </div>
+                </div>
+                <Button id="per_button_doc" className="float-right" style={{ width: '150px', marginRight: '5px', marginBottom: '3px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/doc/gi/manage')}>Create Document</Button>
+
+              </div>
+            </Col>
           </Row>
+         
         </div>
 
         <ReactTableFixedColumns

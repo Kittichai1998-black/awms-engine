@@ -10,6 +10,7 @@ import { GetPermission, CheckWebPermission, CheckViewCreatePermission } from '..
 import Popup from 'reactjs-popup'
 import withFixedColumns from "react-table-hoc-fixed-columns";
 import { DocumentEventStatus } from '../../Status'
+import ExportFile from '../../MasterData/ExportFile';
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
@@ -372,10 +373,22 @@ class IssuedDoc extends Component {
     if (results.length > 0) {
       strStatus = results[0].status
       if (data.original.Options !== undefined) {
+
         if (data.original.Options !== null) {
-          var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
-          if (arrayRes.SapRes !== undefined && arrayRes.SapRes.length > 0) {
-            var strSapRes = decodeURIComponent(arrayRes["SapRes"])
+
+          //var arrayRes = JSON.parse('{"' + decodeURI(data.original.Options).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
+          var msg = data.original.Options
+          var SapRes1 = msg.split("&")
+          var SapRes3 = {}
+          SapRes1.forEach(x=> {
+            var SapRes2 = x.split("=")
+            if(SapRes2[0] === "SapRes"){
+              SapRes3[SapRes2[0]] = decodeURIComponent(SapRes2[1].replace("/n", " "))
+            }
+          })
+          if (SapRes3.SapRes !== undefined && SapRes3.SapRes.length > 0) {
+            console.log("ccc")
+            var strSapRes = decodeURIComponent(SapRes3["SapRes"])
             var newSapRes = strSapRes.replace(/\+/g, ' ').replace(/\|/g, ' , ');
             // console.log(strStatus)
             if (strStatus === "CLOSING") {
@@ -510,17 +523,13 @@ class IssuedDoc extends Component {
         {this.createModal()}
         {this.createModalData()}
         <div className="clearfix" style={{ paddingBottom: '3px' }}>
-          <Row>
+          <div className="clearfix" >
+            <label style={{ marginRight: "10px" }}>Document Date : </label>
 
-            <Col xs="4"></Col>
-            <Col xs="6">
-              <div className="float-right" >
-                <span style={{ fontWeight: 'bold' }}>Doc.Date : </span>
-              </div>
-            </Col>
-            <Col xs="2">
+            <div style={{ display: "inline-block", width: "300px" }}>
+
               <DatePicker selected={this.state.date}
-                customInput={<Input style={{ width: "100%" }} />}
+                customInput={<Input />}
                 onChange={(e) => {
                   if (e === null) {
                     this.DatePickerFilter(null)
@@ -537,14 +546,19 @@ class IssuedDoc extends Component {
                 timeCaption="Time"
                 showTimeSelect={false}
                 dateFormat={"DD-MM-YYYY"} />
+            </div>
+          </div>
+
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+            <Col xs="6"></Col>
+            <Col xs="6">
+              <div className="float-right">
+                  <ExportFile column={cols} dataxls={this.state.data} filename={"SearchReceive"} />
+              </div>
             </Col>
-
-
           </Row>
+
         </div>
-
-
-
 
         <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}

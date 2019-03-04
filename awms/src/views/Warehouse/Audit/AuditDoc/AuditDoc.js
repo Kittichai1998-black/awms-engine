@@ -10,6 +10,7 @@ import Popup from 'reactjs-popup'
 import { DocumentEventStatus } from '../../Status'
 import moment from 'moment';
 import withFixedColumns from "react-table-hoc-fixed-columns";
+import ExportFile from '../../MasterData/ExportFile';
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 const Axios = new apicall()
@@ -469,40 +470,50 @@ class AuditDoc extends Component {
       */}
 
         {this.createModal()}
-        <div className="clearfix" style={{ paddingBottom: '3px' }}>
-          <Row style={{ verticalAlign: 'baseline' }}>
 
-            <Col xs="4"></Col>
-            <Col xs="4">
-              <div className="float-right" >
-                <span className="float-right" style={{ fontWeight: 'bold' }}>Doc.Date : </span>
+        <div className="clearfix" style={{ paddingBottom: '3px' }}>
+          <div className="clearfix" >
+            <label style={{ marginRight: "10px" }}>Document Date : </label>
+
+            <div style={{ display: "inline-block", width: "300px" }}>
+
+              <DatePicker selected={this.state.date}
+                customInput={<Input />}
+                onChange={(e) => {
+                  if (e === null) {
+                    this.DatePickerFilter(null)
+                  }
+                  else {
+                    if (e.isValid() && e !== null) {
+                      this.DatePickerFilter(e)
+                    }
+                  }
+
+                }}
+                timeIntervals={1}
+                timeFormat="HH:mm"
+                timeCaption="Time"
+                showTimeSelect={false}
+                dateFormat={"DD-MM-YYYY"} />
+            </div>
+          </div>
+
+          <Row style={{ marginTop: '3px', marginBottom: '3px' }}>
+            <Col xs="6"></Col>
+            <Col xs="6">
+              <div>
+                <div className="float-right">
+                  <ExportFile column={cols} dataxls={this.state.data} filename={"SearchAudit"} />
+
+                </div>
+                <Button id="per_button_doc" className="float-right" style={{ width: '150px', marginRight: '5px', marginBottom: '3px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/sys/ad/create')}>Create Document</Button>
+
               </div>
             </Col>
-
-            <DatePicker className="float-right" selected={this.state.date}
-              customInput={<Input />}
-              onChange={(e) => {
-                if (e === null) {
-                  this.DatePickerFilter(null)
-                }
-                else {
-                  if (e.isValid() && e !== null) {
-                    this.DatePickerFilter(e)
-                  }
-                }
-
-              }}
-              timeIntervals={1}
-              timeFormat="HH:mm"
-              timeCaption="Time"
-              showTimeSelect={false}
-              dateFormat={"DD-MM-YYYY"} />
-
-            <div className="clearfix">
-              <Button id="per_button_doc" style={{ width: '150px', marginLeft: '5px', marginBottom: '3px', display: this.state.showbutton }} color="primary" className="float-right" onClick={() => this.props.history.push('/sys/ad/create')}>Create Document</Button>
-            </div>
           </Row>
+
         </div>
+
         <ReactTableFixedColumns
           style={{ backgroundColor: 'white', border: '0.5px solid #eceff1', zIndex: 0, maxHeight: '550px' }}
           className="-highlight"

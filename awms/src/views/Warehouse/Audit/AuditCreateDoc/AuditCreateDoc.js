@@ -204,6 +204,7 @@ class IssuedManage extends Component {
         "souAreaMasterID": null,
         "desCustomerID": null,
         "desSupplierID": null,
+        "remark": this.state.remark,
         "actionTime": this.state.date.format("YYYY/MM/DDThh:mm:ss"),
         "documentDate": this.DateNow.format("YYYY/MM/DD"),
         "docItems": listAudit
@@ -251,6 +252,7 @@ class IssuedManage extends Component {
     }
       else if (rowdata.column.datatype == "text") {
       data[rowdata.index][field] = value;
+      
     }
     else {
       if(value){
@@ -259,6 +261,13 @@ class IssuedManage extends Component {
         data[rowdata.index]["UnitTypeCode"] = value.UnitTypeCode;
         data[rowdata.index]["UnitTypeName"] = value.UnitTypeName;
         data[rowdata.index]["SKU_ID"] = value.ID;
+      }
+      else{
+        data[rowdata.index][field] = "";
+        data[rowdata.index]["SKU"] = value.SKU === undefined ? value : value.SKU;
+        data[rowdata.index]["UnitTypeCode"] = "";
+        data[rowdata.index]["UnitTypeName"] = "";
+        data[rowdata.index]["SKU_ID"] = "";
       }
     }
     this.setState({ data });
@@ -311,6 +320,7 @@ class IssuedManage extends Component {
         }
         value={rowdata.original.SKU}
         onChange={(e) => {
+          console.log(e.target.value)
           clearTimeout(this.tid);
           let autoQuery = this.state.select2;
           let value = e.target.value === "" ? "" : e.target.value;

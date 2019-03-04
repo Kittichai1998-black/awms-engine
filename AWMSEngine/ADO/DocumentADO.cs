@@ -287,15 +287,20 @@ namespace AWMSEngine.ADO
         }
 
         public List<amt_DocumentItem> ListItem(DocumentTypeID docTypeID, long? packID,
-            long? souWarehouseID, long? desWarehouseID,
+            long? souBranchID, long? souWarehouseID,
+            long? desBranchID, long? desWarehouseID,
             long? unitTypeID, long? baseUnitTypeID,
             string orderNo, string batch, string lot, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
             whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
+            if (souBranchID.HasValue)
+                whares.Add(new SQLConditionCriteria("Sou_Branch_ID", souBranchID, SQLOperatorType.EQUALS));
             if (souWarehouseID.HasValue)
                 whares.Add(new SQLConditionCriteria("Sou_Warehouse_ID", souWarehouseID, SQLOperatorType.EQUALS));
+            if (desBranchID.HasValue)
+                whares.Add(new SQLConditionCriteria("Des_Branch_ID", desBranchID, SQLOperatorType.EQUALS));
             if (desWarehouseID.HasValue)
                 whares.Add(new SQLConditionCriteria("Des_Warehouse_ID", desWarehouseID, SQLOperatorType.EQUALS));
             if (packID.HasValue)
@@ -381,12 +386,15 @@ namespace AWMSEngine.ADO
         }
         public List<amt_DocumentItem> ListItemCanMapV2(
             DocumentTypeID docTypeID, long? packID, decimal addBaseQty,
-            long? souWarehouseID, long? desWarehouseID,
+            long? souBranchID, 
+            long? souWarehouseID,
+            long? desBranchID,
+            long? desWarehouseID,
             long? unitTypeID, long? baseUnitTypeID,
             string orderNo, string batch, string lot, VOCriteria buVO)
         {
             var docItems = ADO.DocumentADO.GetInstant()
-                       .ListItem(DocumentTypeID.GOODS_RECEIVED, packID, souWarehouseID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, buVO);
+                       .ListItem(DocumentTypeID.GOODS_RECEIVED, packID, souBranchID, souWarehouseID, desBranchID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, buVO);
                        //.Where(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDEL);
 
             List<amt_DocumentItem> res = new List<amt_DocumentItem>();
