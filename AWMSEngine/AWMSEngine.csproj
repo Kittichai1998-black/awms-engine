@@ -24,20 +24,23 @@
     <Compile Remove="Controllers\WM\VRMapSTOReceiveController.cs" />
     <Compile Remove="APIService\WM\GetMstSTOAPI.cs" />
     <Compile Remove="APIService\WM\PutVirtualMapSTOAPI.cs" />
-    <Compile Remove="Engine\Business\FreeSTO.cs" />
-    <Compile Remove="Engine\Business\MenuResponseObject.cs" />
-    <Compile Remove="Engine\Business\NewSTO.cs" />
-    <Compile Remove="Engine\Business\PutSTO.cs" />
-    <Compile Remove="Engine\Business\VirtualMapStorageObjectPutDatabase.cs" />
-    <Compile Remove="Engine\Validation\BuVORequiredFields.cs" />
+    <Compile Remove="Engine\V1\Business\FreeSTO.cs" />
+    <Compile Remove="Engine\V1\Business\MenuResponseObject.cs" />
+    <Compile Remove="Engine\V1\Business\NewSTO.cs" />
+    <Compile Remove="Engine\V1\Business\PutSTO.cs" />
+    <Compile Remove="Engine\V1\Business\VirtualMapStorageObjectPutDatabase.cs" />
+    <Compile Remove="Engine\V1\Validation\BuVORequiredFields.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="APIService\Mst\tlo3u0z1.r1q~" />
-    <None Remove="Engine\Business\bin.txt" />
+    <None Remove="Engine\V1\Business\bin.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Engine\V2\Business\" />
+    <Folder Include="Engine\V2\General\" />
+    <Folder Include="Engine\V2\Validation\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
