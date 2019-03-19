@@ -26,6 +26,7 @@ namespace AWMSModel.Entity
         public long? Des_AreaMaster_ID;
 
         public long? Transport_ID;
+        public long? MovementType_ID;
 
         public string Options;
         public string Remark;

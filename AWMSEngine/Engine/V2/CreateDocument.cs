@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.V2.Business
 {
     public class CreateDocument : BaseEngine<CreateDocument.TReq, amt_Document>
     {

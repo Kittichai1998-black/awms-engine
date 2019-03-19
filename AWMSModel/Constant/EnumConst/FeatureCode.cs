@@ -26,6 +26,8 @@ namespace AWMSModel.Constant.EnumConst
         /// <summary> Goods Issuer Module Cross Dock : สร้างเอกสาร Goods Issued ได้เกินจำนวนสินค้าที่อยู่ในคลัง และ จำนวนใน Goods Receive </summary>
         OB0200,
 
+        /// <summary> Close Document : ตรวจสอบการส่งข้อมูลการปิดเอกสารไปที่ระบบ ERP </summary>
+        SendERPAPIOnClosed_1001_311,
 
     }
 }
