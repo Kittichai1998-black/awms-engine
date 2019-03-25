@@ -6,6 +6,6 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum MovementType
     {
-        RECEIVE = 1
+        NORMAL = 1
     }
 }

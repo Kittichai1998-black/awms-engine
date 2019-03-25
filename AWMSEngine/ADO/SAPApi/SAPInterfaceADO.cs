@@ -14,7 +14,7 @@ namespace AWMSEngine.ADO.SAPApi
         {
             try
             {
-                var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password), 0, 10000);
+                var res = RESTFulAccess.SendJson<SAPResposneAPI>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, new BasicAuthentication(username, password));
                 return res;
             }
             catch (Exception ex)
@@ -105,5 +105,25 @@ namespace AWMSEngine.ADO.SAPApi
             return res;
         }
 
+        public ERPReturnValues GOODS_ISSUED_SendERPAPIOnClosed_NORMAL(dynamic datas, VOCriteria buVO)
+        {
+            ERPReturnValues res = new ERPReturnValues() {
+                status = 1,
+                message="Test Error",
+                data = datas
+            };
+            return res;
+        }
+
+        public ERPReturnValues GOODS_RECEIVED_SendERPAPIOnClosed_NORMAL(dynamic datas, VOCriteria buVO)
+        {
+            ERPReturnValues res = new ERPReturnValues()
+            {
+                status = 1,
+                message = "Test Error",
+                data = datas
+            };
+            return res;
+        }
     }
 }
