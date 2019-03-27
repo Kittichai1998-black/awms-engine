@@ -1,9 +1,11 @@
 ﻿using AMWUtil.Exception;
+using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business
@@ -42,6 +44,7 @@ namespace AWMSEngine.Engine.V2.Business
             public long? forCustomerID;
             public string forCustomerCode;
             public int? transportID;
+            public MovementType movementTypeID;
 
             public string batch;
             public string lot;
@@ -82,11 +85,24 @@ namespace AWMSEngine.Engine.V2.Business
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
 
-                public List<amt_DocumentItemStorageObject> docItemStos;  
+                public List<amt_DocumentItemStorageObject> docItemStos;
             }
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
+            string beforeCode = "BEF_CREATE_DOC";
+            string configValue = this.StaticValue.GetConfig(beforeCode);
+            string strMethod = reqVO.docTypeId + "_" + beforeCode + "_" + reqVO.movementTypeID;
+
+            FeatureCode featureCode = (FeatureCode)System.Enum.Parse(typeof(FeatureCode), strMethod);
+            Type type = Assembly.GetExecutingAssembly().GetType(configValue);
+            MethodInfo method = type.GetMethod(strMethod);
+
+            if (StaticValueManager.GetInstant().IsFeature(featureCode) && method != null)
+            {
+                reqVO = (TReq)method.Invoke(Activator.CreateInstance(type), new object[] { reqVO, this.BuVO });
+            }
+
             long? Sou_Customer_ID =
                     reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
                     string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
@@ -150,8 +166,8 @@ namespace AWMSEngine.Engine.V2.Business
                 Des_AreaMaster_ID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
 
                 For_Customer_ID =
-                    reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
+                reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
+                string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
 
                 Batch = reqVO.batch,
@@ -236,6 +252,19 @@ namespace AWMSEngine.Engine.V2.Business
                 });
             }
             doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
+
+            string afterCode = "AFT_CREATE_DOC";
+            string afterConfigValue = this.StaticValue.GetConfig(afterCode);
+            string afterStrMethod = reqVO.docTypeId + "_" + afterCode + "_" + reqVO.movementTypeID;
+
+            FeatureCode afterFeatureCode = (FeatureCode)System.Enum.Parse(typeof(FeatureCode), afterStrMethod);
+            Type afterType = Assembly.GetExecutingAssembly().GetType(afterConfigValue);
+            MethodInfo afterMethod = afterType.GetMethod(afterStrMethod);
+
+            if (StaticValueManager.GetInstant().IsFeature(afterFeatureCode) && afterMethod != null)
+            {
+                doc = (amt_Document)afterMethod.Invoke(Activator.CreateInstance(afterType), new object[] { doc, this.BuVO });
+            }
 
             return doc;
         }
