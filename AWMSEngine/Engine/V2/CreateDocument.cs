@@ -90,12 +90,12 @@ namespace AWMSEngine.Engine.V2.Business
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            string beforeCode = "BEF_CREATE_DOC";
-            string configValue = this.StaticValue.GetConfig(beforeCode);
-            string strMethod = reqVO.docTypeId + "_" + beforeCode + "_" + reqVO.movementTypeID;
+            string getFullClass = this.StaticValue.GetConfig("ValidateCreateDoc_FullClass");
+
+            string strMethod = "BEFCreateDoc_" + reqVO.docTypeId.GetHashCode() + "_" + reqVO.movementTypeID.GetHashCode();
 
             FeatureCode featureCode = (FeatureCode)System.Enum.Parse(typeof(FeatureCode), strMethod);
-            Type type = Assembly.GetExecutingAssembly().GetType(configValue);
+            Type type = Assembly.GetExecutingAssembly().GetType(getFullClass);
             MethodInfo method = type.GetMethod(strMethod);
 
             if (StaticValueManager.GetInstant().IsFeature(featureCode) && method != null)
@@ -253,12 +253,10 @@ namespace AWMSEngine.Engine.V2.Business
             }
             doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
 
-            string afterCode = "AFT_CREATE_DOC";
-            string afterConfigValue = this.StaticValue.GetConfig(afterCode);
-            string afterStrMethod = reqVO.docTypeId + "_" + afterCode + "_" + reqVO.movementTypeID;
+            string afterStrMethod = "AFTCreateDoc_" + reqVO.docTypeId.GetHashCode() + "_" + reqVO.movementTypeID.GetHashCode();
 
             FeatureCode afterFeatureCode = (FeatureCode)System.Enum.Parse(typeof(FeatureCode), afterStrMethod);
-            Type afterType = Assembly.GetExecutingAssembly().GetType(afterConfigValue);
+            Type afterType = Assembly.GetExecutingAssembly().GetType(getFullClass);
             MethodInfo afterMethod = afterType.GetMethod(afterStrMethod);
 
             if (StaticValueManager.GetInstant().IsFeature(afterFeatureCode) && afterMethod != null)

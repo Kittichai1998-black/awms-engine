@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.V2.Business
                 if (doc == null || doc.Status == EntityStatus.REMOVE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + docID + " Not Found or Status : REMOVE");
 
-                var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(docID, this.BuVO);
+              var disto = ADO.DocumentADO.GetInstant().ListStoInDocs(docID, this.BuVO);
 
                 if (disto.Any(x => x.Status == EntityStatus.INACTIVE))
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Document " + doc.Code + " has not been completed");

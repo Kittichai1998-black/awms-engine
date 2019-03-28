@@ -27,16 +27,16 @@ namespace AWMSModel.Constant.EnumConst
         OB0200,
 
         /// <summary> Close Document : ตรวจสอบการส่งข้อมูลการปิดเอกสาร Goods Received ไปที่ระบบ ERP </summary>
-        GOODS_RECEIVED_SendERPAPIOnClosed_NORMAL,
+        SendERPAPIOnClosed_1001_1,
 
         /// <summary> Close Document : ตรวจสอบการส่งข้อมูลการปิดเอกสาร Goods Issued ไปที่ระบบ ERP </summary>
-        GOODS_ISSUED_SendERPAPIOnClosed_NORMAL,
+        SendERPAPIOnClosed_1002_1,
 
         /// <summary> Close Document : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
-        BEFORE_CREATE_DOCUMENT,
+        BEFCreateDoc_1001_1,
 
         /// <summary> Close Document : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
-        AFTER_CREATE_DOCUMENT,
+        AFTCreateDoc_1001_1,
 
     }
 }

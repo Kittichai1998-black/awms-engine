@@ -105,7 +105,7 @@ namespace AWMSEngine.ADO.SAPApi
             return res;
         }
 
-        public ERPReturnValues GOODS_ISSUED_SendERPAPIOnClosed_NORMAL(dynamic datas, VOCriteria buVO)
+        public ERPReturnValues SendERPAPIOnClosed_1001_1(dynamic datas, VOCriteria buVO)
         {
             ERPReturnValues res = new ERPReturnValues() {
                 status = 1,
@@ -115,7 +115,7 @@ namespace AWMSEngine.ADO.SAPApi
             return res;
         }
 
-        public ERPReturnValues GOODS_RECEIVED_SendERPAPIOnClosed_NORMAL(dynamic datas, VOCriteria buVO)
+        public ERPReturnValues SendERPAPIOnClosed_1002_1(dynamic datas, VOCriteria buVO)
         {
             ERPReturnValues res = new ERPReturnValues()
             {
@@ -124,6 +124,15 @@ namespace AWMSEngine.ADO.SAPApi
                 data = datas
             };
             return res;
+        }
+
+        public dynamic BEFCreateDoc_1001_1(dynamic datas, VOCriteria buVO)
+        {
+            return datas;
+        }
+        public dynamic AFTCreateDoc_1001_1(dynamic datas, VOCriteria buVO)
+        {
+            return datas;
         }
     }
 }

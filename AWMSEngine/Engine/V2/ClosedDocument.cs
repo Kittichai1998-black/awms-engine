@@ -37,18 +37,17 @@ namespace AWMSEngine.Engine.V2.Business
             }
             foreach (var docID in reqVO.docIDs)
             {
-                string Code = "SendERPAPIOnClosed";
+                string getFullClass = this.StaticValue.GetConfig("SendERPAPI_FullClass");
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docID, this.BuVO);
-                string configValue = this.StaticValue.GetConfig(Code);
-                string strMethod = doc.DocumentType_ID + "_" + Code + "_" + doc.MovementType_ID;
+                string strMethod = "SendERPAPIOnClosed_" + doc.DocumentType_ID.GetValueInt() + "_" + doc.MovementType_ID.GetValueInt();
 
                 FeatureCode featureCode = (FeatureCode)System.Enum.Parse(typeof(FeatureCode), strMethod);
-                Type type = Assembly.GetExecutingAssembly().GetType(configValue);
-                MethodInfo method = type.GetMethod(strMethod);
+                Type type = Assembly.GetExecutingAssembly().GetType(getFullClass);
+                MethodInfo fullClassName = type.GetMethod(strMethod);
 
-                if (StaticValueManager.GetInstant().IsFeature(featureCode) && method != null)
+                if (StaticValueManager.GetInstant().IsFeature(featureCode) && fullClassName != null)
                 {
-                    ERPReturnValues result = (ERPReturnValues)method.Invoke(Activator.CreateInstance(type), new object[] { doc, this.BuVO });
+                    ERPReturnValues result = (ERPReturnValues) fullClassName.Invoke(Activator.CreateInstance(type), new object[] { doc, this.BuVO });
                     if (result.status == 1)
                     {
                         ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
