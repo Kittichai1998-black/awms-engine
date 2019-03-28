@@ -35,12 +35,12 @@ namespace AWMSEngine.Engine.Business.Loading
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Code " + reqVO.scanCode + " ได้ทำการ Load เสร็จแล้ว ไม่สามารถ Load ซ่ำได้");
 
             willLoad.isLoaded = true;
-            if (willLoad.objectType != StorageObjectType.PACK)
+            if (willLoad.sou_objectType != StorageObjectType.PACK)
                 baseCanLoads.datas.FindAll(x => x.rootCode == willLoad.rootCode).ForEach(x => x.isLoaded = true);
 
-            var stoLoadTmp = ADO.StorageObjectADO.GetInstant().Get(willLoad.id, willLoad.objectType, false, true, this.BuVO);
+            var stoLoadTmp = ADO.StorageObjectADO.GetInstant().Get(willLoad.sou_id, willLoad.sou_objectType, false, true, this.BuVO);
 
-            if (stoLoadTmp == null || stoLoadTmp.id != willLoad.id)
+            if (stoLoadTmp == null || stoLoadTmp.id != willLoad.sou_id)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการ '" + willLoad.code + "' ในคลังสินค้า");
 
             var stoLoads = stoLoadTmp.ToTreeList();

@@ -56,7 +56,7 @@ namespace AWMSEngine.Engine.V2.Business
                         {
                             var baseSto = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(docID, null, null, this.BuVO);
                             baseSto.ForEach(x => {
-                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.id, null, null, reqVO.stoEvtStatus, this.BuVO);
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.sou_id, null, null, reqVO.stoEvtStatus, this.BuVO);
                             });
                         }
                         data.Add(result.data);

@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.Business.Loading
                 rsiList.ForEach(y => {
                     y.docItemID = x.ID.Value;
                     y.linkDocID = x.LinkDocument_ID.Value;
-                    y.isLoaded = rootStoInLoad.Any(z => z.id == y.id);
+                    y.isLoaded = rootStoInLoad.Any(z => z.sou_id == y.sou_id);
                     y.issuedCode = docIssuedItems[0].Code;
                 });
                 rootStoInIssueds.AddRange(rsiList);

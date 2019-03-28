@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 List<SPOutSTORootCanUseCriteria> stos = ADO.StorageObjectADO.GetInstant().ListRootCanPicking(id, this.BuVO);
                 var datas = stos
                     .GroupBy(x => new {
-                        id = x.id,
+                        id = x.sou_id,
                         code = x.code,
                         areaID = x.areaID,
                         areaCode = x.areaCode,
@@ -53,8 +53,8 @@ namespace AWMSEngine.Engine.Business.Issued
                         branchCode = x.branchCode,
                         warehouseID = x.warehouseID,
                         warehouseCode = x.warehouseCode,
-                        packBaseUnitCode = x.packBaseUnitCode,
-                        packUnitCode = x.packUnitCode
+                        packBaseUnitCode = x.sou_packBaseUnitCode,
+                        packUnitCode = x.sou_packUnitCode
                     })
                     .Select(x => new TRes.TData()
                     {
@@ -68,8 +68,8 @@ namespace AWMSEngine.Engine.Business.Issued
                         branchCode = x.Key.branchCode,
                         warehouseID = x.Key.warehouseID,
                         warehouseCode = x.Key.warehouseCode,
-                        packQty = x.Sum(y => y.packQty),
-                        packBaseQty = x.Sum(y => y.packBaseQty),
+                        packQty = x.Sum(y => y.sou_packQty),
+                        packBaseQty = x.Sum(y => y.sou_packBaseQty),
                         packBaseUnitCode = x.Key.packBaseUnitCode,
                         packUnitCode = x.Key.packUnitCode
                     }).ToList();

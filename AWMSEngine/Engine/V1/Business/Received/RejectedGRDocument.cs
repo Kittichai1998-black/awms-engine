@@ -107,13 +107,13 @@ namespace AWMSEngine.Engine.Business.Received
                     foreach (var rtSto in rootStos
                         .FindAll(x => x.docItemID == docRecvItem.ID)
                         .GroupBy(x => new {
-                            id = x.id,
-                            packCode = x.packCode,
+                            id = x.sou_id,
+                            packCode = x.sou_packCode,
                             baseCode = x.code,
                             areaID = x.areaID,
-                            batch = x.batch,
-                            lot = x.lot,
-                            orderNo = x.orderNo,
+                            batch = x.sou_batch,
+                            lot = x.sou_lot,
+                            orderNo = x.sou_orderNo,
                             distoBaseUnitID = x.distoBaseUnitID,
                             warehouseID = x.warehouseID,
                         }))

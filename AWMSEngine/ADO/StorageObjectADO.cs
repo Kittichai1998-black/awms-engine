@@ -309,7 +309,7 @@ namespace AWMSEngine.ADO
             res.ForEach(x =>
             {
                 var unitConvertSale = StaticValue.StaticValueManager.GetInstant()
-                .ConvertToNewUnitByPack(x.packID, x.distoBaseQtyMax, x.packBaseUnitID, x.distoUnitID);
+                .ConvertToNewUnitByPack(x.sou_packID, x.distoBaseQtyMax, x.sou_packBaseUnitID, x.distoUnitID);
 
                 x.distoQtyMax = unitConvertSale.qty;
             });
@@ -327,7 +327,7 @@ namespace AWMSEngine.ADO
             var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STOID_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             foreach(var stoid in stoids)
             {
-                var sto = this.Get(stoid.rootID, stoid.objectType, false, true, buVO);
+                var sto = this.Get(stoid.rootID, stoid.sou_objectType, false, true, buVO);
                 res.Add(sto);
             }
 
