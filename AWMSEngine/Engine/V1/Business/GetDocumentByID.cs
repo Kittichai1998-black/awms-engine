@@ -27,7 +27,8 @@ namespace AWMSEngine.Engine.Business
             {
                 public List<amv_DocumentItem> documentItems;
             }
-            public List<SPOutSTORootCanUseCriteria> bstos;
+            public List<SPOutSTORootCanUseCriteria> sou_bstos;
+            public List<SPOutSTORootCanUseCriteria> des_bstos;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -56,8 +57,8 @@ namespace AWMSEngine.Engine.Business
             /*--------------------------*/
             if (reqVO.getMapSto && doc.documentItems.Count != 0)
             {
-                res.bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
-                
+                res.sou_bstos = ADO.StorageObjectADO.GetInstant().ListBaseInDoc(doc.ID, null, null, this.BuVO);
+
                 /*res.bstos.ForEach(bs =>
                 {
                     var di = doc.documentItems.FirstOrDefault(x => x.ID == bs.docItemID);
