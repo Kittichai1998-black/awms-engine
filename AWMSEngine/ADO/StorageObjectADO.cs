@@ -316,34 +316,7 @@ namespace AWMSEngine.ADO
 
             return res;
         }
-        public List<SPOutSTORootCanUseCriteria> ListBaseInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, bool sou_bsto, bool des_bsto, VOCriteria buVO)
-        {
-            List<SPOutSTORootCanUseCriteria> res = new List<SPOutSTORootCanUseCriteria>();
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("docID", docID);
-            param.Add("docItemID", docItemID);
-            param.Add("docTypeID", docTypeID);
-            var bsto = this.Query<SPOutSTORootCanUseCriteria>("SP_STOROOT_LIST_IN_DOC", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
-
-            res.ForEach(x =>
-            {
-                var unitConvertSale = StaticValue.StaticValueManager.GetInstant()
-                .ConvertToNewUnitByPack(x.sou_packID, x.distoBaseQtyMax, x.sou_packBaseUnitID, x.distoUnitID);
-
-                x.distoQtyMax = unitConvertSale.qty;
-            });
-            if (sou_bsto)
-            {
-                res = new List<SPOutSTORootCanUseCriteria>
-                {
-
-                }
-            }else if (des_bsto)
-            {
-                
-            }
-            return res;
-        }
+        
         public List<StorageObjectCriteria> ListInDoc(long? docID, long? docItemID, DocumentTypeID? docTypeID, VOCriteria buVO)
         {
 
