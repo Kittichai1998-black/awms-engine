@@ -211,6 +211,7 @@ namespace AWMSEngine.APIService
             this.Logger.LogInfo("APIKEY:: " + apiKey);
 
             if (!this.IsAuthenAuthorize)
+            if (!this.IsAuthenAuthorize)
                 return;
 
 
