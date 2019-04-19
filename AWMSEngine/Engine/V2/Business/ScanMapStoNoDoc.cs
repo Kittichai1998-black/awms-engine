@@ -310,7 +310,6 @@ namespace AWMSEngine.Engine.V2.Business
             if (pm == null && bm == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบพาเลท หรือ สินค้า รหัส '" + reqVO.scanCode + "'");
 
-
             if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
             {
                 if (pm != null)
