@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.V2.Business
             return mapsto;
         }
 
-        private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parrentMapsto, TReq reqVO)
+        private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parentMapsto, TReq reqVO)
         {
 
             var objSize = this.StaticValue.ObjectSizes.Find(x => x.ID == ObjectSize_ID);
@@ -70,8 +70,8 @@ namespace AWMSEngine.Engine.V2.Business
             var baseUnit = objType == StorageObjectType.PACK ?
                 this.StaticValue.ConvertToBaseUnitByPack(reqVO.scanCode, reqVO.amount, trueUnit.ID.Value) : null;
             StorageObjectType? parrentType = null;
-            if (parrentMapsto != null)
-                parrentType = parrentMapsto.type;
+            if (parentMapsto != null)
+                parrentType = parentMapsto.type;
 
             var res = new StorageObjectCriteria()
             {
@@ -82,12 +82,12 @@ namespace AWMSEngine.Engine.V2.Business
                 type = objType,
                 skuID = skuID,
                 productDate = reqVO.productDate,
-                
-                parentID = parrentMapsto != null ? parrentMapsto.id : null,
+
+                parentID = parentMapsto != null ? parentMapsto.id : null,
                 parentType = parrentType,
 
-                areaID = parrentMapsto != null ? parrentMapsto.areaID : reqVO.areaID.Value,
-                warehouseID = parrentMapsto != null ? parrentMapsto.warehouseID : reqVO.warehouseID.Value,
+                areaID = parentMapsto != null ? parentMapsto.areaID : reqVO.areaID.Value,
+                warehouseID = parentMapsto != null ? parentMapsto.warehouseID : reqVO.warehouseID.Value,
                 orderNo = reqVO.orderNo,
                 lot = reqVO.lot,
                 batch = reqVO.batch,
@@ -107,7 +107,7 @@ namespace AWMSEngine.Engine.V2.Business
                 heightM = null,
                 lengthM = null,
 
-                options = reqVO.options,
+                options = reqVO.options != null ? reqVO.options : parentMapsto != null ? parentMapsto.options : null,
 
                 maxWeiKG = objSize.MaxWeigthKG,
                 minWeiKG = objSize.MinWeigthKG,
@@ -153,12 +153,12 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else if (pm != null)
                 {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ต้องสแกนพาเลทหรือกล่อง ก่อนสแกนสินค้า");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Please scan pallet or box code then scan product code");//"ต้องสแกนพาเลทหรือกล่อง ก่อนสแกนสินค้า"
                     //ADO.DocumentADO.GetInstant().ListItemCanMap(reqVO.scanCode, DocumentTypeID.GOODS_RECEIVED, this.BuVO);
                 }
                 else
                 {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่มีรหัส" + reqVO.scanCode + "ในระบบ");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");//"ไม่มีรหัส" + reqVO.scanCode + "ในระบบ"
                 }
             }
             else
@@ -181,21 +181,21 @@ namespace AWMSEngine.Engine.V2.Business
                 else if (reqVO.action == VirtualMapSTOActionType.ADD)
                 {
                     if (!mapsto.eventStatus.In(StorageObjectEventStatus.IDLE, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ เพิ่ม สินค้าลงใน base ที่มีสถานะ '" + mapsto.eventStatus + "' ได้");
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't add product in base that it has status is " + mapsto.eventStatus);//"ไม่สามารถ เพิ่ม สินค้าลงใน base ที่มีสถานะ '" + mapsto.eventStatus + "' ได้"
 
                     this.ActionAdd(reqVO, mapsto);
                 }
                 else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
                 {
                     if (!mapsto.eventStatus.In(StorageObjectEventStatus.IDLE, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ ลบ สินค้าจากใน base ที่มีสถานะ '" + mapsto.eventStatus + "' ได้");
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't remove product from base that it has status is " + mapsto.eventStatus);//"ไม่สามารถ ลบ สินค้าจากใน base ที่มีสถานะ '" + mapsto.eventStatus + "' ได้"
 
                     this.ActionRemove(reqVO, mapsto);
                 }
             }
             return mapsto;
         }
-        //** not use by Apiny **//
+        //** not use by Apinya **//
         //private StorageObjectCriteria ExecFirstScan(TReq reqVO)
         //{
         //    StorageObjectCriteria mapsto = this.ADOSto.Get(reqVO.scanCode, null,null, reqVO.isRoot, true, this.BuVO);
@@ -325,6 +325,7 @@ namespace AWMSEngine.Engine.V2.Business
                     }
                     else
                     {
+                        matchStomap.options = regisMap.options != null ? regisMap.options : matchStomap.options;
                         matchStomap.qty += regisMap.qty;
                         matchStomap.baseQty += regisMap.baseQty;
                         this.ADOSto.PutV2(matchStomap, this.BuVO);
