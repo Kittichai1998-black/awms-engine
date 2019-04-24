@@ -205,7 +205,7 @@ namespace AWMSEngine.APIService
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
             this.Logger.LogInfo("TOKEN:: " + token);
 
-            var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("code", apiKey, this.BuVO).FirstOrDefault() : null;
+            var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("APIKey", apiKey, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
             this.Logger.LogInfo("APIKEY:: " + apiKey);
