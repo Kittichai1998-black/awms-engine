@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\WM\" />
-    <Folder Include="Engine\Business\Received\" />
     <Folder Include="Engine\General\" />
     <Folder Include="Engine\Validation\" />
     <Folder Include="wwwroot\" />
