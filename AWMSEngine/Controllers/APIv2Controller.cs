@@ -48,6 +48,7 @@ namespace AWMSEngine.Controllers
             if (className != null)
             {
                 Type type = Type.GetType(className.FullClassName);
+                var xxx = Activator.CreateInstance(type, new object[] { this });
                 var getInstanct = (APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { this });
                 var res = getInstanct.Execute(jsonObj);
                 return res;
