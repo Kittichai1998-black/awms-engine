@@ -12,43 +12,48 @@ namespace AWMSEngine.Controllers
     [ApiController]
     public class APIv2Controller : ControllerBase
     {
-        [HttpGet("{serviceCode}")]
-        public dynamic GetAPIService(string serviceCode)
+        [HttpGet("{serviceCode}/{method}")]
+        public dynamic GetAPIService(string serviceCode, string method)
         {
             var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
-            var res = getClass(serviceCode, jsond);
+            var res = getClass(serviceCode, method, jsond);
             return res;
         }
 
-        [HttpPost("{serviceCode}")]
-        public dynamic PostAPIService([FromBody]dynamic request, string serviceCode)
+        [HttpPost("{serviceCode}/{method}")]
+        public dynamic PostAPIService([FromBody]dynamic request, string serviceCode, string method)
         {
-            var res = getClass(serviceCode, request);
+            var res = getClass(serviceCode, method, request);
             return res;
         }
 
-        [HttpPut("{serviceCode}")]
-        public dynamic PutAPIService([FromBody]dynamic request, string serviceCode)
+        [HttpPut("{serviceCode}/{method}")]
+        public dynamic PutAPIService([FromBody]dynamic request, string serviceCode, string method)
         {
-            var res = getClass(serviceCode, request);
+            var res = getClass(serviceCode, method, request);
             return res;
         }
 
-        [HttpDelete("{serviceCode}")]
-        public dynamic DeleteAPIService([FromBody]dynamic request, string serviceCode)
+        [HttpDelete("{serviceCode}/{method}")]
+        public dynamic DeleteAPIService([FromBody]dynamic request, string serviceCode, string method)
         {
-            var res = getClass(serviceCode, request);
+            var res = getClass(serviceCode, method, request);
             return res;
         }
 
-        private dynamic getClass(string serviceCode, dynamic jsonObj)
+        private dynamic getClass(string serviceCode, string method, dynamic jsonObj)
         {
             var getStatic = ADO.StaticValue.StaticValueManager.GetInstant().APIServices;
-            var className = getStatic.FirstOrDefault(x => x.Code == serviceCode).FullClassName;
-            Type type = Type.GetType(className);
-            var getInstanct = (APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { this });
-            var res = getInstanct.Execute(jsonObj);
-            return res;
+            var className = getStatic.FirstOrDefault(x => x.Code.ToUpper() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
+            if (className != null)
+            {
+                Type type = Type.GetType(className.FullClassName);
+                var getInstanct = (APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { this });
+                var res = getInstanct.Execute(jsonObj);
+                return res;
+            }
+            else
+                return "class name is not defined.";
         }
     }
 }
