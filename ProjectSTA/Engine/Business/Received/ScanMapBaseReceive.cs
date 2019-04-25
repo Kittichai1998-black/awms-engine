@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ProjectSTA.Engine.Business.Received
 {
-    public class ScanMapPalletReceive : AWMSEngine.Engine.BaseEngine<ScanMapPalletReceive.TReq, ScanMapPalletReceive.TRes>
+    public class ScanMapBaseReceive : AWMSEngine.Engine.BaseEngine<ScanMapBaseReceive.TReq, ScanMapBaseReceive.TRes>
     {
         public class TReq
         {
@@ -30,8 +30,9 @@ namespace ProjectSTA.Engine.Business.Received
 
             string scanCode = reqVO.scanCode == null ? null : reqVO.scanCode;
             string orderNo = scanCode.Substring(0, 7);
-            string skuCode = scanCode.Substring(7, 14);
-            int cartonNo = int.Parse(scanCode.Substring(22, 4));
+            string skuCode = scanCode.Substring(7, 12); //11
+            int cartonNo = int.Parse(scanCode.Substring(19, 4)); //22
+
 
             // var areaLocationMastersItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>("AreaMaster_ID", reqVO.areaID, this.BuVO);
             //หา Array ของ ArealocationID ที่ AreaMaster_ID ตรงกับ areaID
@@ -45,6 +46,8 @@ namespace ProjectSTA.Engine.Business.Received
             int lenghtAreaLocItems = areaLocationMastersItems.Count();
             int numLoc = 0;
             List<dynamic> tempAreaLoc = new List<dynamic>();
+            List<dynamic> tempStoLocationItems = new List<dynamic>();
+            StorageObjectCriteria stobsto = null;
             foreach (var location in areaLocationMastersItems)
             {
                 numLoc++;
@@ -54,6 +57,7 @@ namespace ProjectSTA.Engine.Business.Received
                   new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaLocationMaster_ID",location.ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
+                        new SQLConditionCriteria("EventStatus", 10, SQLOperatorType.EQUALS, SQLConditionType.AND),
                         new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                   }, this.BuVO).FirstOrDefault();
 
@@ -67,7 +71,7 @@ namespace ProjectSTA.Engine.Business.Received
                             //new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                       }, this.BuVO);
                     // var stoPackObjects = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
-                    if(stoPackObjects != null)
+                    if(stoPackObjects != null && stoPackObjects.Count() > 0)
                     { //เจอสินค้าที่อยู่ในพาเลท
                         foreach (var stoPack in stoPackObjects)
                         {
@@ -77,40 +81,30 @@ namespace ProjectSTA.Engine.Business.Received
                                 if (stoPack.Options.Length > 0)
                                 {
                                     dynamic[] options = stoPack.Options.Split("&").ToArray();
-                                    var cartonNoTemp = 0;
-                                   // dynamic[] cartonNoArray = new dynamic[] { };
-
+                                    
                                     foreach (var val in options)
                                     {
                                         dynamic[] options2 = val.Split("=").ToArray();
 
                                         if (options2[0] == "CartonNo")
                                         {  //มีค่า CartonNo 
-                                            dynamic[] cartonNoArray = options2[1].Split(",").ToArray();
-                                            foreach (var val2 in cartonNoArray)
+                                            if (options2[1].Contains(cartonNo.ToString()))
                                             {
-                                                if(cartonNoArray[val2] == cartonNo)
-                                                {
-                                                     cartonNoTemp = int.Parse(cartonNoArray[val2]);
-                                                }
+                                                ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
+                                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สแกนสินค้าซ้ำกัน");
                                             }
-                                                
-                                                break;
+                                            else
+                                            {
+                                                /// รับเข้า วางสินค้าลงบนพาเลทได้
+                                                stoPack.Quantity += 1;
+                                                stoPack.Options = "CartonNo=" + options2[1] + "," + cartonNo.ToString();
+
+                                                //
+                                                stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
+
+                                            }
+                                            //break;
                                         }
-                                    }
-                                    //เอาค่า CartonNo มาเช็ค
-                                    if (cartonNo == cartonNoTemp)
-                                    {
-                                        ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
-                                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้");
-                                    }
-                                    else
-                                    {
-                                        /// รับเข้า วางสินค้าลงบนพาเลทได้
-                                        stoPack.Quantity += 1;
-                                        stoPack.Options = "CartonNo=" + cartonNo.ToString();
-
-
                                     }
                                 }
                                 else
@@ -133,12 +127,23 @@ namespace ProjectSTA.Engine.Business.Received
                         if (numLoc == lenghtAreaLocItems)
                         {
                             //เตรียมข้อมูลinsert
+                            var Quantity = 1;
+                            var Options = "CartonNo=" + cartonNo.ToString();
+                            var locationID = (int)tempAreaLoc[0].ID;
+                            var baseID = (int)stoLocationItems.ID;
+                            var skuItem =  AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
+                            var skuName = skuItem.Name;
+
+                            //
+                            stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
 
                         }
                         // แต่ว่าถ้ายังมีพาเลทอีกอันที่ยังไม่เช็ค
                         else
                         {
-                            continue;
+                            tempAreaLoc.Add(location);
+                            tempStoLocationItems.Add(stoLocationItems);
+                            //continue;
                         }
                     }
                 }
@@ -146,7 +151,30 @@ namespace ProjectSTA.Engine.Business.Received
                 {
                     if (numLoc == lenghtAreaLocItems)
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้");
+                        if(tempAreaLoc.Count() > 0)
+                        {
+                            var Quantity = 1;
+                            var Options = "CartonNo=" + cartonNo.ToString();
+                            //areaID = reqVO.areaID
+                            var locationID = (int)tempAreaLoc[0].ID;
+                            dynamic stoID = null;
+                            if (tempStoLocationItems.Count() > 0)
+                            {
+                                stoID = (int)tempStoLocationItems[0].ID;  //ที่ ObjectType = Base
+
+                            }
+                            var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
+                            var skuName = skuItem.Name;
+                            //เอาไปแมพ เอาไปเช็ค over limit size
+
+                            stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
+
+                        }
+                        else
+                        {
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้");
+
+                        }
                     }
                     else
                     {
@@ -158,8 +186,8 @@ namespace ProjectSTA.Engine.Business.Received
             TRes res = new TRes()
             {
                 areaID = reqVO.areaID,
-                areaLocationID =1,
-                bsto = null
+                areaLocationID = 1,
+                bsto = stobsto
             };
             return res;
         }
