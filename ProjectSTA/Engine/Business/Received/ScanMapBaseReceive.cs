@@ -47,6 +47,7 @@ namespace ProjectSTA.Engine.Business.Received
             int numLoc = 0;
             List<dynamic> tempAreaLoc = new List<dynamic>();
             List<dynamic> tempStoLocationItems = new List<dynamic>();
+            dynamic areaLocationID = null;
             StorageObjectCriteria stobsto = null;
             foreach (var location in areaLocationMastersItems)
             {
@@ -55,7 +56,7 @@ namespace ProjectSTA.Engine.Business.Received
                 //หา stoID ที่เป็น base เพื่อเอาไปหาสินค้าในพาเลท ว่ามี OrderNo,SKUCode ตรงกันมั้ย
                 var stoLocationItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                   new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("AreaLocationMaster_ID",location.ID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("AreaLocationMaster_ID",(int)location.ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
                         new SQLConditionCriteria("EventStatus", 10, SQLOperatorType.EQUALS, SQLConditionType.AND),
                         new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
@@ -100,8 +101,9 @@ namespace ProjectSTA.Engine.Business.Received
                                                 stoPack.Options = "CartonNo=" + options2[1] + "," + cartonNo.ToString();
 
                                                 //
-                                                stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
+                                                stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
 
+                                                areaLocationID = stoLocationItems.ID;
                                             }
                                             //break;
                                         }
@@ -130,13 +132,13 @@ namespace ProjectSTA.Engine.Business.Received
                             var Quantity = 1;
                             var Options = "CartonNo=" + cartonNo.ToString();
                             var locationID = (int)tempAreaLoc[0].ID;
-                            var baseID = (int)stoLocationItems.ID;
+                            var baseID = (long)stoLocationItems.ID;
                             var skuItem =  AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
                             var skuName = skuItem.Name;
 
                             //
-                            stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
-
+                            stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
+                            areaLocationID = locationID;
                         }
                         // แต่ว่าถ้ายังมีพาเลทอีกอันที่ยังไม่เช็ค
                         else
@@ -160,7 +162,7 @@ namespace ProjectSTA.Engine.Business.Received
                             dynamic stoID = null;
                             if (tempStoLocationItems.Count() > 0)
                             {
-                                stoID = (int)tempStoLocationItems[0].ID;  //ที่ ObjectType = Base
+                                stoID = (long)tempStoLocationItems[0].ID;  //ที่ ObjectType = Base
 
                             }
                             var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
@@ -168,7 +170,7 @@ namespace ProjectSTA.Engine.Business.Received
                             //เอาไปแมพ เอาไปเช็ค over limit size
 
                             stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
-
+                            areaLocationID = locationID;
                         }
                         else
                         {
@@ -186,7 +188,7 @@ namespace ProjectSTA.Engine.Business.Received
             TRes res = new TRes()
             {
                 areaID = reqVO.areaID,
-                areaLocationID = 1,
+                areaLocationID = areaLocationID,
                 bsto = stobsto
             };
             return res;

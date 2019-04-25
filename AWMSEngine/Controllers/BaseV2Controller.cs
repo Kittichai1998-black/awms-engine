@@ -49,7 +49,7 @@ namespace AWMSEngine.Controllers
             var className = getStatic.FirstOrDefault(x => x.Code.ToUpper() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
             if (className != null)
             {
-                Type type = GetClass(className.FullClassName);//Type.GetType(className.FullClassName);
+                Type type = className.FullClassName.StartsWith("AWMSEngine") ? Type.GetType(className.FullClassName) : GetClass(className.FullClassName);//Type.GetType(className.FullClassName);
                 var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { null, isAuthen });
                 var res = getInstanct.Execute(jsonObj);
                 return res;
