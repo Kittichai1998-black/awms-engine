@@ -44,7 +44,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
             {
                 result.recievedStatus = false;
             }
-            //var createEmptyPalletQueue = ADO.
+            var createEmptyPalletSTO = new ScanMapStoNoDoc();
+
+            //var createData = ScanMapStoNoDoc
+
+            var res = createEmptyPalletSTO.Execute(this.Logger, this.BuVO, null);
 
 
             return result;
