@@ -8,17 +8,17 @@ using ProjectSTA.Engine.Business.Received;
 
 namespace ProjectSTA.APIService.WM
 {
-    public class ScanMapPalletReceiveAPI : AWMSEngine.APIService.BaseAPIService
+    public class ScanMapBaseReceiveAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public ScanMapPalletReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
+        public ScanMapBaseReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<ScanMapPalletReceive.TReq>(this.RequestVO);
-            var res = new ScanMapPalletReceive().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<ScanMapBaseReceive.TReq>(this.RequestVO);
+            var res = new ScanMapBaseReceive().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }
