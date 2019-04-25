@@ -44,7 +44,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการ " + reqVO.scanCode + " ในคลังสินค้า");
             if (firstMapSto.type == StorageObjectType.PACK)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการ " + reqVO.scanCode + " ในคลังสินค้า");
-            if (firstMapSto.eventStatus == StorageObjectEventStatus.IDLE)
+            if (firstMapSto.eventStatus == StorageObjectEventStatus.NEW)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบรายการ " + reqVO.scanCode + " ในคลังสินค้า");
             firstMapSto.isFocus = true;
 

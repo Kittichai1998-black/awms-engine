@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "เอกสารอยู่ในสถานะ " + getDoc.EventStatus);
                 else if (getDoc.EventStatus == DocumentEventStatus.CLOSED || getDoc.EventStatus == DocumentEventStatus.CLOSING)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "เอกสารนี่ทำเสร็จแล้ว ไม่สามารถยกเลิกได้");
-                else if (getDoc.EventStatus == DocumentEventStatus.IDLE)
+                else if (getDoc.EventStatus == DocumentEventStatus.NEW)
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, null, DocumentEventStatus.REJECTED, this.BuVO);
 
                 getDoc.EventStatus = DocumentEventStatus.REJECTED;

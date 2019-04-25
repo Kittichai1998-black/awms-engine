@@ -30,7 +30,7 @@ namespace AWMSEngine.Engine.Business.Received
         protected override TDocRes ExecuteEngine(TDocReq reqVO)
         {
             var docReceivs = ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
-            var docNotCloseds = docReceivs.Where(x => x.EventStatus != DocumentEventStatus.CLOSING && x.EventStatus != DocumentEventStatus.IDLE);
+            var docNotCloseds = docReceivs.Where(x => x.EventStatus != DocumentEventStatus.CLOSING && x.EventStatus != DocumentEventStatus.NEW);
             if (docNotCloseds.Count() > 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ IDLE หรือ CLOSING เท่านั้น");
 

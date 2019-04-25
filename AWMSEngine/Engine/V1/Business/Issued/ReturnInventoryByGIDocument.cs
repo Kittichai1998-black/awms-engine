@@ -84,7 +84,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         name = packMst.Name,
                         
                     };
-                    if (baseInfo.eventStatus == StorageObjectEventStatus.IDLE)
+                    if (baseInfo.eventStatus == StorageObjectEventStatus.NEW)
                     {
                         baseInfo.eventStatus = StorageObjectEventStatus.RECEIVED;
                         ADO.StorageObjectADO.GetInstant().PutV2(baseInfo, this.BuVO);
@@ -110,7 +110,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     packInfo.baseQty += reqVO.baseQty;
                     packInfo.qty += converUnit.qty;
                     packInfo.weiKG += (packInfo.weiKG / packInfo.baseQty) * reqVO.baseQty;
-                    if (baseInfo.eventStatus == StorageObjectEventStatus.IDLE)
+                    if (baseInfo.eventStatus == StorageObjectEventStatus.NEW)
                     {
                         baseInfo.eventStatus = StorageObjectEventStatus.RECEIVED;
                         ADO.StorageObjectADO.GetInstant().PutV2(baseInfo, this.BuVO);

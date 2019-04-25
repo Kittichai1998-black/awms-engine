@@ -33,10 +33,10 @@ namespace AWMSEngine.Engine.Business.Received
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "DocumnetID " + id);
                 if (doc.Status == EntityStatus.DONE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is Done");
-                if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.IDLE)
+                if (doc.Status == EntityStatus.ACTIVE && doc.EventStatus != DocumentEventStatus.NEW)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Documnet is " + doc.EventStatus);
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(id,
-                    DocumentEventStatus.IDLE, EntityStatus.ACTIVE,
+                    DocumentEventStatus.NEW, EntityStatus.ACTIVE,
                     DocumentEventStatus.WORKING,
                     this.BuVO);
 

@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.Business
                     ADO.StorageObjectADO.GetInstant()
                         .UpdateStatusToChild(
                             u.rootStoID,
-                            StorageObjectEventStatus.IDLE,
+                            StorageObjectEventStatus.NEW,
                             null,
                             StorageObjectEventStatus.RECEIVED,
                             this.BuVO);
@@ -57,7 +57,7 @@ namespace AWMSEngine.Engine.Business
                     ADO.StorageObjectADO.GetInstant()
                         .UpdateStatusToChild(
                             u.rootStoID,
-                            StorageObjectEventStatus.IDLE,
+                            StorageObjectEventStatus.NEW,
                             null,
                             StorageObjectEventStatus.REMOVED,
                             this.BuVO);

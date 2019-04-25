@@ -102,7 +102,7 @@ namespace AWMSEngine.Engine.Business.Loading
 
                 Remark = reqVO.remark,
 
-                EventStatus = DocumentEventStatus.IDLE,
+                EventStatus = DocumentEventStatus.NEW,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };
@@ -133,7 +133,7 @@ namespace AWMSEngine.Engine.Business.Loading
                 {
                     Code = issuedDoc.Code,
                     LinkDocument_ID = issuedDoc.ID.Value,
-                    EventStatus = DocumentEventStatus.IDLE
+                    EventStatus = DocumentEventStatus.NEW
                 };
                 newDocItems.Add(newDocItem);
 
