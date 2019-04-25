@@ -6,11 +6,11 @@ using AMWUtil.Common;
 using Microsoft.AspNetCore.Mvc;
 using ProjectSTA.Engine.Business.Received;
 
-namespace ProjectSTA.APIService.WM
+namespace ProjectSTA.APIService.WM   
 {
     public class ScanMapBaseReceiveAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public ScanMapBaseReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
+        public ScanMapBaseReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
