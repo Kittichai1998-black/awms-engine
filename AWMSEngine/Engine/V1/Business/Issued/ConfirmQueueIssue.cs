@@ -121,7 +121,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         var unitConvert = StaticValue.ConvertToNewUnitBySKU(docItem.SKUMaster_ID.Value, docX.qty, getRootSTO.mapstos[0].baseUnitID, docItem.UnitType_ID.Value);
                         ADO.DocumentADO.GetInstant().CreateDocItemSto(docX.dociID, getRootSTO.mapstos.Where(x => x.parentID == docX.stoi).Select(x => x.id).FirstOrDefault().Value, unitConvert.qty, unitConvert.unitType_ID, unitConvert.baseQty, unitConvert.baseUnitType_ID, this.BuVO);
                         /***********update Document EventStatus 10 --> 11**********/
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docX.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(docX.docID, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                     }
                     /***********update StorageObject EventStatus 12 --> 17**********/
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(list.Key.stoi ?? 0, StorageObjectEventStatus.RECEIVED, null, StorageObjectEventStatus.PICKING, this.BuVO);

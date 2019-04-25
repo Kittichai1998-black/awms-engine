@@ -92,7 +92,7 @@ namespace AWMSEngine.Engine.Business.Issued
             var queueWorkQueueOut = new List<WCSQueueApi.TReq.queueout>();
             List<SPOutSTOProcesQueueIssue> stoRoot = new List<SPOutSTOProcesQueueIssue>();
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
-            DocumentEventStatus[] DocEventStatuses = new DocumentEventStatus[] { DocumentEventStatus.IDLE, DocumentEventStatus.WORKING };
+            DocumentEventStatus[] DocEventStatuses = new DocumentEventStatus[] { DocumentEventStatus.NEW, DocumentEventStatus.WORKING };
 
             List<items> listItems = new List<items>();
             List<DocumentProcess> listDocProcessed = new List<DocumentProcess>();

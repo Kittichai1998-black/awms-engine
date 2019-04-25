@@ -43,7 +43,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string ref1;
             public string ref2;
 
-            public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
+            public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
             public List<ReceiveItem> receiveItems;
             public class ReceiveItem
@@ -65,7 +65,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string refID;
                 public string options;
 
-                public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
+                public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
                 public List<amt_DocumentItemStorageObject> docItemStos;
             }
         }

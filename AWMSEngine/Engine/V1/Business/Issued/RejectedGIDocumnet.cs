@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.Business.Issued
         {
 
             var docIssues = ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
-            var docNotCloseds = docIssues.Where(x => x.EventStatus != DocumentEventStatus.IDLE);
+            var docNotCloseds = docIssues.Where(x => x.EventStatus != DocumentEventStatus.NEW);
             if (docNotCloseds.Count() > 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ IDLE เท่านั้น");
             

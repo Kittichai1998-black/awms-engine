@@ -66,7 +66,7 @@ namespace AWMSEngine.Engine.General
                 public DateTime? expireDate;
                 public DateTime? productionDate;
                 
-                public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
+                public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
             }
@@ -144,7 +144,7 @@ namespace AWMSEngine.Engine.General
 
                 Remark = reqVO.remark,
 
-                EventStatus = DocumentEventStatus.IDLE,
+                EventStatus = DocumentEventStatus.NEW,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };

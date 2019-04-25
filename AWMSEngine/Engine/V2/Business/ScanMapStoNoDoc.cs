@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.V2.Business
 {
     public class ScanMapStoNoDoc : BaseEngine<ScanMapStoNoDoc.TReq, StorageObjectCriteria>
     {
@@ -18,6 +18,7 @@ namespace AWMSEngine.Engine.Business
 
         public class TReq
         {
+            public long? rootID;
             public string scanCode;
             public string orderNo;
             public string batch;
@@ -27,30 +28,23 @@ namespace AWMSEngine.Engine.Business
             public DateTime? productDate;
             public long? warehouseID;
             public long? areaID;
+            public string options;
+            public bool isRoot = true;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
-            public string options;
-            public StorageObjectCriteria mapsto;
-            public bool isRoot = true;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
             StorageObjectCriteria mapsto = null;
-            if (reqVO.mapsto == null)
-            {
-                mapsto = this.ExecFirstScan(reqVO);
-            }
-            else
-            {
-                mapsto = this.ExecNextScan(reqVO);
-            }
+
+            mapsto = this.ExecScan(reqVO);
 
             this.SetQty(mapsto);
 
             return mapsto;
         }
 
-        private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parrentMapsto, TReq reqVO)
+        private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parentMapsto, TReq reqVO)
         {
 
             var objSize = this.StaticValue.ObjectSizes.Find(x => x.ID == ObjectSize_ID);
@@ -69,14 +63,14 @@ namespace AWMSEngine.Engine.Business
                 trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_AreaLocationMaster)obj).UnitType_ID);
 
             if (trueUnit == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "UnitType ไม่ถูกต้อง");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Incorrect UnitType");
             
 
             var baseUnit = objType == StorageObjectType.PACK ?
                 this.StaticValue.ConvertToBaseUnitByPack(reqVO.scanCode, reqVO.amount, trueUnit.ID.Value) : null;
             StorageObjectType? parrentType = null;
-            if (parrentMapsto != null)
-                parrentType = parrentMapsto.type;
+            if (parentMapsto != null)
+                parrentType = parentMapsto.type;
 
             var res = new StorageObjectCriteria()
             {
@@ -87,12 +81,12 @@ namespace AWMSEngine.Engine.Business
                 type = objType,
                 skuID = skuID,
                 productDate = reqVO.productDate,
-                
-                parentID = parrentMapsto != null ? parrentMapsto.id : null,
+
+                parentID = parentMapsto != null ? parentMapsto.id : null,
                 parentType = parrentType,
 
-                areaID = parrentMapsto != null ? parrentMapsto.areaID : reqVO.areaID.Value,
-                warehouseID = parrentMapsto != null ? parrentMapsto.warehouseID : reqVO.warehouseID.Value,
+                areaID = parentMapsto != null ? parentMapsto.areaID : reqVO.areaID.Value,
+                warehouseID = parentMapsto != null ? parentMapsto.warehouseID : reqVO.warehouseID.Value,
                 orderNo = reqVO.orderNo,
                 lot = reqVO.lot,
                 batch = reqVO.batch,
@@ -100,6 +94,7 @@ namespace AWMSEngine.Engine.Business
                 qty = reqVO.amount,
                 unitID = trueUnit.ID.Value,
                 unitCode = trueUnit.Code,
+
 
                 baseQty = baseUnit != null ? baseUnit.baseQty : 1,
                 baseUnitID = baseUnit != null ? baseUnit.baseUnitType_ID : trueUnit.ID.Value,
@@ -128,99 +123,94 @@ namespace AWMSEngine.Engine.Business
                     quantity = 0
                 }).ToList(),
                 mapstos = new List<StorageObjectCriteria>(),
-                eventStatus = StorageObjectEventStatus.NEW,
+                eventStatus = StorageObjectEventStatus.IDLE,
                 isFocus = obj is ams_PackMaster ? false : true,
 
             };
             res.groupSum = StorageObjectCriteria.CreateGroupSum(res);
             return res;
         }
-        private StorageObjectCriteria ExecFirstScan(TReq reqVO)
+        private StorageObjectCriteria ExecScan(TReq reqVO)
         {
-            StorageObjectCriteria mapsto = this.ADOSto.Get(reqVO.scanCode, null,null, reqVO.isRoot, true, this.BuVO);
-
-            if (mapsto == null)
+            StorageObjectCriteria mapsto = null;
+            if (reqVO.rootID == null)
             {
-                ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, reqVO.unitCode, this.BuVO);
-                ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
-                ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
-                if (bm != null)
+                mapsto = this.ADOSto.Get(reqVO.scanCode, null, null, reqVO.isRoot, true, this.BuVO);
+                if (mapsto == null)
                 {
-                    mapsto = this.GenerateStoCrit(bm, bm.ObjectSize_ID, null, reqVO);
-                    this.ADOSto.PutV2(mapsto, this.BuVO);
-                }
-                else if (alm != null)
-                {
-                    mapsto = this.GenerateStoCrit(alm, bm.ObjectSize_ID, null, reqVO);
-                }
-                else if (pm != null)
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ต้องสแกนพาเลทหรือกล่อง ก่อนสแกนสินค้า");
-                    //ADO.DocumentADO.GetInstant().ListItemCanMap(reqVO.scanCode, DocumentTypeID.GOODS_RECEIVED, this.BuVO);
+                    ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, reqVO.unitCode, this.BuVO);
+                    ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
+                    ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
+                    if (bm != null)
+                    {
+                        mapsto = this.GenerateStoCrit(bm, bm.ObjectSize_ID, null, reqVO);
+                        this.ADOSto.PutV2(mapsto, this.BuVO);
+                    }
+                    else if (alm != null)
+                    {
+                        mapsto = this.GenerateStoCrit(alm, bm.ObjectSize_ID, null, reqVO);
+                    }
+                    else if (pm != null)
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Please scan pallet or box code then scan product code");
+                    }
+                    else
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
+                    }
                 }
                 else
                 {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่มีรหัส" + reqVO.scanCode + "ในระบบ");
+                    if (mapsto.warehouseID != reqVO.warehouseID)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
+
+                    if (mapsto.areaID != reqVO.areaID)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
                 }
+
             }
             else
             {
+                mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
+
                 if (mapsto.warehouseID != reqVO.warehouseID)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "warehouse ไม่ตรงกัน");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
 
                 if (mapsto.areaID != reqVO.areaID)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "area ไม่ตรงกัน");
-            }
-            return mapsto;
-        }
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
 
-        private StorageObjectCriteria ExecNextScan(TReq reqVO)
-        {
-            StorageObjectCriteria mapsto = reqVO.mapsto;
-            if (reqVO.action == VirtualMapSTOActionType.SELECT)
-            {
-                this.ActionSelect(reqVO, mapsto);
-                if (mapsto.isFocus == false)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1002, mapsto.code);
-            }
-            else if (reqVO.action == VirtualMapSTOActionType.ADD)
-            {
-                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ เพิ่ม สินค้าลงใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
+                if (reqVO.action == VirtualMapSTOActionType.SELECT)
+                {
+                    this.ActionSelect(reqVO, mapsto);
+                    if (mapsto.isFocus == false)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, mapsto.code);
+                }
+                else if (reqVO.action == VirtualMapSTOActionType.ADD)
+                {
+                    if (!mapsto.eventStatus.In(StorageObjectEventStatus.IDLE, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't add product in base that it has status is " + mapsto.eventStatus);
 
-                this.ActionAdd(reqVO, mapsto);
-            }
-            else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
-            {
-                if (!reqVO.mapsto.eventStatus.In(StorageObjectEventStatus.NEW, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถ ลบ สินค้าจากใน base ที่มีสถานะ '" + reqVO.mapsto.eventStatus + "' ได้");
+                    this.ActionAdd(reqVO, mapsto);
+                }
+                else if (reqVO.action == VirtualMapSTOActionType.REMOVE)
+                {
+                    if (!mapsto.eventStatus.In(StorageObjectEventStatus.IDLE, StorageObjectEventStatus.RECEIVING, StorageObjectEventStatus.REJECTED))
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't remove product from base that it has status is " + mapsto.eventStatus);
 
-                this.ActionRemove(reqVO, mapsto);
+                    this.ActionRemove(reqVO, mapsto);
+                }
             }
-
             return mapsto;
         }
 
         private void SetQty(StorageObjectCriteria mapsto)
         {
-            /*if (mapsto.mapstos.Count() > 0)
-            {
-                mapsto.mapstos.ForEach(x => SetQty(x));
-                mapsto.weiKG = mapsto.mapstos.Sum(x => x.weiKG);
-            }
-            var counts = mapsto.mapstos
-                .GroupBy(x => x.objectSizeID)
-                .Select(x => new { objectSizeID = x.Key, count = x.Count() })
-                .ToList();*/
             mapsto.objectSizeMaps.ForEach(x =>
             {
                 x.quantity = mapsto.mapstos.Count(y => y.objectSizeID == x.outerObjectSizeID);
             });
         }
 
-        /***********************************/
-        /***********************************/
-        /***********************************/
         private bool ActionSelect(
             TReq reqVO,
             StorageObjectCriteria mapsto)
@@ -244,16 +234,14 @@ namespace AWMSEngine.Engine.Business
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
 
             if (alm != null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่สามารถเพิ่ม Location '" + reqVO.scanCode + "' บน '" + firstMapSto.type + "' ลงไปได้");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " can't add location on " + firstMapSto.type);
             if (pm == null && bm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบพาเลท หรือ สินค้า รหัส '" + reqVO.scanCode + "'");
-
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " Not Found");
 
             if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
             {
                 if (pm != null)
                 {
-                    //List<amt_DocumentItemStorageObject> mapDocByStos = new List<amt_DocumentItemStorageObject>();
                     var regisMap = this.GenerateStoCrit(pm, pm.ObjectSize_ID, firstMapSto, reqVO);
                     
                     var matchStomap = firstMapSto.mapstos.FirstOrDefault(x => x.groupSum == regisMap.groupSum);
@@ -264,6 +252,7 @@ namespace AWMSEngine.Engine.Business
                     }
                     else
                     {
+                        matchStomap.options = regisMap.options == null ? matchStomap.options : regisMap.options;
                         matchStomap.qty += regisMap.qty;
                         matchStomap.baseQty += regisMap.baseQty;
                         this.ADOSto.PutV2(matchStomap, this.BuVO);
@@ -285,7 +274,7 @@ namespace AWMSEngine.Engine.Business
             }
             else if (reqVO.mode == VirtualMapSTOModeType.TRANSFER)
             {
-                throw new Exception("ปิด Module Transfer");
+                //throw new Exception("ปิด Module Transfer");
                 var countStoFree = ADO.StorageObjectADO.GetInstant()
                                     .GetFreeCount(reqVO.scanCode, reqVO.warehouseID, reqVO.areaID, reqVO.batch, reqVO.lot, true, this.BuVO);
 
@@ -322,11 +311,11 @@ namespace AWMSEngine.Engine.Business
             StorageObjectCriteria mapsto)
         {
             var msf = GetMapStoLastFocus(mapsto);
-
-            if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW) < reqVo.amount)
+            var xx = msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.IDLE);
+            if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.IDLE) < reqVo.amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             else if (msf.mapstos.Count(x => x.code == reqVo.scanCode) < reqVo.amount)
-                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก");
+                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, reqVo.scanCode + " Not Found");
 
             var mapstos = msf.mapstos.OrderBy(x => x.eventStatus).ThenByDescending(x => x.id);
             for (int i = 0; i < reqVo.amount; i++)

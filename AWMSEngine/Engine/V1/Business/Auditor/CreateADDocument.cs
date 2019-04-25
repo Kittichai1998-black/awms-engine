@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.Business.Auditor
             public string ref1;
             public string ref2;
 
-            public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
+            public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
             public List<TItem> docItems;
             public class TItem
@@ -72,7 +72,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 public string refID;
                 public string options;
 
-                public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
+                public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
             }

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.Business
+namespace AWMSEngine.Engine.V2.Business
 {
     public class ScanMapSto : BaseEngine<ScanMapSto.TReq, StorageObjectCriteria>
     {
@@ -264,7 +264,7 @@ namespace AWMSEngine.Engine.Business
                     }
                     else
                     {
-                        newMS.eventStatus = StorageObjectEventStatus.NEW;
+                        newMS.eventStatus = StorageObjectEventStatus.IDLE;
                         ADOSto.Create(newMS, msf.areaID, batch, lot, this.BuVO);
                     }
                     //ADOSto.Put(newMS,batch,lot, this.BuVO);
@@ -285,7 +285,7 @@ namespace AWMSEngine.Engine.Business
         {
             var msf = GetMapStoLastFocus(mapsto);
 
-            if (mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == scanCode && x.eventStatus == StorageObjectEventStatus.NEW) < amount)
+            if (mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == scanCode && x.eventStatus == StorageObjectEventStatus.IDLE) < amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             else if (msf.mapstos.Count(x => x.code == scanCode) < amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก");
