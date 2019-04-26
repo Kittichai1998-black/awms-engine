@@ -24,6 +24,8 @@ namespace ProjectSTA.Engine.Business.Received
         {
             public int? areaID;
             public int? areaLocationID;
+            public string areaCode;
+            public string areaLocationCode;
             public StorageObjectCriteria bsto;
         }
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -45,7 +47,9 @@ namespace ProjectSTA.Engine.Business.Received
             int numLoc = 0;
             List<dynamic> tempAreaLoc = new List<dynamic>();
             List<dynamic> tempStoBaseItems = new List<dynamic>();
-            dynamic areaLocationID = null;
+            //dynamic areaLocationID = null;
+            dynamic areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
+            //dynamic areaLocationCode = null;
             StorageObjectCriteria stobsto = null;
             var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
 
@@ -97,7 +101,7 @@ namespace ProjectSTA.Engine.Business.Received
                                             {
                                                 /// รับเข้า วางสินค้าลงบนพาเลทได้
                                                 var optionsNew = "CartonNo=" + options2[1] + "," + cartonNo.ToString();
-                                                areaLocationID = (int)stoBaseItems.ID;
+                                                //areaLocationID = (int)stoBaseItems.ID;
 
                                                 var baseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
 
@@ -211,8 +215,10 @@ namespace ProjectSTA.Engine.Business.Received
                                                     TRes res = new TRes()
                                                     {
                                                         areaID = reqVO.areaID,
-                                                        areaLocationID = areaLocationID,
-                                                        bsto = stobsto
+                                                        areaCode = areaCode,
+                                                        areaLocationID = (int)stoBaseItems.ID,
+                                                        areaLocationCode = location.Code,
+                                                    bsto = stobsto
                                                     };
                                                     return res;
                                                 }
@@ -230,7 +236,14 @@ namespace ProjectSTA.Engine.Business.Received
                             else
                             {
                                 //orderNo, skuCode ไม่ตรงกัน
-                                continue;
+                                if (numLoc == lenghtAreaLocItems)
+                                {
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Order No.หรือ SKU Code ไม่ตรงกัน จึงไม่สามารถวางสินค้าลงบน Pallet ได้");
+                                }
+                                else
+                                {
+                                    continue;
+                                }
                             }
                         } //end foreach check สินค้าที่มีในพาเลท
                     }
@@ -243,8 +256,7 @@ namespace ProjectSTA.Engine.Business.Received
                         if (numLoc == lenghtAreaLocItems)
                         {
                             //เตรียมข้อมูลinsert 
-                            var optionsNew = "CartonNo=" + cartonNo.ToString();
-                            areaLocationID = (int)location.ID;
+                            var optionsNew = "CartonNo=" + cartonNo.ToString(); 
                              
                             var reqScan = new ScanMapStoNoDoc.TReq()
                             {
@@ -271,7 +283,9 @@ namespace ProjectSTA.Engine.Business.Received
                                 TRes res = new TRes()
                                 {
                                     areaID = reqVO.areaID,
-                                    areaLocationID = areaLocationID,
+                                    areaCode = areaCode,
+                                    areaLocationID = (int)location.ID,
+                                    areaLocationCode = location.Code,
                                     bsto = stobsto
                                 };
                                 return res;
@@ -298,7 +312,6 @@ namespace ProjectSTA.Engine.Business.Received
                         if(tempAreaLoc.Count() > 0)
                         { 
                             var options = "CartonNo=" + cartonNo.ToString();
-                            areaLocationID = (int)tempAreaLoc[0].ID;
                             dynamic stoID = null;
                             if (tempStoBaseItems.Count() > 0)
                             {
@@ -330,7 +343,9 @@ namespace ProjectSTA.Engine.Business.Received
                                 TRes res = new TRes()
                                 {
                                     areaID = reqVO.areaID,
-                                    areaLocationID = areaLocationID,
+                                    areaCode = areaCode,
+                                    areaLocationID = (int)tempAreaLoc[0].ID,
+                                    areaLocationCode = tempAreaLoc[0].Code,
                                     bsto = stobsto
                                 };
                                 return res;
@@ -338,7 +353,7 @@ namespace ProjectSTA.Engine.Business.Received
                         }
                         else
                         {
-                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี Pallet เปล่า ที่พร้อมวางสินค้าได้");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี Pallet เปล่า ที่สามารถวางสินค้าได้");
 
                         }
                     }
@@ -349,7 +364,7 @@ namespace ProjectSTA.Engine.Business.Received
 
                 }
             }
-                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้4");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้");
         }
     }
 }
