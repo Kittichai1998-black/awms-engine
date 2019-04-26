@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.Engine.V2.Business;
+using AWMSEngine.Engine.Validation;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -27,15 +28,12 @@ namespace ProjectSTA.Engine.Business.Received
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-           
-
             string scanCode = reqVO.scanCode == null ? null : reqVO.scanCode;
             string orderNo = scanCode.Substring(0, 7);
-            string skuCode = scanCode.Substring(7, 12); //11
-            int cartonNo = int.Parse(scanCode.Substring(19, 4)); //22
+            string skuCode1 = scanCode.Substring(7, 15); 
+            string skuCode = skuCode1.Substring(0, 12); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
+            int cartonNo = int.Parse(scanCode.Substring(22, 4)); 
 
-
-            // var areaLocationMastersItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>("AreaMaster_ID", reqVO.areaID, this.BuVO);
             //หา Array ของ ArealocationID ที่ AreaMaster_ID ตรงกับ areaID
             var areaLocationMastersItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                   new SQLConditionCriteria[] {
@@ -43,19 +41,19 @@ namespace ProjectSTA.Engine.Business.Received
                         new SQLConditionCriteria("Status", 1, SQLOperatorType.EQUALS, SQLConditionType.AND)
                   },
                   new SQLOrderByCriteria[] { }, null, null, this.BuVO);
-            //bool checkLocation = true;
             int lenghtAreaLocItems = areaLocationMastersItems.Count();
             int numLoc = 0;
             List<dynamic> tempAreaLoc = new List<dynamic>();
-            List<dynamic> tempStoLocationItems = new List<dynamic>();
+            List<dynamic> tempStoBaseItems = new List<dynamic>();
             dynamic areaLocationID = null;
             StorageObjectCriteria stobsto = null;
+            var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
+
             foreach (var location in areaLocationMastersItems)
             {
                 numLoc++;
-                //var stoItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>("AreaLocationMaster_ID", location.ID, this.BuVO);
                 //หา stoID ที่เป็น base เพื่อเอาไปหาสินค้าในพาเลท ว่ามี OrderNo,SKUCode ตรงกันมั้ย
-                var stoLocationItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                var stoBaseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                   new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaLocationMaster_ID",(int)location.ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
@@ -64,17 +62,16 @@ namespace ProjectSTA.Engine.Business.Received
                   }, this.BuVO).FirstOrDefault();
 
                 //เช็คข้อมูลBase ที่มี AreaLocationMaster_ID ที่ตรงกับ location.ID
-                if (stoLocationItems != null)
+                if (stoBaseItems != null)
                 {
                     //เอาstoID ของ Base มาหารายการสินค้า SKU 
                     var stoPackObjects = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("ParentStorageObject_ID",(long)stoLocationItems.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("ParentStorageObject_ID",(long)stoBaseItems.ID, SQLOperatorType.EQUALS),
                             //new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                       }, this.BuVO);
-                    // var stoPackObjects = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
                     if(stoPackObjects != null && stoPackObjects.Count() > 0)
-                    { //เจอสินค้าที่อยู่ในพาเลท
+                    { //มีสินค้าอยู่บนพาเลท
                         foreach (var stoPack in stoPackObjects)
                         {
                             //เช็คพาเลทว่ามี OrderNo,skuCode ตรงกันกับ ScanCode ของสินค้าใหม่มั้ย
@@ -93,33 +90,113 @@ namespace ProjectSTA.Engine.Business.Received
                                             if (options2[1].Contains(cartonNo.ToString()))
                                             {
                                                 ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
-                                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "สแกนสินค้าซ้ำกัน");
+                                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, 
+                                                    "PalletNo. "+ stoBaseItems.Code + " มี SKU Code: "+ skuCode +", Carton No."+cartonNo.ToString()+" นี้อยู่แล้ว ไม่สามารถสแกนซ้ำกันได้");
                                             }
                                             else
                                             {
                                                 /// รับเข้า วางสินค้าลงบนพาเลทได้
-                                                dynamic optionsNew = "CartonNo=" + options2[1] + "," + cartonNo.ToString();
-                                                var unit = this.StaticValue.UnitTypes.Where(un => un.ID == stoPack.UnitType_ID).FirstOrDefault();
-                                                var area = this.StaticValue.AreaMasters.Where(ar => ar.ID == reqVO.areaID).FirstOrDefault();
-                                                areaLocationID = (int)stoLocationItems.ID;
+                                                var optionsNew = "CartonNo=" + options2[1] + "," + cartonNo.ToString();
+                                                areaLocationID = (int)stoBaseItems.ID;
+
+                                                var baseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
+
+                                                var objectSizeRoot = this.StaticValue.ObjectSizes.Where(ob => ob.ID == baseItems.ObjectSize_ID).FirstOrDefault();
+
+                                                var objectSizePack = this.StaticValue.ObjectSizes.Where(ob => ob.ID == skuItem.ObjectSize_ID).FirstOrDefault();
 
                                                 //--validate limit size of pallet
-                                                stoPack.Quantity += 1;
-                                                stoPack.Options = optionsNew;
-                                                //-end-validate limit size of pallet
+                                                List<StorageObjectCriteria> mapstos = new List<StorageObjectCriteria> { };
+                                                mapstos.Add(new StorageObjectCriteria() {
+                                                    id = stoPack.ID,
+                                                    groupSum = null,
+                                                    type = stoPack.ObjectType,
+                                                    code = stoPack.Code,
+                                                    areaID = (long)reqVO.areaID,
+                                                    orderNo = orderNo,
+                                                    lot = null,
+                                                    batch = null,
+                                                    qty = stoPack.Quantity + 1,
+                                                    baseQty = stoPack.BaseQuantity + 1,
+                                                    unitID = stoPack.UnitType_ID,
+                                                    unitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoPack.UnitType_ID).Code,
+                                                    baseUnitID = stoPack.BaseUnitType_ID,
+                                                    baseUnitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoPack.BaseUnitType_ID).Code,
+                                                    objectSizeID = objectSizePack.ID,
+                                                    objectSizeName = objectSizePack.Name,
+                                                    maxWeiKG = objectSizePack.MaxWeigthKG,
+                                                    minWeiKG = objectSizePack.MinWeigthKG,
+                                                    weiKG = stoPack.WeigthKG,
+                                                    widthM = null,
+                                                    heightM = null,
+                                                    lengthM = null,
+                                                    isFocus = false,
+                                                    productDate = null,
+                                                    eventStatus = stoPack.EventStatus,
+                                                    objectSizeMaps = objectSizePack.ObjectSizeInners.Select(x => new StorageObjectCriteria.ObjectSizeMap()
+                                                    {
+                                                        innerObjectSizeID = x.InnerObjectSize_ID,
+                                                        innerObjectSizeName = this.StaticValue.ObjectSizes.Find(y => y.ID == x.InnerObjectSize_ID).Name,
+                                                        outerObjectSizeID = x.ID.Value,
+                                                        outerObjectSizeName = x.Name,
+                                                        maxQuantity = x.MaxQuantity,
+                                                        minQuantity = x.MinQuantity,
+                                                        quantity = 0
+                                                    }).ToList(),
+                                                    options = optionsNew
+                                                });
+                                                var stoValidateReq = new StorageObjectCriteria() {
+                                                    id = stoBaseItems.ID,
+                                                    groupSum = null,
+                                                    type = stoBaseItems.ObjectType,
+                                                    code = stoBaseItems.Code,
+                                                    areaID = (long)reqVO.areaID,
+                                                    orderNo = orderNo,
+                                                    lot = null,
+                                                    batch = null,
+                                                    qty = stoBaseItems.Quantity,
+                                                    unitID = stoBaseItems.UnitType_ID,
+                                                    unitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoBaseItems.UnitType_ID).Code,
+                                                    baseQty = stoBaseItems.BaseQuantity,
+                                                    objectSizeID = objectSizeRoot.ID,
+                                                    objectSizeName = objectSizeRoot.Name,
+                                                    maxWeiKG = objectSizeRoot.MaxWeigthKG,
+                                                    minWeiKG = objectSizeRoot.MinWeigthKG,
+                                                    weiKG = stoBaseItems.WeigthKG,
+                                                    widthM = null,
+                                                    heightM = null,
+                                                    lengthM = null,
+                                                    isFocus = true,
+                                                    productDate = null,
+                                                    eventStatus = stoBaseItems.EventStatus,
+                                                    objectSizeMaps = objectSizeRoot.ObjectSizeInners.Select(x => new StorageObjectCriteria.ObjectSizeMap()
+                                                    {
+                                                        innerObjectSizeID = x.InnerObjectSize_ID,
+                                                        innerObjectSizeName = this.StaticValue.ObjectSizes.Find(y => y.ID == x.InnerObjectSize_ID).Name,
+                                                        outerObjectSizeID = x.ID.Value,
+                                                        outerObjectSizeName = x.Name,
+                                                        maxQuantity = x.MaxQuantity,
+                                                        minQuantity = x.MinQuantity,
+                                                        quantity = 0
+                                                    }).ToList(),
+                                                    mapstos = mapstos
+                                                };
 
+                                                var stoValidateRes = new ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, stoValidateReq);
+
+                                                //-end-validate limit size of pallet
 
                                                 var reqScan = new ScanMapStoNoDoc.TReq()
                                                 {
-                                                    rootID = (long)stoLocationItems.ID,
+                                                    rootID = (long)stoBaseItems.ID,
                                                     scanCode = skuCode,
                                                     orderNo = orderNo,
                                                     batch = null,
                                                     lot = null,
                                                     amount = 1,
-                                                    unitCode = unit.Code,
+                                                    unitCode = this.StaticValue.UnitTypes.Find(un => un.ID == stoPack.UnitType_ID).Code,
                                                     productDate = null,
-                                                    warehouseID = area.Warehouse_ID,
+                                                    warehouseID = this.StaticValue.AreaMasters.Find(ar => ar.ID == reqVO.areaID).Warehouse_ID,
                                                     areaID = reqVO.areaID,
                                                     options = optionsNew,
                                                     isRoot = false,
@@ -131,7 +208,6 @@ namespace ProjectSTA.Engine.Business.Received
                                                 if (resScanMapStoNoDoc != null)
                                                 {
                                                     stobsto = resScanMapStoNoDoc;
-                                                    //stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
                                                     TRes res = new TRes()
                                                     {
                                                         areaID = reqVO.areaID,
@@ -147,7 +223,7 @@ namespace ProjectSTA.Engine.Business.Received
                                 }
                                 else
                                 {
-                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้2");
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่ได้รับค่า Carton No. จึงไม่สามารถวางสินค้าลงบน Pallet ได้");
                                 }
                                 break;
                             }
@@ -160,45 +236,38 @@ namespace ProjectSTA.Engine.Business.Received
                     }
                     else
                     {
-                        //มีพาเลทเปล่า ไม่มีสินค้าอยู่ข้างใน
-                        //ต้องเอาไว้ใช้เก็บสินค้า
                         //เช็คจนเหลือพาเลทสุดท้ายเเล้ว
+                        //มีพาเลทเปล่า ไม่มีสินค้าอยู่ข้างใน
+                        //เอาไว้ใช้เก็บสินค้าได้
+                        
                         if (numLoc == lenghtAreaLocItems)
                         {
                             //เตรียมข้อมูลinsert 
-                            var options = "CartonNo=" + cartonNo.ToString();
-                            var locationID = (int)location.ID;
-                            var baseID = (long)stoLocationItems.ID;
-                            var skuItem =  AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
-                            //var skuName = skuItem.Name;
-                            var unit = this.StaticValue.UnitTypes.Where(un => un.ID == skuItem.UnitType_ID).FirstOrDefault();
-                            var area = this.StaticValue.AreaMasters.Where(ar => ar.ID == reqVO.areaID).FirstOrDefault();
-
+                            var optionsNew = "CartonNo=" + cartonNo.ToString();
+                            areaLocationID = (int)location.ID;
+                             
                             var reqScan = new ScanMapStoNoDoc.TReq()
                             {
-                                rootID = (long)stoLocationItems.ID,
+                                rootID = (long)stoBaseItems.ID,
                                 scanCode = skuCode,
                                 orderNo = orderNo,
                                 batch = null,
                                 lot = null,
                                 amount = 1,
-                                unitCode = unit.Code,
+                                unitCode = this.StaticValue.UnitTypes.Find(un => un.ID == skuItem.UnitType_ID).Code,
                                 productDate = null,
-                                warehouseID = area.Warehouse_ID,
+                                warehouseID = this.StaticValue.AreaMasters.Find(ar => ar.ID == reqVO.areaID).Warehouse_ID,
                                 areaID = reqVO.areaID,
-                                options = options,
+                                options = optionsNew,
                                 isRoot = false,
                                 mode = VirtualMapSTOModeType.REGISTER,
                                 action = VirtualMapSTOActionType.ADD
                             };
 
-                            //stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
-                            areaLocationID = locationID;
                             var resScanMapStoNoDoc = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO, reqScan); ;
                             if (resScanMapStoNoDoc != null)
                             {
                                 stobsto = resScanMapStoNoDoc;
-                                //stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
                                 TRes res = new TRes()
                                 {
                                     areaID = reqVO.areaID,
@@ -209,7 +278,7 @@ namespace ProjectSTA.Engine.Business.Received
                             }
                             else
                             {
-                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้3");
+                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถ Map สินค้ากับ Pallet No."+ stoBaseItems.Code +" ได้");
                             }
                         }
                         // แต่ว่าถ้ายังมีพาเลทอีกอันที่ยังไม่เช็ค
@@ -217,7 +286,7 @@ namespace ProjectSTA.Engine.Business.Received
                         {
                             //buffer ข้อมูลlocation,pallet
                             tempAreaLoc.Add(location);
-                            tempStoLocationItems.Add(stoLocationItems);
+                            tempStoBaseItems.Add(stoBaseItems);
                         }
                     }
                 }
@@ -225,22 +294,18 @@ namespace ProjectSTA.Engine.Business.Received
                 {
                     if (numLoc == lenghtAreaLocItems)
                     {
+                        //มีข้อมูล base เปล่า ก่อนหน้าที่สามารถวางสินค้าได้
                         if(tempAreaLoc.Count() > 0)
                         { 
                             var options = "CartonNo=" + cartonNo.ToString();
-                            //areaID = reqVO.areaID
-                            var locationID = (int)tempAreaLoc[0].ID;
+                            areaLocationID = (int)tempAreaLoc[0].ID;
                             dynamic stoID = null;
-                            if (tempStoLocationItems.Count() > 0)
+                            if (tempStoBaseItems.Count() > 0)
                             {
-                                stoID = (long)tempStoLocationItems[0].ID;  //ที่ ObjectType = Base
+                                stoID = (long)tempStoBaseItems[0].ID;  //ที่ ObjectType = Base
                             }
-                            var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
-                            //var skuName = skuItem.Name;
-                            var unit = this.StaticValue.UnitTypes.Where(un => un.ID == skuItem.UnitType_ID).FirstOrDefault();
-                            var area = this.StaticValue.AreaMasters.Where(ar => ar.ID == reqVO.areaID).FirstOrDefault();
 
-                            //เอาไปแมพ เอาไปเช็ค over limit size
+                            //เอาไปแมพ 
                             var reqScan = new ScanMapStoNoDoc.TReq() {
                                 rootID = stoID,
                                 scanCode = skuCode,
@@ -248,9 +313,9 @@ namespace ProjectSTA.Engine.Business.Received
                                 batch = null,
                                 lot = null,
                                 amount = 1,
-                                unitCode = unit.Code,
+                                unitCode = this.StaticValue.UnitTypes.Find(un => un.ID == skuItem.UnitType_ID).Code,
                                 productDate = null,
-                                warehouseID = area.Warehouse_ID,
+                                warehouseID = this.StaticValue.AreaMasters.Find(ar => ar.ID == reqVO.areaID).Warehouse_ID,
                                 areaID = reqVO.areaID,
                                 options = options,
                                 isRoot = false,
@@ -258,13 +323,10 @@ namespace ProjectSTA.Engine.Business.Received
                                 action = VirtualMapSTOActionType.ADD
                             };
 
-                            areaLocationID = locationID;
-
                             var resScanMapStoNoDoc = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO, reqScan); ;
                             if(resScanMapStoNoDoc != null)
                             {
                                 stobsto = resScanMapStoNoDoc;
-                                //stobsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
                                 TRes res = new TRes()
                                 {
                                     areaID = reqVO.areaID,
@@ -276,7 +338,7 @@ namespace ProjectSTA.Engine.Business.Received
                         }
                         else
                         {
-                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้1");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มี Pallet เปล่า ที่พร้อมวางสินค้าได้");
 
                         }
                     }
@@ -287,8 +349,7 @@ namespace ProjectSTA.Engine.Business.Received
 
                 }
             }
-            
-            return null;
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถวางสินค้าลงบน Pallet ได้4");
         }
     }
 }
