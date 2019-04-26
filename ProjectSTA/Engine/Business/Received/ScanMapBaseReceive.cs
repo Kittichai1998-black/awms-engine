@@ -217,7 +217,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                         areaID = reqVO.areaID,
                                                         areaCode = areaCode,
                                                         areaLocationID = (int)stoBaseItems.ID,
-                                                        areaLocationCode = stoBaseItems.Code,
+                                                        areaLocationCode = location.Code,
                                                     bsto = stobsto
                                                     };
                                                     return res;
@@ -345,7 +345,7 @@ namespace ProjectSTA.Engine.Business.Received
                                     areaID = reqVO.areaID,
                                     areaCode = areaCode,
                                     areaLocationID = (int)tempAreaLoc[0].ID,
-                                    areaLocationCode = location.Code,
+                                    areaLocationCode = tempAreaLoc[0].Code,
                                     bsto = stobsto
                                 };
                                 return res;

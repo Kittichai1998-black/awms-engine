@@ -18,9 +18,11 @@ namespace AWMSEngine.Engine.V2.Business.Received
         }
         public class TRes
         { 
-                public int? areaID;
-                public int? areaLocationID;
-                public StorageObjectCriteria bsto;
+            public int? areaID;
+            public int? areaLocationID;
+            public string areaCode;
+            public string areaLocationCode;
+            public StorageObjectCriteria bsto;
         }
         protected override List<TRes> ExecuteEngine(TReq reqVO)
         {
@@ -38,7 +40,9 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 {
                     var res = new TRes();
                     res.areaID = reqVO.areaID;
+                    res.areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
                     res.areaLocationID = (int)location.ID;
+                    res.areaLocationCode = location.Code;
 
                     var stoLocationItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
