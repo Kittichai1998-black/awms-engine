@@ -28,6 +28,7 @@ namespace AWMSEngine.Engine.V2.Business
             public DateTime? productDate;
             public long? warehouseID;
             public long? areaID;
+            public string locationCode;
             public string options;
             public bool isRoot = true;
             public VirtualMapSTOModeType mode;
@@ -72,6 +73,15 @@ namespace AWMSEngine.Engine.V2.Business
             if (parentMapsto != null)
                 parrentType = parentMapsto.type;
 
+            ams_AreaLocationMaster alm  = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("Code",reqVO.locationCode),
+                    new KeyValuePair<string,object>("AreaMaster_ID",reqVO.areaID),
+                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                }, this.BuVO).FirstOrDefault();
+            if (!String.IsNullOrEmpty(reqVO.locationCode) && alm == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' not found");
+
             var res = new StorageObjectCriteria()
             {
                 id = null,
@@ -82,8 +92,8 @@ namespace AWMSEngine.Engine.V2.Business
                 skuID = skuID,
                 productDate = reqVO.productDate,
 
-                parentID = parentMapsto != null ? parentMapsto.id : null,
-                parentType = parrentType,
+                parentID = parentMapsto != null ? parentMapsto.id : alm != null ? alm.ID : null,
+                parentType = parrentType != null ? parrentType : StorageObjectType.LOCATION,
 
                 areaID = parentMapsto != null ? parentMapsto.areaID : reqVO.areaID.Value,
                 warehouseID = parentMapsto != null ? parentMapsto.warehouseID : reqVO.warehouseID.Value,
