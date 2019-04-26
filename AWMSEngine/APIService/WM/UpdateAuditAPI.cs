@@ -14,6 +14,11 @@ namespace AWMSEngine.APIService.WM
         {
         }
 
+        public override int APIServiceID()
+        {
+            return 85;
+        }
+
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();

@@ -10,7 +10,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class SelectAuditAPI : BaseAPIService
     {
-
+        public override int APIServiceID()
+        {
+            return 83;
+        }
         public SelectAuditAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

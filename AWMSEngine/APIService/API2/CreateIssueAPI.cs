@@ -13,6 +13,11 @@ namespace AWMSEngine.APIService.Api2
 {
     public class CreateIssueAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 13;
+        }
         public class TModel
         {
             public List<TDocument> documents;

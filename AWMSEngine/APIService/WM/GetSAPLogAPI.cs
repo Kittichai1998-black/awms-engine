@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class GetSAPLogAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 70;
+        }
         public GetSAPLogAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

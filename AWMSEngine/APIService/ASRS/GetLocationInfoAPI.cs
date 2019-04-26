@@ -11,6 +11,11 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class GetLocationInfoAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 19;
+        }
         public GetLocationInfoAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

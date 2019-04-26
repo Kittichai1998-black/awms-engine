@@ -13,6 +13,10 @@ namespace AWMSEngine.APIService.Permission
 {
     public class ListMenuAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 57; //57
+        }
         public ListMenuAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

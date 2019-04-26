@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class ListAreaLocationCanPickingAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 73;
+        }
         public ListAreaLocationCanPickingAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

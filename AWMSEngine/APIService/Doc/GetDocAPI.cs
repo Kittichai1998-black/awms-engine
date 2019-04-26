@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.Doc
 {
     public class GetDocAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 41;
+        }
         public GetDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

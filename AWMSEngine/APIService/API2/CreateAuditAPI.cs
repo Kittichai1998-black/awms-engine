@@ -15,6 +15,11 @@ namespace AWMSEngine.APIService.Api2
 {
     public class CreateAuditAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 12;
+        }
+
         public class TModel
         {
             public List<TDocument> documents;

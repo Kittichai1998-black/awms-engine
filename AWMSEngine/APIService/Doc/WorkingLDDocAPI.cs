@@ -9,6 +9,10 @@ namespace AWMSEngine.APIService.Doc
 {
     public class WorkingLDDocAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 47;
+        }
         public WorkingLDDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

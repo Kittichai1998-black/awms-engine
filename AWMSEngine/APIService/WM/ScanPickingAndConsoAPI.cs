@@ -14,6 +14,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class ScanPickingAndConsoAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 81;
+        }
         public ScanPickingAndConsoAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

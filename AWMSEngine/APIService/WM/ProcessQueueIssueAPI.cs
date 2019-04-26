@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.Doc
 {
     public class ProcessQueueIssueAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 77;
+        }
         public ProcessQueueIssueAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

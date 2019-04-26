@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class UpdateIssuedPickingAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 86;
+        }
         public UpdateIssuedPickingAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

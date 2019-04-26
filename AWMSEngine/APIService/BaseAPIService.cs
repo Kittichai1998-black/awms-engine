@@ -19,7 +19,7 @@ namespace AWMSEngine.APIService
 {
     public abstract class BaseAPIService
     {
-        public int APIServiceID() { return 0; }
+        public abstract int APIServiceID();
         public VOCriteria BuVO { get; set; }
         public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }

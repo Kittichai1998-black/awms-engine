@@ -9,6 +9,11 @@ namespace AWMSEngine.APIService.API2
 {
     public class CheckForUpdateIssueAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 11;
+        }
         public CheckForUpdateIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) :
             base(controllerAPI, isAuthenAuthorize)
         {

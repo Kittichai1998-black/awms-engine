@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class WCSMappingPalletAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 24;
+        }
         public WCSMappingPalletAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

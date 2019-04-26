@@ -12,6 +12,11 @@ namespace AWMSEngine.APIService.Api2
 {
     public class CreateReceiveAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 14;
+        }
         public class TModel
         {
             public List<TDocument> documents;

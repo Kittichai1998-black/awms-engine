@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class GetMapSTOInDocAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 69;
+        }
         public GetMapSTOInDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

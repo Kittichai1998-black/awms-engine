@@ -8,6 +8,10 @@ namespace AWMSEngine.APIService
 {
     public class TestConnectionSAPAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 87;
+        }
         public TestConnectionSAPAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
