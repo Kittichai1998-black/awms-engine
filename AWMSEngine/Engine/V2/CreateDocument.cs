@@ -53,7 +53,7 @@ namespace AWMSEngine.Engine.V2.Business
 
             public DateTime? actionTime;//วันที่ส่ง
             public DateTime documentDate;
-            public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
+            public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
             public string refID;
             public string ref1;
@@ -83,7 +83,7 @@ namespace AWMSEngine.Engine.V2.Business
                 public string refID;
                 public string options;
 
-                public DocumentEventStatus eventStatus = DocumentEventStatus.IDLE;
+                public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
             }

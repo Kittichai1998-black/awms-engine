@@ -79,7 +79,7 @@ namespace AWMSEngine.Engine.Business.Picking
                     doci.EventStatus = DocumentEventStatus.WORKED;
                     doci.Status = ADO.DocumentADO.GetInstant().UpdateItemEventStatus(doci.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
                 }
-                else if (doci.EventStatus == DocumentEventStatus.IDLE)
+                else if (doci.EventStatus == DocumentEventStatus.NEW)
                 {
                     doci.EventStatus = DocumentEventStatus.WORKING;
                     doci.Status = ADO.DocumentADO.GetInstant().UpdateItemEventStatus(doci.ID.Value, DocumentEventStatus.WORKING, this.BuVO);

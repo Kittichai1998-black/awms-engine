@@ -146,7 +146,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
                 }
             }
-            ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+            ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
             listQueue.docID = reqVO.docID;
             listQueue.listItems = itemLists;
             return listQueue;

@@ -55,7 +55,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
             List<amt_DocumentItem> docItems = null;
             //รับสินค้าใหม่เข้าคลัง
-            if (mapsto.eventStatus == StorageObjectEventStatus.IDLE)
+            if (mapsto.eventStatus == StorageObjectEventStatus.NEW)
             {
                 docItems = this.ProcessReceiving(mapsto, reqVO);
 
@@ -143,9 +143,9 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                 null, null, false, true, this.BuVO);
 
-            if (mapsto == null || mapsto.eventStatus == StorageObjectEventStatus.IDLE)
+            if (mapsto == null || mapsto.eventStatus == StorageObjectEventStatus.NEW)
             {
-                if (mapsto != null && mapsto.eventStatus == StorageObjectEventStatus.IDLE)
+                if (mapsto != null && mapsto.eventStatus == StorageObjectEventStatus.NEW)
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
                 var palletList = new List<PalletDataCriteria>();
@@ -199,7 +199,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             this.SetWeiChildAndUpdateInfoToChild(mapsto, reqVO.weight ?? 0);
 
             ADO.StorageObjectADO.GetInstant()
-                .UpdateStatusToChild(mapsto.id.Value, StorageObjectEventStatus.IDLE, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                .UpdateStatusToChild(mapsto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
 
             return mapsto;
         }
@@ -256,7 +256,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             var mapstoTree = mapsto.ToTreeList();
             foreach (var souWarehouse in mapstoTree
-                                                    .Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.IDLE)
+                                                    .Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW)
                                                     .GroupBy(x => x.options)
                                                     .Select(x => new { code = ObjectUtil.QryStrGetValue(x.Key, "Sou_Warehouse_Code"), stoIDs = x.Select(y => y.id.Value) }))
             {
@@ -286,7 +286,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 long souBranchID = StaticValue.Warehouses.First(x => x.ID == souWarehouseID).Branch_ID.Value;
                 var docItem = ADO.DocumentADO.GetInstant()
                     .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souBranchID, souWH, null, null, packH.unitID, packH.baseUnitID, null, packH.batch, null, this.BuVO)
-                    .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
+                    .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
 
 
                 //pack Info พบ Docitem ที่สามารถ Mapping ได้
@@ -295,18 +295,18 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     ADO.DocumentADO.GetInstant().MappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
 
                     var doc = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
-                    if (doc.EventStatus == DocumentEventStatus.IDLE)
+                    if (doc.EventStatus == DocumentEventStatus.NEW)
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                         if (doc.ParentDocument_ID.HasValue)
-                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.IDLE, null, DocumentEventStatus.WORKING, this.BuVO);
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                     }
                     docItems.Add(docItem);
                 }
                 else if (isAutoCreate)
                 {
                     var doc = ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, souWarehouseID, null, null, null, this.BuVO)
-                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDLE);
+                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
                     //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                     if (doc == null)
                     {

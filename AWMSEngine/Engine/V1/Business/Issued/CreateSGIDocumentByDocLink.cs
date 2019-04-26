@@ -72,7 +72,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,
                 DocumentType_ID = DocumentTypeID.SUPER_GOODS_ISSUED,
-                EventStatus = DocumentEventStatus.IDLE,
+                EventStatus = DocumentEventStatus.NEW,
 
                 DocumentItems = new List<amt_DocumentItem>()
             };
@@ -145,7 +145,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     Batch = docGR.Batch,
                     Options = docGR.Options,
                     Lot = docGR.Lot,
-                    EventStatus = DocumentEventStatus.IDLE
+                    EventStatus = DocumentEventStatus.NEW
                 });
             }
 
