@@ -91,19 +91,38 @@ namespace ProjectSTA.Engine.Business.Received
 
                                         if (options2[0] == "CartonNo")
                                         {  //มีค่า CartonNo 
-                                            if (options2[1].Contains(cartonNo.ToString()))
+                                            //1-5
+                                            var resCartonNo = AMWUtil.Common.ConvertUtil.ConverRangeNumToString(options2[1]);
+                                            dynamic newCartonNos = null;
+                                            var splitCartonNo = resCartonNo.Split(",");
+                                            int lenSplitCartonNo = splitCartonNo.Length;
+                                            int numCarton = 0;
+                                            foreach (var no in splitCartonNo)
                                             {
-                                                ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
-                                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, 
-                                                    "PalletNo. "+ stoBaseItems.Code + " มี SKU Code: "+ skuCode +", Carton No."+cartonNo.ToString()+" นี้อยู่แล้ว ไม่สามารถสแกนซ้ำกันได้");
+                                                numCarton++;
+                                                var valno = no;
+                                                if (cartonNo == Int32.Parse(no))
+                                                {
+                                                    ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
+                                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001,
+                                                        "PalletNo. " + stoBaseItems.Code + " มี SKU Code: " + skuCode + ", Carton No." + cartonNo.ToString() + " นี้อยู่แล้ว ไม่สามารถสแกนซ้ำกันได้");
+                                                }
+                                                else
+                                                {
+                                                    if(numCarton == lenSplitCartonNo)
+                                                    {
+                                                        newCartonNos = AMWUtil.Common.ConvertUtil.ConverStringToRangeNum(resCartonNo + "," + cartonNo.ToString());
+                                                    }
+                                                    else{
+                                                        continue;
+                                                    }
+                                                }
                                             }
-                                            else
-                                            {
+ 
                                                 /// รับเข้า วางสินค้าลงบนพาเลทได้
-                                                var optionsNew = "CartonNo=" + options2[1] + "," + cartonNo.ToString();
-                                                //areaLocationID = (int)stoBaseItems.ID;
+                                                var optionsNew = "CartonNo=" + newCartonNos;
 
-                                                var baseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
+                                            var baseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
 
                                                 var objectSizeRoot = this.StaticValue.ObjectSizes.Where(ob => ob.ID == baseItems.ObjectSize_ID).FirstOrDefault();
 
@@ -126,7 +145,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     unitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoPack.UnitType_ID).Code,
                                                     baseUnitID = stoPack.BaseUnitType_ID,
                                                     baseUnitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoPack.BaseUnitType_ID).Code,
-                                                    objectSizeID = objectSizePack.ID,
+                                                    objectSizeID = skuItem.ObjectSize_ID,
                                                     objectSizeName = objectSizePack.Name,
                                                     maxWeiKG = objectSizePack.MaxWeigthKG,
                                                     minWeiKG = objectSizePack.MinWeigthKG,
@@ -141,8 +160,8 @@ namespace ProjectSTA.Engine.Business.Received
                                                     {
                                                         innerObjectSizeID = x.InnerObjectSize_ID,
                                                         innerObjectSizeName = this.StaticValue.ObjectSizes.Find(y => y.ID == x.InnerObjectSize_ID).Name,
-                                                        outerObjectSizeID = x.ID.Value,
-                                                        outerObjectSizeName = x.Name,
+                                                        outerObjectSizeID = x.OuterObjectSize_ID,
+                                                        outerObjectSizeName = this.StaticValue.ObjectSizes.Find(y => y.ID == x.OuterObjectSize_ID).Name,
                                                         maxQuantity = x.MaxQuantity,
                                                         minQuantity = x.MinQuantity,
                                                         quantity = 0
@@ -162,7 +181,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     unitID = stoBaseItems.UnitType_ID,
                                                     unitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoBaseItems.UnitType_ID).Code,
                                                     baseQty = stoBaseItems.BaseQuantity,
-                                                    objectSizeID = objectSizeRoot.ID,
+                                                    objectSizeID = baseItems.ObjectSize_ID,
                                                     objectSizeName = objectSizeRoot.Name,
                                                     maxWeiKG = objectSizeRoot.MaxWeigthKG,
                                                     minWeiKG = objectSizeRoot.MinWeigthKG,
@@ -177,7 +196,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     {
                                                         innerObjectSizeID = x.InnerObjectSize_ID,
                                                         innerObjectSizeName = this.StaticValue.ObjectSizes.Find(y => y.ID == x.InnerObjectSize_ID).Name,
-                                                        outerObjectSizeID = x.ID.Value,
+                                                        outerObjectSizeID = x.OuterObjectSize_ID,
                                                         outerObjectSizeName = x.Name,
                                                         maxQuantity = x.MaxQuantity,
                                                         minQuantity = x.MinQuantity,
@@ -222,8 +241,6 @@ namespace ProjectSTA.Engine.Business.Received
                                                     };
                                                     return res;
                                                 }
-                                            }
-                                            break;
                                         }
                                     }
                                 }
