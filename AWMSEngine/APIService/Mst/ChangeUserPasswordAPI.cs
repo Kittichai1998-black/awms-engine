@@ -8,6 +8,10 @@ namespace AWMSEngine.APIService.Mst
 {
     public class ChangeUserPasswordAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 48;
+        }
         public ChangeUserPasswordAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

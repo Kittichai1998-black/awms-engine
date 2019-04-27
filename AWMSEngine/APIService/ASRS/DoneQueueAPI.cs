@@ -16,6 +16,11 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class DoneQueueAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 16;
+        }
+
         public DoneQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class CheckBaseReceivedAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 89;
+        }
         public CheckBaseReceivedAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }

@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.Mst
 {
     public class PutSKUMasterAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 50;
+        }
         public PutSKUMasterAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

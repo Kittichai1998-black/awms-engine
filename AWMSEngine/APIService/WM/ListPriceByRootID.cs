@@ -12,6 +12,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class ListPriceByRootID : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 75;
+        }
         public ListPriceByRootID(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

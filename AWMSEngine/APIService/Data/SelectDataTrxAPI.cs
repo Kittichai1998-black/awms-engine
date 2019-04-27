@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.Data
 {
     public class SelectDataTrxAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 31;
+        }
         public SelectDataTrxAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

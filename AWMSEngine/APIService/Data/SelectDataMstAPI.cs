@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.Data
 {
     public class SelectDataMstAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 30;
+        }
         public SelectDataMstAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

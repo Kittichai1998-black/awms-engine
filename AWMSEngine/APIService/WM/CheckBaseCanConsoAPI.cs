@@ -9,6 +9,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class CheckBaseCanConsoAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 63;
+        }
         public CheckBaseCanConsoAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

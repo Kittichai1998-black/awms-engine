@@ -10,6 +10,11 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class UpdateStoLocationAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 22;
+        }
         public class TReq
         {
 

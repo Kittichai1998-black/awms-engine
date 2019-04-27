@@ -12,6 +12,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class ConfirmMapSTOReceiveAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 64;
+        }
         public ConfirmMapSTOReceiveAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

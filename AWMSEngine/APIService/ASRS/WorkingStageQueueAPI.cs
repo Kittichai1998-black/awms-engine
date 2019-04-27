@@ -9,6 +9,10 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class WorkingStageQueueAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 26;
+        }
         public WorkingStageQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

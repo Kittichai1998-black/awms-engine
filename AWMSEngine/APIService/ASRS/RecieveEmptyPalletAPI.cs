@@ -9,6 +9,10 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class MapEmptyPalletAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 90;
+        }
         public MapEmptyPalletAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }

@@ -14,6 +14,12 @@ namespace AWMSEngine.APIService.Api2
 {
     public class PutMaterialAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 15;
+        }
+
         public class TModel
         {
             public List<TData> datas;

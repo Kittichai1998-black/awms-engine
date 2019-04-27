@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.Mst
 {
     public class PutSKUMasterTypeFromFileServerAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 52;
+        }
         public PutSKUMasterTypeFromFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

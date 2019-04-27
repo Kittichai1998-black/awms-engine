@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class ListBaseConsoCanLoadingAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 74;
+        }
         public ListBaseConsoCanLoadingAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

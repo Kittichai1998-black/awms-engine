@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.Doc
 {
     public class CreateWorkedSTCDocAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 40;
+        }
         public CreateWorkedSTCDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

@@ -9,6 +9,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class MoveLocationAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 76;
+        }
         public MoveLocationAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

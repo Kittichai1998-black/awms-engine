@@ -14,6 +14,10 @@ namespace AWMSEngine.APIService.Data
 {
     public class InsUpdDataAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 27;
+        }
         public InsUpdDataAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

@@ -9,6 +9,10 @@ namespace AWMSEngine.APIService.Report
 {
     public class GetSPReportAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 61;
+        }
         public GetSPReportAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }

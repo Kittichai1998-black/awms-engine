@@ -10,7 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace AWMSEngine.APIService.Doc
 {
     public class RejectedGIDocAPI : BaseAPIService
+    { 
+      public override int APIServiceID()
     {
+        return 43;
+    }
+    
         public RejectedGIDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

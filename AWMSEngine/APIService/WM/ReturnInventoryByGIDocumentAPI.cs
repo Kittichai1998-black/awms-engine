@@ -9,6 +9,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class ReturnInventoryByGIDocumentAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 78;
+        }
         public ReturnInventoryByGIDocumentAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }

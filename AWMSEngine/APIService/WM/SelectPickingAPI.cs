@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.WM
 {
     public class SelectPickingAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 84;
+        }
         public SelectPickingAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

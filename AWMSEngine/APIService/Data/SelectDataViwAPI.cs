@@ -11,6 +11,12 @@ namespace AWMSEngine.APIService.Data
 {
     public class SelectDataViwAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 32;
+        }
+
         public SelectDataViwAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

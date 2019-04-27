@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.Data
 {
     public class SelectDataLogAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 29;
+        }
         public SelectDataLogAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

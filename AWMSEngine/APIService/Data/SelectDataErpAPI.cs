@@ -11,6 +11,10 @@ namespace AWMSEngine.APIService.Data
 {
     public class SelectDataErpAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 28;
+        }
         public SelectDataErpAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

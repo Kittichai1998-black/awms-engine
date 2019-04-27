@@ -9,6 +9,12 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class EnquiryQueueAPI : BaseAPIService
     {
+
+        public override int APIServiceID()
+        {
+            return 17;
+        }
+
         public EnquiryQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }

@@ -10,6 +10,10 @@ namespace AWMSEngine.APIService.Report
 {
     public class ExportFileServerAPI : BaseAPIService
     {
+        public override int APIServiceID()
+        {
+            return 60;
+        }
         public ExportFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
         {
         }
