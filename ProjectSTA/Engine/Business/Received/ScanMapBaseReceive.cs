@@ -265,7 +265,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     {
                                                         areaID = reqVO.areaID,
                                                         areaCode = areaCode,
-                                                        areaLocationID = (int)stoBaseItems.ID,
+                                                        areaLocationID = (int)location.ID,
                                                         areaLocationCode = location.Code,
                                                         bsto = stobsto
                                                     };
