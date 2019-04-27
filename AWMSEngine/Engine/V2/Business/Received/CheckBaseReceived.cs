@@ -14,20 +14,24 @@ namespace AWMSEngine.Engine.V2.Business.Received
     {
         public class TReq
         {
-            public int? areaID;
+            public int areaID;
         }
         public class TRes
         { 
-            public int? areaID;
-            public int? areaLocationID;
+            public int areaID;
+            public int areaLocationID;
             public string areaCode;
             public string areaLocationCode;
             public StorageObjectCriteria bsto;
         }
         protected override List<TRes> ExecuteEngine(TReq reqVO)
         {
+            if (reqVO.areaID == 0)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ได้รับค่า Area ID");
+            }
             List<TRes> stoRes = new List<TRes>();
-            
+            var areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
             var areaLocationMastersItems = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                   new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaMaster_ID",reqVO.areaID, SQLOperatorType.EQUALS),
@@ -40,7 +44,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 {
                     var res = new TRes();
                     res.areaID = reqVO.areaID;
-                    res.areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
+                    res.areaCode = areaCode;
                     res.areaLocationID = (int)location.ID;
                     res.areaLocationCode = location.Code;
 
@@ -65,7 +69,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
             else
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูล Location รับเข้า");
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบข้อมูล Gate ใน Area: " + areaCode);
 
             }
             return stoRes;
