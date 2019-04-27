@@ -87,9 +87,6 @@ namespace AMWUtil.Common
 
         public static string ConvertStringToRangeNum(string value)
         {
-            //List<int> termsList = new List<int>();
-            //termsList = value.Split(',').Select(Int32.Parse).ToList();
-
             var res = ToRanges(value.Split(',').Select(Int32.Parse).ToList());
             return string.Join(",", res);
         }

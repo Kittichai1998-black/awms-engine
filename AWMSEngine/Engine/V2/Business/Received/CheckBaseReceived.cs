@@ -28,7 +28,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
         {
             if (reqVO.areaID == 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่ได้รับค่า Area ID");
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Not received value for AreaID");
             }
             List<TRes> stoRes = new List<TRes>();
             var areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
@@ -69,7 +69,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             }
             else
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบข้อมูล Gate ใน Area: " + areaCode);
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Gate of Area: " + areaCode + " Not Found");
 
             }
             return stoRes;

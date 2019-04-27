@@ -32,12 +32,12 @@ namespace ProjectSTA.Engine.Business.Received
         {
             if (reqVO.areaID == 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่ได้รับค่า Area ID");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Not received value for AreaID");
             }
-            string scanCode = reqVO.scanCode == null ? throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่ได้รับค่า Scan Code") : reqVO.scanCode;
+            string scanCode = reqVO.scanCode == null ? throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Not received value for ScanCode") : reqVO.scanCode;
             if (scanCode.Length != 26)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "จำนวนตัวอักษรของ Scan Code ไม่เท่ากับ 26 ตัวอักษร");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ScanCode must be equal 26-digits");
             }
             string orderNo = scanCode.Substring(0, 7);
             string skuCode1 = scanCode.Substring(7, 15); 
@@ -47,7 +47,12 @@ namespace ProjectSTA.Engine.Business.Received
             dynamic areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
             if (areaCode == null)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "ไม่พบ Area Code นี้ในระบบ");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Area Code Not Found");
+            }
+            var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
+            if (skuItem == null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of SKU Code: " + skuCode + " Not Found");
             }
             //หา Array ของ ArealocationID ที่ AreaMaster_ID ตรงกับ areaID
             var areaLocationMastersItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
@@ -58,7 +63,7 @@ namespace ProjectSTA.Engine.Business.Received
                   new SQLOrderByCriteria[] { }, null, null, this.BuVO);
             if (areaLocationMastersItems == null)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ Gate ใน Area: "+ areaCode + " นี้");
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Gate of Area: "+ areaCode + " Not Found");
             }
             int lenghtAreaLocItems = areaLocationMastersItems.Count();
             int numLoc = 0;
@@ -68,11 +73,7 @@ namespace ProjectSTA.Engine.Business.Received
            
             //dynamic areaLocationCode = null;
             StorageObjectCriteria stobsto = null;
-            var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
-            if(skuItem == null)
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ SKU นี้ในระบบ");
-            }
+            
             foreach (var location in areaLocationMastersItems)
             {
                 numLoc++;
@@ -125,7 +126,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     {
                                                         ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
                                                         throw new AMWException(this.Logger, AMWExceptionCode.V1002,
-                                                            "PalletNo. " + stoBaseItems.Code + " มี SKU Code: " + skuCode + ", Carton No." + cartonNo.ToString() + " นี้อยู่แล้ว ไม่สามารถสแกนซ้ำกันได้");
+                                                            "PalletNo. " + stoBaseItems.Code + " had SKU Code: " + skuCode + ", Carton No." + cartonNo.ToString() + " already");
                                                     }
                                                     else
                                                     {
@@ -145,17 +146,17 @@ namespace ProjectSTA.Engine.Business.Received
                                                 var baseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
                                                 if (baseItems == null)
                                                 {
-                                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบข้อมูลของ Pallet นี้ในระบบ");
+                                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of Pallet Not Found");
                                                 }
                                                 var objectSizeRoot = this.StaticValue.ObjectSizes.Where(ob => ob.ID == baseItems.ObjectSize_ID).FirstOrDefault();
                                                 if (objectSizeRoot == null)
                                                 {
-                                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบข้อมูล Object Size ของ Pallet: "+ baseItems.Code + " นี้ในระบบ");
+                                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Object Size of Pallet: " + baseItems.Code + " Not Found");
                                                 }
                                                 var objectSizePack = this.StaticValue.ObjectSizes.Where(ob => ob.ID == skuItem.ObjectSize_ID).FirstOrDefault();
                                                 if (objectSizePack == null)
                                                 {
-                                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบข้อมูล Object Size ของ SKU: " + skuItem.Code + " นี้ในระบบ");
+                                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Object Size of SKU Code: " + skuItem.Code + " Not Found");
                                                 }
                                                 //--validate limit size of pallet
                                                 List<StorageObjectCriteria> mapstos = new List<StorageObjectCriteria> { };
@@ -272,23 +273,23 @@ namespace ProjectSTA.Engine.Business.Received
                                                 }
                                                 else
                                                 {
-                                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถกำกับสินค้ากับ Pallet No." + stoBaseItems.Code + " ได้");
+                                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Can't add SKU Code: " + skuCode + " in Pallet No." + stoBaseItems.Code);
                                                 }
                                             }
                                             else
                                             {
-                                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ Carton No. ของสินค้าที่อยู่ใน Pallet: "+ stoBaseItems.Code);
+                                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Carton No. of SKU Code: " + skuCode + " on Pallet: " + stoBaseItems.Code + " Not Found");
                                             }
                                         }
                                         else
                                         {
-                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ Carton No. ของสินค้าที่อยู่ใน Pallet: " + stoBaseItems.Code);
+                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Carton No. of SKU Code: " + skuCode + " on Pallet: " + stoBaseItems.Code + " Not Found");
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบข้อมูล Options");
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Options Not Found");
                                 }
                             }
                             else
@@ -296,7 +297,7 @@ namespace ProjectSTA.Engine.Business.Received
                                 //orderNo, skuCode ไม่ตรงกัน
                                 if (numLoc == lenghtAreaLocItems)
                                 {
-                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Order No.หรือ SKU Code ไม่ตรงกัน จึงไม่สามารถวางสินค้าลงบน Pallet ได้");
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Order No. or SKU Code doesn't match");
                                 }
                                 else
                                 {
@@ -350,7 +351,7 @@ namespace ProjectSTA.Engine.Business.Received
                             }
                             else
                             {
-                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถกำกับสินค้ากับ Pallet No."+ stoBaseItems.Code +" ได้");
+                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Can't add SKU Code: " + skuCode + " in Pallet No." + stoBaseItems.Code);
                             }
                         }
                         // แต่ว่าถ้ายังมีพาเลทอีกอันที่ยังไม่เช็ค
@@ -410,12 +411,12 @@ namespace ProjectSTA.Engine.Business.Received
                             }
                             else
                             {
-                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่สามารถกำกับสินค้ากับ Pallet No." + tempStoBaseItems[0].Code + " ได้");
+                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Can't add SKU Code: " + skuCode + " in Pallet No." + tempStoBaseItems[0].Code);
                             }
                         }
                         else
                         {
-                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "ไม่พบ Pallet ที่สามารถวางสินค้าได้");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Empty Pallet Not Found");
 
                         }
                     }
@@ -426,7 +427,7 @@ namespace ProjectSTA.Engine.Business.Received
 
                 }
             }
-                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถวางสินค้าลงบน Pallet ได้");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Can't add product in this pallet");
         }
     }
 }
