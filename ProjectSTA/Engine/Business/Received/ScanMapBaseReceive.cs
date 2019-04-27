@@ -1,7 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.Engine.V2.Business;
-using AWMSEngine.Engine.Validation;
+using AWMSEngine.Engine.V2.Validation;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -34,8 +34,13 @@ namespace ProjectSTA.Engine.Business.Received
             string orderNo = scanCode.Substring(0, 7);
             string skuCode1 = scanCode.Substring(7, 15); 
             string skuCode = skuCode1.Substring(0, 12); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
-            int cartonNo = int.Parse(scanCode.Substring(22, 4)); 
+            int cartonNo = int.Parse(scanCode.Substring(22, 4));
 
+            dynamic areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
+            if (areaCode == null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Area Code นี้ในระบบ");
+            }
             //หา Array ของ ArealocationID ที่ AreaMaster_ID ตรงกับ areaID
             var areaLocationMastersItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                   new SQLConditionCriteria[] {
@@ -43,16 +48,23 @@ namespace ProjectSTA.Engine.Business.Received
                         new SQLConditionCriteria("Status", 1, SQLOperatorType.EQUALS, SQLConditionType.AND)
                   },
                   new SQLOrderByCriteria[] { }, null, null, this.BuVO);
+            if (areaLocationMastersItems == null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ Gate ใน Area: "+ areaCode + " นี้");
+            }
             int lenghtAreaLocItems = areaLocationMastersItems.Count();
             int numLoc = 0;
             List<dynamic> tempAreaLoc = new List<dynamic>();
             List<dynamic> tempStoBaseItems = new List<dynamic>();
             //dynamic areaLocationID = null;
-            dynamic areaCode = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID).Code;
+           
             //dynamic areaLocationCode = null;
             StorageObjectCriteria stobsto = null;
             var skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
-
+            if(skuItem == null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบ SKU นี้ในระบบ");
+            }
             foreach (var location in areaLocationMastersItems)
             {
                 numLoc++;
@@ -92,7 +104,7 @@ namespace ProjectSTA.Engine.Business.Received
                                         if (options2[0] == "CartonNo")
                                         {  //มีค่า CartonNo 
                                             //1-5
-                                            var resCartonNo = AMWUtil.Common.ConvertUtil.ConverRangeNumToString(options2[1]);
+                                            var resCartonNo = AMWUtil.Common.ConvertUtil.ConvertRangeNumToString(options2[1]);
                                             dynamic newCartonNos = null;
                                             var splitCartonNo = resCartonNo.Split(",");
                                             int lenSplitCartonNo = splitCartonNo.Length;
@@ -111,7 +123,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                 {
                                                     if(numCarton == lenSplitCartonNo)
                                                     {
-                                                        newCartonNos = AMWUtil.Common.ConvertUtil.ConverStringToRangeNum(resCartonNo + "," + cartonNo.ToString());
+                                                        newCartonNos = AMWUtil.Common.ConvertUtil.ConvertStringToRangeNum(resCartonNo + "," + cartonNo.ToString());
                                                     }
                                                     else{
                                                         continue;
@@ -122,7 +134,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                 /// รับเข้า วางสินค้าลงบนพาเลทได้
                                                 var optionsNew = "CartonNo=" + newCartonNos;
 
-                                            var baseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
+                                                var baseItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
 
                                                 var objectSizeRoot = this.StaticValue.ObjectSizes.Where(ob => ob.ID == baseItems.ObjectSize_ID).FirstOrDefault();
 

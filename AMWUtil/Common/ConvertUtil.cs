@@ -7,7 +7,7 @@ namespace AMWUtil.Common
 {
     public static class ConvertUtil
     {
-        public static string ConverRangeNumToString(string[] value)
+        public static string ConvertRangeNumToString(string[] value)
         {
             string newValue = "";
             int[] newArray = new int[] { };
@@ -31,7 +31,7 @@ namespace AMWUtil.Common
             }
             return newValue;
         }
-        public static string ConverRangeNumToString(string value)
+        public static string ConvertRangeNumToString(string value)
         {
             string newValue = "";
             int[] newArray = new int[] { };
@@ -39,7 +39,7 @@ namespace AMWUtil.Common
             if (value.Contains(","))
             {
                 strVal = value.Split(",");
-                return ConverRangeNumToString(strVal);
+                return ConvertRangeNumToString(strVal);
             }
             else
             {
@@ -85,7 +85,7 @@ namespace AMWUtil.Common
             return newArray;
         }
 
-        public static string ConverStringToRangeNum(string value)
+        public static string ConvertStringToRangeNum(string value)
         {
             //List<int> termsList = new List<int>();
             //termsList = value.Split(',').Select(Int32.Parse).ToList();

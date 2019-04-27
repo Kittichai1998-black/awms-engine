@@ -54,7 +54,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                     if(stoLocationItems != null)
                     {
-                        res.bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
+                        res.bsto = ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
                     }
                     else
                     {

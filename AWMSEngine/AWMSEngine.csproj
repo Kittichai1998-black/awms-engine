@@ -39,7 +39,6 @@
 
   <ItemGroup>
     <Folder Include="Engine\V2\General\" />
-    <Folder Include="Engine\V2\Validation\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
