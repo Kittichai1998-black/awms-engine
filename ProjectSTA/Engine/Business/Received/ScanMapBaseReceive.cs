@@ -126,7 +126,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     {
                                                         ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
                                                         throw new AMWException(this.Logger, AMWExceptionCode.V1002,
-                                                            "PalletNo. " + stoBaseItems.Code + " had SKU Code: " + skuCode + ", Carton No." + cartonNo.ToString() + " already");
+                                                            "Pallet No. " + stoBaseItems.Code + " had SKU Code: " + skuCode + " and Carton No." + cartonNo.ToString() + " already");
                                                     }
                                                     else
                                                     {
