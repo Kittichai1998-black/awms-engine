@@ -18,7 +18,7 @@ namespace AWMSEngine.APIService.Data
         {
             return 27;
         }
-        public InsUpdDataAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public InsUpdDataAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

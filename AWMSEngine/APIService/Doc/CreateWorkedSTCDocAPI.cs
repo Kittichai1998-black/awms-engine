@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 40;
         }
-        public CreateWorkedSTCDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateWorkedSTCDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

@@ -43,7 +43,7 @@ namespace AWMSEngine.APIService.Api2
                 }
             }
         }
-        public CreateAuditAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

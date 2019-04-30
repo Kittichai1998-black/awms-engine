@@ -17,7 +17,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 80;
         }
-        public ScanMapStoAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ScanMapStoAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

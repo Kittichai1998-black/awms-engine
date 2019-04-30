@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 65;
         }
-        public ConfirmQueueIssueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ConfirmQueueIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

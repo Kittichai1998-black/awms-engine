@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 70;
         }
-        public GetSAPLogAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GetSAPLogAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 86;
         }
-        public UpdateIssuedPickingAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public UpdateIssuedPickingAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

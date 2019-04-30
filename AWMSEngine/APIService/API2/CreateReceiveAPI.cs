@@ -44,7 +44,7 @@ namespace AWMSEngine.APIService.Api2
             }
         }
 
-        public CreateReceiveAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

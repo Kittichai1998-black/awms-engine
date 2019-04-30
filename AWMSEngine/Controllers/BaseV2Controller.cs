@@ -50,7 +50,7 @@ namespace AWMSEngine.Controllers
             if (className != null)
             {
                 Type type = className.FullClassName.StartsWith("AWMSEngine") ? Type.GetType(className.FullClassName) : GetClass(className.FullClassName);//Type.GetType(className.FullClassName);
-                var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { null, isAuthen });
+                var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { this, isAuthen });
                 var res = getInstanct.Execute(jsonObj);
                 return res;
             }

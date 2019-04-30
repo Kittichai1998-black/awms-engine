@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 75;
         }
-        public ListPriceByRootID(ControllerBase controllerAPI) : base(controllerAPI)
+        public ListPriceByRootID(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

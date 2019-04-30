@@ -18,7 +18,7 @@ namespace AWMSEngine.APIService.ASRS
         {
             return 20;
         }
-        public RegisterQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public RegisterQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

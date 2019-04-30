@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.ASRS
         {
             return 24;
         }
-        public WCSMappingPalletAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public WCSMappingPalletAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

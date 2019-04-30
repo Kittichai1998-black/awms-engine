@@ -18,8 +18,8 @@ namespace AWMSEngine.APIService.WM
         {
             return 81;
         }
-        public ScanPickingAndConsoAPI(ControllerBase controllerAPI) : base(controllerAPI)
-        {
+        public ScanPickingAndConsoAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        { 
         }
 
         protected override dynamic ExecuteEngineManual()

@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Mst
         {
             return 49;
         }
-        public PutCustomerFromFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutCustomerFromFileServerAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

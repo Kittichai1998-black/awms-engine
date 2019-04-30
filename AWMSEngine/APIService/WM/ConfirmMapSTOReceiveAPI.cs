@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 64;
         }
-        public ConfirmMapSTOReceiveAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ConfirmMapSTOReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

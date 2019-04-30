@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.Mst
         {
             return 54;
         }
-        public PutWarehouseAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutWarehouseAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

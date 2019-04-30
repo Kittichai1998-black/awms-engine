@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 41;
         }
-        public GetDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GetDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

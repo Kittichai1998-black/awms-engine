@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.Mst
         {
             return 48;
         }
-        public ChangeUserPasswordAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ChangeUserPasswordAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

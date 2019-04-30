@@ -14,8 +14,7 @@ namespace AWMSEngine.APIService.API2
         {
             return 11;
         }
-        public CheckForUpdateIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) :
-            base(controllerAPI, isAuthenAuthorize)
+        public CheckForUpdateIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

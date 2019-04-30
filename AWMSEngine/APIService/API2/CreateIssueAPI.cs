@@ -48,7 +48,7 @@ namespace AWMSEngine.APIService.Api2
                 }
             }
         }
-        public CreateIssueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

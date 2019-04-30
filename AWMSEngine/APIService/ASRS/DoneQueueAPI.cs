@@ -21,7 +21,7 @@ namespace AWMSEngine.APIService.ASRS
             return 16;
         }
 
-        public DoneQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public DoneQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

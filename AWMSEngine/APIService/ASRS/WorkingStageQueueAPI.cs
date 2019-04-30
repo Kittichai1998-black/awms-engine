@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.ASRS
         {
             return 26;
         }
-        public WorkingStageQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public WorkingStageQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

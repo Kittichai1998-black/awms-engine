@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 83;
         }
-        public SelectAuditAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public SelectAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 76;
         }
-        public MoveLocationAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public MoveLocationAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
