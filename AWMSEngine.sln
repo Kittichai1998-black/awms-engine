@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSEngine", "AWMSEngine\AWMSEngine.csproj", "{CF0D3166-2C4F-4591-9CA4-00C03FC7BC15}"
 EndProject
@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WCSSimAPI", "WCSSimAPI\WCSS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebTest", "WebTest\WebTest.csproj", "{79C9A428-68D6-4078-BB77-C2EEE7468F6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectSTA", "ProjectSTA\ProjectSTA.csproj", "{BF01F812-9A3C-429D-AD90-A6BBC1FA3509}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectSTA", "ProjectSTA\ProjectSTA.csproj", "{BF01F812-9A3C-429D-AD90-A6BBC1FA3509}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectMRK", "ProjectMRK\ProjectMRK.csproj", "{7823FFB8-261A-40A6-9C82-1A9059581567}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{BF01F812-9A3C-429D-AD90-A6BBC1FA3509}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF01F812-9A3C-429D-AD90-A6BBC1FA3509}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF01F812-9A3C-429D-AD90-A6BBC1FA3509}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7823FFB8-261A-40A6-9C82-1A9059581567}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7823FFB8-261A-40A6-9C82-1A9059581567}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7823FFB8-261A-40A6-9C82-1A9059581567}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7823FFB8-261A-40A6-9C82-1A9059581567}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
