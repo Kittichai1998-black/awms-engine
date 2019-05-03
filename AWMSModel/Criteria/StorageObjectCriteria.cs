@@ -18,7 +18,7 @@ namespace AWMSModel.Criteria
         public long? skuID;
         public long? parentID;
         public long warehouseID;
-        public long areaID;
+        public long? areaID;
         public StorageObjectType? parentType;
         public string code;
         public string name;
