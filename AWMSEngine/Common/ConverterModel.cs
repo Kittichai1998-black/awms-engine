@@ -76,7 +76,7 @@ namespace AWMSEngine.Common
                     unitID ?? x.unitID).qty,
                 UnitType_ID = unitID ?? x.unitID,
                 DocumentItem_ID = docItemID ?? 0,
-                StorageObject_ID = x.id.Value
+                Sou_StorageObject_ID = x.id.Value
             }).ToList();
         }
     }

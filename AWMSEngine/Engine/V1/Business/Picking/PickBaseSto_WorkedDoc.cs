@@ -51,12 +51,12 @@ namespace AWMSEngine.Engine.Business.Picking
             //Pciked โดยการ Update STO ทั้งหมดที่ถูกจอง
             foreach(var disto in distos.Where(x=>x.Status == EntityStatus.INACTIVE))
             {
-                var pstoPick = stoTree.FirstOrDefault(x => x.id == disto.StorageObject_ID);
+                var pstoPick = stoTree.FirstOrDefault(x => x.id == disto.Sou_StorageObject_ID);
                 if (pstoPick != null)
                 {
 
                     disto.Status = EntityStatus.ACTIVE;
-                    ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
 
                     var unitConvert = StaticValue.ConvertToNewUnitBySKU(
                                                         pstoPick.skuID.Value,

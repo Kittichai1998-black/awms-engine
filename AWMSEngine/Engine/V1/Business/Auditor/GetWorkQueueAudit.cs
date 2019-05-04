@@ -95,7 +95,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                     {
                         ID = (long?)null,
                         DocumentItem_ID = docItem.ID.Value,
-                        StorageObject_ID = sto.ID.Value,
+                        Sou_StorageObject_ID = sto.ID.Value,
                         BaseQuantity = (decimal?)null,
                         Quantity = (decimal?)null,
                         BaseUnitType_ID = sto.BaseUnitType_ID,

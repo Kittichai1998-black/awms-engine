@@ -340,7 +340,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     var dataStoBranch = new List<dynamic>();
                     foreach (var stoDoc in dataDocItem.DocItemStos)
                     {
-                        var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(stoDoc.StorageObject_ID, BuVO);
+                        var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(stoDoc.Sou_StorageObject_ID, BuVO);
                         //var sto = ADO.StorageObjectADO.GetInstant().Get(stoDoc.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
                         if (sto.Batch != null)
                         {
@@ -409,7 +409,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     var dataStoBranch = new List<string>();
                     foreach (var stoDoc in dataDocItem.DocItemStos)
                     {
-                        var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(stoDoc.StorageObject_ID, this.BuVO);
+                        var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(stoDoc.Sou_StorageObject_ID, this.BuVO);
                         if (sto.Batch != null)
                         {
                             dataStoBranch.Add(sto.Batch);
