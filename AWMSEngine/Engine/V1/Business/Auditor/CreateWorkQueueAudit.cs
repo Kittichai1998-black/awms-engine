@@ -85,9 +85,9 @@ namespace AWMSEngine.Engine.Business.Auditor
             List<amt_DocumentItemStorageObject> distoList = new List<amt_DocumentItemStorageObject>();
             reqVO.disto.ForEach(x =>
             {
-                distoList.Add(ADO.DocumentADO.GetInstant().MappingSTO(x, this.BuVO));
-                ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(x.ID.Value, EntityStatus.INACTIVE, this.BuVO);//ADD BY TOM
-                var res = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                distoList.Add(ADO.DocumentADO.GetInstant().InsertMappingSTO(x, this.BuVO));
+                ADO.DocumentADO.GetInstant().UpdateMappingSTO(x.ID.Value, EntityStatus.INACTIVE, this.BuVO);//ADD BY TOM
+                var res = ADO.StorageObjectADO.GetInstant().Get(x.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
                 var resBase = ADO.StorageObjectADO.GetInstant().Get(res.parentID.Value, StorageObjectType.PACK, false, false, this.BuVO);
                 itemLists.Add(new TRes.ItemList { itemCode = res.code, palletCode = resBase.code });
             });
@@ -103,7 +103,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                     if (x.Sou_AreaMaster_ID == 5)//ASRS
                     {
-                        var distoItem = distoList.Where(dis => getStoList.Contains(dis.StorageObject_ID)).ToList();
+                        var distoItem = distoList.Where(dis => getStoList.Contains(dis.Sou_StorageObject_ID)).ToList();
                         var getDocItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
                             new SQLConditionCriteria("ID", distoList.Select(sto => sto.DocumentItem_ID ).ToList(), SQLOperatorType.IN)
                         }, this.BuVO);
