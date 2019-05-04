@@ -10,11 +10,11 @@ namespace AWMSModel.Criteria
         public string qty;
         public string unit;
         //public string movingType;
-        public string source;
+        public string souWarehouseCode;
         public string warehouseCode;//รหัสคลังสินค้า
+        public string areaCode;//รหัสโซน
         public string orderNo;
         public string lot;
         public string batch;
-        public string areaCode;//รหัสโซน
     }
 }

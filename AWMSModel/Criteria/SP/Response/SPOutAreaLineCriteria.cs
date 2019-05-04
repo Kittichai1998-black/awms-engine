@@ -22,5 +22,6 @@ namespace AWMSModel.Criteria.SP.Response
         public long? Des_AreaLocationMaster_ID;
         public string Des_AreaLocationMaster_Code;
         public YesNoFlag DefaultFlag;
+        public string Condition_Eval;
     }
 }
