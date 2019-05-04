@@ -151,7 +151,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 var palletList = new List<PalletDataCriteria>();
                 palletList.Add(new PalletDataCriteria()
                 {
-                    source = "Sou_Warehouse_Code=" + reqVO.mappingPallets[0].source,
+                    souWarehouseCode = "Sou_Warehouse_Code=" + reqVO.mappingPallets[0].souWarehouseCode,
                     code = reqVO.baseCode,
                     qty = "1",
                     unit = null,
@@ -166,7 +166,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 {
                     palletList.Add(new PalletDataCriteria()
                     {
-                        source = "Sou_Warehouse_Code=" + row.source,
+                        souWarehouseCode = "Sou_Warehouse_Code=" + row.souWarehouseCode,
                         code = row.code,
                         qty = row.qty,
                         unit = row.unit,
