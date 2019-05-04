@@ -25,7 +25,7 @@ namespace AWMSEngine.Engine.Business.Received
             var stopacks = this.ListPackSTOIDs(reqVO.stomap);
             var stopackLockByDock = ADO.DocumentADO.GetInstant().ListStoInDocs(stopacks.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO);
 
-            stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.StorageObject_ID == x.id));
+            stopacks.RemoveAll(x => stopackLockByDock.Any(y => y.Sou_StorageObject_ID == x.id));
 
             amt_Document doc = null;
 

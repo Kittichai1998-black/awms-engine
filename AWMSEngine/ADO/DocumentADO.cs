@@ -171,7 +171,7 @@ namespace AWMSEngine.ADO
 
             docItem.ID = docItemTmp.ID;
             if (docItem.DocItemStos != null && docItem.DocItemStos.Count() > 0)
-                docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; this.MappingSTO(x, buVO); });
+                docItem.DocItemStos.ForEach(x => { x.DocumentItem_ID = docItem.ID.Value; this.InsertMappingSTO(x, buVO); });
             
             /*docItem.StorageObjectIDs = ADO.DataADO.GetInstant()
                 .SelectBy<amt_DocumentItemStorageObject>("DocumentItem_ID", docItem.ID.Value, buVO)
@@ -192,43 +192,45 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction);
         }
 
-        public long UpdateStatusMappingSTO(long disto_id, EntityStatus status, VOCriteria buVO)
+        public long UpdateMappingSTO(long disto_id, EntityStatus status, VOCriteria buVO)
         {
-            return UpdateStatusMappingSTO(disto_id, null, null, status, buVO);
+            return UpdateMappingSTO(disto_id, null, null, null, status, buVO);
         }
-        public long UpdateStatusMappingSTO(long disto_id, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
+        public long UpdateMappingSTO(long disto_id, long? des_StorageObjectID, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@id", disto_id);
+            param.Add("@des_storageObjectID", des_StorageObjectID);
             param.Add("@qty", qty);
             param.Add("@baseQty", baseQty);
             param.Add("@status", status);
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
-            this.Execute("SP_DOCITEM_MAP_STO_V2",
+            this.Execute("SP_DOCITEM_MAP_STO_V3",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction);
             long resID = param.Get<long>("@resID");
             return resID;
         }
-        public List<amt_DocumentItemStorageObject> MappingSTO(List<amt_DocumentItemStorageObject> docItemSto, VOCriteria buVO)
+        public List<amt_DocumentItemStorageObject> InsertMappingSTO(List<amt_DocumentItemStorageObject> docItemSto, VOCriteria buVO)
         {
-            docItemSto.ForEach(x => MappingSTO(x, buVO));
+            docItemSto.ForEach(x => InsertMappingSTO(x, buVO));
             return docItemSto;
         }
-        public amt_DocumentItemStorageObject MappingSTO(amt_DocumentItemStorageObject docItemSto, VOCriteria buVO)
+        public amt_DocumentItemStorageObject InsertMappingSTO(amt_DocumentItemStorageObject docItemSto, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@documentItemID", docItemSto.DocumentItem_ID);
-            param.Add("@storageObjectID", docItemSto.StorageObject_ID);
+            param.Add("@sou_storageObjectID", docItemSto.Sou_StorageObject_ID);
+            param.Add("@des_storageObjectID", docItemSto.Des_StorageObject_ID);
             param.Add("@qty", docItemSto.Quantity);
             param.Add("@unitID", docItemSto.UnitType_ID);
             param.Add("@baseQty", docItemSto.BaseQuantity);
             param.Add("@baseUnitID", docItemSto.BaseUnitType_ID);
             param.Add("@actionBy", buVO.ActionBy);
             param.Add("@resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
-            this.Execute("SP_DOCITEM_MAP_STO_V2",
+            this.Execute("SP_DOCITEM_MAP_STO_V3",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction);
@@ -285,7 +287,22 @@ namespace AWMSEngine.ADO
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
-
+        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, MovementType movementTypeID, VOCriteria buVO)
+        {
+            var whares = new List<SQLConditionCriteria>();
+            whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("MovementType_ID", movementTypeID, SQLOperatorType.EQUALS));
+            whares.Add(new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN));
+            if (souBranchID.HasValue)
+                whares.Add(new SQLConditionCriteria("Sou_Branch_ID", souBranchID, SQLOperatorType.EQUALS));
+            if (souWarehouseID.HasValue)
+                whares.Add(new SQLConditionCriteria("Sou_Warehouse_ID", souWarehouseID, SQLOperatorType.EQUALS));
+            if (souAreaMasterID.HasValue)
+                whares.Add(new SQLConditionCriteria("Sou_AreaMaster_ID", souAreaMasterID, SQLOperatorType.EQUALS));
+           
+            var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
+            return res;
+        }
         public List<amt_DocumentItem> ListItem(DocumentTypeID docTypeID, long? packID,
             long? souBranchID, long? souWarehouseID,
             long? desBranchID, long? desWarehouseID,

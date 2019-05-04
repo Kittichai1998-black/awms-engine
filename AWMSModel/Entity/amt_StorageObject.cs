@@ -7,7 +7,6 @@ namespace AWMSModel.Entity
 {
     public class amt_StorageObject : BaseEntityCreateModify
     {
-        public long? ID;
         public int AreaLocationMaster_ID;
         public long? ParentStorageObject_ID;
         public int BaseMaster_ID;

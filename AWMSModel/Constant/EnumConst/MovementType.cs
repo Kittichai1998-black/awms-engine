@@ -6,6 +6,7 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum MovementType
     {
-        NORMAL = 1
+        NORMAL = 1,
+        EMPTY = 2
     }
 }

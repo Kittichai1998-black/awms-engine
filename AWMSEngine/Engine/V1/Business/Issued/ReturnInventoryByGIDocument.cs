@@ -37,7 +37,7 @@ namespace AWMSEngine.Engine.Business.Issued
             var docItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(reqVO.docItemID, this.BuVO);
             List<amt_StorageObject> mapstoCanReturns = new List<amt_StorageObject>();
             docItem.DocItemStos.ForEach(x => {
-                var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(x.StorageObject_ID, this.BuVO);
+                var sto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(x.Sou_StorageObject_ID, this.BuVO);
                 if(sto.Code == reqVO.packCode && sto.Batch == reqVO.batch && sto.Lot == reqVO.lot && sto.OrderNo == reqVO.orderNo)
                 {
                     mapstoCanReturns.Add(sto);
@@ -45,7 +45,7 @@ namespace AWMSEngine.Engine.Business.Issued
             });
             
             if (reqVO.baseQty <= docItem.DocItemStos
-                                        .Where(x => mapstoCanReturns.Any(y => y.ID == x.StorageObject_ID))
+                                        .Where(x => mapstoCanReturns.Any(y => y.ID == x.Sou_StorageObject_ID))
                                         .Sum(x => x.BaseQuantity))
             {
                 var packInfo = baseTree.FirstOrDefault(x => x.type == StorageObjectType.PACK);
@@ -92,10 +92,10 @@ namespace AWMSEngine.Engine.Business.Issued
                     ADO.StorageObjectADO.GetInstant().PutV2(newSto, this.BuVO);
                     baseInfo.mapstos.Add(newSto);
 
-                    ADO.DocumentADO.GetInstant().MappingSTO(new amt_DocumentItemStorageObject()
+                    ADO.DocumentADO.GetInstant().InsertMappingSTO(new amt_DocumentItemStorageObject()
                     {
                         DocumentItem_ID = docItem.ID.Value,
-                        StorageObject_ID = newSto.id.Value,
+                        Sou_StorageObject_ID = newSto.id.Value,
                         Quantity = -newSto.qty,
                         UnitType_ID = newSto.unitID,
                         BaseQuantity = -newSto.baseQty,
@@ -118,10 +118,10 @@ namespace AWMSEngine.Engine.Business.Issued
                     ADO.StorageObjectADO.GetInstant().PutV2(packInfo, this.BuVO);
                     baseInfo.mapstos.Add(packInfo);
 
-                    ADO.DocumentADO.GetInstant().MappingSTO(new amt_DocumentItemStorageObject()
+                    ADO.DocumentADO.GetInstant().InsertMappingSTO(new amt_DocumentItemStorageObject()
                     {
                         DocumentItem_ID = docItem.ID.Value,
-                        StorageObject_ID = packInfo.id.Value,
+                        Sou_StorageObject_ID = packInfo.id.Value,
                         Quantity = -converUnit.qty,
                         UnitType_ID = converUnit.unitType_ID,
                         BaseQuantity = -converUnit.baseQty,
