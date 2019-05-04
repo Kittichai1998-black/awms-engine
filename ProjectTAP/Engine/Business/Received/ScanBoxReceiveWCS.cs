@@ -9,6 +9,7 @@ using AWMSEngine.Engine.V2.Validation;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
+
 namespace ProjectTAP.Engine.Business.Received
 {
     public class ScanBoxReceiveWCS : AWMSEngine.Engine.BaseEngine<ScanBoxReceiveWCS.TReq, ScanBoxReceiveWCS.TRes>
@@ -58,44 +59,7 @@ namespace ProjectTAP.Engine.Business.Received
 
             if (diList.Count > 0)
             {
-                var baseSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
-                  new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("Code",reqVO.baseCode, SQLOperatorType.EQUALS),
-                  },
-                  new SQLOrderByCriteria[] { }, null, null, this.BuVO);
-
-
-                if(baseSto.Count > 0)
-                {
-                    //มีกล่องในระบบ
-                    
-                }
-                else
-                {
-                    //ไม่มีกล่องในระบบ
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                var getStoResult = this.getSto(reqVO);
 
             }
             else
@@ -103,6 +67,49 @@ namespace ProjectTAP.Engine.Business.Received
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, "No SKU waiting to be received");
             }
             return null;
+        }
+
+        private List<amt_StorageObject> getSto(TReq reqVO)
+        {
+            List<amt_StorageObject> baseStoReturn = new List<amt_StorageObject>();
+
+            var baseSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                  new SQLConditionCriteria[] {
+                                    new SQLConditionCriteria("Code",reqVO.baseCode, SQLOperatorType.EQUALS),
+                  },
+                  new SQLOrderByCriteria[] { }, null, null, this.BuVO);
+            
+                    if (baseSto.Count > 0)
+                    {
+                        //มีกล่องในระบบ
+                        baseStoReturn = baseSto;
+
+                    }
+                    else
+                    {
+                        //ไม่มีกล่องในระบบ
+                        //New
+
+                        var reqScan = new ScanMapStoNoDoc.TReq()
+                        {
+                            rootID = Convert.ToInt64(reqVO.baseCode),
+                            scanCode = skuItem.Code,
+                            orderNo = orderNo,
+                            batch = null,
+                            lot = null,
+                            amount = 1,
+                            unitCode = this.StaticValue.UnitTypes.Find(un => un.ID == skuItem.UnitType_ID).Code,
+                            productDate = null,
+                            warehouseID = this.StaticValue.AreaMasters.Find(ar => ar.ID == reqVO.areaID).Warehouse_ID,
+                            areaID = reqVO.areaID,
+                            options = newOptions,
+                            isRoot = false,
+                            mode = VirtualMapSTOModeType.REGISTER,
+                            action = VirtualMapSTOActionType.ADD
+                        };
+
+            }
+                    return baseStoReturn;
         }
     }
 }
