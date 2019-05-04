@@ -90,23 +90,23 @@ namespace ProjectTAP.Engine.Business.Received
                         //ไม่มีกล่องในระบบ
                         //New
 
-                        var reqScan = new ScanMapStoNoDoc.TReq()
-                        {
-                            rootID = Convert.ToInt64(reqVO.baseCode),
-                            scanCode = skuItem.Code,
-                            orderNo = orderNo,
-                            batch = null,
-                            lot = null,
-                            amount = 1,
-                            unitCode = this.StaticValue.UnitTypes.Find(un => un.ID == skuItem.UnitType_ID).Code,
-                            productDate = null,
-                            warehouseID = this.StaticValue.AreaMasters.Find(ar => ar.ID == reqVO.areaID).Warehouse_ID,
-                            areaID = reqVO.areaID,
-                            options = newOptions,
-                            isRoot = false,
-                            mode = VirtualMapSTOModeType.REGISTER,
-                            action = VirtualMapSTOActionType.ADD
-                        };
+                        //var reqScan = new ScanMapStoNoDoc.TReq()
+                        //{
+                        //    rootID = Convert.ToInt64(reqVO.baseCode),
+                        //    scanCode = skuItem.Code,
+                        //    orderNo = orderNo,
+                        //    batch = null,
+                        //    lot = null,
+                        //    amount = 1,
+                        //    unitCode = this.StaticValue.UnitTypes.Find(un => un.ID == skuItem.UnitType_ID).Code,
+                        //    productDate = null,
+                        //    warehouseID = this.StaticValue.AreaMasters.Find(ar => ar.ID == reqVO.areaID).Warehouse_ID,
+                        //    areaID = reqVO.areaID,
+                        //    options = newOptions,
+                        //    isRoot = false,
+                        //    mode = VirtualMapSTOModeType.REGISTER,
+                        //    action = VirtualMapSTOActionType.ADD
+                        //};
 
             }
                     return baseStoReturn;
