@@ -25,6 +25,7 @@ namespace AWMSModel.Entity
         public string RefID;
         public string Ref1;
         public string Ref2;
+        public string ItemNo;
         public DocumentEventStatus EventStatus;
 
         //public List<long> StorageObjectIDs;
