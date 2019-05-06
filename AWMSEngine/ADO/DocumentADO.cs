@@ -288,7 +288,7 @@ namespace AWMSEngine.ADO
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
-        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, MovementType movementTypeID, VOCriteria buVO)
+        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, long? movementTypeID, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
