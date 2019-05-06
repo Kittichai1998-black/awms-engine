@@ -23,7 +23,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string areaCode;//รหัสโซน
             public string locationCode;//รหัสเกต
             public DateTime actualTime;
-            public List<PalletDataCriteria> mappingPallets;
+            public List<PalletDataCriteriaV2> mappingPallets;
         }
 
         protected abstract StorageObjectCriteria GetSto(TReq reqVO);

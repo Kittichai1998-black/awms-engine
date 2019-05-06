@@ -126,11 +126,11 @@ namespace AWMSEngine.ADO.SAPApi
             return res;
         }
 
-        public dynamic BEFCreateDoc_1001_1(dynamic datas, VOCriteria buVO)
+        public dynamic BEFCreateDoc_1001_100101(dynamic datas, VOCriteria buVO)
         {
             return datas;
         }
-        public dynamic AFTCreateDoc_1001_1(dynamic datas, VOCriteria buVO)
+        public dynamic AFTCreateDoc_1001_100101(dynamic datas, VOCriteria buVO)
         {
             return datas;
         }
