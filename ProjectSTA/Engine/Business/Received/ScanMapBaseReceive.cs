@@ -80,8 +80,8 @@ namespace ProjectSTA.Engine.Business.Received
                   new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaLocationMaster_ID",(long)location.ID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
-                        new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.NEW, SQLOperatorType.EQUALS, SQLConditionType.AND)
-                        //new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
+                        new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.NEW, SQLOperatorType.EQUALS, SQLConditionType.AND),
+                        new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                   }, this.BuVO).FirstOrDefault();
                  
                 //เช็คข้อมูลBase ที่มี AreaLocationMaster_ID ที่ตรงกับ location.ID
@@ -91,7 +91,7 @@ namespace ProjectSTA.Engine.Business.Received
                     var stoPackObjects = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
                             new SQLConditionCriteria("ParentStorageObject_ID",(long)stoBaseItems.ID, SQLOperatorType.EQUALS),
-                            //new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
+                            new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                       }, this.BuVO);
                     if(stoPackObjects != null && stoPackObjects.Count() > 0)
                     { //มีสินค้าอยู่บนพาเลท
