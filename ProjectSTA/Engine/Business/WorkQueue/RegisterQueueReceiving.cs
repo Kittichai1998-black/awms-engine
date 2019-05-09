@@ -115,13 +115,13 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
                     
                     AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
-                    var doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
+                    /*var doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
                     if (doc.EventStatus == DocumentEventStatus.NEW)
                     {
                         AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                         if (doc.ParentDocument_ID.HasValue)
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                    }
+                    }*/
                     docItems.Add(docItem);
                 }
                 else
@@ -148,7 +148,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                 batch = null,
                                 documentDate = DateTime.Now,
                                 actionTime = DateTime.Now,
-                                eventStatus = DocumentEventStatus.WORKING,
+                                eventStatus = DocumentEventStatus.NEW,
                                 receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
                                                     new CreateGRDocument.TReq.ReceiveItem
                                                     {
@@ -160,7 +160,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                                         orderNo = packH.orderNo,
                                                         ref2 = null,
                                                         options = packH.options,
-                                                        eventStatus = DocumentEventStatus.WORKING,
+                                                        eventStatus = DocumentEventStatus.NEW,
                                                         docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
 
                                                     }}
@@ -187,7 +187,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             Options = packH.options,
                             ProductionDate = packH.productDate,
                             SKUMaster_ID = packConvert.skuMaster_ID,
-                            EventStatus = DocumentEventStatus.WORKING,
+                            EventStatus = DocumentEventStatus.NEW,
                             Ref2 = null,
                             DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
                         };
