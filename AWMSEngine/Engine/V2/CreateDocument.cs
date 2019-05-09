@@ -169,7 +169,7 @@ namespace AWMSEngine.Engine.V2.Business
                 reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                 string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Transport_ID = reqVO.transportID,
-
+                MovementType_ID = reqVO.movementTypeID,
                 Batch = reqVO.batch,
                 Lot = reqVO.lot,
                 Options = reqVO.options,

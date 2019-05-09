@@ -4,105 +4,102 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Exception;
+using AWMSEngine.Engine.Business.Received;
 using AWMSEngine.Engine.V2.Business;
+using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSEngine.Engine.V2.Validation;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
+
 namespace ProjectTAP.Engine.Business.Received
 {
-    public class ScanBoxReceiveWCS : AWMSEngine.Engine.BaseEngine<ScanBoxReceiveWCS.TReq, ScanBoxReceiveWCS.TRes>
+    public class ScanBoxReceiveWCS : AWMSEngine.Engine.V2.Business.WorkQueue.BaseRegisterWorkQueue
     {
-        public class TReq
+
+        protected override StorageObjectCriteria GetSto(TReq reqVO)
         {
-            public string code;
-            public string prodDate;
-            public long qty;
-            public string lot;
-            public string itemNo;
-            public string baseCode;
+            var Warehouses = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
+            var area = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == Warehouses.ID);
+            var mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
+            null, null, false, true, this.BuVO);
 
-        }
-        public class TRes
-        {
-            //public long areaID;
-            //public long areaLocationID;
-            //public string areaCode;
-            //public string areaLocationCode;
-        }
-        protected override TRes ExecuteEngine(TReq reqVO)
-        {
-            if (reqVO.code == "" || string.IsNullOrEmpty(reqVO.code) || reqVO.code.Equals(null))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "SKU is null");
+            var location = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("Code",reqVO.locationCode),
+                    new KeyValuePair<string,object>("AreaMaster_ID",area.ID.Value),
+                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                }, this.BuVO).FirstOrDefault();
 
-            if (reqVO.qty == 0 || reqVO.qty.Equals(null))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Quantity is null");
-
-            if (reqVO.itemNo == "" || string.IsNullOrEmpty(reqVO.itemNo) || reqVO.itemNo.Equals(null))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "ItemNo is null");
-
-            if (reqVO.prodDate.Equals(null))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Product date is null");
-
-            if (reqVO.baseCode == "" || string.IsNullOrEmpty(reqVO.baseCode) || reqVO.baseCode.Equals(null))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "baseCode is null");
-
-            //var doc = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(12434, this.BuVO);
-            //var docDate = doc.ProductionDate;
-            
-            var date =   Convert.ToDateTime(reqVO.prodDate);
-            var diList = ADO.DocumentADO.GetInstant().ListDocsItemCheckRerigter(reqVO.code, date, reqVO.qty, reqVO.itemNo, this.BuVO);
-
-
-
-
-            if (diList.Count > 0)
+            if (mapsto == null || mapsto.eventStatus == StorageObjectEventStatus.NEW)
             {
-                var baseSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
-                  new SQLConditionCriteria[] {
-                                    new SQLConditionCriteria("Code",reqVO.baseCode, SQLOperatorType.EQUALS),
-                  },
-                  new SQLOrderByCriteria[] { }, null, null, this.BuVO);
+                if (mapsto != null && mapsto.eventStatus == StorageObjectEventStatus.NEW)
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
 
+                var palletList = new List<PalletDataCriteriaV2>();
+                palletList.Add(new PalletDataCriteriaV2()
+                {
+                    souWarehouseCode = "Sou_Warehouse_Code=" + reqVO.mappingPallets[0].souWarehouseCode,
+                    code = reqVO.baseCode,
+                    qty = "1",
+                    unit = null,
+                    orderNo = null,
+                    batch = null,
+                    lot = null
 
-                if(baseSto.Count > 0)
+                });
+
+                foreach (var row in reqVO.mappingPallets)
                 {
-                    //มีกล่องในระบบ
-                    
-                }
-                else
-                {
-                    //ไม่มีกล่องในระบบ
+                    palletList.Add(new PalletDataCriteriaV2()
+                    {
+                        souWarehouseCode = "Sou_Warehouse_Code=" + row.souWarehouseCode,
+                        code = row.code,
+                        qty = row.qty,
+                        unit = row.unit,
+                        orderNo = row.orderNo,
+                        batch = row.batch,
+                        lot = row.lot,
+
+                        //movingType = row.movingType
+                    });
                 }
 
+                var reqMapping = new WCSMappingPalletV2.TReq()
+                {
+                    actualWeiKG = reqVO.weight,
+                    warehouseCode = reqVO.warehouseCode,
+                    areaCode = reqVO.areaCode,
+                    palletData = palletList
+                };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                mapsto = new WCSMappingPalletV2().Execute(this.Logger, this.BuVO, reqMapping);
             }
-            else
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "No SKU waiting to be received");
-            }
+            mapsto.weiKG = reqVO.weight;
+            mapsto.lengthM = reqVO.length;
+            mapsto.heightM = reqVO.height;
+            mapsto.widthM = reqVO.width;
+            mapsto.warehouseID = Warehouses.ID.Value;
+            mapsto.areaID = area.ID.Value;
+            mapsto.parentID = location.ID.Value;
+            mapsto.parentType = StorageObjectType.LOCATION;
+
+            //this.SetWeiChildAndUpdateInfoToChild(mapsto, reqVO.weight ?? 0);
+
+            AWMSEngine.ADO.StorageObjectADO.GetInstant()
+                .UpdateStatusToChild(mapsto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+
+            return mapsto;
+
+        }
+    
+
+
+        protected override List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
+        {
+
             return null;
         }
+
     }
 }
