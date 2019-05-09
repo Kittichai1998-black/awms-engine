@@ -33,12 +33,20 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var sto = GetSto(reqVO);
-            this.ValidateObjectSizeLimit(sto);
+
+            //this.ValidateObjectSizeLimit(sto);
             var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
 
             var desLocation = this.GetDesLocations(sto, docItem, reqVO);
             var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
+            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+            var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
+            docIDs.ForEach(x =>
+            {
+                ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+            });
             return this.GenerateResponse(sto, queueTrx);
+           
         }
 
         private SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, TReq reqVO)
