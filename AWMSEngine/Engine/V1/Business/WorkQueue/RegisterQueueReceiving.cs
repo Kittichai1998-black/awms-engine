@@ -47,7 +47,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
             if (mapsto.code != reqVO.baseCode)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ถูกต้อง");
 
-            var destinationLine = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID, this.BuVO);
+            var destinationLine = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID.Value, this.BuVO);
 
             //if (!destinationLine.Any(x => x.Des_AreaMaster_ID == this._areaASRS.ID))
             //    throw new AMWException(this.Logger, AMWExceptionCode.V1001,
@@ -240,7 +240,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 sto.weiKG = percentWeiStd * innerTotalWeiKG;
             });
 
-            long areaID = mapsto.areaID;
+            long areaID = mapsto.areaID.Value;
             stoTreeList.ForEach(x =>
             {
                 x.areaID = areaID;
@@ -391,7 +391,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
         private SPworkQueue ProcessRegisterWorkQueue(
             List<amt_DocumentItem> docItems, StorageObjectCriteria mapsto, TReq reqVO)
         {
-            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID, _locationASRS.ID, this.BuVO);
+            var desAreas = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, mapsto.areaID.Value, _locationASRS.ID, this.BuVO);
             var desAreaDefault = desAreas.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
             SPworkQueue workQ = new SPworkQueue()
             {

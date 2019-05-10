@@ -95,7 +95,7 @@ namespace AWMSEngine.ADO
                 param.Add("@des_areaMaster_ID", doc.Des_AreaMaster_ID);
 
                 param.Add("@transport_ID", doc.Transport_ID);
-
+                param.Add("@MovementType_ID", doc.MovementType_ID);
                 param.Add("@actionTime", doc.ActionTime);
                 param.Add("@documentDate", doc.DocumentDate);
                 param.Add("@options", doc.Options);
@@ -288,7 +288,7 @@ namespace AWMSEngine.ADO
             var res = ADO.DataADO.GetInstant().SelectBy<amt_Document>(whares.ToArray(), buVO);
             return res;
         }
-        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, long? movementTypeID, VOCriteria buVO)
+        public List<amt_Document> ListDocs(DocumentTypeID docTypeID, long? souBranchID, long? souWarehouseID, long? souAreaMasterID, MovementType movementTypeID, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
@@ -308,7 +308,7 @@ namespace AWMSEngine.ADO
             long? souBranchID, long? souWarehouseID,
             long? desBranchID, long? desWarehouseID,
             long? unitTypeID, long? baseUnitTypeID,
-            string orderNo, string batch, string lot, VOCriteria buVO)
+            string orderNo, string batch, string lot, string options, VOCriteria buVO)
         {
             var whares = new List<SQLConditionCriteria>();
             whares.Add(new SQLConditionCriteria("DocumentType_ID", docTypeID, SQLOperatorType.EQUALS));
@@ -333,6 +333,8 @@ namespace AWMSEngine.ADO
                 whares.Add(new SQLConditionCriteria("UnitType_ID", unitTypeID, SQLOperatorType.EQUALS));
             if (baseUnitTypeID.HasValue)
                 whares.Add(new SQLConditionCriteria("BaseUnitType_ID", baseUnitTypeID, SQLOperatorType.EQUALS));
+            if (!string.IsNullOrWhiteSpace(options))
+                whares.Add(new SQLConditionCriteria("Options", options, SQLOperatorType.EQUALS));
 
             var res = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>("amv_DocumentItem", "*", null, whares.ToArray(), null, null, null, buVO);
             return res;
@@ -402,6 +404,19 @@ namespace AWMSEngine.ADO
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
         }
+        public List<amt_DocumentItem> ListItemCanMapV2(DocumentTypeID docTypeID, 
+            long? packID, 
+            decimal addBaseQty,
+            long? souBranchID,
+            long? souWarehouseID,
+            long? desBranchID,
+            long? desWarehouseID,
+            long? unitTypeID, long? baseUnitTypeID,
+            string orderNo, string batch, string lot, VOCriteria buVO)
+        {
+            return this.ListItemCanMapV2(docTypeID, packID, addBaseQty, souBranchID, souWarehouseID,
+                desBranchID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, null, buVO);
+        }
         public List<amt_DocumentItem> ListItemCanMapV2(
             DocumentTypeID docTypeID, long? packID, decimal addBaseQty,
             long? souBranchID, 
@@ -409,10 +424,10 @@ namespace AWMSEngine.ADO
             long? desBranchID,
             long? desWarehouseID,
             long? unitTypeID, long? baseUnitTypeID,
-            string orderNo, string batch, string lot, VOCriteria buVO)
+            string orderNo, string batch, string lot, string options, VOCriteria buVO)
         {
             var docItems = ADO.DocumentADO.GetInstant()
-                       .ListItem(DocumentTypeID.GOODS_RECEIVED, packID, souBranchID, souWarehouseID, desBranchID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, buVO);
+                       .ListItem(DocumentTypeID.GOODS_RECEIVED, packID, souBranchID, souWarehouseID, desBranchID, desWarehouseID, unitTypeID, baseUnitTypeID, orderNo, batch, lot, options, buVO);
                        //.Where(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.IDEL);
 
             List<amt_DocumentItem> res = new List<amt_DocumentItem>();

@@ -333,7 +333,7 @@ namespace AWMSEngine.Engine.V2.Business
                 var rmItem = mapstos.FirstOrDefault(x => x.code == reqVo.scanCode);
                 rmItem.parentID = null;
                 rmItem.parentType = null;
-                ADOSto.Update(rmItem, msf.areaID, this.BuVO);
+                ADOSto.Update(rmItem, msf.areaID.Value, this.BuVO);
                 //ADOSto.Put(rmItem, null, null, this.BuVO);
                 msf.mapstos.Remove(rmItem);
             }

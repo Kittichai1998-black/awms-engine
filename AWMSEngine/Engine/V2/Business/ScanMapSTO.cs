@@ -250,7 +250,7 @@ namespace AWMSEngine.Engine.V2.Business
                     {
                         if(newMS.areaID != msf.areaID)
                         {
-                            UpdateAreaAllChilds(newMS, msf.areaID);
+                            UpdateAreaAllChilds(newMS, msf.areaID.Value);
                             void UpdateAreaAllChilds(StorageObjectCriteria ms,long aid)
                             {
                                 ADOSto.Update(ms, aid, this.BuVO);
@@ -259,13 +259,13 @@ namespace AWMSEngine.Engine.V2.Business
                         }
                         else
                         {
-                            ADOSto.Update(newMS, msf.areaID, this.BuVO);
+                            ADOSto.Update(newMS, msf.areaID.Value, this.BuVO);
                         }
                     }
                     else
                     {
                         newMS.eventStatus = StorageObjectEventStatus.NEW;
-                        ADOSto.Create(newMS, msf.areaID, batch, lot, this.BuVO);
+                        ADOSto.Create(newMS, msf.areaID.Value, batch, lot, this.BuVO);
                     }
                     //ADOSto.Put(newMS,batch,lot, this.BuVO);
                     if (!isInStorage && newMS.type != StorageObjectType.PACK)
@@ -296,7 +296,7 @@ namespace AWMSEngine.Engine.V2.Business
                 var rmItem = mapstos.FirstOrDefault(x => x.code == scanCode);
                 rmItem.parentID = null;
                 rmItem.parentType = null;
-                ADOSto.Update(rmItem, msf.areaID, this.BuVO);
+                ADOSto.Update(rmItem, msf.areaID.Value, this.BuVO);
                 //ADOSto.Put(rmItem, null, null, this.BuVO);
                 msf.mapstos.Remove(rmItem);
             }
