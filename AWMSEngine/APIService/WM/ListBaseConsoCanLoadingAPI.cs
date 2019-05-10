@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 74;
         }
-        public ListBaseConsoCanLoadingAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ListBaseConsoCanLoadingAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

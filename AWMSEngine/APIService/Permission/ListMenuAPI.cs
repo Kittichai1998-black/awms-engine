@@ -10,17 +10,17 @@ using Microsoft.AspNetCore.Mvc;
 using AWMSEngine.Engine.General;
 
 namespace AWMSEngine.APIService.Permission
-{
+{ 
     public class ListMenuAPI : BaseAPIService
     {
         public override int APIServiceID()
         {
             return 57; //57
         }
-        public ListMenuAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ListMenuAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
-
+        
         protected override dynamic ExecuteEngineManual()
         {
             var res1 = new ListMenu().Execute(this.Logger, this.BuVO,

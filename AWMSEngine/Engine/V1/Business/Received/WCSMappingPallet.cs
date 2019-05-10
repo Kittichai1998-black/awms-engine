@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.Business.Received
                     amount = row.qty.Get<decimal>(),
                     mode = VirtualMapSTOModeType.REGISTER,
                     action = VirtualMapSTOActionType.ADD,
-                    options = row.source,
+                    options = row.souWarehouseCode,
                     mapsto = mapsto,
                     warehouseID = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == row.warehouseCode).ID,
                     areaID = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == row.areaCode).ID,

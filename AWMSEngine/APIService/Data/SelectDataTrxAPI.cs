@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.Data
         {
             return 31;
         }
-        public SelectDataTrxAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public SelectDataTrxAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 34;
         }
-        public CloseGRDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CloseGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

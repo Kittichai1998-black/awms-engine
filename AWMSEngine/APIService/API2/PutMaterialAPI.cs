@@ -43,7 +43,7 @@ namespace AWMSEngine.APIService.Api2
             }
         }
 
-        public PutMaterialAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutMaterialAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

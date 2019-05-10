@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 73;
         }
-        public ListAreaLocationCanPickingAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ListAreaLocationCanPickingAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

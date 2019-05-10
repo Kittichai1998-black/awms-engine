@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Mst
         {
             return 52;
         }
-        public PutSKUMasterTypeFromFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PutSKUMasterTypeFromFileServerAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

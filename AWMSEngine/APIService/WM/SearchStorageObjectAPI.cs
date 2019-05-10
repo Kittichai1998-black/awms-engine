@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 82;
         }
-        public SearchStorageObjectAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public SearchStorageObjectAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

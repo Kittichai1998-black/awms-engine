@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.Data
         {
             return 28;
         }
-        public SelectDataErpAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public SelectDataErpAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

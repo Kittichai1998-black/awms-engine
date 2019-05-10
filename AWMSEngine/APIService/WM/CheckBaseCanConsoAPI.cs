@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 63;
         }
-        public CheckBaseCanConsoAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CheckBaseCanConsoAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 46;
         }
-        public WorkingGIDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public WorkingGIDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

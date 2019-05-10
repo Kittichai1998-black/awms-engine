@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 72;
         }
-        public HoldStorageObjectAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public HoldStorageObjectAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

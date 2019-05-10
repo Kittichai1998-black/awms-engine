@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.ASRS
         {
             return 24;
         }
-        public WCSMappingPalletAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public WCSMappingPalletAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
@@ -26,7 +26,7 @@ namespace AWMSEngine.APIService.ASRS
             {
                 palletList.Add(new PalletDataCriteria()
                 {
-                    source = "Sou_Warehouse_ID=" + row.source,
+                    souWarehouseCode = "Sou_Warehouse_ID=" + row.source,
                     code = row.code,
                     batch = row.batch,
                     qty = row.qty,

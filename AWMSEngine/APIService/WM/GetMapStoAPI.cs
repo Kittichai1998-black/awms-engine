@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 67;
         }
-        public GetMapStoAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GetMapStoAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

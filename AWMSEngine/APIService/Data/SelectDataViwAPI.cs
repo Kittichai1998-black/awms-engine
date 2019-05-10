@@ -17,7 +17,7 @@ namespace AWMSEngine.APIService.Data
             return 32;
         }
 
-        public SelectDataViwAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public SelectDataViwAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

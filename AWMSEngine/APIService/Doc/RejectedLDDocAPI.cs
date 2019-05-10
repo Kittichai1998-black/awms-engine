@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 45;
         }
-        public RejectedLDDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public RejectedLDDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

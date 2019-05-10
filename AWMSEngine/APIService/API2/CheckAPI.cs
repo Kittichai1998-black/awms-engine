@@ -10,7 +10,7 @@ namespace AWMSEngine.APIService.API2
 {
     public class CheckAPI : BaseAPIService
     {
-        public CheckAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CheckAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

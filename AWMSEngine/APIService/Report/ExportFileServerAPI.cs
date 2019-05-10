@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Report
         {
             return 60;
         }
-        public ExportFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ExportFileServerAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

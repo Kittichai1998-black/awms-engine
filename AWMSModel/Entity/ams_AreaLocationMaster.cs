@@ -8,7 +8,7 @@ namespace AWMSModel.Entity
     {
         public int AreaMaster_ID;
         public string Gate;
-        public int? Bank;
+        public string Bank;
         public int? Bay;
         public int? Lavel;
         public int ObjectSize_ID;

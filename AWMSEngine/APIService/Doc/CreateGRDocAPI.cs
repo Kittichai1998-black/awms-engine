@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 38;
         }
-        public CreateGRDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

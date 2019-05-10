@@ -42,7 +42,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                 disto.ForEach(x =>
                 {
-                    var sto = ADO.StorageObjectADO.GetInstant().Get(x.StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
+                    var sto = ADO.StorageObjectADO.GetInstant().Get(x.Sou_StorageObject_ID, StorageObjectType.PACK, false, false, this.BuVO);
                     if(sto.parentID == getPalletID.id)
                     {
                         itemLists.Add(new TRes.ItemList()

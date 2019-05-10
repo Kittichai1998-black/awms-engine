@@ -12,7 +12,7 @@ namespace AWMSEngine.APIService.ASRS
         {
             return 21;
         }
-        public ResetQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ResetQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

@@ -19,7 +19,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 79;
         }
-        public ScanConsoToLoadingAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ScanConsoToLoadingAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

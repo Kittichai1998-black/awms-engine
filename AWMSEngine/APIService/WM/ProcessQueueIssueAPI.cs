@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 77;
         }
-        public ProcessQueueIssueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ProcessQueueIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

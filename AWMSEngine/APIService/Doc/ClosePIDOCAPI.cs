@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 35;
         }
-        public ClosePIDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public ClosePIDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

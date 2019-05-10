@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 42;
         }
-        public RejectedADDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public RejectedADDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

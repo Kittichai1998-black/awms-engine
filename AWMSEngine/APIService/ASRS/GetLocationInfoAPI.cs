@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.ASRS
         {
             return 19;
         }
-        public GetLocationInfoAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GetLocationInfoAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

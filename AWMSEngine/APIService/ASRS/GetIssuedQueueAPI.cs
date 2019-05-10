@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.ASRS
             return 18;
         }
 
-        public GetIssuedQueueAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public GetIssuedQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

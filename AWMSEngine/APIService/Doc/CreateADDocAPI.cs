@@ -19,7 +19,7 @@ namespace AWMSEngine.APIService.Doc
         {
             return 36;
         }
-        public CreateADDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateADDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

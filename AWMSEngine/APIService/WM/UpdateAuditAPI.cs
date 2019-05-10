@@ -10,7 +10,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class UpdateAuditAPI : BaseAPIService
     {
-        public UpdateAuditAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public UpdateAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

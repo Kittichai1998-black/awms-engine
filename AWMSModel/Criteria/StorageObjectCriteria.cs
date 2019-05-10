@@ -91,9 +91,9 @@ namespace AWMSModel.Criteria
             if (stos.Count() == 0) return null;
             bool isFucus = false;
 
-            List<dynamic> findStoRoots = stos.GroupBy(x => new { id = x.id, parentID = x.parentID, objectSizeID = x.objectSizeID, parentType = x.parentType }).Select(x => x.Key).ToList<dynamic>();
-            dynamic stoRoot = findStoRoots.FirstOrDefault(x => !findStoRoots.Any(y => y.id == x.parentID && y.id != null));
-            var sos = staticObjectSizes.FirstOrDefault(x => x.ID == stoRoot.objectSizeID);
+            List<dynamic> findStoRoots = stos.GroupBy(x => new { id = x.id, parentID = x.parentID, objectSizeID = x.objectSizeID, parentType = x.parentType, type = x.type }).Select(x => x.Key).ToList<dynamic>();
+            dynamic stoRoot = findStoRoots.FirstOrDefault(x => !findStoRoots.Any(y => y.id == x.parentID && y.id != null && y.type == x.parentType));
+            //var sos = staticObjectSizes.FirstOrDefault(x => x.ID == stoRoot.objectSizeID);
             var res = generateMapstos(stoRoot.parentID, stoRoot.parentType, out isFucus).FirstOrDefault();
 
             List<StorageObjectCriteria> generateMapstos(long? parentID, StorageObjectType? parentType, out bool outParentIsFocus)

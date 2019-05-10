@@ -42,6 +42,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
             public string remark;
             public string ref1;
             public string ref2;
+            public MovementType movementTypeID;
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
@@ -137,7 +138,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                     docTypeId = DocumentTypeID.GOODS_RECEIVED,
                     eventStatus = reqVO.eventStatus,
-
+                    movementTypeID = reqVO.movementTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.receiveItems.Select(

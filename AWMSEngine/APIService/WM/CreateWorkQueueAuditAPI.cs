@@ -14,7 +14,7 @@ namespace AWMSEngine.APIService.WM
         {
             return 66;
         }
-        public CreateWorkQueueAuditAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public CreateWorkQueueAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

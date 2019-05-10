@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.Doc
         return 43;
     }
     
-        public RejectedGIDocAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public RejectedGIDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

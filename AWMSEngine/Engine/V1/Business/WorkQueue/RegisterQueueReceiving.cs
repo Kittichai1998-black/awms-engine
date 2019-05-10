@@ -95,7 +95,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                                 disto.BaseQuantity = disto.BaseQuantity ?? 0;
 
                                 disto.Status = EntityStatus.ACTIVE;
-                                ADO.DocumentADO.GetInstant().UpdateStatusMappingSTO(disto.ID.Value, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
+                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
                             }
                         });
                     }
@@ -151,7 +151,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 var palletList = new List<PalletDataCriteria>();
                 palletList.Add(new PalletDataCriteria()
                 {
-                    source = "Sou_Warehouse_Code=" + reqVO.mappingPallets[0].source,
+                    souWarehouseCode = "Sou_Warehouse_Code=" + reqVO.mappingPallets[0].souWarehouseCode,
                     code = reqVO.baseCode,
                     qty = "1",
                     unit = null,
@@ -166,7 +166,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 {
                     palletList.Add(new PalletDataCriteria()
                     {
-                        source = "Sou_Warehouse_Code=" + row.source,
+                        souWarehouseCode = "Sou_Warehouse_Code=" + row.souWarehouseCode,
                         code = row.code,
                         qty = row.qty,
                         unit = row.unit,
@@ -292,7 +292,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                 //pack Info พบ Docitem ที่สามารถ Mapping ได้
                 if (docItem != null)
                 {
-                    ADO.DocumentADO.GetInstant().MappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
+                    ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
 
                     var doc = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
                     if (doc.EventStatus == DocumentEventStatus.NEW)

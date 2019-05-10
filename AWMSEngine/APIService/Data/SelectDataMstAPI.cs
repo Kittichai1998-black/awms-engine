@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.Data
         {
             return 30;
         }
-        public SelectDataMstAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public SelectDataMstAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
