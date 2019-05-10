@@ -57,7 +57,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, TReq reqVO)
         {
             //reqVO.locationCode
-            var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT,sto.areaID,sto.parentID, this.BuVO);
+            var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT,sto.areaID.Value,sto.parentID, this.BuVO);
             foreach(var des in desLocations)
             {
                 if(!string.IsNullOrWhiteSpace(des.Condition_Eval) && Z.Expressions.Eval.Execute<bool>(des.Condition_Eval))
