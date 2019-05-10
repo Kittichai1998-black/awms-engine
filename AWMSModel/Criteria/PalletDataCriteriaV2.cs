@@ -11,10 +11,12 @@ namespace AWMSModel.Criteria
         public string qty;
         public string unit;
         //public string movingType;
-
+        public string prodDate;
         public string orderNo;
         public string lot;
         public string batch;
-        
+        public string itemNo;
+        public string option;
+
     }
 }
