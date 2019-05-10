@@ -6,6 +6,7 @@ using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AMWUtil.Exception;
 using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
@@ -32,28 +33,31 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-            var sto = GetSto(reqVO);
-
-            //this.ValidateObjectSizeLimit(sto);
-            var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
-
-            var desLocation = this.GetDesLocations(sto, docItem, reqVO);
-            var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
-            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
-            var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
-            docIDs.ForEach(x =>
+            if (GetSto(reqVO) != null)
             {
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-            });
-            return this.GenerateResponse(sto, queueTrx);
-           
+                var sto = GetSto(reqVO);
+                //this.ValidateObjectSizeLimit(sto);
+                var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
+
+                var desLocation = this.GetDesLocations(sto, docItem, reqVO);
+                var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+                var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
+                docIDs.ForEach(x =>
+                {
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                });
+                return this.GenerateResponse(sto, queueTrx);
+            }
+            else {
+                throw new Exception( "Sto Invalid");
+            }
         }
 
         private SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, TReq reqVO)
         {
-
             //reqVO.locationCode
-            var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT, sto.areaID,sto.parentID, this.BuVO);
+            var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT,sto.areaID,sto.parentID, this.BuVO);
             foreach(var des in desLocations)
             {
                 if(!string.IsNullOrWhiteSpace(des.Condition_Eval) && Z.Expressions.Eval.Execute<bool>(des.Condition_Eval))
