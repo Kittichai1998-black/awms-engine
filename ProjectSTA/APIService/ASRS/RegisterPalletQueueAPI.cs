@@ -19,8 +19,8 @@ namespace ProjectSTA.APIService.ASRS
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            RegisterQueueReceiving.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterQueueReceiving.TReq>(this.RequestVO);
-            var res = new RegisterQueueReceiving().Execute(this.Logger, this.BuVO, req);
+            RegisterQueueReceiving2.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterQueueReceiving2.TReq>(this.RequestVO);
+            var res = new RegisterQueueReceiving2().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }
