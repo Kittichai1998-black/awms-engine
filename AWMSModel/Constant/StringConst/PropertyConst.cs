@@ -12,6 +12,8 @@ namespace AWMSModel.Constant.StringConst
         public const string APP_KEY_LOG_FILENAME = "logger.filename";
         public const string APP_KEY_CRONEX_311 = "cronex.311";
         public const string APP_KEY_CRONEX_321 = "cronex.321";
+        public const string APP_KEY_CRONEX_XML = "cronex.XML";
+        public const string APP_KEY_CRONEX_DOC = "cronex.DOC";
 
         public const string APP_KEY_DBMSSQL_CONSTR = "database.mssql.connection";
         

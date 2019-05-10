@@ -14,9 +14,9 @@ using Newtonsoft.Json;
 using AWMSModel.Constant.EnumConst;
 using AMWUtil.Exception;
 
-namespace ProjectMRK.Engine.Bussiness
+namespace ProjectMRK.Engine.JobService
 {
-    public class ReadFileXML : BaseEngine<string, string>
+    public class ReadFileXML : BaseEngine<string, ReadFileXML.TRes>
     {
         private class XMLData
         {
@@ -65,11 +65,29 @@ namespace ProjectMRK.Engine.Bussiness
             }
         }
 
-        private string ftpUsername = "administrator";
-        private string ftpPassword = "amwteam";
-        protected override string ExecuteEngine(string reqVO)
+        public class TRes
         {
-            FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create("ftp://191.20.80.120:8089/MRK/recieved/");
+            public List<DocList> document;
+            public class DocList
+            {
+                public amt_Document doc;
+                public StorageObjectCriteria sto;
+            }
+        }
+
+        private string ftpPath;
+        private string ftpLogPath;
+        private string ftpUsername;
+        private string ftpPassword;
+
+        protected override TRes ExecuteEngine(string reqVO)
+        {
+            ftpPath = StaticValue.GetConfig("FTP_PATH_ROOT");
+            ftpLogPath = StaticValue.GetConfig("FTP_PATH_LOG");
+            ftpUsername = StaticValue.GetConfig("FTP_USER");
+            ftpPassword = StaticValue.GetConfig("FTP_PASS");
+
+            FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpPath);
             fwr.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
             fwr.Method = WebRequestMethods.Ftp.ListDirectory;
             fwr.UseBinary = true;
@@ -83,53 +101,21 @@ namespace ProjectMRK.Engine.Bussiness
             Regex matchExpression = new Regex("^[a-zA-Z0-9].+\\.xml$", RegexOptions.IgnoreCase);
             var xmlName = listNames.Where(x => matchExpression.Match(x).Success).ToList();
 
+            TRes res = new TRes();
             if (xmlName.Count > 0)
             {
                 xmlName.ForEach(x =>
                 {
-                    ReadListFileXML(x);
-                });
-
-                return "Success";
-            }
-            else
-            {
-                return "No File";
-            }
-        }
-
-        public void test()
-        {
-            FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create("ftp://191.20.80.120:8089/MRK/recieved/");
-            fwr.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
-            fwr.Method = WebRequestMethods.Ftp.ListDirectory;
-            fwr.UseBinary = true;
-            FtpWebResponse response = (FtpWebResponse)fwr.GetResponse();
-            Stream responseStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(responseStream);
-            string names = reader.ReadToEnd();
-            reader.Close();
-            response.Close();
-            var listNames = names.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            Regex matchExpression = new Regex("^[a-zA-Z0-9].+\\.xml$", RegexOptions.IgnoreCase);
-            var xmlName = listNames.Where(x => matchExpression.Match(x).Success).ToList();
-
-            if(xmlName.Count > 0)
-            {
-                xmlName.ForEach(x =>
-                {
-                    ReadListFileXML(x);
+                    var docRes = ReadListFileXML(x);
+                    res.document.Add(docRes);
                 });
             }
-            else
-            {
-                Console.Write("No File");
-            }
+            return res;
         }
 
-        private void ReadListFileXML(string xmlname)
+        private TRes.DocList ReadListFileXML(string xmlname)
         {
-            var request = (FtpWebRequest)WebRequest.Create("ftp://191.20.80.120:8089/MRK/recieved/" + xmlname);
+            var request = (FtpWebRequest)WebRequest.Create(ftpPath + xmlname);
             request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
             request.Method = WebRequestMethods.Ftp.DownloadFile;
             FtpWebResponse response = (FtpWebResponse)request.GetResponse();
@@ -144,12 +130,13 @@ namespace ProjectMRK.Engine.Bussiness
             Console.WriteLine("Download Complete, status {0}", response.StatusDescription);
 
             var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
-            CreateDocumentFromXML(jsonObj);
 
             reader.Close();
             reader.Dispose();
             response.Close();
             MoveFileXML(xmlname);
+
+            return CreateDocumentFromXML(jsonObj);
         }
 
         private void MoveFileXML(string xmlname)
@@ -157,7 +144,7 @@ namespace ProjectMRK.Engine.Bussiness
             var folderName = "log_" + DateTime.Now.ToString("dd-MM-yyyy");
             createDirectoryFTP(folderName);
 
-            var request = (FtpWebRequest)WebRequest.Create("ftp://191.20.80.120:8089/MRK/recieved/" + xmlname);
+            var request = (FtpWebRequest)WebRequest.Create(ftpPath + xmlname);
             request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
             request.Method = WebRequestMethods.Ftp.Rename;
             request.RenameTo = "log/" + folderName + "/" + xmlname;
@@ -169,7 +156,7 @@ namespace ProjectMRK.Engine.Bussiness
         {
             try
             {
-                FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create("ftp://191.20.80.120:8089/MRK/recieved/log/" + folderName);
+                FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpLogPath + folderName);
                 fwr.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
                 fwr.Method = WebRequestMethods.Ftp.ListDirectory;
                 var resp = (FtpWebResponse)fwr.GetResponse();
@@ -189,8 +176,9 @@ namespace ProjectMRK.Engine.Bussiness
             }
         }
 
-        private void CreateDocumentFromXML(XMLData json)
+        private TRes.DocList CreateDocumentFromXML(XMLData json)
         {
+            TRes.DocList res = new TRes.DocList();
             var jsonHeader = json.MRK_MT_PalletID_SAP_to_WMS.Header_Pallet;
             var jsonDetail = json.MRK_MT_PalletID_SAP_to_WMS.Detail_Pallet.Record_Pallet;
 
@@ -359,11 +347,16 @@ namespace ProjectMRK.Engine.Bussiness
                     BaseQuantity = docItem.Quantity.Value,
                     UnitType_ID = docItem.BaseUnitType_ID.Value,
                     BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                    Status = EntityStatus.ACTIVE
+                    Status = EntityStatus.INACTIVE
                 };
             });
 
             AWMSEngine.ADO.DocumentADO.GetInstant().MappingSTO(disto, this.BuVO);
+
+            res.doc = doc;
+            res.sto = baseSto;
+
+            return res;
 
         }
     }

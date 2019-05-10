@@ -69,11 +69,11 @@ namespace AWMSEngine.Engine.Business.Auditor
                         StorageObject_Code = mapsto.code,
 
                         Warehouse_ID = reqVO.warehouseID.Value,
-                        AreaMaster_ID = mapsto.areaID,
+                        AreaMaster_ID = mapsto.areaID.Value,
                         AreaLocationMaster_ID = mapsto.parentID,
 
                         Sou_Warehouse_ID = reqVO.warehouseID.Value,
-                        Sou_AreaMaster_ID = mapsto.areaID,
+                        Sou_AreaMaster_ID = mapsto.areaID.Value,
                         Sou_AreaLocationMaster_ID = mapsto.parentID,
 
                         Des_Warehouse_ID = desAreaID.Warehouse_ID.Value,
