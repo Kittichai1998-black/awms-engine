@@ -8,9 +8,9 @@ using ProjectTAP.Engine.Business.Received;
 
 namespace ProjectTAP.APIService.WM
 {
-    public class ScanBoxReceiveWCSAPI : AWMSEngine.APIService.BaseAPIService
+    public class WCSMapBaseRegisterAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public ScanBoxReceiveWCSAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public WCSMapBaseRegisterAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
@@ -22,8 +22,8 @@ namespace ProjectTAP.APIService.WM
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<ScanBoxReceiveWCS.TReq>(this.RequestVO);
-            var res = new ScanBoxReceiveWCS().Execute(this.Logger, this.BuVO, req);
+            var req = ObjectUtil.DynamicToModel<WCSMapBaseRegister.TReq>(this.RequestVO);
+            var res = new WCSMapBaseRegister().Execute(this.Logger, this.BuVO, req);
             return res;
         }
 

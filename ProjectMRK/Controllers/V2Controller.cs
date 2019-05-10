@@ -6,7 +6,7 @@ using AMWUtil.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ProjectSTA.Controllers
+namespace ProjectMRK.Controllers
 {
     public class V2Controller : AWMSEngine.Controllers.BaseV2Controller
     {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ProjectSTA.Controllers
+namespace ProjectMRK.Controllers
 {
     public class TokenController : AWMSEngine.Controllers.BaseV2TokenController
     {

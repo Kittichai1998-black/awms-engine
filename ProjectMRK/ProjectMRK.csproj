@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ApiService\" />
+    <Folder Include="Engine\Bussiness\WorkQueue\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

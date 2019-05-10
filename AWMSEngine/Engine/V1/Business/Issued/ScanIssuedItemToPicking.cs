@@ -92,7 +92,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     foreach(var ms in stoConsos)
                     {
                         ms.parentID = bstoConso.id;
-                        ADO.StorageObjectADO.GetInstant().Update(ms, ms.areaID, this.BuVO);
+                        ADO.StorageObjectADO.GetInstant().Update(ms, ms.areaID.Value, this.BuVO);
                     }
                     //TODO
                     //ADO.DocumentADO.GetInstant().MappingSTO(docItem.ID.Value, packConsos.Select(x => x.id.Value).ToList(), this.BuVO);

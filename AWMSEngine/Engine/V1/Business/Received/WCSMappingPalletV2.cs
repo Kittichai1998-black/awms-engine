@@ -27,6 +27,7 @@ namespace AWMSEngine.Engine.Business.Received
             foreach (var row in reqVO.palletData)
             {
                 //long unitID = this.StaticValue.UnitTypes.First(x => x.Code == row.unit).ID;
+
                 mapsto = scanmapsto.Execute(this.Logger, this.BuVO, new ScanMapStoNoDoc.TReq()
                 {
                     scanCode = row.code,
@@ -41,6 +42,7 @@ namespace AWMSEngine.Engine.Business.Received
                     mapsto = mapsto,
                     warehouseID = this.StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode).ID,
                     areaID = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID,
+                    productDate = row.prodDate == null? (DateTime?)null: Convert.ToDateTime(row.prodDate),
                 });
             }
 
