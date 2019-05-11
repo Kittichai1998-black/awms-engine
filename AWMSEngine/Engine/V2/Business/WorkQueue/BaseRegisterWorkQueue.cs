@@ -36,7 +36,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (GetSto(reqVO) != null)
             {
                 var sto = GetSto(reqVO);
-                //this.ValidateObjectSizeLimit(sto);
+                this.ValidateObjectSizeLimit(sto);
                 var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
 
                 var desLocation = this.GetDesLocations(sto, docItem, reqVO);
