@@ -27,17 +27,18 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             //Init Data from ASRS
             this.InitDataASRS(reqVO);
             var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
-              null, null, false, true, this.BuVO); 
-            if (_areaASRS.ID != sto.areaID)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Area don't macth");
-            if (_locationASRS.ID != sto.parentID)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location don't macth");
-
+              null, null, false, true, this.BuVO);
             if (sto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
             if (sto.code != reqVO.baseCode)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
 
+            if (_areaASRS.ID != sto.areaID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Area don't macth");
+            if (_locationASRS.ID != sto.parentID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location don't macth");
+
+            
             sto.lengthM = reqVO.length;
             sto.heightM = reqVO.height;
             sto.widthM = reqVO.width;

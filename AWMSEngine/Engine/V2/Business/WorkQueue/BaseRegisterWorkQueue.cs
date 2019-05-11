@@ -39,7 +39,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
 
                 var sto = GetSto(reqVO);
-                //this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
+                this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
                 //ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 this.ValidateObjectSizeLimit(sto);
                 var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
