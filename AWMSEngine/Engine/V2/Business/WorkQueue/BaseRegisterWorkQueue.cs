@@ -16,6 +16,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TReq //ข้อมูล Request จาก WCS
         {
             public string baseCode;//รหัสพาเลท
+            public IOType ioType = IOType.INPUT;
             public decimal? weight;//น้ำหนัก Kg.
             public decimal? width;//กว้าง M.
             public decimal? length;//ยาว M.
@@ -36,7 +37,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (GetSto(reqVO) != null)
             {
                 var sto = GetSto(reqVO);
-                //this.ValidateObjectSizeLimit(sto);
+                this.ValidateObjectSizeLimit(sto);
                 var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
 
                 var desLocation = this.GetDesLocations(sto, docItem, reqVO);
@@ -57,7 +58,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, TReq reqVO)
         {
             //reqVO.locationCode
-            var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(IOType.INPUT,sto.areaID,sto.parentID, this.BuVO);
+            var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value,sto.parentID, this.BuVO);
             foreach(var des in desLocations)
             {
                 if(!string.IsNullOrWhiteSpace(des.Condition_Eval) && Z.Expressions.Eval.Execute<bool>(des.Condition_Eval))

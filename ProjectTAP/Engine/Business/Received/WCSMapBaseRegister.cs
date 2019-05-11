@@ -80,7 +80,7 @@ namespace ProjectTAP.Engine.Business.Received
                     var palletList = new List<PalletDataCriteriaV2>();
                     palletList.Add(new PalletDataCriteriaV2()
                     {
-                        souWarehouseCode = reqVO.mappingPallets[0].option,
+                        option = reqVO.mappingPallets[0].option,
                         code = reqVO.baseCode,
                         qty = "1",
                         unit = null,
@@ -88,6 +88,7 @@ namespace ProjectTAP.Engine.Business.Received
                         batch = null,
                         lot = null,
                         prodDate = reqVO.mappingPallets[0].prodDate
+                        
 
                     });
 
@@ -95,7 +96,7 @@ namespace ProjectTAP.Engine.Business.Received
                     {
                         palletList.Add(new PalletDataCriteriaV2()
                         {
-                            souWarehouseCode = row.option,
+                            option = row.option,
                             code = row.code,
                             qty = row.qty,
                             unit = row.unit,
