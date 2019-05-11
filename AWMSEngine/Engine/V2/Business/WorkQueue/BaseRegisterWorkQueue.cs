@@ -35,11 +35,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-            if (GetSto(reqVO) != null)
+            var sto = GetSto(reqVO);
+            if (sto != null)
             {
 
-                var sto = GetSto(reqVO);
-                //this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
+                //var sto = GetSto(reqVO);
+                this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
                 //ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 this.ValidateObjectSizeLimit(sto);
                 var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
@@ -69,16 +70,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.PACK).Select(x => x.mstID.Value).Distinct().ToArray()),
                     SQLOperatorType.IN),
                 this.BuVO);
-            var baseMasters = ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
-                new SQLConditionCriteria(
-                    "ID",
-                    string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.BASE).Select(x => x.mstID.Value).Distinct().ToArray()),
-                    SQLOperatorType.IN),
-                this.BuVO);
+            var baseMasters = ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().m,this.BuVO);
             //*****SET WEI CODING
 
             sto.weiKG = totalWeiKG;
-            var innerTotalWeiKG = totalWeiKG - (baseMasters.First(x => x.ID == sto.mstID).WeightKG.Value);
+            var innerTotalWeiKG = totalWeiKG - (baseMasters.WeightKG.Value);
 
             List<decimal> precenFromTotalWeis = new List<decimal>();
             decimal totalWeiStd = packMasters
