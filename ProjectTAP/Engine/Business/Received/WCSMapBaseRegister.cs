@@ -36,6 +36,7 @@ namespace ProjectTAP.Engine.Business.Received
             var baseMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.baseCode),
+                    new KeyValuePair<string,object>("Status",1),
                 }, this.BuVO);
 
             if (baseMasterData.Count <= 0)
