@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AMWUtil.Exception;
 using System.Threading.Tasks;
+using AMWUtil.Common;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -34,15 +35,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-            if (GetSto(reqVO) != null)
+            var sto = GetSto(reqVO);
+            if (sto != null)
             {
-                var sto = GetSto(reqVO);
+
+                //var sto = GetSto(reqVO);
+                this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
+                //ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 this.ValidateObjectSizeLimit(sto);
                 var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
-
                 var desLocation = this.GetDesLocations(sto, docItem, reqVO);
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
+               
                 var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
                 docIDs.ForEach(x =>
                 {
@@ -53,6 +58,47 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             else {
                 throw new Exception( "Sto Invalid");
             }
+        }
+
+
+        public void SetWeiChildAndUpdateInfoToChild(StorageObjectCriteria sto, decimal totalWeiKG)
+        {
+            var stoTreeList = sto.ToTreeList();
+            var packMasters = ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(
+                new SQLConditionCriteria(
+                    "ID",
+                    string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.PACK).Select(x => x.mstID.Value).Distinct().ToArray()),
+                    SQLOperatorType.IN),
+                this.BuVO);
+            var baseMasters = ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().m,this.BuVO);
+            //*****SET WEI CODING
+
+            sto.weiKG = totalWeiKG;
+            var innerTotalWeiKG = totalWeiKG - (baseMasters.WeightKG.Value);
+
+            List<decimal> precenFromTotalWeis = new List<decimal>();
+            decimal totalWeiStd = packMasters
+                .Sum(x =>
+                    (x.WeightKG ?? 0) *
+                    sto.mapstos.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.ID).Sum(y => y.qty));
+
+            sto.mapstos.FindAll(x => x.type == StorageObjectType.PACK).ForEach(stos =>
+            {
+                decimal percentWeiStd =
+                (
+                    packMasters.First(x => x.ID == sto.mstID).WeightKG.Value *
+                    sto.qty
+                ) / totalWeiStd;
+                sto.weiKG = percentWeiStd * innerTotalWeiKG;
+            });
+
+            long areaID = sto.areaID.Value;
+            stoTreeList.ForEach(x =>
+            {
+                x.areaID = areaID;
+                ADO.StorageObjectADO.GetInstant().PutV2(x, BuVO);
+            });
+         
         }
 
         private SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, TReq reqVO)
@@ -105,4 +151,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         
     }
+
+   
+
 }
