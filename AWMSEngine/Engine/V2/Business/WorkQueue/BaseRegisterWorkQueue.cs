@@ -35,10 +35,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
-            if (GetSto(reqVO) != null)
+            var sto = GetSto(reqVO);
+            if (sto != null)
             {
 
-                var sto = GetSto(reqVO);
+                //var sto = GetSto(reqVO);
                 this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
                 //ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 this.ValidateObjectSizeLimit(sto);
@@ -69,30 +70,22 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.PACK).Select(x => x.mstID.Value).Distinct().ToArray()),
                     SQLOperatorType.IN),
                 this.BuVO);
-            var baseMasters = ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
-                new SQLConditionCriteria(
-                    "ID",
-                    string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.BASE).Select(x => x.mstID.Value).Distinct().ToArray()),
-                    SQLOperatorType.IN),
-                this.BuVO);
+            var baseMasters = ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().mstID.Value, this.BuVO);
             //*****SET WEI CODING
 
             sto.weiKG = totalWeiKG;
-            var innerTotalWeiKG = totalWeiKG - (baseMasters.First(x => x.ID == sto.mstID).WeightKG.Value);
+            var innerTotalWeiKG = totalWeiKG - (baseMasters.WeightKG.Value);
 
             List<decimal> precenFromTotalWeis = new List<decimal>();
-            decimal totalWeiStd = packMasters
-                .Sum(x =>
-                    (x.WeightKG ?? 0) *
-                    sto.mapstos.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.ID).Sum(y => y.qty));
+            decimal totalWeiStd = packMasters.Sum(x =>(x.WeightKG ?? 0) *sto.mapstos.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.ID).Sum(y => y.qty));
 
             sto.mapstos.FindAll(x => x.type == StorageObjectType.PACK).ForEach(stos =>
             {
                 decimal percentWeiStd =
                 (
-                    packMasters.First(x => x.ID == sto.mstID).WeightKG.Value *
+                    packMasters.First(x => x.ID == stos.mstID).WeightKG.Value *
                     sto.qty
-                ) / totalWeiStd;
+                )  /totalWeiStd;
                 sto.weiKG = percentWeiStd * innerTotalWeiKG;
             });
 
@@ -118,7 +111,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
             return desLocations.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
         }
-        private SPworkQueue CreateWorkQueue(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, SPOutAreaLineCriteria desLocation, TReq reqVO)
+        private SPworkQueue CreateWorkQueue(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, SPOutAreaLineCriteria location, TReq reqVO)
         {
             SPworkQueue workQ = new SPworkQueue()
             {
@@ -132,17 +125,18 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 StorageObject_ID = sto.id,
                 StorageObject_Code = sto.code,
 
-                Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.ID == desLocation.Sou_AreaMaster_ID).Warehouse_ID.Value,
-                AreaMaster_ID = desLocation.Sou_AreaMaster_ID.Value,
-                AreaLocationMaster_ID = desLocation.Sou_AreaLocationMaster_ID,
+                Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).Warehouse_ID.Value,
+                AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
+                AreaLocationMaster_ID = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO).ID,
+     
 
-                Sou_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.ID == desLocation.Sou_AreaMaster_ID).Warehouse_ID.Value,
-                Sou_AreaMaster_ID = desLocation.Sou_AreaMaster_ID.Value,
-                Sou_AreaLocationMaster_ID = desLocation.Sou_AreaLocationMaster_ID,
+                Sou_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).Warehouse_ID.Value,
+                Sou_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
+                Sou_AreaLocationMaster_ID = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO).ID,
 
-                Des_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.ID == desLocation.Des_AreaMaster_ID).Warehouse_ID.Value,
-                Des_AreaMaster_ID = desLocation.Des_AreaMaster_ID.Value,
-                Des_AreaLocationMaster_ID = desLocation.Des_AreaLocationMaster_ID,
+                Des_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.ID == location.Des_AreaMaster_ID).Warehouse_ID.Value,
+                Des_AreaMaster_ID = location.Des_AreaMaster_ID.Value,
+                Des_AreaLocationMaster_ID = location.Des_AreaLocationMaster_ID,
 
                 EventStatus = WorkQueueEventStatus.WORKING,
                 Status = EntityStatus.ACTIVE,
