@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectSTA.Engine.Business.WorkQueue
+namespace ProjectSTA.Engine.Business.Received
 {
-    public class RegisterQueueReceiving : AWMSEngine.Engine.V2.Business.WorkQueue.BaseRegisterWorkQueue
+    public class WCSMapBaseRegister : AWMSEngine.Engine.V2.Business.WorkQueue.BaseRegisterWorkQueue
     {
         private ams_AreaLocationMaster _locationASRS;
         private ams_Warehouse _warehouseASRS;
@@ -38,7 +38,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             if (_locationASRS.ID != sto.parentID)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location don't macth");
 
-            
+
             sto.lengthM = reqVO.length;
             sto.heightM = reqVO.height;
             sto.widthM = reqVO.width;
@@ -49,7 +49,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
             return sto;
         }
- 
+
         protected override List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
         {
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
@@ -68,9 +68,9 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
             return docItems;
         }
- 
+
         private void InitDataASRS(TReq reqVO)
-         {
+        {
             this._warehouseASRS = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (_warehouseASRS == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Warehouse Code '" + reqVO.warehouseCode + "' Not Found");
@@ -85,15 +85,15 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 }, this.BuVO).FirstOrDefault();
             if (_locationASRS == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
-         }
-         
-         //BEGIN*******************ProcessReceiving***********************
+        }
 
-         private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, TReq reqVO)
-         {
-             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
-             var mapstoTree = mapsto.ToTreeList();
-             var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
+        //BEGIN*******************ProcessReceiving***********************
+
+        private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, TReq reqVO)
+        {
+            List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
+            var mapstoTree = mapsto.ToTreeList();
+            var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
             foreach (var packH in packs)
             {
                 long souBranchID = StaticValue.Warehouses.First(x => x.ID == _warehouseASRS.ID).Branch_ID.Value;
@@ -112,7 +112,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                        .FirstOrDefault(x => x.Status == EntityStatus.INACTIVE && x.Sou_StorageObject_ID == packH.id);
                     if (docItemsSto != null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
-                    
+
                     var DocItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
                     docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { DocItemStos };
                     docItems.Add(docItem);
@@ -122,7 +122,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
                                 //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
                                 .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
-                         //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
+                                                                                                                                                //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                     if (doc == null)
                     {
                         doc = new CreateGRDocument().Execute(this.Logger, this.BuVO,
@@ -193,6 +193,6 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             }
 
             return docItems;
-         } 
+        }
     }
 }
