@@ -40,7 +40,12 @@ namespace AWMSModel.Constant.EnumConst
         AFTCreateDoc_1001_100101,
 
         [EnumValueAttribute(ValueString = "WCEB01")]
-        WMENG_CreateGRDocument_Exec_Before,
+        EXEWM_CreateGRDocument_Exec_Before,
 
+        [EnumValueAttribute(ValueString = "PRGS01")]
+        EXEPJ_RegisterWorkQueue_GetSTO,
+
+        [EnumValueAttribute(ValueString = "PRGD01")]
+        EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO
     }
 }
