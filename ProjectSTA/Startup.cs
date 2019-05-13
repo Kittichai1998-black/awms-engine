@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using ProjectSTA.Engine.JobService;
 
 namespace ProjectSTA
 {
@@ -46,11 +47,10 @@ namespace ProjectSTA
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
 
+ 
+            string cronExDOC = appProperty[PropertyConst.APP_KEY_CRONEX_DOC];
+            AMWUtil.Common.SchedulerUtil.Start<CloseGRDocJobServicecs>(cronExDOC);
 
-            string cronEx311 = appProperty[PropertyConst.APP_KEY_CRONEX_311];
-            string cronEx321 = appProperty[PropertyConst.APP_KEY_CRONEX_321];
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDoc311ToSAPJob>(cronEx311);
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDocPackage321ToSAPJob>(cronEx321);
 
             if (env.IsDevelopment())
             {
