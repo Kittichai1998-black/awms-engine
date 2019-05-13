@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -37,6 +38,9 @@ namespace AWMSModel.Constant.EnumConst
 
         /// <summary> Close Document : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
         AFTCreateDoc_1001_1,
+
+        [EnumValueAttribute(ValueString = "WCEB01")]
+        WMENG_CreateGRDocument_Exec_Before,
 
     }
 }
