@@ -7,5 +7,6 @@ namespace AWMSModel.Entity
     public class ams_Feature : BaseEntitySTD
     {
         public string DataValue;
+        public string FullClassName;
     }
 }
