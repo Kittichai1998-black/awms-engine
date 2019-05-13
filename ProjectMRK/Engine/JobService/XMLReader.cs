@@ -342,7 +342,8 @@ namespace ProjectMRK.Engine.JobService
                 {
                     ID = null,
                     DocumentItem_ID = docItem.ID.Value,
-                    StorageObject_ID = sto.id.Value,
+                    Sou_StorageObject_ID = sto.id.Value,
+                    Des_StorageObject_ID = sto.id.Value,
                     Quantity = docItem.Quantity.Value,
                     BaseQuantity = docItem.Quantity.Value,
                     UnitType_ID = docItem.BaseUnitType_ID.Value,
@@ -351,7 +352,7 @@ namespace ProjectMRK.Engine.JobService
                 };
             });
 
-            AWMSEngine.ADO.DocumentADO.GetInstant().MappingSTO(disto, this.BuVO);
+            AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
 
             res.doc = doc;
             res.sto = baseSto;
