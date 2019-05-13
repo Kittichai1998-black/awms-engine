@@ -43,11 +43,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 souAreaCode =
                 this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == queueTrx.Sou_AreaMaster_ID).Code,
                 souLocationCode = sou_lm == null ? null : sou_lm.Code,
-
+         
                 desWarehouseCode = this.StaticValue.Warehouses.FirstOrDefault(x => x.ID == queueTrx.Des_Warehouse_ID).Code,
                 desAreaCode = this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == queueTrx.Des_AreaMaster_ID).Code,
                 desLocationCode = des_lm == null ? null : des_lm.Code,
-
+                
                 queueID = queueTrx.ID,
                 baseInfo = new WorkQueueCriteria.BaseInfo()
                 {

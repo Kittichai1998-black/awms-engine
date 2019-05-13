@@ -34,10 +34,10 @@ namespace AWMSModel.Constant.EnumConst
         SendERPAPIOnClosed_1002_1,
 
         /// <summary> Close Document : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
-        BEFCreateDoc_1001_1,
+        BEFCreateDoc_1001_100101,
 
         /// <summary> Close Document : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
-        AFTCreateDoc_1001_1,
+        AFTCreateDoc_1001_100101,
 
         [EnumValueAttribute(ValueString = "WCEB01")]
         WMENG_CreateGRDocument_Exec_Before,

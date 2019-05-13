@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,7 @@ namespace AWMSEngine.Controllers
 {
     [Route("v2")]
     [ApiController]
-    public abstract class BaseV2Controller : ControllerBase
+    public class BaseV2Controller : ControllerBase
     {
         [HttpGet("{serviceCode}")]
         public dynamic GetAPIService(string serviceCode)
@@ -41,15 +42,16 @@ namespace AWMSEngine.Controllers
             return res;
         }
 
-        protected abstract Type GetClass(string fullName);
+        //protected abstract Type GetClass(string fullName);
 
         private dynamic ExecuteAPI(string serviceCode, string method, bool isAuthen, dynamic jsonObj)
         {
             var getStatic = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().APIServices;
             var className = getStatic.FirstOrDefault(x => x.Code.ToUpper() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
+            
             if (className != null)
             {
-                Type type = className.FullClassName.StartsWith("AWMSEngine") ? Type.GetType(className.FullClassName) : GetClass(className.FullClassName);//Type.GetType(className.FullClassName);
+                Type type = ClassType.GetClassType(className.FullClassName);//Type.GetType(className.FullClassName);
                 var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { this, isAuthen });
                 var res = getInstanct.Execute(jsonObj);
                 return res;

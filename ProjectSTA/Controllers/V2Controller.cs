@@ -10,10 +10,5 @@ namespace ProjectSTA.Controllers
 {
     public class V2Controller : AWMSEngine.Controllers.BaseV2Controller
     {
-        protected override Type GetClass(string fullName)
-        {
-            Type t = Type.GetType(fullName);
-            return t;
-        }
     }
 }

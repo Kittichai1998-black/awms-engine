@@ -1,5 +1,5 @@
 ﻿using AWMSModel.Criteria;
-using AWMSModel.Entity;
+using AWMSModel.Entity; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace ProjectTAP.ADO
 {
     public class DocumentADO: AWMSEngine.ADO.BaseMSSQLAccess<DocumentADO>
     {
-        public List<amt_DocumentItem> ListDocsItemCheckRerigter(String code, DateTime prodDate, long? qty,string itemNo, VOCriteria buVO)
+        public List<amt_DocumentItem> ListDocsItemCheckRegister(String code, DateTime prodDate, long? qty,string itemNo, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("code", code);

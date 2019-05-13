@@ -8,6 +8,7 @@ namespace AWMSModel.Constant.EnumConst
     {
         NEW = 10,
         WORKING = 11,
+        WAIT_FOR_WORKED = 812,
         WORKED = 12,
 
         APPROVING = 13,
