@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectSTA.Engine.Business.WorkQueue
+namespace ProjectSTA.Engine.Business.Received
 {
-    public class RegisterQueueReceiving : AWMSEngine.Engine.V2.Business.WorkQueue.BaseRegisterWorkQueue
+    public class WCSMapBaseRegister : AWMSEngine.Engine.V2.Business.WorkQueue.BaseRegisterWorkQueue
     {
         private ams_AreaLocationMaster _locationASRS;
         private ams_Warehouse _warehouseASRS;
@@ -21,33 +21,31 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
         protected override StorageObjectCriteria GetSto(TReq reqVO)
         {
+            if (reqVO.mappingPallets != null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "จะต้องไม่มีข้อมูล Pallets");
+
             //Init Data from ASRS
             this.InitDataASRS(reqVO);
             var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
-              null, null, false, true, this.BuVO); 
-            if (_areaASRS.ID != sto.areaID)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Area don't macth");
-            if (_locationASRS.ID != sto.parentID)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location don't macth");
-
+              null, null, false, true, this.BuVO);
             if (sto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
             if (sto.code != reqVO.baseCode)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
 
-           // //sto.weiKG = reqVO.weight;
-            /*sto.lengthM = reqVO.length;
+            if (_areaASRS.ID != sto.areaID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Area don't macth");
+            if (_locationASRS.ID != sto.parentID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location don't macth");
+
+
+            sto.lengthM = reqVO.length;
             sto.heightM = reqVO.height;
             sto.widthM = reqVO.width;
             sto.warehouseID = _warehouseASRS.ID.Value;
             sto.areaID = _areaASRS.ID.Value;
             sto.parentID = _locationASRS.ID.Value;
             sto.parentType = StorageObjectType.LOCATION;
-            */
-            //this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0);
-           
-           // AWMSEngine.ADO.StorageObjectADO.GetInstant()
-           //     .UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
 
             return sto;
         }
@@ -70,9 +68,9 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
             return docItems;
         }
- 
+
         private void InitDataASRS(TReq reqVO)
-         {
+        {
             this._warehouseASRS = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (_warehouseASRS == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Warehouse Code '" + reqVO.warehouseCode + "' Not Found");
@@ -87,22 +85,23 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 }, this.BuVO).FirstOrDefault();
             if (_locationASRS == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
-         }
-         
-         //BEGIN*******************ProcessReceiving***********************
+        }
 
-         private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, TReq reqVO)
-         {
-             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
-             var mapstoTree = mapsto.ToTreeList();
-             var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
+        //BEGIN*******************ProcessReceiving***********************
+
+        private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, TReq reqVO)
+        {
+            List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
+            var mapstoTree = mapsto.ToTreeList();
+            var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
             foreach (var packH in packs)
             {
                 long souBranchID = StaticValue.Warehouses.First(x => x.ID == _warehouseASRS.ID).Branch_ID.Value;
                 //หา  List<amt_DocumentItem> ที่มีสินค้าตรงกัน และเช็ค Options(CartonNo) ถ้าไม่ตรงให้เพิ่ม DocItem ใหม่
                 var docItem = AWMSEngine.ADO.DocumentADO.GetInstant()
-                   .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souBranchID, _warehouseASRS.ID, null, null, packH.unitID, packH.baseUnitID, packH.orderNo, null, null, packH.options, this.BuVO)
-                   .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
+                            .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, null, null, null, null, packH.unitID, packH.baseUnitID, packH.orderNo, null, null, null, this.BuVO)
+                            //.ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souBranchID, _warehouseASRS.ID, null, null, packH.unitID, packH.baseUnitID, packH.orderNo, null, null, packH.options, this.BuVO)
+                            .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
 
                 //pack Info พบ Docitem ที่สามารถ Mapping ได้
                 if (docItem != null)
@@ -113,58 +112,54 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                        .FirstOrDefault(x => x.Status == EntityStatus.INACTIVE && x.Sou_StorageObject_ID == packH.id);
                     if (docItemsSto != null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
-                    
-                    AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
-                    /*var doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
-                    if (doc.EventStatus == DocumentEventStatus.NEW)
-                    {
-                        AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                        if (doc.ParentDocument_ID.HasValue)
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                    }*/
+
+                    var DocItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), this.BuVO);
+                    docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { DocItemStos };
                     docItems.Add(docItem);
                 }
                 else
                 {
-                    var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
-                       .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
-                    //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
+                    var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
+                                //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
+                                .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
+                                                                                                                                                //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                     if (doc == null)
                     {
                         doc = new CreateGRDocument().Execute(this.Logger, this.BuVO,
-                            new CreateGRDocument.TReq()
-                            {
-                                refID = null,
-                                ref1 = null,
-                                ref2 = null,
-                                souBranchID = this.StaticValue.Warehouses.First(x => x.ID == _warehouseASRS.ID).Branch_ID,
-                                souWarehouseID = _warehouseASRS.ID,
-                                desBranchID = this.StaticValue.Warehouses.First(x => x.ID == _warehouseASRS.ID).Branch_ID,
-                                desWarehouseID = _warehouseASRS.ID,
-                                desAreaMasterID = _areaASRS.ID,
-                                movementTypeID = MovementType.RECEIVE_PRODUCTION,
-                                orderNo = packH.orderNo,
-                                lot = null,
-                                batch = null,
-                                documentDate = DateTime.Now,
-                                actionTime = DateTime.Now,
-                                eventStatus = DocumentEventStatus.NEW,
-                                receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
-                                                    new CreateGRDocument.TReq.ReceiveItem
-                                                    {
-                                                        packCode = packH.code,
-                                                        quantity = null,
-                                                        unitType = packH.unitCode,
-                                                        batch = null,
-                                                        lot = null,
-                                                        orderNo = packH.orderNo,
-                                                        ref2 = null,
-                                                        options = packH.options,
-                                                        eventStatus = DocumentEventStatus.NEW,
-                                                        docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
+                                   new CreateGRDocument.TReq()
+                                   {
+                                       refID = null,
+                                       ref1 = null,
+                                       ref2 = null,
+                                       souBranchID = null,
+                                       souWarehouseID = null,
+                                       souAreaMasterID = null,
+                                       desBranchID = this.StaticValue.Warehouses.First(x => x.ID == _warehouseASRS.ID).Branch_ID,
+                                       desWarehouseID = _warehouseASRS.ID,
+                                       desAreaMasterID = null,
+                                       movementTypeID = MovementType.RECEIVE_PRODUCTION,
+                                       //orderNo = packH.orderNo,
+                                       lot = null,
+                                       batch = null,
+                                       documentDate = DateTime.Now,
+                                       actionTime = DateTime.Now,
+                                       eventStatus = DocumentEventStatus.NEW,
+                                       receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
+                                                        new CreateGRDocument.TReq.ReceiveItem
+                                                        {
+                                                            packCode = packH.code,
+                                                            quantity = null,
+                                                            unitType = packH.unitCode,
+                                                            batch = null,
+                                                            lot = null,
+                                                            orderNo = packH.orderNo,
+                                                            ref2 = null,
+                                                            //options = packH.options,
+                                                            eventStatus = DocumentEventStatus.NEW,
+                                                            docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
 
-                                                    }}
-                            });
+                                                        }}
+                                   });
                         docItems.AddRange(doc.DocumentItems);
                     }
 
@@ -184,20 +179,20 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             Batch = null,
                             Lot = null,
                             OrderNo = packH.orderNo,
-                            Options = packH.options,
+                            //Options = packH.options,
                             ProductionDate = packH.productDate,
                             SKUMaster_ID = packConvert.skuMaster_ID,
                             EventStatus = DocumentEventStatus.NEW,
                             Ref2 = null,
                             DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
                         };
-                        AWMSEngine.ADO.DocumentADO.GetInstant().CreateItem(docItem, this.BuVO);
-                        docItems.Add(docItem);
+                        var newdocItem = AWMSEngine.ADO.DocumentADO.GetInstant().CreateItem(docItem, this.BuVO);
+                        docItems.Add(newdocItem);
                     }
                 }
             }
 
             return docItems;
-         } 
+        }
     }
 }

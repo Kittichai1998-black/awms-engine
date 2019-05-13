@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="APIService\ASRS\" />
     <Folder Include="Controllers\WM\" />
+    <Folder Include="Engine\Business\WorkQueue\" />
     <Folder Include="Engine\General\" />
     <Folder Include="Engine\Validation\" />
     <Folder Include="wwwroot\" />
