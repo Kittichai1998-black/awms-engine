@@ -287,7 +287,7 @@ namespace ProjectMRK.Engine.JobService
                 Des_AreaMaster_ID = null,
                 DocumentDate = jsonHeader.TransDate,
                 ActionTime = null,
-                MovementType_ID = skuMovementType.Code == "FastMove" ? MovementType.FG_FASTMOVE : MovementType.FG_TRANSFER,
+                MovementType_ID = skuMovementType.Code == "FASTMOVE" ? MovementType.FG_FASTMOVE : MovementType.FG_TRANSFER,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
