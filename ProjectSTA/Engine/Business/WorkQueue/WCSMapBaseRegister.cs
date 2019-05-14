@@ -2,7 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine.Common;
 using AWMSEngine.Engine.V2.Business;
-using AWMSEngine.Engine.V2.Business.Received;
+using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectSTA.Engine.Business.Received
+namespace ProjectSTA.Engine.Business.WorkQueue
 {
     public class WCSMapBaseRegister : AWMSEngine.Engine.V2.Business.WorkQueue.BaseRegisterWorkQueue
     {

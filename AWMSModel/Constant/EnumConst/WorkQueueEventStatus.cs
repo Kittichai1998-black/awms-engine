@@ -6,7 +6,7 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum WorkQueueEventStatus
     {
-        IDLE = 10,//ยังไม่เริ่ม
+        NEW = 10,//ยังไม่เริ่ม
 
         WORKING = 11,//กำลังทำงาน
         WORKED = 12,

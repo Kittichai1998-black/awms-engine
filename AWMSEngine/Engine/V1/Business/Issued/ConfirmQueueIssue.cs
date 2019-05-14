@@ -234,7 +234,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 Sou_AreaMaster_ID = souAreaDefault.Sou_AreaMaster_ID.Value,
                 Sou_AreaLocationMaster_ID = souAreaDefault.Sou_AreaLocationMaster_ID,
 
-                EventStatus = WorkQueueEventStatus.IDLE,
+                EventStatus = WorkQueueEventStatus.NEW,
                 Status = EntityStatus.INACTIVE,
                 StartTime = actualTime,
                 DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, mapsto)
