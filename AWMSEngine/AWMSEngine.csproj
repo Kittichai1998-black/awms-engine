@@ -25,6 +25,7 @@
     <Compile Remove="Controllers\WM\VRMapSTOReceiveController.cs" />
     <Compile Remove="APIService\WM\GetMstSTOAPI.cs" />
     <Compile Remove="APIService\WM\PutVirtualMapSTOAPI.cs" />
+    <Compile Remove="Engine\EngineParamAttr.cs" />
     <Compile Remove="Engine\V1\Business\FreeSTO.cs" />
     <Compile Remove="Engine\V1\Business\MenuResponseObject.cs" />
     <Compile Remove="Engine\V1\Business\NewSTO.cs" />

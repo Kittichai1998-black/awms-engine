@@ -21,9 +21,9 @@ namespace AWMSEngine.Engine
     {
         protected abstract TRes ExecuteEngine(TReq reqVO);
 
-        protected VOCriteria BuVO { get; set; }
-        protected StaticValueManager StaticValue { get; set; }
-        protected AMWLogger Logger { get; set; }
+        public VOCriteria BuVO { get; set; }
+        public StaticValueManager StaticValue { get; set; }
+        public AMWLogger Logger { get; set; }
 
         protected string Token => this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN);
         protected amt_Token TokenInfo => this.BuVO.Get<amt_Token>(BusinessVOConst.KEY_TOKEN_INFO);
@@ -40,6 +40,21 @@ namespace AWMSEngine.Engine
         {
             return new AMWException(this.Logger, code, parameters, (AMWException.ENLanguage)LanguageCode);
         }
+
+        protected TExecRes ExectProject<TExecReq,TExecRes>(FeatureCode featureCode, TExecReq reqVO)
+           where TExecRes : class
+        {
+            var staticVal = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            var fcode = AMWUtil.Common.AttributeUtil.Attribute<AMWUtil.Common.EnumValueAttribute>(featureCode);
+
+            if (staticVal.Features.ContainsKey(fcode.ValueString))
+                return null;
+            var feature = staticVal.Features[fcode.ValueString];
+            Type type = ClassType.GetClassType(feature.FullClassName);
+            var getInstanct = (IProjectEngine<TReq, TRes>)Activator.CreateInstance(type, new object[] { });
+            return getInstanct.ExecuteEngine(this.Logger, this.BuVO, reqVO);
+        }
+
 
         public TRes Execute(AMWLogger logger,
             VOCriteria buVO,

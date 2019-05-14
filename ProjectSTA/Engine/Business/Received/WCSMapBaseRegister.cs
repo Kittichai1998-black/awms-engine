@@ -119,7 +119,7 @@ namespace ProjectSTA.Engine.Business.Received
                 }
                 else
                 {
-                    var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
+                    var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, MovementType.FG_TRANSFER, this.BuVO)
                                 //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
                                 .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
                                                                                                                                                 //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
@@ -137,7 +137,7 @@ namespace ProjectSTA.Engine.Business.Received
                                        desBranchID = this.StaticValue.Warehouses.First(x => x.ID == _warehouseASRS.ID).Branch_ID,
                                        desWarehouseID = _warehouseASRS.ID,
                                        desAreaMasterID = null,
-                                       movementTypeID = MovementType.RECEIVE_PRODUCTION,
+                                       movementTypeID = MovementType.FG_TRANSFER,
                                        //orderNo = packH.orderNo,
                                        lot = null,
                                        batch = null,
