@@ -211,7 +211,7 @@ namespace AWMSEngine.Engine.Business
                         result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
                     }
                 }
-                catch (System.Exception ex)
+                catch
                 {
                     result = null;
                     if (retry == 0 && logger != null)
