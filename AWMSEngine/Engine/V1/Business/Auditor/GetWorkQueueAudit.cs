@@ -80,7 +80,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                         Des_AreaMaster_ID = desAreaID.ID.Value,
                         Des_AreaLocationMaster_ID = null,
 
-                        EventStatus = WorkQueueEventStatus.IDLE,
+                        EventStatus = WorkQueueEventStatus.NEW,
                         Status = EntityStatus.ACTIVE,
                         StartTime = DateTime.Now,
                         QueueStatus = false,

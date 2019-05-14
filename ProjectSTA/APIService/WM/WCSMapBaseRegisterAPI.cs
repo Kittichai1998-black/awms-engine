@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProjectSTA.Engine.Business.Received;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AWMSEngine.Engine.V2.Business.WorkQueue;
+using Microsoft.AspNetCore.Mvc; 
 
 namespace ProjectSTA.APIService.WM
 {
@@ -19,8 +15,8 @@ namespace ProjectSTA.APIService.WM
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            WCSMapBaseRegister.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<WCSMapBaseRegister.TReq>(this.RequestVO);
-            var res = new WCSMapBaseRegister().Execute(this.Logger, this.BuVO, req);
+            RegisterWorkQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterWorkQueue.TReq>(this.RequestVO);
+            var res = new RegisterWorkQueue().Execute(this.Logger, this.BuVO, req);
             return res;
         }
     }
