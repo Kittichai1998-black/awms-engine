@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Logger;
+using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -18,7 +19,6 @@ namespace ProjectSTA.Engine.Business
  
         protected override string ExecuteEngine(TReq reqVO)
         {
-             
             foreach (var num in reqVO.docIDs)
             {
                 var doc = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amv_Document>(num, this.BuVO);

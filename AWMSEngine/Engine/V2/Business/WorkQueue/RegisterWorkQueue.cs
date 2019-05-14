@@ -29,6 +29,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public List<PalletDataCriteriaV2> mappingPallets;
         }
 
+        public class TReqDocumentItemAndDISTO
+        {
+            public StorageObjectCriteria sto;
+            public TReq reqVO;
+        }
+
         protected StorageObjectCriteria GetSto(TReq reqVO)
         {
             var res = this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
@@ -38,9 +44,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             }
             return res;
         }
-        protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto)
+        protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
         {
-            var res = this.ExectProject<StorageObjectCriteria, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, sto);
+            var res = this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
             if (res == null)
             {
                 ////DF Code
@@ -60,7 +66,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
                 //ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 this.ValidateObjectSizeLimit(sto);
-                var docItem = GetDocumentItemAndDISTO(sto);
+                var docItem = GetDocumentItemAndDISTO(sto, reqVO);
                 var desLocation = this.GetDesLocations(sto, docItem, reqVO);
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);

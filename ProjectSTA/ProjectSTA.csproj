@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Engine\Business\EvalTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="APIService\ASRS\" />
     <Folder Include="Controllers\WM\" />
     <Folder Include="Engine\Business\WorkQueue\" />

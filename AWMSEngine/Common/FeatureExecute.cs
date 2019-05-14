@@ -12,8 +12,8 @@ namespace AWMSEngine.Common
 {
     public static class FeatureExecute
     {
-        public static TRes ExectProjectFeature<TReq, TRes>(FeatureCode featureCode, AMWLogger logger, VOCriteria buVO, TReq reqVO)
-            where TRes : class
+        public static TExecRes ExectProject<TExecReq, TExecRes>(FeatureCode featureCode,  AMWLogger logger, VOCriteria buVO, TExecReq req)
+           where TExecRes : class
         {
             var staticVal = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
             var fcode = AMWUtil.Common.AttributeUtil.Attribute<AMWUtil.Common.EnumValueAttribute>(featureCode);
@@ -22,8 +22,14 @@ namespace AWMSEngine.Common
                 return null;
             var feature = staticVal.Features[fcode.ValueString];
             Type type = ClassType.GetClassType(feature.FullClassName);
-            var getInstanct = (IProjectEngine<TReq, TRes>)Activator.CreateInstance(type, new object[] { });
-            return getInstanct.ExecuteEngine(logger, buVO, reqVO);
+            var getInstanct = (IProjectEngine<TExecReq, TExecRes>)Activator.CreateInstance(type, new object[] { });
+            return getInstanct.ExecuteEngine(logger, buVO, req);
+        }
+
+        public static bool EvalExec(string fullClassName, dynamic data)
+        {
+            var eval = (IEval)Activator.CreateInstance(ClassType.GetClassType(fullClassName));
+            return eval.exec(data);
         }
     }
 }
