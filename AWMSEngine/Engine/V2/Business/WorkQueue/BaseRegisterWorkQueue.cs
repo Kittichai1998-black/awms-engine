@@ -70,7 +70,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     string.Join(',', stoTreeList.Where(x => x.type == StorageObjectType.PACK).Select(x => x.mstID.Value).Distinct().ToArray()),
                     SQLOperatorType.IN),
                 this.BuVO);
-            var baseMasters = ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault().m,this.BuVO);
+            var baseMasters = ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(stoTreeList.Where(x => x.type == StorageObjectType.BASE).FirstOrDefault(),this.BuVO);
             //*****SET WEI CODING
 
             sto.weiKG = totalWeiKG;
