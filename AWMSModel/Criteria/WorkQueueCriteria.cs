@@ -32,15 +32,17 @@ namespace AWMSModel.Criteria
             public long id;//รหัสพาเลท
             public string baseCode;//รหัสพาเลท
             public List<PackInfo> packInfos;//ข้อมูลสินค้าในพาเลท
-            public class PackInfo
+            public class PackInfo 
             {
-                public string packCode;//รหัส Packet
-                public decimal packQty;//จำนวน Packet
-                public string skuCode;//รหัส SKU
-                public decimal skuQty;//จำนวนสินค้านับจาก SKU
-                public string orderNo;
-                public string lot;
+                public string code;
+                public decimal qty;
+                public string unti;
+                public decimal baseQty;
+                public string baseUnit;
                 public string batch;
+                public string lot;
+                public string orderNo;
+                public DateTime? prodDate;
 
                 //public DateTime? minProductDate;//วันผลิด ต่ำสุดจากทั้งหมดใยพาเลท
                 //public DateTime? maxProductDate;//วันผลิด สูงสุดจากทั้งหมดใยพาเลท
