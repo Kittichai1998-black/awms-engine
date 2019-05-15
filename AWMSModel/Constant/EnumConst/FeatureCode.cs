@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -33,10 +34,18 @@ namespace AWMSModel.Constant.EnumConst
         SendERPAPIOnClosed_1002_1,
 
         /// <summary> Close Document : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
-        BEFCreateDoc_1001_100101,
+        BEFCreateDoc_1001_101,
 
         /// <summary> Close Document : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
-        AFTCreateDoc_1001_100101,
+        AFTCreateDoc_1001_101,
 
+        [EnumValueAttribute(ValueString = "WCEB01")]
+        EXEWM_CreateGRDocument_Exec_Before,
+
+        [EnumValueAttribute(ValueString = "PRGS01")]
+        EXEPJ_RegisterWorkQueue_GetSTO,
+
+        [EnumValueAttribute(ValueString = "PRGD01")]
+        EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO
     }
 }

@@ -1,10 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Engine\Business\EvalTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="APIService\ASRS\" />
     <Folder Include="Controllers\WM\" />
     <Folder Include="Engine\General\" />
     <Folder Include="Engine\Validation\" />

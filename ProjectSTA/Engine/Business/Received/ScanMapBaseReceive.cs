@@ -83,20 +83,39 @@ namespace ProjectSTA.Engine.Business.Received
                         new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.NEW, SQLOperatorType.EQUALS, SQLConditionType.AND),
                         new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                   }, this.BuVO).FirstOrDefault();
-                 
+
+               
                 //เช็คข้อมูลBase ที่มี AreaLocationMaster_ID ที่ตรงกับ location.ID
                 if (stoBaseItems != null)
                 {
+                    var baseItemsCheck = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", (long)stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
+                    var objSizeBaseCheck = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)baseItemsCheck.ObjectSize_ID).FirstOrDefault();
+
                     //เอาstoID ของ Base มาหารายการสินค้า SKU 
                     var stoPackObjects = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
                             new SQLConditionCriteria("ParentStorageObject_ID",(long)stoBaseItems.ID, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                       }, this.BuVO);
-                    if(stoPackObjects != null && stoPackObjects.Count() > 0)
+
+                    if (stoPackObjects != null && stoPackObjects.Count() > 0)
                     { //มีสินค้าอยู่บนพาเลท
                         foreach (var stoPack in stoPackObjects)
                         {
+                            var packItemsCheck = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>("ID", (long)stoPack.PackMaster_ID, this.BuVO).FirstOrDefault();
+                            var objSizePackCheck = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)packItemsCheck.ObjectSize_ID).FirstOrDefault();
+
+                            var objectSizeMaps = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>(new SQLConditionCriteria[] {
+                                    new SQLConditionCriteria("OuterObjectSize_ID", (long)objSizeBaseCheck.ID, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("InnerObjectSize_ID", (long)objSizePackCheck.ID, SQLOperatorType.EQUALS, SQLConditionType.AND),
+                                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS, SQLConditionType.AND), 
+                              }, this.BuVO).FirstOrDefault();
+                            var lastPackQty = stoPack.Quantity;
+                            if(lastPackQty == objectSizeMaps.MaxQuantity)
+                            {
+                                continue;
+                            }
+
                             //เช็คพาเลทว่ามี OrderNo,skuCode ตรงกันกับ ScanCode ของสินค้าใหม่มั้ย
                             if (orderNo == stoPack.OrderNo && skuCode == stoPack.Code)
                             {  //ข้อมูลตรง เช็คว่ามีค่า Options มั้ย ถ้ามี เช็คหาค่า CartonNo.
@@ -140,7 +159,7 @@ namespace ProjectSTA.Engine.Business.Received
 
                                                 /// รับเข้า วางสินค้าลงบนพาเลทได้
                                                 var optionsNew = "CartonNo=" + newCartonNos;
-                                                 
+
                                                 var objectSizePack = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)skuItem.ObjectSize_ID).FirstOrDefault();
                                                 if (objectSizePack == null)
                                                 {
@@ -306,7 +325,7 @@ namespace ProjectSTA.Engine.Business.Received
 
                 }
             }
-                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Can't add product in this pallet");
+                            throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Can't add product in this pallet. Because Empty Pallet Not Found or Order No. or SKU Code doesn't match");
         }
 
         private TRes GenerateMapSto(TReq reqVO, string orderNo, string newOptions, amt_StorageObject stoBaseItem, ams_SKUMaster skuItem, List<StorageObjectCriteria> mapStosPack, ams_AreaMaster areaItem, ams_AreaLocationMaster arealocation)

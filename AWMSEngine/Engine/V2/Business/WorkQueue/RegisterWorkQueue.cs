@@ -9,10 +9,11 @@ using System.Linq;
 using AMWUtil.Exception;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.Common;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public abstract class BaseRegisterWorkQueue : BaseQueue<BaseRegisterWorkQueue.TReq, WorkQueueCriteria>
+    public class RegisterWorkQueue : BaseQueue<RegisterWorkQueue.TReq, WorkQueueCriteria>
     {
         public class TReq //ข้อมูล Request จาก WCS
         {
@@ -29,8 +30,31 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public List<PalletDataCriteriaV2> mappingPallets;
         }
 
-        protected abstract StorageObjectCriteria GetSto(TReq reqVO);
-        protected abstract List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO);
+        public class TReqDocumentItemAndDISTO
+        {
+            public StorageObjectCriteria sto;
+            public TReq reqVO;
+        }
+
+        protected StorageObjectCriteria GetSto(TReq reqVO)
+        {
+            var res = this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
+            if(res == null)
+            {
+                ////DF Code
+            }
+            return res;
+        }
+        protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
+        {
+            var res = this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            if (res == null)
+            {
+                ////DF Code
+            }
+
+            return res;
+        }
 
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
@@ -43,7 +67,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
                 //ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 this.ValidateObjectSizeLimit(sto);
-                var docItem = this.GetDocumentItemAndDISTO(sto, reqVO);
+                var docItem = GetDocumentItemAndDISTO(sto, reqVO);
                 var desLocation = this.GetDesLocations(sto, docItem, reqVO);
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);

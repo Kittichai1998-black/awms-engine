@@ -221,7 +221,7 @@ namespace ProjectMRK.Engine.JobService
             List<StorageObjectCriteria> listSto = new List<StorageObjectCriteria>();
             listSto.Add(new StorageObjectCriteria()
             {
-                code = jsonDetail.PalletID,
+                code = jsonDetail.ItemNumber,
                 eventStatus = StorageObjectEventStatus.NEW,
                 name = sku.Name,
                 batch = jsonDetail.ToBatch,
@@ -264,6 +264,7 @@ namespace ProjectMRK.Engine.JobService
             };
 
             var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().Create(baseSto, jsonDetail.ToBatch, null, this.BuVO);
+            var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
 
             amt_Document doc = new amt_Document()
             {
@@ -286,7 +287,7 @@ namespace ProjectMRK.Engine.JobService
                 Des_AreaMaster_ID = null,
                 DocumentDate = jsonHeader.TransDate,
                 ActionTime = null,
-
+                MovementType_ID = skuMovementType.Code == "FASTMOVE" ? MovementType.FG_FASTMOVE : MovementType.FG_TRANSFER,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
@@ -342,7 +343,8 @@ namespace ProjectMRK.Engine.JobService
                 {
                     ID = null,
                     DocumentItem_ID = docItem.ID.Value,
-                    StorageObject_ID = sto.id.Value,
+                    Sou_StorageObject_ID = sto.id.Value,
+                    Des_StorageObject_ID = sto.id.Value,
                     Quantity = docItem.Quantity.Value,
                     BaseQuantity = docItem.Quantity.Value,
                     UnitType_ID = docItem.BaseUnitType_ID.Value,
@@ -351,7 +353,7 @@ namespace ProjectMRK.Engine.JobService
                 };
             });
 
-            AWMSEngine.ADO.DocumentADO.GetInstant().MappingSTO(disto, this.BuVO);
+            AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
 
             res.doc = doc;
             res.sto = baseSto;
