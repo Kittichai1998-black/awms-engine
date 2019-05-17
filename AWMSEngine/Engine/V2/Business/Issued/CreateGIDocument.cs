@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             public string forCustomerCode;
             public string batch;
             public string lot;
+            public MovementType movementTypeID;
 
             public long? souBranchID;
             public long? souWarehouseID;
@@ -122,6 +123,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
+                    parentDocumentID = reqVO.parentDocumentID,
                     lot = reqVO.lot,
                     batch = reqVO.batch,
                     forCustomerID =
@@ -145,9 +147,9 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
 
-                    docTypeId = DocumentTypeID.GOODS_RECEIVED,
+                    docTypeId = DocumentTypeID.GOODS_ISSUED,
                     eventStatus = reqVO.eventStatus,
-
+                    movementTypeID = reqVO.movementTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.issueItems.Select(

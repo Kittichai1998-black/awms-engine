@@ -1,9 +1,13 @@
 ﻿using AWMSEngine.Engine.V2.Business.WorkQueue;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace ProjectSTA.APIService.WM
+namespace AWMSEngine.APIService.ASRS
 {
-    public class WCSMapBaseRegisterAPI : AWMSEngine.APIService.BaseAPIService
+    public class WCSMapBaseRegisterAPI : BaseAPIService
     {
         public override int APIServiceID()
         {
