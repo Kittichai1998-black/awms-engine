@@ -57,13 +57,15 @@ namespace AWMSEngine.Engine.Business.WorkQueue
                     .Where(x => x.type == StorageObjectType.PACK)
                     .Select(x => new WorkQueueCriteria.BaseInfo.PackInfo()
                     {
+                        code = x.code,
+                        qty = x.qty,
+                        unti = x.unitCode,
+                        baseQty = x.baseQty,
+                        baseUnit = x.baseUnitCode,
                         batch = x.batch,
                         lot = x.lot,
                         orderNo = x.orderNo,
-                        packCode = x.code,
-                        packQty = x.qty,
-                        skuCode = x.code,
-                        skuQty = x.baseQty
+                        prodDate = x.productDate,
                     })
                     .ToList()
                 },
