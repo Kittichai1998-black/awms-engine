@@ -103,8 +103,8 @@ namespace AWMSModel.Criteria
             {
                 id = null,
                 mstID = objMstID,
-                code = obj.Code,
-                name = obj.Name,
+                code = null,
+                name = null,
                 type = objType,
                 skuID = skuID,
                 productDate = productDate,
@@ -150,7 +150,7 @@ namespace AWMSModel.Criteria
                 }).ToList(),
                 mapstos = new List<StorageObjectCriteria>(),
                 eventStatus = StorageObjectEventStatus.NEW,
-                isFocus = obj is ams_PackMaster ? false : true,
+                isFocus = null is ams_PackMaster ? false : true,
 
             };
             res.groupSum = StorageObjectCriteria.CreateGroupSum(res);

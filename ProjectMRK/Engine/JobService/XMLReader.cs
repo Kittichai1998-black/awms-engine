@@ -103,14 +103,16 @@ namespace ProjectMRK.Engine.JobService
             var xmlName = listNames.Where(x => matchExpression.Match(x).Success).ToList();
 
             TRes res = new TRes();
+            List<TRes.DocList> docList = new List<TRes.DocList>();
             if (xmlName.Count > 0)
             {
                 xmlName.ForEach(x =>
                 {
                     var docRes = ReadListFileXML(x);
-                    res.document.Add(docRes);
+                    docList.Add(docRes);
                 });
             }
+            res.document = docList;
             return res;
         }
 
@@ -241,7 +243,7 @@ namespace ProjectMRK.Engine.JobService
             };
 
             var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
-            var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(new StorageObjectCriteria()
+            var childSto = new StorageObjectCriteria()
             {
                 parentID = stoID,
                 parentType = StorageObjectType.BASE,
@@ -260,7 +262,9 @@ namespace ProjectMRK.Engine.JobService
                 type = StorageObjectType.PACK,
                 productDate = jsonDetail.ManufactureDate,
                 objectSizeName = objSizePack.Name,
-            }, this.BuVO);
+                mstID = pack.ID
+            };
+            var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(childSto, this.BuVO);
             
             var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
 
@@ -330,7 +334,7 @@ namespace ProjectMRK.Engine.JobService
             var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, this.BuVO).ID;
 
             var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID.Value, this.BuVO);
-            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(childStoID, StorageObjectType.PACK, false, true, this.BuVO);
+            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
             var stoList = stos.ToTreeList();
             var stoPack = stoList.Where(x => x.type == StorageObjectType.PACK);
             amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject();
@@ -354,7 +358,9 @@ namespace ProjectMRK.Engine.JobService
             AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
 
             res.doc = doc;
+            baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
             res.sto = baseSto;
+            
 
             return res;
 
