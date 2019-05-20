@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectMRK.APIService
+namespace ProjectMRK.APIService.Doc
 {
     public class CloseDocumentJobAPI : BaseAPIService
     {
@@ -16,7 +16,7 @@ namespace ProjectMRK.APIService
 
         public override int APIServiceID()
         {
-            throw new NotImplementedException();
+            return 88;
         }
 
         protected override dynamic ExecuteEngineManual()

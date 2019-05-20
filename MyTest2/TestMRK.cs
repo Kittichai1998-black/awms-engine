@@ -10,8 +10,8 @@ namespace UnitTestProject1
         [Fact]
         public void TestRead()
         {
-            var proj = new ProjectMRK.Engine.Bussiness.ReadFileXML();
-            proj.test();
+            //var proj = new ProjectMRK.Engine.Bussiness.ReadFileXML();
+            //proj.test();
         }
     }
 }

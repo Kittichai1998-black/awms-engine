@@ -21,9 +21,9 @@ namespace AWMSEngine.Engine
     {
         protected abstract TRes ExecuteEngine(TReq reqVO);
 
-        protected VOCriteria BuVO { get; set; }
-        protected StaticValueManager StaticValue { get; set; }
-        protected AMWLogger Logger { get; set; }
+        public VOCriteria BuVO { get; set; }
+        public StaticValueManager StaticValue { get; set; }
+        public AMWLogger Logger { get; set; }
 
         protected string Token => this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN);
         protected amt_Token TokenInfo => this.BuVO.Get<amt_Token>(BusinessVOConst.KEY_TOKEN_INFO);
@@ -40,6 +40,13 @@ namespace AWMSEngine.Engine
         {
             return new AMWException(this.Logger, code, parameters, (AMWException.ENLanguage)LanguageCode);
         }
+
+        protected TExecRes ExectProject<TExecReq,TExecRes>(FeatureCode featureCode, TExecReq req)
+           where TExecRes : class
+        {
+            return Common.FeatureExecute.ExectProject<TExecReq, TExecRes>(featureCode, this.Logger, this.BuVO, req);
+        }
+
 
         public TRes Execute(AMWLogger logger,
             VOCriteria buVO,
