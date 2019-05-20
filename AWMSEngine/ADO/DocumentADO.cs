@@ -761,5 +761,17 @@ namespace AWMSEngine.ADO
                 new SQLConditionCriteria("Options", options, SQLOperatorType.LIKE)
             }, buVO);
         }
+
+        public List<amt_DocumentItemStorageObject> ListDISTOByDoc(long docID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("docID", docID);
+            var distos = this.Query<amt_DocumentItemStorageObject>("SP_DOCITEM_LIST_DISTO_FROM_DOC",
+                System.Data.CommandType.StoredProcedure,
+                param,
+                buVO.Logger,
+                buVO.SqlTransaction).ToList();
+            return distos;
+        }
     }
 }

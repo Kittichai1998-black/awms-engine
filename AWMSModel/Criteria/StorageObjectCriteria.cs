@@ -6,6 +6,8 @@ using System.Text;
 using System.Linq;
 using AMWUtil.Common;
 using AWMSModel.Entity;
+using AMWUtil.Logger;
+using AMWUtil.Exception;
 
 namespace AWMSModel.Criteria
 {
@@ -68,6 +70,93 @@ namespace AWMSModel.Criteria
                 return GetMapStoLastFocus(res);
             return mapsto;
         }
+        public StorageObjectCriteria GenerateStoCrit(StorageObjectType objType, long objMstID, long objUnitTypeID, long objSizeID, StorageObjectCriteria parrentMapsto,
+            string stoCode, string unitCode, decimal amount, long? areaID, long warehouseID, string batch, string lot, string orderNo, DateTime productDate,
+            IStaticValueManager staticValue,
+            AMWLogger logger)
+        {
+
+            var objSize = staticValue.ObjectSizes.Find(x => x.ID == objSizeID);
+            //var objType = obj is ams_BaseMaster ? StorageObjectType.BASE : obj is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK;
+
+            ams_UnitType trueUnit = null;
+            long? skuID = null;
+            if (objType == StorageObjectType.PACK)
+            {
+                trueUnit = staticValue.UnitTypes.FirstOrDefault(x => x.Code == unitCode && x.ObjectType == objType);
+                skuID = objMstID; //((ams_PackMaster)obj).SKUMaster_ID;
+            }
+            else
+                trueUnit = staticValue.UnitTypes.FirstOrDefault(x => x.ID == objUnitTypeID);
+
+            if (trueUnit == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "UnitType ไม่ถูกต้อง");
+
+
+            var baseUnit = objType == StorageObjectType.PACK ?
+                staticValue.ConvertToBaseUnitByPack(stoCode, amount, trueUnit.ID.Value) : null;
+            StorageObjectType? parrentType = null;
+            if (parrentMapsto != null)
+                parrentType = parrentMapsto.type;
+
+            var res = new StorageObjectCriteria()
+            {
+                id = null,
+                mstID = objMstID,
+                code = obj.Code,
+                name = obj.Name,
+                type = objType,
+                skuID = skuID,
+                productDate = productDate,
+
+                parentID = parrentMapsto != null ? parrentMapsto.id : null,
+                parentType = parrentType,
+
+                areaID = parrentMapsto != null ? parrentMapsto.areaID : areaID.Value,
+                warehouseID = parrentMapsto != null ? parrentMapsto.warehouseID : warehouseID,
+                orderNo = orderNo,
+                lot = lot,
+                batch = batch,
+
+                qty = amount,
+                unitID = trueUnit.ID.Value,
+                unitCode = trueUnit.Code,
+
+                baseQty = baseUnit != null ? baseUnit.baseQty : 1,
+                baseUnitID = baseUnit != null ? baseUnit.baseUnitType_ID : trueUnit.ID.Value,
+                baseUnitCode = baseUnit != null ?
+                                    staticValue.UnitTypes.First(x => x.ID == baseUnit.baseUnitType_ID).Code : trueUnit.Code,
+
+                weiKG = null,
+                widthM = null,
+                heightM = null,
+                lengthM = null,
+
+                options = options,
+
+                maxWeiKG = objSize.MaxWeigthKG,
+                minWeiKG = objSize.MinWeigthKG,
+                objectSizeID = objSize.ID.Value,
+                objectSizeName = objSize.Name,
+                objectSizeMaps = objSize.ObjectSizeInners.Select(x => new StorageObjectCriteria.ObjectSizeMap()
+                {
+                    innerObjectSizeID = x.InnerObjectSize_ID,
+                    innerObjectSizeName = staticValue.ObjectSizes.Find(y => y.ID == x.InnerObjectSize_ID).Name,
+                    outerObjectSizeID = x.ID.Value,
+                    outerObjectSizeName = x.Name,
+                    maxQuantity = x.MaxQuantity,
+                    minQuantity = x.MinQuantity,
+                    quantity = 0
+                }).ToList(),
+                mapstos = new List<StorageObjectCriteria>(),
+                eventStatus = StorageObjectEventStatus.NEW,
+                isFocus = obj is ams_PackMaster ? false : true,
+
+            };
+            res.groupSum = StorageObjectCriteria.CreateGroupSum(res);
+            return res;
+        }
+
 
         public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
             List<ams_ObjectSize> staticObjectSizes,

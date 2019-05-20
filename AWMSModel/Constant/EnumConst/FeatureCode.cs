@@ -46,6 +46,15 @@ namespace AWMSModel.Constant.EnumConst
         EXEPJ_RegisterWorkQueue_GetSTO,
 
         [EnumValueAttribute(ValueString = "PRGD01")]
-        EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO
+        EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO,
+
+        [EnumValueAttribute(ValueString = "DQUW01")]
+        EXEWM_DoneQueueWorked,
+
+        [EnumValueAttribute(ValueString = "DQUC01")]
+        EXEWM_DoneQueueClosing,
+
+        [EnumValueAttribute(ValueString = "DQUC02")]
+        EXEWM_DoneQueueClosed
     }
 }
