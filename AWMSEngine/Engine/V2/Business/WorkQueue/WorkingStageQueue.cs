@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class WorkingQueue : BaseQueue<WorkingQueue.TReq, WorkQueueCriteria>
+    public class WorkingStageQueue : BaseQueue<WorkingStageQueue.TReq, WorkQueueCriteria>
     {
         public class TReq
         {
@@ -27,7 +27,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             this.initMasterData(reqVO);
             var queueTrx = this.UpdateWorkQueueWork(reqVO);
             if (queueTrx.StorageObject_Code != reqVO.baseCode)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' ไม่ตรงกับที่มีใน Work Queue '" + queueTrx.StorageObject_Code + "'");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' doesn't match with in Work Queue '" + queueTrx.StorageObject_Code + "'");
 
             var baseInfo = this.UpdateStorageObject(reqVO, queueTrx);
 
@@ -74,7 +74,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 queueTrx.ActualTime = reqVO.actualTime;
                 queueTrx.EndTime = reqVO.actualTime;
-                //
+
                 if (queueTrx.Des_Warehouse_ID == queueTrx.Warehouse_ID &&
                     queueTrx.Des_AreaMaster_ID == queueTrx.AreaMaster_ID &&
                     (queueTrx.Des_AreaLocationMaster_ID ?? queueTrx.AreaLocationMaster_ID) == queueTrx.AreaLocationMaster_ID)

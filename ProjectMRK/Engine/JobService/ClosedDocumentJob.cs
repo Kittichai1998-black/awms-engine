@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.JobService;
-using ProjectMRK.APIService;
+using ProjectMRK.APIService.Doc;
 using Quartz;
 
 namespace ProjectMRK.Engine.JobService
