@@ -27,6 +27,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string warehouseCode;//รหัสคลังสินค้า
             public string areaCode;//รหัสโซน
             public string locationCode;//รหัสเกต
+            public string desWarehouseCode; 
+            public string desAreaCode;
+            public string desLocationCode;
             public DateTime actualTime;
             public List<PalletDataCriteriaV2> mappingPallets;
         }
@@ -62,8 +65,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             SPOutAreaLineCriteria res = this.ExectProject<TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDesLocations, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
             if (res == null)
             {
-                var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, this.BuVO);
-                res = desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(reqVO.desAreaCode))
+                {
+                    var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, this.BuVO);
+                    res = desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
+                }
+                else
+                {
+                    res = new SPOutAreaLineCriteria()
+                    {
+                        Sou_AreaMaster_Code = reqVO.areaCode,
+                        Des_AreaMaster_Code = reqVO.desAreaCode
+                    };
+                }
             }
             return res;
         }
