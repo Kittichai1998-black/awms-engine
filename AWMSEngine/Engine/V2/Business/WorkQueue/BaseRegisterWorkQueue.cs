@@ -116,7 +116,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             SPworkQueue workQ = new SPworkQueue()
             {
                 ID = null,
-                IOType = IOType.INPUT,
+                IOType = reqVO.ioType,
                 ActualTime = reqVO.actualTime,
                 Parent_WorkQueue_ID = null,
                 Priority = 1,

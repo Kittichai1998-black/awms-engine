@@ -52,6 +52,27 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
             foreach (var packH in packs)
             {
+                MovementType FG_Movement = MovementType.FG_TRANSFER;
+                //AMWUtil.Common.ObjectUtil.QryStrGetValue(opt,"MVT") == "??"
+                if (packH.options != null && packH.options.Length > 0)
+                {
+                    dynamic[] options = packH.options.Split("&").ToArray();
+                    foreach (var val in options)
+                    {
+                        dynamic[] options2 = val.Split("=");
+                        if (options2[0] == "MVT")
+                        {
+                            //มีค่า "MVT"
+                            if (options2[1].Length > 0)
+                            {
+                                if (options2[1].Equals(MovementType.FG_RETURNCUSTOMER))
+                                {
+                                    FG_Movement = MovementType.FG_RETURNCUSTOMER;
+                                } 
+                            }
+                        }
+                    }
+                }
                 long souBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID.Value;
                 //หา  List<amt_DocumentItem> ที่มีสินค้าตรงกัน และเช็ค Options(CartonNo) ถ้าไม่ตรงให้เพิ่ม DocItem ใหม่
                 var docItem = AWMSEngine.ADO.DocumentADO.GetInstant()
@@ -67,7 +88,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                        .ListStoInDocs(docItem.Document_ID, buVO)
                        .FirstOrDefault(x => x.Status == EntityStatus.INACTIVE && x.Sou_StorageObject_ID == packH.id);
                     if (docItemsSto != null)
-                        throw new AMWException(logger, AMWExceptionCode.V1001, "'Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
+                        throw new AMWException(logger, AMWExceptionCode.V1001, "Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
 
                     var DocItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), buVO);
                     docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { DocItemStos };
@@ -75,32 +96,35 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 }
                 else
                 {
+
                     var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, MovementType.FG_TRANSFER, buVO)
                                 //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
                                 .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
                                                                                                                                                 //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                     if (doc == null)
                     {
-                        doc = new CreateGRDocument().Execute(logger, buVO,
-                                   new CreateGRDocument.TReq()
-                                   {
-                                       refID = null,
-                                       ref1 = null,
-                                       ref2 = null,
-                                       souBranchID = null,
-                                       souWarehouseID = null,
-                                       souAreaMasterID = null,
-                                       desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
-                                       desWarehouseID = mapsto.warehouseID,
-                                       desAreaMasterID = null,
-                                       movementTypeID = MovementType.FG_TRANSFER,
+                        if (reqVO.ioType == IOType.INPUT)
+                        {
+                            doc = new CreateGRDocument().Execute(logger, buVO,
+                                       new CreateGRDocument.TReq()
+                                       {
+                                           refID = null,
+                                           ref1 = null,
+                                           ref2 = null,
+                                           souBranchID = null,
+                                           souWarehouseID = null, //
+                                           souAreaMasterID = null,  //
+                                           desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
+                                           desWarehouseID = mapsto.warehouseID,
+                                           desAreaMasterID = null,
+                                           movementTypeID = MovementType.FG_TRANSFER,
                                        //orderNo = packH.orderNo,
                                        lot = null,
-                                       batch = null,
-                                       documentDate = DateTime.Now,
-                                       actionTime = DateTime.Now,
-                                       eventStatus = DocumentEventStatus.NEW,
-                                       receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
+                                           batch = null,
+                                           documentDate = DateTime.Now,
+                                           actionTime = DateTime.Now,
+                                           eventStatus = DocumentEventStatus.NEW,
+                                           receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
                                                         new CreateGRDocument.TReq.ReceiveItem
                                                         {
                                                             packCode = packH.code,
@@ -115,7 +139,13 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                                             docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH) }
 
                                                         }}
-                                   });
+                                       });
+                        }
+                        else
+                        {
+                            //สร้างเอกสาร GI
+
+                        }
                         docItems.AddRange(doc.DocumentItems);
                     }
 

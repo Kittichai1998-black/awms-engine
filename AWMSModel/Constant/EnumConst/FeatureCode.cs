@@ -49,6 +49,24 @@ namespace AWMSModel.Constant.EnumConst
         EXEPJ_RegisterWorkQueue_GetSTO,
 
         [EnumValueAttribute(ValueString = "PRGD01")]
-        EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO
+        EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO,
+
+        [EnumValueAttribute(ValueString = "PRGL01")]
+        EXEPJ_RegisterWorkQueue_GetDesLocations,
+
+        [EnumValueAttribute(ValueString = "DQUW01")]
+        EXEWM_DoneQueueWorked,
+
+        [EnumValueAttribute(ValueString = "DQUC01")]
+        EXEWM_DoneQueueClosing,
+
+        [EnumValueAttribute(ValueString = "DQUC02")]
+        EXEWM_DoneQueueClosed,
+
+         /// <summary> Close Document GI : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
+        BEFCreateDoc_1002_102,
+
+        /// <summary> Close Document GI : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
+        AFTCreateDoc_1002_102,
     }
 }

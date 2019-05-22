@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace AWMSEngine.ADO.StaticValue
 {
-    public class StaticValueManager
+    public class StaticValueManager : IStaticValueManager
     {
         private Dictionary<string, ams_Feature> _Features;
         public Dictionary<string, ams_Feature> Features { get => this._Features; }

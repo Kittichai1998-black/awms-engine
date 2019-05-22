@@ -6,6 +6,8 @@ using System.Text;
 using System.Linq;
 using AMWUtil.Common;
 using AWMSModel.Entity;
+using AMWUtil.Logger;
+using AMWUtil.Exception;
 
 namespace AWMSModel.Criteria
 {
@@ -68,6 +70,164 @@ namespace AWMSModel.Criteria
                 return GetMapStoLastFocus(res);
             return mapsto;
         }
+
+        public static StorageObjectCriteria CreateCriteriaPack(
+            StorageObjectCriteria parentSto,
+            ams_PackMaster stoMst,
+            decimal qty,
+            string unitCode,
+            string batch, string lot, string orderNo, string options,
+            DateTime? stoProductDate,
+            IStaticValueManager staticValue)
+        {
+            if (parentSto == null)
+                throw new Exception("Can't Create STO. parentSto is null.");
+            return CreateCriteriaMain(parentSto, stoMst, qty, unitCode, null, batch, lot, orderNo, options, stoProductDate, staticValue);
+        }
+        public static StorageObjectCriteria CreateCriteriaPack(
+            ams_PackMaster stoMst,
+            decimal qty,
+            string unitCode,
+            long? areaID,
+            string batch, string lot, string orderNo, string options,
+            DateTime? stoProductDate,
+            IStaticValueManager staticValue)
+        {
+            return CreateCriteriaMain(null, stoMst, qty, unitCode, areaID, batch, lot, orderNo, options, stoProductDate, staticValue);
+        }
+        public static StorageObjectCriteria CreateCriteriaBase(
+            StorageObjectCriteria parentSto,
+            ams_BaseMaster stoMst, string options,
+            IStaticValueManager staticValue)
+        {
+            if (parentSto == null)
+                throw new Exception("Can't Create STO. parentSto is null.");
+            return CreateCriteriaMain(parentSto, stoMst, 1, null, null, null, null, null, options, null, staticValue);
+        }
+        public static StorageObjectCriteria CreateCriteriaBase(
+            ams_BaseMaster stoMst, long areaID, string options,
+            IStaticValueManager staticValue)
+        {
+            return CreateCriteriaMain(null, stoMst, 1, null, areaID, null, null, null, options, null, staticValue);
+        }
+        public static StorageObjectCriteria CreateCriteriaLocation(
+            ams_AreaLocationMaster stoMst,
+            IStaticValueManager staticValue)
+        {
+            return CreateCriteriaMain(null, stoMst, 1, null, null, null, null, null, null, null, staticValue);
+        }
+
+        private static StorageObjectCriteria CreateCriteriaMain(
+            StorageObjectCriteria parentSto,
+            BaseEntitySTD stoMst,
+            decimal qty,
+            string unitCode,
+            long? areaID,
+            string batch, string lot, string orderNo, string options, DateTime? stoProductDate, 
+            IStaticValueManager staticValue)
+        {
+
+            //var objSize = staticValue.ObjectSizes.Find(x => x.ID == objSizeID);
+            StorageObjectType stoType = stoMst is ams_BaseMaster ? StorageObjectType.BASE : stoMst is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK;
+            ams_AreaMaster stoArea = null; 
+            ams_UnitType stoUnitType = null;
+            ams_ObjectSize stoObjectSize = null;
+            long? stoSkuID = null;
+
+            if (stoType == StorageObjectType.PACK)
+            {
+                var stoMst2 = ((ams_PackMaster)stoMst);
+                stoObjectSize = staticValue.ObjectSizes.FirstOrDefault(x => x.ID == stoMst2.ObjectSize_ID);
+                stoUnitType = staticValue.UnitTypes.FirstOrDefault(x => x.Code == unitCode && x.ObjectType == StorageObjectType.PACK);
+                stoArea = parentSto != null ?
+                    staticValue.AreaMasters.FirstOrDefault(x => x.ID == parentSto.areaID) :
+                    staticValue.AreaMasters.FirstOrDefault(x => x.ID == areaID);
+                stoSkuID = stoMst2.SKUMaster_ID;
+            }
+            else if (stoType == StorageObjectType.BASE)
+            {
+                var stoMst2 = ((ams_BaseMaster)stoMst);
+                stoObjectSize = staticValue.ObjectSizes.FirstOrDefault(x => x.ID == stoMst2.ObjectSize_ID);
+                stoUnitType = staticValue.UnitTypes.FirstOrDefault(x => x.ID == stoMst2.UnitType_ID);
+                stoArea = parentSto != null ?
+                    staticValue.AreaMasters.FirstOrDefault(x => x.ID == parentSto.areaID) :
+                    staticValue.AreaMasters.FirstOrDefault(x => x.ID == areaID);
+            }
+            else if (stoType == StorageObjectType.LOCATION)
+            {
+                var stoMst2 = ((ams_AreaLocationMaster)stoMst);
+                stoObjectSize = staticValue.ObjectSizes.FirstOrDefault(x => x.ID == stoMst2.ObjectSize_ID);
+                stoUnitType = staticValue.UnitTypes.FirstOrDefault(x => x.ID == stoMst2.UnitType_ID);
+                stoArea = staticValue.AreaMasters.FirstOrDefault(x => x.ID == stoMst2.AreaMaster_ID);
+            }
+
+            if (stoUnitType == null)
+                throw new Exception("Can't Create STO. UnitType not found.");
+            if (stoObjectSize == null)
+                throw new Exception("Can't Create STO. ObjectSize not found.");
+
+            var stoBaseUnitTypeConvert = stoType == StorageObjectType.PACK ?
+                staticValue.ConvertToBaseUnitByPack(stoMst.ID.Value, qty, stoUnitType.ID.Value) : null;
+            
+            var res = new StorageObjectCriteria()
+            {
+                id = stoType == StorageObjectType.LOCATION ? stoMst.ID : null,
+                mstID = stoMst.ID,
+                code = stoMst.Code,
+                name = stoMst.Name,
+                type = stoType,
+                skuID = stoSkuID,
+                productDate = stoProductDate,
+
+                parentID = parentSto != null ? parentSto.id : null,
+                parentType = parentSto != null ? (StorageObjectType?)parentSto.type : null,
+
+                areaID = stoArea.ID,
+                warehouseID = stoArea.Warehouse_ID.Value,
+
+                orderNo = orderNo,
+                lot = lot,
+                batch = batch,
+
+                qty = qty,
+                unitID = stoUnitType.ID.Value,
+                unitCode = stoUnitType.Code,
+
+                baseQty = stoBaseUnitTypeConvert != null ? stoBaseUnitTypeConvert.baseQty : 1,
+                baseUnitID = stoBaseUnitTypeConvert != null ? stoBaseUnitTypeConvert.baseUnitType_ID : stoUnitType.ID.Value,
+                baseUnitCode = stoBaseUnitTypeConvert != null ?
+                                    staticValue.UnitTypes.First(x => x.ID == stoBaseUnitTypeConvert.baseUnitType_ID).Code : stoUnitType.Code,
+
+                weiKG = null,
+                widthM = null,
+                heightM = null,
+                lengthM = null,
+
+                options = options,
+
+                maxWeiKG = stoObjectSize.MaxWeigthKG,
+                minWeiKG = stoObjectSize.MinWeigthKG,
+                objectSizeID = stoObjectSize.ID.Value,
+                objectSizeName = stoObjectSize.Name,
+                objectSizeMaps = stoObjectSize.ObjectSizeInners.Select(x => new StorageObjectCriteria.ObjectSizeMap()
+                {
+                    innerObjectSizeID = x.InnerObjectSize_ID,
+                    innerObjectSizeName = staticValue.ObjectSizes.Find(y => y.ID == x.InnerObjectSize_ID).Name,
+                    outerObjectSizeID = x.ID.Value,
+                    outerObjectSizeName = x.Name,
+                    maxQuantity = x.MaxQuantity,
+                    minQuantity = x.MinQuantity,
+                    quantity = 0
+                }).ToList(),
+                mapstos = new List<StorageObjectCriteria>(),
+                eventStatus = StorageObjectEventStatus.NEW,
+                isFocus = stoType == StorageObjectType.PACK ? true : false,
+
+            };
+            res.groupSum = StorageObjectCriteria.CreateGroupSum(res);
+            return res;
+        }
+
 
         public static StorageObjectCriteria Generate(List<SPOutSTOMiniCriteria> stos, 
             List<ams_ObjectSize> staticObjectSizes,
