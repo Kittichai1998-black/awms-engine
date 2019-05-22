@@ -90,18 +90,7 @@ namespace AWMSEngine.Engine.V2.Business
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            string getFullClass = this.StaticValue.GetConfig("ValidateCreateDoc_FullClass");
-
-            string strMethod = "BEFCreateDoc_" + reqVO.docTypeId.GetHashCode() + "_" + reqVO.movementTypeID.GetHashCode();
-
-            FeatureCode featureCode = (FeatureCode)System.Enum.Parse(typeof(FeatureCode), strMethod);
-            Type type = Assembly.GetExecutingAssembly().GetType(getFullClass);
-            MethodInfo method = type.GetMethod(strMethod);
-
-            if (StaticValueManager.GetInstant().IsFeature(featureCode) && method != null)
-            {
-                reqVO = (TReq)method.Invoke(Activator.CreateInstance(type), new object[] { reqVO, this.BuVO });
-            }
+            exceFullClass(reqVO, FeatureCode.EXEWM_CreateGRDocument_Exec_Before);
 
             long? Sou_Customer_ID =
                     reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
@@ -253,18 +242,13 @@ namespace AWMSEngine.Engine.V2.Business
             }
             doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
 
-            string afterStrMethod = "AFTCreateDoc_" + reqVO.docTypeId.GetHashCode() + "_" + reqVO.movementTypeID.GetHashCode();
-
-            FeatureCode afterFeatureCode = (FeatureCode)System.Enum.Parse(typeof(FeatureCode), afterStrMethod);
-            Type afterType = Assembly.GetExecutingAssembly().GetType(getFullClass);
-            MethodInfo afterMethod = afterType.GetMethod(afterStrMethod);
-
-            if (StaticValueManager.GetInstant().IsFeature(afterFeatureCode) && afterMethod != null)
-            {
-                doc = (amt_Document)afterMethod.Invoke(Activator.CreateInstance(afterType), new object[] { doc, this.BuVO });
-            }
+            exceFullClass(reqVO, FeatureCode.EXEWM_CreateGRDocument_Exec_After);
 
             return doc;
+        }
+        private void exceFullClass(TReq reqVO, FeatureCode featureCode)
+        {
+            this.ExectProject<TReq, amt_Document>(featureCode, reqVO);
         }
     }
 }
