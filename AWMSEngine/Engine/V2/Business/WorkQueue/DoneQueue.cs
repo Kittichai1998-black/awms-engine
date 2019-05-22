@@ -155,7 +155,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             new SQLConditionCriteria("Sou_StorageObject_ID", sto.id, SQLOperatorType.EQUALS)
                             }, this.BuVO);
 
-                            distos.Where(disto => disto.DocumentType_ID == DocumentTypeID.GOODS_ISSUED).ToList().ForEach(disto =>
+                            distos.ToList().ForEach(disto =>
                             {
                                 if (sto.qty == disto.Quantity)
                                 {
