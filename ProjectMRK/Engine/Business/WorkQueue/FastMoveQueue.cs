@@ -1,42 +1,55 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Exception;
+using AMWUtil.Logger;
 using AWMSEngine.Common;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business;
 using AWMSEngine.Engine.V2.Business.Issued;
+using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectMRK.Engine.Bussiness.WorkQueue
+namespace ProjectMRK.Engine.Business.WorkQueue
 {
-    public class FastMoveQueue: IEval
+    public class FastMoveQueue: IProjectEngine<RegisterWorkQueue.TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>
     {
-        public bool exec(dynamic data)
+        public SPOutAreaLineCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReqDocumentItemAndDISTO data)
         {
-            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            var reqVO = data.reqVO;
+            StorageObjectCriteria sto = data.sto;
+            var desLocations = AWMSEngine.ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, buVO);
+            if (checkFastMove(reqVO.baseCode, logger, buVO))
+            {
+                return desLocations.Where(x => x.Des_AreaMaster_ID == 4).FirstOrDefault();
+            }
+            return desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
+        }
+        public bool checkFastMove(string baseCode, AMWLogger logger, VOCriteria buVO)
+        {
+            List<amt_StorageObject> stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(baseCode, buVO);
 
-            //var str = "return FeatureExecute.EvalExec(\"ProjectMRK.Engine.Bussiness.WorkQueue.FastMoveQueue\", new { baseCode = reqVO.baseCode, buVO = this.BuVO, logger = this.Logger });";
-            List<amt_StorageObject> stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(data.baseCode.ToString(), (VOCriteria)data.buVO).ToList();
+            List<amt_Document> docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs.Select(x => x.ID.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, buVO);
+            if(docs == null || docs.Count() == 0)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code: '" + baseCode + "' Not Found");
 
-            List<amt_Document> docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs.Select(x => x.ID.Value).ToList(), (VOCriteria)data.buVO);
             var fastMove = docs.TrueForAll(x => x.MovementType_ID == MovementType.FG_FASTMOVE);
             if (fastMove)
             {
                 List<amt_StorageObject> locationGateFast = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
-                new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("AreaMaster_ID", 4, SQLOperatorType.EQUALS),
-            }, (VOCriteria)data.buVO);
+                    new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("AreaMaster_ID", 4, SQLOperatorType.EQUALS),
+                }, buVO);
                 if (locationGateFast.Count() > 1)
                 {
                     return false;
                 }
                 else
                 {
-                    CreateGIDocument(docs, stoIDs, data.logger, (VOCriteria)data.buVO);
                     return true;
                 }
             }
@@ -45,6 +58,9 @@ namespace ProjectMRK.Engine.Bussiness.WorkQueue
                 return false;
             }
         }
+
+        /*
+         * CreateGIDocument(docs, stoIDs, logger, buVO);
         private void CreateGIDocument(List<amt_Document> docs, List<amt_StorageObject> sto, AMWLogger logger, VOCriteria buVO)
         {
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
@@ -92,6 +108,6 @@ namespace ProjectMRK.Engine.Bussiness.WorkQueue
             }
 
 
-        }
+        }*/
     }
 }
