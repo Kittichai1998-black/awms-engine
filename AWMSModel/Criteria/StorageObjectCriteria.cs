@@ -84,6 +84,17 @@ namespace AWMSModel.Criteria
                 throw new Exception("Can't Create STO. parentSto is null.");
             return CreateCriteriaMain(parentSto, stoMst, qty, unitCode, null, batch, lot, orderNo, options, stoProductDate, staticValue);
         }
+        public static StorageObjectCriteria CreateCriteriaPack(
+            ams_PackMaster stoMst,
+            decimal qty,
+            string unitCode,
+            long? areaID,
+            string batch, string lot, string orderNo, string options,
+            DateTime? stoProductDate,
+            IStaticValueManager staticValue)
+        {
+            return CreateCriteriaMain(null, stoMst, qty, unitCode, areaID, batch, lot, orderNo, options, stoProductDate, staticValue);
+        }
         public static StorageObjectCriteria CreateCriteriaBase(
             StorageObjectCriteria parentSto,
             ams_BaseMaster stoMst, string options,
