@@ -94,11 +94,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
                
-                var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
-                docIDs.ForEach(x =>
+                if(docItem != null)
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                });
+                    var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
+                    docIDs.ForEach(x =>
+                    {
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                    });
+                }
+
                 return this.GenerateResponse(sto, queueTrx);
             }
             else {
