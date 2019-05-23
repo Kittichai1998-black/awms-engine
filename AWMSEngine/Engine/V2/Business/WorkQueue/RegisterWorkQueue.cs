@@ -74,8 +74,25 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     res = new SPOutAreaLineCriteria()
                     {
+                        Sou_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).ID,
+                        Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).Code,
+                        Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).groupType,
+                        Sou_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
                         Sou_AreaMaster_Code = reqVO.areaCode,
-                        Des_AreaMaster_Code = reqVO.desAreaCode
+                        Sou_AreaLocationMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.locationCode).ID.Value,
+                        Sou_AreaLocationMaster_Code = reqVO.locationCode,
+                        Des_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).ID,
+                        Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).Code,
+                        Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).groupType,
+                        Des_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desAreaCode).ID.Value,
+                        Des_AreaMaster_Code = reqVO.desAreaCode,
+                        Des_AreaLocationMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desLocationCode).ID.Value,
+                        Des_AreaLocationMaster_Code = reqVO.desLocationCode,
+                        DefaultFlag = YesNoFlag.No,
+                        Condition_Eval = null
+
+
+
                     };
                 }
             }
@@ -150,7 +167,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             SPworkQueue workQ = new SPworkQueue()
             {
                 ID = null,
-                IOType = IOType.INPUT,
+                IOType = reqVO.ioType,
                 ActualTime = reqVO.actualTime,
                 Parent_WorkQueue_ID = null,
                 Priority = 1,

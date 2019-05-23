@@ -81,6 +81,7 @@ namespace AWMSEngine.ADO.StaticValue
 
             return a;
         }
+      
 
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
