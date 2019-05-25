@@ -269,20 +269,35 @@ namespace AWMSEngine.ADO.StaticValue
             this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
         }
         public void LoadPackMasterEmptyPallets(VOCriteria buVO = null)
-        { 
-            this._PackMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("PackMasterType_ID", 
-                            ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 2, buVO ?? new VOCriteria()).Find(x => x.Code == "EMPTYPALLET").ID, 
+        {
+            var packtype = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
+            if (packtype != null)
+            {
+                this._PackMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("PackMasterType_ID", packtype.ID.Value,
                             SQLOperatorType.EQUALS, SQLConditionType.AND)
                       }, buVO ?? new VOCriteria()));
+            }
+            else
+            {
+                this._PackMasterEmptyPallets = null;
+            }
         }
         public void LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
         {
-            this._SKUMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+            var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
+            if (skutype != null)
+            {
+                this._SKUMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("SKUMasterType_ID",
-                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 2, buVO ?? new VOCriteria()).Find(x => x.Code == "EMPTYPALLET").ID,
+                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault().ID.Value,
                             SQLOperatorType.EQUALS, SQLConditionType.AND)
                       }, buVO ?? new VOCriteria()));
+            }
+            else
+            {
+                this._SKUMasterEmptyPallets = null;
+            }
         }
 
         public bool IsFeature(FeatureCode code)
