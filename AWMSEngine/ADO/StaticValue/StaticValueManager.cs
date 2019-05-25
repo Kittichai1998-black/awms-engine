@@ -81,6 +81,7 @@ namespace AWMSEngine.ADO.StaticValue
 
             return a;
         }
+      
 
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
@@ -96,8 +97,14 @@ namespace AWMSEngine.ADO.StaticValue
         private List<ams_PackMasterType> _PackMasterTypes;
         public List<ams_PackMasterType> PackMasterTypes { get => this._PackMasterTypes; }
 
+        private List<ams_PackMaster> _PackMasterEmptyPallets;
+        public List<ams_PackMaster> PackMasterEmptyPallets { get => this._PackMasterEmptyPallets; }
+
         private List<ams_SKUMasterType> _SKUMasterTypes;
         public List<ams_SKUMasterType> SKUMasterTypes { get => this._SKUMasterTypes; }
+
+        private List<ams_SKUMaster> _SKUMasterEmptyPallets;
+        public List<ams_SKUMaster> SKUMasterEmptyPallets { get => this._SKUMasterEmptyPallets; }
 
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
@@ -260,6 +267,22 @@ namespace AWMSEngine.ADO.StaticValue
         public void LoadTransport(VOCriteria buVO = null)
         {
             this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
+        }
+        public void LoadPackMasterEmptyPallets(VOCriteria buVO = null)
+        { 
+            this._PackMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("PackMasterType_ID", 
+                            ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 2, buVO ?? new VOCriteria()).Find(x => x.Code == "EMPTYPALLET").ID, 
+                            SQLOperatorType.EQUALS, SQLConditionType.AND)
+                      }, buVO ?? new VOCriteria()));
+        }
+        public void LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
+        {
+            this._SKUMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("SKUMasterType_ID",
+                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 2, buVO ?? new VOCriteria()).Find(x => x.Code == "EMPTYPALLET").ID,
+                            SQLOperatorType.EQUALS, SQLConditionType.AND)
+                      }, buVO ?? new VOCriteria()));
         }
 
         public bool IsFeature(FeatureCode code)

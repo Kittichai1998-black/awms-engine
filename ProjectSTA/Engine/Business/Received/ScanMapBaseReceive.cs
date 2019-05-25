@@ -121,16 +121,11 @@ namespace ProjectSTA.Engine.Business.Received
                             {  //ข้อมูลตรง เช็คว่ามีค่า Options มั้ย ถ้ามี เช็คหาค่า CartonNo.
                                 if (stoPack.Options != null && stoPack.Options.Length > 0)
                                 {
-                                    dynamic[] options = stoPack.Options.Split("&").ToArray();
-                                    
-                                    foreach (var val in options)
-                                    {
-                                        dynamic[] options2 = val.Split("=");
+                                    var optionsCartonNo = ObjectUtil.QryStrGetValue(stoPack.Options, "CartonNo");
 
-                                        if (options2[0] == "CartonNo")
-                                        {  //มีค่า CartonNo 
-                                            if (options2[1].Length > 0) {
-                                                var resCartonNo = AMWUtil.Common.ConvertUtil.ConvertRangeNumToString(options2[1]);
+                                         //มีค่า CartonNo 
+                                            if (optionsCartonNo.Length > 0) {
+                                                var resCartonNo = AMWUtil.Common.ConvertUtil.ConvertRangeNumToString(optionsCartonNo);
                                                 dynamic newCartonNos = null;
                                                 var splitCartonNo = resCartonNo.Split(",");
                                                 int lenSplitCartonNo = splitCartonNo.Length;
@@ -212,12 +207,7 @@ namespace ProjectSTA.Engine.Business.Received
                                             {
                                                 throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Carton No. of SKU Code: " + skuCode + " on Pallet: " + stoBaseItems.Code + " Not Found");
                                             }
-                                        }
-                                        else
-                                        {
-                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Carton No. of SKU Code: " + skuCode + " on Pallet: " + stoBaseItems.Code + " Not Found");
-                                        }
-                                    }
+                                                                              
                                 }
                                 else
                                 {

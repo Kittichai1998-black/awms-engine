@@ -12,6 +12,7 @@ namespace AWMSModel.Constant.EnumConst
         FG_COUNTING = 111,
         FG_REWORK = 112,
         FG_QC = 113,
+        FG_RETURNCUSTOMER = 114,
         EMP_TRANSFER = 201
     }
 }

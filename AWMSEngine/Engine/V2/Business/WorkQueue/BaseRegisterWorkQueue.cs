@@ -25,6 +25,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string warehouseCode;//รหัสคลังสินค้า
             public string areaCode;//รหัสโซน
             public string locationCode;//รหัสเกต
+            public string desWarehouseCode;
+            public string desAreaCode;
+            public string desLocationCode;
             public DateTime actualTime;
             public List<PalletDataCriteriaV2> mappingPallets;
         }
