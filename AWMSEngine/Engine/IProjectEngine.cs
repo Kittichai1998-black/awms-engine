@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace AWMSEngine.Engine
 {
     public interface IProjectEngine<TReq, TRes>
-        where TRes : class
     {
         TRes ExecuteEngine(AMWLogger logger, VOCriteria buVO, TReq reqVO);
     }
