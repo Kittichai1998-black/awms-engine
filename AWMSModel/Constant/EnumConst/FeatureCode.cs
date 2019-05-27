@@ -33,11 +33,17 @@ namespace AWMSModel.Constant.EnumConst
         /// <summary> Close Document : ตรวจสอบการส่งข้อมูลการปิดเอกสาร Goods Issued ไปที่ระบบ ERP </summary>
         SendERPAPIOnClosed_1002_1,
 
-        /// <summary> Close Document : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
+        /// <summary> Close Document GR for FG_TRANSFER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
         BEFCreateDoc_1001_101,
 
-        /// <summary> Close Document : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
+        /// <summary> Close Document GR for FG_TRANSFER : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
         AFTCreateDoc_1001_101,
+
+        /// <summary> Close Document GI for FG_TRANSFER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
+        BEFCreateDoc_1002_101,
+
+        /// <summary> Close Document GI for FG_TRANSFER : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
+        AFTCreateDoc_1002_101,
 
         [EnumValueAttribute(ValueString = "WCEB01")]
         EXEWM_CreateGRDocument_Exec_Before,
@@ -60,10 +66,29 @@ namespace AWMSModel.Constant.EnumConst
         [EnumValueAttribute(ValueString = "DQUC02")]
         EXEWM_DoneQueueClosed,
 
-         /// <summary> Close Document GI : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
+        /// <summary> Create Document GI for FG_FASTMOVE : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
         BEFCreateDoc_1002_102,
 
-        /// <summary> Close Document GI : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
+        /// <summary> Create Document GI for FG_FASTMOVE : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
         AFTCreateDoc_1002_102,
+
+        /// <summary> Create Document GR for EMP_TRANSFER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร EMP_TRANSFER
+        BEFCreateDoc_1001_201,
+
+        /// <summary> Create Document GR for EMP_TRANSFER : ตรวจสอบข้อมูลหลังสร้างเอกสาร EMP_TRANSFER
+        AFTCreateDoc_1001_201,
+
+        /// <summary> Create Document GI for EMP_TRANSFER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร EMP_TRANSFER
+        BEFCreateDoc_1002_201,
+
+        /// <summary> Create Document GI for EMP_TRANSFER : ตรวจสอบข้อมูลหลังสร้างเอกสาร EMP_TRANSFER
+        AFTCreateDoc_1002_201,
+
+        /// <summary> Create Document GR for FG_RETURNCUSTOMER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร FG_RETURNCUSTOMER
+        BEFCreateDoc_1001_114,
+
+        /// <summary> Create Document GR for FG_RETURNCUSTOMER : ตรวจสอบข้อมูลหลังสร้างเอกสาร FG_RETURNCUSTOMER
+        AFTCreateDoc_1001_114,
+
     }
 }
