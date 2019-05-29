@@ -1,5 +1,5 @@
 ﻿using AMWUtil.Common;
-using AWMSEngine.Engine.Business.Issued;
+using AWMSEngine.Engine.V2.Business.Received;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,8 +21,8 @@ namespace AWMSEngine.APIService.Doc
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var reqDoc = ObjectUtil.DynamicToModel<CreateDocument.TReq>(this.RequestVO);
-            var res = new CreateDocument().Execute(
+            var reqDoc = ObjectUtil.DynamicToModel<CreateGRDocumentV2.TReq>(this.RequestVO);
+            var res = new CreateGRDocumentV2().Execute(
                 this.Logger,
                 this.BuVO,
                 reqDoc);

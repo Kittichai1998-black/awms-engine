@@ -78,39 +78,41 @@ namespace ProjectSTA.Engine.Business.Received
             return doc;
         }
 
-        private List<amt_DocumentItem> CreateDocItems (TReq reqVO, StorageObjectCriteria stoCri, ams_AreaMaster AreaMasterModel)
+        private List<amt_DocumentItem> CreateDocItems(TReq reqVO, StorageObjectCriteria stoCri, ams_AreaMaster AreaMasterModel)
         {
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             var branchID = StaticValue.Warehouses.First(x => x.ID == AreaMasterModel.Warehouse_ID).Branch_ID;
             var warehouseID = AreaMasterModel.Warehouse_ID;
             foreach (var mapSto in stoCri.mapstos)
             {
-                var doc = AWMSEngine.ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, warehouseID, null, null, null, this.BuVO)
+                var docItem = AWMSEngine.ADO.DocumentADO.GetInstant()
+                        .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, mapSto.mstID, mapSto.baseQty, branchID, warehouseID, branchID, warehouseID, mapSto.unitID, mapSto.baseUnitID, null, mapSto.batch, null, this.BuVO)
                         .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
-                if (doc == null)
+                if (docItem != null)
                 {
-                    doc = this.CreateDoc(reqVO, AreaMasterModel, mapSto);
-                    if (doc == null)
-                        throw new AMWException(this.Logger, AMWExceptionCode.I0001, "Failed to Create Document");
-                    docItems.AddRange(doc.DocumentItems);
+                    AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(mapSto, null, null, docItem.ID), this.BuVO);
+
+                    var doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
+                    if (doc.EventStatus == DocumentEventStatus.NEW)
+                    {
+                        AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                        if (doc.ParentDocument_ID.HasValue)
+                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                    }
                 }
                 else
                 {
-                    var docItem = AWMSEngine.ADO.DocumentADO.GetInstant()
-                        .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, mapSto.mstID, mapSto.baseQty, branchID, warehouseID, branchID, warehouseID, mapSto.unitID, mapSto.baseUnitID, null, mapSto.batch, null, this.BuVO)
-                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
-                    if (docItem != null)
+                    var doc = AWMSEngine.ADO.DocumentADO.GetInstant().List(DocumentTypeID.GOODS_RECEIVED, warehouseID, null, null, null, this.BuVO)
+                       .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
+                    if (doc == null)
                     {
-                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(mapSto, null, null, docItem.ID), this.BuVO);
-
-                        doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
-                        if (doc.EventStatus == DocumentEventStatus.NEW)
-                        {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                            if (doc.ParentDocument_ID.HasValue)
-                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ParentDocument_ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                        }
-
+                        doc = this.CreateDoc(reqVO, AreaMasterModel, mapSto);
+                        if (doc == null)
+                            throw new AMWException(this.Logger, AMWExceptionCode.I0001, "Failed to Create Document");
+                        docItems.AddRange(doc.DocumentItems);
+                    }
+                    else
+                    {
                         var packConvert = this.StaticValue.ConvertToBaseUnitByPack(mapSto.mstID.Value, 1, mapSto.unitID);
                         docItem = new amt_DocumentItem()
                         {
@@ -133,10 +135,6 @@ namespace ProjectSTA.Engine.Business.Received
                         };
                         AWMSEngine.ADO.DocumentADO.GetInstant().CreateItem(docItem, this.BuVO);
                         docItems.Add(docItem);
-                    }
-                    else
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ไม่สามารถรับเข้ารายการ");
                     }
                 }
             }
