@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.Exception;
+using AMWUtil.Logger;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
@@ -21,6 +22,8 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             var distos = new List<amt_DocumentItem>();
             var stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.baseCode, buVO).Select(x => x.ID.Value).ToList();
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO);
+            if(docs == null && docs.Count() == 0)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '"+ reqVO.baseCode +"' Not Found");
 
             docs.ForEach(x =>
             {
