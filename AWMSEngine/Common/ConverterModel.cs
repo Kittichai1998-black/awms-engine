@@ -33,22 +33,6 @@ namespace AWMSEngine.Common
                                                 .Sum(x => x.baseQty);
 
                     var getSto = mapstoTree.Where(x => x.type == StorageObjectType.PACK).FirstOrDefault();
-                    if(getSto.skuID.Value == 1)
-                    {
-                        amt_WorkQueueDocumentItem r = new amt_WorkQueueDocumentItem()
-                        {
-                            BaseQuantity = baseQty,
-                            BaseUnitType_ID = getSto.baseUnitID,
-                            Quantity = baseQty,
-                            UnitType_ID = getSto.baseUnitID,
-                            DocumentItem_ID = di.ID.Value,
-                            WorkQueue_ID = workQueusID ?? 0
-                        };
-
-                        res.Add(r);
-                    }
-                    else
-                    {
 
                         var unitConvert = StaticValueManager.GetInstant().ConvertToNewUnitBySKU(getSto.skuID.Value, baseQty, getSto.baseUnitID, getSto.unitID);
 
@@ -63,7 +47,6 @@ namespace AWMSEngine.Common
                         };
                     
                         res.Add(r);
-                    }
                 }
             return res;
         }

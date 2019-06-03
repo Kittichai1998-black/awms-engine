@@ -67,17 +67,18 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 if (packMaster == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)packH.mstID + "' NotFound");
 
-                var empPallet = StaticValue.SKUMasterEmptyPallets.Find(x => x.ID == (long)packH.skuID);
-                if (empPallet == null)
+                var empPallet = StaticValue.SKUMasterTypes.Find(x => x.ID == (long)skuMaster.SKUMasterType_ID);
+                if (empPallet.Code != "EMPTYPALLET" )
                 {
                     //ไม่ใช่พาเลทเปล่า
                     if (packH.options != null && packH.options.Length > 0)
                     {
                         var mvt = ObjectUtil.QryStrGetValue(packH.options, "MVT");
-                        if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURNCUSTOMER)
-                        {
-                            FG_Movement = MovementType.FG_RETURNCUSTOMER;
-                        }
+                        if(mvt != null && mvt.Length > 0)
+                            if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURNCUSTOMER)
+                            {
+                                FG_Movement = MovementType.FG_RETURNCUSTOMER;
+                            }
                     }
                 }
                 else
@@ -88,24 +89,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 if (reqVO.ioType == IOType.INPUT)
                 {
                     //หา  List<amt_DocumentItem> ที่มีสินค้าตรงกัน และเช็ค Options(CartonNo) ถ้าไม่ตรงให้เพิ่ม DocItem ใหม่
-                    /*if (FG_Movement == MovementType.FG_RETURNCUSTOMER)
-                    {
-                        docItem = AWMSEngine.ADO.DocumentADO.GetInstant()
-                            .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, null, null, null, null, packH.unitID, packH.baseUnitID, packH.orderNo, null, null, null, buVO)
-                            //.ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souBranchID, _warehouseASRS.ID, null, null, packH.unitID, packH.baseUnitID, packH.orderNo, null, null, packH.options, this.BuVO)
-                            .FirstOrDefault(x =>
-                            {
-                                var mvt = ObjectUtil.QryStrGetValue(x.Options, "MVT");
-                                return Convert.ToInt32(mvt) == (int)MovementType.FG_RETURNCUSTOMER && x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW;
-                            });
-                    }
-                    else
-                    {
-                        docItem = AWMSEngine.ADO.DocumentADO.GetInstant()
-                            .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, null, null, null, null, packH.unitID, packH.baseUnitID, packH.orderNo, null, null, null, buVO)
-                            //.ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, souBranchID, _warehouseASRS.ID, null, null, packH.unitID, packH.baseUnitID, packH.orderNo, null, null, packH.options, this.BuVO)
-                            .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
-                    }*/
+                    
 
                     var docItemAll = AWMSEngine.ADO.DocumentADO.GetInstant()
                             .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, null, null, null, null,
@@ -147,7 +131,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                 throw new AMWException(logger, AMWExceptionCode.V1001, "This Pallet had matched with GR document, already");
                             }
 
-                        var docItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ToDiSTO(packH, null, null, docItem.ID, FG_Movement), buVO);
+                        var docItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), buVO);
                         docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { docItemStos };
                         docItems.Add(docItem);
                     }
@@ -160,76 +144,6 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                                                                                                                                     //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                         if (doc == null)
                         {
-                            if (FG_Movement == MovementType.EMP_TRANSFER)
-                            {   //สร้างเอกสารรับเข้า ของ Empty Pallet
-                                doc = new amt_Document()
-                                {
-                                    ID = null,
-                                    Code = null,
-                                    ParentDocument_ID = null,
-                                    Lot = null,
-                                    Batch = null,
-                                    For_Customer_ID = null,
-                                    Sou_Customer_ID = null,
-                                    Sou_Supplier_ID = null,
-                                    Sou_Branch_ID = null,
-                                    Sou_Warehouse_ID = null,
-                                    Sou_AreaMaster_ID = null,
-
-                                    Des_Customer_ID = null,
-                                    Des_Supplier_ID = null,
-                                    Des_Branch_ID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
-                                    Des_Warehouse_ID = mapsto.warehouseID,
-                                    Des_AreaMaster_ID = null,
-                                    DocumentDate = DateTime.Now,
-                                    ActionTime = DateTime.Now,
-                                    MovementType_ID = FG_Movement,
-                                    RefID = null,
-                                    Ref1 = null,
-                                    Ref2 = null,
-
-                                    DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                                    EventStatus = DocumentEventStatus.NEW,
-
-                                    Remark = null,
-                                    Options = null,
-                                    Transport_ID = null,
-
-                                    DocumentItems = new List<amt_DocumentItem>(),
-
-                                };
-                                doc.DocumentItems.Add(new amt_DocumentItem()
-                                {
-                                    ID = null,
-                                    Code = skuMaster.Code,
-                                    SKUMaster_ID = skuMaster.ID.Value,
-                                    PackMaster_ID = packMaster.ID,
-
-                                    Quantity = null,
-                                    UnitType_ID = packH.unitID,
-                                    BaseQuantity = null,
-                                    BaseUnitType_ID = packH.unitID,
-
-                                    OrderNo = FG_Movement == MovementType.EMP_TRANSFER ? null : packH.orderNo,
-                                    Batch = null,
-                                    Lot = null,
-
-                                    Options = null,
-                                    ExpireDate = null,
-                                    ProductionDate = null,
-                                    Ref1 = null,
-                                    Ref2 = null,
-                                    RefID = null,
-
-                                    EventStatus = DocumentEventStatus.NEW,
-                                    DocItemStos = new List<amt_DocumentItemStorageObject>() { ToDiSTO(packH, null, null, null, FG_Movement) }
-                                });
-
-                                var newDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, buVO);
-                                docItems.AddRange(newDoc.DocumentItems);
-                            }
-                            else
-                            {
                                 //สร้างเอกสารรับเข้า ปกติ FG_Transfer, FG_RETURNCUSTOMER
                                 doc = new CreateGRDocument().Execute(logger, buVO,
                                            new CreateGRDocument.TReq()
@@ -257,24 +171,20 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                                             unitType = packH.unitCode,
                                                             batch = null,
                                                             lot = null,
-                                                            orderNo = packH.orderNo, 
+                                                            orderNo = FG_Movement == MovementType.EMP_TRANSFER ? null : packH.orderNo, 
                                                             ref2 = null,
                                                             eventStatus = DocumentEventStatus.NEW,
-                                                            docItemStos = new List<amt_DocumentItemStorageObject>() { ToDiSTO(packH, null, null, null, FG_Movement)}
+                                                            docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null)}
 
                                                         }}
                                            });
 
                                 docItems.AddRange(doc.DocumentItems);
-                            }
                         }
-
                         //Pack Info พบ Document แต่ไม่พบ DocumentItem
                         else
                             {
-                            ConvertUnitCriteria packConvert = new ConvertUnitCriteria();
-                                if (FG_Movement != MovementType.EMP_TRANSFER)
-                                    packConvert = StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
+                                var packConvert = StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
                                 docItem = new amt_DocumentItem()
                                 {
                                     Document_ID = doc.ID.Value,
@@ -288,10 +198,10 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                     Lot = null,
                                     OrderNo = FG_Movement == MovementType.EMP_TRANSFER ? null : packH.orderNo,
                                     ProductionDate = packH.productDate,
-                                    SKUMaster_ID = FG_Movement == MovementType.EMP_TRANSFER ? skuMaster.ID : packConvert.skuMaster_ID,
+                                    SKUMaster_ID = packConvert.skuMaster_ID,
                                     EventStatus = DocumentEventStatus.NEW,
                                     Ref2 = null,
-                                    DocItemStos = new List<amt_DocumentItemStorageObject>() { ToDiSTO(packH, null, null, null, FG_Movement) }
+                                    DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null) }
                                 };
                                 var newdocItem = AWMSEngine.ADO.DocumentADO.GetInstant().CreateItem(docItem, buVO);
                                 docItems.Add(newdocItem);
@@ -324,7 +234,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             if (docItemsSto != null)
                                 throw new AMWException(logger, AMWExceptionCode.V1001, "This Pallet had matched with GI document, already");
 
-                            var docItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ToDiSTO(packH, null, null, docItem.ID, FG_Movement), buVO);
+                            var docItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), buVO);
                             docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { docItemStos };
                             docItems.Add(docItem);
                         }
@@ -335,72 +245,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                 .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
                             if (doc == null)
                             {
-                                doc = new amt_Document()
-                                {
-                                    ID = null,
-                                    Code = null,
-                                    ParentDocument_ID = null,
-                                    Lot = null,
-                                    Batch = null,
-                                    For_Customer_ID = null,
-                                    Sou_Customer_ID = null,
-                                    Sou_Supplier_ID = null,
-                                    Sou_Branch_ID = souBranchID,
-                                    Sou_Warehouse_ID = souWarehouseID,
-                                    Sou_AreaMaster_ID = packH.areaID,
-
-                                    Des_Customer_ID = null,
-                                    Des_Supplier_ID = null,
-                                    Des_Branch_ID = desBranchID,
-                                    Des_Warehouse_ID = desWarehouseID,
-                                    Des_AreaMaster_ID = desAreaMasterID,
-                                    DocumentDate = DateTime.Now,
-                                    ActionTime = DateTime.Now,
-                                    MovementType_ID = FG_Movement,
-                                    RefID = null,
-                                    Ref1 = null,
-                                    Ref2 = null,
-
-                                    DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
-                                    EventStatus = DocumentEventStatus.NEW,
-
-                                    Remark = null,
-                                    Options = null,
-                                    Transport_ID = null,
-
-                                    DocumentItems = new List<amt_DocumentItem>(),
-
-                                };
-                                doc.DocumentItems.Add(new amt_DocumentItem()
-                                {
-                                    ID = null,
-                                    Code = skuMaster.Code,
-                                    SKUMaster_ID = skuMaster.ID.Value,
-                                    PackMaster_ID = packMaster.ID,
-
-                                    Quantity = null,
-                                    UnitType_ID = packH.unitID,
-                                    BaseQuantity = null,
-                                    BaseUnitType_ID = packH.unitID,
-
-                                    OrderNo = null,
-                                    Batch = null,
-                                    Lot = null,
-
-                                    Options = null,
-                                    ExpireDate = null,
-                                    ProductionDate = null,
-                                    Ref1 = null,
-                                    Ref2 = null,
-                                    RefID = null,
-
-                                    EventStatus = DocumentEventStatus.NEW,
-                                    DocItemStos = new List<amt_DocumentItemStorageObject>() { ToDiSTO(packH, null, null, null, FG_Movement) }
-                                });
-
-                                var newDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, buVO);
-                                docItems.AddRange(newDoc.DocumentItems);
-                                /*   doc = new CreateGIDocument().Execute(logger, buVO,
+                                doc = new CreateGIDocument().Execute(logger, buVO,
                                            new CreateGIDocument.TReq
                                            {
                                                refID = null,
@@ -430,17 +275,17 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                                        ref2 = null,
                                                        options = null,
                                                        eventStatus = DocumentEventStatus.NEW,
-                                                       docItemStos = new List<amt_DocumentItemStorageObject>() { ToDiSTO(packH, null, null, null, FG_Movement) }
+                                                       docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null) }
 
                                                    }}
 
                                            });
 
-                                   docItems.AddRange(doc.DocumentItems);*/
+                                   docItems.AddRange(doc.DocumentItems);
                             }
                             else
                             {
-                                //var packConvert = StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
+                                var packConvert = StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
                                 docItem = new amt_DocumentItem()
                                 {
                                     Document_ID = doc.ID.Value,
@@ -454,10 +299,10 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                     Lot = null,
                                     OrderNo = null, 
                                     ProductionDate = packH.productDate,
-                                    SKUMaster_ID = skuMaster.ID,
+                                    SKUMaster_ID = packConvert.skuMaster_ID,
                                     EventStatus = DocumentEventStatus.NEW,
                                     Ref2 = null,
-                                    DocItemStos = new List<amt_DocumentItemStorageObject>() { ToDiSTO(packH, null, null, null, FG_Movement) }
+                                    DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null) }
                                 };
                                 var newdocItem = AWMSEngine.ADO.DocumentADO.GetInstant().CreateItem(docItem, buVO);
                                 docItems.Add(newdocItem);
