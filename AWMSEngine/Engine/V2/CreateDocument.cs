@@ -1,6 +1,8 @@
 ﻿using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -86,11 +88,20 @@ namespace AWMSEngine.Engine.V2.Business
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
+                public List<BaseSto> baseStos;
+                public class BaseSto
+                {
+                    public string baseCode;
+                    public string areaCode;
+                    public decimal? quantity;
+                    public string options;
+                    public bool? isRegisBaseCode;
+                }
             }
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            exceFullClass(reqVO, FeatureCode.EXEWM_CreateGRDocument_Exec_Before);
+            exceFullClass(reqVO, FeatureCode.EXEWM_CreateDocument_Exec_Before);
 
             long? Sou_Customer_ID =
                     reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
@@ -213,6 +224,27 @@ namespace AWMSEngine.Engine.V2.Business
                 if (Item.quantity.HasValue)
                     baseQuantity = baseUnitTypeConvt.baseQty;
 
+                if (Item.baseStos.Count > 0)
+                {
+                    foreach (var Sto in MappingSto(Item))
+                    {
+                        if(Item.docItemStos == null)
+                            Item.docItemStos = new List<amt_DocumentItemStorageObject>();
+                        
+                        List<amt_DocumentItemStorageObject> disto = Sto.mapstos.Select(x => new amt_DocumentItemStorageObject()
+                        {
+                            Sou_StorageObject_ID = x.id.Value,
+                            Des_StorageObject_ID = null,
+                            Quantity = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).qty,
+                            BaseQuantity = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).baseQty,
+                            UnitType_ID = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).unitType_ID,
+                            BaseUnitType_ID = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).baseUnitType_ID,
+                            Status = EntityStatus.INACTIVE
+                        }).ToList();
+                        Item.docItemStos.AddRange(disto);
+                    };
+                }
+
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
@@ -242,13 +274,80 @@ namespace AWMSEngine.Engine.V2.Business
             }
             doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
 
-            exceFullClass(reqVO, FeatureCode.EXEWM_CreateGRDocument_Exec_After);
+            exceFullClass(reqVO, FeatureCode.EXEWM_CreateDocument_Exec_After);
 
             return doc;
         }
         private void exceFullClass(TReq reqVO, FeatureCode featureCode)
         {
             this.ExectProject<TReq, amt_Document>(featureCode, reqVO);
+        }
+
+        private List<StorageObjectCriteria> MappingSto(TReq.Item reqVO)
+        {
+            List<StorageObjectCriteria> mapStos = new List<StorageObjectCriteria>();
+            foreach (var baseSto in reqVO.baseStos)
+            {
+                ams_BaseMaster bm = ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(baseSto.baseCode, this.BuVO);
+                var areaModel = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == baseSto.areaCode);
+                if (bm == null && baseSto.isRegisBaseCode.Value)
+                {
+                    AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                    {
+                        Code = baseSto.baseCode,
+                        Name = baseSto.baseCode,
+                        BaseMasterType_ID = 6,
+                        Description = "Pallet",
+                        ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                        Status = EntityStatus.ACTIVE,
+                        UnitType_ID = 1,
+                        WeightKG = null
+                    });
+                }else if (bm == null && !baseSto.isRegisBaseCode.Value)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "BaseCode : " + baseSto.baseCode + " Not Found");
+
+                var mapBaseSto = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO,
+                new ScanMapStoNoDoc.TReq()
+                {
+                    rootID = null,
+                    scanCode = baseSto.baseCode,
+                    orderNo = null,
+                    batch = null,
+                    lot = null,
+                    amount = 1,
+                    unitCode = null,
+                    productDate = null,
+                    warehouseID = areaModel.Warehouse_ID,
+                    areaID = areaModel.ID,
+                    locationCode = null,
+                    options = null,
+                    isRoot = true,
+                    mode = VirtualMapSTOModeType.REGISTER,
+                    action = VirtualMapSTOActionType.ADD,
+                });
+
+                var mapSto = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO,
+                    new ScanMapStoNoDoc.TReq()
+                    {
+                        rootID = mapBaseSto.id,
+                        scanCode = reqVO.packCode,
+                        orderNo = reqVO.orderNo,
+                        batch = reqVO.batch,
+                        lot = reqVO.lot,
+                        amount = baseSto.quantity.Value,
+                        unitCode = reqVO.unitType,
+                        productDate = reqVO.productionDate,
+                        warehouseID = areaModel.Warehouse_ID,
+                        areaID = areaModel.ID,
+                        locationCode = null,
+                        options = baseSto.options,
+                        isRoot = false,
+                        mode = VirtualMapSTOModeType.REGISTER,
+                        action = VirtualMapSTOActionType.ADD,
+                    });
+                mapStos.Add(mapSto);
+            }
+            return mapStos;
         }
     }
 }

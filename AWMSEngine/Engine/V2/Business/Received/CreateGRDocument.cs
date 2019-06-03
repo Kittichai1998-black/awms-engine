@@ -68,6 +68,15 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
                 public List<amt_DocumentItemStorageObject> docItemStos;
+                public List<BaseSto> baseStos;
+                public class BaseSto
+                {
+                    public string baseCode;
+                    public string areaCode;
+                    public decimal quantity;
+                    public string options;
+                    public bool isRegisBaseCode;
+                }
             }
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
@@ -161,7 +170,15 @@ namespace AWMSEngine.Engine.V2.Business.Received
                             refID = x.refID,
 
                             eventStatus = x.eventStatus,
-                            docItemStos = x.docItemStos
+                            docItemStos = x.docItemStos,
+                            baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
+                            {
+                                baseCode = y.baseCode,
+                                areaCode = y.areaCode,
+                                quantity = y.quantity,
+                                options = y.options,
+                                isRegisBaseCode = y.isRegisBaseCode
+                            }).ToList()
                         }).ToList()
                 });
             return doc;
