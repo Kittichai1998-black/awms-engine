@@ -55,7 +55,7 @@ namespace AWMSEngine.Engine.V2.Business
             long? skuID = null;
             if (objType == StorageObjectType.PACK)
             {
-                trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.Code == reqVO.unitCode && x.ObjectType == objType);
+                trueUnit = this.StaticValue.UnitTypes.FirstOrDefault(x => x.ID == ((ams_PackMaster)obj).UnitType_ID);
                 skuID = ((ams_PackMaster)obj).SKUMaster_ID;
             }
             else if (objType == StorageObjectType.BASE)
@@ -148,7 +148,7 @@ namespace AWMSEngine.Engine.V2.Business
                 mapsto = this.ADOSto.Get(reqVO.scanCode, null, null, reqVO.isRoot, true, this.BuVO);
                 if (mapsto == null)
                 {
-                    ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, reqVO.unitCode, this.BuVO);
+                    ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
                     ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
                     ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
                     if (bm != null)
@@ -239,7 +239,7 @@ namespace AWMSEngine.Engine.V2.Business
             StorageObjectCriteria mapsto)
         {
             var firstMapSto = this.GetMapStoLastFocus(mapsto);
-            ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, reqVO.unitCode, this.BuVO);
+            ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
             ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
 
@@ -321,7 +321,6 @@ namespace AWMSEngine.Engine.V2.Business
             StorageObjectCriteria mapsto)
         {
             var msf = GetMapStoLastFocus(mapsto);
-            var xx = msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW);
             if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW) < reqVo.amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             else if (msf.mapstos.Count(x => x.code == reqVo.scanCode) < reqVo.amount)
