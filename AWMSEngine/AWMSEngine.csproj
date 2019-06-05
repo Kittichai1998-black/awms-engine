@@ -32,6 +32,7 @@
     <Compile Remove="Engine\V1\Business\PutSTO.cs" />
     <Compile Remove="Engine\V1\Business\VirtualMapStorageObjectPutDatabase.cs" />
     <Compile Remove="Engine\V1\Validation\BuVORequiredFields.cs" />
+    <Compile Remove="Engine\V2\Business\WorkQueue\BaseRegisterWorkQueue.cs" />
   </ItemGroup>
 
   <ItemGroup>

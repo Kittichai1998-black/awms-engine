@@ -92,6 +92,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var queueTrx = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
+            if (queueTrx.Des_Warehouse_ID != queueTrx.Warehouse_ID)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Present Location Not Equals Destination Location.");
             this.UpdateStorageObjectLocation(queueTrx, reqVO);
             this.UpdateDocumentItemStorageObject(reqVO, queueTrx);
             return null;
