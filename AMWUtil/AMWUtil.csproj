@@ -6,9 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Quartz" Version="3.0.7" />
-    <PackageReference Include="Z.Expressions.Eval" Version="2.6.5" />
+    <PackageReference Include="Z.Expressions.Eval" Version="2.9.31" />
   </ItemGroup>
 
 </Project>

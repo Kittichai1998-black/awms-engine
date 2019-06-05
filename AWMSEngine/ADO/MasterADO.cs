@@ -65,6 +65,15 @@ namespace AWMSEngine.ADO
             }, buVO).FirstOrDefault();
             return packMst;
         }
+        public AWMSModel.Entity.ams_PackMaster GetPackMasterByPack(string packCode, VOCriteria buVO)
+        {
+            var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("Code",packCode),
+                new KeyValuePair<string, object>("Status",1)
+            }, buVO).FirstOrDefault(x => x.BaseUnitType_ID == x.UnitType_ID);
+            return packMst;
+        }
 
 
         public AWMSModel.Entity.ams_SKUMaster GetSKUMaster(long packID, VOCriteria buVO)

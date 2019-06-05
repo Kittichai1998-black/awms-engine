@@ -1,14 +1,17 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business.Received
+namespace AWMSEngine.Engine.V2.Business.Auditor
 {
-    public class CreateGRDocument : BaseEngine<CreateGRDocument.TReq, amt_Document>
+    public class CreateADDocument : BaseEngine<CreateADDocument.TReq, amt_Document>
     {
         public class TReq
         {
@@ -46,13 +49,17 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
-            public List<ReceiveItem> receiveItems;
-            public class ReceiveItem
+            public List<TItem> docItems;
+            public class TItem
             {
+                public long? skuID;
                 public string skuCode;
                 public string packCode;
+                //public int? packItemQty;
                 public decimal? quantity;
                 public string unitType;
+                //public decimal baseQuantity;
+                //public string baseUnitType;
 
                 public DateTime? expireDate;
                 public DateTime? productionDate;
@@ -67,16 +74,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                 public string options;
 
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
+
                 public List<amt_DocumentItemStorageObject> docItemStos;
-                public List<BaseSto> baseStos;
-                public class BaseSto
-                {
-                    public string baseCode;
-                    public string areaCode;
-                    public decimal quantity;
-                    public string options;
-                    public bool isRegisBaseCode;
-                }
             }
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
@@ -118,69 +117,101 @@ namespace AWMSEngine.Engine.V2.Business.Received
                                                     reqVO.desBranchCode,
                                                     reqVO.desWarehouseCode,
                                                     reqVO.desAreaMasterCode);
-
-            var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
-                new CreateDocument.TReq()
-                {
-                    lot = reqVO.lot,
-                    batch = reqVO.batch,
-                    forCustomerID =
+            amt_Document doc = new amt_Document()
+            {
+                ID = null,
+                Code = null,
+                ParentDocument_ID = null,
+                Lot = reqVO.lot,
+                Batch = reqVO.batch,
+                For_Customer_ID =
                     reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
                     string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
 
-                    souCustomerID = Sou_Customer_ID,
-                    souSupplierID = Sou_Supplier_ID,
-                    souBranchID = Sou_Branch_ID == null ? null : Sou_Branch_ID.ID,
-                    souWarehouseID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
-                    souAreaMasterID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
+                Sou_Customer_ID = Sou_Customer_ID,
+                Sou_Supplier_ID = Sou_Supplier_ID,
+                Sou_Branch_ID = Sou_Branch_ID == null ? null : Sou_Branch_ID.ID,
+                Sou_Warehouse_ID = Sou_Warehouse_ID == null ? null : Sou_Warehouse_ID.ID,
+                Sou_AreaMaster_ID = Sou_AreaMaster_ID == null ? null : Sou_AreaMaster_ID.ID,
 
+                Des_Customer_ID = null,
+                Des_Supplier_ID = null,
+                Des_Branch_ID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
+                Des_Warehouse_ID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
+                Des_AreaMaster_ID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
+                DocumentDate = reqVO.documentDate,
+                ActionTime = reqVO.actionTime ?? reqVO.documentDate,
 
-                    desBranchID = Des_Branch_ID == null ? null : Des_Branch_ID.ID,
-                    desWarehouseID = Des_Warehouse_ID == null ? null : Des_Warehouse_ID.ID,
-                    desAreaMasterID = Des_AreaMaster_ID == null ? null : Des_AreaMaster_ID.ID,
-                    documentDate = reqVO.documentDate,
-                    actionTime = reqVO.actionTime ?? reqVO.documentDate,
+                RefID = reqVO.refID,
+                Ref1 = reqVO.ref1,
+                Ref2 = reqVO.ref2,
 
-                    refID = reqVO.refID,
-                    ref1 = reqVO.ref1,
-                    ref2 = reqVO.ref2,
+                DocumentType_ID = DocumentTypeID.AUDIT,
+                MovementType_ID = reqVO.movementTypeID,
+                EventStatus = reqVO.eventStatus,
 
-                    docTypeId = DocumentTypeID.GOODS_RECEIVED,
-                    eventStatus = reqVO.eventStatus,
-                    movementTypeID = reqVO.movementTypeID,
-                    remark = reqVO.remark,
+                Remark = reqVO.remark,
+                Options = null,
+                Transport_ID = null,
 
-                    Items = reqVO.receiveItems.Select(
-                        x => new CreateDocument.TReq.Item
-                        {
-                            skuCode = x.skuCode,
-                            packCode = x.packCode,
+                DocumentItems = new List<amt_DocumentItem>(),
 
-                            quantity = x.quantity,
-                            unitType = x.unitType,
+            };
 
-                            orderNo = x.orderNo,
-                            batch = x.batch,
-                            lot = x.lot,
-                            options = x.options,
-                            expireDate = x.expireDate,
-                            productionDate = x.productionDate,
-                            ref1 = x.ref1,
-                            ref2 = x.ref2,
-                            refID = x.refID,
+            foreach (var docItem in reqVO.docItems)
+            {
 
-                            eventStatus = x.eventStatus,
-                            docItemStos = x.docItemStos,
-                            baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
-                            {
-                                baseCode = y.baseCode,
-                                areaCode = y.areaCode,
-                                quantity = y.quantity,
-                                options = y.options,
-                                isRegisBaseCode = y.isRegisBaseCode
-                            }).ToList()
-                        }).ToList()
+                ams_PackMaster packMst = null;
+                ams_SKUMaster skuMst = null;
+
+                if (!string.IsNullOrWhiteSpace(docItem.packCode))
+                {
+                    packMst = ADO.MasterADO.GetInstant().GetPackMasterByPack(docItem.packCode, docItem.unitType, this.BuVO);
+                    skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(packMst.SKUMaster_ID, this.BuVO);
+                }
+                else if (docItem.skuID.HasValue)
+                {
+                    skuMst = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(docItem.skuID, this.BuVO);
+                    packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, docItem.unitType, this.BuVO);
+                }
+                else if (!string.IsNullOrWhiteSpace(docItem.skuCode))
+                {
+                    skuMst = ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(docItem.skuCode, this.BuVO);
+                    packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, docItem.unitType, this.BuVO);
+                }
+
+                //var mainUnitType = this.StaticValue.UnitTypes.First(x => x.Code == recItem.packItemUnit);
+                ConvertUnitCriteria baseUnitTypeConvt = packMst == null ? null : this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, docItem.quantity ?? 1, packMst.UnitType_ID);
+                
+                doc.DocumentItems.Add(new amt_DocumentItem()
+                {
+                    ID = null,
+                    Code = skuMst != null ? skuMst.Code : string.Empty,
+                    SKUMaster_ID = skuMst != null ? skuMst.ID : null,
+                    PackMaster_ID = packMst != null ? packMst.ID : null,
+
+                    UnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.unitType_ID,
+                    BaseUnitType_ID = baseUnitTypeConvt == null ? null : (long?)baseUnitTypeConvt.baseUnitType_ID,
+
+                    OrderNo = docItem.orderNo,
+                    Batch = docItem.batch,
+                    Lot = docItem.lot,
+
+                    Options = docItem.options,
+                    ExpireDate = docItem.expireDate,
+                    ProductionDate = docItem.productionDate,
+                    Ref1 = docItem.ref1,
+                    Ref2 = docItem.ref2,
+                    RefID = docItem.refID,
+
+                    EventStatus = docItem.eventStatus,
+                    DocItemStos = docItem.docItemStos
                 });
+            }
+
+
+            doc = ADO.DocumentADO.GetInstant().Create(doc, BuVO);
+
             return doc;
         }
     }
