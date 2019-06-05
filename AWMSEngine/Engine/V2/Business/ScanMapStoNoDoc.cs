@@ -321,7 +321,6 @@ namespace AWMSEngine.Engine.V2.Business
             StorageObjectCriteria mapsto)
         {
             var msf = GetMapStoLastFocus(mapsto);
-            var xx = msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW);
             if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW) < reqVo.amount)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             else if (msf.mapstos.Count(x => x.code == reqVo.scanCode) < reqVo.amount)
