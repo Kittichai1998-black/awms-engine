@@ -76,11 +76,11 @@ namespace AWMSEngine.Engine.Business.Auditor
             queueCheck.queueOut = queueOut;
             if (queueOut.Count > 0)
             {
-                var wcsRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
-                if (wcsRes._result.resultcheck == 0)
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
-                }
+                //var wcsRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
+                //if (wcsRes._result.resultcheck == 0)
+                //{
+                //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
+                //}
             }
             List<amt_DocumentItemStorageObject> distoList = new List<amt_DocumentItemStorageObject>();
             reqVO.disto.ForEach(x =>
@@ -140,11 +140,11 @@ namespace AWMSEngine.Engine.Business.Auditor
             queueCheck.queueOut = queueOut2;
             if (queueOut2.Count > 0)
             {
-                var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
-                if (wcsAcceptRes._result.resultcheck == 0)
-                {
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
-                }
+                //var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueCheck, this.BuVO);
+                //if (wcsAcceptRes._result.resultcheck == 0)
+                //{
+                //    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกสินค้าในรายการได้");
+                //}
             }
             ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
             listQueue.docID = reqVO.docID;
