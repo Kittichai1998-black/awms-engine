@@ -10,6 +10,7 @@ using AMWUtil.Exception;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.Common;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -26,6 +27,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string warehouseCode;//รหัสคลังสินค้า
             public string areaCode;//รหัสโซน
             public string locationCode;//รหัสเกต
+            public string desWarehouseCode; 
+            public string desAreaCode;
+            public string desLocationCode;
             public DateTime actualTime;
             public List<PalletDataCriteriaV2> mappingPallets;
         }
@@ -34,7 +38,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             public StorageObjectCriteria sto;
             public TReq reqVO;
-        }
+        } 
 
         protected StorageObjectCriteria GetSto(TReq reqVO)
         {
@@ -56,27 +60,66 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             return res;
         }
 
+        protected SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, TReq reqVO)
+        { 
+            SPOutAreaLineCriteria res = this.ExectProject<TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDesLocations, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            if (res == null)
+            {
+                if (string.IsNullOrWhiteSpace(reqVO.desAreaCode))
+                {
+                    var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, this.BuVO);
+                    res = desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
+                }
+                else
+                {
+                    res = new SPOutAreaLineCriteria()
+                    {
+                        Sou_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).ID,
+                        Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).Code,
+                        Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).groupType,
+                        Sou_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
+                        Sou_AreaMaster_Code = reqVO.areaCode,
+                        Sou_AreaLocationMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.locationCode).ID.Value,
+                        Sou_AreaLocationMaster_Code = reqVO.locationCode,
+                        Des_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).ID,
+                        Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).Code,
+                        Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).groupType,
+                        Des_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desAreaCode).ID.Value,
+                        Des_AreaMaster_Code = reqVO.desAreaCode,
+                        Des_AreaLocationMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desLocationCode).ID.Value,
+                        Des_AreaLocationMaster_Code = reqVO.desLocationCode,
+                        DefaultFlag = YesNoFlag.No,
+                        Condition_Eval = null
+
+
+
+                    };
+                }
+            }
+            return res;
+        }
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
             var sto = GetSto(reqVO);
             if (sto != null)
             {
-
-                //var sto = GetSto(reqVO);
                 this.SetWeiChildAndUpdateInfoToChild(sto, reqVO.weight ?? 0 );
-                //ADO.StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
                 this.ValidateObjectSizeLimit(sto);
                 var docItem = GetDocumentItemAndDISTO(sto, reqVO);
-                var desLocation = this.GetDesLocations(sto, docItem, reqVO);
+                var desLocation = this.GetDesLocations(sto, reqVO);
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
                
-                var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
-                docIDs.ForEach(x =>
+                if(docItem != null)
                 {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
-                });
+                    var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
+                    docIDs.ForEach(x =>
+                    {
+                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                    });
+                }
+
                 return this.GenerateResponse(sto, queueTrx);
             }
             else {
@@ -98,7 +141,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //*****SET WEI CODING
 
             sto.weiKG = totalWeiKG;
-            var innerTotalWeiKG = totalWeiKG - (baseMasters.WeightKG.Value);
+            var innerTotalWeiKG = totalWeiKG - (baseMasters.WeightKG);
 
             List<decimal> precenFromTotalWeis = new List<decimal>();
             decimal totalWeiStd = packMasters.Sum(x =>(x.WeightKG ?? 0) *sto.mapstos.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.ID).Sum(y => y.qty));
@@ -121,26 +164,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             });
          
         }
+ 
 
-        private SPOutAreaLineCriteria GetDesLocations(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, TReq reqVO)
-        {
-            //reqVO.locationCode
-            var desLocations = ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value,sto.parentID, this.BuVO);
-            foreach(var des in desLocations)
-            {
-                if(!string.IsNullOrWhiteSpace(des.Condition_Eval) && Z.Expressions.Eval.Execute<bool>(des.Condition_Eval))
-                {
-                    return des;
-                }
-            }
-            return desLocations.FirstOrDefault(x => x.DefaultFlag == YesNoFlag.YES);
-        }
         private SPworkQueue CreateWorkQueue(StorageObjectCriteria sto, List<amt_DocumentItem> docItems, SPOutAreaLineCriteria location, TReq reqVO)
         {
             SPworkQueue workQ = new SPworkQueue()
             {
                 ID = null,
-                IOType = IOType.INPUT,
+                IOType = reqVO.ioType,
                 ActualTime = reqVO.actualTime,
                 Parent_WorkQueue_ID = null,
                 Priority = 1,

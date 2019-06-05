@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             public string forCustomerCode;
             public string batch;
             public string lot;
+            public MovementType movementTypeID;
 
             public long? souBranchID;
             public long? souWarehouseID;
@@ -72,6 +73,15 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                 public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
                 public List<amt_DocumentItemStorageObject> docItemStos;
+                public List<BaseSto> baseStos;
+                public class BaseSto
+                {
+                    public string baseCode;
+                    public string areaCode;
+                    public decimal quantity;
+                    public string options;
+                    public bool isRegisBaseCode;
+                }
             }
         }
 
@@ -122,6 +132,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
             var doc = new CreateDocument().Execute(this.Logger, this.BuVO,
                 new CreateDocument.TReq()
                 {
+                    parentDocumentID = reqVO.parentDocumentID,
                     lot = reqVO.lot,
                     batch = reqVO.batch,
                     forCustomerID =
@@ -145,9 +156,9 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                     ref1 = reqVO.ref1,
                     ref2 = reqVO.ref2,
 
-                    docTypeId = DocumentTypeID.GOODS_RECEIVED,
+                    docTypeId = DocumentTypeID.GOODS_ISSUED,
                     eventStatus = reqVO.eventStatus,
-
+                    movementTypeID = reqVO.movementTypeID,
                     remark = reqVO.remark,
 
                     Items = reqVO.issueItems.Select(
@@ -170,7 +181,15 @@ namespace AWMSEngine.Engine.V2.Business.Issued
                             refID = x.refID,
 
                             eventStatus = x.eventStatus,
-                            docItemStos = x.docItemStos
+                            docItemStos = x.docItemStos,
+                            baseStos = x.baseStos == null ? new List<CreateDocument.TReq.Item.BaseSto>() : x.baseStos.Select(y => new CreateDocument.TReq.Item.BaseSto()
+                            {
+                                baseCode = y.baseCode,
+                                areaCode = y.areaCode,
+                                quantity = y.quantity,
+                                options = y.options,
+                                isRegisBaseCode = y.isRegisBaseCode
+                            }).ToList()
                         }).ToList()
                 });
             return doc;

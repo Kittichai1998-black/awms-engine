@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AWMSEngine.APIService.ASRS
 {
-    public class MapEmptyPalletAPI : BaseAPIService
+    public class MappingEmptyPalletToLocationAPI : BaseAPIService
     {
         public override int APIServiceID()
         {
             return 90;
         }
-        public MapEmptyPalletAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public MappingEmptyPalletToLocationAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 

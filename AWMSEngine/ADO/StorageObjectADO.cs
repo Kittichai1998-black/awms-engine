@@ -184,7 +184,7 @@ namespace AWMSEngine.ADO
         public long Create(StorageObjectCriteria sto, string batch, string lot, VOCriteria buVO)
         {
             sto.id = null;
-            return this.Put(sto, sto.areaID.Value, batch, lot, buVO);
+            return this.Put(sto, sto.areaID, batch, lot, buVO);
         }
         public long Update(StorageObjectCriteria sto, long areaID, VOCriteria buVO)
         {
@@ -194,7 +194,7 @@ namespace AWMSEngine.ADO
         {
             return this.Put(sto, sto.areaID.Value, null, null, buVO);
         }
-        private long Put(StorageObjectCriteria sto, long areaID, string batch, string lot, VOCriteria buVO)
+        private long Put(StorageObjectCriteria sto, long? areaID, string batch, string lot, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("id", sto.id);

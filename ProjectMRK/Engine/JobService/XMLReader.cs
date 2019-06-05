@@ -82,6 +82,7 @@ namespace ProjectMRK.Engine.JobService
 
         protected override TRes ExecuteEngine(string reqVO)
         {
+        
             ftpPath = StaticValue.GetConfig("FTP_PATH_ROOT");
             ftpLogPath = StaticValue.GetConfig("FTP_PATH_LOG");
             ftpUsername = StaticValue.GetConfig("FTP_USER");
@@ -102,14 +103,16 @@ namespace ProjectMRK.Engine.JobService
             var xmlName = listNames.Where(x => matchExpression.Match(x).Success).ToList();
 
             TRes res = new TRes();
+            List<TRes.DocList> docList = new List<TRes.DocList>();
             if (xmlName.Count > 0)
             {
                 xmlName.ForEach(x =>
                 {
                     var docRes = ReadListFileXML(x);
-                    res.document.Add(docRes);
+                    docList.Add(docRes);
                 });
             }
+            res.document = docList;
             return res;
         }
 
@@ -134,9 +137,12 @@ namespace ProjectMRK.Engine.JobService
             reader.Close();
             reader.Dispose();
             response.Close();
+
+            var res =  CreateDocumentFromXML(jsonObj);
+
             MoveFileXML(xmlname);
 
-            return CreateDocumentFromXML(jsonObj);
+            return res;
         }
 
         private void MoveFileXML(string xmlname)
@@ -205,22 +211,42 @@ namespace ProjectMRK.Engine.JobService
             if (unit == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Unit Type " + jsonDetail.UOM + " NotFound");
 
-            var objSize = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
+            var objSizeBase = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
+            var objSizePack = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
             var baseID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
             {
                 Code = jsonDetail.PalletID,
                 Name = jsonDetail.PalletID,
-                BaseMasterType_ID = 1,
+                BaseMasterType_ID = 6,
                 Description = "Pallet",
-                ObjectSize_ID = objSize.ID.Value,
+                ObjectSize_ID = objSizeBase.ID.Value,
                 Status = EntityStatus.ACTIVE,
                 UnitType_ID = 1,
                 WeightKG = null
             });
-
-            List<StorageObjectCriteria> listSto = new List<StorageObjectCriteria>();
-            listSto.Add(new StorageObjectCriteria()
+            
+            StorageObjectCriteria baseSto = new StorageObjectCriteria()
             {
+                code = jsonDetail.PalletID,
+                eventStatus = StorageObjectEventStatus.NEW,
+                name = "Pallet",
+                qty = 1,
+                unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x=>x.ObjectType == StorageObjectType.BASE).Code,
+                baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                baseQty = 1,
+                objectSizeID = objSizeBase.ID.Value,
+                type = StorageObjectType.BASE,
+                mstID = baseID,
+                objectSizeName = objSizeBase.Name,
+            };
+
+            var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
+            var childSto = new StorageObjectCriteria()
+            {
+                parentID = stoID,
+                parentType = StorageObjectType.BASE,
                 code = jsonDetail.ItemNumber,
                 eventStatus = StorageObjectEventStatus.NEW,
                 name = sku.Name,
@@ -231,39 +257,15 @@ namespace ProjectMRK.Engine.JobService
                 unitID = unit.ID.Value,
                 baseUnitCode = unit.Code,
                 baseUnitID = unit.ID.Value,
-                areaID = null,
-                baseQty = 1,
-                objectSizeID = objSize.ID.Value,
-                type = StorageObjectType.BASE,
-                mstID = baseID,
+                baseQty = Convert.ToDecimal(jsonDetail.Quantity),
+                objectSizeID = objSizePack.ID.Value,
+                type = StorageObjectType.PACK,
                 productDate = jsonDetail.ManufactureDate,
-                objectSizeName = objSize.Name,
-                mapstos = null
-            });
-
-            StorageObjectCriteria baseSto = new StorageObjectCriteria()
-            {
-                code = jsonDetail.PalletID,
-                eventStatus = StorageObjectEventStatus.NEW,
-                name = "Pallet",
-                batch = jsonDetail.ToBatch,
-                qty = 1,
-                skuID = null,
-                unitCode = unit.Code,
-                unitID = unit.ID.Value,
-                baseUnitCode = jsonDetail.UOM,
-                baseUnitID = unit.ID.Value,
-                areaID = null,
-                baseQty = 1,
-                objectSizeID = objSize.ID.Value,
-                type = StorageObjectType.BASE,
-                mstID = baseID,
-                productDate = jsonDetail.ManufactureDate,
-                objectSizeName = objSize.Name,
-                mapstos = listSto
+                objectSizeName = objSizePack.Name,
+                mstID = pack.ID
             };
-
-            var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().Create(baseSto, jsonDetail.ToBatch, null, this.BuVO);
+            var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(childSto, this.BuVO);
+            
             var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
 
             amt_Document doc = new amt_Document()
@@ -356,7 +358,9 @@ namespace ProjectMRK.Engine.JobService
             AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
 
             res.doc = doc;
+            baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
             res.sto = baseSto;
+            
 
             return res;
 

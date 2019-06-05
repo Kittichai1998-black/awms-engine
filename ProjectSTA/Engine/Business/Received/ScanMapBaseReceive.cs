@@ -50,7 +50,10 @@ namespace ProjectSTA.Engine.Business.Received
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Area Not Found");
             }
              
-            ams_SKUMaster skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", skuCode, this.BuVO).FirstOrDefault();
+            ams_SKUMaster skuItem = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("Code",skuCode, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS, SQLConditionType.AND)
+                      }, this.BuVO).FirstOrDefault();
             if (skuItem == null)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of SKU Code: " + skuCode + " Not Found");
@@ -88,9 +91,14 @@ namespace ProjectSTA.Engine.Business.Received
                 //เช็คข้อมูลBase ที่มี AreaLocationMaster_ID ที่ตรงกับ location.ID
                 if (stoBaseItems != null)
                 {
-                    var baseItemsCheck = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>("ID", (long)stoBaseItems.BaseMaster_ID, this.BuVO).FirstOrDefault();
-                    var objSizeBaseCheck = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)baseItemsCheck.ObjectSize_ID).FirstOrDefault();
+                    var baseItemsCheck = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>((long)stoBaseItems.BaseMaster_ID, this.BuVO);
+                    if (baseItemsCheck == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of Base Not Found");
 
+                    var objSizeBaseCheck = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)baseItemsCheck.ObjectSize_ID).FirstOrDefault();
+                    if (objSizeBaseCheck == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Object Size of Base Not Found");
+                    
                     //เอาstoID ของ Base มาหารายการสินค้า SKU 
                     var stoPackObjects = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
@@ -102,8 +110,13 @@ namespace ProjectSTA.Engine.Business.Received
                     { //มีสินค้าอยู่บนพาเลท
                         foreach (var stoPack in stoPackObjects)
                         {
-                            var packItemsCheck = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>("ID", (long)stoPack.PackMaster_ID, this.BuVO).FirstOrDefault();
+                            var packItemsCheck = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)stoPack.PackMaster_ID, this.BuVO);
+                            if (packItemsCheck == null)
+                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of Pack Not Found");
+
                             var objSizePackCheck = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)packItemsCheck.ObjectSize_ID).FirstOrDefault();
+                            if (objSizePackCheck == null)
+                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Object Size of Pack Not Found");
 
                             var objectSizeMaps = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>(new SQLConditionCriteria[] {
                                     new SQLConditionCriteria("OuterObjectSize_ID", (long)objSizeBaseCheck.ID, SQLOperatorType.EQUALS),
@@ -121,16 +134,11 @@ namespace ProjectSTA.Engine.Business.Received
                             {  //ข้อมูลตรง เช็คว่ามีค่า Options มั้ย ถ้ามี เช็คหาค่า CartonNo.
                                 if (stoPack.Options != null && stoPack.Options.Length > 0)
                                 {
-                                    dynamic[] options = stoPack.Options.Split("&").ToArray();
-                                    
-                                    foreach (var val in options)
-                                    {
-                                        dynamic[] options2 = val.Split("=");
+                                    var optionsCartonNo = ObjectUtil.QryStrGetValue(stoPack.Options, "CartonNo");
 
-                                        if (options2[0] == "CartonNo")
-                                        {  //มีค่า CartonNo 
-                                            if (options2[1].Length > 0) {
-                                                var resCartonNo = AMWUtil.Common.ConvertUtil.ConvertRangeNumToString(options2[1]);
+                                         //มีค่า CartonNo 
+                                            if (optionsCartonNo.Length > 0) {
+                                                var resCartonNo = AMWUtil.Common.ConvertUtil.ConvertRangeNumToString(optionsCartonNo);
                                                 dynamic newCartonNos = null;
                                                 var splitCartonNo = resCartonNo.Split(",");
                                                 int lenSplitCartonNo = splitCartonNo.Length;
@@ -182,7 +190,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     unitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoPack.UnitType_ID).Code,
                                                     baseUnitID = stoPack.BaseUnitType_ID,
                                                     baseUnitCode = this.StaticValue.UnitTypes.Find(y => y.ID == stoPack.BaseUnitType_ID).Code,
-                                                    objectSizeID = (long)skuItem.ObjectSize_ID,
+                                                    objectSizeID = (long)packItemsCheck.ObjectSize_ID,
                                                     objectSizeName = objectSizePack.Name,
                                                     maxWeiKG = objectSizePack.MaxWeigthKG,
                                                     minWeiKG = objectSizePack.MinWeigthKG,
@@ -212,12 +220,7 @@ namespace ProjectSTA.Engine.Business.Received
                                             {
                                                 throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Carton No. of SKU Code: " + skuCode + " on Pallet: " + stoBaseItems.Code + " Not Found");
                                             }
-                                        }
-                                        else
-                                        {
-                                            throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Carton No. of SKU Code: " + skuCode + " on Pallet: " + stoBaseItems.Code + " Not Found");
-                                        }
-                                    }
+                                                                              
                                 }
                                 else
                                 {

@@ -1,6 +1,7 @@
 ﻿using AWMSEngine.ADO.StaticValue;
-using AWMSEngine.Engine.Business;
-using AWMSEngine.Engine.Business.Received;
+using AWMSEngine.Engine.V2.Business;
+using AWMSEngine.Engine.V2.Validation;
+using AWMSEngine.Engine.V2.Business.Received;
 using AWMSModel.Constant.EnumConst;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -37,8 +38,8 @@ namespace AWMSEngine.APIService.WM
             {
 
                 //Validate
-                new Engine.Validation.ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, res);
-                new Engine.Validation.ValidateObjectSizeLowerLimit().Execute(this.Logger, this.BuVO, res);
+                new ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, res);
+                new ValidateObjectSizeLowerLimit().Execute(this.Logger, this.BuVO, res);
 
                 List<long> docIDs = new List<long>();
                 if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102) &&
@@ -53,7 +54,7 @@ namespace AWMSEngine.APIService.WM
                 else if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
                 {
                     //List Doc in Database
-                    docIDs = new Engine.Business.GetDocumnetRelationBySTO().Execute(this.Logger, this.BuVO, res).documents.Select(x => x.ID.Value).ToList();
+                    docIDs = new GetDocumnetRelationBySTO().Execute(this.Logger, this.BuVO, res).documents.Select(x => x.ID.Value).ToList();
                 }
 
 

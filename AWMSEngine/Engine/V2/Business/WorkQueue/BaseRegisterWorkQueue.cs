@@ -25,6 +25,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string warehouseCode;//รหัสคลังสินค้า
             public string areaCode;//รหัสโซน
             public string locationCode;//รหัสเกต
+            public string desWarehouseCode;
+            public string desAreaCode;
+            public string desLocationCode;
             public DateTime actualTime;
             public List<PalletDataCriteriaV2> mappingPallets;
         }
@@ -116,7 +119,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             SPworkQueue workQ = new SPworkQueue()
             {
                 ID = null,
-                IOType = IOType.INPUT,
+                IOType = reqVO.ioType,
                 ActualTime = reqVO.actualTime,
                 Parent_WorkQueue_ID = null,
                 Priority = 1,

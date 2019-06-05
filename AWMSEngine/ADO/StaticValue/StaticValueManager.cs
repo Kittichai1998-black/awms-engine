@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace AWMSEngine.ADO.StaticValue
 {
-    public class StaticValueManager
+    public class StaticValueManager : IStaticValueManager
     {
         private Dictionary<string, ams_Feature> _Features;
         public Dictionary<string, ams_Feature> Features { get => this._Features; }
@@ -81,6 +81,7 @@ namespace AWMSEngine.ADO.StaticValue
 
             return a;
         }
+      
 
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
@@ -96,8 +97,14 @@ namespace AWMSEngine.ADO.StaticValue
         private List<ams_PackMasterType> _PackMasterTypes;
         public List<ams_PackMasterType> PackMasterTypes { get => this._PackMasterTypes; }
 
+        private List<ams_PackMaster> _PackMasterEmptyPallets;
+        public List<ams_PackMaster> PackMasterEmptyPallets { get => this._PackMasterEmptyPallets; }
+
         private List<ams_SKUMasterType> _SKUMasterTypes;
         public List<ams_SKUMasterType> SKUMasterTypes { get => this._SKUMasterTypes; }
+
+        private List<ams_SKUMaster> _SKUMasterEmptyPallets;
+        public List<ams_SKUMaster> SKUMasterEmptyPallets { get => this._SKUMasterEmptyPallets; }
 
         private List<ams_APIService> _APIServices;
         public List<ams_APIService> APIServices { get => this._APIServices; }
@@ -260,6 +267,37 @@ namespace AWMSEngine.ADO.StaticValue
         public void LoadTransport(VOCriteria buVO = null)
         {
             this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
+        }
+        public void LoadPackMasterEmptyPallets(VOCriteria buVO = null)
+        {
+            var packtype = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
+            if (packtype != null)
+            {
+                this._PackMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("PackMasterType_ID", packtype.ID.Value,
+                            SQLOperatorType.EQUALS, SQLConditionType.AND)
+                      }, buVO ?? new VOCriteria()));
+            }
+            else
+            {
+                this._PackMasterEmptyPallets = null;
+            }
+        }
+        public void LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
+        {
+            var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
+            if (skutype != null)
+            {
+                this._SKUMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
+                            new SQLConditionCriteria("SKUMasterType_ID",
+                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault().ID.Value,
+                            SQLOperatorType.EQUALS, SQLConditionType.AND)
+                      }, buVO ?? new VOCriteria()));
+            }
+            else
+            {
+                this._SKUMasterEmptyPallets = null;
+            }
         }
 
         public bool IsFeature(FeatureCode code)
