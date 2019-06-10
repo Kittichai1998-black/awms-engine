@@ -72,21 +72,25 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
+                    var area = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
+                    var desArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
+                    var location = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+                    var desLocation = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, this.BuVO);
                     res = new SPOutAreaLineCriteria()
                     {
-                        Sou_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).ID,
-                        Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).Code,
-                        Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.areaCode).groupType,
-                        Sou_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
+                        Sou_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).ID,
+                        Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).Code,
+                        Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).groupType,
+                        Sou_AreaMaster_ID = area.ID.Value,
                         Sou_AreaMaster_Code = reqVO.areaCode,
-                        Sou_AreaLocationMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.locationCode).ID.Value,
+                        Sou_AreaLocationMaster_ID = location.ID,
                         Sou_AreaLocationMaster_Code = reqVO.locationCode,
-                        Des_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).ID,
-                        Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).Code,
-                        Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.Code == reqVO.desAreaCode).groupType,
-                        Des_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desAreaCode).ID.Value,
+                        Des_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).ID,
+                        Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).Code,
+                        Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).groupType,
+                        Des_AreaMaster_ID = desArea.ID.Value,
                         Des_AreaMaster_Code = reqVO.desAreaCode,
-                        Des_AreaLocationMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.desLocationCode).ID.Value,
+                        Des_AreaLocationMaster_ID = desLocation.ID,
                         Des_AreaLocationMaster_Code = reqVO.desLocationCode,
                         DefaultFlag = YesNoFlag.No,
                         Condition_Eval = null
