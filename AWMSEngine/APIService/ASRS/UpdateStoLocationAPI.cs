@@ -49,7 +49,17 @@ namespace AWMSEngine.APIService.ASRS
             }, this.BuVO).FirstOrDefault();
             ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, desALM.ID.Value, this.BuVO);
 
-            return null;
+            return new TReq()
+            {
+                baseCode = req.baseCode,
+                souWarehouseCode = req.souWarehouseCode,
+                souAreaCode = req.souAreaCode,
+                souLocationCode = req.souLocationCode,
+                desWarehouseCode = desWH.Code,
+                desAreaCode = desAM.Code,
+                desLocationCode = desALM.Code,
+                actualTime = req.actualTime
+            };
         }
     }
 }
