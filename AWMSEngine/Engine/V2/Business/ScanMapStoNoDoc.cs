@@ -148,6 +148,8 @@ namespace AWMSEngine.Engine.V2.Business
                 mapsto = this.ADOSto.Get(reqVO.scanCode, null, null, reqVO.isRoot, true, this.BuVO);
                 if (mapsto == null)
                 {
+                    if (reqVO.action == VirtualMapSTOActionType.SELECT)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'" + reqVO.scanCode + "' Not Found");
                     ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
                     ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
                     ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);

@@ -50,7 +50,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             if(docs == null || docs.Count() == 0)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code: '" + baseCode + "' Not Found");
 
-            var fastMove = docs.TrueForAll(x => x.MovementType_ID == MovementType.FG_FASTMOVE);
+            var fastMove = docs.TrueForAll(x => x.MovementType_ID == MovementType.FG_FAST_TRANSFER_WM);
             if (fastMove)
             {
                 List<amt_StorageObject> locationGateFast = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{

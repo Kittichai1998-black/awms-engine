@@ -27,13 +27,13 @@ namespace ProjectSTA.Engine.Business
                        .ListStoInDocs(num, this.BuVO);
                 if (docItemsSto.Any(x => x.Status == EntityStatus.INACTIVE))
                 {
-                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(num, 
-                        null, null, DocumentEventStatus.WAIT_FOR_WORKED, this.BuVO);
+                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(num,
+                        DocumentEventStatus.WORKING, null, DocumentEventStatus.WAIT_FOR_WORKED, this.BuVO);
                 }
                 else
                 {
                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(num,
-                        null, null, DocumentEventStatus.CLOSED, this.BuVO);
+                        DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSED, this.BuVO);
                 }
 
             }
