@@ -85,6 +85,7 @@ namespace AWMSEngine.Engine.V2.Business
             public string warehouseCode;
             public int branchID;
             public string branchCode;
+            public string options;
         }
 
         protected override TRes ExecuteEngine(TReq reqVO)
@@ -169,7 +170,10 @@ namespace AWMSEngine.Engine.V2.Business
                         warehouseID = bs.warehouseID,
                         warehouseCode = bs.warehouseCode,
                         branchID = bs.branchID,
-                        branchCode = bs.branchCode
+                        branchCode = bs.branchCode,
+                        options = bs.options
+                        
+
                     });
 
                     des_sto.Add(new bsto
@@ -225,7 +229,8 @@ namespace AWMSEngine.Engine.V2.Business
                         warehouseID = bs.warehouseID,
                         warehouseCode = bs.warehouseCode,
                         branchID = bs.branchID,
-                        branchCode = bs.branchCode
+                        branchCode = bs.branchCode,
+                        options = bs.options
                     });
 
                 });
