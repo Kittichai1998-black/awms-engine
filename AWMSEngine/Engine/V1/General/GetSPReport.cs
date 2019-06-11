@@ -10,29 +10,62 @@ namespace AWMSEngine.Engine.General
     {
         public class TRes
         {
-            public List<dynamic> datas;
+            public dynamic datas;
         }
         protected override TRes ExecuteEngine(Dictionary<string, string> reqVO)
         {
-            string spname = string.Empty;
-            Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
-            foreach (var key in reqVO.Keys)
+            
+            if (reqVO.ContainsKey("spnames"))
             {
-                if (key.ToLower().Equals("spname"))
+                Dictionary<string, dynamic> datas = new Dictionary<string, dynamic>();
+                var spnames = reqVO["spnames"].Split(',');
+                foreach(var n in spnames)
                 {
-                    spname = "RP_" + reqVO[key];
+                    var spname = "RP_" + n;
+                    Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
+                    foreach(var key in reqVO.Keys)
+                    {
+                        if (!key.ToLower().Equals("spnames") &&
+                            !key.ToLower().Equals("apikey") && !key.ToLower().Equals("_apikey") &&
+                            !key.ToLower().Equals("token") && !key.ToLower().Equals("_token"))
+                        {
+                            parameters.Add(key, reqVO[key]);
+                        }
+                    }
+
+                    datas.Add(n, ADO.DataADO.GetInstant().QuerySP(spname, parameters, this.BuVO));
+
+
                 }
-                else if (!key.ToLower().Equals("apikey") && !key.ToLower().Equals("_apikey") &&
-                    !key.ToLower().Equals("token") && !key.ToLower().Equals("_token"))
+                TRes res = new TRes()
                 {
-                    parameters.Add(key, reqVO[key]);
+                    datas = datas
+                };
+                return res;
+            } 
+            else
+            {
+                Dapper.DynamicParameters parameters = new Dapper.DynamicParameters();
+                string spname = string.Empty;
+                foreach (var key in reqVO.Keys)
+                {
+                    if (key.ToLower().Equals("spname"))
+                    {
+                        spname = "RP_" + reqVO[key];
+                    }
+                    else if (!key.ToLower().Equals("apikey") && !key.ToLower().Equals("_apikey") &&
+                        !key.ToLower().Equals("token") && !key.ToLower().Equals("_token"))
+                    {
+                        parameters.Add(key, reqVO[key]);
+                    }
                 }
+                
+                TRes res = new TRes()
+                {
+                    datas = ADO.DataADO.GetInstant().QuerySP(spname, parameters, this.BuVO)
+                };
+                return res;
             }
-            TRes res = new TRes()
-            {
-                datas = ADO.DataADO.GetInstant().QuerySP(spname, parameters, this.BuVO)
-            };
-            return res;
         }
     }
 }
