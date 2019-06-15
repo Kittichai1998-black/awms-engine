@@ -40,14 +40,14 @@ namespace AWMSEngine.Engine.V2.Business
 
             mapsto = this.ExecScan(reqVO);
 
-            this.SetQty(mapsto);
+            if(mapsto != null)
+                this.SetQty(mapsto);
 
             return mapsto;
         }
 
         private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parentMapsto, TReq reqVO)
         {
-
             var objSize = this.StaticValue.ObjectSizes.Find(x => x.ID == ObjectSize_ID);
             var objType = obj is ams_BaseMaster ? StorageObjectType.BASE : obj is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK;
 
@@ -211,6 +211,7 @@ namespace AWMSEngine.Engine.V2.Business
                         throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't remove product from base that it has status is " + mapsto.eventStatus);
 
                     this.ActionRemove(reqVO, mapsto);
+                    mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
                 }
             }
             return mapsto;
@@ -326,7 +327,6 @@ namespace AWMSEngine.Engine.V2.Business
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             if (reqVo.scanCode == mapsto.code)
             {
-                msf.eventStatus = StorageObjectEventStatus.REMOVED;
                 ADOSto.Update(msf, msf.areaID.Value, this.BuVO);
             }
             else
