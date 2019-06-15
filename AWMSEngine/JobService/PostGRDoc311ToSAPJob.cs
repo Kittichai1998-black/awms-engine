@@ -13,7 +13,7 @@ namespace AWMSEngine.JobService
 {
     public class PostGRDoc311ToSAPJob : BaseJobService
     {
-        public override void ExecuteJob(IJobExecutionContext context)
+        public override void ExecuteJob(IJobExecutionContext context, JobDataMap data)
         {
             var docs = 
                 ADO.DataADO.GetInstant().SelectBy<amt_Document>(

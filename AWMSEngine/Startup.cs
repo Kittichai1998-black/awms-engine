@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AMWUtil.Common;
 using AMWUtil.PropertyFile;
 using AWMSEngine.JobService;
 using AWMSModel.Constant.StringConst;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Quartz;
 
 namespace AWMSEngine
 {
@@ -57,10 +59,17 @@ namespace AWMSEngine
             ADO.StaticValue.StaticValueManager.GetInstant();
 
 
-            string cronEx311 = appProperty[PropertyConst.APP_KEY_CRONEX_311];
-            string cronEx321 = appProperty[PropertyConst.APP_KEY_CRONEX_321];
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDoc311ToSAPJob>(cronEx311);
-            AMWUtil.Common.SchedulerUtil.Start<PostGRDocPackage321ToSAPJob>(cronEx321);
+            string jobNames = appProperty[PropertyConst.APP_KEY_JOB_NAMES];
+            foreach (string jobName in jobNames.Split(','))
+            {
+                string jobCronex = string.Format(appProperty[PropertyConst.APP_KEY_JOB_CRONEX], jobName);
+                string jobClassname = string.Format(appProperty[PropertyConst.APP_KEY_JOB_CLASSNAME], jobName);
+                string jobData = string.Format(appProperty[PropertyConst.APP_KEY_JOB_DATA], jobName);
+                var tJob = AMWUtil.Common.ClassType.GetClassType(jobClassname);
+                var v = jobData.Json<Dictionary<string, object>>();
+                
+                AMWUtil.Common.SchedulerUtil.Start(tJob,jobCronex, v.FieldKeyValuePairs().ToArray());
+            }
 
             if (env.IsDevelopment())
             {
@@ -74,6 +83,7 @@ namespace AWMSEngine
             app.UseCors("AllowCors");
             app.UseHttpsRedirection();
             app.UseMvc();
+            
         }
     }
 }

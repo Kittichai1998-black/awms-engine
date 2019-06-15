@@ -10,10 +10,10 @@ namespace AWMSModel.Constant.StringConst
         public const string APP_KEY = "app";
         public const string APP_KEY_LOG_ROOTPATH = "logger.rootpath";
         public const string APP_KEY_LOG_FILENAME = "logger.filename";
-        public const string APP_KEY_CRONEX_311 = "cronex.311";
-        public const string APP_KEY_CRONEX_321 = "cronex.321";
-        public const string APP_KEY_CRONEX_XML = "cronex.XML";
-        public const string APP_KEY_CRONEX_DOC = "cronex.DOC";
+        public const string APP_KEY_JOB_NAMES = "job.names";
+        public const string APP_KEY_JOB_CRONEX = "job.{0}.cronex";
+        public const string APP_KEY_JOB_CLASSNAME = "job.{0}.classname";
+        public const string APP_KEY_JOB_DATA = "job.{0}.data";
 
         public const string APP_KEY_DBMSSQL_CONSTR = "database.mssql.connection";
         

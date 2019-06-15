@@ -32,11 +32,16 @@ namespace AMWUtil.Common
                 return null;
             }
         }
+
         public static IJobDetail Start<TJobRun>(string cronExp, params KeyValuePair<string, object>[] jobDataMaps)
             where TJobRun : IJob
         {
+            return Start(typeof(TJobRun), cronExp, jobDataMaps);
+        }
+        public static IJobDetail Start(Type tJob, string cronExp, params KeyValuePair<string, object>[] jobDataMaps)
+        {
             var scheduler = StdSchedulerFactory.GetDefaultScheduler().Result;
-            var job = JobBuilder.Create<TJobRun>().Build();
+            var job = JobBuilder.Create(tJob).Build();
             if (jobDataMaps != null)
                 foreach (var data in jobDataMaps)
                 {

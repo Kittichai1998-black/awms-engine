@@ -46,8 +46,8 @@ namespace ProjectAAI
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
 
-            string cronExXML = appProperty[PropertyConst.APP_KEY_CRONEX_XML];
-            string cronExDOC = appProperty[PropertyConst.APP_KEY_CRONEX_DOC];
+            //string cronExXML = appProperty[PropertyConst.APP_KEY_CRONEX_XML];
+            //string cronExDOC = appProperty[PropertyConst.APP_KEY_CRONEX_DOC];
 
 
             if (env.IsDevelopment())

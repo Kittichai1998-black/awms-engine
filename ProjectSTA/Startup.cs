@@ -47,10 +47,6 @@ namespace ProjectSTA
             AMWUtil.Logger.AMWLoggerManager.InitInstant(rootName, fileName);
             AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
 
- 
-            string cronExDOC = appProperty[PropertyConst.APP_KEY_CRONEX_DOC];
-            AMWUtil.Common.SchedulerUtil.Start<CloseGRDocJobServicecs>(cronExDOC);
-
 
             if (env.IsDevelopment())
             {

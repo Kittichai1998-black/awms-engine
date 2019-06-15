@@ -84,7 +84,7 @@ namespace AWMSModel.Criteria
                 var res = this.Get<dynamic>(key);
                 return res;
             }
-            catch(Exception ex)
+            catch
             {
                 return null;
             }
