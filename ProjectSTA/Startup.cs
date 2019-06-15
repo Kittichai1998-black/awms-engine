@@ -49,7 +49,7 @@ namespace ProjectSTA
 
  
             string cronExDOC = appProperty[PropertyConst.APP_KEY_CRONEX_DOC];
-            //AMWUtil.Common.SchedulerUtil.Start<CloseGRDocJobServicecs>(cronExDOC);
+            AMWUtil.Common.SchedulerUtil.Start<CloseGRDocJobServicecs>(cronExDOC);
 
 
             if (env.IsDevelopment())

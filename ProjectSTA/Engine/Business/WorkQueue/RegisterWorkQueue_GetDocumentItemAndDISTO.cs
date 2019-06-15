@@ -59,7 +59,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
             foreach (var packH in packs)
             {
-                MovementType FG_Movement = MovementType.FG_TRANSFER;
+                MovementType FG_Movement = MovementType.FG_TRANSFER_WM;
                 ams_SKUMaster skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)packH.skuID, buVO);
                 if (skuMaster == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)packH.skuID + "' NotFound");
@@ -75,15 +75,15 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     {
                         var mvt = ObjectUtil.QryStrGetValue(packH.options, "MVT");
                         if(mvt != null && mvt.Length > 0)
-                            if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURNCUSTOMER)
+                            if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURN_CUS)
                             {
-                                FG_Movement = MovementType.FG_RETURNCUSTOMER;
+                                FG_Movement = MovementType.FG_RETURN_CUS;
                             }
                     }
                 }
                 else
                 {
-                    FG_Movement = MovementType.EMP_TRANSFER;
+                    FG_Movement = MovementType.EPL_TRANSFER_WM;
                 }
                 amt_DocumentItem docItem = new amt_DocumentItem();
                 if (reqVO.ioType == IOType.INPUT)
@@ -122,7 +122,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                            .ListStoInDocs(docItem.Document_ID, buVO)
                            .FirstOrDefault(x => x.Status == EntityStatus.INACTIVE && x.Sou_StorageObject_ID == packH.id);
                         if (docItemsSto != null)
-                            if(FG_Movement != MovementType.EMP_TRANSFER)
+                            if(FG_Movement != MovementType.EPL_TRANSFER_WM)
                             {
                                 throw new AMWException(logger, AMWExceptionCode.V1001, "Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
                             }
@@ -139,7 +139,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     {
 
                         amt_Document doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, FG_Movement, buVO)
-                                    //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, MovementType.RECEIVE_PRODUCTION, this.BuVO)
+                                    //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, FG_Movement, this.BuVO)
                                     .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
                                                                                                                                                     //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
                         if (doc == null)
@@ -171,7 +171,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                                             unitType = packH.unitCode,
                                                             batch = null,
                                                             lot = null,
-                                                            orderNo = FG_Movement == MovementType.EMP_TRANSFER ? null : packH.orderNo, 
+                                                            orderNo = FG_Movement == MovementType.EPL_TRANSFER_WM ? null : packH.orderNo, 
                                                             ref2 = null,
                                                             eventStatus = DocumentEventStatus.NEW,
                                                             docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null)}
@@ -196,7 +196,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                     BaseUnitType_ID = packH.baseUnitID,
                                     Batch = null,
                                     Lot = null,
-                                    OrderNo = FG_Movement == MovementType.EMP_TRANSFER ? null : packH.orderNo,
+                                    OrderNo = FG_Movement == MovementType.EPL_TRANSFER_WM ? null : packH.orderNo,
                                     ProductionDate = packH.productDate,
                                     SKUMaster_ID = packConvert.skuMaster_ID,
                                     EventStatus = DocumentEventStatus.NEW,
@@ -211,7 +211,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 else
                 {
                     //สร้างเอกสาร GI เบิกพาเลทเปล่า
-                    if (FG_Movement == MovementType.EMP_TRANSFER)
+                    if (FG_Movement == MovementType.EPL_TRANSFER_WM)
                     {
 
                         var souBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID.Value;
@@ -324,7 +324,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             StorageObjectCriteria pack, decimal? baseQty, long? unitID, long? docItemID, MovementType mvt)
         {
 
-            if (mvt == MovementType.EMP_TRANSFER)
+            if (mvt == MovementType.EPL_TRANSFER_WM)
             {
                 List<StorageObjectCriteria> packs = new StorageObjectCriteria[] { pack }.ToList();
                 if (packs.Any(x => x.type != StorageObjectType.PACK))

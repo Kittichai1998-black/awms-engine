@@ -1,4 +1,4 @@
-﻿using AWMSEngine.Engine.Business.WorkQueue;
+﻿using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
@@ -31,43 +31,43 @@ namespace AWMSEngine.APIService.ASRS
             DoneQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<DoneQueue.TReq>(this.RequestVO);
             WorkQueueCriteria res = new DoneQueue().Execute(this.Logger, this.BuVO, req);
 
-            new Engine.General.MoveStoInGateToNextArea().Execute(this.Logger, this.BuVO, new Engine.General.MoveStoInGateToNextArea.TReq()
-            {
-                baseStoID = res.baseInfo.id
-            });
-            var getQueue = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(req.queueID.Value, this.BuVO);
-            var bsto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(getQueue.StorageObject_ID, this.BuVO);
-            //this.CommitTransaction();
+            //new Engine.General.MoveStoInGateToNextArea().Execute(this.Logger, this.BuVO, new Engine.General.MoveStoInGateToNextArea.TReq()
+            //{
+            //    baseStoID = res.baseInfo.id
+            //});
+            //var getQueue = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(req.queueID.Value, this.BuVO);
+            //var bsto = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(getQueue.StorageObject_ID, this.BuVO);
+            ////this.CommitTransaction();
 
-            if (getQueue.IOType == IOType.OUTPUT && bsto.EventStatus == StorageObjectEventStatus.PICKING)
-            {
-                //this.BeginTransaction();
-                var resPick = new PickBaseSto_WorkedDoc()
-                    .Execute(this.Logger, this.BuVO, new PickBaseSto_WorkedDoc.TReq()
-                    {
-                        baseStoID = getQueue.StorageObject_ID
-                    });
-                this.CommitTransaction();
+            //if (getQueue.IOType == IOType.OUTPUT && bsto.EventStatus == StorageObjectEventStatus.PICKING)
+            //{
+            //    //this.BeginTransaction();
+            //    var resPick = new PickBaseSto_WorkedDoc()
+            //        .Execute(this.Logger, this.BuVO, new PickBaseSto_WorkedDoc.TReq()
+            //        {
+            //            baseStoID = getQueue.StorageObject_ID
+            //        });
+            //    this.CommitTransaction();
 
-                if (resPick.docs.Any(x => x.EventStatus == DocumentEventStatus.WORKED))
-                {
-                    this.BeginTransaction();
-                    var resLocal = new ClosingGIDocument().Execute(this.Logger, this.BuVO, new ClosingGIDocument.TDocReq()
-                    {
-                        auto = 0,
-                        docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
-                    });
-                    this.CommitTransaction();
+            //    if (resPick.docs.Any(x => x.EventStatus == DocumentEventStatus.WORKED))
+            //    {
+            //        this.BeginTransaction();
+            //        var resLocal = new ClosingGIDocument().Execute(this.Logger, this.BuVO, new ClosingGIDocument.TDocReq()
+            //        {
+            //            auto = 0,
+            //            docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
+            //        });
+            //        this.CommitTransaction();
 
-                    this.BeginTransaction();
-                    var resSAP = new ClosedGIDocument().Execute(this.Logger, this.BuVO, new ClosedGIDocument.TDocReq()
-                    {
-                        docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
-                    });
-                    this.CommitTransaction();
-                }
+            //        this.BeginTransaction();
+            //        var resSAP = new ClosedGIDocument().Execute(this.Logger, this.BuVO, new ClosedGIDocument.TDocReq()
+            //        {
+            //            docIDs = resPick.docs.Where(x => x.EventStatus == DocumentEventStatus.WORKED).Select(x => x.ID.Value).ToArray()
+            //        });
+            //        this.CommitTransaction();
+            //    }
 
-            }
+            //}
             return res;
         }
     }

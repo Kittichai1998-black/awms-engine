@@ -85,8 +85,9 @@ namespace AWMSModel.Criteria.SP.Response
         public string warehouseCode;
         public int branchID;
         public string branchCode;
+        public string options;
 
-        
+
 
         //public DateTime createTime;
     }

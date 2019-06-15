@@ -1,0 +1,4 @@
+﻿logger.rootpath = D:/logs/{MachineName}/{Date}/
+logger.filename = {RefID}.{Date}.log
+
+database.mssql.connection = Server=192.168.0.154;Uid=sa;PASSWORD=@mwte@mp@55;database=AWMS_THIP;Max Pool Size=400;Connect Timeout=600;

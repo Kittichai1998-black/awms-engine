@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -53,6 +54,19 @@ namespace AMWUtil.Common
             if (typeof(T) == typeof(double)) return (T)(object)double.Parse(s);
             if (typeof(T) == typeof(float)) return (T)(object)float.Parse(s);
             if (typeof(T) == typeof(long)) return (T)(object)long.Parse(s);
+            if (typeof(T) == typeof(DateTime))
+            {
+                if(s.Contains("\\") || s.Contains("-"))
+                {
+                    return (T)(object)s.JsonCast<DateTime>();
+                }
+                else
+                {
+                    var strDatetime = DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
+                    return (T)(object)DateTime.Parse(strDatetime);
+                }
+            }
+
             throw new System.Exception("Type " + typeof(T) + " Not Support.");
         }
         public static T? GetTry<T>(this string s)
