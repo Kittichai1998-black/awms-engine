@@ -74,10 +74,15 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     if (packH.options != null && packH.options.Length > 0)
                     {
                         var mvt = ObjectUtil.QryStrGetValue(packH.options, "MVT");
+                        
                         if(mvt != null && mvt.Length > 0)
                             if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURN_CUS)
                             {
                                 FG_Movement = MovementType.FG_RETURN_CUS;
+                            }
+                            else if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURN_WM)
+                            {
+                                FG_Movement = MovementType.FG_RETURN_WM;
                             }
                     }
                 }
@@ -89,124 +94,151 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 if (reqVO.ioType == IOType.INPUT)
                 {
                     //หา  List<amt_DocumentItem> ที่มีสินค้าตรงกัน และเช็ค Options(CartonNo) ถ้าไม่ตรงให้เพิ่ม DocItem ใหม่
-                    
-
-                    var docItemAll = AWMSEngine.ADO.DocumentADO.GetInstant()
-                            .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, null, null, null, null,
-                            packH.unitID, packH.baseUnitID, packH.orderNo, null, null, null, buVO)
-                            .FindAll(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
-                    if (docItemAll != null && docItemAll.Count() > 0)
+                    if(FG_Movement == MovementType.FG_RETURN_WM)
                     {
-                        docItemAll.ForEach(x =>
-                        {
-                            var doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x.Document_ID, buVO);
-                            if (doc.MovementType_ID == FG_Movement)
-                            {
-                                docItem = x;
-                            }
-                            else
-                            {
-                                docItem = null;
-                            }
-                        });
-                    }
-                    else
-                    {
-                        docItem = null;
-                    }
-                    //pack Info พบ Docitem ที่สามารถ Mapping ได้
-                    if (docItem != null)
-                    {
-                        //check ว่ามีสินค้านี้มีการผูกกับ DiSTO เเล้วหรือยัง ถ้ามีคือการส่งค่ามาซ้ำ จะเเสดง Exception
-                        var docItemsSto = AWMSEngine.ADO.DocumentADO.GetInstant()
-                           .ListStoInDocs(docItem.Document_ID, buVO)
-                           .FirstOrDefault(x => x.Status == EntityStatus.INACTIVE && x.Sou_StorageObject_ID == packH.id);
-                        if (docItemsSto != null)
-                            if(FG_Movement != MovementType.EPL_TRANSFER_WM)
-                            {
-                                throw new AMWException(logger, AMWExceptionCode.V1001, "Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
-                            }
-                            else
-                            {
-                                throw new AMWException(logger, AMWExceptionCode.V1001, "This Pallet had matched with GR document, already");
-                            }
-
-                        var docItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), buVO);
-                        docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { docItemStos };
-                        docItems.Add(docItem);
+                        var _DocumentItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { packH.id.Value }, DocumentTypeID.GOODS_RECEIVED, buVO);
+                        if (_DocumentItems == null && _DocumentItems.Count() == 0)
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '" + reqVO.baseCode + "' Not Found");
+                        docItems.AddRange(_DocumentItems);
                     }
                     else
                     {
 
-                        amt_Document doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, FG_Movement, buVO)
-                                    //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, FG_Movement, this.BuVO)
-                                    .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
-                                                                                                                                                    //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
-                        if (doc == null)
+                        var docItemAll = AWMSEngine.ADO.DocumentADO.GetInstant()
+                                .ListItemCanMapV2(DocumentTypeID.GOODS_RECEIVED, packH.mstID, packH.baseQty, null, null, null, null,
+                                packH.unitID, packH.baseUnitID, packH.orderNo, null, null, null, buVO)
+                                .FindAll(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
+                        if (docItemAll != null && docItemAll.Count() > 0)
                         {
-                                //สร้างเอกสารรับเข้า ปกติ FG_Transfer, FG_RETURNCUSTOMER
-                                doc = new CreateGRDocument().Execute(logger, buVO,
-                                           new CreateGRDocument.TReq()
-                                           {
-                                               refID = null,
-                                               ref1 = null,
-                                               ref2 = null,
-                                               souBranchID = null,
-                                               souWarehouseID = null,
-                                               souAreaMasterID = null, 
-                                               desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
-                                               desWarehouseID = mapsto.warehouseID,
-                                               desAreaMasterID = null,
-                                               movementTypeID = FG_Movement,
-                                               lot = null,
-                                               batch = null,
-                                               documentDate = DateTime.Now,
-                                               actionTime = DateTime.Now,
-                                               eventStatus = DocumentEventStatus.NEW,
-                                               receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
-                                                        new CreateGRDocument.TReq.ReceiveItem
-                                                        {
-                                                            packCode = packH.code,
-                                                            quantity = null,
-                                                            unitType = packH.unitCode,
-                                                            batch = null,
-                                                            lot = null,
-                                                            orderNo = FG_Movement == MovementType.EPL_TRANSFER_WM ? null : packH.orderNo, 
-                                                            ref2 = null,
-                                                            eventStatus = DocumentEventStatus.NEW,
-                                                            docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null)}
-
-                                                        }}
-                                           });
-
-                                docItems.AddRange(doc.DocumentItems);
-                        }
-                        //Pack Info พบ Document แต่ไม่พบ DocumentItem
-                        else
+                            foreach (var x in docItemAll)
                             {
-                                var packConvert = StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
-                                docItem = new amt_DocumentItem()
+                                var doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x.Document_ID, buVO);
+                                if (doc.MovementType_ID == FG_Movement)
                                 {
-                                    Document_ID = doc.ID.Value,
-                                    Code = packH.code,
-                                    PackMaster_ID = packH.mstID,
-                                    Quantity = null,
-                                    UnitType_ID = packH.unitID,
-                                    BaseQuantity = null,
-                                    BaseUnitType_ID = packH.baseUnitID,
-                                    Batch = null,
-                                    Lot = null,
-                                    OrderNo = FG_Movement == MovementType.EPL_TRANSFER_WM ? null : packH.orderNo,
-                                    ProductionDate = packH.productDate,
-                                    SKUMaster_ID = packConvert.skuMaster_ID,
-                                    EventStatus = DocumentEventStatus.NEW,
-                                    Ref2 = null,
-                                    DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null) }
-                                };
-                                var newdocItem = AWMSEngine.ADO.DocumentADO.GetInstant().CreateItem(docItem, buVO);
-                                docItems.Add(newdocItem);
+                                    docItem = x;
+                                    break;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
                             }
+                           /* docItemAll.ForEach(x =>
+                            {
+                                var doc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x.Document_ID, buVO);
+                                if (doc.MovementType_ID == FG_Movement)
+                                {
+                                    docItem = x;
+                                }
+                                else
+                                {
+                                    docItem = null;
+                                }
+                            });*/
+                        }
+                        else
+                        {
+                            docItem = null;
+                        }
+                        //pack Info พบ Docitem ที่สามารถ Mapping ได้
+                        if (docItem != null)
+                        {
+                            // check MVT=FG_Return_WM = 1091
+
+
+                            //check ว่ามีสินค้านี้มีการผูกกับ DiSTO เเล้วหรือยัง ถ้ามีคือการส่งค่ามาซ้ำ จะเเสดง Exception
+                            var docItemsSto = AWMSEngine.ADO.DocumentADO.GetInstant()
+                               .ListStoInDocs(docItem.Document_ID, buVO)
+                               .FirstOrDefault(x => x.Status == EntityStatus.INACTIVE && x.Sou_StorageObject_ID == packH.id);
+                            if (docItemsSto != null)
+                                if(FG_Movement != MovementType.EPL_TRANSFER_WM)
+                                {
+                                    throw new AMWException(logger, AMWExceptionCode.V1001, "Document Item StorageObject had SKU Code '" + packH.code + "', Order No.'" + packH.orderNo + "' on Pallet Code '" + reqVO.baseCode + "' already");
+                                }
+                                else
+                                {
+                                    throw new AMWException(logger, AMWExceptionCode.V1001, "This Pallet had matched with GR document, already");
+                                }
+
+                            var docItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packH, null, null, docItem.ID), buVO);
+                            docItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { docItemStos };
+                            docItems.Add(docItem);
+                        }
+                        else
+                        {
+
+                            amt_Document doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, null, null, null, FG_Movement, buVO)
+                                        //var doc = AWMSEngine.ADO.DocumentADO.GetInstant().ListDocs(DocumentTypeID.GOODS_RECEIVED, souBranchID, _warehouseASRS.ID, null, FG_Movement, this.BuVO)
+                                        .FirstOrDefault(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW); //_areaASRS.ID
+                                                                                                                                                        //Pack Info ไม่พบ Document Item ใดๆที่ตรงกับในระบบ
+                            if (doc == null)
+                            {
+                                    //สร้างเอกสารรับเข้า ปกติ FG_Transfer, FG_RETURNCUSTOMER
+                                    doc = new CreateGRDocument().Execute(logger, buVO,
+                                               new CreateGRDocument.TReq()
+                                               {
+                                                   refID = null,
+                                                   ref1 = null,
+                                                   ref2 = null,
+                                                   souBranchID = null,
+                                                   souWarehouseID = null,
+                                                   souAreaMasterID = null, 
+                                                   desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
+                                                   desWarehouseID = mapsto.warehouseID,
+                                                   desAreaMasterID = null,
+                                                   movementTypeID = FG_Movement,
+                                                   lot = null,
+                                                   batch = null,
+                                                   documentDate = DateTime.Now,
+                                                   actionTime = DateTime.Now,
+                                                   eventStatus = DocumentEventStatus.NEW,
+                                                   receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
+                                                            new CreateGRDocument.TReq.ReceiveItem
+                                                            {
+                                                                packCode = packH.code,
+                                                                quantity = null,
+                                                                unitType = packH.unitCode,
+                                                                batch = null,
+                                                                lot = null,
+                                                                orderNo = FG_Movement == MovementType.EPL_TRANSFER_WM ? null : packH.orderNo, 
+                                                                ref2 = null,
+                                                                eventStatus = DocumentEventStatus.NEW,
+                                                                docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null)}
+
+                                                            }}
+                                               });
+
+                                    docItems.AddRange(doc.DocumentItems);
+                            }
+                            //Pack Info พบ Document แต่ไม่พบ DocumentItem
+                            else
+                                {
+                                    var packConvert = StaticValue.ConvertToBaseUnitByPack(packH.mstID.Value, 1, packH.unitID);
+                                    docItem = new amt_DocumentItem()
+                                    {
+                                        Document_ID = doc.ID.Value,
+                                        Code = packH.code,
+                                        PackMaster_ID = packH.mstID,
+                                        Quantity = null,
+                                        UnitType_ID = packH.unitID,
+                                        BaseQuantity = null,
+                                        BaseUnitType_ID = packH.baseUnitID,
+                                        Batch = null,
+                                        Lot = null,
+                                        OrderNo = FG_Movement == MovementType.EPL_TRANSFER_WM ? null : packH.orderNo,
+                                        ProductionDate = packH.productDate,
+                                        SKUMaster_ID = packConvert.skuMaster_ID,
+                                        EventStatus = DocumentEventStatus.NEW,
+                                        Ref2 = null,
+                                        DocItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null) }
+                                    };
+                                    var newdocItem = AWMSEngine.ADO.DocumentADO.GetInstant().CreateItem(docItem, buVO);
+                                    docItems.Add(newdocItem);
+                                }
+                        }
+
                     }
+
                 }
                 else
                 {
