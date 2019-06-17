@@ -40,14 +40,14 @@ namespace AWMSEngine.Engine.V2.Business
 
             mapsto = this.ExecScan(reqVO);
 
-            this.SetQty(mapsto);
+            if(mapsto != null)
+                this.SetQty(mapsto);
 
             return mapsto;
         }
 
         private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parentMapsto, TReq reqVO)
         {
-
             var objSize = this.StaticValue.ObjectSizes.Find(x => x.ID == ObjectSize_ID);
             var objType = obj is ams_BaseMaster ? StorageObjectType.BASE : obj is ams_AreaLocationMaster ? StorageObjectType.LOCATION : StorageObjectType.PACK;
 
@@ -184,7 +184,8 @@ namespace AWMSEngine.Engine.V2.Business
             else
             {
                 mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
-
+                if (mapsto == null)
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
                 if (mapsto.warehouseID != reqVO.warehouseID)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
 
@@ -210,6 +211,7 @@ namespace AWMSEngine.Engine.V2.Business
                         throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Can't remove product from base that it has status is " + mapsto.eventStatus);
 
                     this.ActionRemove(reqVO, mapsto);
+                    mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
                 }
             }
             return mapsto;
@@ -248,7 +250,7 @@ namespace AWMSEngine.Engine.V2.Business
             if (alm != null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " can't add location on " + firstMapSto.type);
             if (pm == null && bm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " Not Found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
 
             if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
             {
@@ -318,25 +320,39 @@ namespace AWMSEngine.Engine.V2.Business
                 }
             }
         }
-        private void ActionRemove(
-            TReq reqVo,
-            StorageObjectCriteria mapsto)
+        private void ActionRemove(TReq reqVo, StorageObjectCriteria mapsto)
         {
             var msf = GetMapStoLastFocus(mapsto);
-            if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.mapstos.Count(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW) < reqVo.amount)
+            if (reqVo.mode == VirtualMapSTOModeType.REGISTER && msf.eventStatus != StorageObjectEventStatus.NEW)
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
-            else if (msf.mapstos.Count(x => x.code == reqVo.scanCode) < reqVo.amount)
-                throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, reqVo.scanCode + " Not Found");
-
-            var mapstos = msf.mapstos.OrderBy(x => x.eventStatus).ThenByDescending(x => x.id);
-            for (int i = 0; i < reqVo.amount; i++)
+            if (reqVo.scanCode == mapsto.code)
             {
+                ADOSto.Update(msf, msf.areaID.Value, this.BuVO);
+            }
+            else
+            {
+                var msfPack = msf.mapstos.FirstOrDefault(x => x.code == reqVo.scanCode && x.eventStatus == StorageObjectEventStatus.NEW);
+                if (msfPack == null)
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
+                else if (msfPack.qty < reqVo.amount)
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "Amount not enough");
+
+                var mapstos = msf.mapstos.OrderBy(x => x.eventStatus).ThenByDescending(x => x.id);
                 var rmItem = mapstos.FirstOrDefault(x => x.code == reqVo.scanCode);
-                rmItem.parentID = null;
-                rmItem.parentType = null;
-                ADOSto.Update(rmItem, msf.areaID.Value, this.BuVO);
-                //ADOSto.Put(rmItem, null, null, this.BuVO);
-                msf.mapstos.Remove(rmItem);
+                var qty = rmItem.qty -= reqVo.amount;
+                if (qty > 0)
+                {
+                    var baseUnit = this.StaticValue.ConvertToBaseUnitByPack(reqVo.scanCode, qty, rmItem.unitID);
+                    rmItem.qty = baseUnit.qty;
+                    rmItem.baseQty = baseUnit.baseQty;
+                    rmItem.options = reqVo.options;
+                    ADOSto.PutV2(rmItem, this.BuVO);
+                }
+                else
+                {
+                    ADOSto.Update(rmItem, msf.areaID.Value, this.BuVO);
+                    msf.mapstos.Remove(rmItem);
+                }
             }
         }
 
