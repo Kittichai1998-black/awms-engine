@@ -21,13 +21,8 @@ namespace SAPNCO.ADO
                 var Metadata_IN = SapRfcRepository.GetStructureMetadata(req.inStructureName);
                 var IN_SU = Metadata_IN.CreateStructure();
                 var T_IN_SU = SapFunction.GetTable(req.inTableName);
-
-                foreach (var data in req.datas)
-                {
-                    IN_SU.SetValue(data.Key, data.Value); //"COMPANYCODEID", "TEST");
-                }
-
-                T_IN_SU.Append(IN_SU);
+                
+                T_IN_SU.Append(SetValue(req, IN_SU));
                 SapFunction.Invoke(SapRfcDestination);
                 var SAPdt = SapFunction.GetTable(req.outTableName);
                 //var res = SapFunction.GetStructure(0);
@@ -51,6 +46,34 @@ namespace SAPNCO.ADO
                     stacktrace = ex.StackTrace
                 };
             }
+        }
+
+        private IRfcStructure SetValue(RequestCriteria req, IRfcStructure IN_SU)
+        {
+
+            foreach (var data in req.datas)
+            {
+                var dataType = IN_SU.Metadata[data.Key];
+                if(dataType.DataType == RfcDataType.CHAR)
+                {
+                    if(data.Value.GetType() == typeof(string))
+                    {
+                        string value = data.Value.ToString();
+                        if(value.Length < dataType.NucLength)
+                        {
+                            IN_SU.SetValue(data.Key, value.PadLeft(20,'0'));
+                        }
+                        else
+                            IN_SU.SetValue(data.Key, data.Value);
+                    }
+                    else
+                        IN_SU.SetValue(data.Key, data.Value);
+                }
+                else
+                    IN_SU.SetValue(data.Key, data.Value);
+            }
+
+            return IN_SU;
         }
 
         private List<dynamic> CreateResponse(IRfcTable sapTable)
@@ -98,6 +121,11 @@ namespace SAPNCO.ADO
                         case RfcDataType.FLOAT:
                             {
                                 resObj.Add(metadata.Name, row.GetDouble(metadata.Name));
+                                break;
+                            }
+                        case RfcDataType.NUM:
+                            {
+                                resObj.Add(metadata.Name, row.GetLong(metadata.Name));
                                 break;
                             }
                         default:

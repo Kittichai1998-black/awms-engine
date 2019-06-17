@@ -67,12 +67,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var queue = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
                     var distos = ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, this.BuVO);
 
-                    if (queue.IOType == IOType.INPUT)
+                    if (x.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                     {
                         ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, 
                             StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                     }
-                    else
+                    else if(x.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
                     {
                         distos.Where(disto => disto.Sou_StorageObject_ID == queue.StorageObject_ID.Value).ToList().ForEach(disto =>
                         {
