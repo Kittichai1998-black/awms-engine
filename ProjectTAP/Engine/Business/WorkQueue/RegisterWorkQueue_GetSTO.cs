@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectTAP.Engine.Business.Received
+namespace ProjectTAP.Engine.Business.WorkQueue
 {
     public class RegisterWorkQueue_GetSTO : IProjectEngine<
         RegisterWorkQueue.TReq,
@@ -42,15 +42,9 @@ namespace ProjectTAP.Engine.Business.Received
             if (baseMasterData.Count <= 0)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Base Code '" + reqVO.baseCode + "'");
 
-            List<amt_DocumentItem> diList = new List<amt_DocumentItem>();
-            foreach (var row in reqVO.mappingPallets)
-            {
-                var date = Convert.ToDateTime(row.prodDate);
-                diList = ADO.DocumentADO.GetInstant().ListDocsItemCheckRegister(row.code, date, int.Parse(row.qty), row.itemNo, buVO);
 
-            }
             var mapsto = new StorageObjectCriteria();
-            if (diList.Count > 0)
+            
             {   // Map data to Table StorageObject
                 var Warehouses = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
                 if (Warehouses == null)
@@ -130,10 +124,7 @@ namespace ProjectTAP.Engine.Business.Received
                 mapsto.parentType = StorageObjectType.LOCATION;
 
             }
-            else
-            {
-                throw new AMWException(logger, AMWExceptionCode.V1001, "No SKU waiting to be received");
-            }
+           
 
             return mapsto;
         }

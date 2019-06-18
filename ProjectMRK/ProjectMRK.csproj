@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Engine\JobService\XMLReader.cs~RFac0f0af.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="APIService\WM\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

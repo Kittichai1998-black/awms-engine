@@ -64,7 +64,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 Des_AreaMaster_ID = desArea.ID.Value,
                 DocumentDate = DateTime.Now,
                 ActionTime = null,
-                MovementType_ID = MovementType.FG_TRANSFER,
+                MovementType_ID = MovementType.FG_TRANSFER_WM,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
