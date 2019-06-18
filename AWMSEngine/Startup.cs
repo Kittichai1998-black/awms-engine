@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AMWUtil.PropertyFile;
+using AWMSEngine.HubService;
 using AWMSEngine.JobService;
+using AWMSEngine.WorkerService;
 using AWMSModel.Constant.StringConst;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +34,9 @@ namespace AWMSEngine
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, PropertyConst.APP_FILENAME);
+            var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY);
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowCors", builder =>
@@ -44,13 +51,28 @@ namespace AWMSEngine
                 });
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSignalR();
+
+            string workerNames = appProperty.ContainsKey(PropertyConst.APP_KEY_WORKER_NAMES) ? appProperty[PropertyConst.APP_KEY_WORKER_NAMES] : string.Empty;
+            if (!string.IsNullOrWhiteSpace(workerNames))
+            {
+                foreach (string n in workerNames.Split(','))
+                { 
+                    string workerClassname = appProperty[string.Format(PropertyConst.APP_KEY_WORKER_CLASSNAME, n)];
+                    var t = AMWUtil.Common.ClassType.GetClassType(workerClassname);
+                    var m1 = typeof(ServiceCollectionHostedServiceExtensions).GetMethod("AddHostedService", 
+                        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    var m2 = m1.MakeGenericMethod(t);
+                    m2.Invoke(null, new object[] { services });
+                    //ServiceCollectionHostedServiceExtensions.AddHostedService<DashboardWorker>(services);
+                }
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
-            PropertyFileManager.GetInstant().AddPropertyFile(PropertyConst.APP_KEY, env.ContentRootPath + PropertyConst.APP_FILENAME);
             var appProperty = PropertyFileManager.GetInstant().GetPropertyDictionary(PropertyConst.APP_KEY);
 
             string rootName = appProperty[PropertyConst.APP_KEY_LOG_ROOTPATH];
@@ -59,12 +81,12 @@ namespace AWMSEngine
             ADO.StaticValue.StaticValueManager.GetInstant();
 
 
-            string jobNames = appProperty[PropertyConst.APP_KEY_JOB_NAMES];
-            foreach (string jobName in jobNames.Split(','))
+            string jobNames = appProperty.ContainsKey(PropertyConst.APP_KEY_JOB_NAMES) ? appProperty[PropertyConst.APP_KEY_JOB_NAMES] : string.Empty;
+            foreach (string n in jobNames.Split(','))
             {
-                string jobCronex = string.Format(appProperty[PropertyConst.APP_KEY_JOB_CRONEX], jobName);
-                string jobClassname = string.Format(appProperty[PropertyConst.APP_KEY_JOB_CLASSNAME], jobName);
-                string jobData = string.Format(appProperty[PropertyConst.APP_KEY_JOB_DATA], jobName);
+                string jobCronex = appProperty[string.Format(PropertyConst.APP_KEY_JOB_CRONEX, n)];
+                string jobClassname = appProperty[string.Format(PropertyConst.APP_KEY_JOB_CLASSNAME, n)];
+                string jobData = appProperty[string.Format(PropertyConst.APP_KEY_JOB_DATA, n)];
                 var tJob = AMWUtil.Common.ClassType.GetClassType(jobClassname);
                 var v = jobData.Json<Dictionary<string, object>>();
                 
@@ -82,8 +104,29 @@ namespace AWMSEngine
 
             app.UseCors("AllowCors");
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            string hubNames = appProperty.ContainsKey(PropertyConst.APP_KEY_HUB_NAMES) ? appProperty[PropertyConst.APP_KEY_HUB_NAMES] : string.Empty;
+            if (!string.IsNullOrWhiteSpace(hubNames))
+            {
+                app.UseSignalR(routes =>
+                {
+                    foreach (string n in hubNames.Split(','))
+                    {
+                        string hubURL = appProperty[string.Format(PropertyConst.APP_KEY_HUB_URL, n)];
+                        string hubClassname = appProperty[string.Format(PropertyConst.APP_KEY_HUB_CLASSNAME, n)];
+                        var t = AMWUtil.Common.ClassType.GetClassType(hubClassname);
+                        var t2 = routes.GetType();
+                        var m1 = t2.GetMethod("MapHub", new Type[] { typeof(PathString) });
+                        var m2 = m1.MakeGenericMethod(t);
+                        m2.Invoke(routes, new object[] { new PathString(hubURL) });
+                        //routes.MapHub<CommonMessageHub>("/clockhub");
+                    }
+                });
+            }
             app.UseMvc();
-            
+
+
         }
     }
 }

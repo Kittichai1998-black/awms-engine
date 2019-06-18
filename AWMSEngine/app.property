@@ -1,11 +1,19 @@
-﻿logger.rootpath = D:/logs/{MachineName}/{Date}/
+﻿database.mssql.connection = Server=191.20.80.120\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_ENGINE;Max Pool Size=400;Connect Timeout=600;
+
+logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {RefID}.{Date}.log
 
+#------------------------------------
 job.names = dashboard_01
-
 job.dashboard_01.classname = AWMSEngine.JobService.DashboardSignalRJob
 job.dashboard_01.cronex = 0/5 * * * * ?
 job.dashboard_01.data = {spname:"RP_DASHBOARD_RETURN_STO_ON_FLOOR",areaIDs:"5,6,7,8"}
 
+#------------------------------------
+worker.names = dashboard_01
+worker.dashboard_01.classname  = AWMSEngine.WorkerService.DashboardWorker
 
-database.mssql.connection = Server=191.20.80.120\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_ENGINE;Max Pool Size=400;Connect Timeout=600;
+#------------------------------------
+hub.names = dashboard
+hub.dashboard.classname  = AWMSEngine.HubService.CommonMessageHub
+hub.dashboard.url = /dashboard
