@@ -4,14 +4,14 @@ logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {RefID}.{Date}.log
 
 #------------------------------------
-job.names = dashboard_01
-job.dashboard_01.classname = AWMSEngine.JobService.DashboardSignalRJob
-job.dashboard_01.cronex = 0/5 * * * * ?
-job.dashboard_01.data = {spname:"RP_DASHBOARD_RETURN_STO_ON_FLOOR",areaIDs:"5,6,7,8"}
+#job.names = dashboard
+#job.dashboard.classname = AWMSEngine.JobService.DashboardSignalRJob
+#job.dashboard.cronex = 0/5 * * * * ?
+#job.dashboard.data = {spname:"RP_DASHBOARD_RETURN_STO_ON_FLOOR",areaIDs:"5,6,7,8"}
 
 #------------------------------------
-worker.names = dashboard_01
-worker.dashboard_01.classname  = AWMSEngine.WorkerService.DashboardWorker
+worker.names = dashboard
+worker.dashboard.classname  = AWMSEngine.WorkerService.CommonDashboardWorker
 
 #------------------------------------
 hub.names = dashboard
