@@ -142,9 +142,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         }
                         //pack Info พบ Docitem ที่สามารถ Mapping ได้
                         if (docItem != null)
-                        {
-                            // check MVT=FG_Return_WM = 1091
-
+                        { 
 
                             //check ว่ามีสินค้านี้มีการผูกกับ DiSTO เเล้วหรือยัง ถ้ามีคือการส่งค่ามาซ้ำ จะเเสดง Exception
                             var docItemsSto = AWMSEngine.ADO.DocumentADO.GetInstant()
