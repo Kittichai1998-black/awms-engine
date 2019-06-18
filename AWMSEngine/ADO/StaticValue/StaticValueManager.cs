@@ -302,7 +302,7 @@ namespace AWMSEngine.ADO.StaticValue
 
         public bool IsFeature(FeatureCode code)
         {
-            string c = code.ToString();
+            string c = code.Attribute<EnumValueAttribute>().ValueString;
             return this._Features.ContainsKey(c) ?
                 this._Features[c].DataValue != AWMSModel.Constant.StringConst.YesNoConst.NO : false;
         }
