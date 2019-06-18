@@ -46,7 +46,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
         public class TRes
         {
-            public List<DocumentProcess> DocumentProcessed;
+            public List<ProcessDocument> DocumentProcessed;
         }
 
         public class items
@@ -61,7 +61,7 @@ namespace AWMSEngine.Engine.Business.Issued
             public decimal qty;
         }
 
-        public class DocumentProcess
+        public class ProcessDocument
         {
             public amt_Document document;
             public amv_DocumentItem documentItem;
@@ -95,7 +95,7 @@ namespace AWMSEngine.Engine.Business.Issued
             DocumentEventStatus[] DocEventStatuses = new DocumentEventStatus[] { DocumentEventStatus.NEW, DocumentEventStatus.WORKING };
 
             List<items> listItems = new List<items>();
-            List<DocumentProcess> listDocProcessed = new List<DocumentProcess>();
+            List<ProcessDocument> listDocProcessed = new List<ProcessDocument>();
 
             foreach (var docsProcess in reqVO.documentsProcess)
             {
@@ -213,7 +213,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                         {
                                             if (sto.packQty >= batch.qty)
                                             {
-                                                listDocProcessed.Add(new DocumentProcess
+                                                listDocProcessed.Add(new ProcessDocument
                                                 {
                                                     docID = doc.docID,
                                                     document = document,
@@ -240,7 +240,7 @@ namespace AWMSEngine.Engine.Business.Issued
                                             }
                                             else
                                             {
-                                                listDocProcessed.Add(new DocumentProcess
+                                                listDocProcessed.Add(new ProcessDocument
                                                 {
                                                     docID = doc.docID,
                                                     document = document,
@@ -294,7 +294,7 @@ namespace AWMSEngine.Engine.Business.Issued
                             }
                             else
                             {
-                                listDocProcessed.Add(new DocumentProcess
+                                listDocProcessed.Add(new ProcessDocument
                                 {
                                     docID = doc.docID,
                                     document = document,
@@ -318,7 +318,7 @@ namespace AWMSEngine.Engine.Business.Issued
                         }
                         if (listDocProcessed.Where(x => x.dociID == docItem.docItemID).Count() == 0)
                         {
-                            listDocProcessed.Add(new DocumentProcess
+                            listDocProcessed.Add(new ProcessDocument
                             {
                                 docID = doc.docID,
                                 document = document,
