@@ -145,10 +145,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             //*****SET WEI CODING
 
             sto.weiKG = totalWeiKG;
-            var innerTotalWeiKG = totalWeiKG - (baseMasters.WeightKG);
+            var innerTotalWeiKG = (totalWeiKG - (baseMasters.WeightKG))??1;
 
             List<decimal> precenFromTotalWeis = new List<decimal>();
             decimal totalWeiStd = packMasters.Sum(x =>(x.WeightKG ?? 0) *sto.mapstos.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.ID).Sum(y => y.qty));
+            totalWeiStd = totalWeiStd == 0 ? innerTotalWeiKG : totalWeiStd;
 
             sto.mapstos.FindAll(x => x.type == StorageObjectType.PACK).ForEach(stos =>
             {

@@ -17,9 +17,9 @@ namespace AWMSEngine.ADO
 {
     public class DataADO : BaseMSSQLAccess<DataADO>
     {
-        public List<dynamic> QuerySP(string spname, Dapper.DynamicParameters parameters,VOCriteria buVO)
+        public List<dynamic> QuerySP(string spname, Dapper.DynamicParameters parameters, VOCriteria buVO)
         {
-            var res = this.Query<dynamic>(spname, CommandType.StoredProcedure, parameters, buVO.Logger, buVO.SqlTransaction).ToList();
+            var res = this.Query<dynamic>(spname, CommandType.StoredProcedure, parameters, buVO == null ? null : buVO.Logger, buVO == null ? null : buVO.SqlTransaction).ToList();
             return res;
         }
         public int InsUpd(string table_name, Dictionary<string, dynamic> recv, string con, bool isNextRevision,

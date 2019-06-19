@@ -52,6 +52,8 @@ namespace AWMSEngine.Engine.Business.Received
             public DocumentEventStatus eventStatus = DocumentEventStatus.NEW;
 
             public List<ReceiveItem> receiveItems;
+            public MovementType movementTypeID;
+
             public class ReceiveItem
             {
                 public string skuCode;

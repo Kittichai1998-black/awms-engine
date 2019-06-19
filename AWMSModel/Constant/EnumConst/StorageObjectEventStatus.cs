@@ -34,6 +34,7 @@ namespace AWMSModel.Constant.EnumConst
         SHIPPING = 33,
         SHIPPED = 34,
 
+        QC = 98,
         HOLD = 99
     }
 }
