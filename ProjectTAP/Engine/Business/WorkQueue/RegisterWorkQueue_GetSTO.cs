@@ -83,7 +83,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                         batch = null,
                         lot = null,
                         prodDate = reqVO.mappingPallets[0].prodDate
-
+                        
 
                     });
 
@@ -98,8 +98,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                             orderNo = row.orderNo,
                             batch = row.batch,
                             lot = row.lot,
-                            prodDate = row.prodDate
-
+                            prodDate = row.prodDate,
                             //movingType = row.movingType
                         });
                     }
@@ -125,7 +124,6 @@ namespace ProjectTAP.Engine.Business.WorkQueue
 
             }
            
-
             return mapsto;
         }
     }

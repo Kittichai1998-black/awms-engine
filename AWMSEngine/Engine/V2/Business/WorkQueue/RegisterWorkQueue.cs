@@ -30,6 +30,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string desWarehouseCode; 
             public string desAreaCode;
             public string desLocationCode;
+            public string forCustomerCode;
             public DateTime actualTime;
             public List<PalletDataCriteriaV2> mappingPallets;
         }
@@ -149,13 +150,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             List<decimal> precenFromTotalWeis = new List<decimal>();
             decimal totalWeiStd = packMasters.Sum(x =>(x.WeightKG ?? 0) *sto.mapstos.Where(y => y.type == StorageObjectType.PACK && y.mstID == x.ID).Sum(y => y.qty));
-            totalWeiStd = totalWeiStd == 0 ? innerTotalWeiKG : totalWeiStd;
+            totalWeiStd = totalWeiStd==0?1:totalWeiStd;
 
             sto.mapstos.FindAll(x => x.type == StorageObjectType.PACK).ForEach(stos =>
             {
                 decimal percentWeiStd =
                 (
-                    packMasters.First(x => x.ID == stos.mstID).WeightKG.Value *
+                    packMasters.First(x => x.ID == stos.mstID).WeightKG??1 *
                     sto.qty
                 )  /totalWeiStd;
                 sto.weiKG = percentWeiStd * innerTotalWeiKG;
