@@ -13,7 +13,7 @@ namespace ProjectSTA.Engine.JobService
 {
     public class CloseGRDocJobServicecs : BaseJobService
     {
-        public override void ExecuteJob(IJobExecutionContext context)
+        public override void ExecuteJob(IJobExecutionContext context, JobDataMap data)
         {
             var docs =
                 AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(

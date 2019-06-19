@@ -12,6 +12,7 @@ namespace AWMSModel.Entity
         public int BaseMaster_ID;
         public int PackMaster_ID;
         public string Code;
+        public string Name;
         public StorageObjectType ObjectType;
         public decimal WeigthKG;
         public decimal WidthM;
@@ -28,6 +29,7 @@ namespace AWMSModel.Entity
         public long UnitType_ID;
         public decimal Quantity;
         public decimal BaseQuantity;
+        public DateTime ProductDate;
 
     }
 }
