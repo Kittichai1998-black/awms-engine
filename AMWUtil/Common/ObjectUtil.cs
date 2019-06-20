@@ -248,19 +248,19 @@ namespace AMWUtil.Common
             }
             return res;
         }
-        public static List<string> QryStrToListKeys(string param)
+        public static List<string> QryStrToListKeys(this string param)
         {
             List<string> res = new List<string>();
             QryStrToKeyValues(param).ForEach(x => res.Add(x.Key));
             return res;
         }
-        public static string QryStrGetValue(string param, string key)
+        public static string QryStrGetValue(this string param, string key)
         {
             var match = Regex.Match("?" + param + "&", "[&?]" + key + "=([^&]*)");
             string res = Regex.Replace(match.Value, "^[?&]*" + key + "=|[&]*$", "");
             return res;
         }
-        public static string QryStrSetValue(string param, string key, object value)
+        public static string QryStrSetValue(this string param, string key, object value)
         {
             var kv = QryStrToKeyValues(param);
             kv.RemoveAll(x => x.Key == key);
@@ -269,14 +269,18 @@ namespace AMWUtil.Common
             var res = ListKeyToQryStr(kv);
             return res;
         }
-        public static bool QryStrContainsKey(string param, string key)
+        public static bool QryStrContainsKey(this string param, string key)
         {
             var match = Regex.IsMatch("?" + param + "&", "[&?]" + param + "=([^&]*)");
             //string res = Regex.Replace(match.Value, "^[?&]*|[&]*$", "");
             return match;
         }
+        public static bool QryStrContainsKeyValue(this string param, string param_contains)
+        {
+            return param_contains.Split('&').ToList().TrueForAll(y => param.Contains(y));
+        }
 
-        
+
         public static T KeyValueToObject<T>(List<KeyValuePair<string, object>> values)
             where T : new()
         {
@@ -307,7 +311,7 @@ namespace AMWUtil.Common
 
 
 
-        public static dynamic QueryStringToObject(string querystring)
+        public static dynamic QryStrToDynamic(this string querystring)
         {
             querystring = Regex.Replace(querystring, "^[?]+", "");
             var dict = HttpUtility.ParseQueryString(querystring);
@@ -392,6 +396,25 @@ namespace AMWUtil.Common
         public static bool In(this string vals, string val)
         {
             return vals.Split(',').Any(x => x == val);
+        }
+        public static string JoinString<T>(this IEnumerable<T> d, char separator = ',')
+        {
+            return string.Join(separator, d.ToArray());
+        }
+        public static List<T> RandomList<T>(this IEnumerable<T> d, int percentCount)
+        {
+            Random rand = new Random();
+            List<T> data = d.ToList();
+            List<T> res = new List<T>();
+            percentCount = percentCount > 100 ? 100 : 0;
+            int maxCount = (int)((float)data.Count() * (percentCount / 100.0f));
+            while(res.Count() < maxCount)
+            {
+                var i = rand.Next(data.Count());
+                for (; res.Any(x => x.Equals(data[i])); i = (i + 1 == data.Count() ? 0 : i + 1)) ;
+                res.Add(data[i]);
+            }
+            return res;
         }
     }
 }

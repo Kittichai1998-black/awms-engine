@@ -14,7 +14,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet("location")]
         public dynamic GetLocationInfo()
         {
-            var value = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var value = AMWUtil.Common.ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = new APIService.ASRS.GetLocationInfoAPI(this).Execute(value);
             return res;
         }
@@ -69,7 +69,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet("queue/view")]
         public dynamic View()
         {
-            var value = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var value = AMWUtil.Common.ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = new APIService.ASRS.ViewQueueAPI(this).Execute(value);
             return res;
         }
