@@ -16,7 +16,7 @@ namespace AWMSEngine.Engine.Business
         public class TDocReq
         {
             public long[] bstosID;
-            public string type;
+            public long eventStatus;
         }
         public class TDocRes
         {
@@ -33,23 +33,31 @@ namespace AWMSEngine.Engine.Business
                 var stoData = ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO).EventStatus;
 
 
-                if (reqVO.type == "hold")
+                if (reqVO.eventStatus == 99)
                 {
-                    if (stoData != StorageObjectEventStatus.RECEIVED)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED");
+                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.QC)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED or QC");
 
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.HOLD, this.BuVO);
                 }
-                else
+                else if(reqVO.eventStatus == 12)
                 {
-                    if (stoData != StorageObjectEventStatus.HOLD)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data is not Hold");
+                    if (stoData != StorageObjectEventStatus.HOLD && stoData != StorageObjectEventStatus.QC)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data is not Hold or QC");
 
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                 }
+                else if (reqVO.eventStatus == 98)
+                {
+                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.HOLD)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED or HOLD ");
+
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.QC, this.BuVO);
+                }
+              
 
 
-                res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
+                    res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
 
             }
             allRes.data = res;
