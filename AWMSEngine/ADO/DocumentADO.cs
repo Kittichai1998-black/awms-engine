@@ -106,7 +106,7 @@ namespace AWMSEngine.ADO
                 param.Add("@for_customer_ID", doc.For_Customer_ID);
                 param.Add("@batch", doc.Batch);
                 param.Add("@lot", doc.Lot);
-
+               
                 param.Add("@remark", doc.Remark);
                 param.Add("@eventStatus", doc.EventStatus);
                 param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(doc.EventStatus));
@@ -158,6 +158,7 @@ namespace AWMSEngine.ADO
             param.Add("@orderNo", docItem.OrderNo);
             param.Add("@batch", docItem.Batch);
             param.Add("@lot", docItem.Lot);
+
             param.Add("@eventStatus", docItem.EventStatus);
             param.Add("@status", StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<DocumentEventStatus>(docItem.EventStatus));
             //param.Add("@storageObject_IDs", docItem.StorageObjectIDs == null ? null : string.Join(",", docItem.StorageObjectIDs));

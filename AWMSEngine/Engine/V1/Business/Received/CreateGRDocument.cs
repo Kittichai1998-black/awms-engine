@@ -148,7 +148,8 @@ namespace AWMSEngine.Engine.Business.Received
                 RefID = reqVO.refID,
                 Ref1 = reqVO.ref1,
                 Ref2 = reqVO.ref2,
-
+               
+                MovementType_ID = reqVO.movementTypeID,
                 DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
                 EventStatus = reqVO.eventStatus,
                 
