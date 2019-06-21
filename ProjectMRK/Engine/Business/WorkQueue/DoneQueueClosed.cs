@@ -40,7 +40,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     {
                         var souAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Sou_AreaMaster_ID);
                         var desAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Des_AreaMaster_ID);
-                        if(desAreaQueue.Code == "ISFW" && souAreaQueue.Code == "RPL")
+                        if(desAreaQueue.Code == "OF" && souAreaQueue.Code == "IP")
                         {
                             CreateGIDocument(docs, stos, logger, buVO);
                             AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, StorageObjectEventStatus.PICKED, buVO);

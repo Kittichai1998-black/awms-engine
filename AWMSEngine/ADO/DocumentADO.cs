@@ -198,6 +198,10 @@ namespace AWMSEngine.ADO
         {
             return UpdateMappingSTO(disto_id, null, null, null, null, status, buVO);
         }
+        public long UpdateMappingSTO(long disto_id, long workQueueID, EntityStatus status, VOCriteria buVO)
+        {
+            return UpdateMappingSTO(disto_id, workQueueID, null, null, null, status, buVO);
+        }
         public long UpdateMappingSTO(long disto_id, long? des_StorageObjectID, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
         {
             return UpdateMappingSTO(disto_id, null, des_StorageObjectID, qty, baseQty, status, buVO);

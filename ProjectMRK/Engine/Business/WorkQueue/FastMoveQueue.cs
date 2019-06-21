@@ -18,22 +18,21 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 {
     public class FastMoveQueue: IProjectEngine<RegisterWorkQueue.TReqDocumentItemAndDISTO, SPOutAreaLineCriteria>
     {
-        private ams_AreaMaster _ISFWArea;
+        private ams_AreaMaster _OFArea;
 
         public SPOutAreaLineCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReqDocumentItemAndDISTO data)
         {
             var reqVO = data.reqVO;
             StorageObjectCriteria sto = data.sto;
             var desLocations = AWMSEngine.ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, buVO);
-            this._ISFWArea = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("Code", "ISFW", buVO ?? new VOCriteria()).FirstOrDefault();
-            if(_ISFWArea == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Area Code: 'ISFW' Not Found");
 
-            if (reqVO.areaCode == "RPL")
+            if (reqVO.areaCode == "IP" || reqVO.areaCode == "IR")
             {
+                this._OFArea = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("Code", "OF", buVO ?? new VOCriteria()).FirstOrDefault();
+
                 if (checkFastMove(reqVO.baseCode, logger, buVO))
                 {
-                    return desLocations.Where(x => x.Des_AreaMaster_ID == _ISFWArea.ID).FirstOrDefault();
+                    return desLocations.Where(x => x.Des_AreaMaster_ID == _OFArea.ID).FirstOrDefault();
                 }
                 else
                 {
@@ -42,6 +41,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             }
             return desLocations.OrderByDescending(x => x.DefaultFlag).FirstOrDefault();
         }
+
         public bool checkFastMove(string baseCode, AMWLogger logger, VOCriteria buVO)
         {
             List<amt_StorageObject> stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(baseCode, buVO);
@@ -55,7 +55,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             {
                 List<amt_StorageObject> locationGateFast = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("AreaMaster_ID", _ISFWArea.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("AreaMaster_ID", _OFArea.ID, SQLOperatorType.EQUALS),
                 }, buVO);
                 if (locationGateFast.Count() > 1)
                 {

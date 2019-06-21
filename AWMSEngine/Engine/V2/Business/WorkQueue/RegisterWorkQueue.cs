@@ -118,6 +118,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                
                 if(docItem != null)
                 {
+                    docItem.ForEach(x =>
+                    {
+                        x.DocItemStos.ForEach(disto =>
+                        {
+                            disto.WorkQueue_ID = queueTrx.ID.Value;
+                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                        });
+                    });
+
+
                     var docIDs = docItem.Select(x => x.Document_ID).Distinct().ToList();
                     docIDs.ForEach(x =>
                     {
@@ -205,7 +215,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, sto)
             };
-            workQ = ADO.WorkQueueADO.GetInstant().Create_LossVersion(workQ, this.BuVO);
+            workQ = ADO.WorkQueueADO.GetInstant().PUT(workQ, this.BuVO);
             return workQ;
         }
         

@@ -70,7 +70,7 @@ namespace ProjectMRK.APIService
 
                         DocumentItemWorkQueues = null
                     };
-                    workQ = AWMSEngine.ADO.WorkQueueADO.GetInstant().Create_LossVersion(workQ, this.BuVO);
+                    workQ = AWMSEngine.ADO.WorkQueueADO.GetInstant().PUT(workQ, this.BuVO);
                 }
 
                 return null;
