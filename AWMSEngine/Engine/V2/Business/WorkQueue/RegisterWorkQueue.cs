@@ -205,7 +205,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, sto)
             };
-            workQ = ADO.WorkQueueADO.GetInstant().Create(workQ, this.BuVO);
+            workQ = ADO.WorkQueueADO.GetInstant().Create_LossVersion(workQ, this.BuVO);
             return workQ;
         }
         

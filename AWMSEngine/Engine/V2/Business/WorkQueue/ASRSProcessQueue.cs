@@ -16,6 +16,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
     {
         public class TReq
         {
+            public string desASRSWarehouseCode;
             public string desASRSAreaCode;
             public string desASRSLocationCode;
             public List<ProcessQueueCriteria> processQueues;
@@ -33,7 +34,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 public bool useShelfLifeDate;
                 public bool useExpireDate;
                 public bool useIncubateDate;
-                public bool useFullPallet;
+                public bool useFullPick;
 
                 public decimal? baseQty;
                 public int? percentRandom;
@@ -46,6 +47,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         public class TRes
         {
+            public string desASRSWarehouseCode;
             public string desASRSAreaCode;
             public string desASRSLocationCode;
             public List<ProcessQueueResult> processResults;
@@ -58,6 +60,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     public long docItemID;
                     public string docItemCode;
+                    public int priority;
                     public decimal? baseQty;
                     public decimal? percentRandom;
                     public List<SPOutSTOProcessQueueCriteria> pickStos;
@@ -72,18 +75,22 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             TRes res = new TRes()
             {
                 processResults = new List<TRes.ProcessQueueResult>(),
+                desASRSWarehouseCode = reqVO.desASRSWarehouseCode,
                 desASRSAreaCode = reqVO.desASRSAreaCode,
                 desASRSLocationCode = reqVO.desASRSLocationCode
             };
+            var desASRSWm = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
             List<amt_Document> docs = ADO.DocumentADO.GetInstant().ListAndItem(
                 reqVO.processQueues.GroupBy(x => x.docID).Select(x=>x.Key).ToList()
                 , this.BuVO);
             List<SPOutSTOProcessQueueCriteria> tmpStoProcs = new List<SPOutSTOProcessQueueCriteria>();
             var processQueues = reqVO.processQueues.OrderByDescending(x => x.priority).ToList();
+
             foreach (var proc in processQueues)
             {
                 TRes.ProcessQueueResult processRes = res.processResults.FirstOrDefault(x => x.docID == proc.docID);
                 var doc = docs.First(x => x.ID == proc.docID);
+                var souWM = this.StaticValue.Warehouses.First(x => x.ID == doc.Sou_Warehouse_ID);
                 if (processRes == null)
                 {
                     processRes = new TRes.ProcessQueueResult()
@@ -98,7 +105,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var processResItem = new TRes.ProcessQueueResult.ProcessQueueResultItem()
                 {
                     docItemID = proc.docItemID,
+                    docItemCode = doc.DocumentItems.First(x => x.ID == proc.docID).Code,
                     baseQty = proc.baseQty,
+                    priority = proc.priority,
                     percentRandom = proc.percentRandom,
                     pickStos = new List<SPOutSTOProcessQueueCriteria>()
                 };
@@ -107,7 +116,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 res.processResults.Add(processRes);
                 foreach (var condi in proc.conditions)
                 {
-                    var desASRSWm = this.StaticValue.Warehouses.First(x => x.ID == doc.Sou_Warehouse_ID.Value);
+                    
                     List<SPOutSTOProcessQueueCriteria> pickStos = processResItem.pickStos;
                     var _condi = condi.Clone();
                     if (_condi.baseQty.HasValue)//ตรวจพาเลทที่เคย query มาแล้วจากใน TEMP
@@ -115,7 +124,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         var _pickStos = tmpStoProcs.Where(x =>
                             x.isWCSReady &&
                             x.pickBaseQty < x.pstoBaseQty &&
-                            (string.IsNullOrWhiteSpace(desASRSWm.Code) || x.warehouseCode == desASRSWm.Code) &&
+                            (!doc.Sou_Warehouse_ID.HasValue || x.warehouseID == doc.Sou_Warehouse_ID) &&
                             (string.IsNullOrWhiteSpace(proc.locationCode) || x.locationCode == proc.locationCode) &&
                             (string.IsNullOrWhiteSpace(proc.baseCode) || x.bstoCode == proc.baseCode) &&
                             (string.IsNullOrWhiteSpace(proc.skuCode) || x.pstoCode == proc.skuCode) &&
@@ -159,14 +168,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             condition = _condi,
                             orderBys = proc.orderBys,
                             useExpireDate = proc.useExpireDate,
-                            usePickFull = proc.useFullPallet,
+                            useFullPick = proc.useFullPick,
                             useIncubateDate = proc.useIncubateDate,
                             useShelfLifeDate = proc.useShelfLifeDate,
-                            warehouseCode = desASRSWm.Code,
+                            warehouseCode = souWM.Code,
                             not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList()
                         };
                         var _pickStos = ADO.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
-                        //this.ValidateWCS(_pickStos, desASRSWm, reqVO);
+                        this.ValidateWCS(_pickStos, reqVO);
 
                         if (proc.baseQty.HasValue)
                             tmpStoProcs.AddRange(_pickStos);
@@ -181,16 +190,41 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             }
 
+            this.SetResponseForUseFullPick(res, tmpStoProcs);
             return res;
         }
-        private void ValidateWCS(List<SPOutSTOProcessQueueCriteria> _pickStos, ams_Warehouse desASRSWm, TReq reqVO)
+        private void SetResponseForUseFullPick(TRes res, List<SPOutSTOProcessQueueCriteria> tmpStoProcs)
+        {
+            foreach(var proc in res.processResults)
+            {
+                foreach (var procItem in proc.processResultItems)
+                {
+                    foreach(var pickSto in procItem.pickStos)
+                    {
+                        if (pickSto.useFullPick)
+                        {
+                            tmpStoProcs
+                                .FindAll(x => x.rstoID == pickSto.rstoID && x.pickBaseQty < x.pstoBaseQty)
+                                .ForEach(x =>
+                                {
+                                    var addPickBaseQty = x.pstoBaseQty - x.pickBaseQty;
+                                    pickSto.pickBaseQty += addPickBaseQty;
+                                    x.pickBaseQty = x.pstoBaseQty;
+                                });
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ValidateWCS(List<SPOutSTOProcessQueueCriteria> _pickStos, TReq reqVO)
         {
             WCSQueueApi.TReq req = new WCSQueueApi.TReq()
             {
                 queueOut = _pickStos.Select(x => new WCSQueueApi.TReq.queueout()
                 {
                     queueID = null,
-                    desWarehouseCode = desASRSWm.Code,
+                    desWarehouseCode = reqVO.desASRSWarehouseCode,
                     desAreaCode = reqVO.desASRSAreaCode,
                     desLocationCode = reqVO.desASRSLocationCode,
                     priority = 0,

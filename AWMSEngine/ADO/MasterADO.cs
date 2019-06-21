@@ -21,6 +21,16 @@ namespace AWMSEngine.ADO
             }, buVO).FirstOrDefault();
             return packMst;
         }
+        public AWMSModel.Entity.ams_PackMaster GetAreaLocationMaster(string locationCode,long areaID, VOCriteria buVO)
+        {
+            var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("Code", locationCode),
+                new KeyValuePair<string, object>("AreaID", areaID),
+                new KeyValuePair<string, object>("Status",1)
+            }, buVO).FirstOrDefault();
+            return packMst;
+        }
         public AWMSModel.Entity.ams_PackMaster GetPackMasterBySKU(long skuID, int itemQty, VOCriteria buVO)
         {
             var packMst = DataADO.GetInstant().SelectBy<ams_PackMaster>(new KeyValuePair<string, object>[]

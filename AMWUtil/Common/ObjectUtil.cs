@@ -21,7 +21,7 @@ namespace AMWUtil.Common
             lock (GenUniqID_Lock)
             {
                 long t = DateTime.UtcNow.Ticks;
-                GenUniqID_Run = GenUniqID_Run >= 1000 ? 0 : GenUniqID_Run + 1;
+                GenUniqID_Run = GenUniqID_Run >= 10000 ? 0 : GenUniqID_Run + 1;
                 string id = NumZ(t) + NumZ(GenUniqID_Run, 1);
                 return id;
             }

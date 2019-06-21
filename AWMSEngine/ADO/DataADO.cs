@@ -277,18 +277,18 @@ namespace AWMSEngine.ADO
             string commTxt = string.Empty;
             if (skip.HasValue)
             {
-                commTxt = string.Format(@"select {4} * from (select {5} from {0} {1} {6} {2} {3} ) x",
+                commTxt = string.Format(@"select {5} from {0} {1} {6} {2} {3} {4} ",
                         table ?? typeof(T).Name.Split('.').Last(),
-                        string.IsNullOrEmpty(commWhere) ? string.Empty : "WHERE " + commWhere,
-                        string.IsNullOrEmpty(commOrderBy) ? string.Empty : "ORDER BY " + commOrderBy,
+                        string.IsNullOrEmpty(commWhere) ? string.Empty : " WHERE " + commWhere,
+                        string.IsNullOrEmpty(commOrderBy) ? string.Empty : " ORDER BY " + commOrderBy,
                         skip.HasValue ? "OFFSET " + skip.Value + " ROWS" : string.Empty,
-                        limit.HasValue ? "TOP " + limit.Value : string.Empty,
+                        limit.HasValue ? "FETCH NEXT " + limit.Value+ " ROWS ONLY " : string.Empty,
                         select,
                         string.IsNullOrEmpty(groupBys) ? string.Empty : " GROUP BY " + groupBys);
             }
             else
             {
-                commTxt = string.Format(@"select {4} {5} from {0} {1} {6} {2} {3}",
+                commTxt = string.Format(@"select {4} {5} from {0} {1} {6} {2} {3} ",
                         table ?? typeof(T).Name.Split('.').Last(),
                         string.IsNullOrEmpty(commWhere) ? string.Empty : "WHERE " + commWhere,
                         string.IsNullOrEmpty(commOrderBy) ? string.Empty : "ORDER BY " + commOrderBy,

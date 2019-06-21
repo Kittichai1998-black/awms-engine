@@ -415,7 +415,7 @@ namespace AWMSEngine.ADO
             param.Add("baseCode", search.baseCode);
             param.Add("skuCode", search.skuCode);
 
-            param.Add("usePickFull", search.usePickFull);
+            param.Add("useFullPick", search.useFullPick);
             param.Add("useExpireDate", search.useExpireDate); 
             param.Add("useIncubateDate", search.useIncubateDate);
             param.Add("useShelfLifeDate", search.useShelfLifeDate);
