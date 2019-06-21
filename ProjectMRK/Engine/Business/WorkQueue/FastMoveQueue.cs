@@ -26,12 +26,9 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             StorageObjectCriteria sto = data.sto;
             var desLocations = AWMSEngine.ADO.AreaADO.GetInstant().ListDestinationArea(reqVO.ioType, sto.areaID.Value, sto.parentID, buVO);
 
-            if (reqVO.areaCode == "IP")
+            if (reqVO.areaCode == "IP" || reqVO.areaCode == "IR")
             {
                 this._OFArea = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("Code", "OF", buVO ?? new VOCriteria()).FirstOrDefault();
-
-                if (_OFArea == null)
-                    throw new AMWException(logger, AMWExceptionCode.V1001, "Area Code: 'OF' Not Found");
 
                 if (checkFastMove(reqVO.baseCode, logger, buVO))
                 {
