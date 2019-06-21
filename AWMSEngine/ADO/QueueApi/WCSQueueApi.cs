@@ -57,6 +57,7 @@ namespace AWMSEngine.ADO.QueueApi
 
         public TRes SendReady(TReq datas, VOCriteria buVO)
         {
+            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "XXXXX" } };
             var d = datas.Clone();
             d.queueOut.ForEach(x => x.queueID = null);
             var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("WCS_SEND_QUEUE");

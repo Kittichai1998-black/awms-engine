@@ -36,6 +36,11 @@ namespace AWMSModel.Criteria.SP.Response
         public long pstoBaseUnitID;
         public string pstoBaseUnitCode;
 
+        public decimal pickQty;
+        public decimal pstoQty;
+        public long pstoUnitID;
+        public string pstoUnitCode;
+
         public DateTime? pstoExpiryDate;
         public DateTime? pstoProductDate;
         public DateTime pstoCreateTime;
