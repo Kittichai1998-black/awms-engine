@@ -8,7 +8,7 @@ namespace AWMSModel.Constant.EnumConst
     public enum SQLOrderByType
     {
         [ValueAttribute("ASC")]
-        ASC,
+        ASC = 0,
         [ValueAttribute("DESC")]
         DESC
     }

@@ -27,12 +27,6 @@ namespace ProjectTAP.Engine.Business.WorkQueue
             if (reqVO.mappingPallets[0].itemNo == null || reqVO.mappingPallets[0].itemNo == "" || reqVO.mappingPallets[0].itemNo == String.Empty)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "ItemNo is null");
 
-            if (reqVO.mappingPallets[0].prodDate == null || reqVO.mappingPallets[0].prodDate == "" || reqVO.mappingPallets[0].prodDate == String.Empty)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Product Date is null");
-
-            if (reqVO.mappingPallets[0].code == null || reqVO.mappingPallets[0].code == "" || reqVO.mappingPallets[0].code == String.Empty)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "SKU Code Date is null");
-
             var baseMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.baseCode),
@@ -67,11 +61,9 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                 if (location == null)
                     throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Location Code '" + reqVO.locationCode + "'");
 
-                if (mapsto == null || mapsto.eventStatus == StorageObjectEventStatus.NEW)
+                if (mapsto == null )
                 {
-                    if (mapsto != null && mapsto.eventStatus == StorageObjectEventStatus.NEW)
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(mapsto.id.Value, null, null, StorageObjectEventStatus.REMOVED, buVO);
-
+                  
                     var palletList = new List<PalletDataCriteriaV2>();
                     palletList.Add(new PalletDataCriteriaV2()
                     {

@@ -240,7 +240,7 @@ namespace AWMSEngine.Engine.Business.Issued
                 DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, mapsto)
             };
 
-            res = ADO.WorkQueueADO.GetInstant().Create(workQ, this.BuVO);
+            res = ADO.WorkQueueADO.GetInstant().Create_LossVersion(workQ, this.BuVO);
 
             return res;
         }

@@ -43,7 +43,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet("price")]
         public dynamic GetPrice()
         {
-            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = AMWUtil.Common.ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             ListPriceByRootID exec = new ListPriceByRootID(this);
             return exec.Execute(req);// exec.Execute(datas);
         }

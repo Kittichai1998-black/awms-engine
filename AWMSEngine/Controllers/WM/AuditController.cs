@@ -29,7 +29,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic GetDoc()
         {
             GetDocAPI exec = new GetDocAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.AUDIT);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.AUDIT);
             var res = exec.Execute(req);
             return res;
         }
@@ -46,7 +46,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic GetQueue()
         {
             GetWorkQueueAuditAPI exec = new GetWorkQueueAuditAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             return exec.Execute(req);
         }
 
@@ -61,7 +61,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic Get()
         {
             SelectAuditAPI exec = new SelectAuditAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = exec.Execute(req);
             return res;
         }

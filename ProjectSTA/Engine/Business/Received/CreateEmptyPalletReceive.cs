@@ -224,7 +224,7 @@ namespace ProjectSTA.Engine.Business.Received
 
                 DocumentItemWorkQueues = AWMSEngine.Common.ConverterModel.ToDocumentItemWorkQueue(docItems, mapsto)
             };
-            workQ = AWMSEngine.ADO.WorkQueueADO.GetInstant().Create(workQ, this.BuVO);
+            workQ = AWMSEngine.ADO.WorkQueueADO.GetInstant().Create_LossVersion(workQ, this.BuVO);
             return workQ;
         }
     }

@@ -16,7 +16,7 @@ namespace AWMSEngine.Controllers
         [HttpGet("{serviceCode}")]
         public dynamic GetAPIService(string serviceCode)
         {
-            var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var jsond = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = ExecuteAPI(serviceCode, "get", true, jsond);
             return res;
         }

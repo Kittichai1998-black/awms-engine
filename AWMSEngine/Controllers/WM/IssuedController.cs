@@ -19,7 +19,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic GetDoc()
         {
             GetDocAPI exec = new GetDocAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
             var res = exec.Execute(req);
             return res;
         }
@@ -27,7 +27,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic GetDocSTO()
         {
             GetMapSTOInDocAPI exec = new GetMapSTOInDocAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_ISSUED);
             var res = exec.Execute(req);
             return res;
         }
@@ -71,7 +71,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet("bsto/canConso")]
         public dynamic GetBSTOCanConso()
         {
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             CheckBaseCanConsoAPI exec = new CheckBaseCanConsoAPI(this);
             var res = exec.Execute(req);
             return res;
@@ -79,7 +79,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet("location/canPick")]
         public dynamic GetLocationCanPick()
         {
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             ListAreaLocationCanPickingAPI exec = new ListAreaLocationCanPickingAPI(this);
             var res = exec.Execute(req);
             return res;

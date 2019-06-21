@@ -19,7 +19,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic Get()
         {
             GetDocAPI exec = new GetDocAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_RECEIVED);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.GOODS_RECEIVED);
             var res = exec.Execute(req);
             return res;
         }
@@ -55,7 +55,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic SAPRes()
         {
             GetSAPLogAPI exec = new GetSAPLogAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = exec.Execute(req);
             return res;
         }

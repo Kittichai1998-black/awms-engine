@@ -423,7 +423,7 @@ namespace AWMSEngine.Engine.Business.WorkQueue
 
                 DocumentItemWorkQueues = Common.ConverterModel.ToDocumentItemWorkQueue(docItems, mapsto)
             };
-            workQ = ADO.WorkQueueADO.GetInstant().Create(workQ, this.BuVO);
+            workQ = ADO.WorkQueueADO.GetInstant().Create_LossVersion(workQ, this.BuVO);
             return workQ;
         }
         //END*******************ProcessRegisterWorkQueue***********************

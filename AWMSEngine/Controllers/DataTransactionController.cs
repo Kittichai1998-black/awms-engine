@@ -18,7 +18,7 @@ namespace AWMSEngine.Controllers
         public dynamic GetData()
         {
             var qrystr = this.Request.QueryString.Value.Replace("?", "");
-            var jsond = ObjectUtil.QueryStringToObject(qrystr);
+            var jsond = ObjectUtil.QryStrToDynamic(qrystr);
             //{"token":"","apiKey":"","t":"",pk:"","datas":[{"test":"xx"}]}
             var api = new SelectDataTrxAPI(this);
             var res = api.Execute(jsond);
@@ -28,14 +28,14 @@ namespace AWMSEngine.Controllers
         [HttpGet("sto/search")]
         public dynamic SearchSTO()
         {
-            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = AMWUtil.Common.ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = new SearchStorageObjectAPI(this).Execute(req);
             return res;
         }
         [HttpGet("mapsto")]
         public dynamic GetMapSto()
         {
-            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = AMWUtil.Common.ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = new GetMapStoAPI(this).Execute(req);
             return res;
         }

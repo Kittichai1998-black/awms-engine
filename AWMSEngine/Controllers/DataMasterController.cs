@@ -26,7 +26,7 @@ namespace AWMSEngine.Controllers
         [HttpGet]
         public dynamic GetData()
         {
-            var jsond = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var jsond = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var api = new SelectDataMstAPI(this);
             var res = api.Execute(jsond);
             return res;
