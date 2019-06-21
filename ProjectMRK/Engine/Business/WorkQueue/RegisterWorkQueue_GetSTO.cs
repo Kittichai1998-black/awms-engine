@@ -26,9 +26,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
             if (sto == null && reqVO.areaCode != "OS")
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
-            if (sto.code != reqVO.baseCode && reqVO.areaCode != "OS")
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
-
+            
             if (sto == null && reqVO.areaCode == "OS")
             {
                 var staticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
@@ -68,8 +66,8 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
                 var _packSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>("ParentStorageObject_ID", _baseSto.ID, buVO).FirstOrDefault();
 
-                var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", _packSto.PackMaster_ID, buVO).FirstOrDefault();
-                var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(sku.UnitType_ID, buVO);
+                var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", _packSto.Code, buVO).FirstOrDefault();
+                var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(sku.UnitType_ID, buVO);
 
                 var packSto = new StorageObjectCriteria()
                 {

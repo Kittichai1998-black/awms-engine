@@ -24,9 +24,11 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             var distos = new List<amt_DocumentItem>();
             var stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.baseCode, buVO).Select(x => x.ID.Value).ToList();
 
-            if(stoIDs == null)
+            var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO);
+
+            if (docs == null && reqVO.areaCode == "OS")
             {
-                var pack = sto.ToTreeList().FindAll(x=> x.type == StorageObjectType.PACK).FirstOrDefault();
+                var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
 
                 var souWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
                 if (souWarehouse == null)
@@ -48,7 +50,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     Batch = pack.batch,
                     Sou_Branch_ID = souWarehouse.ID.Value,
                     Sou_Warehouse_ID = souWarehouse.ID.Value,
-                    Sou_AreaMaster_ID = reqVO.areaCode == "" ? StaticValue.AreaMasters.FirstOrDefault(x=> x.Code == reqVO.areaCode).ID : null,
+                    Sou_AreaMaster_ID = reqVO.areaCode == "" ? StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID : null,
 
                     Des_Branch_ID = desWarehouse.ID.Value,
                     Des_Warehouse_ID = desWarehouse.ID.Value,
@@ -119,12 +121,12 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
                 distos.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docID.Value, buVO));
             }
+            else if(docs == null)
+            {
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '" + reqVO.baseCode + "' Not Found");
+            }
             else
             {
-                var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO);
-                if (docs == null && docs.Count() == 0)
-                    throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '" + reqVO.baseCode + "' Not Found");
-
                 docs.ForEach(x =>
                 {
                     distos.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x.ID.Value, buVO));
