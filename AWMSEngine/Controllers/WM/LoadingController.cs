@@ -20,7 +20,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic GetDocument()
         {
             GetDocAPI exec = new GetDocAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.LOADING);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.LOADING);
             var res = exec.Execute(req);
             return res;
         }
@@ -54,7 +54,7 @@ namespace AWMSEngine.Controllers.WM
         [HttpGet("conso")]
         public dynamic ListBaseConsoCanLoading()
         {
-            dynamic req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            dynamic req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             ListBaseConsoCanLoadingAPI exec = new ListBaseConsoCanLoadingAPI(this);
             return exec.Execute(req);
         }

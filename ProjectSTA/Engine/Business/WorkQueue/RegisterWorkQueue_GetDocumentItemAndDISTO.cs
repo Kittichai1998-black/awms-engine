@@ -56,16 +56,18 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             var mapstoTree = mapsto.ToTreeList();
             var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
+            if (packs == null || packs.Count() == 0)
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
 
             foreach (var packH in packs)
             {
                 MovementType FG_Movement = MovementType.FG_TRANSFER_WM;
                 ams_SKUMaster skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)packH.skuID, buVO);
                 if (skuMaster == null)
-                    throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)packH.skuID + "' NotFound");
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)packH.skuID + "' Not Found");
                 ams_PackMaster packMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)packH.mstID, buVO);
                 if (packMaster == null)
-                    throw new AMWException(logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)packH.mstID + "' NotFound");
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)packH.mstID + "' Not Found");
 
                 var empPallet = StaticValue.SKUMasterTypes.Find(x => x.ID == (long)skuMaster.SKUMasterType_ID);
                 if (empPallet.Code != "EMPTYPALLET" )
