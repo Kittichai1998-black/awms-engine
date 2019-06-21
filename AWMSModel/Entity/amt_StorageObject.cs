@@ -29,7 +29,7 @@ namespace AWMSModel.Entity
         public long UnitType_ID;
         public decimal Quantity;
         public decimal BaseQuantity;
-        public DateTime ProductDate;
+        public DateTime? ProductDate;
 
     }
 }

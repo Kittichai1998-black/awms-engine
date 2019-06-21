@@ -35,7 +35,7 @@ namespace AWMSEngine.Controllers
         public dynamic EnquiryToken()
         {
             var qrystr = this.Request.QueryString.Value.Replace("?", "");
-            var jsond = ObjectUtil.QueryStringToObject(qrystr);
+            var jsond = ObjectUtil.QryStrToDynamic(qrystr);
             var api = new EnquiryTokenAPI(this);
             var res = api.Execute(jsond);
 

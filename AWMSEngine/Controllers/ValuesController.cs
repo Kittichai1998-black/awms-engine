@@ -86,7 +86,7 @@ namespace AWMSEngine.Controllers
         public dynamic CheckAPI()
         {
             CheckAPI exec = new CheckAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = exec.Execute(req);
             return res;
         }

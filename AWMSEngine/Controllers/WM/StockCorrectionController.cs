@@ -18,7 +18,7 @@ namespace AWMSEngine.Controllers.WM
         public dynamic GetDoc()
         {
             GetDocAPI exec = new GetDocAPI(this);
-            var req = ObjectUtil.QueryStringToObject(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.STOCK_CORRECTIONS);
+            var req = ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value + "&docTypeID=" + (int)DocumentTypeID.STOCK_CORRECTIONS);
             var res = exec.Execute(req);
             return res;
         }

@@ -15,7 +15,7 @@ namespace AWMSEngine.Controllers.WM
         //[HttpGet("location")]
         public dynamic GetPalletPicking()
         {
-            var value = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var value = AMWUtil.Common.ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = new APIService.WM.SelectPickingAPI(this).Execute(value);
             return res;
         }

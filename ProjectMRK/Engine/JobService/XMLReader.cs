@@ -82,7 +82,7 @@ namespace ProjectMRK.Engine.JobService
 
         protected override TRes ExecuteEngine(string reqVO)
         {
-        
+
             ftpPath = StaticValue.GetConfig("FTP_PATH_ROOT");
             ftpLogPath = StaticValue.GetConfig("FTP_PATH_LOG");
             ftpUsername = StaticValue.GetConfig("FTP_USER");
@@ -138,7 +138,7 @@ namespace ProjectMRK.Engine.JobService
             reader.Dispose();
             response.Close();
 
-            var res =  CreateDocumentFromXML(jsonObj);
+            var res = CreateDocumentFromXML(jsonObj);
 
             MoveFileXML(xmlname);
 
@@ -213,18 +213,28 @@ namespace ProjectMRK.Engine.JobService
 
             var objSizeBase = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
             var objSizePack = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
-            var baseID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+
+            var getBase = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(jsonDetail.PalletID, this.BuVO);
+            long baseID;
+            if (getBase == null)
             {
-                Code = jsonDetail.PalletID,
-                Name = jsonDetail.PalletID,
-                BaseMasterType_ID = 6,
-                Description = "Pallet",
-                ObjectSize_ID = objSizeBase.ID.Value,
-                Status = EntityStatus.ACTIVE,
-                UnitType_ID = 1,
-                WeightKG = null
-            });
-            
+                baseID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                {
+                    Code = jsonDetail.PalletID,
+                    Name = jsonDetail.PalletID,
+                    BaseMasterType_ID = 6,
+                    Description = "Pallet",
+                    ObjectSize_ID = objSizeBase.ID.Value,
+                    Status = EntityStatus.ACTIVE,
+                    UnitType_ID = 1,
+                    WeightKG = null
+                }).Value;
+            }
+            else
+            {
+                baseID = getBase.ID.Value;
+            }
+
             StorageObjectCriteria baseSto = new StorageObjectCriteria()
             {
                 code = jsonDetail.PalletID,
@@ -233,7 +243,7 @@ namespace ProjectMRK.Engine.JobService
                 qty = 1,
                 unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
                 unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x=>x.ObjectType == StorageObjectType.BASE).Code,
+                baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
                 baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
                 baseQty = 1,
                 objectSizeID = objSizeBase.ID.Value,
@@ -265,7 +275,7 @@ namespace ProjectMRK.Engine.JobService
                 mstID = pack.ID
             };
             var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(childSto, this.BuVO);
-            
+
             var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
 
             amt_Document doc = new amt_Document()
@@ -328,7 +338,7 @@ namespace ProjectMRK.Engine.JobService
                 RefID = "palletCode=" + jsonDetail.PalletID,
 
                 EventStatus = DocumentEventStatus.NEW,
-                
+
             });
 
             var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, this.BuVO).ID;
@@ -360,7 +370,7 @@ namespace ProjectMRK.Engine.JobService
             res.doc = doc;
             baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
             res.sto = baseSto;
-            
+
 
             return res;
 

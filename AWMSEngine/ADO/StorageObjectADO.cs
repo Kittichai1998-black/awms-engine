@@ -406,6 +406,35 @@ namespace AWMSEngine.ADO
 
             return res;
         }
+
+        public List<SPOutSTOProcessQueueCriteria> ListByProcessQueue(SPInSTOProcessQueueCriteria search, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("warehouseCode", search.warehouseCode);
+            param.Add("locationCode", search.locationCode);
+            param.Add("baseCode", search.baseCode);
+            param.Add("skuCode", search.skuCode);
+
+            param.Add("usePickFull", search.usePickFull);
+            param.Add("useExpireDate", search.useExpireDate); 
+            param.Add("useIncubateDate", search.useIncubateDate);
+            param.Add("useShelfLifeDate", search.useShelfLifeDate);
+            param.Add("eventStatuses", search.eventStatuses.Select(x => (int)x).JoinString());
+
+            param.Add("baseQty", search.condition.baseQty);
+            param.Add("batch", search.condition.batch);
+            param.Add("lot", search.condition.lot);
+            param.Add("orderNo", search.condition.orderNo);
+            param.Add("options", search.condition.options);
+
+            param.Add("orderBys", search.orderBys.Select(x => x.fieldName + " " + x.orderByType.ToString()).JoinString());
+            param.Add("not_pstoIDs", search.not_pstoIDs.JoinString());
+
+            
+            var res = this.Query<SPOutSTOProcessQueueCriteria>("SP_STO_PROCESS_QUEUE_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction).ToList();
+
+            return res;
+        }
     }
 
 }

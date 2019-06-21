@@ -22,7 +22,7 @@ namespace AWMSEngine.Controllers
         [HttpGet("sp")]
         public dynamic GetSPReport()
         {
-            var req = AMWUtil.Common.ObjectUtil.QueryStringToObject(this.Request.QueryString.Value);
+            var req = AMWUtil.Common.ObjectUtil.QryStrToDynamic(this.Request.QueryString.Value);
             var res = new GetSPReportAPI(this).Execute(req);
             return res;
         }

@@ -196,13 +196,22 @@ namespace AWMSEngine.ADO
 
         public long UpdateMappingSTO(long disto_id, EntityStatus status, VOCriteria buVO)
         {
-            return UpdateMappingSTO(disto_id, null, null, null, status, buVO);
+            return UpdateMappingSTO(disto_id, null, null, null, null, status, buVO);
+        }
+        public long UpdateMappingSTO(long disto_id, long workQueueID, EntityStatus status, VOCriteria buVO)
+        {
+            return UpdateMappingSTO(disto_id, workQueueID, null, null, null, status, buVO);
         }
         public long UpdateMappingSTO(long disto_id, long? des_StorageObjectID, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
+        {
+            return UpdateMappingSTO(disto_id, null, des_StorageObjectID, qty, baseQty, status, buVO);
+        }
+        public long UpdateMappingSTO(long disto_id, long? workQueueID, long? des_StorageObjectID, decimal? qty, decimal? baseQty, EntityStatus status, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("@id", disto_id);
             param.Add("@des_storageObjectID", des_StorageObjectID);
+            param.Add("@workqueue_id", workQueueID);
             param.Add("@qty", qty);
             param.Add("@baseQty", baseQty);
             param.Add("@status", status);
@@ -226,6 +235,7 @@ namespace AWMSEngine.ADO
             param.Add("@documentItemID", docItemSto.DocumentItem_ID);
             param.Add("@sou_storageObjectID", docItemSto.Sou_StorageObject_ID);
             param.Add("@des_storageObjectID", docItemSto.Des_StorageObject_ID);
+            param.Add("@workqueue_id", docItemSto.WorkQueue_ID);
             param.Add("@qty", docItemSto.Quantity);
             param.Add("@unitID", docItemSto.UnitType_ID);
             param.Add("@baseQty", docItemSto.BaseQuantity);

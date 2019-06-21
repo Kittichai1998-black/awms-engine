@@ -131,8 +131,11 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                             //long diStoID = 0;
                             //update docItemSto
                             var disto = docItem.DocItemStos.Find(distox => distox.Status == EntityStatus.INACTIVE && distox.Sou_StorageObject_ID == packs.id);
+                            if(disto == null)
+                                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Source StorageObject ID of Scan Code '" + reqVO.scanCode + "' Not Match");
+
                             //ต้องเช็คจาก disto ทั้งหมด
-                            if(disto.Quantity == docItem.Quantity)
+                            if (disto.Quantity == docItem.Quantity)
                             {
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Completed the specified amount");
                             }
