@@ -20,7 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TRes
         {
             public List<RootStoProcess> confirmResult;
-            public amt_Document docGRCD;
+            public List<amt_Document> docGRCrossDocks;
         }
 
         public class RootStoProcess
@@ -145,11 +145,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
-            var docGRCD = Common.FeatureExecute.ExectProject<List<amt_Document>, amt_Document>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
+            var docGRCDs = Common.FeatureExecute.ExectProject<List<amt_Document>, List<amt_Document>>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
 
             this.WCSSendQueue(rstos);
 
-            return new TRes() { confirmResult = rstos, docGRCD = docGRCD };
+            return new TRes() { confirmResult = rstos, docGRCrossDocks = docGRCDs };
         }
 
         private void WCSSendQueue(List<RootStoProcess> rstos)
