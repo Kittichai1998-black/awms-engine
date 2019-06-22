@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         public class TRes
         {
             public List<RootStoProcess> confirmResult;
+            public amt_Document docGRCD;
         }
 
         public class RootStoProcess
@@ -73,8 +74,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
-            this.ValidateDoc(docs);
+            this.ValidateDocAndInitDisto(docs);
             var rstos = this.ListRootStoProcess(reqVO, docs);
+            List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
             foreach (var rsto in rstos)
             {
                 var wq = new SPworkQueue()
@@ -114,7 +116,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 wq = ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
                 rsto.workQueueID = wq.ID;
 
-                var distos = rsto.docItems.Select(x => new amt_DocumentItemStorageObject()
+                var _distos = rsto.docItems.Select(x => new amt_DocumentItemStorageObject()
                 {
                     ID = null,
                     Sou_StorageObject_ID = x.pstoID,
@@ -127,19 +129,27 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Status = EntityStatus.INACTIVE,
                     WorkQueue_ID = wq.ID.Value,
                 }).ToList();
-                ADO.DocumentADO.GetInstant().InsertMappingSTO(distos, this.BuVO);
-                
+                _distos = ADO.DocumentADO.GetInstant().InsertMappingSTO(distos, this.BuVO);
+                distos.AddRange(_distos);
             };
             docs.ForEach(doc =>
             {
-                if(rstos.Any(x=>x.docItems.Any(y => y.docID == doc.ID)))
+                doc.DocumentItems.ForEach(doci =>
+                {
+                    doci.DocItemStos.AddRange(distos.FindAll(disto => disto.DocumentItem_ID == doci.ID));
+                });
+                if (rstos.Any(x=>x.docItems.Any(y => y.docID == doc.ID)))
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                 else
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
             });
-                        
+
+            /////////////////////////////////CREATE Document(GR) Cross Dock
+            var docGRCD = Common.FeatureExecute.ExectProject<List<amt_Document>, amt_Document>(FeatureCode.EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock, this.Logger, this.BuVO, docs);
+
             this.WCSSendQueue(rstos);
-            return new TRes() { confirmResult = rstos };
+
+            return new TRes() { confirmResult = rstos, docGRCD = docGRCD };
         }
 
         private void WCSSendQueue(List<RootStoProcess> rstos)
@@ -171,6 +181,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 });
             });
+
             
             var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
             if (wcsRes._result.resultcheck == 0)
@@ -256,10 +267,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         })));
             return rstoProcs;
         }
-        private void ValidateDoc(List<amt_Document> docs)
+        private void ValidateDocAndInitDisto(List<amt_Document> docs)
         {
             docs.ForEach(x =>
             {
+                x.DocumentItems.ForEach(doci => doci.DocItemStos = new List<amt_DocumentItemStorageObject>());
                 if (x.EventStatus != DocumentEventStatus.NEW)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "'" + x.Code + "' is not NEW.");

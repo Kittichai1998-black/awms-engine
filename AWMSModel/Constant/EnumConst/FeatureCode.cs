@@ -85,6 +85,9 @@ namespace AWMSModel.Constant.EnumConst
         [EnumValueAttribute(ValueString = "AMTS01")]
         EXEWM_AllowMultiSKU,
 
+        [EnumValueAttribute(ValueString = "ACPQCCD01")]
+        EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock,
+
         /// <summary> Create Document GI for FG_FASTMOVE : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
         [EnumValueAttribute(ValueString = "BEFCreateDoc_1002_102")]
         BEFCreateDoc_1002_102,
