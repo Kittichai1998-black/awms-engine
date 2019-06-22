@@ -41,7 +41,7 @@ namespace ProjectSTA.Engine.Business.Received
             }
             string orderNo = scanCode.Substring(0, 7);
             string skuCode1 = scanCode.Substring(7, 15); 
-            string skuCode = skuCode1.Substring(0, 12); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
+            string skuCode = skuCode1.Trim(); //ทดสอบ .Trim() ต้องตัดค่าว่างท้ายทิ้ง
             int cartonNo = int.Parse(scanCode.Substring(22, 4));
 
             ams_AreaMaster areaItem = this.StaticValue.AreaMasters.Find(y => y.ID == reqVO.areaID);
