@@ -105,7 +105,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var processResItem = new TRes.ProcessQueueResult.ProcessQueueResultItem()
                 {
                     docItemID = proc.docItemID,
-                    docItemCode = doc.DocumentItems.First(x => x.ID == proc.docID).Code,
+                    docItemCode = doc.DocumentItems.First(x => x.ID == proc.docItemID).Code,
                     baseQty = proc.baseQty,
                     priority = proc.priority,
                     percentRandom = proc.percentRandom,
@@ -113,7 +113,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 };
                 processRes.processResultItems.Add(processResItem);
 
-                res.processResults.Add(processRes);
+                //res.processResults.Add(processRes);
                 foreach (var condi in proc.conditions)
                 {
                     

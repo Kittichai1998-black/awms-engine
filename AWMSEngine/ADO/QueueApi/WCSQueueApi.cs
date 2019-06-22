@@ -49,6 +49,7 @@ namespace AWMSEngine.ADO.QueueApi
         
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
+            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("WCS_SEND_QUEUE");
             var res = RESTFulAccess.SendJson<TRes>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas);
             return res;
@@ -57,7 +58,7 @@ namespace AWMSEngine.ADO.QueueApi
 
         public TRes SendReady(TReq datas, VOCriteria buVO)
         {
-            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "XXXXX" } };
+            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             var d = datas.Clone();
             d.queueOut.ForEach(x => x.queueID = null);
             var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("WCS_SEND_QUEUE");

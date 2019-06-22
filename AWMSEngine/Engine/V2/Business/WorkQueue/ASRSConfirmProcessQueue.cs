@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class ASRSConfirmQueue : BaseEngine<ASRSConfirmQueue.TReq, ASRSConfirmQueue.TRes>
+    public class ASRSConfirmProcessQueue : BaseEngine<ASRSConfirmProcessQueue.TReq, ASRSConfirmProcessQueue.TRes>
     {
 
         public class TReq : ASRSProcessQueue.TRes
@@ -19,6 +19,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         public class TRes
         {
+            public List<RootStoProcess> confirmResult;
         }
 
         public class RootStoProcess
@@ -28,25 +29,33 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 public long docID;
                 public long docItemID;
+
+                public long bstoID;
+                public string bstoCode;
+
+                public long pstoID;
+                public string pstoCode;
+                public string pstoBatch;
+                public string pstoLot;
+                public string pstoOrderNo;
+                public string pstoOptions;
+
                 public decimal pstoQty;
                 public long pstoUnitID;
                 public decimal pstoBaseQty;
                 public long pstoBaseUnitID;
             }
+            public long? workQueueID;
             public int priority;
 
             public long rstoID;
-            public long bstoID;
-            public long pstoID;
             public string rstoCode;
-            public string bstoCode;
-            public string pstoCode;
 
-            public decimal pstoQty;
-            public long pstoUnitID;
+            //public decimal pstoQty;
+            //public long pstoUnitID;
 
-            public decimal pstoBaseQty;
-            public long pstoBaseUnitID;
+            //public decimal pstoBaseQty;
+            //public long pstoBaseUnitID;
 
             public long warehouseID;
             public long areaID;
@@ -58,10 +67,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public long desWarehouseID;
             public long desAreaID;
             public long? desLocationID;
+
+
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-
             var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
             this.ValidateDoc(docs);
             var rstos = this.ListRootStoProcess(reqVO, docs);
@@ -75,7 +85,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     IOType = IOType.OUTPUT,
                     Priority = rsto.priority,
                     StorageObject_ID = rsto.rstoID,
-                    StorageObject_Code = rsto.bstoCode,
+                    StorageObject_Code = rsto.rstoCode,
 
                     Warehouse_ID = rsto.warehouseID,
                     AreaMaster_ID = rsto.areaID,
@@ -87,7 +97,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                     Des_AreaMaster_ID = rsto.desAreaID,
                     Des_Warehouse_ID = rsto.desWarehouseID,
-                    Des_AreaLocationMaster_ID = rsto.desAreaID,
+                    Des_AreaLocationMaster_ID = rsto.desLocationID,
 
                     EventStatus = WorkQueueEventStatus.NEW,
                     Status = EntityStatus.ACTIVE,
@@ -102,12 +112,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                 };
                 wq = ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
+                rsto.workQueueID = wq.ID;
 
-                long workqueue_id = wq.ID.Value;
                 var distos = rsto.docItems.Select(x => new amt_DocumentItemStorageObject()
                 {
                     ID = null,
-                    Sou_StorageObject_ID = rsto.pstoID,
+                    Sou_StorageObject_ID = x.pstoID,
                     Des_StorageObject_ID = null,
                     DocumentItem_ID = x.docItemID,
                     Quantity = x.pstoQty,
@@ -115,38 +125,51 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     UnitType_ID = x.pstoUnitID,
                     BaseUnitType_ID = x.pstoBaseUnitID,
                     Status = EntityStatus.INACTIVE,
-                    WorkQueue_ID = workqueue_id,
+                    WorkQueue_ID = wq.ID.Value,
                 }).ToList();
                 ADO.DocumentADO.GetInstant().InsertMappingSTO(distos, this.BuVO);
+                
             };
             docs.ForEach(doc =>
             {
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
             });
-
-
-            return null;
+                        
+            this.WCSSendQueue(rstos);
+            return new TRes() { confirmResult = rstos };
         }
 
-        private void ValidateWCS(List<RootStoProcess> _pickStos, TReq reqVO)
+        private void WCSSendQueue(List<RootStoProcess> rstos)
         {
-            WCSQueueApi.TReq req = new WCSQueueApi.TReq()
+            WCSQueueApi.TReq wcQueue = new WCSQueueApi.TReq() { queueOut = new List<WCSQueueApi.TReq.queueout>() };
+            rstos.ForEach(rsto =>
             {
-                queueOut = _pickStos.Select(x => new WCSQueueApi.TReq.queueout()
+                wcQueue.queueOut.Add(new WCSQueueApi.TReq.queueout()
                 {
-                    queueID = null,
-                    desWarehouseCode = reqVO.desASRSWarehouseCode,
-                    desAreaCode = reqVO.desASRSAreaCode,
-                    desLocationCode = reqVO.desASRSLocationCode,
-                    priority = 0,
+                    priority = rsto.priority,
+                    queueID = rsto.workQueueID.Value,
+                    desWarehouseCode = this.StaticValue.GetWarehousesCode(rsto.desWarehouseID),
+                    desAreaCode = this.StaticValue.GetAreaMasterCode(rsto.desAreaID),
+                    desLocationCode = rsto.desLocationID.HasValue ?
+                                           ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
+                                           null,
+
                     baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
                     {
-                        baseCode = x.rstoCode,
-                        packInfos = null
+                        baseCode = rsto.rstoCode,
+                        packInfos = rsto.docItems.Select(x => new WCSQueueApi.TReq.queueout.baseinfo.packinfo()
+                        {
+                            batch = x.pstoBatch,
+                            lot = x.pstoLot,
+                            skuCode = x.pstoCode,
+                            skuQty = x.pstoBaseQty
+                        }).ToList()
                     }
-                }).ToList()
-            };
-            var wcsRes = ADO.QueueApi.WCSQueueApi.GetInstant().SendReady(req, this.BuVO);
+
+                });
+            });
+            
+            var wcsRes = ADO.QueueApi.WCSQueueApi.GetInstant().SendQueue(wcQueue, this.BuVO);
             if (wcsRes._result.resultcheck == 0)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);
@@ -155,8 +178,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
         {
-            var desWM = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSAreaCode);
-            var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSWarehouseCode);
+            var desWM = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
+            var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
             var desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
             reqVO.processResults.ForEach(
@@ -172,13 +195,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 {
                                     docID = x.docID,
                                     docItemID = y.docItemID,
-                                    pstoBaseQty = z.pstoBaseQty,
-                                    pstoBaseUnitID = z.pstoBaseUnitID,
+
+                                    bstoID = z.bstoID,
+                                    bstoCode = z.bstoCode,
+                                    pstoID = z.pstoID,
+                                    pstoCode = z.pstoCode,
+
                                     pstoQty = z.pstoQty,
+                                    pstoBaseQty = z.pstoBaseQty,
                                     pstoUnitID = z.pstoUnitID,
+                                    pstoBaseUnitID = z.pstoBaseUnitID,
                                 });
-                                rsto.pstoQty += z.pstoQty;
-                                rsto.pstoBaseQty += z.pstoBaseQty;
+                                //rsto.pstoQty += z.pstoQty;
+                                //rsto.pstoBaseQty += z.pstoBaseQty;
                                 rsto.priority = (rsto.priority > y.priority ? rsto.priority : y.priority);
                             }
                             else
@@ -192,31 +221,29 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         {
                                             docID = x.docID,
                                             docItemID = y.docItemID,
-                                            pstoBaseQty = z.pstoBaseQty,
-                                            pstoBaseUnitID = z.pstoBaseUnitID,
+
+                                            bstoID = z.bstoID,
+                                            bstoCode = z.bstoCode,
+                                            pstoID = z.pstoID,
+                                            pstoCode = z.pstoCode,
+
                                             pstoQty = z.pstoQty,
+                                            pstoBaseQty = z.pstoBaseQty,
                                             pstoUnitID = z.pstoUnitID,
+                                            pstoBaseUnitID = z.pstoBaseUnitID,
+
                                         }},
                                     priority = y.priority,
 
                                     rstoID = z.rstoID,
                                     rstoCode = z.rstoCode,
-                                    bstoID = z.bstoID,
-                                    bstoCode = z.bstoCode,
-                                    pstoID = z.pstoID,
-                                    pstoCode = z.pstoCode,
-
-                                    pstoQty = z.pstoQty,
-                                    pstoBaseQty = z.pstoBaseQty,
-                                    pstoUnitID = z.pstoUnitID,
-                                    pstoBaseUnitID = z.pstoBaseUnitID,
                                     
                                     warehouseID = z.warehouseID,
                                     areaID = z.areaID,
                                     locationID = z.locationID,
 
-                                    souWarehouseID = doc.Sou_Warehouse_ID.Value,
-                                    souAreaID = doc.Sou_AreaMaster_ID.Value,
+                                    souWarehouseID = z.warehouseID,
+                                    souAreaID = z.areaID,
 
                                     desWarehouseID = desWM.ID.Value,
                                     desAreaID = desAM.ID.Value,

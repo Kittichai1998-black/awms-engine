@@ -214,9 +214,9 @@ namespace AWMSEngine.Engine.V2.Business
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลสินค้าใน SKU Master");
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, Item.unitType, this.BuVO);
                 }
-                else
+                else if(!Item.options.Contains("basecode"))
                 {
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
                 }
 
                 var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, Item.quantity ?? 1, packMst.UnitType_ID);

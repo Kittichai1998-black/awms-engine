@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.APIService.WM
+namespace AWMSEngine.APIService.V2.ProcessQueue
 {
     public class ASRSProcessQueueAPI : BaseAPIService
     {
