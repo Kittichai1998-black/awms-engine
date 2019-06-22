@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.ADO.QueueApi
 {
-    public class WCSQueueApi : BaseMSSQLAccess<WCSQueueApi>
+    public class WCSQueueADO : BaseMSSQLAccess<WCSQueueADO>
     {
         public class TReq
         {

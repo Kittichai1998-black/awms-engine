@@ -219,23 +219,23 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void ValidateWCS(List<SPOutSTOProcessQueueCriteria> _pickStos, TReq reqVO)
         {
-            WCSQueueApi.TReq req = new WCSQueueApi.TReq()
+            WCSQueueADO.TReq req = new WCSQueueADO.TReq()
             {
-                queueOut = _pickStos.Select(x => new WCSQueueApi.TReq.queueout()
+                queueOut = _pickStos.Select(x => new WCSQueueADO.TReq.queueout()
                 {
                     queueID = null,
                     desWarehouseCode = reqVO.desASRSWarehouseCode,
                     desAreaCode = reqVO.desASRSAreaCode,
                     desLocationCode = reqVO.desASRSLocationCode,
                     priority = 0,
-                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                    baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
                         baseCode = x.rstoCode,
                         packInfos = null
                     }
                 }).ToList()
             };
-            var wcsRes = ADO.QueueApi.WCSQueueApi.GetInstant().SendReady(req, this.BuVO);
+            var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
             if(wcsRes._result.resultcheck == 0)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);

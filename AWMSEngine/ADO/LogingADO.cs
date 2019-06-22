@@ -1,4 +1,5 @@
-﻿using AWMSModel.Criteria;
+﻿using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -30,10 +31,11 @@ namespace AWMSEngine.ADO
             long id = param.Get<long>("@ID");
             return id;
         }
-        public long EndAPIService(long logID, int resultStatus, string resultCode, string resultMessage, string techMessage, VOCriteria buVO)
+        public long EndAPIService(long logID, object response, int resultStatus, string resultCode, string resultMessage, string techMessage, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
 
+            param.Add("@OutputText ", Newtonsoft.Json.JsonConvert.SerializeObject(response));
             param.Add("@ResultStatus", resultStatus);
             param.Add("@ResultCode", resultCode);
             param.Add("@ResultMessage ", resultMessage);
@@ -44,78 +46,23 @@ namespace AWMSEngine.ADO
             return id;
         }
 
-        public long BeginAPIServiceAction(long logID, string className, object request, VOCriteria buVO)
+        public long PutDocumentAlertMessage(long docID, string msgError, string msgWarning, string msgInfo, VOCriteria buVO)
         {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("@APIServiceEvent_ID", logID);
-            param.Add("@ClassName", className);
-            param.Add("@InputText ", "");
-            param.Add("@ID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.InputOutput);
-            this.Execute("SP_LOG_APISERVICE_ACTION_EVENT", System.Data.CommandType.StoredProcedure, param, buVO.Logger);
-            long id = param.Get<long>("@ID");
-            return id;
+            var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docID, buVO);
+            var options = doc.Options;
+            options = AMWUtil.Common.ObjectUtil.QryStrSetValue(options,
+                new KeyValuePair<string, object>("_error", msgError),
+                new KeyValuePair<string, object>("_warning", msgWarning),
+                new KeyValuePair<string, object>("_info", msgInfo));
+
+            ADO.DataADO.GetInstant().UpdateBy<amt_Document>(
+                new SQLConditionCriteria[]{
+                    new SQLConditionCriteria("id",doc.ID.Value, SQLOperatorType.EQUALS)
+                },
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string, object>("options",options)
+                }, buVO);
+            return doc.ID.Value;
         }
-        public long EndAPIServiceAction(long logActionID, int resultStatus, string resultCode, string resultMessage, string techMessage, VOCriteria buVO)
-        {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-
-            param.Add("@ResultStatus", resultStatus, System.Data.DbType.Int32);
-            param.Add("@ResultCode", resultCode, System.Data.DbType.String);
-            param.Add("@ResultMessage ", resultMessage, System.Data.DbType.String);
-            param.Add("@TechMessage ", techMessage, System.Data.DbType.String);
-            param.Add("@ID", logActionID, System.Data.DbType.Int64, System.Data.ParameterDirection.InputOutput);
-            this.Execute("SP_LOG_APISERVICE_ACTION_EVENT", System.Data.CommandType.StoredProcedure, param, buVO.Logger);
-            long id = param.Get<long>("@ID");
-            return id;
-        }
-
-        /*public long STOEvent(long? documentItemID, long? storageObjectID, VOCriteria buVO)
-        {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("LogRefID", buVO.Logger.LogRefID);
-            param.Add("TokenID", buVO.Get<string>(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_TOKEN));
-            param.Add("DocumentItem_ID ", documentItemID);
-            param.Add("Des_StorageObject_ID ", storageObjectID);
-            param.Add("ActionBy", buVO.ActionBy);
-
-            int res = this.Execute("SP_LOG_STO_EVENT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
-            return res;
-        }*/
-        /*public long STOEvent(StorageObjectEventCriteria log,VOCriteria buVO)
-        {
-            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
-            param.Add("ActionCommand", log.ActionCommand);
-            param.Add("Des_AreaLocationMaster_ID", log.Des_AreaLocationMaster_ID);
-            param.Add("Des_AreaMaster_ID ", log.Des_AreaMaster_ID);
-            param.Add("Des_BaseMaster_ID ", log.Des_BaseMaster_ID);
-            param.Add("Des_Branch_ID ", log.Des_Branch_ID);
-            param.Add("Des_PackMaster_ID ", log.Des_PackMaster_ID);
-            param.Add("Des_ParentStorageObject_ID ", log.Des_ParentStorageObject_ID);
-            param.Add("Des_RootStorageObject_ID ", log.Des_RootStorageObject_ID);
-            param.Add("Des_SKUMaster_ID ", log.Des_SKUMaster_ID);
-            param.Add("Des_StorageObject_ID ", log.Des_StorageObject_ID);
-            param.Add("Des_Warehouse_ID ", log.Des_Warehouse_ID);
-            param.Add("DocumentItem_ID", log.DocumentItem_ID);
-            param.Add("Document_ID ", log.Document_ID);
-            param.Add("Sou_AreaLocationMaster_ID ", log.Sou_AreaLocationMaster_ID);
-            param.Add("Sou_AreaMaster_ID ", log.Sou_AreaMaster_ID);
-            param.Add("Sou_BaseMaster_ID", log.Sou_BaseMaster_ID);
-            param.Add("Sou_Branch_ID", log.Sou_Branch_ID);
-            param.Add("Sou_PackMaster_ID", log.Sou_PackMaster_ID);
-            param.Add("Sou_ParentStorageObject_ID", log.Sou_ParentStorageObject_ID);
-            param.Add("Sou_RootStorageObject_ID", log.Sou_RootStorageObject_ID);
-            param.Add("Sou_SKUMaster_ID", log.Sou_SKUMaster_ID);
-            param.Add("Sou_StorageObject_ID", log.Sou_StorageObject_ID);
-            param.Add("Sou_Warehouse_ID", log.Sou_Warehouse_ID);
-            
-            param.Add("ResultStatus", log.Sou_Warehouse_ID);
-            param.Add("ResultCode", log.Sou_Warehouse_ID);
-            param.Add("ResultMessage", log.Sou_Warehouse_ID);
-            param.Add("TechMessage", log.Sou_Warehouse_ID);
-            param.Add("ActionBy", buVO.ActionBy);
-
-            int res = this.Execute("SP_LOG_STO_PUT", System.Data.CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
-            return res;
-        }*/
     }
 }

@@ -260,6 +260,17 @@ namespace AMWUtil.Common
             string res = Regex.Replace(match.Value, "^[?&]*" + key + "=|[&]*$", "");
             return res;
         }
+        public static string QryStrSetValue(this string param, params KeyValuePair<string, object>[] values)
+        {
+            var kv = QryStrToKeyValues(param);
+            foreach (var v in values)
+            {
+                kv.RemoveAll(x => x.Key == v.Key);
+                kv.Add(new KeyValuePair<string, string>(v.Key, string.Format("{0}", v.Value)));
+            }
+            var res = ListKeyToQryStr(kv);
+            return res;
+        }
         public static string QryStrSetValue(this string param, string key, object value)
         {
             var kv = QryStrToKeyValues(param);

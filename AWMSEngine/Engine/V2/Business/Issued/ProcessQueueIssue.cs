@@ -107,8 +107,8 @@ namespace AWMSEngine.Engine.V2.Business.Issued
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             TRes res = new TRes();
-            var queueWorkQueue = new WCSQueueApi.TReq();
-            var queueWorkQueueOut = new List<WCSQueueApi.TReq.queueout>();
+            var queueWorkQueue = new WCSQueueADO.TReq();
+            var queueWorkQueueOut = new List<WCSQueueADO.TReq.queueout>();
             List<SPOutSTOProcesQueueIssue> stoRoot = new List<SPOutSTOProcesQueueIssue>();
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
             DocumentEventStatus[] DocEventStatuses = new DocumentEventStatus[] { DocumentEventStatus.NEW, DocumentEventStatus.WORKING };
@@ -388,13 +388,13 @@ namespace AWMSEngine.Engine.V2.Business.Issued
 
                 if (this.StaticValue.AreaMasters.FirstOrDefault(x => x.ID == processed.areaID).AreaMasterType_ID == Convert.ToInt16(AreaMasterTypeID.STORAGE_ASRS))
                 {
-                    var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
-                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                    var baseInfo = new WCSQueueADO.TReq.queueout.baseinfo();
+                    baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
                         baseCode = processed.baseCode,
                         packInfos = null
                     };
-                    queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
+                    queueWorkQueueOut.Add(new WCSQueueADO.TReq.queueout()
                     {
                         queueID = null,
                         desWarehouseCode = _warehouseASRS.Code,
@@ -417,7 +417,7 @@ namespace AWMSEngine.Engine.V2.Business.Issued
 
             if (queueWorkQueue.queueOut != null && chkMachineASRS.ToUpper() == "TRUE")
             {
-                var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+                var wcsAcceptRes = WCSQueueADO.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
                 if (wcsAcceptRes._result.resultcheck == 0)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าได้");

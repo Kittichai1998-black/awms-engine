@@ -74,8 +74,8 @@ namespace AWMSEngine.Engine.Business.Issued
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var queueWorkQueue = new WCSQueueApi.TReq();
-            var queueWorkQueueOut = new List<WCSQueueApi.TReq.queueout>();
+            var queueWorkQueue = new WCSQueueADO.TReq();
+            var queueWorkQueueOut = new List<WCSQueueADO.TReq.queueout>();
 
             TRes res = new TRes();
             StorageObjectCriteria stoCriteria = new StorageObjectCriteria();
@@ -156,14 +156,14 @@ namespace AWMSEngine.Engine.Business.Issued
                 {
                     
                     SPworkQueue workQ = CreateQIssue(docItems, stoCriteria, result.priority, DateTime.Now, stoCriteria.areaID.Value);
-                    var baseInfo = new WCSQueueApi.TReq.queueout.baseinfo();
-                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                    var baseInfo = new WCSQueueADO.TReq.queueout.baseinfo();
+                    baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
                         baseCode = result.baseCode,
                         packInfos = null
                     };
 
-                    queueWorkQueueOut.Add(new WCSQueueApi.TReq.queueout()
+                    queueWorkQueueOut.Add(new WCSQueueADO.TReq.queueout()
                     {
                         queueID = workQ.ID,
                         desWarehouseCode = _warehouseASRS.Code,
@@ -191,7 +191,7 @@ namespace AWMSEngine.Engine.Business.Issued
 
             if (queueWorkQueue.queueOut != null && chkMachineASRS.ToUpper() == "TRUE")
             {
-                var wcsAcceptRes = WCSQueueApi.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
+                var wcsAcceptRes = WCSQueueADO.GetInstant().SendQueue(queueWorkQueue, this.BuVO);
                 if (wcsAcceptRes._result.resultcheck == 0)
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถเบิกพาเลทสินค้าจาก ASRS ได้");

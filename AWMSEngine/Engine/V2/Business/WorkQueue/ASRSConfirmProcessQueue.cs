@@ -132,7 +132,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             };
             docs.ForEach(doc =>
             {
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                if(rstos.Any(x=>x.docItems.Any(y => y.docID == doc.ID)))
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
+                else
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
             });
                         
             this.WCSSendQueue(rstos);
@@ -141,10 +144,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void WCSSendQueue(List<RootStoProcess> rstos)
         {
-            WCSQueueApi.TReq wcQueue = new WCSQueueApi.TReq() { queueOut = new List<WCSQueueApi.TReq.queueout>() };
+            WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
             rstos.ForEach(rsto =>
             {
-                wcQueue.queueOut.Add(new WCSQueueApi.TReq.queueout()
+                wcQueue.queueOut.Add(new WCSQueueADO.TReq.queueout()
                 {
                     priority = rsto.priority,
                     queueID = rsto.workQueueID.Value,
@@ -154,10 +157,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                            ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                            null,
 
-                    baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                    baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
                         baseCode = rsto.rstoCode,
-                        packInfos = rsto.docItems.Select(x => new WCSQueueApi.TReq.queueout.baseinfo.packinfo()
+                        packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
                         {
                             batch = x.pstoBatch,
                             lot = x.pstoLot,
@@ -169,7 +172,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 });
             });
             
-            var wcsRes = ADO.QueueApi.WCSQueueApi.GetInstant().SendQueue(wcQueue, this.BuVO);
+            var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
             if (wcsRes._result.resultcheck == 0)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);

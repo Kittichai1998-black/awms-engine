@@ -43,10 +43,10 @@ namespace AWMSEngine.Engine.Business.Auditor
         {
             TRes listQueue = new TRes();
             var itemLists = new List<TRes.ItemList>();
-            var queueCheck = new WCSQueueApi.TReq();
-            var queueWorkQueue = new WCSQueueApi.TReq();
-            var queueOut = new List<WCSQueueApi.TReq.queueout>();
-            var queueOut2 = new List<WCSQueueApi.TReq.queueout>();
+            var queueCheck = new WCSQueueADO.TReq();
+            var queueWorkQueue = new WCSQueueADO.TReq();
+            var queueOut = new List<WCSQueueADO.TReq.queueout>();
+            var queueOut2 = new List<WCSQueueADO.TReq.queueout>();
 
             reqVO.workQueue.ForEach(x =>
             {
@@ -54,14 +54,14 @@ namespace AWMSEngine.Engine.Business.Auditor
                 {
                     if (x.Sou_AreaMaster_ID == 5)
                     {
-                        var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
-                        baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                        var baseInfo = new WCSQueueADO.TRes.queueout.baseinfo();
+                        baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                         {
                             baseCode = x.StorageObject_Code,
                             packInfos = null
                         };
 
-                        queueOut.Add(new WCSQueueApi.TReq.queueout()
+                        queueOut.Add(new WCSQueueADO.TReq.queueout()
                         {
                             queueID = null,
                             baseInfo = baseInfo,
@@ -115,14 +115,14 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                         var resWorkQueue = ADO.WorkQueueADO.GetInstant().Create_LossVersion(x, this.BuVO);
 
-                        var baseInfo = new WCSQueueApi.TRes.queueout.baseinfo();
-                        baseInfo = new WCSQueueApi.TReq.queueout.baseinfo()
+                        var baseInfo = new WCSQueueADO.TRes.queueout.baseinfo();
+                        baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                         {
                             baseCode = resWorkQueue.StorageObject_Code,
                             packInfos = null
                         };
 
-                        queueOut2.Add(new WCSQueueApi.TReq.queueout()
+                        queueOut2.Add(new WCSQueueADO.TReq.queueout()
                         {
                             queueID = resWorkQueue.ID,
                             baseInfo = baseInfo,
