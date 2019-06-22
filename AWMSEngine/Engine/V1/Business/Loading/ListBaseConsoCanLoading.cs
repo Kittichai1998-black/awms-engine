@@ -22,7 +22,7 @@ namespace AWMSEngine.Engine.Business.Loading
             public List<DataItem> datas;
             public class DataItem: SPOutSTORootCanUseCriteria
             {
-                public long docItemID;
+                //public long docItemID;
                 public long linkDocID;
                 public bool isLoaded;
                 public string issuedCode;

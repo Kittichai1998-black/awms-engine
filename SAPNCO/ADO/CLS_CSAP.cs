@@ -9,7 +9,6 @@ namespace SAPNCO.ADO
     public class CLS_CSAP : IDestinationConfiguration
     {
         public event RfcDestinationManager.ConfigurationChangeHandler ConfigurationChanged;
-
         public bool ChangeEventsSupported()
         {
             return false;

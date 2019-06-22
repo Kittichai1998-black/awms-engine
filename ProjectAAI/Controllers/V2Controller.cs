@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProjectAAI.Controllers
 {
-    public class V2Controller : AWMSEngine.Controllers.BaseV2Controller
+    public class V2Controller : AWMSEngine.Controllers.V2.BaseV2Controller
     {
     }
 }

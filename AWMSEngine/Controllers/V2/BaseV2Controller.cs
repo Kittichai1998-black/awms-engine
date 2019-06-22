@@ -7,7 +7,7 @@ using AMWUtil.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AWMSEngine.Controllers
+namespace AWMSEngine.Controllers.V2
 {
     [Route("v2")]
     [ApiController]

@@ -13,13 +13,7 @@ namespace TestConvert
         {
             this.sysout = sysout;
         }
-        [Fact]
-        public void Test5()
-        {
-            var iw = Z.Expressions.Eval.Execute("EvalExec(2);");
 
-            int EvalExec(int i) { return i; }
-        }
         [Fact]
         public void Test1()
         {
