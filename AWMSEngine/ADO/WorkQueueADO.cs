@@ -17,7 +17,10 @@ namespace AWMSEngine.ADO
             var q = ADO.DataADO.GetInstant().SelectByID<amt_WorkQueue>(queueID, buVO);
             return SPworkQueue.Generate(q);
         }
-        public SPworkQueue Create(SPworkQueue obj, VOCriteria buVO)
+        /// <summary>
+        /// ไม่ได้ใช้งานแล้ว
+        /// </summary>
+        public SPworkQueue Create_LossVersion(SPworkQueue obj, VOCriteria buVO)
         {
             if (!obj.ID.HasValue)
                 this.PUT(obj, buVO);

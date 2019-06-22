@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProjectSTA.Controllers
 {
-    public class TokenController : AWMSEngine.Controllers.BaseV2TokenController
+    public class TokenController : AWMSEngine.Controllers.V2.BaseV2TokenController
     {
     }
 }

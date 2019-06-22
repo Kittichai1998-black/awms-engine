@@ -41,6 +41,7 @@ namespace AWMSModel.Criteria.SP.Response
         public long pstoUnitID;
         public string pstoUnitCode;
 
+        public bool useFullPick;
         public DateTime? pstoExpiryDate;
         public DateTime? pstoProductDate;
         public DateTime pstoCreateTime;

@@ -16,7 +16,7 @@ namespace AWMSModel.Criteria.SP.Request
         public bool useShelfLifeDate;
         public bool useExpireDate;
         public bool useIncubateDate;
-        public bool usePickFull;
+        public bool useFullPick;
 
         public ConditionProcess condition;
         public List<StorageObjectEventStatus> eventStatuses;

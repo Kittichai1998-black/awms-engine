@@ -185,7 +185,7 @@ namespace AWMSEngine.APIService
                 if (!string.IsNullOrEmpty(apiKey))
                     result.stacktrace = null;
 
-                ADO.LogingADO.GetInstant().EndAPIService(dbLogID, _status, _code, _message, _stacktrace, this.BuVO);
+                ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
                 this.Logger.LogInfo("RESPONSE_DATA:: " + ObjectUtil.Json(response));
                 this.Logger.LogInfo("####### END TRANSACTION #######");
             }

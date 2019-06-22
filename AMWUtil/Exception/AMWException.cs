@@ -36,8 +36,7 @@ namespace AMWUtil.Exception
                 string.Format(code + ":" 
                     + (Language == ENLanguage.EN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).EN :
                     Language == ENLanguage.CN ? AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).CN :
-                        AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).TH)
-                    + " \nLOG." + (logger==null ? "???" : logger.LogRefID),
+                        AMWUtil.Common.AttributeUtil.Attribute<AMWExceptionDescription>(code).TH),
                     paramters??new string[] { })
                   )
         {

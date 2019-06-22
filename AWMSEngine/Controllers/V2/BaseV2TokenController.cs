@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace AWMSEngine.Controllers
+namespace AWMSEngine.Controllers.V2
 {
     [Route("v2/token")]
     [ApiController]

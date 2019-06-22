@@ -64,6 +64,10 @@ namespace AWMSEngine.ADO.StaticValue
 
             return w;
         }
+        public string GetWarehousesCode(long id)
+        {
+            return this._Warehouses.First(x => x.ID == id).Code;
+        }
 
         private List<ams_AreaMaster> _AreaMasters;
         public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
@@ -81,10 +85,18 @@ namespace AWMSEngine.ADO.StaticValue
 
             return a;
         }
-      
+        public string GetAreaMasterCode(long id)
+        {
+            return this._AreaMasters.First(x => x.ID == id).Code;
+        }
 
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
+        public string GetAreaMasterTypesCode(long id)
+        {
+            return this._AreaMasterTypes.First(x => x.ID == id).Code;
+        }
+
         private List<ams_AreaRoute> _AreaMasterLines;
         public List<ams_AreaRoute> AreaMasterLines { get => this._AreaMasterLines; }
 

@@ -21,7 +21,7 @@ namespace AMWUtil.Common
             lock (GenUniqID_Lock)
             {
                 long t = DateTime.UtcNow.Ticks;
-                GenUniqID_Run = GenUniqID_Run >= 1000 ? 0 : GenUniqID_Run + 1;
+                GenUniqID_Run = GenUniqID_Run >= 10000 ? 0 : GenUniqID_Run + 1;
                 string id = NumZ(t) + NumZ(GenUniqID_Run, 1);
                 return id;
             }
@@ -258,6 +258,17 @@ namespace AMWUtil.Common
         {
             var match = Regex.Match("?" + param + "&", "[&?]" + key + "=([^&]*)");
             string res = Regex.Replace(match.Value, "^[?&]*" + key + "=|[&]*$", "");
+            return res;
+        }
+        public static string QryStrSetValue(this string param, params KeyValuePair<string, object>[] values)
+        {
+            var kv = QryStrToKeyValues(param);
+            foreach (var v in values)
+            {
+                kv.RemoveAll(x => x.Key == v.Key);
+                kv.Add(new KeyValuePair<string, string>(v.Key, string.Format("{0}", v.Value)));
+            }
+            var res = ListKeyToQryStr(kv);
             return res;
         }
         public static string QryStrSetValue(this string param, string key, object value)

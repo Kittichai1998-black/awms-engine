@@ -58,13 +58,13 @@ namespace AWMSEngine.Engine
             TRes resVO = null;
             var result = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             long dbLogID = this.BuVO.Get<long>(BusinessVOConst.KEY_DB_LOGID);
-            long dbLogActionID = 0;
+            //long dbLogActionID = 0;
             var resultStatus = new { status = -1,code="", message = "", techmessage = "" };
             try
             {
                 this.Logger = logger;
                 this.Logger.LogInfo("REQUEST_DATA:: " + resVO.Json());
-                dbLogActionID = ADO.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
+                //dbLogActionID = ADO.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 resVO = this.ExecuteEngine(reqVO);
@@ -84,7 +84,7 @@ namespace AWMSEngine.Engine
             }
             finally
             {
-                ADO.LogingADO.GetInstant().EndAPIServiceAction(dbLogActionID,resultStatus.status,resultStatus.code,resultStatus.message,resultStatus.techmessage, this.BuVO);
+                //ADO.LogingADO.GetInstant().EndAPIServiceAction(dbLogActionID,resultStatus.status,resultStatus.code,resultStatus.message,resultStatus.techmessage, this.BuVO);
 
                 if (this.Logger != null)
                 {
