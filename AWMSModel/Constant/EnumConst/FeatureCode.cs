@@ -88,37 +88,6 @@ namespace AWMSModel.Constant.EnumConst
         [EnumValueAttribute(ValueString = "ACPQCCD01")]
         EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock,
 
-        /// <summary> Create Document GI for FG_FASTMOVE : ตรวจสอบข้อมูลก่อนสร้างเอกสาร </summary>
-        [EnumValueAttribute(ValueString = "BEFCreateDoc_1002_102")]
-        BEFCreateDoc_1002_102,
-
-        /// <summary> Create Document GI for FG_FASTMOVE : ตรวจสอบข้อมูลหลังสร้างเอกสาร </summary>
-        [EnumValueAttribute(ValueString = "AFTCreateDoc_1002_102")]
-        AFTCreateDoc_1002_102,
-
-        /// <summary> Create Document GR for EMP_TRANSFER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร EMP_TRANSFER
-        [EnumValueAttribute(ValueString = "BEFCreateDoc_1001_201")]
-        BEFCreateDoc_1001_201,
-
-        /// <summary> Create Document GR for EMP_TRANSFER : ตรวจสอบข้อมูลหลังสร้างเอกสาร EMP_TRANSFER
-        [EnumValueAttribute(ValueString = "AFTCreateDoc_1001_201")]
-        AFTCreateDoc_1001_201,
-
-        /// <summary> Create Document GI for EMP_TRANSFER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร EMP_TRANSFER
-        [EnumValueAttribute(ValueString = "BEFCreateDoc_1002_201")]
-        BEFCreateDoc_1002_201,
-
-        /// <summary> Create Document GI for EMP_TRANSFER : ตรวจสอบข้อมูลหลังสร้างเอกสาร EMP_TRANSFER
-        [EnumValueAttribute(ValueString = "AFTCreateDoc_1002_201")]
-        AFTCreateDoc_1002_201,
-
-        /// <summary> Create Document GR for FG_RETURNCUSTOMER : ตรวจสอบข้อมูลก่อนสร้างเอกสาร FG_RETURNCUSTOMER
-        [EnumValueAttribute(ValueString = "BEFCreateDoc_1001_114")]
-        BEFCreateDoc_1001_114,
-
-        /// <summary> Create Document GR for FG_RETURNCUSTOMER : ตรวจสอบข้อมูลหลังสร้างเอกสาร FG_RETURNCUSTOMER
-        [EnumValueAttribute(ValueString = "AFTCreateDoc_1001_114")]
-        AFTCreateDoc_1001_114,
 
     }
 }
