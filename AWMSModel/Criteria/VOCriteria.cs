@@ -1,4 +1,5 @@
-﻿using AMWUtil.Logger;
+﻿using AMWUtil.DataAccess.Http;
+using AMWUtil.Logger;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Entity;
 using System;
@@ -111,6 +112,14 @@ namespace AWMSModel.Criteria
         }
         private AMWLogger _Logger;
         public AMWLogger Logger { get => this.Get<AMWLogger>(BusinessVOConst.KEY_LOGGER); }
+        public List<HttpResultModel> FinalLogSendAPIEvent
+        {
+            get => this.Get<FinalDatabaseLogCriteria>(BusinessVOConst.KEY_FINAL_DB_LOG).sendAPIEvents;
+        }
+        public List<FinalDatabaseLogCriteria.DocumentOptionMessage> FinalLogDocMessage
+        {
+            get => this.Get<FinalDatabaseLogCriteria>(BusinessVOConst.KEY_FINAL_DB_LOG).documentOptionMessages;
+        }
         public int ActionBy
         {
             get
