@@ -217,22 +217,25 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                             if (resStoPack != null && resStoPack.Count() > 0)
                             {
-                                
-                                var doc = ADO.DocumentADO.GetInstant().ListBySTO(resStoPack.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO)
-                                         .FindLast(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW && x.MovementType_ID == MovementType.FG_RETURN_WM);
+                                var doc = new amt_Document();
                                 var resdocumentItems = new amt_DocumentItem();
                                 if (reqVO.docItemID != null)
                                 {
                                     resdocumentItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                                     new SQLConditionCriteria[] {
                                         new SQLConditionCriteria("ID",reqVO.docItemID, SQLOperatorType.EQUALS),
-                                        new SQLConditionCriteria("Document_ID",doc.ID.Value, SQLOperatorType.EQUALS),
+                                        //new SQLConditionCriteria("Document_ID",doc.ID.Value, SQLOperatorType.EQUALS),
                                         new SQLConditionCriteria("EventStatus", string.Join(',', EnumUtil.ListValueInt(DocumentEventStatus.WORKING, DocumentEventStatus.NEW)), SQLOperatorType.IN),
                                         new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN)
                                     }, this.BuVO).FirstOrDefault();
                                 }
                                 else
                                 {
+                                    doc = ADO.DocumentADO.GetInstant().ListBySTO(resStoPack.Select(x => x.id.Value).ToList(), DocumentTypeID.GOODS_RECEIVED, this.BuVO)
+                                        .FindLast(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW && x.MovementType_ID == MovementType.FG_RETURN_WM);
+                                    if (doc == null)
+                                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document of Scan Code '" + reqVO.scanCode + "' Not Found");
+
                                     resdocumentItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                                     new SQLConditionCriteria[] {
                                         new SQLConditionCriteria("Document_ID",doc.ID.Value, SQLOperatorType.EQUALS),
@@ -244,12 +247,15 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                     }, this.BuVO).FirstOrDefault();
                                 }
                                 
+                                if(resdocumentItems == null)
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
+
                                 var resDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                                     new SQLConditionCriteria[] {
                                         new SQLConditionCriteria("DocumentItem_ID",resdocumentItems.ID, SQLOperatorType.EQUALS),
                                         new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
                                     }, this.BuVO);
-
+                                
                                 resDiSto.ForEach(disto =>
                                 {
                                     if (disto.Sou_StorageObject_ID == resStoPack[0].id.Value)
