@@ -221,13 +221,34 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 var resdocumentItems = new amt_DocumentItem();
                                 if (reqVO.docItemID != null)
                                 {
-                                    resdocumentItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
-                                    new SQLConditionCriteria[] {
-                                        new SQLConditionCriteria("ID",reqVO.docItemID, SQLOperatorType.EQUALS),
-                                        //new SQLConditionCriteria("Document_ID",doc.ID.Value, SQLOperatorType.EQUALS),
-                                        new SQLConditionCriteria("EventStatus", string.Join(',', EnumUtil.ListValueInt(DocumentEventStatus.WORKING, DocumentEventStatus.NEW)), SQLOperatorType.IN),
-                                        new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN)
-                                    }, this.BuVO).FirstOrDefault();
+                                    /* resdocumentItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+                                     new SQLConditionCriteria[] {
+                                         new SQLConditionCriteria("ID",reqVO.docItemID, SQLOperatorType.EQUALS),
+                                         //new SQLConditionCriteria("Document_ID",doc.ID.Value, SQLOperatorType.EQUALS),
+                                         new SQLConditionCriteria("EventStatus", string.Join(',', EnumUtil.ListValueInt(DocumentEventStatus.WORKING, DocumentEventStatus.NEW)), SQLOperatorType.IN),
+                                         new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN)
+                                     }, this.BuVO).FirstOrDefault();*/
+                                    resdocumentItems = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem((long)reqVO.docItemID, this.BuVO);
+                                    if (resdocumentItems != null)
+                                    {
+                                        resdocumentItems.DocItemStos.ForEach(disto =>
+                                        {
+                                            if (disto.Sou_StorageObject_ID == resStoPack[0].id.Value)
+                                            {
+                                                disto.Quantity -= 0;
+                                                disto.BaseQuantity -= 0;
+                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
+                                            }
+                                        });
+                                        var docx = ADO.DocumentADO.GetInstant().Get(resdocumentItems.Document_ID, this.BuVO);
+
+                                        docx.DocumentItems = new List<amt_DocumentItem>() { resdocumentItems };
+                                        result.docs = docx;
+                                    }
+                                    else
+                                    {
+                                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
+                                    }
                                 }
                                 else
                                 {
@@ -245,30 +266,30 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                         new SQLConditionCriteria("EventStatus", string.Join(',', EnumUtil.ListValueInt(DocumentEventStatus.WORKING, DocumentEventStatus.NEW)), SQLOperatorType.IN),
                                         new SQLConditionCriteria("Status", string.Join(',', EnumUtil.ListValueInt(EntityStatus.INACTIVE, EntityStatus.ACTIVE)), SQLOperatorType.IN)
                                     }, this.BuVO).FirstOrDefault();
-                                }
+                               
                                 
-                                if(resdocumentItems == null)
-                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
+                                    if(resdocumentItems == null)
+                                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
-                                var resDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                                    new SQLConditionCriteria[] {
-                                        new SQLConditionCriteria("DocumentItem_ID",resdocumentItems.ID, SQLOperatorType.EQUALS),
-                                        new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
-                                    }, this.BuVO);
+                                    var resDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                                        new SQLConditionCriteria[] {
+                                            new SQLConditionCriteria("DocumentItem_ID",resdocumentItems.ID, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
+                                        }, this.BuVO);
                                 
-                                resDiSto.ForEach(disto =>
-                                {
-                                    if (disto.Sou_StorageObject_ID == resStoPack[0].id.Value)
+                                    resDiSto.ForEach(disto =>
                                     {
-                                        disto.Quantity -= reqVO.amount;
-                                        disto.BaseQuantity -= reqVO.amount;
-                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
-                                    }
-                                });
-                                resdocumentItems.DocItemStos = resDiSto;
-                                doc.DocumentItems = new List<amt_DocumentItem>() { resdocumentItems };
-                                result.docs = doc;
-
+                                        if (disto.Sou_StorageObject_ID == resStoPack[0].id.Value)
+                                        {
+                                            disto.Quantity -= reqVO.amount;
+                                            disto.BaseQuantity -= reqVO.amount;
+                                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
+                                        }
+                                    });
+                                    resdocumentItems.DocItemStos = resDiSto;
+                                    doc.DocumentItems = new List<amt_DocumentItem>() { resdocumentItems };
+                                    result.docs = doc;
+                                }
                             }
                             else
                             {
