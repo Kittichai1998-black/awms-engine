@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.WM
     {
         public override int APIServiceID()
         {
-            return 93;
+            return 94;
         }
         public ScanPickingReturnAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {

@@ -123,6 +123,8 @@ namespace ProjectSTA.Engine.Business.Received
                                     new SQLConditionCriteria("InnerObjectSize_ID", (long)objSizePackCheck.ID, SQLOperatorType.EQUALS, SQLConditionType.AND),
                                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS, SQLConditionType.AND), 
                               }, this.BuVO).FirstOrDefault();
+                            if (objectSizeMaps == null)
+                                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Object Size Maps of Pack Not Found");
                             var lastPackQty = stoPack.Quantity;
                             if(lastPackQty == objectSizeMaps.MaxQuantity)
                             {
