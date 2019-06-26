@@ -118,6 +118,7 @@ namespace AWMSEngine.APIService
                         documentOptionMessages = new List<FinalDatabaseLogCriteria.DocumentOptionMessage>(),
                         sendAPIEvents = new List<HttpResultModel>()
                     });
+
                 this.Permission(token,apiKey, APIServiceID());
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
@@ -210,14 +211,14 @@ namespace AWMSEngine.APIService
             this.Logger.LogInfo("APIKEY:: " + apiKey);
 
             if (!this.IsAuthenAuthorize)
-            if (!this.IsAuthenAuthorize)
                 return;
 
+            var apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.FullClassName == this.GetType().FullName);
+            if (apiService == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
 
-            ADO.TokenADO.GetInstant().Authen(token, apiKey,APIServiceID, this.BuVO);
-             
-            
-          
+            ADO.TokenADO.GetInstant().Authen(token, apiKey, apiService.ID.Value, this.BuVO);
+
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");
