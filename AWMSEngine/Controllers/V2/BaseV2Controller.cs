@@ -47,7 +47,7 @@ namespace AWMSEngine.Controllers.V2
         private dynamic ExecuteAPI(string serviceCode, string method, bool isAuthen, dynamic jsonObj)
         {
             var getStatic = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().APIServices;
-            var className = getStatic.FirstOrDefault(x => x.Code.ToUpper() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
+            var className = getStatic.FirstOrDefault(x => x.Code.ToUpper().Trim() == serviceCode.ToUpper() && x.ActionCommand.ToUpper() == method.ToUpper());
             
             if (className != null)
             {
