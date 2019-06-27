@@ -52,7 +52,7 @@ namespace AWMSEngine.Controllers.V2
             
             if (className != null)
             {
-                Type type = ClassType.GetClassType(className.FullClassName);//Type.GetType(className.FullClassName);
+                Type type = ClassType.GetClassType(className.FullClassName.Trim());//Type.GetType(className.FullClassName);
                 var getInstanct = (AWMSEngine.APIService.BaseAPIService)Activator.CreateInstance(type, new object[] { this, isAuthen });
                 var res = getInstanct.Execute(jsonObj);
                 return res;

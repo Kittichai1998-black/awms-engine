@@ -5,7 +5,7 @@ logger.filename = {RefID}.{Date}.log
 
 #------------------------------------
 #job.names = close_gr
-#job.close_gr.classname = ProjectMRK.Engine.JobService.ClosedDocumentJob
+#job.close_gr.classname = ProjectSTA.Engine.JobService.CloseGRDocJobServicecs
 #job.close_gr.cronex = * 0/5 * * * ?
 #job.close_gr.data = 
 
