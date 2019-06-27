@@ -24,79 +24,76 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
             var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
 
-            if (sto == null && reqVO.areaCode != "OS")
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
-            
-            if (sto == null && reqVO.areaCode == "OS")
-            {
-                var staticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
-                var _baseSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>("Code", reqVO.baseCode, buVO).OrderByDescending(x => x.ID).FirstOrDefault();
-                if(_baseSto == null)
-                    throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
+            //if (sto == null)
+            //{
+            //    var staticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            //    var _baseSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>("Code", reqVO.baseCode, buVO).OrderByDescending(x => x.ID).FirstOrDefault();
+            //    if (_baseSto == null)
+            //        throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
 
-                var objSizeBase = staticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
-                var objSizePack = staticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
+            //    var objSizeBase = staticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
+            //    var objSizePack = staticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
 
-                StorageObjectCriteria baseSto = new StorageObjectCriteria()
-                {
-                    code = _baseSto.Code,
-                    eventStatus = StorageObjectEventStatus.NEW,
-                    name = "Pallet",
-                    qty = 1,
-                    unitCode = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                    unitID = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    baseUnitCode = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                    baseUnitID = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    baseQty = 1,
-                    objectSizeID = objSizeBase.ID,
-                    type = StorageObjectType.BASE,
-                    mstID = _baseSto.BaseMaster_ID,
-                    objectSizeName = objSizeBase.Name,
-                    lengthM = reqVO.length,
-                    heightM = reqVO.height,
-                    widthM = reqVO.width,
-                    weiKG = reqVO.weight,
-                    warehouseID = _warehouseASRS.ID.Value,
-                    areaID = _areaASRS.ID.Value,
-                    parentID = _locationASRS.ID.Value,
-                    parentType = StorageObjectType.LOCATION
-            };
+            //    StorageObjectCriteria baseSto = new StorageObjectCriteria()
+            //    {
+            //        code = _baseSto.Code,
+            //        eventStatus = StorageObjectEventStatus.NEW,
+            //        name = "Pallet",
+            //        qty = 1,
+            //        unitCode = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+            //        unitID = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+            //        baseUnitCode = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+            //        baseUnitID = staticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+            //        baseQty = 1,
+            //        objectSizeID = objSizeBase.ID,
+            //        type = StorageObjectType.BASE,
+            //        mstID = _baseSto.BaseMaster_ID,
+            //        objectSizeName = objSizeBase.Name,
+            //        lengthM = reqVO.length,
+            //        heightM = reqVO.height,
+            //        widthM = reqVO.width,
+            //        weiKG = reqVO.weight,
+            //        warehouseID = _warehouseASRS.ID.Value,
+            //        areaID = _areaASRS.ID.Value,
+            //        parentID = _locationASRS.ID.Value,
+            //        parentType = StorageObjectType.LOCATION
+            //    };
 
-                var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
+            //    var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
 
-                var _packSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>("ParentStorageObject_ID", _baseSto.ID, buVO).FirstOrDefault();
+            //    var _packSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>("ParentStorageObject_ID", _baseSto.ID, buVO).FirstOrDefault();
 
-                var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", _packSto.Code, buVO).FirstOrDefault();
-                var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(sku.UnitType_ID, buVO);
+            //    var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>("Code", _packSto.Code, buVO).FirstOrDefault();
+            //    var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_UnitType>(sku.UnitType_ID, buVO);
 
-                var packSto = new StorageObjectCriteria()
-                {
-                    parentID = baseStoID,
-                    parentType = StorageObjectType.BASE,
-                    code = _packSto.Code,
-                    eventStatus = StorageObjectEventStatus.NEW,
-                    name = _packSto.Name,
-                    batch = _packSto.Batch,
-                    qty = Convert.ToDecimal(reqVO.mappingPallets.FirstOrDefault().qty),
-                    skuID = sku.ID.Value,
-                    unitCode = unit.Code,
-                    unitID = unit.ID.Value,
-                    baseUnitCode = unit.Code,
-                    baseUnitID = unit.ID.Value,
-                    baseQty = Convert.ToDecimal(reqVO.mappingPallets.FirstOrDefault().qty),
-                    objectSizeID = objSizePack.ID.Value,
-                    type = StorageObjectType.PACK,
-                    productDate = _packSto.ProductDate,
-                    objectSizeName = objSizePack.Name,
-                    mstID = _packSto.PackMaster_ID,
-                    weiKG = reqVO.weight
-                };
+            //    var packSto = new StorageObjectCriteria()
+            //    {
+            //        parentID = baseStoID,
+            //        parentType = StorageObjectType.BASE,
+            //        code = _packSto.Code,
+            //        eventStatus = StorageObjectEventStatus.NEW,
+            //        name = _packSto.Name,
+            //        batch = _packSto.Batch,
+            //        qty = Convert.ToDecimal(reqVO.mappingPallets.FirstOrDefault().qty),
+            //        skuID = sku.ID.Value,
+            //        unitCode = unit.Code,
+            //        unitID = unit.ID.Value,
+            //        baseUnitCode = unit.Code,
+            //        baseUnitID = unit.ID.Value,
+            //        baseQty = Convert.ToDecimal(reqVO.mappingPallets.FirstOrDefault().qty),
+            //        objectSizeID = objSizePack.ID.Value,
+            //        type = StorageObjectType.PACK,
+            //        productDate = _packSto.ProductDate,
+            //        objectSizeName = objSizePack.Name,
+            //        mstID = _packSto.PackMaster_ID,
+            //        weiKG = reqVO.weight
+            //    };
 
-                var packStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, buVO);
+            //    var packStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, buVO);
 
-                sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
+            //    sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
 
-            }
+            //}
 
             sto.lengthM = reqVO.length;
             sto.heightM = reqVO.height;
@@ -106,6 +103,11 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             sto.areaID = _areaASRS.ID.Value;
             sto.parentID = _locationASRS.ID.Value;
             sto.parentType = StorageObjectType.LOCATION;
+
+            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, buVO);
+
+            if(sto == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' Not Found");
 
             return sto;
         }
