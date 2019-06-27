@@ -33,7 +33,7 @@ namespace ProjectSTA.Engine.Business
                 else
                 {
                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(num,
-                        DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSED, this.BuVO);
+                        null, null, DocumentEventStatus.CLOSED, this.BuVO);
                 }
 
             }

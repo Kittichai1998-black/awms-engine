@@ -98,10 +98,18 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     //หา  List<amt_DocumentItem> ที่มีสินค้าตรงกัน และเช็ค Options(CartonNo) ถ้าไม่ตรงให้เพิ่ม DocItem ใหม่
                     if(FG_Movement == MovementType.FG_RETURN_WM)
                     {
-                        var _DocumentItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { packH.id.Value }, DocumentTypeID.GOODS_RECEIVED, buVO);
-                        if (_DocumentItems == null && _DocumentItems.Count() == 0)
-                            throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '" + reqVO.baseCode + "' Not Found");
-                        docItems.AddRange(_DocumentItems);
+                        var resDiSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                                         new SQLConditionCriteria[] {
+                                               new SQLConditionCriteria("Sou_StorageObject_ID",packH.id, SQLOperatorType.EQUALS),
+                                               new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
+                                         }, buVO).FirstOrDefault();
+                        if (resDiSto == null)
+                            throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item Storage Object of Pack Code '" + packH.code + "' Not Found");
+                        var resDocItem = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(resDiSto.DocumentItem_ID, buVO);
+                        if (resDocItem == null)
+                              throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item of Pack Code '" + packH.code + "' Not Found");
+                        resDocItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { resDiSto };
+                        docItems.Add(resDocItem);
                     }
                     else
                     {
@@ -138,7 +146,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                 }
                             });*/
                         }
-                        else
+                    else
                         {
                             docItem = null;
                         }
