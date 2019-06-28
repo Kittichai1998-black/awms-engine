@@ -56,31 +56,58 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                 var mapstoTree = mapsto.ToTreeList();
                 var packs = mapstoTree.Where(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW).ToList();
 
-                foreach (var packH in packs)
+                if (mapsto.eventStatus == StorageObjectEventStatus.AUDITED || mapsto.eventStatus == StorageObjectEventStatus.AUDITING)
                 {
+                    var listDoc = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(mapstoTree.FindAll(x => x.type == StorageObjectType.PACK).Select(x=>x.id.Value).ToList(), buVO);
+                    var listDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(listDoc.FirstOrDefault().ID.Value, buVO);
 
-                    amt_Document doc = new amt_Document();
+                    var mapstoPack = mapstoTree.FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
 
-                    doc = new CreateGRDocument().Execute(logger, buVO,
-                                   new CreateGRDocument.TReq()
-                                   {
-                                       refID = null,
-                                       ref1 = null,
-                                       ref2 = null,
-                                       souBranchID = null,
-                                       souWarehouseID = StaticValue.Warehouses.First(x => x.Code == mappingPallet.souWarehouseCode).ID,
-                                       souAreaMasterID = StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID,
-                                       desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
-                                       desWarehouseID = mapsto.warehouseID,
-                                       desAreaMasterID = StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID,
-                                       movementTypeID = MovementType.FG_TRANSFER_WM,
-                                       lot = null,
-                                       batch = null,
-                                       forCustomerID = StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
-                                       documentDate = DateTime.Now,
-                                       actionTime = DateTime.Now,
-                                       eventStatus = DocumentEventStatus.NEW,
-                                       receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
+                    listDocItem.ForEach(docItem =>
+                    {
+                        docItem.DocItemStos.ForEach(disto =>
+                        {
+                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, 
+                                disto.Sou_StorageObject_ID,
+                                Convert.ToDecimal(mappingPallet.qty) - mapstoPack.qty,
+                                Convert.ToDecimal(mappingPallet.qty) - mapstoPack.qty, 
+                                EntityStatus.ACTIVE, buVO);
+                        });
+                    });
+
+                    var pack = reqVO.mappingPallets.FirstOrDefault(y => mapstoPack.code == y.code);
+                    mapstoPack.qty = Convert.ToDecimal(pack.qty);
+                    mapstoPack.baseQty = Convert.ToDecimal(pack.qty);
+
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(mapstoPack, buVO);
+                }
+                else
+                {
+                    foreach (var packH in packs)
+                    {
+
+                        amt_Document doc = new amt_Document();
+
+                        doc = new CreateGRDocument().Execute(logger, buVO,
+                                       new CreateGRDocument.TReq()
+                                       {
+                                           refID = null,
+                                           ref1 = null,
+                                           ref2 = null,
+                                           souBranchID = null,
+                                           souWarehouseID = StaticValue.Warehouses.First(x => x.Code == mappingPallet.souWarehouseCode).ID,
+                                           souAreaMasterID = StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID,
+                                           desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
+                                           desWarehouseID = mapsto.warehouseID,
+                                           desAreaMasterID = StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID,
+                                           movementTypeID = MovementType.FG_TRANSFER_WM,
+                                           lot = null,
+                                           batch = null,
+                                           forCustomerID = StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
+                                           documentDate = DateTime.Now,
+                                           actionTime = DateTime.Now,
+                                           eventStatus = DocumentEventStatus.NEW,
+                                           receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
                                                                 new CreateGRDocument.TReq.ReceiveItem
                                                                 {
                                                                     packCode = packH.code,
@@ -95,10 +122,11 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                                                                     docItemStos = new List<amt_DocumentItemStorageObject>() { ConverterModel.ToDocumentItemStorageObject(packH, null, null, null)}
 
                                                                 }}
-                                   });
+                                       });
 
-                    docItems.AddRange(doc.DocumentItems);
+                        docItems.AddRange(doc.DocumentItems);
 
+                    }
                 }
             }
                 return docItems;

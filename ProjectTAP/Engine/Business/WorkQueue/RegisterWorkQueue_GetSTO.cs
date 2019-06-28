@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.Business.Received;
@@ -105,6 +106,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
 
                     mapsto = new WCSMappingPalletV2().Execute(logger, buVO, reqMapping);
                 }
+
                 mapsto.weiKG = reqVO.weight;
                 mapsto.lengthM = reqVO.length;
                 mapsto.heightM = reqVO.height;

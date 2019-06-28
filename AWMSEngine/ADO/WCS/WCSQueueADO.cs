@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.ADO.QueueApi
 {
-    public class WCSQueueADO : BaseMSSQLAccess<WCSQueueADO>
+    public class WCSQueueADO : BaseAPIAccess<WCSQueueADO>
     {
         public class TReq
         {
@@ -50,8 +50,7 @@ namespace AWMSEngine.ADO.QueueApi
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
             return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
-            var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("WCS_SEND_QUEUE");
-            var res = RESTFulAccess.SendJson<TRes>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas);
+            var res = this.SendJson<TRes>("WCS_SEND_QUEUE", datas, null, buVO);
             return res;
         }
 
@@ -61,8 +60,7 @@ namespace AWMSEngine.ADO.QueueApi
             return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             var d = datas.Clone();
             d.queueOut.ForEach(x => x.queueID = null);
-            var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig("WCS_SEND_QUEUE");
-            var res = RESTFulAccess.SendJson<TRes>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, d);
+            var res = this.SendJson<TRes>("WCS_SEND_QUEUE", d, null, buVO);
             return res;
         }
     }

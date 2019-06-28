@@ -308,7 +308,7 @@ namespace ProjectMRK.Engine.JobService
                 EventStatus = DocumentEventStatus.NEW,
 
                 Remark = null,
-                Options = "palletCode=" + jsonDetail.PalletID,
+                Options = "basecode=" + jsonDetail.PalletID,
                 Transport_ID = null,
 
                 DocumentItems = new List<amt_DocumentItem>(),
@@ -335,7 +335,7 @@ namespace ProjectMRK.Engine.JobService
                 ProductionDate = jsonDetail.ManufactureDate,
                 Ref1 = null,
                 Ref2 = null,
-                RefID = "palletCode=" + jsonDetail.PalletID,
+                RefID = "basecode=" + jsonDetail.PalletID,
 
                 EventStatus = DocumentEventStatus.NEW,
 

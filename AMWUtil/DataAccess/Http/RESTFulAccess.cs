@@ -7,6 +7,7 @@ using AMWUtil.Logger;
 using AMWUtil.Exception;
 using System.Net.Http;
 using AMWUtil.Common;
+using System.Linq;
 
 namespace AMWUtil.DataAccess.Http
 {
@@ -20,7 +21,12 @@ namespace AMWUtil.DataAccess.Http
             DELETE,
             PATCH
         }
-        public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 10000)
+        public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+            where T : class, new()
+        {
+            return SendForm<T>(logger, apiUrl, method, datas, null , authen, retry, timeout);
+        }
+        public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
             where T : class, new()
         {
             T result = null;
@@ -41,6 +47,8 @@ namespace AMWUtil.DataAccess.Http
             {
                 try
                 {
+                    var outResult = new HttpResultModel();
+                    outResults.Add(outResult);
                     retry--;
                     using (HttpClient client = new HttpClient())
                     {
@@ -55,6 +63,14 @@ namespace AMWUtil.DataAccess.Http
                             }
                         }
 
+                        if (outResult == null)
+                        {
+                            outResult.APIUrl = apiUrl;
+                            outResult.Header = string.Format("{0},{1},{2}", (retry + 1), method, client.DefaultRequestHeaders.From);
+                            outResult.InputText = datas.Json();
+                            outResult.StartTime = DateTime.Now;
+                        }
+
                         client.Timeout = new TimeSpan(timeout);
                         logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + datas.Json());
                         var response = client.PostAsync(apiUrl, content);
@@ -63,6 +79,13 @@ namespace AMWUtil.DataAccess.Http
                         string body = responseString.Result;
                         logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
                         result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
+
+                        if(outResult!= null)
+                        {
+                            outResult.HttpStatus = (int)response.Result.StatusCode;
+                            outResult.OutputText = body;
+                            outResult.EndTime = DateTime.Now;
+                        }
                     }
                 }
                 catch (System.Exception ex)
@@ -74,8 +97,12 @@ namespace AMWUtil.DataAccess.Http
 
             return result;
         }
-
-        public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 10000)
+        public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
+            where T : class, new()
+        {
+            return SendJson<T>(logger, apiUrl, method, datas, null, authen, retry, timeout);
+        }
+        public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
             where T : class, new()
         {
             T result = null;
@@ -85,6 +112,9 @@ namespace AMWUtil.DataAccess.Http
             {
                 try
                 {
+                    var outResult = new HttpResultModel();
+                    outResults.Add(outResult);
+
                     retry--;
                     HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(apiUrl);
                     httpWebRequest.ContentType = "application/json";
@@ -112,6 +142,16 @@ namespace AMWUtil.DataAccess.Http
                         logger.LogInfo("API_REQUEST_DATA(" + (retry + 1) + "):: " + json);
                     //return new T();
 
+
+                    if (outResult == null)
+                    {
+                        var heads = httpWebRequest.Headers.AllKeys.ToList().Select(x => x + "=" + httpWebRequest.Headers.Get(x)).JoinString();
+                        outResult.APIUrl = apiUrl;
+                        outResult.Header = string.Format("{0},{1},{2}", (retry + 1), method, heads);
+                        outResult.InputText = datas.Json();
+                        outResult.StartTime = DateTime.Now;
+                    }
+
                     using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {
                         streamWriter.Write(Newtonsoft.Json.JsonConvert.SerializeObject(datas));
@@ -128,7 +168,16 @@ namespace AMWUtil.DataAccess.Http
                         if (logger != null)
                             logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
                         result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
+
+                        if (outResult != null)
+                        {
+                            outResult.HttpStatus = (int)httpResponse.StatusCode;
+                            outResult.OutputText = body;
+                            outResult.EndTime = DateTime.Now;
+                        }
                     }
+
+
                 }
                 catch (System.Exception ex)
                 {

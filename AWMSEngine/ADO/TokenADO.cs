@@ -80,7 +80,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public string  Authen(string Token, string APIKey,int APIServiceID,
+        public string  Authen(string Token, string APIKey,long APIServiceID,
            VOCriteria buVO)
         {
             var param = new Dapper.DynamicParameters();
