@@ -327,7 +327,7 @@ namespace AWMSEngine.Engine.V2.Business
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             if (reqVo.scanCode == mapsto.code)
             {
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(reqVo.rootID.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
                // msf.eventStatus = StorageObjectEventStatus.REMOVED;
                // msf.areaID = msf.areaID.Value;
                // ADOSto.PutV2(msf, this.BuVO);
