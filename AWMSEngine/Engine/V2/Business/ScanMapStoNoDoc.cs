@@ -175,9 +175,9 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     if (mapsto.warehouseID != reqVO.warehouseID)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
-
-                    if (mapsto.areaID != reqVO.areaID)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
+                    if (reqVO.action != VirtualMapSTOActionType.SELECT)
+                        if (mapsto.areaID != reqVO.areaID)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
                 }
 
             }
