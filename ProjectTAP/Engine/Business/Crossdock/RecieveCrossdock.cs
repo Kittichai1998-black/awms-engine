@@ -17,9 +17,9 @@ namespace ProjectTAP.Engine.Business.Crossdock
         {
             public string packCode;
             public decimal Quantity;
-            public string lot;
-            public DateTime productDate;
-            public string options;
+            public string Lot;
+            public DateTime ProductDate;
+            public string Options;
             public long GIdoc;
             public long GRdoc;
         }

@@ -39,7 +39,7 @@ namespace ProjectTAP.Engine.Business.Issued
                     Des_Branch_ID = reqDoc.Des_Warehouse_ID,
                     Des_Warehouse_ID = reqDoc.Des_Warehouse_ID,
                     Des_AreaMaster_ID = null,
-                    DocumentDate = new DateTime(),
+                    DocumentDate = DateTime.Now,
                     ActionTime = null,
                     MovementType_ID = MovementType.FG_CROSSDOCK_CUS,
                     RefID = null,
@@ -65,7 +65,7 @@ namespace ProjectTAP.Engine.Business.Issued
                         {
                             ID = null,
                             Code = item.Code,
-                            SKUMaster_ID = item.ID.Value,
+                            SKUMaster_ID = pack.SKUMaster_ID,
                             PackMaster_ID = pack.ID,
 
                             Quantity = item.BaseQuantity - sumQtyDisto,
