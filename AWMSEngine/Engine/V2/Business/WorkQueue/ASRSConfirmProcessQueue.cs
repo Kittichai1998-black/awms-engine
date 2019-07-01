@@ -129,7 +129,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Status = EntityStatus.INACTIVE,
                     WorkQueue_ID = wq.ID.Value,
                 }).ToList();
-                _distos = ADO.DocumentADO.GetInstant().InsertMappingSTO(distos, this.BuVO);
+                _distos = ADO.DocumentADO.GetInstant().InsertMappingSTO(_distos, this.BuVO);
                 distos.AddRange(_distos);
             };
             docs.ForEach(doc =>
