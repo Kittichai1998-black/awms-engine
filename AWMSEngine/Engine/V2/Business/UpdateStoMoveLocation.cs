@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
+using AWMSEngine.Engine.V2.Validation;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
@@ -44,9 +45,10 @@ namespace AWMSEngine.Engine.V2.Business
 
 
             
-            res.data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto,StorageObjectEventStatus.RECEIVED ,reqVO.LocationID,this.BuVO);
+            var data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto,StorageObjectEventStatus.RECEIVED ,reqVO.LocationID,this.BuVO);
 
-           
+            var stoValidateRes = new ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, data);
+            res.data = data;
             return res;
         }
     }

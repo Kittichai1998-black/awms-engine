@@ -1,4 +1,5 @@
 ﻿using AMWUtil.Common;
+using AMWUtil.DataAccess.Http;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.ADO;
@@ -23,6 +24,7 @@ namespace AWMSEngine.APIService
         public VOCriteria BuVO { get; set; }
         public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
+        public FinalDatabaseLogCriteria FinalDBLog { get => (FinalDatabaseLogCriteria)this.BuVO.GetDynamic(BusinessVOConst.KEY_FINAL_DB_LOG); }
         private bool IsAuthenAuthorize { get; set; }
 
         public AMWLogger Logger { get; set; }
@@ -90,23 +92,6 @@ namespace AWMSEngine.APIService
             string apiKey = null;
             try
             {
-                /*var getKey = this.ControllerAPI == null ? null : 
-                    ObjectUtil.QueryStringToObject(this.ControllerAPI.Request.QueryString.Value);
-                if (getKey.token != null)
-                    token = getKey.token;
-                else if (getKey._token != null)
-                    token = getKey._token;
-
-                if (getKey.apiKey != null)
-                    apiKey = getKey.apiKey;
-                else if (getKey._apiKey != null)
-                    apiKey = getKey._apiKey;
-                else if (getKey.apikey != null)
-                    apiKey = getKey.apikey;
-                else if (getKey._apikey != null)
-                    apiKey = getKey._apikey;*/
-
-
                 if (request != null)
                 {
                     string _getKeyJson = Newtonsoft.Json.JsonConvert.SerializeObject(request);
@@ -127,6 +112,13 @@ namespace AWMSEngine.APIService
                 this.Logger.LogInfo("REQUEST_DATA:: " + ObjectUtil.Json(request));
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
+                this.BuVO.Set(BusinessVOConst.KEY_FINAL_DB_LOG,
+                    new FinalDatabaseLogCriteria()
+                    {
+                        documentOptionMessages = new List<FinalDatabaseLogCriteria.DocumentOptionMessage>(),
+                        sendAPIEvents = new List<HttpResultModel>()
+                    });
+
                 this.Permission(token,apiKey, APIServiceID());
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
@@ -186,6 +178,14 @@ namespace AWMSEngine.APIService
                     result.stacktrace = null;
 
                 ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
+                this.FinalDBLog.sendAPIEvents.ForEach(x =>
+                {
+
+                });
+                this.FinalDBLog.documentOptionMessages.ForEach(x =>
+                {
+                    ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x.docID, x.msgError, x.msgWarning, x.msgInfo, this.BuVO);
+                });
                 this.Logger.LogInfo("RESPONSE_DATA:: " + ObjectUtil.Json(response));
                 this.Logger.LogInfo("####### END TRANSACTION #######");
             }
@@ -211,14 +211,14 @@ namespace AWMSEngine.APIService
             this.Logger.LogInfo("APIKEY:: " + apiKey);
 
             if (!this.IsAuthenAuthorize)
-            if (!this.IsAuthenAuthorize)
                 return;
 
+            var apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.FullClassName == this.GetType().FullName);
+            if (apiService == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
 
-            ADO.TokenADO.GetInstant().Authen(token, apiKey,APIServiceID, this.BuVO);
-             
-            
-          
+            ADO.TokenADO.GetInstant().Authen(token, apiKey, apiService.ID.Value, this.BuVO);
+
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.A0001, "API Key Not Found");

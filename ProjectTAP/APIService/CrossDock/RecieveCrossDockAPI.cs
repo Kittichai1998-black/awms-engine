@@ -7,23 +7,23 @@ using AWMSEngine.APIService;
 using Microsoft.AspNetCore.Mvc;
 using ProjectTAP.Engine.Business.Crossdock;
 
-namespace ProjectTAP.APIService.Issued
+namespace ProjectTAP.APIService.CrossDock
 {
-    public class GetIssueCrossdockDocAPI : BaseAPIService
+    public class RecieveCrossDockAPI : BaseAPIService
     {
-        public GetIssueCrossdockDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
+        public RecieveCrossDockAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
         {
         }
         public override int APIServiceID()
         {
-            return 92;
+            return 93;
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
             var req = ObjectUtil.DynamicToModel<GetIssueCrossdockDoc.TReq>(this.RequestVO);
-            var crossdock = new GetIssueCrossdockDoc();
+            var crossdock = new RecieveCrossdock();
             var res = crossdock.Execute(this.Logger, this.BuVO, req);
             return res;
         }

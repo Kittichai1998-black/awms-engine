@@ -1,4 +1,5 @@
-﻿using AWMSModel.Constant.EnumConst;
+﻿using AMWUtil.DataAccess.Http;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -63,6 +64,29 @@ namespace AWMSEngine.ADO
                     new KeyValuePair<string, object>("options",options)
                 }, buVO);
             return doc.ID.Value;
+        }
+        public long PutSendAPIEvent(HttpResultModel apiEvt, VOCriteria buVO)
+        {
+            var id = ADO.DataADO.GetInstant().Insert<aml_SendAPIEvent>(
+                buVO,
+                new aml_SendAPIEvent()
+                {
+                    ID = null,
+                    LogRefID = buVO.Logger.LogRefID,
+                    APIService_Module = apiEvt.APIService_Module,
+                    APIName = apiEvt.APIName,
+                    APIUrl = apiEvt.APIUrl,
+                    Header = apiEvt.Header,
+                    InputText = apiEvt.InputText,
+                    OutputText = apiEvt.OutputText,
+                    HttpStatus = apiEvt.HttpStatus,
+                    ActionBy = buVO.ActionBy,
+                    ResultMessage = apiEvt.ResultMessage,
+                    ResultStatus = apiEvt.ResultStatus,
+                    StartTime = apiEvt.StartTime,
+                    EndTime = apiEvt.EndTime,
+                });
+            return id.Value;
         }
     }
 }

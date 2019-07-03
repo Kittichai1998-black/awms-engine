@@ -1,13 +1,13 @@
-﻿database.mssql.connection = Server=191.20.80.120\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_STA;Max Pool Size=400;Connect Timeout=600;
+﻿database.mssql.connection = Server=191.20.80.120\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_MRK;Max Pool Size=400;Connect Timeout=600;
 
 logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {RefID}.{Date}.log
 
 #------------------------------------
-#job.names = close_gr
-#job.close_gr.classname = ProjectMRK.Engine.JobService.ClosedDocumentJob
-#job.close_gr.cronex = * 0/5 * * * ?
-#job.close_gr.data = 
+job.names = close_gr
+job.close_gr.classname = ProjectSTA.Engine.JobService.CloseGRDocJobServicecs
+job.close_gr.cronex = * 0/1 * * * ?
+job.close_gr.data = 
 
 
 #------------------------------------
