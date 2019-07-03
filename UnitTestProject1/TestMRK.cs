@@ -11,8 +11,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestRead()
         {
-            var proj = new ProjectMRK.Engine.Bussiness.ReadFileXML();
-            proj.test();
+          //  var proj = new ProjectMRK.Engine.Bussiness.ReadFileXML();
+            //proj.test();
         }
     }
 }

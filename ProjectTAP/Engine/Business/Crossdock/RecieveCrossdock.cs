@@ -22,6 +22,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
             public string Options;
             public long GIdoc;
             public long GRdoc;
+            internal DateTime? productDate;
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
