@@ -19,7 +19,7 @@ namespace ProjectMRK
     {
         public Startup(IConfiguration configuration) : base(configuration)
         {
+             //AMWUtil.DataAccess.Http.LineAccess.Notify(null, "sC4Q7oFLb24XL2SXofp7KRFHvcUhd4kFJfAUCstHAo4","test");
         }
     }
-
 }

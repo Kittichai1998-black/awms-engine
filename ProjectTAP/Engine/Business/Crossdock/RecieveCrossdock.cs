@@ -11,7 +11,7 @@ using AWMSModel.Entity;
 
 namespace ProjectTAP.Engine.Business.Crossdock
 {
-    public class RecieveCrossdock : BaseEngine<RecieveCrossdock.TReq, amt_Document>
+    public class RecieveCrossdock : BaseEngine<RecieveCrossdock.TReq, RecieveCrossdock.TRes>
     {
         public class TReq
         {
@@ -24,7 +24,12 @@ namespace ProjectTAP.Engine.Business.Crossdock
             public long GRdoc;
             internal DateTime? productDate;
         }
-        protected override amt_Document ExecuteEngine(TReq reqVO)
+
+        public class TRes
+        {
+            public amt_Document GIDoc;
+        }
+        protected override TRes ExecuteEngine(TReq reqVO)
         {
             var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.packCode, this.BuVO);
 
@@ -48,7 +53,10 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 Status = EntityStatus.ACTIVE
             };
 
-            AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(recvDisto, this.BuVO);
+            var resDistoRecv = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(recvDisto, this.BuVO);
+            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDistoRecv.ID.Value,  EntityStatus.ACTIVE, this.BuVO);
+
+
             amt_DocumentItemStorageObject pickingDisto = new amt_DocumentItemStorageObject();
             pickingDisto = new amt_DocumentItemStorageObject()
             {
@@ -63,15 +71,15 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 Status = EntityStatus.ACTIVE
             };
 
-            stos.qty = 0;
-            stos.baseQty = 0;
-
-            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stos, this.BuVO);
-
-            AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(pickingDisto, this.BuVO);
+            var resDistoPick = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(pickingDisto, this.BuVO);
+            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDistoPick.ID.Value, EntityStatus.ACTIVE, this.BuVO);
 
             if (stos.baseQty == GRDocItems.BaseQuantity)
             {
+                stos.qty = 0;
+                stos.baseQty = 0;
+
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stos, this.BuVO);
                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GRdoc, null, null, DocumentEventStatus.CLOSED, this.BuVO);
             }
             else
@@ -89,7 +97,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GIdoc, null, null, DocumentEventStatus.CLOSED, this.BuVO);
             }
 
-            return AWMSEngine.ADO.DocumentADO.GetInstant().Get(reqVO.GIdoc, this.BuVO);
+            return new TRes() { GIDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(reqVO.GIdoc, this.BuVO) };
         }
 
         private StorageObjectCriteria CreateStorageObject(ams_PackMaster pack, RecieveCrossdock.TReq reqVO)
@@ -102,7 +110,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
             StorageObjectCriteria recvBaseSto = new StorageObjectCriteria()
             {
                 code = getBase.Code,
-                eventStatus = StorageObjectEventStatus.PICKING,
+                eventStatus = StorageObjectEventStatus.PICKED,
                 name = getBase.Name,
                 qty = 1,
                 unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == getBase.UnitType_ID).Code,
@@ -114,6 +122,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 type = StorageObjectType.BASE,
                 mstID = getBase.ID.Value,
                 objectSizeName = objSizeBase.Name,
+                areaID = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == "SS").ID.Value,
             };
             var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(recvBaseSto, this.BuVO);
             var recvSto = new StorageObjectCriteria()
@@ -121,7 +130,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 parentID = stoID,
                 parentType = StorageObjectType.BASE,
                 code = pack.Code,
-                eventStatus = StorageObjectEventStatus.PICKING,
+                eventStatus = StorageObjectEventStatus.PICKED,
                 name = pack.Name,
                 batch = null,
                 qty = reqVO.Quantity,
@@ -133,15 +142,19 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 baseQty = reqVO.Quantity,
                 objectSizeID = objSizePack.ID.Value,
                 type = StorageObjectType.PACK,
-                productDate = reqVO.productDate,
+                productDate = reqVO.ProductDate,
                 objectSizeName = objSizePack.Name,
-                mstID = pack.ID
+                mstID = pack.ID,
+                areaID = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == "SS").ID.Value,
+                options = reqVO.Options
             };
             var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(recvSto, this.BuVO);
 
-            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(childStoID, StorageObjectType.PACK, false, true, this.BuVO);
+            AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(childStoID, StorageObjectType.PACK, false, true, this.BuVO);
 
-            return stos;
+            recvSto.id = childStoID;
+
+            return recvSto;
         }
     }
 }
