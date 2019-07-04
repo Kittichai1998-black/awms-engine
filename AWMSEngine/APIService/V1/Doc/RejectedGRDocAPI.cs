@@ -13,7 +13,7 @@ namespace AWMSEngine.APIService.Doc
     {
         public override int APIServiceID()
         {
-            return 44;
+            return 36;
         }
         public RejectedGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {

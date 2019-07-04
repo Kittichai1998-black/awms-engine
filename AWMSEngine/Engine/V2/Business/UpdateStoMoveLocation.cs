@@ -28,6 +28,18 @@ namespace AWMSEngine.Engine.V2.Business
         protected override TDocRes ExecuteEngine(TDocReq reqVO)
         {
             TDocRes res = new TDocRes();
+
+            var locArea = ADO.DataADO.GetInstant().SelectByID<ams_AreaLocationMaster>(reqVO.LocationID, this.BuVO);
+            if(ADO.StaticValue.StaticValueManager.GetInstant().GetAreaMaster(locArea.AreaMaster_ID,null).Code == "SA")
+            {
+                var checkAreaLoc = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("AreaLocationMaster_ID",reqVO.LocationID, SQLOperatorType.EQUALS),
+                        new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+                    }, this.BuVO).FirstOrDefault();
+                if (checkAreaLoc != null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "This Location "+ locArea.Code + " is available to use.");
+            }
+            
             var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
 
             var docItemSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(

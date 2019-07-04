@@ -14,6 +14,13 @@ namespace AWMSEngine.Controllers.V2
     [ApiController]
     public class BaseV2Controller : ControllerBase
     {
+        [HttpGet("time")]
+        public dynamic GetTime()
+        {
+            var val = ADO.DataADO.GetInstant().QueryString<dynamic>("select getdate() dt", null).FirstOrDefault();
+            DateTime dt = val.dt;
+            return new { serverTime = DateTime.Now, dbTime = dt };
+        }
         [HttpGet("{serviceCode}")]
         public dynamic GetAPIService(string serviceCode)
         {

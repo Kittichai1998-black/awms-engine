@@ -36,7 +36,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
                 if (queue.IOType == IOType.INPUT)
                 {
-                    if(x.MovementType_ID == MovementType.FG_FASTMOVE)
+                    if(x.MovementType_ID == MovementType.FG_FAST_TRANSFER_WM)
                     {
                         var souAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Sou_AreaMaster_ID);
                         var desAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Des_AreaMaster_ID);
@@ -95,7 +95,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                         //desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
                         //desWarehouseID = sto.warehouseID,
                         desAreaMasterID = null,
-                        movementTypeID = MovementType.FG_FASTMOVE,
+                        movementTypeID = MovementType.FG_FAST_TRANSFER_WM,
                         lot = mapsto.lot,
                         batch = mapsto.batch,
                         documentDate = DateTime.Now,
