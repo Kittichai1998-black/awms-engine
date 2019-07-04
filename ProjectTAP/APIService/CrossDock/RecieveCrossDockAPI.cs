@@ -22,7 +22,7 @@ namespace ProjectTAP.APIService.CrossDock
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = ObjectUtil.DynamicToModel<GetIssueCrossdockDoc.TReq>(this.RequestVO);
+            var req = ObjectUtil.DynamicToModel<RecieveCrossdock.TReq>(this.RequestVO);
             var crossdock = new RecieveCrossdock();
             var res = crossdock.Execute(this.Logger, this.BuVO, req);
             return res;
