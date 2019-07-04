@@ -22,6 +22,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemByWorkQueueDisto(reqVO.queueID.Value, buVO);
             var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.baseCode, buVO).ToList();
             var docsCode = docItems.Select(x => x.Document_ID).Distinct().ToList();
+            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, buVO);
 
             docsCode.ForEach(x =>
             {
@@ -31,7 +32,6 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
             docs.ForEach(x =>
             {
-                var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, buVO);
                 var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, buVO);
 
                 if (queue.IOType == IOType.INPUT)
@@ -72,7 +72,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 }
             });
 
-            return null;
+            return new WorkQueueCriteria();
         }
 
         private void CreateGIDocument(List<amt_Document> docs, List<amt_StorageObject> sto, AMWLogger logger, VOCriteria buVO)

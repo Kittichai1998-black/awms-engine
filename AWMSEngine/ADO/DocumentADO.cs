@@ -491,7 +491,7 @@ namespace AWMSEngine.ADO
 
             var docItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
             {
-                new SQLConditionCriteria("Document_ID", string.Join(",", distos.Select(x=>x.DocumentItem_ID).ToArray()), SQLOperatorType.IN)
+                new SQLConditionCriteria("ID", string.Join(",", distos.Select(x=>x.DocumentItem_ID).ToArray()), SQLOperatorType.IN)
             }, buVO);
 
             return docItems;
