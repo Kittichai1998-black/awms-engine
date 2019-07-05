@@ -299,7 +299,7 @@ namespace ProjectMRK.Engine.JobService
                 Des_AreaMaster_ID = null,
                 DocumentDate = jsonHeader.TransDate,
                 ActionTime = null,
-                MovementType_ID = skuMovementType.Code == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
+                MovementType_ID = skuMovementType.Code.ToUpper() == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
