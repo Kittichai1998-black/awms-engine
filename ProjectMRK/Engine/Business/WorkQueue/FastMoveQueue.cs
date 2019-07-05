@@ -59,7 +59,12 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                 }, buVO);
 
-                if (locationGateFast.Count() > 1)
+                List<amt_WorkQueue> workQueue = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_WorkQueue>(new SQLConditionCriteria[]{
+                    new SQLConditionCriteria("Des_Area_ID", _OFArea.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+                }, buVO);
+
+                if (locationGateFast.Count() > 1 && workQueue.Count() > 1)
                 {
                     return false;
                 }

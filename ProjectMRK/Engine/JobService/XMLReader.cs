@@ -375,5 +375,11 @@ namespace ProjectMRK.Engine.JobService
             return res;
 
         }
+
+        private void ReadFileFromDirectory()
+        {
+            var getFile = Directory.GetFiles(@"D:\TestLog\", "*.txt");
+
+        }
     }
 }
