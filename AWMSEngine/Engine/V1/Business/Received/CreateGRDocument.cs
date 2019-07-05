@@ -18,6 +18,7 @@ namespace AWMSEngine.Engine.Business.Received
     {
         public class TReq
         {
+            public long? parentDocumentID;
             public string refID;
             public long? forCustomerID;
             public string forCustomerCode;

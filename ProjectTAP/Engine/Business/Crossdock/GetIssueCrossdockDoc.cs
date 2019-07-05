@@ -70,6 +70,35 @@ namespace ProjectTAP.Engine.Business.Crossdock
             var res = new TRes();
             var res2 = new List<TRes.Document>();
 
+            var GIDoc = docs.Select(x => new TRes.amt_DocumentExtend()
+            {
+                ID = x.ID,
+                Code = x.Code,
+                EventStatus = x.EventStatus,
+                Status = x.Status,
+                DocumentType_ID = x.DocumentType_ID,
+                MovementType_ID = x.MovementType_ID,
+                DocumentDate = x.DocumentDate,
+                DocumentItems = x.DocumentItems.Select(y => new TRes.amt_DocumentItemsExtend()
+                {
+                    ID = y.ID,
+                    Code = y.Code,
+                    Quantity = y.Quantity,
+                    BaseQuantity = y.BaseQuantity,
+                    EventStatus = y.EventStatus,
+                    Status = y.Status,
+                    Lot = y.Lot,
+                    OrderNo = y.OrderNo,
+                    Batch = y.Batch,
+                    Document_ID = y.Document_ID,
+                    UnitType_ID = y.UnitType_ID,
+                    BaseUnitType_ID = y.BaseUnitType_ID,
+                    BaseUnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == y.UnitType_ID.Value).Code,
+                    UnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == y.BaseUnitType_ID.Value).Code,
+                }).ToList(),
+                ParentDocument_ID = x.ParentDocument_ID,
+            }).FirstOrDefault(x => x.DocumentType_ID == DocumentTypeID.GOODS_ISSUED);
+
             docsList.ForEach(x =>
             {
                 x.DocumentItems = x.DocumentItems.Where(doci => doci.PackMaster_ID == pack.ID).ToList();
@@ -116,7 +145,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
 
                 var resData = new TRes.Document()
                 {
-                    doc = crosDocNew,
+                    doc = GIDoc,
                     GRDocument = crosDocs.Where(y => y.ParentDocument_ID == x.ID).ToList()
                 };
 

@@ -102,7 +102,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         private List<amt_Document> GetDocument(long queueID)
         {
             List<amt_Document> docs = new List<amt_Document>();
-            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(queueID, this.BuVO);
+
+            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueueDisto(queueID, this.BuVO);
+
             var docsCode = docItems.Select(x => x.Document_ID).Distinct().ToList();
             docsCode.ForEach(x =>
             {
