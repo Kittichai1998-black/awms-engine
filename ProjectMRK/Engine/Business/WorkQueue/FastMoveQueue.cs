@@ -56,7 +56,9 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 List<amt_StorageObject> locationGateFast = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]{
                     new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("AreaMaster_ID", _OFArea.ID, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                 }, buVO);
+
                 if (locationGateFast.Count() > 1)
                 {
                     return false;
