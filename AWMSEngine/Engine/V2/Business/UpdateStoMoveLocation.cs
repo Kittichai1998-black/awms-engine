@@ -37,7 +37,7 @@ namespace AWMSEngine.Engine.V2.Business
                         new SQLConditionCriteria("status",EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                     }, this.BuVO).FirstOrDefault();
                 if (checkAreaLoc != null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "This Location "+ locArea.Code + " is available to use.");
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "This Location "+ locArea.Code + " is unavailable.");
             }
             
             var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
