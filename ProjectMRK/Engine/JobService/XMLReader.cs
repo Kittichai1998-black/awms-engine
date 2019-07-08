@@ -368,7 +368,7 @@ namespace ProjectMRK.Engine.JobService
             });
 
             AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
-
+            doc.ID = docID;
             res.doc = doc;
             baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
             res.sto = baseSto;
@@ -381,12 +381,14 @@ namespace ProjectMRK.Engine.JobService
         private TRes ReadFileFromDirectory()
         {
             TRes res = new TRes();
+            var resList = new List<TRes.DocList>();
             var getFile = new DirectoryInfo(directoryPath).GetFiles("*.xml");
             foreach(var file in getFile)
             {
-                res.document.Add(ReadListFileXMLFromDirectory(file));
+                var doc = ReadListFileXMLFromDirectory(file);
+                resList.Add(doc);
             }
-
+            res.document = resList;
             return res;
         }
 
