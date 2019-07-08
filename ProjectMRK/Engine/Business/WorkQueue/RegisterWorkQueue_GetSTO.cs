@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
+using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 
 namespace ProjectMRK.Engine.Business.WorkQueue
@@ -24,15 +26,14 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
             var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
 
-            if (sto == null && reqVO.areaCode != "OS")
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
-            
-            if (sto == null && reqVO.areaCode == "OS")
+            if (sto == null)
             {
                 var staticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
                 var _baseSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>("Code", reqVO.baseCode, buVO).OrderByDescending(x => x.ID).FirstOrDefault();
-                if(_baseSto == null)
+                if (_baseSto == null)
+                {
                     throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
+                }
 
                 var objSizeBase = staticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
                 var objSizePack = staticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
@@ -60,7 +61,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     areaID = _areaASRS.ID.Value,
                     parentID = _locationASRS.ID.Value,
                     parentType = StorageObjectType.LOCATION
-            };
+                };
 
                 var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
 
@@ -107,6 +108,11 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             sto.parentID = _locationASRS.ID.Value;
             sto.parentType = StorageObjectType.LOCATION;
 
+            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, buVO);
+
+            if(sto == null)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' Not Found");
+
             return sto;
         }
 
@@ -128,6 +134,42 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 }, buVO).FirstOrDefault();
             if (_locationASRS == null)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
+        }
+
+        private SPworkQueue EjectWorkQueue(RegisterWorkQueue.TReq reqVO, VOCriteria buVO)
+        {
+            SPworkQueue workQ = new SPworkQueue()
+            {
+                ID = null,
+                IOType = IOType.OUTPUT,
+                ActualTime = DateTime.Now,
+                Parent_WorkQueue_ID = null,
+                Priority = 1,
+                TargetStartTime = null,
+
+                StorageObject_ID = null,
+                StorageObject_Code = reqVO.baseCode,
+
+                Warehouse_ID = StaticValueManager.GetInstant().Warehouses.First(x => x.Code == reqVO.warehouseCode).ID.Value,
+                AreaMaster_ID = StaticValueManager.GetInstant().AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
+                AreaLocationMaster_ID = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, buVO).ID,
+
+
+                Sou_Warehouse_ID = StaticValueManager.GetInstant().Warehouses.First(x => x.Code == reqVO.warehouseCode).ID.Value,
+                Sou_AreaMaster_ID = StaticValueManager.GetInstant().AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
+                Sou_AreaLocationMaster_ID = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, buVO).ID,
+
+                Des_Warehouse_ID = StaticValueManager.GetInstant().Warehouses.First(x => x.Code == reqVO.warehouseCode).ID.Value,
+                Des_AreaMaster_ID = 7,
+                Des_AreaLocationMaster_ID = 7,
+
+                EventStatus = WorkQueueEventStatus.WORKING,
+                Status = EntityStatus.ACTIVE,
+                StartTime = reqVO.actualTime
+            };
+            workQ = AWMSEngine.ADO.WorkQueueADO.GetInstant().PUT(workQ, buVO);
+
+            return workQ;
         }
     }
 }

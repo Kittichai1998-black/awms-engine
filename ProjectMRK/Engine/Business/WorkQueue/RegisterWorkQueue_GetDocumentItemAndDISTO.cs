@@ -26,7 +26,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO);
 
-            if (docs == null && reqVO.areaCode == "OS")
+            if (docs == null)
             {
                 var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
 
@@ -56,7 +56,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     Des_Warehouse_ID = desWarehouse.ID.Value,
                     Des_AreaMaster_ID = reqVO.desAreaCode == "" ? StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode).ID : null,
                     DocumentDate = DateTime.Now,
-                    MovementType_ID = MovementType.FG_TRANSFER_WM,
+                    MovementType_ID = MovementType.FG_RETURN_WM,
 
                     DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
                     EventStatus = DocumentEventStatus.NEW,
@@ -121,16 +121,17 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
                 distos.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docID.Value, buVO));
             }
-            else if(docs == null)
-            {
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '" + reqVO.baseCode + "' Not Found");
-            }
             else
             {
                 docs.ForEach(x =>
                 {
                     distos.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x.ID.Value, buVO));
                 });
+            }
+
+            if(distos == null)
+            {
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '" + reqVO.baseCode + "' Not Found");
             }
 
             return distos;

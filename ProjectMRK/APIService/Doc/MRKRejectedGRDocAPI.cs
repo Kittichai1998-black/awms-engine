@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
-using AWMSEngine.Engine.Business;
-using AWMSEngine.Engine.Business.Received;
+using ProjectMRK.Engine.Business;
+using ProjectMRK.Engine.Business.Received;
 using Microsoft.AspNetCore.Mvc;
+using AWMSEngine.APIService;
 
-namespace AWMSEngine.APIService.Doc
+namespace ProjectMRK.APIService.Doc
 {
-    public class RejectedGRDocAPI : BaseAPIService
+    public class MRKRejectedGRDocAPI : BaseAPIService
     {
         public override int APIServiceID()
         {
-            return 36;
+            return 105;
         }
-        public RejectedGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public MRKRejectedGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
@@ -26,6 +27,7 @@ namespace AWMSEngine.APIService.Doc
             var res = new RejectedGRDocument().Execute(this.Logger, this.BuVO, req);
 
             return res;
+
         }
     }
 }

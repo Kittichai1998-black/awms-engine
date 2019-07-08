@@ -32,7 +32,7 @@ namespace AWMSEngine.Engine.Business.Received
             var docReceivs = ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
             var docNotCloseds = docReceivs.Where(x => x.EventStatus != DocumentEventStatus.CLOSING && x.EventStatus != DocumentEventStatus.NEW);
             if (docNotCloseds.Count() > 0)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ IDLE หรือ CLOSING เท่านั้น");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ New หรือ CLOSING เท่านั้น");
 
             List<SPOutSTORootCanUseCriteria> rootStos = new List<SPOutSTORootCanUseCriteria>();
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();

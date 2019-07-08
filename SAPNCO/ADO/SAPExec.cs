@@ -56,18 +56,22 @@ namespace SAPNCO.ADO
                 var dataType = IN_SU.Metadata[data.Key];
                 if(dataType.DataType == RfcDataType.CHAR)
                 {
-                    if(data.Value.GetType() == typeof(string))
+                    if(data.Value.ToString() != "")
                     {
-                        string value = data.Value.ToString();
-                        if(value.Length < dataType.NucLength)
+                        if (data.Value.GetType() == typeof(string))
                         {
-                            IN_SU.SetValue(data.Key, value.PadLeft(20,'0'));
+                            string value = data.Value.ToString();
+                            if (value.Length < dataType.NucLength && (dataType.Name == "VBELN_VL" || dataType.Name == "LENUM"))
+                            {
+                                IN_SU.SetValue(data.Key, value.PadLeft(dataType.NucLength, '0'));
+                            }
+                            else
+                                IN_SU.SetValue(data.Key, data.Value);
                         }
                         else
                             IN_SU.SetValue(data.Key, data.Value);
                     }
-                    else
-                        IN_SU.SetValue(data.Key, data.Value);
+                    
                 }
                 else
                     IN_SU.SetValue(data.Key, data.Value);

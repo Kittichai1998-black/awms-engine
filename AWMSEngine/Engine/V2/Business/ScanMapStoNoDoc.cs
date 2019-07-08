@@ -148,7 +148,7 @@ namespace AWMSEngine.Engine.V2.Business
                 mapsto = this.ADOSto.Get(reqVO.scanCode, null, null, reqVO.isRoot, true, this.BuVO);
                 if (mapsto == null)
                 {
-                    if (reqVO.action == VirtualMapSTOActionType.SELECT)
+                    if (reqVO.action == VirtualMapSTOActionType.SELECT || reqVO.action == VirtualMapSTOActionType.REMOVE)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'" + reqVO.scanCode + "' Not Found");
                     ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
                     ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
@@ -175,9 +175,9 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     if (mapsto.warehouseID != reqVO.warehouseID)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
-
-                    if (mapsto.areaID != reqVO.areaID)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
+                    if (reqVO.action != VirtualMapSTOActionType.SELECT)
+                        if (mapsto.areaID != reqVO.areaID)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Area doesn't match");
                 }
 
             }
@@ -327,7 +327,10 @@ namespace AWMSEngine.Engine.V2.Business
                 throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "ไม่พบรายการที่ต้องการนำออก / รายการที่จะนำออกต้องเป็นรายการที่ยังไม่ได้รับเข้าเท่านั้น");
             if (reqVo.scanCode == mapsto.code)
             {
-                ADOSto.Update(msf, msf.areaID.Value, this.BuVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(msf.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+               // msf.eventStatus = StorageObjectEventStatus.REMOVED;
+               // msf.areaID = msf.areaID.Value;
+               // ADOSto.PutV2(msf, this.BuVO);
             }
             else
             {
@@ -350,7 +353,9 @@ namespace AWMSEngine.Engine.V2.Business
                 }
                 else
                 {
-                    ADOSto.Update(rmItem, msf.areaID.Value, this.BuVO);
+                    rmItem.eventStatus = StorageObjectEventStatus.REMOVED;
+                    rmItem.areaID = msf.areaID.Value;
+                    ADOSto.PutV2(rmItem, this.BuVO);
                     msf.mapstos.Remove(rmItem);
                 }
             }

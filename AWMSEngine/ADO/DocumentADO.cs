@@ -481,6 +481,22 @@ namespace AWMSEngine.ADO
         {
             return this.ListItemByWorkQueue(new List<long> { workQueueID }, buVO);
         }
+
+        public List<amt_DocumentItem> ListItemByWorkQueueDisto(long workQueueID, VOCriteria buVO)
+        {
+            var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+            {
+                new SQLConditionCriteria("WorkQueue_ID", workQueueID, SQLOperatorType.EQUALS)
+            }, buVO);
+
+            var docItems = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]
+            {
+                new SQLConditionCriteria("ID", string.Join(",", distos.Select(x=>x.DocumentItem_ID).ToArray()), SQLOperatorType.IN)
+            }, buVO);
+
+            return docItems;
+        }
+
         public List<amt_DocumentItem> ListItemByWorkQueue(List<long> workQueueIDs, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();

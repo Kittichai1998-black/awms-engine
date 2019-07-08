@@ -24,14 +24,15 @@ namespace AMWUtil.DataAccess.Http
         public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
             where T : class, new()
         {
-            return SendForm<T>(logger, apiUrl, method, datas, null , authen, retry, timeout);
+            return SendForm<T>(logger, apiUrl, method, datas, null, authen, retry, timeout);
         }
         public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
             where T : class, new()
         {
             T result = null;
             var values = new Dictionary<string, string>();
-            ObjectUtil.FieldKeyValuePairs(datas).ForEach(x => {
+            ObjectUtil.FieldKeyValuePairs(datas).ForEach(x =>
+            {
                 string val;
                 if (x.Value is int || x.Value is long || x.Value is decimal || x.Value is float || x.Value is double || x.Value is string)
                     val = x.Value.ToString();
@@ -80,7 +81,7 @@ namespace AMWUtil.DataAccess.Http
                         logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
                         result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
 
-                        if(outResult!= null)
+                        if (outResult != null)
                         {
                             outResult.HttpStatus = (int)response.Result.StatusCode;
                             outResult.OutputText = body;
@@ -106,14 +107,15 @@ namespace AMWUtil.DataAccess.Http
             where T : class, new()
         {
             T result = null;
-            if(logger != null)
+            if (logger != null)
                 logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
             do
             {
                 try
                 {
                     var outResult = new HttpResultModel();
-                    outResults.Add(outResult);
+                    if (outResults != null)
+                        outResults.Add(outResult);
 
                     retry--;
                     HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(apiUrl);
@@ -121,7 +123,7 @@ namespace AMWUtil.DataAccess.Http
                     httpWebRequest.Method = method.ToString();
                     httpWebRequest.Timeout = timeout;
 
-                    if(authen != null)
+                    if (authen != null)
                     {
                         if (authen is BasicAuthentication)
                         {
@@ -135,6 +137,20 @@ namespace AMWUtil.DataAccess.Http
                             httpWebRequest.CookieContainer = myContainer;
                             httpWebRequest.PreAuthenticate = true;
                         }
+                        else if (authen is BearerAuthentication)
+                        {
+                            var a = (BearerAuthentication)authen;
+                            httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+                            httpWebRequest.Headers[HttpRequestHeader.Authorization] = "Bearer " + a.Token;
+
+                            var postData = string.Format("message={0}", datas);
+                            var data = Encoding.UTF8.GetBytes(postData);
+                            httpWebRequest.ContentLength = data.Length;
+
+                            //using (var stream = httpWebRequest.GetRequestStream()) stream.Write(data, 0, data.Length);
+                            //var response = (HttpWebResponse)httpWebRequest.GetResponse();
+                        }
+
                     }
 
                     string json = datas.Json();

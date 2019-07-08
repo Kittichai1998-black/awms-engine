@@ -1,17 +1,17 @@
-﻿database.mssql.connection = Server=191.20.80.120\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_MRK;Max Pool Size=400;Connect Timeout=600;
+﻿database.mssql.connection = Server=191.20.80.120\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_MRK1;Max Pool Size=400;Connect Timeout=600;
 
 logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {RefID}.{Date}.log
 
 #------------------------------------
-job.names = close_gr,create_gr
-job.close_gr.classname = ProjectMRK.Engine.JobService.ClosedDocumentJob
-job.close_gr.cronex = * 0/5 * * * ?
-job.close_gr.data = 
+#job.names = close_gr,create_gr
+#job.close_gr.classname = ProjectMRK.Engine.JobService.ClosedDocumentJob
+#job.close_gr.cronex = * 0/5 * * * ?
+#job.close_gr.data = 
 
-job.create_gr.classname = ProjectMRK.Engine.JobService.XMLReaderJob
-job.create_gr.cronex = 0/5 * * * * ?
-job.create_gr.data = 
+#job.create_gr.classname = ProjectMRK.Engine.JobService.XMLReaderJob
+#job.create_gr.cronex = 0/10 * * * * ?
+#job.create_gr.data = 
 
 
 #------------------------------------
