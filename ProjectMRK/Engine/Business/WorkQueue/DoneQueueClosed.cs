@@ -118,12 +118,14 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                             }}
 
                     });
+                
+                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(doc.DocumentItems.FirstOrDefault().DocItemStos.FirstOrDefault().ID.Value, EntityStatus.ACTIVE, buVO);
 
-                AWMSEngine.ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
-                     new SQLConditionCriteria("DocumentItem_ID", null, SQLOperatorType.EQUALS)
-                    }, new KeyValuePair<string, object>[]{
-                        new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE)
-                    }, buVO);
+                //AWMSEngine.ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
+                //     new SQLConditionCriteria("DocumentItem_ID", null, SQLOperatorType.EQUALS)
+                //    }, new KeyValuePair<string, object>[]{
+                //        new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE)
+                //    }, buVO);
             }
         }
     }

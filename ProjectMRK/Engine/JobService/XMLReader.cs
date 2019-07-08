@@ -75,112 +75,114 @@ namespace ProjectMRK.Engine.JobService
             }
         }
 
-        private string ftpPath;
-        private string ftpLogPath;
-        private string ftpUsername;
-        private string ftpPassword;
+        //private string ftpPath;
+        //private string ftpLogPath;
+        //private string ftpUsername;
+        //private string ftpPassword;
+        private string directoryPath;
 
         protected override TRes ExecuteEngine(string reqVO)
         {
+            //ftpPath = StaticValue.GetConfig("FTP_PATH_ROOT");
+            //ftpLogPath = StaticValue.GetConfig("FTP_PATH_LOG");
+            //ftpUsername = StaticValue.GetConfig("FTP_USER");
+            //ftpPassword = StaticValue.GetConfig("FTP_PASS");
+            directoryPath = StaticValue.GetConfig("DIRECTORY_PATH");
+            var res = ReadFileFromDirectory();
 
-            ftpPath = StaticValue.GetConfig("FTP_PATH_ROOT");
-            ftpLogPath = StaticValue.GetConfig("FTP_PATH_LOG");
-            ftpUsername = StaticValue.GetConfig("FTP_USER");
-            ftpPassword = StaticValue.GetConfig("FTP_PASS");
+            //FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpPath);
+            //fwr.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+            //fwr.Method = WebRequestMethods.Ftp.ListDirectory;
+            //fwr.UseBinary = true;
+            //FtpWebResponse response = (FtpWebResponse)fwr.GetResponse();
+            //Stream responseStream = response.GetResponseStream();
+            //StreamReader reader = new StreamReader(responseStream);
+            //string names = reader.ReadToEnd();
+            //reader.Close();
+            //response.Close();
+            //var listNames = names.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            //Regex matchExpression = new Regex("^[a-zA-Z0-9].+\\.xml$", RegexOptions.IgnoreCase);
+            //var xmlName = listNames.Where(x => matchExpression.Match(x).Success).ToList();
 
-            FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpPath);
-            fwr.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
-            fwr.Method = WebRequestMethods.Ftp.ListDirectory;
-            fwr.UseBinary = true;
-            FtpWebResponse response = (FtpWebResponse)fwr.GetResponse();
-            Stream responseStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(responseStream);
-            string names = reader.ReadToEnd();
-            reader.Close();
-            response.Close();
-            var listNames = names.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            Regex matchExpression = new Regex("^[a-zA-Z0-9].+\\.xml$", RegexOptions.IgnoreCase);
-            var xmlName = listNames.Where(x => matchExpression.Match(x).Success).ToList();
-
-            TRes res = new TRes();
-            List<TRes.DocList> docList = new List<TRes.DocList>();
-            if (xmlName.Count > 0)
-            {
-                xmlName.ForEach(x =>
-                {
-                    var docRes = ReadListFileXML(x);
-                    docList.Add(docRes);
-                });
-            }
-            res.document = docList;
+            //TRes res = new TRes();
+            //List<TRes.DocList> docList = new List<TRes.DocList>();
+            //if (xmlName.Count > 0)
+            //{
+            //    //xmlName.ForEach(x =>
+            //    //{
+            //    //    var docRes = ReadListFileXMLFromFTP(x);
+            //    //    docList.Add(docRes);
+            //    //});
+            //}
+            //res.document = docList;
             return res;
         }
 
-        private TRes.DocList ReadListFileXML(string xmlname)
-        {
-            var request = (FtpWebRequest)WebRequest.Create(ftpPath + xmlname);
-            request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
-            request.Method = WebRequestMethods.Ftp.DownloadFile;
-            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+        //private TRes.DocList ReadListFileXMLFromFTP(string xmlname)
+        //{
+        //    var request = (FtpWebRequest)WebRequest.Create(ftpPath + xmlname);
+        //    request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+        //    request.Method = WebRequestMethods.Ftp.DownloadFile;
+        //    FtpWebResponse response = (FtpWebResponse)request.GetResponse();
 
-            Stream responseStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(responseStream);
-            var xmlData = reader.ReadToEnd();
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(xmlData);
-            var json = JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented);
+        //    Stream responseStream = response.GetResponseStream();
+        //    StreamReader reader = new StreamReader(responseStream);
+        //    var xmlData = reader.ReadToEnd();
+        //    XmlDocument doc = new XmlDocument();
+        //    doc.LoadXml(xmlData);
+        //    var json = JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented);
 
-            Console.WriteLine("Download Complete, status {0}", response.StatusDescription);
+        //    Console.WriteLine("Download Complete, status {0}", response.StatusDescription);
 
-            var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
+        //    var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
 
-            reader.Close();
-            reader.Dispose();
-            response.Close();
+        //    reader.Close();
+        //    reader.Dispose();
+        //    response.Close();
 
-            var res = CreateDocumentFromXML(jsonObj);
+        //    var res = CreateDocumentFromXML(jsonObj);
 
-            MoveFileXML(xmlname);
+        //    MoveFileXML(xmlname);
 
-            return res;
-        }
+        //    return res;
+        //}
 
-        private void MoveFileXML(string xmlname)
-        {
-            var folderName = "log_" + DateTime.Now.ToString("dd-MM-yyyy");
-            createDirectoryFTP(folderName);
+        //private void MoveFileXML(string xmlname)
+        //{
+        //    var folderName = "log_" + DateTime.Now.ToString("dd-MM-yyyy");
+        //    CreateDirectoryFTP(folderName);
 
-            var request = (FtpWebRequest)WebRequest.Create(ftpPath + xmlname);
-            request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
-            request.Method = WebRequestMethods.Ftp.Rename;
-            request.RenameTo = "log/" + folderName + "/" + xmlname;
-            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-            response.Close();
-        }
+        //    var request = (FtpWebRequest)WebRequest.Create(ftpPath + xmlname);
+        //    request.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+        //    request.Method = WebRequestMethods.Ftp.Rename;
+        //    request.RenameTo = "log/" + folderName + "/" + xmlname;
+        //    FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+        //    response.Close();
+        //}
 
-        private void createDirectoryFTP(string folderName)
-        {
-            try
-            {
-                FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpLogPath + folderName);
-                fwr.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
-                fwr.Method = WebRequestMethods.Ftp.ListDirectory;
-                var resp = (FtpWebResponse)fwr.GetResponse();
-                resp.Close();
-            }
-            catch
-            {
-                string ftpUri = "ftp://191.20.80.120:8089/MRK/recieved/log/" + folderName.ToString();
-                var reqCreateDir = (FtpWebRequest)WebRequest.Create(ftpUri);
-                reqCreateDir.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
-                reqCreateDir.Method = WebRequestMethods.Ftp.MakeDirectory;
+        //private void CreateDirectoryFTP(string folderName)
+        //{
+        //    try
+        //    {
+        //        FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpLogPath + folderName);
+        //        fwr.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+        //        fwr.Method = WebRequestMethods.Ftp.ListDirectory;
+        //        var resp = (FtpWebResponse)fwr.GetResponse();
+        //        resp.Close();
+        //    }
+        //    catch
+        //    {
+        //        string ftpUri = "ftp://191.20.80.120:8089/MRK/recieved/log/" + folderName.ToString();
+        //        var reqCreateDir = (FtpWebRequest)WebRequest.Create(ftpUri);
+        //        reqCreateDir.Credentials = new NetworkCredential(ftpUsername, ftpPassword);
+        //        reqCreateDir.Method = WebRequestMethods.Ftp.MakeDirectory;
 
-                using (var resp = (FtpWebResponse)reqCreateDir.GetResponse())
-                {
-                    Console.WriteLine(resp.StatusCode);
-                }
-            }
-        }
+        //        using (var resp = (FtpWebResponse)reqCreateDir.GetResponse())
+        //        {
+        //            Console.WriteLine(resp.StatusCode);
+        //        }
+        //    }
+        //}
 
         private TRes.DocList CreateDocumentFromXML(XMLData json)
         {
@@ -299,7 +301,7 @@ namespace ProjectMRK.Engine.JobService
                 Des_AreaMaster_ID = null,
                 DocumentDate = jsonHeader.TransDate,
                 ActionTime = null,
-                MovementType_ID = skuMovementType.Code == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
+                MovementType_ID = skuMovementType.Code.ToUpper() == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
@@ -366,7 +368,7 @@ namespace ProjectMRK.Engine.JobService
             });
 
             AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
-
+            doc.ID = docID;
             res.doc = doc;
             baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
             res.sto = baseSto;
@@ -374,6 +376,47 @@ namespace ProjectMRK.Engine.JobService
 
             return res;
 
+        }
+
+        private TRes ReadFileFromDirectory()
+        {
+            TRes res = new TRes();
+            var resList = new List<TRes.DocList>();
+            var getFile = new DirectoryInfo(directoryPath).GetFiles("*.xml");
+            foreach(var file in getFile)
+            {
+                var doc = ReadListFileXMLFromDirectory(file);
+                resList.Add(doc);
+            }
+            res.document = resList;
+            return res;
+        }
+
+        private TRes.DocList ReadListFileXMLFromDirectory(FileInfo xml)
+        {
+            var xmlData = File.ReadAllText(xml.FullName);
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xmlData);
+            var json = JsonConvert.SerializeXmlNode(doc, Newtonsoft.Json.Formatting.Indented);
+
+            var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
+
+            var res = CreateDocumentFromXML(jsonObj);
+
+            MoveFileXMLDirectory(xml.FullName, xml.Name);
+
+            return res;
+        }
+
+        private void MoveFileXMLDirectory(string xmlPath, string xmlname)
+        {
+            var folderName = "achrive_" + DateTime.Now.ToString("dd-MM-yyyy");
+            if (!Directory.Exists(directoryPath + "Achrive/" + folderName))
+            {
+                Directory.CreateDirectory(directoryPath + "Achrive/" + folderName);
+            }
+
+            File.Move(xmlPath, directoryPath + "Achrive/" + folderName + "/" + xmlname);
         }
     }
 }
