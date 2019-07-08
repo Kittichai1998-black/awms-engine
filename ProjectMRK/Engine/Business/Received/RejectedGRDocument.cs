@@ -30,9 +30,9 @@ namespace ProjectMRK.Engine.Business.Received
         protected override TDocRes ExecuteEngine(TDocReq reqVO)
         {
             var docReceivs = AWMSEngine.ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
-            var docNotCloseds = docReceivs.Where(x => x.EventStatus != DocumentEventStatus.WORKING && x.EventStatus != DocumentEventStatus.NEW);
+            var docNotCloseds = docReceivs.Where(x => x.EventStatus != DocumentEventStatus.NEW);
             if (docNotCloseds.Count() > 0)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ New หรือ Working เท่านั้น");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ New เท่านั้น");
 
             List<SPOutSTORootCanUseCriteria> rootStos = new List<SPOutSTORootCanUseCriteria>();
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
@@ -42,7 +42,20 @@ namespace ProjectMRK.Engine.Business.Received
 
                 foreach(var rt in rtStos)
                 {
+                    var stoID = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                        new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string,object>("ParentStorageObject_ID",rt.rootID),
+                        new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                    }, this.BuVO).FirstOrDefault();
+
+                    var distoID = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                        new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string,object>("Sou_StorageObject_ID",stoID.ID),
+                    }, this.BuVO).FirstOrDefault();
+
                     AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(rt.rootID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.REJECTED, this.BuVO);
+                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(distoID.ID.Value, EntityStatus.REMOVE, this.BuVO);
+
                 }
 
                 rootStos.AddRange(rtStos);
