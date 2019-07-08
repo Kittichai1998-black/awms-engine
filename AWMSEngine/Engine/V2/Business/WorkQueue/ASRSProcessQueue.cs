@@ -84,6 +84,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 reqVO.processQueues.GroupBy(x => x.docID).Select(x=>x.Key).ToList()
                 , this.BuVO);
             List<SPOutSTOProcessQueueCriteria> tmpStoProcs = new List<SPOutSTOProcessQueueCriteria>();
+            List<SPOutSTOProcessQueueCriteria> resStoProcs = new List<SPOutSTOProcessQueueCriteria>();
             var processQueues = reqVO.processQueues.OrderByDescending(x => x.priority).ToList();
 
             foreach (var proc in processQueues)
@@ -144,9 +145,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 if (_condi.baseQty.Value > 0)
                                 {
                                     var a = (x.pstoBaseQty - x.pickBaseQty);//เศษที่เหลือจากการหยิบ
+                                    var b = (x.pstoQty - x.pickQty);//เศษที่เหลือจากการหยิบ
                                     x.pickBaseQty = (a <= _condi.baseQty.Value ? a : _condi.baseQty.Value);
+
+                                    var _condiQty = this.StaticValue.ConvertToNewUnitBySKU(x.SKUMasterID, x.pickBaseQty, x.pstoBaseUnitID, x.pstoUnitID);
+                                    x.pickQty = (b <= _condiQty.qty ? b : _condiQty.qty);
                                     _condi.baseQty -= x.pickBaseQty;
-                                    tmpStoProcs.First(y => y.pstoID == x.pstoID).pickBaseQty += x.pickBaseQty;//เพิ่มรายการที่หยิบเข้า TEMP
+
+                                    var _tmp = tmpStoProcs.First(y => y.pstoID == x.pstoID);
+                                    _tmp.pickBaseQty += x.pickBaseQty;//เพิ่มรายการที่หยิบเข้า TEMP
+                                    _tmp.pickQty += x.pickQty;//เพิ่มรายการที่หยิบเข้า TEMP
                                 }
                                 else
                                     x.pickBaseQty = 0;
@@ -178,11 +186,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         this.ValidateWCS(_pickStos, reqVO);
 
                         if (proc.baseQty.HasValue)
-                            tmpStoProcs.AddRange(_pickStos);
+                            tmpStoProcs.AddRange(_pickStos.Clone());
                         else if (proc.percentRandom.HasValue)
                         {
                             _pickStos = _pickStos.RandomList(proc.percentRandom.Value);
-                            tmpStoProcs.AddRange(_pickStos);
+                            tmpStoProcs.AddRange(_pickStos.Clone());
                         }
                         pickStos.AddRange(_pickStos);
                     }
