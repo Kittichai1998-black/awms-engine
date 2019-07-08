@@ -184,7 +184,7 @@ namespace ProjectMRK.Engine.JobService
         //    }
         //}
 
-        private TRes.DocList CreateDocumentFromXML(XMLData json)
+        private TRes.DocList CreateDocumentFromXML(XMLData json, string XMLFullName, string XMLName)
         {
             TRes.DocList res = new TRes.DocList();
             var jsonHeader = json.MRK_MT_PalletID_SAP_to_WMS.Header_Pallet;
@@ -217,6 +217,14 @@ namespace ProjectMRK.Engine.JobService
             var objSizePack = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
 
             var getBase = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(jsonDetail.PalletID, this.BuVO);
+
+            var chkPallet = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<amt_StorageObject>(jsonDetail.PalletID, this.BuVO);
+            if(chkPallet != null)
+            {
+                DeleteFileXMLDirectory(XMLFullName, XMLName);
+                throw new Exception("Pallet Code Duplicate");
+            }
+
             long baseID;
             if (getBase == null)
             {
@@ -401,7 +409,7 @@ namespace ProjectMRK.Engine.JobService
 
             var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
 
-            var res = CreateDocumentFromXML(jsonObj);
+            var res = CreateDocumentFromXML(jsonObj, xml.FullName, xml.Name);
 
             MoveFileXMLDirectory(xml.FullName, xml.Name);
 
@@ -417,6 +425,16 @@ namespace ProjectMRK.Engine.JobService
             }
 
             File.Move(xmlPath, directoryPath + "Achrive/" + folderName + "/" + xmlname);
+        }
+        private void DeleteFileXMLDirectory(string xmlPath, string xmlname)
+        {
+            var folderName = "error_" + DateTime.Now.ToString("dd-MM-yyyy");
+            if (!Directory.Exists(directoryPath + "Achrive/" + folderName))
+            {
+                Directory.CreateDirectory(directoryPath + "Error/" + folderName);
+            }
+
+            File.Move(xmlPath, directoryPath + "Error/" + folderName + "/" + xmlname);
         }
     }
 }

@@ -56,7 +56,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     Des_Warehouse_ID = desWarehouse.ID.Value,
                     Des_AreaMaster_ID = reqVO.desAreaCode == "" ? StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode).ID : null,
                     DocumentDate = DateTime.Now,
-                    MovementType_ID = MovementType.FG_TRANSFER_WM,
+                    MovementType_ID = MovementType.FG_RETURN_WM,
 
                     DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
                     EventStatus = DocumentEventStatus.NEW,

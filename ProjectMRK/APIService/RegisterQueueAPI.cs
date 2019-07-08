@@ -1,6 +1,7 @@
 ﻿using AWMSEngine.APIService;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -37,45 +38,29 @@ namespace ProjectMRK.APIService
                     throw e;
                 else
                 {
-                    this.BeginTransaction();
-                    var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get("EJ00000000", null, null, false, false, this.BuVO);
-                    var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
-                    SPworkQueue workQ = new SPworkQueue()
+                    WorkQueueCriteria wq = new WorkQueueCriteria()
                     {
-                        ID = null,
-                        IOType = IOType.OUTPUT,
-                        ActualTime = null,
-                        Parent_WorkQueue_ID = null,
-                        Priority = 1,
-                        TargetStartTime = null,
-                                                                    
-                        StorageObject_ID = sto.id,
-                        StorageObject_Code = sto.code,
-
-                        Warehouse_ID = 1,
-                        AreaMaster_ID = 1,
-                        AreaLocationMaster_ID = null,
-
-                        Sou_Warehouse_ID = StaticValue.AreaMasters.First(x => x.Code == req.warehouseCode).Warehouse_ID.Value,
-                        Sou_AreaMaster_ID = StaticValue.AreaMasters.First(x => x.Code == req.areaCode).ID.Value,
-                        Sou_AreaLocationMaster_ID = null,
-
-                        Des_Warehouse_ID = StaticValue.Warehouses.First(x => x.Code == req.desWarehouseCode).ID.Value,
-                        Des_AreaMaster_ID = 7,
-                        Des_AreaLocationMaster_ID = null,
-
-                        EventStatus = WorkQueueEventStatus.WORKING,
-                        Status = EntityStatus.ACTIVE,
-                        StartTime = req.actualTime,
-
-                        DocumentItemWorkQueues = null
+                        queueID = null,
+                        baseInfo = null,
+                        warehouseCode = req.warehouseCode,
+                        areaCode = req.areaCode,
+                        locationCode = req.locationCode,
+                        souWarehouseCode = req.warehouseCode,
+                        souAreaCode = req.areaCode,
+                        souLocationCode = req.locationCode,
+                        desWarehouseCode = req.warehouseCode,
+                        desAreaCode = "EJ",
+                        desLocationCode = "EJ01",
+                        queueParentID = null,
+                        queueRefID = null,
+                        queueStatus = WorkQueueEventStatus.NEW,
+                        seq = 0,
                     };
-                    workQ = AWMSEngine.ADO.WorkQueueADO.GetInstant().PUT(workQ, this.BuVO);
+                    return wq;
                 }
 
-                return null;
             }
-            
+
         }
     }
 }
