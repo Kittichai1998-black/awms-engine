@@ -26,6 +26,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                 public long baseUnitID;
                 public string baseUnitCode;
                 public string batch;
+                public string orderNo;
+                public string lot;
             }
         }
 
@@ -57,6 +59,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                             baseUnitID = sto.baseUnitID,
                             stoID = sto.id.Value,
                             batch = sto.batch,
+                            orderNo = sto.orderNo,
+                            lot = sto.lot
                         });
                     }
                     
