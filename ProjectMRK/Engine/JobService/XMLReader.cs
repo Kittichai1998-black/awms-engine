@@ -184,7 +184,7 @@ namespace ProjectMRK.Engine.JobService
         //    }
         //}
 
-        private TRes.DocList CreateDocumentFromXML(XMLData json)
+        private TRes.DocList CreateDocumentFromXML(XMLData json, string XMLFullName, string XMLName)
         {
             TRes.DocList res = new TRes.DocList();
             var jsonHeader = json.MRK_MT_PalletID_SAP_to_WMS.Header_Pallet;
@@ -217,164 +217,174 @@ namespace ProjectMRK.Engine.JobService
             var objSizePack = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
 
             var getBase = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(jsonDetail.PalletID, this.BuVO);
-            long baseID;
-            if (getBase == null)
+
+            var chkPallet = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<amt_StorageObject>(jsonDetail.PalletID, this.BuVO);
+
+            if(chkPallet != null)
             {
-                baseID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
-                {
-                    Code = jsonDetail.PalletID,
-                    Name = jsonDetail.PalletID,
-                    BaseMasterType_ID = 6,
-                    Description = "Pallet",
-                    ObjectSize_ID = objSizeBase.ID.Value,
-                    Status = EntityStatus.ACTIVE,
-                    UnitType_ID = 1,
-                    WeightKG = null
-                }).Value;
+                DeleteFileXMLDirectory(XMLFullName, XMLName);
+                return null;
             }
             else
             {
-                baseID = getBase.ID.Value;
-            }
+                long baseID;
+                if (getBase == null)
+                {
+                    baseID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                    {
+                        Code = jsonDetail.PalletID,
+                        Name = jsonDetail.PalletID,
+                        BaseMasterType_ID = 6,
+                        Description = "Pallet",
+                        ObjectSize_ID = objSizeBase.ID.Value,
+                        Status = EntityStatus.ACTIVE,
+                        UnitType_ID = 1,
+                        WeightKG = null
+                    }).Value;
+                }
+                else
+                {
+                    baseID = getBase.ID.Value;
+                }
 
-            StorageObjectCriteria baseSto = new StorageObjectCriteria()
-            {
-                code = jsonDetail.PalletID,
-                eventStatus = StorageObjectEventStatus.NEW,
-                name = "Pallet",
-                qty = 1,
-                unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                baseQty = 1,
-                objectSizeID = objSizeBase.ID.Value,
-                type = StorageObjectType.BASE,
-                mstID = baseID,
-                objectSizeName = objSizeBase.Name,
-            };
+                StorageObjectCriteria baseSto = new StorageObjectCriteria()
+                {
+                    code = jsonDetail.PalletID,
+                    eventStatus = StorageObjectEventStatus.NEW,
+                    name = "Pallet",
+                    qty = 1,
+                    unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                    unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                    baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                    baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                    baseQty = 1,
+                    objectSizeID = objSizeBase.ID.Value,
+                    type = StorageObjectType.BASE,
+                    mstID = baseID,
+                    objectSizeName = objSizeBase.Name,
+                };
 
-            var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
-            var childSto = new StorageObjectCriteria()
-            {
-                parentID = stoID,
-                parentType = StorageObjectType.BASE,
-                code = jsonDetail.ItemNumber,
-                eventStatus = StorageObjectEventStatus.NEW,
-                name = sku.Name,
-                batch = jsonDetail.ToBatch,
-                qty = Convert.ToDecimal(jsonDetail.Quantity),
-                skuID = sku.ID,
-                unitCode = unit.Code,
-                unitID = unit.ID.Value,
-                baseUnitCode = unit.Code,
-                baseUnitID = unit.ID.Value,
-                baseQty = Convert.ToDecimal(jsonDetail.Quantity),
-                objectSizeID = objSizePack.ID.Value,
-                type = StorageObjectType.PACK,
-                productDate = jsonDetail.ManufactureDate,
-                objectSizeName = objSizePack.Name,
-                mstID = pack.ID
-            };
-            var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(childSto, this.BuVO);
+                var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
+                var childSto = new StorageObjectCriteria()
+                {
+                    parentID = stoID,
+                    parentType = StorageObjectType.BASE,
+                    code = jsonDetail.ItemNumber,
+                    eventStatus = StorageObjectEventStatus.NEW,
+                    name = sku.Name,
+                    batch = jsonDetail.ToBatch,
+                    qty = Convert.ToDecimal(jsonDetail.Quantity),
+                    skuID = sku.ID,
+                    unitCode = unit.Code,
+                    unitID = unit.ID.Value,
+                    baseUnitCode = unit.Code,
+                    baseUnitID = unit.ID.Value,
+                    baseQty = Convert.ToDecimal(jsonDetail.Quantity),
+                    objectSizeID = objSizePack.ID.Value,
+                    type = StorageObjectType.PACK,
+                    productDate = jsonDetail.ManufactureDate,
+                    objectSizeName = objSizePack.Name,
+                    mstID = pack.ID
+                };
+                var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(childSto, this.BuVO);
 
-            var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
+                var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
 
-            amt_Document doc = new amt_Document()
-            {
-                ID = null,
-                Code = null,
-                ParentDocument_ID = null,
-                Lot = null,
-                Batch = jsonDetail.ToBatch,
-                For_Customer_ID = null,
-                Sou_Customer_ID = null,
-                Sou_Supplier_ID = null,
-                Sou_Branch_ID = fromWarehouse.ID.Value,
-                Sou_Warehouse_ID = fromWarehouse.ID.Value,
-                Sou_AreaMaster_ID = null,
-
-                Des_Customer_ID = null,
-                Des_Supplier_ID = null,
-                Des_Branch_ID = toWarehouse.ID.Value,
-                Des_Warehouse_ID = toWarehouse.ID.Value,
-                Des_AreaMaster_ID = null,
-                DocumentDate = jsonHeader.TransDate,
-                ActionTime = null,
-                MovementType_ID = skuMovementType.Code.ToUpper() == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
-                RefID = null,
-                Ref1 = null,
-                Ref2 = null,
-
-                DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                EventStatus = DocumentEventStatus.NEW,
-
-                Remark = null,
-                Options = "basecode=" + jsonDetail.PalletID,
-                Transport_ID = null,
-
-                DocumentItems = new List<amt_DocumentItem>(),
-
-            };
-            doc.DocumentItems.Add(new amt_DocumentItem()
-            {
-                ID = null,
-                Code = sku.Code,
-                SKUMaster_ID = sku.ID.Value,
-                PackMaster_ID = pack.ID,
-
-                Quantity = Convert.ToDecimal(jsonDetail.Quantity),
-                UnitType_ID = unit.ID,
-                BaseQuantity = Convert.ToDecimal(jsonDetail.Quantity),
-                BaseUnitType_ID = unit.ID,
-
-                OrderNo = null,
-                Batch = jsonDetail.ToBatch,
-                Lot = null,
-
-                Options = null,
-                ExpireDate = null,
-                ProductionDate = jsonDetail.ManufactureDate,
-                Ref1 = null,
-                Ref2 = null,
-                RefID = "basecode=" + jsonDetail.PalletID,
-
-                EventStatus = DocumentEventStatus.NEW,
-
-            });
-
-            var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, this.BuVO).ID;
-
-            var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID.Value, this.BuVO);
-            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
-            var stoList = stos.ToTreeList();
-            var stoPack = stoList.Where(x => x.type == StorageObjectType.PACK);
-            amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject();
-            docItems.ForEach(docItem =>
-            {
-                var sto = stoPack.FirstOrDefault(x => x.skuID == docItem.SKUMaster_ID);
-                disto = new amt_DocumentItemStorageObject()
+                amt_Document doc = new amt_Document()
                 {
                     ID = null,
-                    DocumentItem_ID = docItem.ID.Value,
-                    Sou_StorageObject_ID = sto.id.Value,
-                    Des_StorageObject_ID = sto.id.Value,
-                    Quantity = docItem.Quantity.Value,
-                    BaseQuantity = docItem.Quantity.Value,
-                    UnitType_ID = docItem.BaseUnitType_ID.Value,
-                    BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                    Status = EntityStatus.INACTIVE
+                    Code = null,
+                    ParentDocument_ID = null,
+                    Lot = null,
+                    Batch = jsonDetail.ToBatch,
+                    For_Customer_ID = null,
+                    Sou_Customer_ID = null,
+                    Sou_Supplier_ID = null,
+                    Sou_Branch_ID = fromWarehouse.ID.Value,
+                    Sou_Warehouse_ID = fromWarehouse.ID.Value,
+                    Sou_AreaMaster_ID = null,
+
+                    Des_Customer_ID = null,
+                    Des_Supplier_ID = null,
+                    Des_Branch_ID = toWarehouse.ID.Value,
+                    Des_Warehouse_ID = toWarehouse.ID.Value,
+                    Des_AreaMaster_ID = null,
+                    DocumentDate = jsonHeader.TransDate,
+                    ActionTime = null,
+                    MovementType_ID = skuMovementType.Code.ToUpper() == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
+                    RefID = null,
+                    Ref1 = null,
+                    Ref2 = null,
+
+                    DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
+                    EventStatus = DocumentEventStatus.NEW,
+
+                    Remark = null,
+                    Options = "basecode=" + jsonDetail.PalletID,
+                    Transport_ID = null,
+
+                    DocumentItems = new List<amt_DocumentItem>(),
+
                 };
-            });
+                doc.DocumentItems.Add(new amt_DocumentItem()
+                {
+                    ID = null,
+                    Code = sku.Code,
+                    SKUMaster_ID = sku.ID.Value,
+                    PackMaster_ID = pack.ID,
 
-            AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
-            doc.ID = docID;
-            res.doc = doc;
-            baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
-            res.sto = baseSto;
+                    Quantity = Convert.ToDecimal(jsonDetail.Quantity),
+                    UnitType_ID = unit.ID,
+                    BaseQuantity = Convert.ToDecimal(jsonDetail.Quantity),
+                    BaseUnitType_ID = unit.ID,
 
+                    OrderNo = null,
+                    Batch = jsonDetail.ToBatch,
+                    Lot = null,
 
-            return res;
+                    Options = null,
+                    ExpireDate = null,
+                    ProductionDate = jsonDetail.ManufactureDate,
+                    Ref1 = null,
+                    Ref2 = null,
+                    RefID = "basecode=" + jsonDetail.PalletID,
+
+                    EventStatus = DocumentEventStatus.NEW,
+
+                });
+
+                var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, this.BuVO).ID;
+
+                var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID.Value, this.BuVO);
+                var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
+                var stoList = stos.ToTreeList();
+                var stoPack = stoList.Where(x => x.type == StorageObjectType.PACK);
+                amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject();
+                docItems.ForEach(docItem =>
+                {
+                    var sto = stoPack.FirstOrDefault(x => x.skuID == docItem.SKUMaster_ID);
+                    disto = new amt_DocumentItemStorageObject()
+                    {
+                        ID = null,
+                        DocumentItem_ID = docItem.ID.Value,
+                        Sou_StorageObject_ID = sto.id.Value,
+                        Des_StorageObject_ID = sto.id.Value,
+                        Quantity = docItem.Quantity.Value,
+                        BaseQuantity = docItem.Quantity.Value,
+                        UnitType_ID = docItem.BaseUnitType_ID.Value,
+                        BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
+                        Status = EntityStatus.INACTIVE
+                    };
+                });
+
+                AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
+                doc.ID = docID;
+                res.doc = doc;
+                baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
+                res.sto = baseSto;
+
+                return res;
+            }
 
         }
 
@@ -401,9 +411,9 @@ namespace ProjectMRK.Engine.JobService
 
             var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
 
-            var res = CreateDocumentFromXML(jsonObj);
-
-            MoveFileXMLDirectory(xml.FullName, xml.Name);
+            var res = CreateDocumentFromXML(jsonObj, xml.FullName, xml.Name);
+            if(res != null)
+                MoveFileXMLDirectory(xml.FullName, xml.Name);
 
             return res;
         }
@@ -417,6 +427,16 @@ namespace ProjectMRK.Engine.JobService
             }
 
             File.Move(xmlPath, directoryPath + "Achrive/" + folderName + "/" + xmlname);
+        }
+        private void DeleteFileXMLDirectory(string xmlPath, string xmlname)
+        {
+            var folderName = "error_" + DateTime.Now.ToString("dd-MM-yyyy");
+            if (!Directory.Exists(directoryPath + "Achrive/" + folderName))
+            {
+                Directory.CreateDirectory(directoryPath + "Error/" + folderName);
+            }
+
+            File.Move(xmlPath, directoryPath + "Error/" + folderName + "/" + xmlname);
         }
     }
 }
