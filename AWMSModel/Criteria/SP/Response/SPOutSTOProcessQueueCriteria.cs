@@ -24,6 +24,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string pstoName;
         public long? pstoParentID;
         public long? pstoForCusID;
+        public long SKUMasterID;
         public string pstoBatch;
         public string pstoLot;
         public string pstoOrderNo;

@@ -125,7 +125,7 @@ namespace AWMSEngine.Engine.V2.Business
                         mstID = bs.sou_mstID,
                         packID = bs.sou_packID,
                         packCode = bs.sou_packCode,
-                        packName = bs.sou_packCode,
+                        packName = bs.sou_packName,
 
                         packQty = bs.sou_packQty,
                         packUnitID = bs.sou_packUnitID,
@@ -184,7 +184,7 @@ namespace AWMSEngine.Engine.V2.Business
                         mstID = bs.des_mstID,
                         packID = bs.des_packID,
                         packCode = bs.des_packCode,
-                        packName = bs.des_packCode,
+                        packName = bs.des_packName,
 
                         packQty = bs.des_packQty,
                         packUnitID = bs.des_packUnitID,
