@@ -25,9 +25,6 @@ namespace ProjectTAP.Engine.Business.WorkQueue
             if (reqVO.baseCode == null || reqVO.baseCode == "" || reqVO.baseCode == String.Empty)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code is null");
 
-            if (reqVO.mappingPallets[0].itemNo == null || reqVO.mappingPallets[0].itemNo == "" || reqVO.mappingPallets[0].itemNo == String.Empty)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "ItemNo is null");
-
             var baseMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.baseCode),
@@ -41,7 +38,11 @@ namespace ProjectTAP.Engine.Business.WorkQueue
 
             if(stos != null)
             {
-                var stoPack = stos.ToTreeList().Find(x=> x.type == StorageObjectType.PACK && (x.eventStatus == StorageObjectEventStatus.AUDITING || x.eventStatus == StorageObjectEventStatus.AUDITING));
+                
+                var stoPack = stos.ToTreeList().Find(x=> x.type == StorageObjectType.PACK && (x.eventStatus == StorageObjectEventStatus.AUDITING || x.eventStatus == StorageObjectEventStatus.AUDITED));
+                if(stoPack != null)
+                    throw new AMWException(logger, AMWExceptionCode.V1001, "Pallet have in system");
+
                 stoPack.qty = Convert.ToDecimal(reqVO.mappingPallets.First().qty);
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stoPack, buVO);
 

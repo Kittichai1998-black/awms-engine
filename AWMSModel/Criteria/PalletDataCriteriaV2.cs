@@ -7,6 +7,7 @@ namespace AWMSModel.Criteria
     public class PalletDataCriteriaV2
     {
         public string souWarehouseCode;
+        public string forCustomerCode;
         public string code;
         public string qty;
         public string unit;

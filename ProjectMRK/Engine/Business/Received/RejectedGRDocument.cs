@@ -42,19 +42,21 @@ namespace ProjectMRK.Engine.Business.Received
 
                 foreach(var rt in rtStos)
                 {
-                    var stoID = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
-                        new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string,object>("ParentStorageObject_ID",rt.rootID),
-                        new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
-                    }, this.BuVO).FirstOrDefault();
-
-                    var distoID = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                        new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string,object>("Sou_StorageObject_ID",stoID.ID),
-                    }, this.BuVO).FirstOrDefault();
-
                     AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(rt.rootID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.REJECTED, this.BuVO);
-                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(distoID.ID.Value, EntityStatus.REMOVE, this.BuVO);
+
+                    //var stoID = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                    //    new KeyValuePair<string, object>[] {
+                    //    new KeyValuePair<string,object>("ParentStorageObject_ID",rt.rootID),
+                    //    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                    //}, this.BuVO).FirstOrDefault();
+
+                    //var distoID = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                    //    new KeyValuePair<string, object>[] {
+                    //    new KeyValuePair<string,object>("Sou_StorageObject_ID",stoID.ID),
+                    //}, this.BuVO).FirstOrDefault();
+
+                    //AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(rt.rootID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.REJECTED, this.BuVO);
+                    //AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(distoID.ID.Value, EntityStatus.REMOVE, this.BuVO);
 
                 }
 
@@ -68,17 +70,6 @@ namespace ProjectMRK.Engine.Business.Received
 
 
             
-            //var docIssues = ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
-            //var docNotCloseds = docIssues.Where(x => x.EventStatus != DocumentEventStatus.NEW);
-            //if (docNotCloseds.Count() > 0)
-            //    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ New เท่านั้น");
-
-            //docIssues.ForEach(doc =>
-            //{
-            //    doc.EventStatus = DocumentEventStatus.REJECTED;
-            //    doc.Status = ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
-
-            //});
 
 
             return new TDocRes() { documents = docReceivs };
