@@ -81,8 +81,7 @@ namespace ProjectMRK.Engine.JobService
         //private string ftpPassword;
         private string directoryPath;
 
-        private List<FileInfo> fileError = new List<FileInfo>();
-        private List<FileInfo> fileSuccess = new List<FileInfo>();
+        private List<FileInfo> fileError = new List<FileInfo>(), fileSuccess = new List<FileInfo>();
 
         protected override TRes ExecuteEngine(string reqVO)
         {
@@ -208,15 +207,6 @@ namespace ProjectMRK.Engine.JobService
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Branch " + jsonHeader.BranchCode + " NotFound");
             }
-
-            var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(jsonDetail.ItemNumber, this.BuVO);
-            if (sku == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
-
-            var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(jsonDetail.ItemNumber, this.BuVO);
-            if (pack == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
-
             var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(jsonDetail.UOM, this.BuVO);
             if (unit == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Unit Type " + jsonDetail.UOM + " NotFound");
@@ -228,7 +218,20 @@ namespace ProjectMRK.Engine.JobService
 
             var chkPallet = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<amt_StorageObject>(jsonDetail.PalletID, this.BuVO);
 
-            if(chkPallet != null)
+            var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]{
+                 new SQLConditionCriteria("Code", jsonDetail.ItemNumber, SQLOperatorType.EQUALS),
+                 new SQLConditionCriteria("UnitType_ID", unit.ID, SQLOperatorType.EQUALS)
+                }, this.BuVO).FirstOrDefault();
+
+            if (sku == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
+
+            var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[]{
+                 new SQLConditionCriteria("SKUMaster_ID", sku.ID, SQLOperatorType.EQUALS) }, this.BuVO).FirstOrDefault();
+            if (pack == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
+
+            if (chkPallet != null)
             {
                 return null;
             }
@@ -407,9 +410,8 @@ namespace ProjectMRK.Engine.JobService
                     var doc = ReadListFileXMLFromDirectory(file);
                     resList.Add(doc);
                 }
-                catch (Exception e)
+                catch
                 {
-                    fileError.Add(file);
                     break;
                 }
             }
