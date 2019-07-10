@@ -64,7 +64,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
                 }, buVO);
 
-                if (locationGateFast.Count() > 1 && workQueue.Count() > 1)
+                if (locationGateFast.Count() > 2 || workQueue.Count() > 2)
                 {
                     return false;
                 }
