@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AMWUtil.Common;
 using AMWUtil.Logger;
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Common;
@@ -59,9 +60,11 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 }
                 else
                 {
-                    distos.Where(disto => disto.Sou_StorageObject_ID == queue.StorageObject_ID.Value).ToList().ForEach(disto =>
+                    var packStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO)
+                    .ToTreeList().FindAll(y => y.type == StorageObjectType.PACK);
+                    packStos.ForEach(packSto =>
                     {
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(packSto.id.Value,
                             StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
                     });
                 }

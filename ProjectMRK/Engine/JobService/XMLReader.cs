@@ -420,18 +420,18 @@ namespace ProjectMRK.Engine.JobService
 
         private void MoveFileXMLDirectory(string xmlPath, string xmlname)
         {
-            var folderName = "achrive_" + DateTime.Now.ToString("dd-MM-yyyy");
-            if (!Directory.Exists(directoryPath + "Achrive/" + folderName))
+            var folderName = "Archive_" + DateTime.Now.ToString("dd-MM-yyyy");
+            if (!Directory.Exists(directoryPath + "Archive/" + folderName))
             {
-                Directory.CreateDirectory(directoryPath + "Achrive/" + folderName);
+                Directory.CreateDirectory(directoryPath + "Archive/" + folderName);
             }
 
-            File.Move(xmlPath, directoryPath + "Achrive/" + folderName + "/" + xmlname);
+            File.Move(xmlPath, directoryPath + "Archive/" + folderName + "/" + xmlname);
         }
         private void DeleteFileXMLDirectory(string xmlPath, string xmlname)
         {
             var folderName = "error_" + DateTime.Now.ToString("dd-MM-yyyy");
-            if (!Directory.Exists(directoryPath + "Achrive/" + folderName))
+            if (!Directory.Exists(directoryPath + "Archive/" + folderName))
             {
                 Directory.CreateDirectory(directoryPath + "Error/" + folderName);
             }

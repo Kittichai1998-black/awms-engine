@@ -90,27 +90,36 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     productDate = _packSto.ProductDate,
                     objectSizeName = objSizePack.Name,
                     mstID = _packSto.PackMaster_ID,
-                    weiKG = reqVO.weight
+                    weiKG = reqVO.weight,
+                    lengthM = reqVO.length,
+                    heightM = reqVO.height,
+                    widthM = reqVO.width,
+                    warehouseID = _warehouseASRS.ID.Value,
+                    areaID = _areaASRS.ID.Value,
                 };
+
 
                 var packStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, buVO);
 
                 sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
 
             }
+            else
+            {
+                sto.lengthM = reqVO.length;
+                sto.heightM = reqVO.height;
+                sto.widthM = reqVO.width;
+                sto.weiKG = reqVO.weight;
+                sto.warehouseID = _warehouseASRS.ID.Value;
+                sto.areaID = _areaASRS.ID.Value;
+                sto.parentID = _locationASRS.ID.Value;
+                sto.parentType = StorageObjectType.LOCATION;
 
-            sto.lengthM = reqVO.length;
-            sto.heightM = reqVO.height;
-            sto.widthM = reqVO.width;
-            sto.weiKG = reqVO.weight;
-            sto.warehouseID = _warehouseASRS.ID.Value;
-            sto.areaID = _areaASRS.ID.Value;
-            sto.parentID = _locationASRS.ID.Value;
-            sto.parentType = StorageObjectType.LOCATION;
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, buVO);
+            }
 
-            AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(sto, buVO);
 
-            if(sto == null)
+            if (sto == null)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code '" + reqVO.baseCode + "' Not Found");
 
             return sto;
