@@ -312,7 +312,7 @@ namespace AWMSEngine.ADO
             //else if (key.StartsWith("@@sql")) key = key.Remove(0, 5);
 
             var conf = key.Split(',');
-            var comm = StaticValue.StaticValueManager.GetInstant().GetConfig(conf[0]);
+            var comm = StaticValue.StaticValueManager.GetInstant().GetConfigValue(conf[0]);
             for (int i = 1; i < conf.Length; i++)
             {
                 comm = comm.Replace("{" + (i - 1) + "}", conf[i]);

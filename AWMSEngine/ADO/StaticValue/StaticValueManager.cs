@@ -12,17 +12,17 @@ namespace AWMSEngine.ADO.StaticValue
 {
     public class StaticValueManager : IStaticValueManager
     {
-        private Dictionary<string, ams_Feature> _Features;
-        public Dictionary<string, ams_Feature> Features { get => this._Features; }
+        private List<ams_Feature> _Features;
+        public List<ams_Feature> Features { get => this._Features ?? this.LoadFeature(); }
 
-        private Dictionary<string, ams_Config> _Configs;
-        public Dictionary<string, ams_Config> Configs { get => this._Configs; }
+        private List<ams_Config> _Configs;
+        public List<ams_Config> Configs { get => this._Configs ?? this._Configs; }
 
         private List<ams_ObjectSize> _ObjectSizes;
-        public List<ams_ObjectSize> ObjectSizes { get => this._ObjectSizes; }
+        public List<ams_ObjectSize> ObjectSizes { get => this._ObjectSizes ?? this.LoadObjectSize(); }
 
         private List<ams_Branch> _Branchs;
-        public List<ams_Branch> Branchs { get => this._Branchs; }
+        public List<ams_Branch> Branchs { get => this._Branchs ?? this.LoadBranch(); }
         public ams_Branch GetBranch(long? branchID, long? warehouseID, long? areaID,
             string branchCode, string warehouseCode, string areaCode)
         {
@@ -44,7 +44,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
 
         private List<ams_Warehouse> _Warehouses;
-        public List<ams_Warehouse> Warehouses { get => this._Warehouses; }
+        public List<ams_Warehouse> Warehouses { get => this._Warehouses ?? this.LoadWarehouse(); }
         public ams_Warehouse GetWarehouse(long? warehouseID, long? areaID,
             string warehouseCode, string areaCode)
         {
@@ -70,7 +70,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
 
         private List<ams_AreaMaster> _AreaMasters;
-        public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters; }
+        public List<ams_AreaMaster> AreaMasters { get => this._AreaMasters ?? this.LoadAreaMaster(); }
         public ams_AreaMaster GetAreaMaster(long? areaID, string areaCode)
         {
             ams_AreaMaster a = null;
@@ -91,103 +91,44 @@ namespace AWMSEngine.ADO.StaticValue
         }
 
         private List<ams_AreaMasterType> _AreaMasterTypes;
-        public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes; }
+        public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes ?? this.LoadAreaMasterType(); }
         public string GetAreaMasterTypesCode(long id)
         {
             return this._AreaMasterTypes.First(x => x.ID == id).Code;
         }
 
-        private List<ams_AreaRoute> _AreaMasterLines;
-        public List<ams_AreaRoute> AreaMasterLines { get => this._AreaMasterLines; }
+        private List<ams_AreaRoute> _AreaRoutes;
+        public List<ams_AreaRoute> AreaRoutes { get => this._AreaRoutes ?? this.LoadAreaRoute(); }
 
         private List<ams_Supplier> _Suppliers;
-        public List<ams_Supplier> Suppliers { get => this._Suppliers; }
+        public List<ams_Supplier> Suppliers { get => this._Suppliers ?? this.LoadSupplier(); }
 
         private List<ams_Customer> _Customers;
-        public List<ams_Customer> Customers { get => this._Customers; }
+        public List<ams_Customer> Customers { get => this._Customers ?? this.LoadCustomer(); }
 
         private List<ams_PackMasterType> _PackMasterTypes;
-        public List<ams_PackMasterType> PackMasterTypes { get => this._PackMasterTypes; }
+        public List<ams_PackMasterType> PackMasterTypes { get => this._PackMasterTypes ?? this.LoadPackMasterType(); }
 
         private List<ams_PackMaster> _PackMasterEmptyPallets;
-        public List<ams_PackMaster> PackMasterEmptyPallets { get => this._PackMasterEmptyPallets; }
+        public List<ams_PackMaster> PackMasterEmptyPallets { get => this._PackMasterEmptyPallets ?? this.LoadPackMasterEmptyPallets(); }
 
         private List<ams_SKUMasterType> _SKUMasterTypes;
-        public List<ams_SKUMasterType> SKUMasterTypes { get => this._SKUMasterTypes; }
+        public List<ams_SKUMasterType> SKUMasterTypes { get => this._SKUMasterTypes ?? this.LoadSKUMasterType(); }
 
         private List<ams_SKUMaster> _SKUMasterEmptyPallets;
-        public List<ams_SKUMaster> SKUMasterEmptyPallets { get => this._SKUMasterEmptyPallets; }
+        public List<ams_SKUMaster> SKUMasterEmptyPallets { get => this._SKUMasterEmptyPallets ?? this.LoadSKUMasterEmptyPallets(); }
 
         private List<ams_APIService> _APIServices;
-        public List<ams_APIService> APIServices { get => this._APIServices; }
+        public List<ams_APIService> APIServices { get => this._APIServices ?? this.LoadAPIService(); }
 
         private List<ams_Transport> _Transports;
-        public List<ams_Transport> Transports { get => this._Transports; }
+        public List<ams_Transport> Transports { get => this._Transports ?? this.LoadTransport(); }
 
         private List<ams_UnitType> _UnitTypes;
-        public List<ams_UnitType> UnitTypes { get => this._UnitTypes; }
+        public List<ams_UnitType> UnitTypes { get => this._UnitTypes ?? this.LoadUnitType(); }
 
         private List<amv_PackUnitConvert> _PackUnitConverts;
-        public List<amv_PackUnitConvert> PackUnitConverts { get => this._PackUnitConverts; }
-
-        public ConvertUnitCriteria ConvertToNewUnitBySKU(long skuID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
-        {
-            var oldUnit = this._PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == oldUnitTypeID);
-            var newUnit = this._PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == newUnitTypeID);
-            if (newUnit == null || oldUnit == null)
-                throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config PackMaster");
-
-            //var baseUnit = this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
-            return new ConvertUnitCriteria()
-            {
-                skuMaster_ID = newUnit.SKUMaster_ID,
-                skuMaster_Code = newUnit.SKUMaster_Code,
-                packMaster_ID = newUnit.PackMaster_ID,
-                packMaster_Code = newUnit.PackMaster_Code,
-                qty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity) * newUnit.Quantity / newUnit.BaseQuantity,
-                unitType_ID = newUnit.UnitType_ID,
-                baseQty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity),
-                baseUnitType_ID = oldUnit.BaseUnitType_ID,
-                weiKg = newUnit.WeightKG * (qty * oldUnit.BaseQuantity / oldUnit.Quantity) / newUnit.BaseQuantity
-            };
-        }
-
-        public ConvertUnitCriteria ConvertToBaseUnitBySKU(long skuID, decimal qty, long oldUnitTypeID)
-        {
-            var baseUnitID = this._PackUnitConverts.First(x => x.SKUMaster_ID == skuID).BaseUnitType_ID;
-            var convertUnit = this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, baseUnitID);
-            return convertUnit;
-        }
-        public ConvertUnitCriteria ConvertToBaseUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID)
-        {
-            int skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
-            return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
-        }
-        public ConvertUnitCriteria ConvertToBaseUnitByPack(string packCode, decimal qty, long oldUnitTypeID)
-        {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
-            return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
-        }
-        public ConvertUnitCriteria ConvertToBaseUnitByPack(long packID, decimal qty, long oldUnitTypeID)
-        {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
-            return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
-        }
-        public ConvertUnitCriteria ConvertToNewUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
-        {
-            var skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
-            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
-        }
-        public ConvertUnitCriteria ConvertToNewUnitByPack(string packCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
-        {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
-            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
-        }
-        public ConvertUnitCriteria ConvertToNewUnitByPack(long packID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
-        {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
-            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
-        }
+        public List<amv_PackUnitConvert> PackUnitConverts { get => this._PackUnitConverts ?? this.LoadPackUnitConvert(); }
 
 
         private static StaticValueManager instant;
@@ -212,75 +153,75 @@ namespace AWMSEngine.ADO.StaticValue
                 }
             }
         }
-        public void LoadFeature(VOCriteria buVO = null)
+
+        public List<ams_Feature> LoadFeature(VOCriteria buVO = null)
         {
-            this._Features = new Dictionary<string, ams_Feature>();
-            ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, buVO ?? new VOCriteria()).ForEach(x => this._Features.Add(x.Code, x));
+            return this._Features = ADO.DataADO.GetInstant().SelectBy<ams_Feature>("status", 1, buVO ?? new VOCriteria());
         }
-        public void LoadConfig(VOCriteria buVO = null)
+        public List<ams_Config> LoadConfig(VOCriteria buVO = null)
         {
-            this._Configs = new Dictionary<string, ams_Config>();
-            ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, buVO ?? new VOCriteria()).ForEach(x => this._Configs.Add(x.Code, x));
+            return this._Configs = ADO.DataADO.GetInstant().SelectBy<ams_Config>("status", 1, buVO ?? new VOCriteria());
         }
-        public void LoadObjectSize(VOCriteria buVO = null)
+        public List<ams_ObjectSize> LoadObjectSize(VOCriteria buVO = null)
         {
             this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, buVO ?? new VOCriteria()));
             var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, buVO ?? new VOCriteria()));
             this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
+            return this._ObjectSizes;
         }
-        public void LoadPackMaster(VOCriteria buVO = null)
+        public List<amv_PackUnitConvert> LoadPackUnitConvert(VOCriteria buVO = null)
         {
-            this._PackUnitConverts = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<amv_PackUnitConvert>(new SQLConditionCriteria[] { }, buVO ?? new VOCriteria()));
+            return this._PackUnitConverts = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<amv_PackUnitConvert>(new SQLConditionCriteria[] { }, buVO ?? new VOCriteria()));
         }
-        public void LoadUnitType(VOCriteria buVO = null)
+        public List<ams_UnitType> LoadUnitType(VOCriteria buVO = null)
         {
-            this._UnitTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_UnitType>("status", 1, buVO ?? new VOCriteria()));
+            return this._UnitTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_UnitType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAreaMaster(VOCriteria buVO = null)
+        public List<ams_AreaMaster> LoadAreaMaster(VOCriteria buVO = null)
         {
-            this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, buVO ?? new VOCriteria()));
+            return this._AreaMasters = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAreaRoute(VOCriteria buVO = null)
+        public List<ams_AreaRoute> LoadAreaRoute(VOCriteria buVO = null)
         {
-            this._AreaMasterLines = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, buVO ?? new VOCriteria()));
+            return this._AreaRoutes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaRoute>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAreaMasterType(VOCriteria buVO = null)
+        public List<ams_AreaMasterType> LoadAreaMasterType(VOCriteria buVO = null)
         {
-            this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, buVO ?? new VOCriteria()));
+            return this._AreaMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_AreaMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadWarehouse(VOCriteria buVO = null)
+        public List<ams_Warehouse> LoadWarehouse(VOCriteria buVO = null)
         {
-            this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, buVO ?? new VOCriteria()));
+            return this._Warehouses = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Warehouse>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadBranch(VOCriteria buVO = null)
+        public List<ams_Branch> LoadBranch(VOCriteria buVO = null)
         {
-            this._Branchs = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, buVO ?? new VOCriteria()));
+            return this._Branchs = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Branch>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadCustomer(VOCriteria buVO = null)
+        public List<ams_Customer> LoadCustomer(VOCriteria buVO = null)
         {
-            this._Customers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, buVO ?? new VOCriteria()));
+            return this._Customers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Customer>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadSupplier(VOCriteria buVO = null)
+        public List<ams_Supplier> LoadSupplier(VOCriteria buVO = null)
         {
-            this._Suppliers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, buVO ?? new VOCriteria()));
+            return this._Suppliers = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Supplier>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadPackMasterType(VOCriteria buVO = null)
+        public List<ams_PackMasterType> LoadPackMasterType(VOCriteria buVO = null)
         {
-            this._PackMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, buVO ?? new VOCriteria()));
+            return this._PackMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadAPIService(VOCriteria buVO = null)
+        public List<ams_APIService> LoadAPIService(VOCriteria buVO = null)
         {
-            this._APIServices = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, buVO ?? new VOCriteria()));
+            return this._APIServices = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_APIService>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadSKUMasterType(VOCriteria buVO = null)
+        public List<ams_SKUMasterType> LoadSKUMasterType(VOCriteria buVO = null)
         {
-            this._SKUMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, buVO ?? new VOCriteria()));
+            return this._SKUMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadTransport(VOCriteria buVO = null)
+        public List<ams_Transport> LoadTransport(VOCriteria buVO = null)
         {
-            this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
+            return this._Transports = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_Transport>("status", 1, buVO ?? new VOCriteria()));
         }
-        public void LoadPackMasterEmptyPallets(VOCriteria buVO = null)
+        public List<ams_PackMaster> LoadPackMasterEmptyPallets(VOCriteria buVO = null)
         {
             var packtype = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
             if (packtype != null)
@@ -292,10 +233,11 @@ namespace AWMSEngine.ADO.StaticValue
             }
             else
             {
-                this._PackMasterEmptyPallets = null;
+                this._PackMasterEmptyPallets = new List<ams_PackMaster>();
             }
+            return this._PackMasterEmptyPallets;
         }
-        public void LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
+        public List<ams_SKUMaster> LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
         {
             var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
             if (skutype != null)
@@ -308,52 +250,73 @@ namespace AWMSEngine.ADO.StaticValue
             }
             else
             {
-                this._SKUMasterEmptyPallets = null;
+                this._SKUMasterEmptyPallets = new List<ams_SKUMaster>();
+            }
+            return this._SKUMasterEmptyPallets;
+        }
+
+        public void ClearStaticByTableName(string tableName)
+        {
+            if (tableName.StartsWith("ams_"))
+            {
+                if (tableName == typeof(ams_Feature).Name) this._Features = null;
+                else if (tableName == typeof(ams_Config).Name) this._Configs = null;
+                else if (tableName == typeof(ams_ObjectSize).Name) this._ObjectSizes = null;
+                else if (tableName == typeof(ams_UnitType).Name) this._UnitTypes = null;
+                else if (tableName == typeof(ams_AreaMaster).Name) this._AreaMasters = null;
+                else if (tableName == typeof(ams_AreaRoute).Name) this._AreaRoutes = null;
+                else if (tableName == typeof(ams_AreaMasterType).Name) this._AreaMasterTypes = null;
+                else if (tableName == typeof(ams_Warehouse).Name) this._Warehouses = null;
+                else if (tableName == typeof(ams_Branch).Name) this._Branchs = null;
+                else if (tableName == typeof(ams_Customer).Name) this._Customers = null;
+                else if (tableName == typeof(ams_Supplier).Name) this._Suppliers = null;
+                else if (tableName == typeof(ams_APIService).Name) this._APIServices = null;
+                else if (tableName == typeof(ams_Transport).Name) this._Transports = null;
+                else if (tableName == typeof(ams_PackMasterType).Name) this._PackMasterTypes = null;
+                else if (tableName == typeof(ams_SKUMasterType).Name) this._SKUMasterTypes = null;
+                else if (tableName == typeof(ams_PackMaster).Name) { this._PackUnitConverts = null; this._PackMasterEmptyPallets = null; }
+                else if (tableName == typeof(ams_SKUMaster).Name) { this._SKUMasterEmptyPallets = null; }
             }
         }
 
+        //--------------GET Feature & Config
         public bool IsFeature(FeatureCode code)
         {
             string c = code.Attribute<EnumValueAttribute>().ValueString;
-            return this._Features.ContainsKey(c) ?
-                this._Features[c].DataValue != AWMSModel.Constant.StringConst.YesNoConst.NO : false;
+            var feature = this._Features.FirstOrDefault(x => x.Code == c);
+            return feature == null ? false : feature.DataValue == AWMSModel.Constant.StringConst.YesNoConst.YES;
         }
         public string GetFeatureValue(FeatureCode code)
         {
-            string c = code.ToString();
-            return this._Features.ContainsKey(c) ? this._Features[c].DataValue : null;
+            string c = code.Attribute<EnumValueAttribute>().ValueString;
+            return GetFeatureValue(c);
         }
-        public string GetConfig(ConfigCode code)
+        public string GetFeatureValue(string code)
         {
-            return GetConfig(code.ToString());
+            var feature = this._Features.FirstOrDefault(x => x.Code == code);
+            return feature == null ? null : feature.DataValue;
         }
-        public string GetConfig(string code)
+        public ams_Feature GetFeature(string code)
+        {
+            var feature = this._Features.FirstOrDefault(x => x.Code == code);
+            return feature;
+        }
+
+        public string GetConfigValue(ConfigCode code)
+        {
+            return GetConfigValue(code.ToString());
+        }
+        public string GetConfigValue(string code)
         {
             string c = code;
-            return this._Configs.ContainsKey(c) ? this._Configs[c].DataValue : null;
+            var config = this._Configs.FirstOrDefault(x => x.Code == c);
+            return config == null ? null : config.DataValue;
         }
-        public T GetEntity<T>(long? id, string code)
-            where T : BaseEntitySTD
-        {
-            string propName = typeof(T).Name.Split('.').Last().Substring(4)+"s";
-            var lis = (List<T>)this.GetType().GetProperty(propName).GetValue(this, null);
-            var e = lis.FindAll(x => x.ID == id || x.Code == code);
-            var e1 = e.FirstOrDefault();
-            if (e1 == null)
-                return null;
-            if (e.Count() > 1)
-                throw new Exception("ข้อมูล" + propName + "ซ้ำซ้อน");
-            if (!string.IsNullOrWhiteSpace(code) && e1.Code != code)
-                throw new Exception("รหัสของ " + propName + " ไม่ถูกต้อง");
-            if (id.HasValue && e1.ID != id)
-                throw new Exception("ID ของ " + propName + " ไม่ถูกต้อง");
-            return e1;
 
-        }
         public bool IsMatchConfigArray(string code, object value)
         {
             string v = value.ToString();
-            return Regex.IsMatch(this.GetConfig(code), string.Format("^{0}$|^{0},|,{0},|,{0}$", v));
+            return Regex.IsMatch(this.GetConfigValue(code), string.Format("^{0}$|^{0},|,{0},|,{0}$", v));
         }
         public EntityStatus? GetStatusInConfigByEventStatus<T>(T? value)
             where T : struct, IComparable, IFormattable, IConvertible
@@ -373,5 +336,66 @@ namespace AWMSEngine.ADO.StaticValue
                 return EntityStatus.DONE;
             throw new Exception("EventStatus '" + value ?? "" + "' Convert To EntityStatus Not Config");
         }
+
+        //---------------PACK Convert UNIT
+        public ConvertUnitCriteria ConvertToBaseUnitBySKU(long skuID, decimal qty, long oldUnitTypeID)
+        {
+            var baseUnitID = this._PackUnitConverts.First(x => x.SKUMaster_ID == skuID).BaseUnitType_ID;
+            var convertUnit = this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, baseUnitID);
+            return convertUnit;
+        }
+        public ConvertUnitCriteria ConvertToBaseUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID)
+        {
+            int skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
+            return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToBaseUnitByPack(string packCode, decimal qty, long oldUnitTypeID)
+        {
+            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
+            return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToBaseUnitByPack(long packID, decimal qty, long oldUnitTypeID)
+        {
+            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
+            return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToNewUnitBySKU(long skuID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            var oldUnit = this._PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == oldUnitTypeID);
+            var newUnit = this._PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == newUnitTypeID);
+            if (newUnit == null || oldUnit == null)
+                throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config PackMaster");
+
+            //var baseUnit = this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
+            return new ConvertUnitCriteria()
+            {
+                skuMaster_ID = newUnit.SKUMaster_ID,
+                skuMaster_Code = newUnit.SKUMaster_Code,
+                packMaster_ID = newUnit.PackMaster_ID,
+                packMaster_Code = newUnit.PackMaster_Code,
+                qty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity) * newUnit.Quantity / newUnit.BaseQuantity,
+                unitType_ID = newUnit.UnitType_ID,
+                baseQty = (qty * oldUnit.BaseQuantity / oldUnit.Quantity),
+                baseUnitType_ID = oldUnit.BaseUnitType_ID,
+                weiKg = newUnit.WeightKG * (qty * oldUnit.BaseQuantity / oldUnit.Quantity) / newUnit.BaseQuantity
+            };
+        }
+        public ConvertUnitCriteria ConvertToNewUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            var skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
+            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToNewUnitByPack(string packCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
+            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
+        }
+        public ConvertUnitCriteria ConvertToNewUnitByPack(long packID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
+        {
+            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
+            return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
+        }
+
+
     }
 }

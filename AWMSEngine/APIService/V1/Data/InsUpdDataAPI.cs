@@ -25,17 +25,18 @@ namespace AWMSEngine.APIService.Data
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var res1 = new InsertSql().Execute(this.Logger, this.BuVO,
-                new InsertSql.TReqModel()
-                {
-                    datas = this.RequestVO.datas,
-                    nr = this.RequestVO.nr,
-                    pk = this.RequestVO.pk,
-                    t = this.RequestVO.t
-                });
+            var req = new InsertSql.TReqModel()
+            {
+                datas = this.RequestVO.datas,
+                nr = (string)this.RequestVO.nr,
+                pk = (string)this.RequestVO.pk,
+                t = (string)this.RequestVO.t
+            };
+            var res1 = new InsertSql().Execute(this.Logger, this.BuVO, req);
             this.CommitTransaction();
 
-            var stManager = ADO.StaticValue.StaticValueManager.GetInstant();
+            ADO.StaticValue.StaticValueManager.GetInstant().ClearStaticByTableName(req.t);
+            /*var stManager = ADO.StaticValue.StaticValueManager.GetInstant();
             Type stManagerType = stManager.GetType();
             foreach(var mt in stManagerType.GetMethods())
             {
@@ -43,7 +44,7 @@ namespace AWMSEngine.APIService.Data
                 {
                     mt.Invoke(stManager, new object[] { null });
                 }
-            }
+            }*/
             return res1;
         }
     }

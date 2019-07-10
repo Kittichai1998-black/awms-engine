@@ -58,19 +58,19 @@ namespace AWMSEngine.Engine.Business
                 }
             };
 
-            string apiURL = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0001_URL");
-            string apiURL02 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0002_URL");
-            string apiURL03 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0003_URL");
-            string apiURL04 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0004_URL");
-            string apiURL08 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0008_URL");
-            string apiURL09 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0009_URL");
-            string apiURL081 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI0008_URL");
-            string apiURL11 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_MMI00011_URL");
+            string apiURL = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI0001_URL");
+            string apiURL02 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI0002_URL");
+            string apiURL03 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI0003_URL");
+            string apiURL04 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI0004_URL");
+            string apiURL08 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI0008_URL");
+            string apiURL09 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI0009_URL");
+            string apiURL081 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI0008_URL");
+            string apiURL11 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_MMI00011_URL");
 
 
 
-            string username = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_USERNAME");
-            string password = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("SAP_PASSWORD");
+            string username = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_USERNAME");
+            string password = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("SAP_PASSWORD");
 
 
             var res01 = SendJson<SAPResposneAPI>(this.BuVO.Logger, apiURL, HttpMethod.Post, Returnvalues, new BasicAuthentication(username, password));

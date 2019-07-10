@@ -23,7 +23,7 @@ namespace AWMSEngine.ADO
         {
             //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
 
-            var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfig(apiConfigName);
+            var apiURL = StaticValue.StaticValueManager.GetInstant().GetConfigValue(apiConfigName);
             List<HttpResultModel> outResults = new List<HttpResultModel>();
             var res = RESTFulAccess.SendJson<T>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, outResults, authentication);
             outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });

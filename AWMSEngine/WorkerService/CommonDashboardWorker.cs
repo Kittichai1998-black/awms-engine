@@ -30,16 +30,16 @@ namespace AWMSEngine.WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            int idx = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig(CF_KEY_INDEX).GetTry<int>() ?? 0;
-            int delay = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig(CF_KEY_DELAY).GetTry<int>() ?? 0;
+            int idx = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_INDEX).GetTry<int>() ?? 0;
+            int delay = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_DELAY).GetTry<int>() ?? 0;
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 for(int i = 1; i <= idx; i++)
                 {
-                    var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig(string.Format(CF_KEY_SPNAME, i));
-                    var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig(string.Format(CF_KEY_PARAM, i));
-                    var hubname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig(string.Format(CF_KEY_HUBNAME, i));
+                    var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_SPNAME, i));
+                    var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, i));
+                    var hubname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_HUBNAME, i));
                     Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
                     AMWUtil.Common.ObjectUtil.QryStrToDictionary(param).ToList().ForEach(x =>
                     {

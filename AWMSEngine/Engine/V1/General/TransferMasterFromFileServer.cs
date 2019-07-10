@@ -37,11 +37,11 @@ namespace AWMSEngine.Engine.General
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             string shotTable = reqVO.TableName.Substring(4);
-            string pathIN = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFT_" + shotTable + "_Path_IN");
-            string pathOUT = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFT_" + shotTable + "_Path_OUT");
-            string filePattern = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFT_" + shotTable + "_FilePattern");
-            string[] fieldNames = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFT_" + shotTable + "_Fields").Split('|');
-            string[] requireFieldNames = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFT_" + shotTable + "_RequireFields").Split('|');
+            string pathIN = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFT_" + shotTable + "_Path_IN");
+            string pathOUT = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFT_" + shotTable + "_Path_OUT");
+            string filePattern = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFT_" + shotTable + "_FilePattern");
+            string[] fieldNames = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFT_" + shotTable + "_Fields").Split('|');
+            string[] requireFieldNames = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFT_" + shotTable + "_RequireFields").Split('|');
 
             TRes res = new TRes();
             res.apiResults = new List<TRes.APIResult>();
