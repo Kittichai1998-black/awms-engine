@@ -21,6 +21,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
     {
         public StorageObjectCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReq reqVO)
         {
+            StorageObjectCriteria stos = new StorageObjectCriteria();
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
             if (reqVO.baseCode == null || reqVO.baseCode == "" || reqVO.baseCode == String.Empty)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code is null");
@@ -31,16 +32,31 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                     new KeyValuePair<string,object>("Status",1),
                 }, buVO);
 
+
             if (baseMasterData.Count <= 0)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Base Code '" + reqVO.baseCode + "'");
+            {
+                //ไม่มีในระบบ insert เข้า baseMaster
+               AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(buVO, new ams_BaseMaster()
+                {
+                    Code = reqVO.baseCode,
+                    Name = "BOX",
+                    BaseMasterType_ID = 6,
+                    Description = "",
+                    ObjectSize_ID = 16,
+                    Status = EntityStatus.ACTIVE,
+                    UnitType_ID = 98,
+                    WeightKG = Convert.ToDecimal(0.5)
+                });
+            }
 
-            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
-
+            stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
+           
+                
             if(stos != null)
             {
                 
                 var stoPack = stos.ToTreeList().Find(x=> x.type == StorageObjectType.PACK && (x.eventStatus == StorageObjectEventStatus.AUDITING || x.eventStatus == StorageObjectEventStatus.AUDITED));
-                if(stoPack != null)
+                if(stoPack == null)
                     throw new AMWException(logger, AMWExceptionCode.V1001, "Pallet have in system");
 
                 stoPack.qty = Convert.ToDecimal(reqVO.mappingPallets.First().qty);
