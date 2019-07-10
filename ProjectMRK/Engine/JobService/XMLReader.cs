@@ -220,14 +220,14 @@ namespace ProjectMRK.Engine.JobService
 
             var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]{
                  new SQLConditionCriteria("Code", jsonDetail.ItemNumber, SQLOperatorType.EQUALS),
-                 new SQLConditionCriteria("UnitType_ID", unit.ID, SQLOperatorType.EQUALS)
                 }, this.BuVO).FirstOrDefault();
 
             if (sku == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
 
             var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[]{
-                 new SQLConditionCriteria("SKUMaster_ID", sku.ID, SQLOperatorType.EQUALS) }, this.BuVO).FirstOrDefault();
+                 new SQLConditionCriteria("SKUMaster_ID", sku.ID, SQLOperatorType.EQUALS),
+                 new SQLConditionCriteria("BaseUnitType_ID", unit.ID, SQLOperatorType.EQUALS)}, this.BuVO).FirstOrDefault();
             if (pack == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
 
