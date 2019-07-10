@@ -81,6 +81,8 @@ namespace ProjectMRK.Engine.JobService
         //private string ftpPassword;
         private string directoryPath;
 
+        private List<FileInfo> fileSuccess , fileError = new List<FileInfo>();
+
         protected override TRes ExecuteEngine(string reqVO)
         {
             //ftpPath = StaticValue.GetConfig("FTP_PATH_ROOT");
@@ -184,7 +186,7 @@ namespace ProjectMRK.Engine.JobService
         //    }
         //}
 
-        private TRes.DocList CreateDocumentFromXML(XMLData json, string XMLFullName, string XMLName)
+        private TRes.DocList CreateDocumentFromXML(XMLData json)
         {
             TRes.DocList res = new TRes.DocList();
             var jsonHeader = json.MRK_MT_PalletID_SAP_to_WMS.Header_Pallet;
@@ -227,7 +229,6 @@ namespace ProjectMRK.Engine.JobService
 
             if(chkPallet != null)
             {
-                DeleteFileXMLDirectory(XMLFullName, XMLName);
                 return null;
             }
             else
@@ -398,11 +399,36 @@ namespace ProjectMRK.Engine.JobService
             TRes res = new TRes();
             var resList = new List<TRes.DocList>();
             var getFile = new DirectoryInfo(directoryPath).GetFiles("*.xml");
-            foreach(var file in getFile)
+            foreach (var file in getFile)
             {
-                var doc = ReadListFileXMLFromDirectory(file);
-                resList.Add(doc);
+                try
+                {
+                    var doc = ReadListFileXMLFromDirectory(file);
+                    resList.Add(doc);
+                }
+                catch
+                {
+                    fileError.Add(file);
+                    break;
+                }
             }
+
+            if(fileSuccess.Count > 0)
+            {
+                fileSuccess.ForEach(x =>
+                {
+                    MoveFileXMLDirectory(x.FullName, x.Name);
+                });
+            }
+
+            if(fileError.Count > 0)
+            {
+                fileError.ForEach(x =>
+                {
+                    DeleteFileXMLDirectory(x.FullName, x.Name);
+                });
+            }
+
             res.document = resList;
             return res;
         }
@@ -416,9 +442,11 @@ namespace ProjectMRK.Engine.JobService
 
             var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
 
-            var res = CreateDocumentFromXML(jsonObj, xml.FullName, xml.Name);
-            if(res != null)
-                MoveFileXMLDirectory(xml.FullName, xml.Name);
+            var res = CreateDocumentFromXML(jsonObj);
+            if (res != null)
+                fileSuccess.Add(xml);
+            else
+                fileError.Add(xml);
 
             return res;
         }
