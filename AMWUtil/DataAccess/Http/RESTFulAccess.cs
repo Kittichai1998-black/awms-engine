@@ -143,8 +143,7 @@ namespace AMWUtil.DataAccess.Http
                             httpWebRequest.ContentType = "application/x-www-form-urlencoded";
                             httpWebRequest.Headers[HttpRequestHeader.Authorization] = "Bearer " + a.Token;
 
-                            var postData = string.Format("message={0}", datas);
-                            var data = Encoding.UTF8.GetBytes(postData);
+                            var data = Encoding.UTF8.GetBytes(datas.ToString());
                             httpWebRequest.ContentLength = data.Length;
 
                             //using (var stream = httpWebRequest.GetRequestStream()) stream.Write(data, 0, data.Length);
@@ -170,7 +169,14 @@ namespace AMWUtil.DataAccess.Http
 
                     using (StreamWriter streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
                     {
-                        streamWriter.Write(Newtonsoft.Json.JsonConvert.SerializeObject(datas));
+                        if (authen is BearerAuthentication)
+                        {
+                            streamWriter.Write(datas.ToString(), 0, Encoding.UTF8.GetBytes(datas.ToString()));
+                        }
+                        else {
+                            streamWriter.Write(Newtonsoft.Json.JsonConvert.SerializeObject(datas));
+                        }
+                    
                         streamWriter.Flush();
                         streamWriter.Close();
                     }

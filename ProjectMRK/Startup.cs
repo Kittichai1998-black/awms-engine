@@ -19,7 +19,8 @@ namespace ProjectMRK
     {
         public Startup(IConfiguration configuration) : base(configuration)
         {
-             //AMWUtil.DataAccess.Http.LineAccess.Notify(null, "sC4Q7oFLb24XL2SXofp7KRFHvcUhd4kFJfAUCstHAo4","test");
+            //var res = AMWUtil.DataAccess.Http.LineAccess.Notify(null, "oLEeNu9n4JRg2qyn9UkplEGwJ45cy4y5cJh028xmsjV", "Running Project MRK");
+            //var res = ADO.LineNotify.notifyPicture("oLEeNu9n4JRg2qyn9UkplEGwJ45cy4y5cJh028xmsjV", "C:/Users/6200904/Desktop/signalr.txt");
         }
     }
 }
