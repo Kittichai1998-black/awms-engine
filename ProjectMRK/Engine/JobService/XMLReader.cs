@@ -200,6 +200,11 @@ namespace ProjectMRK.Engine.JobService
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Warehouse " + jsonDetail.ToLocation + " NotFound");
             }
+            var branch = StaticValue.Branchs.FirstOrDefault(x => x.Code == jsonHeader.BranchCode);
+            if (branch == null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Branch " + jsonHeader.BranchCode + " NotFound");
+            }
 
             var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(jsonDetail.ItemNumber, this.BuVO);
             if (sku == null)
@@ -300,13 +305,13 @@ namespace ProjectMRK.Engine.JobService
                     For_Customer_ID = null,
                     Sou_Customer_ID = null,
                     Sou_Supplier_ID = null,
-                    Sou_Branch_ID = fromWarehouse.ID.Value,
+                    Sou_Branch_ID = branch.ID.Value,
                     Sou_Warehouse_ID = fromWarehouse.ID.Value,
                     Sou_AreaMaster_ID = null,
 
                     Des_Customer_ID = null,
                     Des_Supplier_ID = null,
-                    Des_Branch_ID = toWarehouse.ID.Value,
+                    Des_Branch_ID = branch.ID.Value,
                     Des_Warehouse_ID = toWarehouse.ID.Value,
                     Des_AreaMaster_ID = null,
                     DocumentDate = jsonHeader.TransDate,
