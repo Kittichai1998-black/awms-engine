@@ -4,14 +4,14 @@ logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {RefID}.{Date}.log
 
 #------------------------------------
-#job.names = create_gr
+job.names = create_gr
 #job.close_gr.classname = ProjectMRK.Engine.JobService.ClosedDocumentJob
 #job.close_gr.cronex = * 0/5 * * * ?
 #job.close_gr.data = 
 
-#job.create_gr.classname = ProjectMRK.Engine.JobService.XMLReaderJob
-#job.create_gr.cronex = 0/5 * * * * ?
-#job.create_gr.data = 
+job.create_gr.classname = ProjectMRK.Engine.JobService.XMLReaderJob
+job.create_gr.cronex = 0 0/2 * * * ?
+job.create_gr.data = 
 
 
 #------------------------------------

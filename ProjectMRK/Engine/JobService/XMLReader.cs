@@ -197,7 +197,7 @@ namespace ProjectMRK.Engine.JobService
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Warehouse " + jsonDetail.FromLocation + " NotFound");
             }
-            var toWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == jsonDetail.FromLocation);
+            var toWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == jsonDetail.ToLocation);
             if (toWarehouse == null)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Warehouse " + jsonDetail.ToLocation + " NotFound");
