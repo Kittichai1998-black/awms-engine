@@ -26,7 +26,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
 
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO);
 
-            if (docs == null)
+            if (docs.Count == 0)
             {
                 var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
 
@@ -34,11 +34,6 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 if (souWarehouse == null)
                 {
                     throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.warehouseCode + " NotFound");
-                }
-                var desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
-                if (desWarehouse == null)
-                {
-                    throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.desWarehouseCode + " NotFound");
                 }
 
                 amt_Document doc = new amt_Document()
@@ -50,11 +45,11 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     Batch = pack.batch,
                     Sou_Branch_ID = souWarehouse.ID.Value,
                     Sou_Warehouse_ID = souWarehouse.ID.Value,
-                    Sou_AreaMaster_ID = reqVO.areaCode == "" ? StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID : null,
+                    Sou_AreaMaster_ID = reqVO.areaCode == null ? null : StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID,
 
-                    Des_Branch_ID = desWarehouse.ID.Value,
-                    Des_Warehouse_ID = desWarehouse.ID.Value,
-                    Des_AreaMaster_ID = reqVO.desAreaCode == "" ? StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode).ID : null,
+                    Des_Branch_ID = souWarehouse.ID.Value,
+                    Des_Warehouse_ID = souWarehouse.ID.Value,
+                    Des_AreaMaster_ID = reqVO.desAreaCode == null ? null : StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode).ID,
                     DocumentDate = DateTime.Now,
                     MovementType_ID = MovementType.FG_RETURN_WM,
 
