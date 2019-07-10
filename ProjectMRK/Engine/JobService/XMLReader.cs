@@ -81,7 +81,8 @@ namespace ProjectMRK.Engine.JobService
         //private string ftpPassword;
         private string directoryPath;
 
-        private List<FileInfo> fileSuccess , fileError = new List<FileInfo>();
+        private List<FileInfo> fileError = new List<FileInfo>();
+        private List<FileInfo> fileSuccess = new List<FileInfo>();
 
         protected override TRes ExecuteEngine(string reqVO)
         {
@@ -406,7 +407,7 @@ namespace ProjectMRK.Engine.JobService
                     var doc = ReadListFileXMLFromDirectory(file);
                     resList.Add(doc);
                 }
-                catch
+                catch (Exception e)
                 {
                     fileError.Add(file);
                     break;
