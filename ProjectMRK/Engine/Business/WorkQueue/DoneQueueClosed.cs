@@ -60,13 +60,17 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 }
                 else
                 {
-                    var packStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO)
-                    .ToTreeList().FindAll(y => y.type == StorageObjectType.PACK);
-                    packStos.ForEach(packSto =>
-                    {
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(packSto.id.Value,
-                            StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
-                    });
+                    //var packStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO)
+                    //.ToTreeList().FindAll(y => y.type == StorageObjectType.PACK);
+                    //packStos.ForEach(packSto =>
+                    //{
+                    //    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(packSto.id.Value,
+                    //        StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
+                    //});
+                    
+                    // add by ple
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                        StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
                 }
 
                 if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
