@@ -91,6 +91,9 @@ namespace AWMSEngine
 
         }
 
+        public static IServiceCollection WorkerControllers = null;// new List<ServiceDescriptor>();
+        public static List<IJobDetail> SchedulerControllers = new List<IJobDetail>();
+
         private void SetUpWorker(Dictionary<string, string> appProperty, IServiceCollection services)
         {
             string workerNames = appProperty.ContainsKey(PropertyConst.APP_KEY_WORKER_NAMES) ? appProperty[PropertyConst.APP_KEY_WORKER_NAMES] : string.Empty;
@@ -103,7 +106,11 @@ namespace AWMSEngine
                     var m1 = typeof(ServiceCollectionHostedServiceExtensions).GetMethod("AddHostedService",
                         BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
                     var m2 = m1.MakeGenericMethod(t);
-                    m2.Invoke(null, new object[] { services });
+                    IServiceCollection w = (IServiceCollection)m2.Invoke(null, new object[] { services });
+                    //var st = w.Where(x => x.ServiceType.GetType() == t).ToList();
+                    //st.RemoveAll(x => WorkerControllers.Any(y => y == x));
+                    WorkerControllers = w;
+                    //IServiceCollection worker= ServiceCollectionHostedServiceExtensions.AddHostedService<CommonDashboardWorker>(services);
                     //ServiceCollectionHostedServiceExtensions.AddHostedService<DashboardWorker>(services);
                 }
             }
@@ -121,7 +128,8 @@ namespace AWMSEngine
                     var tJob = AMWUtil.Common.ClassType.GetClassType(jobClassname);
                     var v = jobData.Json<Dictionary<string, object>>();
 
-                    AMWUtil.Common.SchedulerUtil.Start(tJob, jobCronex, v.FieldKeyValuePairs().ToArray());
+                    IJobDetail w = AMWUtil.Common.SchedulerUtil.Start(tJob, jobCronex, v.FieldKeyValuePairs().ToArray());
+                    SchedulerControllers.Add(w);
                 }
             }
         }
