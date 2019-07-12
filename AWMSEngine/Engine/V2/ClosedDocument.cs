@@ -37,7 +37,7 @@ namespace AWMSEngine.Engine.V2.Business
             }
             foreach (var docID in reqVO.docIDs)
             {
-                string getFullClass = this.StaticValue.GetConfig("SendERPAPI_FullClass");
+                string getFullClass = this.StaticValue.GetConfigValue("SendERPAPI_FullClass");
                 var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docID, this.BuVO);
                 string strMethod = "SendERPAPIOnClosed_" + doc.DocumentType_ID.GetValueInt() + "_" + doc.MovementType_ID.GetValueInt();
 

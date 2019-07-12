@@ -24,11 +24,11 @@ namespace AWMSEngine.Engine.General
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            string sqlComm = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFE_" + reqVO.exportName + "_SqlComm");
-            string pathOut = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFE_" + reqVO.exportName + "_Path_OUT");
+            string sqlComm = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFE_" + reqVO.exportName + "_SqlComm");
+            string pathOut = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFE_" + reqVO.exportName + "_Path_OUT");
             if (!pathOut.EndsWith("/")) pathOut += "/";
-            string fileOut = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFE_" + reqVO.exportName + "_File_OUT");
-            bool useFormatAWMS = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFE_" + reqVO.exportName + "_UseFormat_AWMS") == YesNoConst.YES;
+            string fileOut = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFE_" + reqVO.exportName + "_File_OUT");
+            bool useFormatAWMS = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFE_" + reqVO.exportName + "_UseFormat_AWMS") == YesNoConst.YES;
             
             if (!Directory.Exists(pathOut))
                 Directory.CreateDirectory(pathOut);

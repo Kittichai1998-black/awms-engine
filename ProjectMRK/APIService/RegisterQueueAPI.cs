@@ -25,41 +25,46 @@ namespace ProjectMRK.APIService
         protected override dynamic ExecuteEngineManual()
         {
             RegisterWorkQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterWorkQueue.TReq>(this.RequestVO);
-            try
-            {
-                this.BeginTransaction();
-                var res = new RegisterWorkQueue().Execute(this.Logger, this.BuVO, req);
-                return res;
-            }
-            catch (Exception e)
-            {
-                this.RollbackTransaction();
-                if (req.areaCode == "OS")
-                    throw e;
-                else
-                {
-                    WorkQueueCriteria wq = new WorkQueueCriteria()
-                    {
-                        queueID = null,
-                        baseInfo = null,
-                        warehouseCode = req.warehouseCode,
-                        areaCode = req.areaCode,
-                        locationCode = req.locationCode,
-                        souWarehouseCode = req.warehouseCode,
-                        souAreaCode = req.areaCode,
-                        souLocationCode = req.locationCode,
-                        desWarehouseCode = req.warehouseCode,
-                        desAreaCode = "EJ",
-                        desLocationCode = "EJ01",
-                        queueParentID = null,
-                        queueRefID = null,
-                        queueStatus = WorkQueueEventStatus.NEW,
-                        seq = 0,
-                    };
-                    return wq;
-                }
+            this.BeginTransaction();
+            var res = new RegisterWorkQueue().Execute(this.Logger, this.BuVO, req);
+            return res;
 
-            }
+
+            //try
+            //{
+            //    this.BeginTransaction();
+            //    var res = new RegisterWorkQueue().Execute(this.Logger, this.BuVO, req);
+            //    return res;
+            //}
+            //catch (Exception e)
+            //{
+            //    this.RollbackTransaction();
+            //    if (req.areaCode == "OS")
+            //        throw e;
+            //    else
+            //    {
+            //        WorkQueueCriteria wq = new WorkQueueCriteria()
+            //        {
+            //            queueID = null,
+            //            baseInfo = null,
+            //            warehouseCode = req.warehouseCode,
+            //            areaCode = req.areaCode,
+            //            locationCode = req.locationCode,
+            //            souWarehouseCode = req.warehouseCode,
+            //            souAreaCode = req.areaCode,
+            //            souLocationCode = req.locationCode,
+            //            desWarehouseCode = req.warehouseCode,
+            //            desAreaCode = "EJ",
+            //            desLocationCode = "EJ01",
+            //            queueParentID = null,
+            //            queueRefID = null,
+            //            queueStatus = WorkQueueEventStatus.NEW,
+            //            seq = 0,
+            //        };
+            //        return wq;
+            //    }
+
+            //}
 
         }
     }

@@ -19,9 +19,9 @@ namespace AWMSEngine.Common
             var staticVal = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
             var fcode = AMWUtil.Common.AttributeUtil.Attribute<AMWUtil.Common.EnumValueAttribute>(featureCode);
 
-            if (!staticVal.Features.ContainsKey(fcode.ValueString))
+            if (!staticVal.Features.Any(x=>x.Code == fcode.ValueString))
                 return null;
-            var feature = staticVal.Features[fcode.ValueString];
+            var feature = staticVal.GetFeature(fcode.ValueString);
             if (string.IsNullOrWhiteSpace(feature.FullClassName))
                 throw new AMWException(logger, AMWExceptionCode.V2001, "Feature '"+ fcode.ValueString + "' FullClassName Not Found");
             Type type = ClassType.GetClassType(feature.FullClassName);

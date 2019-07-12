@@ -379,7 +379,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     
                 }
             }
-            var chkMachineASRS = this.StaticValue.GetConfig("RUN_MACHINE_ASRS");
+            var chkMachineASRS = this.StaticValue.GetConfigValue("RUN_MACHINE_ASRS");
 
             if (queueWorkQueue.queueOut != null && chkMachineASRS.ToUpper() == "TRUE")
             {

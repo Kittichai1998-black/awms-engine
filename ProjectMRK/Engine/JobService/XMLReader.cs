@@ -89,7 +89,7 @@ namespace ProjectMRK.Engine.JobService
             //ftpLogPath = StaticValue.GetConfig("FTP_PATH_LOG");
             //ftpUsername = StaticValue.GetConfig("FTP_USER");
             //ftpPassword = StaticValue.GetConfig("FTP_PASS");
-            directoryPath = StaticValue.GetConfig("DIRECTORY_PATH");
+            directoryPath = StaticValue.GetConfigValue("DIRECTORY_PATH");
             var res = ReadFileFromDirectory();
 
             //FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpPath);
