@@ -20,48 +20,48 @@ namespace ProjectMRK.Engine.JobService
     {
         private class XMLData
         {
-            public MRK_Pallet MRK_MT_PalletID_SAP_to_WMS;
+            public MRK_Pallet MRK_MT_PalletID_SAP_to_WMS { get; set; }
 
             public class MRK_Pallet
             {
-                public Header Header_Pallet;
-                public Detail Detail_Pallet;
+                public Header Header_Pallet { get; set; }
+                public Detail Detail_Pallet { get; set; }
             }
             public class Header
             {
-                public string SenderId;
-                public string RecipientId;
-                public string CompanyCode;
-                public string BranchCode;
-                public string WarehouseCode;
-                public string JobAction;
-                public string JobType;
-                public string TransCode;
-                public DateTime TransDate;
+                public string SenderId { get; set; }
+                public string RecipientId { get; set; }
+                public string CompanyCode { get; set; }
+                public string BranchCode { get; set; }
+                public string WarehouseCode { get; set; }
+                public string JobAction { get; set; }
+                public string JobType { get; set; }
+                public string TransCode { get; set; }
+                public DateTime TransDate { get; set; }
             }
             public class Detail
             {
-                public Record Record_Pallet;
+                public Record Record_Pallet { get; set; }
             }
             public class Record
             {
-                public string LineNum;
-                public string PalletID;
-                public string Plant;
-                public DateTime ManufactureDate;
-                public string ItemNumber;
-                public string Quantity;
-                public string UOM;
-                public string FromBatch;
-                public string ToBatch;
-                public string FromLocation;
-                public string ToLocation;
-                public string Flag;
-                public string BatchControl;
-                public string MonthEndControl;
-                public string ProductionQty;
-                public string ProductionUOM;
-                public string MaterialSlip;
+                public string LineNum { get; set; }
+                public string PalletID { get; set; }
+                public string Plant { get; set; }
+                public DateTime ManufactureDate { get; set; }
+                public string ItemNumber { get; set; }
+                public string Quantity { get; set; }
+                public string UOM { get; set; }
+                public string FromBatch { get; set; }
+                public string ToBatch { get; set; }
+                public string FromLocation { get; set; }
+                public string ToLocation { get; set; }
+                public string Flag { get; set; }
+                public string BatchControl { get; set; }
+                public string MonthEndControl { get; set; }
+                public string ProductionQty { get; set; }
+                public string ProductionUOM { get; set; }
+                public string MaterialSlip { get; set; }
             }
         }
 
