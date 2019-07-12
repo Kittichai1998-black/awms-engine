@@ -81,13 +81,15 @@ namespace ProjectMRK.Engine.JobService
         //private string ftpPassword;
         private string directoryPath;
 
+        private List<FileInfo> fileError = new List<FileInfo>(), fileSuccess = new List<FileInfo>();
+
         protected override TRes ExecuteEngine(string reqVO)
         {
             //ftpPath = StaticValue.GetConfig("FTP_PATH_ROOT");
             //ftpLogPath = StaticValue.GetConfig("FTP_PATH_LOG");
             //ftpUsername = StaticValue.GetConfig("FTP_USER");
             //ftpPassword = StaticValue.GetConfig("FTP_PASS");
-            directoryPath = StaticValue.GetConfig("DIRECTORY_PATH");
+            directoryPath = StaticValue.GetConfigValue("DIRECTORY_PATH");
             var res = ReadFileFromDirectory();
 
             //FtpWebRequest fwr = (FtpWebRequest)WebRequest.Create(ftpPath);
@@ -184,7 +186,7 @@ namespace ProjectMRK.Engine.JobService
         //    }
         //}
 
-        private TRes.DocList CreateDocumentFromXML(XMLData json, string XMLFullName, string XMLName)
+        private TRes.DocList CreateDocumentFromXML(XMLData json)
         {
             TRes.DocList res = new TRes.DocList();
             var jsonHeader = json.MRK_MT_PalletID_SAP_to_WMS.Header_Pallet;
@@ -195,20 +197,16 @@ namespace ProjectMRK.Engine.JobService
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Warehouse " + jsonDetail.FromLocation + " NotFound");
             }
-            var toWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == jsonDetail.FromLocation);
+            var toWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == jsonDetail.ToLocation);
             if (toWarehouse == null)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Warehouse " + jsonDetail.ToLocation + " NotFound");
             }
-
-            var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_SKUMaster>(jsonDetail.ItemNumber, this.BuVO);
-            if (sku == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
-
-            var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(jsonDetail.ItemNumber, this.BuVO);
-            if (pack == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
-
+            var branch = StaticValue.Branchs.FirstOrDefault(x => x.Code == jsonHeader.BranchCode);
+            if (branch == null)
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Branch " + jsonHeader.BranchCode + " NotFound");
+            }
             var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(jsonDetail.UOM, this.BuVO);
             if (unit == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Unit Type " + jsonDetail.UOM + " NotFound");
@@ -220,9 +218,21 @@ namespace ProjectMRK.Engine.JobService
 
             var chkPallet = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<amt_StorageObject>(jsonDetail.PalletID, this.BuVO);
 
-            if(chkPallet != null)
+            var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]{
+                 new SQLConditionCriteria("Code", jsonDetail.ItemNumber, SQLOperatorType.EQUALS),
+                }, this.BuVO).FirstOrDefault();
+
+            if (sku == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
+
+            var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[]{
+                 new SQLConditionCriteria("SKUMaster_ID", sku.ID, SQLOperatorType.EQUALS),
+                 new SQLConditionCriteria("BaseUnitType_ID", unit.ID, SQLOperatorType.EQUALS)}, this.BuVO).FirstOrDefault();
+            if (pack == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
+
+            if (chkPallet != null)
             {
-                DeleteFileXMLDirectory(XMLFullName, XMLName);
                 return null;
             }
             else
@@ -300,13 +310,13 @@ namespace ProjectMRK.Engine.JobService
                     For_Customer_ID = null,
                     Sou_Customer_ID = null,
                     Sou_Supplier_ID = null,
-                    Sou_Branch_ID = fromWarehouse.ID.Value,
+                    Sou_Branch_ID = branch.ID.Value,
                     Sou_Warehouse_ID = fromWarehouse.ID.Value,
                     Sou_AreaMaster_ID = null,
 
                     Des_Customer_ID = null,
                     Des_Supplier_ID = null,
-                    Des_Branch_ID = toWarehouse.ID.Value,
+                    Des_Branch_ID = branch.ID.Value,
                     Des_Warehouse_ID = toWarehouse.ID.Value,
                     Des_AreaMaster_ID = null,
                     DocumentDate = jsonHeader.TransDate,
@@ -393,11 +403,35 @@ namespace ProjectMRK.Engine.JobService
             TRes res = new TRes();
             var resList = new List<TRes.DocList>();
             var getFile = new DirectoryInfo(directoryPath).GetFiles("*.xml");
-            foreach(var file in getFile)
+            foreach (var file in getFile)
             {
-                var doc = ReadListFileXMLFromDirectory(file);
-                resList.Add(doc);
+                try
+                {
+                    var doc = ReadListFileXMLFromDirectory(file);
+                    resList.Add(doc);
+                }
+                catch
+                {
+                    break;
+                }
             }
+
+            if(fileSuccess.Count > 0)
+            {
+                fileSuccess.ForEach(x =>
+                {
+                    MoveFileXMLDirectory(x.FullName, x.Name);
+                });
+            }
+
+            if(fileError.Count > 0)
+            {
+                fileError.ForEach(x =>
+                {
+                    DeleteFileXMLDirectory(x.FullName, x.Name);
+                });
+            }
+
             res.document = resList;
             return res;
         }
@@ -411,9 +445,11 @@ namespace ProjectMRK.Engine.JobService
 
             var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
 
-            var res = CreateDocumentFromXML(jsonObj, xml.FullName, xml.Name);
-            if(res != null)
-                MoveFileXMLDirectory(xml.FullName, xml.Name);
+            var res = CreateDocumentFromXML(jsonObj);
+            if (res != null)
+                fileSuccess.Add(xml);
+            else
+                fileError.Add(xml);
 
             return res;
         }

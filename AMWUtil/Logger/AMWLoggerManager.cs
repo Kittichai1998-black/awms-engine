@@ -123,8 +123,8 @@ namespace AMWUtil.Logger
                         for (KeyValuePair<string, string>? msg = LogMessages.FirstOrDefault();
                                 msg.HasValue && msg.Value.Key != null;)
                         {
-                            if (!msg.Value.Key.Split('/').Last().StartsWith("FREE") &&
-                                !msg.Value.Key.Split('\\').Last().StartsWith("FREE"))
+                            if (!msg.Value.Key.Split('/').Last().ToUpper().StartsWith("FREE") &&
+                                !msg.Value.Key.Split('\\').Last().ToUpper().StartsWith("FREE"))
                             {
                                 using (var fw = new StreamWriter(msg.Value.Key, true))
                                 {

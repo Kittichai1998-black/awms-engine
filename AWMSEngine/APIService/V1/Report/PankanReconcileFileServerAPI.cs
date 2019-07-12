@@ -34,7 +34,7 @@ namespace AWMSEngine.APIService.Report
         protected override dynamic ExecuteEngineManual()
         {
             TRes res = new TRes();
-            string fileDir = ADO.StaticValue.StaticValueManager.GetInstant().GetConfig("AFC_Reconcile_Path_IN");
+            string fileDir = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue("AFC_Reconcile_Path_IN");
             if (!Directory.Exists(fileDir))
                 Directory.CreateDirectory(fileDir);
             string[] fileNames = Directory.GetFiles(fileDir).ToList().OrderByDescending(x => x).ToArray();
