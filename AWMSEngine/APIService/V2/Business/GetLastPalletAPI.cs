@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.APIService.V2
+namespace AWMSEngine.APIService.V2.Business
 {
     public class GetLastPalletAPI : BaseAPIService
     {
@@ -16,7 +16,7 @@ namespace AWMSEngine.APIService.V2
 
         public override int APIServiceID()
         {
-            return 111;
+            return 107;
         }
 
         protected override dynamic ExecuteEngineManual()
