@@ -15,7 +15,7 @@ namespace AWMSEngine.Engine.V2.Business
     {
         public class TReq
         {
-            public string palletCode;
+            public string baseCode;
             public string warehouseCode;
             public string areaCode;
             public string locationCode;
@@ -49,10 +49,10 @@ namespace AWMSEngine.Engine.V2.Business
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().GetLastPallet(reqVO.palletCode, reqVO.warehouseCode, reqVO.areaCode, reqVO.locationCode, this.BuVO);
+            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().GetLastPallet(reqVO.baseCode, reqVO.warehouseCode, reqVO.areaCode, reqVO.locationCode, this.BuVO);
             var res = new TRes();
-            if (res == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet " + reqVO + " Data Not Found");
+            if (stos == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Base " + reqVO + " Data Not Found");
 
             var getBaseSto = stos.First();
             res.warehouseCode = getBaseSto.warehouseCode;
