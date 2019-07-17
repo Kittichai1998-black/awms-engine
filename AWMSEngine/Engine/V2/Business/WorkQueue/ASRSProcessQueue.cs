@@ -263,7 +263,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1001, "baseQty / percentRandom not Found.");
                 }
-                if (proc.baseQty != proc.conditions.Sum(x => x.baseQty))
+                if (!proc.percentRandom.HasValue && proc.baseQty != proc.conditions.Sum(x => x.baseQty))
                 {
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002,
                         "Qty("

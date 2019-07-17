@@ -417,8 +417,8 @@ namespace AMWUtil.Common
             Random rand = new Random();
             List<T> data = d.ToList();
             List<T> res = new List<T>();
-            percentCount = percentCount > 100 ? 100 : 0;
-            int maxCount = (int)((float)data.Count() * (percentCount / 100.0f));
+            percentCount = percentCount > 100 ? 100 : percentCount;
+            int maxCount = (int)Math.Ceiling((float)data.Count() * (percentCount / 100.0f));
             while(res.Count() < maxCount)
             {
                 var i = rand.Next(data.Count());
