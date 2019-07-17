@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.V2.Business
 
         public override int APIServiceID()
         {
-            return 555;
+            return 108;
         }
 
         public class TRes
