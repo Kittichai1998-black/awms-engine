@@ -74,6 +74,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var docs = ADO.DocumentADO.GetInstant().ListAndItem(reqVO.processResults.GroupBy(x => x.docID).Select(x => x.Key).ToList(), this.BuVO);
+            if (docs.Count() == 0)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not Found");
+            StorageObjectEventStatus stoNextEventStatus;
+            if (docs.First().DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                stoNextEventStatus = StorageObjectEventStatus.PICKING;
+            else if (docs.First().DocumentType_ID == DocumentTypeID.AUDIT)
+                stoNextEventStatus = StorageObjectEventStatus.AUDITING;
+            else
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document not " + docs.First().DocumentType_ID + " not Support");
+
             this.ValidateDocAndInitDisto(docs);
             var rstos = this.ListRootStoProcess(reqVO, docs);
             List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
@@ -146,7 +156,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             rstos.ForEach(x =>
             {
-                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, null, EntityStatus.ACTIVE, StorageObjectEventStatus.PICKING, this.BuVO);
+                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, null, EntityStatus.ACTIVE, stoNextEventStatus, this.BuVO);
             });
 
             /////////////////////////////////CREATE Document(GR) Cross Dock
