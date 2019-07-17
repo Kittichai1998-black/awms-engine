@@ -54,10 +54,15 @@ namespace ProjectMRK.Engine.JobService
             if (listText.Count > 0)
                 foreach (string text in listText)
                 {
-                    resultSendMessage = ADO.LineNotify.lineNotify("oLEeNu9n4JRg2qyn9UkplEGwJ45cy4y5cJh028xmsjV", text);
+                    resultSendMessage = ADO.LineNotify.lineNotify("LXFvvzNXjk9XCPQhh1OaJqR7O5GsYrqiZX46OQyTmhY", text);
+                    //resultSendMessage = ADO.LineNotify.lineNotify("oLEeNu9n4JRg2qyn9UkplEGwJ45cy4y5cJh028xmsjV", text);
                 }
             else
-                resultSendMessage = ADO.LineNotify.lineNotify("oLEeNu9n4JRg2qyn9UkplEGwJ45cy4y5cJh028xmsjV", "*** *No Data* ***");
+            {
+                resultSendMessage = ADO.LineNotify.lineNotify("LXFvvzNXjk9XCPQhh1OaJqR7O5GsYrqiZX46OQyTmhY", "*** *No Data* ***");
+                //resultSendMessage = ADO.LineNotify.lineNotify("oLEeNu9n4JRg2qyn9UkplEGwJ45cy4y5cJh028xmsjV", "*** *No Data* ***");
+            }
+
             //var res_send = AMWUtil.DataAccess.Http.LineAccess.Notify(null, "oLEeNu9n4JRg2qyn9UkplEGwJ45cy4y5cJh028xmsjV", "Running Project MRK");
         }
     }
