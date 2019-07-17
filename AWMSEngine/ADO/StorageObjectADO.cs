@@ -435,6 +435,21 @@ namespace AWMSEngine.ADO
 
             return res;
         }
+
+        public List<SPOutGetLastPallet> GetLastPallet(string palletCode, string warehouseCode, string areaCode, string locationCode, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("palletCode", palletCode);
+            param.Add("warehouseCode", warehouseCode);
+            param.Add("areaCode", areaCode);
+            param.Add("locationCode", locationCode);
+
+            var res = this.Query<SPOutGetLastPallet>("SP_STO_GET_LASTEST_PALLET",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
     }
 
 }
