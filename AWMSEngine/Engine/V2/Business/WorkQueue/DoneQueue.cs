@@ -80,10 +80,39 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
                         });
                     }
+                    else if(x.DocumentType_ID == DocumentTypeID.AUDIT)
+                    {
+                        if (queue.IOType == IOType.INPUT)
+                        {
+                            var getDiSTO = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                            {
+                                new SQLConditionCriteria("WorkQueue_ID", queue.StorageObject_ID.Value, SQLOperatorType.EQUALS)
+                            }, this.BuVO);
+
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                            getDiSTO.ForEach(y => {
+                                DocumentADO.GetInstant().UpdateMappingSTO(y.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                            });
+                        }
+                        else
+                        {
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITING, this.BuVO);
+                        }
+                    }
 
                     if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                        if(x.DocumentType_ID == DocumentTypeID.AUDIT && queue.IOType == IOType.INPUT)
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, null, null, DocumentEventStatus.CLOSED, this.BuVO);
+                        }
+                        else
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                        }
                     }
                 });
             }
