@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine;
 using AWMSEngine.ADO;
+using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -74,10 +75,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                     else if (x.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
                     {
-                        distos.Where(disto => disto.Sou_StorageObject_ID == queue.StorageObject_ID.Value).ToList().ForEach(disto =>
+                        distos.Where(disto => disto.WorkQueue_ID == queue.ID.Value).ToList().ForEach(disto =>
                         {
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
                                 StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+
+                            var sto = ADO.StorageObjectADO.GetInstant().Get(disto.Des_StorageObject_ID.Value, StorageObjectType.PACK, true, true, this.BuVO);
+                            var getArea = new MoveStoInGateToNextArea();
+                            var treq = new MoveStoInGateToNextArea.TReq()
+                            {
+                                baseStoID = sto.id.Value
+                            };
+                            getArea.Execute(this.Logger, this.BuVO, treq);
+                            
                         });
                     }
                     else if (x.DocumentType_ID == DocumentTypeID.AUDIT)
@@ -103,6 +113,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITING, this.BuVO);
                         }
                     }
+
 
                     if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                     {
