@@ -28,7 +28,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
             var sto = data.sto;
             List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
 
-            if (sto.eventStatus == StorageObjectEventStatus.NEW)
+            if (sto.eventStatus == StorageObjectEventStatus.NEW || sto.eventStatus == StorageObjectEventStatus.AUDITED || sto.eventStatus == StorageObjectEventStatus.AUDITING)
             {
 
                 docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
