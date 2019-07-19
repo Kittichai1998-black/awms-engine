@@ -207,8 +207,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private List<RootStoProcess> ListRootStoProcess(TReq reqVO, List<amt_Document> docs)
         {
-            var desWM = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
-            var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.desASRSAreaCode);
+            var desWM = this.StaticValue.Warehouses.First(x => x.Code == reqVO.DesASRSWarehouseCode);
+            var desAM = this.StaticValue.AreaMasters.First(x => x.Warehouse_ID == desWM.ID && x.Code == reqVO.DesASRSAreaCode);
             var desALM = ADO.MasterADO.GetInstant().GetAreaLocationMaster(reqVO.desASRSLocationCode, desAM.ID.Value, this.BuVO);
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
             reqVO.processResults.ForEach(
