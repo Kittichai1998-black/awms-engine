@@ -35,11 +35,17 @@ namespace ProjectTAP.Engine.Business.Crossdock
 
             var GIDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(reqVO.GIdoc, this.BuVO).Where(x => x.PackMaster_ID == pack.ID.Value).FirstOrDefault();
             var GRDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(reqVO.GRdoc, this.BuVO).Where(x => x.PackMaster_ID == pack.ID.Value).FirstOrDefault();
+
+            var sumQty = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+            {
+                new SQLConditionCriteria("DocumentItem_ID", GRDocItems.ID.Value, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+            }, this.BuVO).Sum(x => x.BaseQuantity);
+            
+            if (GRDocItems.Quantity > sumQty + reqVO.Quantity)
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Quantity More than CrossDock Document");
+
             var stos = CreateStorageObject(pack, reqVO);
-
-            if (GRDocItems.Quantity < reqVO.Quantity)
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet Item Not Equal Document");
-
             amt_DocumentItemStorageObject recvDisto = new amt_DocumentItemStorageObject()
             {
                 ID = null,

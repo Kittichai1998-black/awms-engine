@@ -30,7 +30,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             {
                 this._OFArea = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaMaster>("Code", "OF", buVO ?? new VOCriteria()).FirstOrDefault();
 
-                if (checkFastMove(reqVO.baseCode, logger, buVO))
+                if (checkFastMove(reqVO.baseCode, logger, buVO) && reqVO.desAreaCode == null)
                 {
                     return desLocations.Where(x => x.Des_AreaMaster_ID == _OFArea.ID).FirstOrDefault();
                 }

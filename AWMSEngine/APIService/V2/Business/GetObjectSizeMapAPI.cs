@@ -15,7 +15,7 @@ namespace AWMSEngine.APIService.V2.Business
 
         public override int APIServiceID()
         {
-            return 555;
+            return 108;
         }
 
         public class TRes
@@ -28,7 +28,7 @@ namespace AWMSEngine.APIService.V2.Business
             public decimal? MaxQuantity;
             public decimal? MinQuantity;
             public int ObjectType;
-            public EntityStatus Status;
+            public EntityStatus? Status;
         }
 
         protected override dynamic ExecuteEngineManual()
