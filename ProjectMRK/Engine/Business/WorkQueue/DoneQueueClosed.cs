@@ -87,9 +87,17 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     //    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(packSto.id.Value,
                     //        StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
                     //});
-                    
+
                     // add by ple
-                    if(x.DocumentType_ID == DocumentTypeID.AUDIT)
+
+                    var getArea = new MoveStoInGateToNextArea();
+                    var treq = new MoveStoInGateToNextArea.TReq()
+                    {
+                        baseStoID = queue.StorageObject_ID.Value
+                    };
+                    getArea.Execute(logger, buVO, treq);
+
+                    if (x.DocumentType_ID == DocumentTypeID.AUDIT)
                     {
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                             StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITING, buVO);
@@ -99,13 +107,6 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                             StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
                     }
-
-                    var getArea = new MoveStoInGateToNextArea();
-                    var treq = new MoveStoInGateToNextArea.TReq()
-                    {
-                        baseStoID = queue.StorageObject_ID.Value
-                    };
-                    getArea.Execute(logger, buVO, treq);
                 }
 
                 if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
