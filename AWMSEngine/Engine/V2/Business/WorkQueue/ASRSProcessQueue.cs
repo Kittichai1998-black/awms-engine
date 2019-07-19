@@ -75,8 +75,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             TRes res = new TRes()
             {
                 processResults = new List<TRes.ProcessQueueResult>(),
-                DesASRSWarehouseCode = reqVO.desASRSWarehouseCode,
-                DesASRSAreaCode = reqVO.desASRSAreaCode,
+                desASRSWarehouseCode = reqVO.desASRSWarehouseCode,
+                desASRSAreaCode = reqVO.desASRSAreaCode,
                 desASRSLocationCode = reqVO.desASRSLocationCode
             };
             var desASRSWm = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
