@@ -7,6 +7,7 @@ using AMWUtil.Logger;
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Common;
 using AWMSEngine.Engine;
+using AWMSEngine.Engine.General;
 using AWMSEngine.Engine.V2.Business.Issued;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
@@ -112,6 +113,13 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     }
                 }
             });
+
+            var getArea = new MoveStoInGateToNextArea();
+            var treq = new MoveStoInGateToNextArea.TReq()
+            {
+                baseStoID = queue.StorageObject_ID.Value
+            };
+            getArea.Execute(logger, buVO, treq);
 
             return new WorkQueueCriteria();
         }
