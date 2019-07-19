@@ -77,21 +77,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         distos.Where(disto => disto.WorkQueue_ID == queue.ID.Value).ToList().ForEach(disto =>
                         {
-                            var sto = ADO.StorageObjectADO.GetInstant().Get(disto.Des_StorageObject_ID.Value, StorageObjectType.PACK, true, true, this.BuVO);
-
-                            var getBase = sto.ToTreeList()
-                            .FindAll(stobase => stobase.type == StorageObjectType.BASE).Find(stobase => stobase.mapstos.Any(y => y.id.Value == disto.Des_StorageObject_ID.Value));
-
                             var getArea = new MoveStoInGateToNextArea();
                             var treq = new MoveStoInGateToNextArea.TReq()
                             {
-                                baseStoID = getBase.id.Value
+                                baseStoID = queue.StorageObject_ID.Value
                             };
                             getArea.Execute(this.Logger, this.BuVO, treq);
 
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                                 StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
-
                         });
                     }
                     else if (x.DocumentType_ID == DocumentTypeID.AUDIT)
