@@ -296,7 +296,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (mapsto.parentType != StorageObjectType.LOCATION)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ข้อมูลพาเลทไม่ถูกต้อง");
 
-            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, queueTrx.AreaLocationMaster_ID.Value, this.BuVO);
+            var location = DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+
+            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, location.ID.Value, this.BuVO);
 
             return mapsto;
         }
