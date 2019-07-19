@@ -99,6 +99,13 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                             StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
                     }
+
+                    var getArea = new MoveStoInGateToNextArea();
+                    var treq = new MoveStoInGateToNextArea.TReq()
+                    {
+                        baseStoID = queue.StorageObject_ID.Value
+                    };
+                    getArea.Execute(logger, buVO, treq);
                 }
 
                 if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
@@ -113,13 +120,6 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                     }
                 }
             });
-
-            var getArea = new MoveStoInGateToNextArea();
-            var treq = new MoveStoInGateToNextArea.TReq()
-            {
-                baseStoID = queue.StorageObject_ID.Value
-            };
-            getArea.Execute(logger, buVO, treq);
 
             return new WorkQueueCriteria();
         }
