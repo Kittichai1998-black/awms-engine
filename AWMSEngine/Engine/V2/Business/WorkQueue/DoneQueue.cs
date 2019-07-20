@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine;
 using AWMSEngine.ADO;
+using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -74,9 +75,16 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                     else if (x.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
                     {
-                        distos.Where(disto => disto.Sou_StorageObject_ID == queue.StorageObject_ID.Value).ToList().ForEach(disto =>
+                        distos.Where(disto => disto.WorkQueue_ID == queue.ID.Value).ToList().ForEach(disto =>
                         {
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                            var getArea = new MoveStoInGateToNextArea();
+                            var treq = new MoveStoInGateToNextArea.TReq()
+                            {
+                                baseStoID = queue.StorageObject_ID.Value
+                            };
+                            getArea.Execute(this.Logger, this.BuVO, treq);
+
+                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                                 StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
                         });
                     }
@@ -103,6 +111,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITING, this.BuVO);
                         }
                     }
+
 
                     if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                     {
@@ -287,7 +296,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (mapsto.parentType != StorageObjectType.LOCATION)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ข้อมูลพาเลทไม่ถูกต้อง");
 
-            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, queueTrx.AreaLocationMaster_ID.Value, this.BuVO);
+            var location = DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+
+            ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, location.ID.Value, this.BuVO);
 
             return mapsto;
         }

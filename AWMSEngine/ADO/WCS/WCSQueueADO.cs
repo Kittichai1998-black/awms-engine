@@ -49,7 +49,7 @@ namespace AWMSEngine.ADO.QueueApi
         
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
-            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             var res = this.SendJson<TRes>("WCS_SEND_QUEUE", datas, null, buVO);
             return res;
         }
@@ -57,7 +57,7 @@ namespace AWMSEngine.ADO.QueueApi
 
         public TRes SendReady(TReq datas, VOCriteria buVO)
         {
-            return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             var d = datas.Clone();
             d.queueOut.ForEach(x => x.queueID = null);
             var res = this.SendJson<TRes>("WCS_SEND_QUEUE", d, null, buVO);

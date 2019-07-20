@@ -31,8 +31,7 @@ namespace AWMSEngine.APIService.WM
                     rootStoID = this.RequestVO.rootStoID,
                     type = (StorageObjectType)this.RequestVO.type
                 });
-
-
+            
 
             if (this.RequestVO.isConfirm == true)
             {
@@ -42,30 +41,26 @@ namespace AWMSEngine.APIService.WM
                 new ValidateObjectSizeLowerLimit().Execute(this.Logger, this.BuVO, res);
 
                 List<long> docIDs = new List<long>();
-                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102) &&
-                    !StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
-                {
-                    //Create Doc AUTO
-                    var doc = new CreateGRDocumentBySTO().Execute(this.Logger, this.BuVO,
-                        new CreateGRDocumentBySTO.TReq() { stomap = res });
-                    if (doc == null || doc.ID == null) return res;
-                    docIDs.Add(doc.ID.Value);
-                }
-                else if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100))
-                {
-                    //List Doc in Database
-                    docIDs = new GetDocumnetRelationBySTO().Execute(this.Logger, this.BuVO, res).documents.Select(x => x.ID.Value).ToList();
-                }
 
+                //Create Doc AUTO
+                var doc = new CreateGRDocumentBySTO().Execute(this.Logger, this.BuVO,
+                    new CreateGRDocumentBySTO.TReq() { stomap = res });
+                if (doc == null || doc.ID == null) return res;
+                docIDs.Add(doc.ID.Value);
 
                 //Close Doc ALL
-                if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0100) || StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0102))
+                foreach (long docID in docIDs)
                 {
-                    if (StaticValueManager.GetInstant().IsFeature(FeatureCode.IB0103))
+                    var docItemsSto = AWMSEngine.ADO.DocumentADO.GetInstant()
+                       .ListStoInDocs(docID, this.BuVO);
+                    docItemsSto.ForEach(disto =>
                     {
-                        new WorkedGRDocument().Execute(this.Logger, this.BuVO, new WorkedGRDocument.TReq() { DocumentIDs = docIDs });
-                    }
+                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, null, null, EntityStatus.ACTIVE, this.BuVO);
+                    });
+                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(docID, null, EntityStatus.ACTIVE, DocumentEventStatus.CLOSED, this.BuVO);
                 }
+                //new WorkedGRDocument().Execute(this.Logger, this.BuVO, new WorkedGRDocument.TReq() { DocumentIDs = docIDs });
+
             }
             return res;
         }
