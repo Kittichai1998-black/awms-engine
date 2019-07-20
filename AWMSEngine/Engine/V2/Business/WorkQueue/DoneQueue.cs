@@ -92,15 +92,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         if (queue.IOType == IOType.INPUT)
                         {
-                            var getDiSTO = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                            {
-                                new SQLConditionCriteria("WorkQueue_ID", queue.StorageObject_ID.Value, SQLOperatorType.EQUALS)
-                            }, this.BuVO);
 
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                                     null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
 
-                            getDiSTO.ForEach(y =>
+                            distos.Where(disto => disto.WorkQueue_ID == queue.ID.Value).ToList().ForEach(y =>
                             {
                                 DocumentADO.GetInstant().UpdateMappingSTO(y.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                             });
