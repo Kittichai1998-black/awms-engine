@@ -62,6 +62,19 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                 stoPack.qty = Convert.ToDecimal(reqVO.mappingPallets.First().qty);
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stoPack, buVO);
 
+                var Warehouses = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
+                if (Warehouses == null)
+                    throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Warehouse Code '" + reqVO.warehouseCode + "'");
+                var area = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == Warehouses.ID);
+                if (area == null)
+                    throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Area Code '" + reqVO.areaCode + "'");
+
+                stos.ToTreeList().ForEach(x =>
+                {
+                    x.areaID = area.ID.Value;
+                    x.warehouseID = Warehouses.ID.Value;
+                });
+
                 return stos;
             }
             else
@@ -144,6 +157,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                     mapsto.areaID = area.ID.Value;
                     mapsto.parentID = location.ID.Value;
                     mapsto.parentType = StorageObjectType.LOCATION;
+                    
 
                 }
 
