@@ -44,8 +44,6 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 if (reqVO.isConfirm)
                 {
-                    throw new Exception("API Not support isConfirm = true");
-
                     ADO.StorageObjectADO.GetInstant()
                         .UpdateStatusToChild(
                             u.rootStoID,
