@@ -16,7 +16,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
         public WorkQueueCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, DoneQueue.TReq reqVO)
         {
             List<amt_Document> docs = new List<amt_Document>();
-            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
+            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, buVO);
             var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemByWorkQueueDisto(reqVO.queueID.Value, buVO);
 
             var docsCode = docItems.Select(x => x.Document_ID).Distinct().ToList();
