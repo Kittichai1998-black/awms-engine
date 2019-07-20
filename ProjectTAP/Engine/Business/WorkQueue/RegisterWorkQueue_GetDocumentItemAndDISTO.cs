@@ -33,8 +33,11 @@ namespace ProjectTAP.Engine.Business.WorkQueue
 
                 docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
 
-                if (docItems.Count() == 0)
-                    throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+                if (sto.eventStatus != StorageObjectEventStatus.AUDITED && sto.eventStatus != StorageObjectEventStatus.AUDITING)
+                {
+                    if (docItems.Count() == 0)
+                        throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+                }
             }
             else
             {
@@ -58,7 +61,10 @@ namespace ProjectTAP.Engine.Business.WorkQueue
 
                 if (mapsto.eventStatus == StorageObjectEventStatus.AUDITED || mapsto.eventStatus == StorageObjectEventStatus.AUDITING)
                 {
-                    var listDoc = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(mapstoTree.FindAll(x => x.type == StorageObjectType.PACK).Select(x=>x.id.Value).ToList(), buVO);
+                    var listDoc = AWMSEngine.ADO.DocumentADO.GetInstant()
+                        .ListBySTO(mapstoTree.FindAll(x => x.type == StorageObjectType.PACK)
+                        .Select(x=>x.id.Value).ToList(),DocumentTypeID.AUDIT, buVO);
+
                     var listDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(listDoc.FirstOrDefault().ID.Value, buVO);
 
                     var mapstoPack = mapstoTree.FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
@@ -80,6 +86,9 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                     mapstoPack.baseQty = Convert.ToDecimal(pack.qty);
 
                     AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(mapstoPack, buVO);
+
+                    return listDocItem;
+
                 }
                 else
                 {
