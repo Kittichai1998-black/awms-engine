@@ -9,6 +9,7 @@ namespace AWMSModel.Entity
     {
         public long Document_ID;
         public long? LinkDocument_ID;
+        public long? ParentDocumentItem_ID;
         public string Code;
         public long? SKUMaster_ID;
         public long? PackMaster_ID;

@@ -28,7 +28,7 @@ namespace ProjectTAP.Engine.Business.Issued
                         Code = null,
                         ParentDocument_ID = reqDoc.ID.Value,
                         Lot = reqDoc.Lot,
-                        Batch = null,
+                        Batch = reqDoc.Batch,
                         For_Customer_ID = null,
                         Sou_Customer_ID = null,
                         Sou_Supplier_ID = null,
@@ -67,6 +67,7 @@ namespace ProjectTAP.Engine.Business.Issued
                             {
                                 ID = null,
                                 Code = item.Code,
+                                ParentDocumentItem_ID = item.ID,
                                 SKUMaster_ID = pack.SKUMaster_ID,
                                 PackMaster_ID = pack.ID,
 

@@ -29,6 +29,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
 
             docs.ForEach(doc =>
             {
+                var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO);
                 if (doc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                 {
                     if (AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
@@ -38,7 +39,6 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                 }
                 else if(doc.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
                 {
-                    var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO);
                     var sumDisto = distos.FindAll(x => x.Status == EntityStatus.ACTIVE).GroupBy(x => x.DocumentItem_ID).Select(x => new { documentItemID = x.Key, sumBaseQty = x.Sum(y => y.BaseQuantity) }).ToList();
 
                     sumDisto.ForEach(x =>
@@ -56,6 +56,14 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                 {
                     if (queue.IOType == IOType.INPUT)
                     {
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    null, null, StorageObjectEventStatus.RECEIVED, buVO);
+
+                        distos.Where(disto => disto.WorkQueue_ID == queue.ID.Value).ToList().ForEach(y =>
+                        {
+                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(y.ID.Value, EntityStatus.ACTIVE, buVO);
+                        });
+
                         if (AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
