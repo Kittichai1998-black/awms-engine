@@ -63,11 +63,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
             }, this.BuVO).Sum(x => x.BaseQuantity);
 
-            var GIDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-            {
-                new SQLConditionCriteria("DocumentItem_ID", GIDocItem.ID.Value, SQLOperatorType.EQUALS),
-                new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
-            }, this.BuVO);
+            var GIDisto = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(GIDocItem.Document_ID, this.BuVO);
 
             if (sumQty + reqVO.Quantity > GRDocItem.Quantity)
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Quantity More than CrossDock Document");
@@ -81,7 +77,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 Sou_StorageObject_ID = stos.id.Value,
                 Des_StorageObject_ID = stos.id.Value,
                 Quantity = stos.baseQty,
-                BaseQuantity = GRDocItem.Quantity.Value,
+                BaseQuantity = stos.baseQty,
                 UnitType_ID = GRDocItem.BaseUnitType_ID.Value,
                 BaseUnitType_ID = GRDocItem.BaseUnitType_ID.Value,
             };
@@ -97,9 +93,9 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 Sou_StorageObject_ID = stos.id.Value,
                 Des_StorageObject_ID = stos.id.Value,
                 Quantity = stos.baseQty,
-                BaseQuantity = GRDocItem.Quantity.Value,
-                UnitType_ID = GRDocItem.BaseUnitType_ID.Value,
-                BaseUnitType_ID = GRDocItem.BaseUnitType_ID.Value,
+                BaseQuantity = stos.baseQty,
+                UnitType_ID = GIDocItem.BaseUnitType_ID.Value,
+                BaseUnitType_ID = GIDocItem.BaseUnitType_ID.Value,
             };
 
             var resDistoPick = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(pickingDisto, this.BuVO);
@@ -111,21 +107,13 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
             }, this.BuVO).Sum(x => x.BaseQuantity);
 
-            var sumAllQtyxxx = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-            {
-                new SQLConditionCriteria("DocumentItem_ID", GRDocItem.ID.Value, SQLOperatorType.EQUALS),
-                //new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
-            }, this.BuVO);
-
             if (sumAllQty == GRDocItem.BaseQuantity)
             {
-                stos.qty = 0;
-                stos.baseQty = 0;
-
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stos, this.BuVO);
                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GRdoc.DocID, null, null, DocumentEventStatus.CLOSED, this.BuVO);
 
-                if(GIDisto.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+                var chkGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>("ParentDocument_ID", reqVO.GIdoc.DocID, this.BuVO);
+                if (chkGR.TrueForAll(grDoc => grDoc.EventStatus == DocumentEventStatus.CLOSED) && GIDisto.TrueForAll(gidisto => gidisto.Status == EntityStatus.ACTIVE))
                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GIdoc.DocID, null, null, DocumentEventStatus.CLOSED, this.BuVO);
             }
             else
@@ -182,7 +170,8 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 objectSizeName = objSizePack.Name,
                 mstID = pack.ID,
                 areaID = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == "SS").ID.Value,
-                options = reqVO.Options
+                options = reqVO.Options,
+                lot = reqVO.Lot
             };
             var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(recvSto, this.BuVO);
 
