@@ -50,7 +50,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                         itemLists.Add(new TRes.ItemList()
                         {
                             packCode = sto.code,
-                            docItemID = x.DocumentItem_ID,
+                            docItemID = x.DocumentItem_ID.Value,
                             baseQty = sto.baseQty,
                             baseUnitCode = sto.baseUnitCode,
                             qty = sto.qty,
