@@ -45,7 +45,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                     {
                         var docItem = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(x.documentItemID, buVO);
 
-                        if (docItem.BaseQuantity == x.sumBaseQty)
+                        if (docItem.BaseQuantity <= x.sumBaseQty)
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
                         else
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKING, buVO);
