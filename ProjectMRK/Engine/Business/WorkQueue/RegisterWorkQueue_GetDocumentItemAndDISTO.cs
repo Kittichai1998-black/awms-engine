@@ -25,17 +25,16 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             var stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.baseCode, buVO).Select(x => x.ID.Value).ToList();
 
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO);
+            var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
+
+            var souWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
+            if (souWarehouse == null)
+            {
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.warehouseCode + " NotFound");
+            }
 
             if (docs.Count == 0)
             {
-                var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
-
-                var souWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
-                if (souWarehouse == null)
-                {
-                    throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.warehouseCode + " NotFound");
-                }
-
                 amt_Document doc = new amt_Document()
                 {
                     ID = null,
@@ -120,7 +119,26 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             {
                 docs.ForEach(x =>
                 {
-                    distos.AddRange(AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x.ID.Value, buVO));
+                    var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x.ID.Value, buVO);
+                    docItems.ForEach(docItem =>
+                    {
+                        var disto = new amt_DocumentItemStorageObject
+                        {
+                            ID = null,
+                            DocumentItem_ID = null,
+                            Sou_StorageObject_ID = pack.id.Value,
+                            Des_StorageObject_ID = pack.id.Value,
+                            Quantity = 0,
+                            BaseQuantity = 0,
+                            UnitType_ID = pack.unitID,
+                            BaseUnitType_ID = pack.baseUnitID,
+                            Status = EntityStatus.ACTIVE
+                        };
+                        
+                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
+                        docItem.DocItemStos = new List<amt_DocumentItemStorageObject> { disto };
+                    });
+                    distos.AddRange(docItems);
                 });
             }
 
