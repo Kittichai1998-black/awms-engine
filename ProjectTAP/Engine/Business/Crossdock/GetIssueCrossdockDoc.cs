@@ -27,18 +27,24 @@ namespace ProjectTAP.Engine.Business.Crossdock
             public List<Document> docs;
             public class Document
             {
-                public amt_DocumentExtend doc;
-                public List<amt_Document> GRDocument;
+                public amt_DocumentItemsExtend docItem;
+                public DocItemIDs DocumentID;
             }
 
-            public class amt_DocumentExtend : amt_Document
-            {
-                public new List<amt_DocumentItemsExtend> DocumentItems;
-            }
             public class amt_DocumentItemsExtend : amt_DocumentItem
             {
                 public string UnitCode;
                 public string BaseUnitCode;
+                public decimal Picked;
+                public string DocumentCode;
+            }
+
+            public class DocItemIDs 
+            {
+                public long grDocID;
+                public long grDocItemID;
+                public long giDocID;
+                public long giDocItemID;
             }
         }
 
@@ -49,107 +55,134 @@ namespace ProjectTAP.Engine.Business.Crossdock
             if (pack == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pack " + reqVO.packCode + " Not Found");
 
+            //Find All DocItem From Pack Detail
             var docItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new SQLConditionCriteria[]{
                 new SQLConditionCriteria("EventStatus", "10,11", SQLOperatorType.IN),
                 new SQLConditionCriteria("PackMaster_ID", pack.ID.Value, SQLOperatorType.EQUALS),
-                reqVO.lot != null ? new SQLConditionCriteria("Lot", reqVO.lot, SQLOperatorType.EQUALS) :
-                new SQLConditionCriteria("Lot", "", SQLOperatorType.ISNULL),
                 new SQLConditionCriteria("BaseQuantity", reqVO.quantity, SQLOperatorType.MORE_EQUALS),
                 new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, this.BuVO);
 
+            if (!string.IsNullOrWhiteSpace(reqVO.lot))
+                docItems = docItems.Where(x => x.Lot == reqVO.lot).ToList();
+
             if (docItems == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Crossdock Document Not Found");
 
+            //Get Document
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListAndItem(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO);
+            //Filter to Get GR
             var crosDocs = docs.Where(x => x.MovementType_ID == MovementType.FG_CROSSDOCK_CUS).ToList();
-
+            //Get GI
             var parentDocsID = crosDocs.Select(x => x.ParentDocument_ID.Value).Distinct().ToList();
-            var docsList = AWMSEngine.ADO.DocumentADO.GetInstant().ListAndItem(parentDocsID, this.BuVO);
+            //Get List GI
+            //var docsList = AWMSEngine.ADO.DocumentADO.GetInstant().ListAndItem(parentDocsID, this.BuVO);
 
             var res = new TRes();
             var res2 = new List<TRes.Document>();
 
-            var GIDoc = docs.Select(x => new TRes.amt_DocumentExtend()
+            //Create List Doc
+            crosDocs.ForEach(doc =>
             {
-                ID = x.ID,
-                Code = x.Code,
-                EventStatus = x.EventStatus,
-                Status = x.Status,
-                DocumentType_ID = x.DocumentType_ID,
-                MovementType_ID = x.MovementType_ID,
-                DocumentDate = x.DocumentDate,
-                DocumentItems = x.DocumentItems.Select(y => new TRes.amt_DocumentItemsExtend()
+                var getDocItemGI = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ParentDocument_ID.Value, this.BuVO);
+
+                doc.DocumentItems.ForEach(docItem =>
                 {
-                    ID = y.ID,
-                    Code = y.Code,
-                    Quantity = y.Quantity,
-                    BaseQuantity = y.BaseQuantity,
-                    EventStatus = y.EventStatus,
-                    Status = y.Status,
-                    Lot = y.Lot,
-                    OrderNo = y.OrderNo,
-                    Batch = y.Batch,
-                    Document_ID = y.Document_ID,
-                    UnitType_ID = y.UnitType_ID,
-                    BaseUnitType_ID = y.BaseUnitType_ID,
-                    BaseUnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == y.UnitType_ID.Value).Code,
-                    UnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == y.BaseUnitType_ID.Value).Code,
-                }).ToList(),
-                ParentDocument_ID = x.ParentDocument_ID,
-            }).FirstOrDefault(x => x.DocumentType_ID == DocumentTypeID.GOODS_ISSUED);
+                    var getdocItemGI = getDocItemGI.Find(docItemGI => docItem.ParentDocumentItem_ID == docItemGI.ID);
 
-            docsList.ForEach(x =>
-            {
-                x.DocumentItems = x.DocumentItems.Where(doci => doci.PackMaster_ID == pack.ID).ToList();
+                    decimal? sumPicked = 0;
+                    if(docItem.DocItemStos != null)
+                        sumPicked = docItem.DocItemStos.FindAll(x=>x.Status == EntityStatus.ACTIVE).Sum(x => x.BaseQuantity);
 
-                var crossDockDoc = crosDocs.Where(y => y.ParentDocument_ID == x.ID).ToList();
+                    if(sumPicked.Value + reqVO.quantity > docItem.BaseQuantity)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Quantity more than Cross Dock Document");
 
-                var crosDocNew = new TRes.amt_DocumentExtend();
-
-                crossDockDoc.ForEach(crosDoc =>
-                {
-                    var crosDocItemNew = new List<TRes.amt_DocumentItemsExtend>();
-
-                    crosDoc.DocumentItems.ForEach(docItem =>
+                    var crosDocItemGR = new TRes.amt_DocumentItemsExtend()
                     {
-                        crosDocItemNew.Add(new TRes.amt_DocumentItemsExtend()
-                        {
-                            ID = docItem.ID,
-                            Code = docItem.Code,
-                            Quantity = docItem.Quantity,
-                            BaseQuantity = docItem.BaseQuantity,
-                            EventStatus = docItem.EventStatus,
-                            Status = docItem.Status,
-                            Lot = docItem.Lot,
-                            OrderNo = docItem.OrderNo,
-                            Batch = docItem.Batch,
-                            Document_ID = docItem.Document_ID,
-                            UnitType_ID = docItem.UnitType_ID,
-                            BaseUnitType_ID = docItem.BaseUnitType_ID,
-                            BaseUnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == docItem.UnitType_ID.Value).Code,
-                            UnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == docItem.BaseUnitType_ID.Value).Code,
-                        });
-                    });
+                        ID = docItem.ID,
+                        DocumentCode = doc.Code,
+                        ParentDocumentItem_ID = docItem.ParentDocumentItem_ID,
+                        Code = docItem.Code,
+                        Quantity = docItem.Quantity,
+                        BaseQuantity = docItem.BaseQuantity,
+                        Picked = sumPicked.Value,
+                        EventStatus = docItem.EventStatus,
+                        Status = docItem.Status,
+                        Lot = docItem.Lot,
+                        OrderNo = docItem.OrderNo,
+                        Batch = docItem.Batch,
+                        Document_ID = docItem.Document_ID,
+                        UnitType_ID = docItem.UnitType_ID,
+                        BaseUnitType_ID = docItem.BaseUnitType_ID,
+                        BaseUnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == docItem.UnitType_ID.Value).Code,
+                        UnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == docItem.BaseUnitType_ID.Value).Code,
+                    };
 
-                    crosDocNew.ID = crosDoc.ID;
-                    crosDocNew.Code = crosDoc.Code;
-                    crosDocNew.EventStatus = crosDoc.EventStatus;
-                    crosDocNew.Status = crosDoc.Status;
-                    crosDocNew.DocumentType_ID = crosDoc.DocumentType_ID;
-                    crosDocNew.MovementType_ID = crosDoc.MovementType_ID;
-                    crosDocNew.DocumentDate = crosDoc.DocumentDate;
-                    crosDocNew.DocumentItems = crosDocItemNew;
-                    crosDocNew.ParentDocument_ID = crosDoc.ParentDocument_ID;
+                    var resData = new TRes.Document()
+                    {
+                        docItem = crosDocItemGR,
+                        DocumentID = new TRes.DocItemIDs()
+                        {
+                            giDocID = getdocItemGI.Document_ID,
+                            giDocItemID = getdocItemGI.ID.Value,
+                            grDocID = crosDocItemGR.Document_ID,
+                            grDocItemID = crosDocItemGR.ID.Value,
+                        }
+                    };
+
+                    res2.Add(resData);
                 });
 
-                var resData = new TRes.Document()
-                {
-                    doc = GIDoc,
-                    GRDocument = crosDocs.Where(y => y.ParentDocument_ID == x.ID).ToList()
-                };
+                //x.DocumentItems = x.DocumentItems.Where(doci => doci.PackMaster_ID == pack.ID).ToList();
 
-                res2.Add(resData);
+                //var crossDockDoc = crosDocs.Where(y => y.ParentDocument_ID == x.ID).ToList();
+
+                //var crosDocNew = new TRes.amt_DocumentExtend();
+
+                //crossDockDoc.ForEach(crosDoc =>
+                //{
+                //    var crosDocItemNew = new List<TRes.amt_DocumentItemsExtend>();
+
+                //    crosDoc.DocumentItems.ForEach(docItem =>
+                //    {
+                //        crosDocItemNew.Add(new TRes.amt_DocumentItemsExtend()
+                //        {
+                //            ID = docItem.ID,
+                //            ParentDocumentItem_ID = docItem.ParentDocumentItem_ID,
+                //            Code = docItem.Code,
+                //            Quantity = docItem.Quantity,
+                //            BaseQuantity = docItem.BaseQuantity,
+                //            EventStatus = docItem.EventStatus,
+                //            Status = docItem.Status,
+                //            Lot = docItem.Lot,
+                //            OrderNo = docItem.OrderNo,
+                //            Batch = docItem.Batch,
+                //            Document_ID = docItem.Document_ID,
+                //            UnitType_ID = docItem.UnitType_ID,
+                //            BaseUnitType_ID = docItem.BaseUnitType_ID,
+                //            BaseUnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == docItem.UnitType_ID.Value).Code,
+                //            UnitCode = StaticValue.UnitTypes.FirstOrDefault(xx => xx.ID == docItem.BaseUnitType_ID.Value).Code,
+                //        });
+                //    });
+
+                //    crosDocNew.ID = crosDoc.ID;
+                //    crosDocNew.Code = crosDoc.Code;
+                //    crosDocNew.EventStatus = crosDoc.EventStatus;
+                //    crosDocNew.Status = crosDoc.Status;
+                //    crosDocNew.DocumentType_ID = crosDoc.DocumentType_ID;
+                //    crosDocNew.MovementType_ID = crosDoc.MovementType_ID;
+                //    crosDocNew.DocumentDate = crosDoc.DocumentDate;
+                //    crosDocNew.DocumentItems = crosDocItemNew;
+                //    crosDocNew.ParentDocument_ID = crosDoc.ParentDocument_ID;
+                //});
+
+                //var resData = new TRes.Document()
+                //{
+                //    doc = crosDocNew,
+                //    GRDocument = crosDocs.Where(y => y.ParentDocument_ID == x.ID).ToList()
+                //};
+
+                //res2.Add(resData);
             });
 
             res.docs = res2;
