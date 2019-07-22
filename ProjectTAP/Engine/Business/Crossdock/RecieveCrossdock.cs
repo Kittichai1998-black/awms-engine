@@ -69,7 +69,7 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
             }, this.BuVO);
 
-            if (GRDocItem.Quantity > sumQty + reqVO.Quantity)
+            if (sumQty + reqVO.Quantity > GRDocItem.Quantity)
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Quantity More than CrossDock Document");
 
             var stos = CreateStorageObject(pack, reqVO);
