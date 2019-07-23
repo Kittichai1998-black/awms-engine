@@ -1,4 +1,5 @@
-﻿using AWMSEngine.Engine;
+﻿using AMWUtil.Common;
+using AWMSEngine.Engine;
 using AWMSEngine.Engine.Business.Received;
 using AWMSEngine.Engine.V2.Business;
 using AWMSModel.Constant.EnumConst;
@@ -85,8 +86,8 @@ namespace ProjectMRK.Engine.Business.Received
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
             long? Sou_Customer_ID =
-                    reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
+                    reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
+                    string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID;
             long? Sou_Supplier_ID =
                     reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
                     string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
@@ -185,6 +186,8 @@ namespace ProjectMRK.Engine.Business.Received
                         }).ToList()
                 });
 
+            var scanmapsto = new ScanMapStoNoDoc();
+
             doc.DocumentItems.ForEach(docItem =>
             {
                 var getBaseCode = AMWUtil.Common.ObjectUtil.GenUniqID();
@@ -205,65 +208,96 @@ namespace ProjectMRK.Engine.Business.Received
                 decimal loopTime = Math.Ceiling(docItem.BaseQuantity.Value / getQty);
                 decimal remain = docItem.BaseQuantity.Value % getQty;
 
-                for(int i = 0; i < loopTime; i++)
+                var baseSto = new StorageObjectCriteria()
                 {
-                    var mapSto = new List<PalletDataCriteriaV2>();
-                    mapSto.Add(new PalletDataCriteriaV2()
-                    {
-                        code = getBaseCode,
-                        qty = "1",
-                        unit = null,
-                        orderNo = null,
-                        batch = null,
-                        lot = null
-                    });
+                    code = getBaseCode,
+                    eventStatus = StorageObjectEventStatus.NEW,
+                    name = "Pallet",
+                    qty = 1,
+                    unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                    unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                    baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                    baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                    baseQty = 1,
+                    objectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                    type = StorageObjectType.BASE,
+                    mstID = genBase,
+                    objectSizeName = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Name,
+                };
+                var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
 
-                    if(i == loopTime - 1 && remain > 0)
+                for (int i = 0; i < loopTime; i++)
+                {
+                    var mapSto = new StorageObjectCriteria();
+                    if (i == loopTime - 1 && remain > 0)
                     {
-                        mapSto.Add(new PalletDataCriteriaV2()
+                        mapSto = new StorageObjectCriteria()
                         {
+                            parentID = baseSto.id.Value,
+                            parentType = StorageObjectType.BASE,
                             code = docItem.Code,
+                            eventStatus = StorageObjectEventStatus.NEW,
+                            name = docItem.Code,
                             batch = docItem.Batch,
-                            forCustomerCode = doc.For_Customer_ID.HasValue ? StaticValue.Customers.FirstOrDefault(x => x.ID == doc.For_Customer_ID.Value).Code : null,
-                            unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).Code,
                             orderNo = docItem.OrderNo,
                             lot = docItem.Lot,
-                            qty = remain.ToString(),
-                        });
+                            qty = remain,
+                            skuID = docItem.SKUMaster_ID,
+                            unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.UnitType_ID).Code,
+                            unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.UnitType_ID).ID.Value,
+                            baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).Code,
+                            baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).ID.Value,
+                            baseQty = remain,
+                            objectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK).ID.Value,
+                            type = StorageObjectType.PACK,
+                            productDate = docItem.ProductionDate,
+                            objectSizeName = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK).Name,
+                            mstID = docItem.PackMaster_ID
+                        };
                     }
                     else
                     {
-                        mapSto.Add(new PalletDataCriteriaV2()
+                        mapSto  = new StorageObjectCriteria()
                         {
+                            parentID = baseSto.id.Value,
+                            parentType = StorageObjectType.BASE,
                             code = docItem.Code,
+                            eventStatus = StorageObjectEventStatus.NEW,
+                            name = docItem.Code,
                             batch = docItem.Batch,
-                            forCustomerCode = StaticValue.Customers.FirstOrDefault(x => x.ID == doc.For_Customer_ID.Value).Code,
-                            unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).Code,
                             orderNo = docItem.OrderNo,
                             lot = docItem.Lot,
-                            qty = getQty.ToString(),
+                            qty = getQty,
+                            skuID = docItem.SKUMaster_ID,
+                            unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.UnitType_ID).Code,
+                            unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.UnitType_ID).ID.Value,
+                            baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).Code,
+                            baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).ID.Value,
+                            baseQty = remain,
+                            objectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK).ID.Value,
+                            type = StorageObjectType.PACK,
+                            productDate = docItem.ProductionDate,
+                            objectSizeName = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK).Name,
+                            mstID = docItem.PackMaster_ID
+                        };
+                    }
+
+                    var packStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(mapSto, this.BuVO);
+
+                    if (Sou_Customer_ID.HasValue)
+                    {
+                        AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(packStoID, this.BuVO, new KeyValuePair<string, object>[]{
+                        new KeyValuePair<string, object>("For_Customer_ID", Sou_Customer_ID.Value)
                         });
                     }
 
-                    var reqMapping = new WCSMappingPalletV2.TReq()
-                    {
-                        actualWeiKG = null,
-                        warehouseCode = StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Sou_Warehouse_ID.Value).Code,
-                        areaCode = doc.Sou_AreaMaster_ID.HasValue ? StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Sou_AreaMaster_ID.Value).Code : null,
-                        palletData = mapSto
-                    };
-
-                    var mapPallet = new WCSMappingPalletV2();
-                    var res = mapPallet.Execute(this.Logger, this.BuVO, reqMapping);
-
-                    var stoID = res.mapstos.Find(x => x.type == StorageObjectType.PACK).id;
                     var disto = new amt_DocumentItemStorageObject()
                     {
                         DocumentItem_ID = docItem.ID,
-                        Sou_StorageObject_ID = stoID.Value,
-                        BaseQuantity = Convert.ToDecimal(mapSto.Last().qty),
+                        Sou_StorageObject_ID = packStoID,
+                        BaseQuantity = Convert.ToDecimal(mapSto.qty),
                         BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                        Quantity = Convert.ToDecimal(mapSto.Last().qty),
+                        Quantity = Convert.ToDecimal(mapSto.qty),
                         UnitType_ID = docItem.UnitType_ID.Value,
                         Status = EntityStatus.INACTIVE
                     };
