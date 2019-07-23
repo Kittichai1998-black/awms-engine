@@ -275,7 +275,7 @@ namespace ProjectMRK.Engine.Business.Received
                             unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.UnitType_ID).ID.Value,
                             baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).Code,
                             baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).ID.Value,
-                            baseQty = remain,
+                            baseQty = getQty,
                             objectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK).ID.Value,
                             type = StorageObjectType.PACK,
                             productDate = docItem.ProductionDate,
