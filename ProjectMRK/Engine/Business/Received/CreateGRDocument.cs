@@ -208,26 +208,27 @@ namespace ProjectMRK.Engine.Business.Received
                 decimal loopTime = Math.Ceiling(docItem.BaseQuantity.Value / getQty);
                 decimal remain = docItem.BaseQuantity.Value % getQty;
 
-                var baseSto = new StorageObjectCriteria()
-                {
-                    code = getBaseCode,
-                    eventStatus = StorageObjectEventStatus.NEW,
-                    name = "Pallet",
-                    qty = 1,
-                    unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                    unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                    baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    baseQty = 1,
-                    objectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    type = StorageObjectType.BASE,
-                    mstID = genBase,
-                    objectSizeName = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Name,
-                };
-                var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
 
                 for (int i = 0; i < loopTime; i++)
                 {
+                    var baseSto = new StorageObjectCriteria()
+                    {
+                        code = getBaseCode,
+                        eventStatus = StorageObjectEventStatus.NEW,
+                        name = "Pallet",
+                        qty = 1,
+                        unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                        unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                        baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                        baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                        baseQty = 1,
+                        objectSizeID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                        type = StorageObjectType.BASE,
+                        mstID = genBase,
+                        objectSizeName = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Name,
+                    };
+                    var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
+
                     var mapSto = new StorageObjectCriteria();
                     if (i == loopTime - 1 && remain > 0)
                     {

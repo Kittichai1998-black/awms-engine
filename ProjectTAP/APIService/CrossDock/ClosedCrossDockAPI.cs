@@ -17,7 +17,7 @@ namespace ProjectTAP.APIService.CrossDock
 
         public override int APIServiceID()
         {
-            throw new NotImplementedException();
+            return 110;
         }
 
         protected override dynamic ExecuteEngineManual()
