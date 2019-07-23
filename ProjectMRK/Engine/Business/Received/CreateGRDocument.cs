@@ -200,7 +200,7 @@ namespace ProjectMRK.Engine.Business.Received
                     WeightKG = null
                 }).Value;
 
-                var getQty = Convert.ToDecimal(AMWUtil.Common.ObjectUtil.QryStrGetValue(docItem.Options, "setqty"));
+                var getQty = Convert.ToDecimal(AMWUtil.Common.ObjectUtil.QryStrGetValue(docItem.Options, "perpallet"));
 
                 decimal loopTime = Math.Ceiling(docItem.BaseQuantity.Value / getQty);
                 decimal remain = docItem.BaseQuantity.Value % getQty;
@@ -224,7 +224,7 @@ namespace ProjectMRK.Engine.Business.Received
                         {
                             code = docItem.Code,
                             batch = docItem.Batch,
-                            forCustomerCode = StaticValue.Customers.FirstOrDefault(x => x.ID == doc.For_Customer_ID.Value).Code,
+                            forCustomerCode = doc.For_Customer_ID.HasValue ? StaticValue.Customers.FirstOrDefault(x => x.ID == doc.For_Customer_ID.Value).Code : null,
                             unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docItem.BaseUnitType_ID).Code,
                             orderNo = docItem.OrderNo,
                             lot = docItem.Lot,
@@ -249,7 +249,7 @@ namespace ProjectMRK.Engine.Business.Received
                     {
                         actualWeiKG = null,
                         warehouseCode = StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Sou_Warehouse_ID.Value).Code,
-                        areaCode = StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Sou_AreaMaster_ID.Value).Code,
+                        areaCode = doc.Sou_AreaMaster_ID.HasValue ? StaticValue.Warehouses.FirstOrDefault(x => x.ID == doc.Sou_AreaMaster_ID.Value).Code : null,
                         palletData = mapSto
                     };
 
