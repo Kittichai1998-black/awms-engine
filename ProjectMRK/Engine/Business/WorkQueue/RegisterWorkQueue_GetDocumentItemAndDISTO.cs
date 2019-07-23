@@ -25,7 +25,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             var stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.baseCode, buVO).Select(x => x.ID.Value).ToList();
 
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO);
-            var pack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
+            var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
 
             var souWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (souWarehouse == null)
@@ -33,37 +33,33 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.warehouseCode + " NotFound");
             }
 
-            docs.ForEach(x =>
+            if(docs.Count > 0)
             {
-                var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x.ID.Value, buVO);
-                if (x.DocumentType_ID != DocumentTypeID.GOODS_RECEIVED)
+                docs.ForEach(x =>
                 {
-                    docItems.ForEach(docItem =>
-                    {
-                        var disto = new amt_DocumentItemStorageObject
-                        {
-                            ID = null,
-                            DocumentItem_ID = null,
-                            Sou_StorageObject_ID = pack.id.Value,
-                            Des_StorageObject_ID = pack.id.Value,
-                            Quantity = 0,
-                            BaseQuantity = 0,
-                            UnitType_ID = pack.unitID,
-                            BaseUnitType_ID = pack.baseUnitID,
-                            Status = EntityStatus.ACTIVE
-                        };
-
-                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
-                        docItem.DocItemStos = new List<amt_DocumentItemStorageObject> { disto };
-                    });
-                }
-                distos.AddRange(docItems);
-
-            });
-
-            if (distos == null)
+                    var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x.ID.Value, buVO);
+                    distos.AddRange(docItems);
+                });
+            }
+            else
             {
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Document of Base Code '" + reqVO.baseCode + "' Not Found");
+                packs.ForEach(pack =>
+                {
+                    var disto = new amt_DocumentItemStorageObject
+                    {
+                        ID = null,
+                        DocumentItem_ID = null,
+                        Sou_StorageObject_ID = pack.id.Value,
+                        Des_StorageObject_ID = pack.id.Value,
+                        Quantity = 0,
+                        BaseQuantity = 0,
+                        UnitType_ID = pack.unitID,
+                        BaseUnitType_ID = pack.baseUnitID,
+                        Status = EntityStatus.ACTIVE
+                    };
+
+                    AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
+                });
             }
 
             return distos;
