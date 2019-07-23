@@ -49,7 +49,7 @@ namespace ProjectTAP.Engine.Business.Issued
                         Ref2 = null,
 
                         DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                        EventStatus = DocumentEventStatus.NEW,
+                        EventStatus = DocumentEventStatus.WORKING,
 
                         Remark = null,
                         Transport_ID = null,
@@ -87,7 +87,7 @@ namespace ProjectTAP.Engine.Business.Issued
                                 Ref2 = item.Ref2,
                                 RefID = item.RefID,
 
-                                EventStatus = DocumentEventStatus.NEW,
+                                EventStatus = DocumentEventStatus.WORKING,
 
                             });
                         }
