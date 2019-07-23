@@ -120,25 +120,29 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 docs.ForEach(x =>
                 {
                     var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x.ID.Value, buVO);
-                    docItems.ForEach(docItem =>
+                    if(x.DocumentType_ID != DocumentTypeID.GOODS_RECEIVED)
                     {
-                        var disto = new amt_DocumentItemStorageObject
+                        docItems.ForEach(docItem =>
                         {
-                            ID = null,
-                            DocumentItem_ID = null,
-                            Sou_StorageObject_ID = pack.id.Value,
-                            Des_StorageObject_ID = pack.id.Value,
-                            Quantity = 0,
-                            BaseQuantity = 0,
-                            UnitType_ID = pack.unitID,
-                            BaseUnitType_ID = pack.baseUnitID,
-                            Status = EntityStatus.ACTIVE
-                        };
-                        
-                        AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
-                        docItem.DocItemStos = new List<amt_DocumentItemStorageObject> { disto };
-                    });
+                            var disto = new amt_DocumentItemStorageObject
+                            {
+                                ID = null,
+                                DocumentItem_ID = null,
+                                Sou_StorageObject_ID = pack.id.Value,
+                                Des_StorageObject_ID = pack.id.Value,
+                                Quantity = 0,
+                                BaseQuantity = 0,
+                                UnitType_ID = pack.unitID,
+                                BaseUnitType_ID = pack.baseUnitID,
+                                Status = EntityStatus.ACTIVE
+                            };
+
+                            AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
+                            docItem.DocItemStos = new List<amt_DocumentItemStorageObject> { disto };
+                        });
+                    }
                     distos.AddRange(docItems);
+
                 });
             }
 
