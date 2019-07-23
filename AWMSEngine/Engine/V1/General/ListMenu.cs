@@ -55,7 +55,8 @@ namespace AWMSEngine.Engine.General
                         PathLV1 = row.PathLV1,
                         PathLV2 = row.PathLV2,
                         PathLV3 = row.PathLV3,
-                        Icon = row.subIcon
+                        Icon = row.subIcon,
+                        Description = row.Description
                     });
 
                     GroupID = row.WebPageGroup_ID;

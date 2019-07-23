@@ -31,6 +31,7 @@ namespace AWMSModel.Criteria
         public string PathLV3 { get; set; }
         public string Icon { get; set; }
         public string subIcon { get; set; }
+        public string Description { get; set; }
     }
 
     public class AllMenuPage
