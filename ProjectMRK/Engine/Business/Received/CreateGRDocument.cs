@@ -190,18 +190,6 @@ namespace ProjectMRK.Engine.Business.Received
 
             doc.DocumentItems.ForEach(docItem =>
             {
-                var getBaseCode = AMWUtil.Common.ObjectUtil.GenUniqID();
-                var genBase = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
-                {
-                    Code = getBaseCode,
-                    Name = getBaseCode,
-                    BaseMasterType_ID = 6,
-                    Description = "Pallet",
-                    ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    Status = EntityStatus.ACTIVE,
-                    UnitType_ID = 1,
-                    WeightKG = null
-                }).Value;
 
                 var getQty = Convert.ToDecimal(AMWUtil.Common.ObjectUtil.QryStrGetValue(docItem.Options, "perpallet"));
 
@@ -211,6 +199,19 @@ namespace ProjectMRK.Engine.Business.Received
 
                 for (int i = 0; i < loopTime; i++)
                 {
+                    var getBaseCode = AMWUtil.Common.ObjectUtil.GenUniqID();
+                    var genBase = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                    {
+                        Code = getBaseCode,
+                        Name = getBaseCode,
+                        BaseMasterType_ID = 6,
+                        Description = "Pallet",
+                        ObjectSize_ID = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                        Status = EntityStatus.ACTIVE,
+                        UnitType_ID = 1,
+                        WeightKG = null
+                    }).Value;
+
                     var baseSto = new StorageObjectCriteria()
                     {
                         code = getBaseCode,
