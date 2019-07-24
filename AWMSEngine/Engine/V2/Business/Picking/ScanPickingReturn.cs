@@ -256,7 +256,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                             else
                             {   //select pallet ที่มี pack อยู่ในนั้นเเล้ว
                                
-                                result.docs = ListDocument(resDiSto.DocumentItem_ID, reqVO);
+                                result.docs = ListDocument(resDiSto.DocumentItem_ID.Value, reqVO);
                                 
                             }
                         }
@@ -354,7 +354,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 resDiSto1.Status = EntityStatus.REMOVE;
                                 ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDiSto1.ID.Value, null, resDiSto1.Quantity, resDiSto1.BaseQuantity, resDiSto1.Status, this.BuVO);
                                 
-                                result.docs = ListDocument(resDiSto1.DocumentItem_ID, reqVO);
+                                result.docs = ListDocument(resDiSto1.DocumentItem_ID.Value, reqVO);
                             }
                             else
                             {
@@ -413,7 +413,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                     resDiSto1.BaseQuantity = packConvert.baseQty; 
                                     ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDiSto1.ID.Value, null, resDiSto1.Quantity, resDiSto1.BaseQuantity, resDiSto1.Status, this.BuVO);
 
-                                    result.docs = ListDocument(resDiSto1.DocumentItem_ID, reqVO);
+                                    result.docs = ListDocument(resDiSto1.DocumentItem_ID.Value, reqVO);
                                 }
                             }
                             else
@@ -477,7 +477,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             if(resDiSto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item Storage Object of Scan Code '" + reqVO.scanCode + "' Not Found");
 
-            var resDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(resDiSto.DocumentItem_ID, this.BuVO);
+            var resDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(resDiSto.DocumentItem_ID.Value, this.BuVO);
             if (resDocItem == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
@@ -533,7 +533,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         private List<amt_DocumentItem> InsertDiSTO(StorageObjectCriteria packs,long diID, TReq reqVO)
         {
             var addDocItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packs, packs.baseQty, packs.unitID, diID), this.BuVO);
-            var newDocItems = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(addDocItemStos.DocumentItem_ID, this.BuVO);
+            var newDocItems = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(addDocItemStos.DocumentItem_ID.Value, this.BuVO);
             return new List<amt_DocumentItem>() { newDocItems };
         }
 

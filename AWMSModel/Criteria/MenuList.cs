@@ -16,6 +16,7 @@ namespace AWMSModel.Criteria
         public string Name { get; set; }
         public string Description { get; set; }
         public string Icon { get; set; }
+        public string Language_code { get; set; }
         public List<MenuPage> WebPages { get; set; }
     }
 
@@ -31,6 +32,8 @@ namespace AWMSModel.Criteria
         public string PathLV3 { get; set; }
         public string Icon { get; set; }
         public string subIcon { get; set; }
+        public string Description { get; set; }
+        public string Language_code { get; set; }
     }
 
     public class AllMenuPage
@@ -49,5 +52,7 @@ namespace AWMSModel.Criteria
         public string PathLV3 { get; set; }
         public string Icon { get; set; }
         public string subIcon { get; set; }
+        public string LangCode_1 { get; set; }
+        public string LangCode_2 { get; set; }
     }
 }

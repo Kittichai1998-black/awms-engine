@@ -30,10 +30,17 @@ namespace AWMSEngine.Engine.General
             var getheader = tokenModel.GroupBy(x => x.ID).Select(grp => grp.First()).ToList();
             var getdata = tokenModel.GroupBy(x => x.ID).Select(grp => grp.ToList()).ToList();
 
-            foreach(var row in getheader)
+            foreach (var row in getheader)
             {
-                menugroup.Add(new MenuGroup() { ID = row.ID, Seq = row.Seq, Name = row.Name, Description = row.Description,Icon= row.Icon
-                    , WebPages = null });
+                menugroup.Add(new MenuGroup()
+                {
+                    ID = row.ID,
+                    Seq = row.Seq,
+                    Name = row.Name,
+                    Icon = row.Icon,
+                    WebPages = null,
+                    Language_code = row.LangCode_2
+                });
             }
 
 
@@ -43,7 +50,7 @@ namespace AWMSEngine.Engine.General
 
                 int GroupID = 0;
 
-                foreach (var row in rows )
+                foreach (var row in rows)
                 {
                     pagelist.Add(new MenuPage()
                     {
@@ -55,13 +62,14 @@ namespace AWMSEngine.Engine.General
                         PathLV1 = row.PathLV1,
                         PathLV2 = row.PathLV2,
                         PathLV3 = row.PathLV3,
-                        Icon = row.subIcon
+                        Icon = row.subIcon,
+                        Language_code = row.LangCode_1
                     });
 
                     GroupID = row.WebPageGroup_ID;
                 }
 
-                foreach(var edt in menugroup.Where(x => x.ID == GroupID))
+                foreach (var edt in menugroup.Where(x => x.ID == GroupID))
                 {
                     edt.WebPages = pagelist;
                 }

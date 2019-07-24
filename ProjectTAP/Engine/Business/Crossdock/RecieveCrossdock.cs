@@ -20,9 +20,15 @@ namespace ProjectTAP.Engine.Business.Crossdock
             public string Lot;
             public DateTime ProductDate;
             public string Options;
-            public long GIdoc;
-            public long GRdoc;
-            internal DateTime? productDate;
+            public DocumentID GIdoc;
+            public DocumentID GRdoc;
+            public DateTime? productDate;
+
+            public class DocumentID
+            {
+                public long DocID;
+                public long DocItemID;
+            }
         }
 
         public class TRes
@@ -32,78 +38,90 @@ namespace ProjectTAP.Engine.Business.Crossdock
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.packCode, this.BuVO);
+            amt_DocumentItem GIDocItem = new amt_DocumentItem(), GRDocItem = new amt_DocumentItem();
 
-            var GIDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(reqVO.GIdoc, this.BuVO).Where(x => x.PackMaster_ID == pack.ID.Value).FirstOrDefault();
-            var GRDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(reqVO.GRdoc, this.BuVO).Where(x => x.PackMaster_ID == pack.ID.Value).FirstOrDefault();
+            var GIDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(reqVO.GIdoc.DocID, this.BuVO)
+                .Where(x => x.PackMaster_ID == pack.ID.Value && x.ID == reqVO.GIdoc.DocItemID);
+
+            var GRDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(reqVO.GRdoc.DocID, this.BuVO)
+                .Where(x => x.PackMaster_ID == pack.ID.Value && x.ID == reqVO.GRdoc.DocItemID);
+
+            if (!string.IsNullOrWhiteSpace(reqVO.Lot))
+            {
+                GIDocItem = GIDocItems.FirstOrDefault(x => x.Lot == reqVO.Lot);
+                GRDocItem = GRDocItems.FirstOrDefault(x => x.Lot == reqVO.Lot);
+            }
+            else
+            {
+                GIDocItem = GIDocItems.FirstOrDefault();
+                GRDocItem = GRDocItems.FirstOrDefault();
+            }
 
             var sumQty = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
             {
-                new SQLConditionCriteria("DocumentItem_ID", GRDocItems.ID.Value, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("DocumentItem_ID", GRDocItem.ID.Value, SQLOperatorType.EQUALS),
                 new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
             }, this.BuVO).Sum(x => x.BaseQuantity);
-            
-            if (GRDocItems.Quantity > sumQty + reqVO.Quantity)
+
+            var GIDisto = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(GIDocItem.Document_ID, this.BuVO);
+
+            if (sumQty + reqVO.Quantity > GRDocItem.Quantity)
                 throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Quantity More than CrossDock Document");
 
             var stos = CreateStorageObject(pack, reqVO);
+
             amt_DocumentItemStorageObject recvDisto = new amt_DocumentItemStorageObject()
             {
                 ID = null,
-                DocumentItem_ID = GRDocItems.ID.Value,
+                DocumentItem_ID = GRDocItem.ID.Value,
                 Sou_StorageObject_ID = stos.id.Value,
                 Des_StorageObject_ID = stos.id.Value,
                 Quantity = stos.baseQty,
-                BaseQuantity = GRDocItems.Quantity.Value,
-                UnitType_ID = GRDocItems.BaseUnitType_ID.Value,
-                BaseUnitType_ID = GRDocItems.BaseUnitType_ID.Value,
-                Status = EntityStatus.ACTIVE
+                BaseQuantity = stos.baseQty,
+                UnitType_ID = GRDocItem.BaseUnitType_ID.Value,
+                BaseUnitType_ID = GRDocItem.BaseUnitType_ID.Value,
             };
 
             var resDistoRecv = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(recvDisto, this.BuVO);
-            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDistoRecv.ID.Value,  EntityStatus.ACTIVE, this.BuVO);
-
+            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDistoRecv.ID.Value, EntityStatus.ACTIVE, this.BuVO);
 
             amt_DocumentItemStorageObject pickingDisto = new amt_DocumentItemStorageObject();
             pickingDisto = new amt_DocumentItemStorageObject()
             {
                 ID = null,
-                DocumentItem_ID = GIDocItems.ID.Value,
+                DocumentItem_ID = GIDocItem.ID.Value,
                 Sou_StorageObject_ID = stos.id.Value,
                 Des_StorageObject_ID = stos.id.Value,
                 Quantity = stos.baseQty,
-                BaseQuantity = GRDocItems.Quantity.Value,
-                UnitType_ID = GRDocItems.BaseUnitType_ID.Value,
-                BaseUnitType_ID = GRDocItems.BaseUnitType_ID.Value,
-                Status = EntityStatus.ACTIVE
+                BaseQuantity = stos.baseQty,
+                UnitType_ID = GIDocItem.BaseUnitType_ID.Value,
+                BaseUnitType_ID = GIDocItem.BaseUnitType_ID.Value,
             };
 
             var resDistoPick = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(pickingDisto, this.BuVO);
-            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDistoPick.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(pickingDisto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
 
-            if (stos.baseQty == GRDocItems.BaseQuantity)
+            var sumAllQty = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
             {
-                stos.qty = 0;
-                stos.baseQty = 0;
+                new SQLConditionCriteria("DocumentItem_ID", GRDocItem.ID.Value, SQLOperatorType.EQUALS),
+                new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS),
+            }, this.BuVO).Sum(x => x.BaseQuantity);
 
+            if (sumAllQty == GRDocItem.BaseQuantity)
+            {
                 AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stos, this.BuVO);
-                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GRdoc, null, null, DocumentEventStatus.CLOSED, this.BuVO);
+                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GRdoc.DocID, null, null, DocumentEventStatus.CLOSED, this.BuVO);
+
+                var chkGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>("ParentDocument_ID", reqVO.GIdoc.DocID, this.BuVO);
+                if (chkGR.TrueForAll(grDoc => grDoc.EventStatus == DocumentEventStatus.CLOSED) && GIDisto.TrueForAll(gidisto => gidisto.Status == EntityStatus.ACTIVE))
+                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GIdoc.DocID, null, null, DocumentEventStatus.CLOSED, this.BuVO);
             }
             else
             {
-                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GRdoc, null, null, DocumentEventStatus.WORKING, this.BuVO);
+                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GRdoc.DocID, null, null, DocumentEventStatus.WORKING, this.BuVO);
             }
 
-            var chkDoc = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_Document>(new SQLConditionCriteria[]
-            {
-                new SQLConditionCriteria("ParentDocument_ID", reqVO.GIdoc, SQLOperatorType.EQUALS)
-            }, this.BuVO);
-
-            if(chkDoc.TrueForAll(x => x.EventStatus == DocumentEventStatus.CLOSED))
-            {
-                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.GIdoc, null, null, DocumentEventStatus.CLOSED, this.BuVO);
-            }
-
-            return new TRes() { GIDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(reqVO.GIdoc, this.BuVO) };
+            return new TRes() { GIDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(reqVO.GIdoc.DocID, this.BuVO) };
         }
 
         private StorageObjectCriteria CreateStorageObject(ams_PackMaster pack, RecieveCrossdock.TReq reqVO)
@@ -152,7 +170,8 @@ namespace ProjectTAP.Engine.Business.Crossdock
                 objectSizeName = objSizePack.Name,
                 mstID = pack.ID,
                 areaID = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == "SS").ID.Value,
-                options = reqVO.Options
+                options = reqVO.Options,
+                lot = reqVO.Lot
             };
             var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(recvSto, this.BuVO);
 
