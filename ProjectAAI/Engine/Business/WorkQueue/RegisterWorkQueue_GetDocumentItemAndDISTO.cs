@@ -86,6 +86,12 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 if (pack == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "Pack " + sto.code + " Not Found");
 
+                var PackMasterType = staticValue.PackMasterTypes.Find(x => x.ID == (long)pack.PackMasterType_ID);
+                if (PackMasterType.Code != "EMPTYPALLET")
+                {
+                    doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
+                }
+                
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
