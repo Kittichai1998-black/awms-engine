@@ -72,7 +72,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
         public StorageObjectCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReq reqVO)
         {
             var chkStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
-            if (chkStos == null)
+            if (chkStos != null)
             {
                 return chkStos;
             }
