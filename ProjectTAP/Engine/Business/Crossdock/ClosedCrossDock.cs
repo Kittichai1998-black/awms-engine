@@ -1,4 +1,5 @@
-﻿using AWMSEngine.Engine;
+﻿using AMWUtil.Exception;
+using AWMSEngine.Engine;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Entity;
 using System;
@@ -14,6 +15,12 @@ namespace ProjectTAP.Engine.Business.Crossdock
         {
             var DocumentADO = AWMSEngine.ADO.DocumentADO.GetInstant();
             var getGRDoc = DocumentADO.Get(reqVO, this.BuVO);
+
+            if (getGRDoc == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Cross Dock Document Not Found");
+            if (getGRDoc.MovementType_ID != MovementType.FG_CROSSDOCK_CUS)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "This Document is not Cross Dock Document");
+
             var getGIDoc = DocumentADO.Get(getGRDoc.ParentDocument_ID.Value, this.BuVO);
 
             DocumentADO.UpdateStatusToChild(getGRDoc.ID.Value, null, null, DocumentEventStatus.CLOSED, this.BuVO);
