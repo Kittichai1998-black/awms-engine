@@ -13,6 +13,7 @@ using System.Xml;
 using Newtonsoft.Json;
 using AWMSModel.Constant.EnumConst;
 using AMWUtil.Exception;
+using System.Globalization;
 
 namespace ProjectMRK.Engine.JobService
 {
@@ -48,7 +49,7 @@ namespace ProjectMRK.Engine.JobService
                 public string LineNum { get; set; }
                 public string PalletID { get; set; }
                 public string Plant { get; set; }
-                public DateTime ManufactureDate { get; set; }
+                public string ManufactureDate { get; set; }
                 public string ItemNumber { get; set; }
                 public string Quantity { get; set; }
                 public string UOM { get; set; }
@@ -231,6 +232,8 @@ namespace ProjectMRK.Engine.JobService
             if (pack == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "SKU " + jsonDetail.ItemNumber + " NotFound");
 
+            DateTime dt = DateTime.ParseExact(jsonDetail.ManufactureDate, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+
             if (chkPallet != null)
             {
                 return null;
@@ -292,7 +295,7 @@ namespace ProjectMRK.Engine.JobService
                     baseQty = Convert.ToDecimal(jsonDetail.Quantity),
                     objectSizeID = objSizePack.ID.Value,
                     type = StorageObjectType.PACK,
-                    productDate = jsonDetail.ManufactureDate,
+                    productDate = dt,
                     objectSizeName = objSizePack.Name,
                     mstID = pack.ID
                 };
@@ -354,7 +357,7 @@ namespace ProjectMRK.Engine.JobService
 
                     Options = null,
                     ExpireDate = null,
-                    ProductionDate = jsonDetail.ManufactureDate,
+                    ProductionDate = dt,
                     Ref1 = null,
                     Ref2 = null,
                     RefID = "basecode=" + jsonDetail.PalletID,
@@ -410,7 +413,7 @@ namespace ProjectMRK.Engine.JobService
                     var doc = ReadListFileXMLFromDirectory(file);
                     resList.Add(doc);
                 }
-                catch
+                catch(Exception ex)
                 {
                     break;
                 }
