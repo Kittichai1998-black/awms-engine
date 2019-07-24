@@ -17,11 +17,12 @@ namespace ProjectTAP.APIService.CrossDock
 
         public override int APIServiceID()
         {
-            throw new NotImplementedException();
+            return 110;
         }
 
         protected override dynamic ExecuteEngineManual()
         {
+            this.BeginTransaction();
             var req = ObjectUtil.DynamicToModel<GetIssueCrossdockDoc.TReq>(this.RequestVO);
             long docID = req.docID;
             var close = new ClosedCrossDock();

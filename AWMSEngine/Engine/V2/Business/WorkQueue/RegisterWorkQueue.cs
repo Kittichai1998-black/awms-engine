@@ -123,7 +123,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         x.DocItemStos.ForEach(disto =>
                         {
                             disto.WorkQueue_ID = queueTrx.ID.Value;
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                            if(disto.Status == EntityStatus.INACTIVE)
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
                         });
                     });
 
