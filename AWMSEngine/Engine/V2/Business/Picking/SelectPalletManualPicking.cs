@@ -37,6 +37,9 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             public string docCode;
             public string matDoc;
             public string destination;
+            public string lot;
+            public string batch;
+            public string orderNo;
             public List<pickItem> pickItems;
 
             public class pickItem
@@ -78,8 +81,8 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                 foreach (var row in selectPack)
                 {
-                    var itemCanMap = ADO.DocumentADO.GetInstant().ListItemCanMap(row.code, DocumentTypeID.GOODS_ISSUED, reqVO.docID, DocumentEventStatus.WORKING, this.BuVO)
-                        .Where(x => x.StorageObject_ID == row.id && x.Status == EntityStatus.INACTIVE).ToList();
+                    var itemCanMap = ADO.DocumentADO.GetInstant().ListItemCanMapV2(row.code, DocumentTypeID.GOODS_ISSUED, reqVO.docID, DocumentEventStatus.WORKING, this.BuVO)
+                        .Where(x => x.Sou_StorageObject_ID == row.id && x.Status == EntityStatus.INACTIVE).ToList();
                     var unitType = this.StaticValue.UnitTypes.FirstOrDefault(y => y.ID == row.unitID).Name;
 
                     if (itemCanMap.Count > 0)
@@ -104,18 +107,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                     }
                     else
                     {
-                        palletItem.Add(new docItem.palletItem()
-                        {
-                            packCode = row.code,
-                            STOID = row.id,
-                            batch = row.batch,
-                            palletQty = row.qty,
-                            lot = row.lot,
-                            canPick = 0,
-                            pick = false,
-                            shouldPick = 0,
-                            unitType = unitType,
-                        });
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "No Product to PICK");
                     }
 
                     var docItem = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(new KeyValuePair<string, object>[] {
@@ -138,7 +130,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         private List<docItem> getDocumentPickingList(TReq reqVO)
         {
             List<docItem> docItemList = new List<docItem>();
-            var docCanMap = ADO.DocumentADO.GetInstant().ListDocumentCanMap(reqVO.palletCode, StorageObjectEventStatus.PICKING, reqVO.pickMode, this.BuVO);
+            var docCanMap = ADO.DocumentADO.GetInstant().ListDocumentCanMapV2(reqVO.palletCode, StorageObjectEventStatus.PICKING, this.BuVO);
             if (docCanMap.Count == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Pallet นี้ไม่มีเอกสารสำหรับ Picking");
 
@@ -148,23 +140,19 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 var listitem = ADO.DocumentADO.GetInstant().ListItem(x.ID.Value, this.BuVO);
                 pickItemList = listitem.Select(y =>
                 {
-                    var g = ADO.DataADO.GetInstant().SelectBy<dynamic>(
-                        "amt_DocumentItemStorageObject",
-                        "sum(Quantity) s",
-                        "DocumentItem_ID",
-                        new SQLConditionCriteria[] { new SQLConditionCriteria("DocumentItem_ID", y.ID, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS) },
-                        null,
-                        null,
-                        null,
-                        this.BuVO).FirstOrDefault();
-                    long sumData = g == null ? 0 : (long)g.s;
+                    var g = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("DocumentItem_ID", y.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
+
+                        }
+                        ,this.BuVO).Sum(xx => xx.BaseQuantity);
 
                     return new docItem.pickItem()
                     {
                         itemCode = y.Code,
-                        picked = sumData,
-                        willPick = y.Quantity.Value
+                        picked = g.HasValue ? g.Value : 0, // ถูก pick ไปแล้ว
+                        willPick = y.BaseQuantity.Value //ที่จะ pick
                     };
                 }).ToList();
 
@@ -180,7 +168,8 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 {
                     docID = x.ID.Value,
                     docCode = x.Code,
-                    matDoc = x.RefID,
+                    lot = x.Lot,
+                    batch = x.Lot,
                     destination = des_warehouse != "" ? des_warehouse : des_customer != "" ? des_customer : des_suplier == "" ? des_suplier : null,
                     pickItems = pickItemList
                 });

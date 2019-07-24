@@ -575,6 +575,19 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public List<SPOutDocItemCanMap> ListItemCanMapV2(string packCode, DocumentTypeID docTypeID, long? docID, DocumentEventStatus eventStatus, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("packCode", packCode);
+            param.Add("docTypeID", docTypeID);
+            param.Add("docID", docID);
+            param.Add("eventStatus", eventStatus);
+            var res = this.Query<SPOutDocItemCanMap>("SP_DOCITEM_LIST_CANMAP_V2",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
 
         public List<amt_Document> ListDocumentCanMap(string palletCode, StorageObjectEventStatus docTypeID, PickingModeType pickMode, VOCriteria buVO)
         {
@@ -583,6 +596,17 @@ namespace AWMSEngine.ADO
             param.Add("eventStatus", docTypeID);
             param.Add("modePick", pickMode);
             var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_PICKING",
+                                System.Data.CommandType.StoredProcedure,
+                                param,
+                                buVO.Logger, buVO.SqlTransaction).ToList();
+            return res;
+        }
+        public List<amt_Document> ListDocumentCanMapV2(string palletCode, StorageObjectEventStatus docTypeID, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("palletCode", palletCode);
+            param.Add("eventStatus", docTypeID);
+            var res = this.Query<amt_Document>("SP_STO_SCAN_PALLET_FOR_PICKING_V2",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
