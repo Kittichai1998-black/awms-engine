@@ -10,7 +10,7 @@ job.names = create_gr,line_notify
 #job.close_gr.data = 
 
 job.create_gr.classname = ProjectMRK.Engine.JobService.XMLReaderJob
-job.create_gr.cronex = 0 0/2 * * * ?
+job.create_gr.cronex = 0/20 * * * * ?
 job.create_gr.data = 
 
 job.line_notify.classname = ProjectMRK.Engine.JobService.LineNotify

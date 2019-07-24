@@ -140,7 +140,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueueDisto(queueID, this.BuVO);
 
-            if(docItems.Count > 0)
+            if (docItems.Count > 0)
             {
                 var docsCode = docItems.Select(x => x.Document_ID).Distinct().ToList();
                 docsCode.ForEach(x =>
@@ -178,7 +178,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 if (queueTrx.IOType == IOType.INPUT)
                 {
-                    if(docItems.Count > 0)
+                    if (docItems.Count > 0)
                     {
                         docItems.ForEach(docItem =>
                         {
@@ -207,6 +207,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                     else
                     {
+                        var stoPack = stos.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
+                        var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                            {
+                            new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
+                            }, this.BuVO).FirstOrDefault(x => x.DocumentItem_ID == null);
+
+                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDisto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                         ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                     }
                 }
@@ -246,7 +254,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     updSto.mapstos = null;
                                     updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
 
-                                    if(updSto.baseQty == 0)
+                                    if (updSto.baseQty == 0)
                                     {
                                         updSto.eventStatus = StorageObjectEventStatus.PICKING;
                                         var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);

@@ -8,6 +8,7 @@ namespace AWMSModel.Entity
     public class amt_DocumentItemStorageObject : BaseEntityID
     {
         public long? DocumentItem_ID;
+        public DocumentTypeID? DocumentType_ID;
         public long? WorkQueue_ID;
         public long Sou_StorageObject_ID;
         public long? Des_StorageObject_ID;
