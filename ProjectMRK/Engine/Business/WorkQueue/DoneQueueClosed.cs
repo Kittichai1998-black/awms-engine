@@ -74,9 +74,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                             AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                                 StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
                         }
-                    }
-
-                    
+                    }                    
                 }
                 else
                 {
