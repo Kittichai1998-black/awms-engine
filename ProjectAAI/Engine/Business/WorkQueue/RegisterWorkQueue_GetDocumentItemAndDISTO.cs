@@ -31,17 +31,33 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             if (area == null)
                 throw new AMWException(logger, AMWExceptionCode.V2001, "Area " + reqVO.areaCode + " Not Found");
 
-            var desWarehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
-            if (desWarehouse == null)
-                throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.desWarehouseCode + " Not Found");
-            var desBranch = staticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
-            if (desBranch == null)
-                throw new AMWException(logger, AMWExceptionCode.V2001, "Branch Not Found");
-            var desArea = staticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
-            if (desArea == null)
-                throw new AMWException(logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
+            var desWarehouse = new ams_Warehouse();
+            var desBranch = new ams_Branch();
+            var desArea = new ams_AreaMaster(); 
+            if (reqVO.ioType == IOType.INPUT)
+            {
+                desWarehouse = string.IsNullOrWhiteSpace(reqVO.desWarehouseCode) ? warehouse : 
+                    staticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
+                desBranch = staticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
+                if (desBranch == null)
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "Branch Not Found");
+                desArea = null;
+            }
+            else
+            {
+                desWarehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
+                if (desWarehouse == null)
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.desWarehouseCode + " Not Found");
+                desBranch = staticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
+                if (desBranch == null)
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "Branch Not Found");
+                desArea = staticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
+                if (desArea == null)
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
+             
 
-            var stoList = stoRoot.ToTreeList().Where(x=> x.type == StorageObjectType.PACK).ToList();
+            }
+            var stoList = stoRoot.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
 
             amt_Document doc = new amt_Document()
             {
@@ -50,7 +66,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 ParentDocument_ID = null,
                 Lot = null,
                 Batch = null,
-                For_Customer_ID = null,
+                For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : staticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Sou_Customer_ID = null,
                 Sou_Supplier_ID = null,
                 Sou_Branch_ID = branch.ID.Value,
@@ -59,9 +75,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                 Des_Customer_ID = null,
                 Des_Supplier_ID = null,
-                Des_Branch_ID = desBranch.ID.Value,
-                Des_Warehouse_ID = desWarehouse.ID.Value,
-                Des_AreaMaster_ID = desArea.ID.Value,
+                Des_Branch_ID = desBranch == null ? null : desBranch.ID,
+                Des_Warehouse_ID = desWarehouse == null ? null : desWarehouse.ID,
+                Des_AreaMaster_ID = desArea == null ? null : desArea.ID,
                 DocumentDate = DateTime.Now,
                 ActionTime = null,
                 MovementType_ID = MovementType.FG_TRANSFER_WM,
@@ -78,16 +94,17 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                 DocumentItems = new List<amt_DocumentItem>(),
 
-            };
-
+            }; 
             stoList.ForEach(sto =>
             {
                 var pack = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(sto.code, buVO);
                 if (pack == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "Pack " + sto.code + " Not Found");
-
-                var PackMasterType = staticValue.PackMasterTypes.Find(x => x.ID == (long)pack.PackMasterType_ID);
-                if (PackMasterType.Code != "EMPTYPALLET")
+                var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)sto.skuID, buVO);
+                if (skuMaster == null)
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
+                var SKUMasterType = staticValue.SKUMasterTypes.Find(x => x.ID == (long)skuMaster.SKUMasterType_ID);
+                if (SKUMasterType.Code == "EMPTYPALLET")
                 {
                     doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
                 }
@@ -120,7 +137,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 });
 
             });
-
+            //if(checkMVT == true)
+                //doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
             var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, buVO).ID;
             var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID.Value, buVO);
 
