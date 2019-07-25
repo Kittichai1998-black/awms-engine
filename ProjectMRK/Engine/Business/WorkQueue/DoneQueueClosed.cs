@@ -32,95 +32,119 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 docs.Add(doc);
             });
 
-            docs.ForEach(x =>
+            if(docs.Count > 0)
             {
-                var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, buVO);
-
-                if (queue.IOType == IOType.INPUT)
+                docs.ForEach(x =>
                 {
-                    if(x.MovementType_ID == MovementType.FG_FAST_TRANSFER_WM)
+                    var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, buVO);
+
+                    if (queue.IOType == IOType.INPUT)
                     {
-                        var souAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Sou_AreaMaster_ID);
-                        var desAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Des_AreaMaster_ID);
-                        if(desAreaQueue.Code == "OF" && souAreaQueue.Code == "IP")
+                        if (x.MovementType_ID == MovementType.FG_FAST_TRANSFER_WM)
                         {
-                            CreateGIDocument(docs, stos, logger, buVO);
-                            AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, StorageObjectEventStatus.PICKED, buVO);
+                            var souAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Sou_AreaMaster_ID);
+                            var desAreaQueue = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(area => area.ID == queue.Des_AreaMaster_ID);
+                            if (desAreaQueue.Code == "OF" && souAreaQueue.Code == "IP")
+                            {
+                                CreateGIDocument(docs, stos, logger, buVO);
+                                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, StorageObjectEventStatus.PICKED, buVO);
+                            }
+                            else
+                            {
+                                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                            }
                         }
                         else
                         {
-                            AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                                StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                            if (x.DocumentType_ID == DocumentTypeID.AUDIT)
+                            {
+                                var getDiSTO = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                                    {
+                                new SQLConditionCriteria("WorkQueue_ID", queue.StorageObject_ID.Value, SQLOperatorType.EQUALS)
+                                    }, buVO);
+
+                                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                        null, null, StorageObjectEventStatus.RECEIVED, buVO);
+
+                                getDiSTO.ForEach(y => {
+                                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(y.ID.Value, EntityStatus.ACTIVE, buVO);
+                                });
+                            }
+                            else
+                            {
+                                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                            }
                         }
                     }
                     else
                     {
+                        //var packStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO)
+                        //.ToTreeList().FindAll(y => y.type == StorageObjectType.PACK);
+                        //packStos.ForEach(packSto =>
+                        //{
+                        //    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(packSto.id.Value,
+                        //        StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
+                        //});
+
+                        // add by ple
+
+                        var getArea = new MoveStoInGateToNextArea();
+                        var treq = new MoveStoInGateToNextArea.TReq()
+                        {
+                            baseStoID = queue.StorageObject_ID.Value
+                        };
+                        getArea.Execute(logger, buVO, treq);
+
                         if (x.DocumentType_ID == DocumentTypeID.AUDIT)
                         {
-                            var getDiSTO = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                                {
-                                new SQLConditionCriteria("WorkQueue_ID", queue.StorageObject_ID.Value, SQLOperatorType.EQUALS)
-                                }, buVO);
-
                             AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                                    null, null, StorageObjectEventStatus.RECEIVED, buVO);
-
-                            getDiSTO.ForEach(y => {
-                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(y.ID.Value, EntityStatus.ACTIVE, buVO);
-                            });
+                                StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITING, buVO);
                         }
                         else
                         {
                             AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                                StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                                StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
                         }
                     }
 
-                    
-                }
-                else
+                    if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                    {
+                        if (x.DocumentType_ID == DocumentTypeID.AUDIT && queue.IOType == IOType.INPUT)
+                        {
+                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, null, null, DocumentEventStatus.CLOSED, buVO);
+                        }
+                        else
+                        {
+                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
+                        }
+                    }
+                });
+            }
+            else
+            {
+                var stoBase = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
+                var stoPack = stoBase.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
+                var getDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                    {
+                            new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
+                    }, buVO);
+
+                getDisto.FindAll(x=> x.DocumentItem_ID != null).ForEach(x =>
                 {
-                    //var packStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO)
-                    //.ToTreeList().FindAll(y => y.type == StorageObjectType.PACK);
-                    //packStos.ForEach(packSto =>
-                    //{
-                    //    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(packSto.id.Value,
-                    //        StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
-                    //});
+                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(x.ID.Value, EntityStatus.ACTIVE, buVO);
+                    x.Status = EntityStatus.ACTIVE;
+                });
 
-                    // add by ple
-
-                    var getArea = new MoveStoInGateToNextArea();
-                    var treq = new MoveStoInGateToNextArea.TReq()
-                    {
-                        baseStoID = queue.StorageObject_ID.Value
-                    };
-                    getArea.Execute(logger, buVO, treq);
-
-                    if (x.DocumentType_ID == DocumentTypeID.AUDIT)
-                    {
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                            StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITING, buVO);
-                    }
-                    else
-                    {
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                            StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
-                    }
-                }
-
-                if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                var getDocItem = getDisto.FindAll(x => x.DocumentItem_ID != null && x.DocumentType_ID == DocumentTypeID.AUDIT);
+                if(getDocItem.TrueForAll(x=> x.Status == EntityStatus.ACTIVE))
                 {
-                    if (x.DocumentType_ID == DocumentTypeID.AUDIT && queue.IOType == IOType.INPUT)
-                    {
-                        AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, null, null, DocumentEventStatus.CLOSED, buVO);
-                    }
-                    else
-                    {
-                        AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
-                    }
+                    var getDocID = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem((getDocItem.First().DocumentItem_ID.Value), buVO);
+                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(getDocID.Document_ID, null, null, DocumentEventStatus.CLOSED, buVO);
                 }
-            });
+            }
 
             return new WorkQueueCriteria();
         }

@@ -116,7 +116,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var queueTrx = this.CreateWorkQueue(sto, docItem, desLocation, reqVO);
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, null, null, StorageObjectEventStatus.RECEIVING, this.BuVO);
                
-                if(docItem != null)
+                if(docItem.Count > 0)
                 {
                     docItem.ForEach(x =>
                     {
@@ -125,6 +125,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             disto.WorkQueue_ID = queueTrx.ID.Value;
                             if(disto.Status == EntityStatus.INACTIVE)
                                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
+                            else
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, queueTrx.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                         });
                     });
 
@@ -134,6 +136,17 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                     });
+                }
+                else
+                {
+                    var stoPack = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
+                    var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
+                        }, this.BuVO).FirstOrDefault(x => x.DocumentItem_ID == null);
+
+                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDisto.ID.Value, queueTrx.ID.Value, EntityStatus.INACTIVE, this.BuVO);
                 }
 
                 return this.GenerateResponse(sto, queueTrx);

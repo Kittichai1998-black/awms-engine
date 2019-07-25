@@ -85,9 +85,8 @@ namespace ProjectMRK.Engine.Business.Received
         }
         protected override amt_Document ExecuteEngine(TReq reqVO)
         {
-            long? Sou_Customer_ID =
-                    reqVO.forCustomerID.HasValue ? reqVO.forCustomerID.Value :
-                    string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID;
+            long? Sou_Customer_ID = reqVO.souCustomerID.HasValue ? reqVO.souCustomerID.Value :
+                    string.IsNullOrWhiteSpace(reqVO.souCustomerCode) ? null : this.StaticValue.Customers.First(x => x.Code == reqVO.souCustomerCode).ID;
             long? Sou_Supplier_ID =
                     reqVO.souSupplierID.HasValue ? reqVO.souSupplierID.Value :
                     string.IsNullOrWhiteSpace(reqVO.souSupplierCode) ? null : this.StaticValue.Suppliers.First(x => x.Code == reqVO.souSupplierCode).ID;
