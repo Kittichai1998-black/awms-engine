@@ -60,12 +60,12 @@ namespace RemoteFile
         private void ReadFileFromSharedFolder(string souFolderPath, string desFolderPath)
         {
             var getFile = new DirectoryInfo(souFolderPath).GetFiles("*.xml");
-            var folderName = "achrive_" + DateTime.Now.ToString("dd-MM-yyyy");
+            var folderName = "archive_" + DateTime.Now.ToString("dd-MM-yyyy");
             var rmvFolderName = "remove_" + DateTime.Now.ToString("dd-MM-yyyy");
 
-            if (!Directory.Exists(souFolderPath + "Achrive/" + folderName))
+            if (!Directory.Exists(souFolderPath + "Archive2/" + folderName))
             {
-                Directory.CreateDirectory(souFolderPath + "Achrive/" + folderName);
+                Directory.CreateDirectory(souFolderPath + "Archive2/" + folderName);
             }
 
             foreach (var file in getFile)
@@ -73,15 +73,15 @@ namespace RemoteFile
                 try
                 {
                     File.Copy(file.FullName, desFolderPath + "/" + file.Name);
-                    File.Move(file.FullName, souFolderPath + "Achrive/" + folderName + "/" + file.Name);
+                    File.Move(file.FullName, souFolderPath + "Archive2/" + folderName + "/" + file.Name);
                 }
                 catch
                 {
-                    if (!Directory.Exists(souFolderPath + "Remove/" + rmvFolderName))
+                    if (!Directory.Exists(souFolderPath + "Remove2/" + rmvFolderName))
                     {
-                        Directory.CreateDirectory(souFolderPath + "Remove/" + rmvFolderName);
+                        Directory.CreateDirectory(souFolderPath + "Remove2/" + rmvFolderName);
                     }
-                    File.Move(file.FullName, souFolderPath + "Remove/" + rmvFolderName + "/" + file.Name);
+                    File.Move(file.FullName, souFolderPath + "Remove2/" + rmvFolderName + "/" + file.Name);
                 }
             }
         }
@@ -127,12 +127,12 @@ namespace RemoteFile
         private void MoveFileFromFTP(string ftpPath, string username, string password, string fileName)
         {
             var folderName = "/archive_" + DateTime.Now.ToString("dd-MM-yyyy");
-            CreateDirectoryFTP(ftpPath + "/Archive", username, password, folderName);
+            CreateDirectoryFTP(ftpPath + "/Achrive2", username, password, folderName);
 
             var request = (FtpWebRequest)WebRequest.Create(ftpPath + "/" + fileName);
             request.Credentials = new NetworkCredential(username, password);
             request.Method = WebRequestMethods.Ftp.Rename;
-            request.RenameTo = "Archive" + folderName + "/" + fileName;
+            request.RenameTo = "Achrive" + folderName + "/" + fileName;
             FtpWebResponse response = (FtpWebResponse)request.GetResponse();
             response.Close();
         }
