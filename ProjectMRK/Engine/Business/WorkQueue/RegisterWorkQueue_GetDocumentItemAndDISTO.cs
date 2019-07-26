@@ -25,7 +25,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
             var stoIDs = AWMSEngine.ADO.StorageObjectADO.GetInstant().ListPallet(reqVO.baseCode, buVO).Select(x => x.ID.Value).ToList();
 
             var docs = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(stoIDs, DocumentTypeID.GOODS_RECEIVED, buVO)
-                .FindAll(x=>x.EventStatus == DocumentEventStatus.NEW && x.EventStatus == DocumentEventStatus.WORKING);
+                .FindAll(x=>x.EventStatus == DocumentEventStatus.NEW || x.EventStatus == DocumentEventStatus.WORKING);
             var packs = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
 
             var souWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
