@@ -208,9 +208,9 @@ namespace ProjectMRK.Engine.JobService
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Branch " + jsonHeader.BranchCode + " NotFound");
             }
-            var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(jsonDetail.ProductionUOM, this.BuVO);
+            var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(jsonDetail.UOM, this.BuVO);
             if (unit == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Unit Type " + jsonDetail.ProductionUOM + " NotFound");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Unit Type " + jsonDetail.UOM + " NotFound");
 
             var objSizeBase = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
             var objSizePack = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
@@ -286,13 +286,13 @@ namespace ProjectMRK.Engine.JobService
                     eventStatus = StorageObjectEventStatus.NEW,
                     name = sku.Name,
                     batch = jsonDetail.ToBatch,
-                    qty = Convert.ToDecimal(jsonDetail.ProductionQty),
+                    qty = Convert.ToDecimal(jsonDetail.Quantity),
                     skuID = sku.ID,
                     unitCode = unit.Code,
                     unitID = unit.ID.Value,
                     baseUnitCode = unit.Code,
                     baseUnitID = unit.ID.Value,
-                    baseQty = Convert.ToDecimal(jsonDetail.ProductionQty),
+                    baseQty = Convert.ToDecimal(jsonDetail.Quantity),
                     objectSizeID = objSizePack.ID.Value,
                     type = StorageObjectType.PACK,
                     productDate = dt,
@@ -346,9 +346,9 @@ namespace ProjectMRK.Engine.JobService
                     SKUMaster_ID = sku.ID.Value,
                     PackMaster_ID = pack.ID,
 
-                    Quantity = Convert.ToDecimal(jsonDetail.ProductionQty),
+                    Quantity = Convert.ToDecimal(jsonDetail.Quantity),
                     UnitType_ID = unit.ID,
-                    BaseQuantity = Convert.ToDecimal(jsonDetail.ProductionQty),
+                    BaseQuantity = Convert.ToDecimal(jsonDetail.Quantity),
                     BaseUnitType_ID = unit.ID,
 
                     OrderNo = null,
