@@ -108,7 +108,11 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 {
                     doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
                 }
-                
+                var baseUnitTypeConvt = staticValue.ConvertToBaseUnitByPack(pack.ID.Value, sto.qty, pack.UnitType_ID);
+                decimal? baseQuantity = null;
+                if (sto.qty >= 0)
+                    baseQuantity = baseUnitTypeConvt.baseQty;
+
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
@@ -117,9 +121,12 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     PackMaster_ID = pack.ID.Value,
 
                     Quantity = sto.qty,
-                    UnitType_ID = sto.unitID,
-                    BaseQuantity = sto.baseQty,
-                    BaseUnitType_ID = sto.baseUnitID,
+                    //UnitType_ID = sto.unitID,
+                    //BaseQuantity = sto.baseQty,
+                    //BaseUnitType_ID = sto.baseUnitID,
+                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    BaseQuantity = baseQuantity,
+                    BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
 
                     OrderNo = sto.orderNo,
                     Batch = sto.batch,
