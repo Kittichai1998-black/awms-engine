@@ -177,7 +177,7 @@ namespace RemoteFile
             {
                 try
                 {
-                    File.Copy(file.FullName, desFolderPath + "/" + file.Name);
+                    Console.WriteLine(file);
                 }
                 catch
                 {
