@@ -21,31 +21,31 @@ namespace RemoteFile
 
             if (mode == "1")
             {
-                //string souPath = ConfigurationManager.AppSettings["sharedPath"];
-                //Console.WriteLine("Shared Folder Path : {0}", souPath);
+                string souPath = ConfigurationManager.AppSettings["sharedPath"];
+                Console.WriteLine("Shared Folder Path : {0}", souPath);
 
-                //if (souPath != "" && desPath != "")
-                //{
-                //    Timer timer = new Timer(x =>
-                //    {
-                //        prg.ReadFileFromSharedFolder(souPath, desPath);
-                //    }, null, 0, 5000);
-                //}
+                if (souPath != "" && desPath != "")
+                {
+                    Timer timer = new Timer(x =>
+                    {
+                        prg.ReadFileFromSharedFolder(souPath, desPath);
+                    }, null, 0, 5000);
+                }
             }
             else if (mode == "2")
             {
-                //string ftpPath = ConfigurationManager.AppSettings["ftpPath"];
-                //Console.WriteLine("FTP Folder Path : {0}", ftpPath);
-                //string username = ConfigurationManager.AppSettings["ftpUsername"];
-                //string password = ConfigurationManager.AppSettings["ftpPassword"];
+                string ftpPath = ConfigurationManager.AppSettings["ftpPath"];
+                Console.WriteLine("FTP Folder Path : {0}", ftpPath);
+                string username = ConfigurationManager.AppSettings["ftpUsername"];
+                string password = ConfigurationManager.AppSettings["ftpPassword"];
 
-                //if (desPath != "" && ftpPath != "")
-                //{
-                //    Timer timer = new Timer(x =>
-                //    {
-                //        prg.GetFileFromFTP(ftpPath, username, password, desPath);
-                //    }, null, 0, 5000);
-                //}
+                if (desPath != "" && ftpPath != "")
+                {
+                    Timer timer = new Timer(x =>
+                    {
+                        prg.GetFileFromFTP(ftpPath, username, password, desPath);
+                    }, null, 0, 5000);
+                }
             }
             else if(mode == "3")
             {
@@ -183,6 +183,7 @@ namespace RemoteFile
                 {
                 }
             }
+            Console.WriteLine(getFile.Count());
         }
     }
 }
