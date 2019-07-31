@@ -130,6 +130,8 @@ namespace AWMSEngine.ADO.StaticValue
         private List<amv_PackUnitConvert> _PackUnitConverts;
         public List<amv_PackUnitConvert> PackUnitConverts { get => this._PackUnitConverts ?? this.LoadPackUnitConvert(); }
 
+        private List<ams_BaseMasterType> _BaseMasterTypes;
+        public List<ams_BaseMasterType> BaseMasterTypes { get => this._BaseMasterTypes ?? this.LoadBaseMasterType(); }
 
         private static StaticValueManager instant;
 
@@ -254,7 +256,10 @@ namespace AWMSEngine.ADO.StaticValue
             }
             return this._SKUMasterEmptyPallets;
         }
-
+        public List<ams_BaseMasterType> LoadBaseMasterType(VOCriteria buVO = null)
+        {
+            return this._BaseMasterTypes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_BaseMasterType>("status", 1, buVO ?? new VOCriteria()));
+        }
         public void ClearStaticByTableName(string tableName)
         {
             if (tableName.StartsWith("ams_"))
@@ -274,6 +279,7 @@ namespace AWMSEngine.ADO.StaticValue
                 else if (tableName == typeof(ams_Transport).Name) this._Transports = null;
                 else if (tableName == typeof(ams_PackMasterType).Name) this._PackMasterTypes = null;
                 else if (tableName == typeof(ams_SKUMasterType).Name) this._SKUMasterTypes = null;
+                else if (tableName == typeof(ams_BaseMasterType).Name) this._BaseMasterTypes = null;
                 else if (tableName == typeof(ams_PackMaster).Name) { this._PackUnitConverts = null; this._PackMasterEmptyPallets = null; }
                 else if (tableName == typeof(ams_SKUMaster).Name) { this._SKUMasterEmptyPallets = null; }
             }

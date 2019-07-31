@@ -240,6 +240,10 @@ namespace AWMSEngine.ADO
             param.Add("heightM", sto.heightM);
             param.Add("lengthM", sto.lengthM);
 
+            param.Add("refID", sto.refID);
+            param.Add("ref1", sto.ref1);
+            param.Add("ref2", sto.ref2);
+
             param.Add("actionBy", buVO.ActionBy);
             param.Add("productDate", sto.productDate);
             param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
