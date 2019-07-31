@@ -20,7 +20,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public object ZWMRF001(string reqVO, VOCriteria buVO)
+        public List<ZSWMRF001_OUT_SU> ZWMRF001(string reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -38,28 +38,10 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            var res = this.postSAP<ZSWMRF001_OUT_SU>(req, buVO, getURL);
-            var newRes = new
-            {
-                warehouseCode = res.LGNUM,
-                storageUnit = res.LGTYP,
-                storageUnitNum = res.LENUM,
-                materialNumber = res.MATNR,
-                batch = res.CHARG,
-                stockCat = res.LGTYP,
-                availableStock = res.VERME,
-                basUnit = res.MEINS,
-                prdDate = res.HSDAT,
-                incubatedDate = res.WEBAZ,
-                grossWeight = res.BRGEW,
-                weigthUnit = res.GEWEI,
-                dateFromBatch = res.FVDT1,
-                errMSG = res.ERR_MSG,
-            };
-            return newRes;
+            return this.postSAP<List<ZSWMRF001_OUT_SU>>(req, buVO, getURL);
         }
 
-        public object ZWMRF002(string reqVO, VOCriteria buVO)
+        public List<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -80,19 +62,7 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            var res = this.postSAP<ZSWMRF002_OUT_SU>(req, buVO, getURL);
-            var newRes = new
-            {
-                warehouseCode = res.LGNUM,
-                storageUnit = res.LGTYP,
-                desStorageType = res.LGTYP,
-                desStorageBin = res.LGPLA,
-                storageSection = res.NLBER,
-                storageUnitNum = res.LENUM,
-                tranOrder = res.TANUM,
-                errMSG = res.ERR_MSG,
-            };
-            return newRes;
+            return this.postSAP<List<ZSWMRF002_OUT_SU>>(req, buVO, getURL);
         }
 
         public dynamic ZWMRF004(ZSWMRF004_IN_AWS reqVO, VOCriteria buVO)
