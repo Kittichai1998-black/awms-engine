@@ -49,7 +49,9 @@ namespace AWMSModel.Criteria
         public List<ObjectSizeMap> objectSizeMaps;
         public string options;
         public List<StorageObjectCriteria> mapstos;
-        
+        public string refID;
+        public string ref1;
+        public string ref2;
 
         public class ObjectSizeMap
         {
