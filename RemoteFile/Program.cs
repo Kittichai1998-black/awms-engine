@@ -47,6 +47,16 @@ namespace RemoteFile
                     }, null, 0, 5000);
                 }
             }
+            else if(mode == "3")
+            {
+                string souPath = ConfigurationManager.AppSettings["sharedPath"];
+                Console.WriteLine("Shared Folder Path : {0}", souPath);
+                
+                if (souPath != "" && desPath != "")
+                {
+                    prg.ReadFileFromSharedFolderWithoutMove(souPath, desPath);
+                }
+            }
             else
             {
                 Console.Write("Wrong Mode");
@@ -157,6 +167,23 @@ namespace RemoteFile
                 var resp = (FtpWebResponse)reqCreateDir.GetResponse();
                 resp.Close();
             }
+        }
+
+        private void ReadFileFromSharedFolderWithoutMove(string souFolderPath, string desFolderPath)
+        {
+            var getFile = new DirectoryInfo(souFolderPath).GetFiles("*.xml");
+
+            foreach (var file in getFile)
+            {
+                try
+                {
+                    Console.WriteLine(file);
+                }
+                catch
+                {
+                }
+            }
+            Console.WriteLine(getFile.Count());
         }
     }
 }
