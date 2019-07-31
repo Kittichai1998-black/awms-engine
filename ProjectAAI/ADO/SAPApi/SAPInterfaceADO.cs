@@ -1,4 +1,5 @@
 ﻿using AMWUtil.DataAccess.Http;
+using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.ADO;
 using AWMSEngine.ADO.StaticValue;
@@ -38,7 +39,13 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            return this.postSAP<List<ZSWMRF001_OUT_SU>>(req, buVO, getURL);
+            var res = this.postSAP<List<ZSWMRF001_OUT_SU>>(req, buVO, getURL);
+            if (res.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            {
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+            }
+
+            return res;
         }
 
         public List<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
@@ -62,7 +69,14 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            return this.postSAP<List<ZSWMRF002_OUT_SU>>(req, buVO, getURL);
+            var res = this.postSAP<List<ZSWMRF002_OUT_SU>>(req, buVO, getURL);
+
+            if (res.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            {
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+            }
+
+            return res;
         }
 
         public dynamic ZWMRF004(ZSWMRF004_IN_AWS reqVO, VOCriteria buVO)
