@@ -14,6 +14,14 @@ namespace ProjectAAI.ADO.SAPApi
 {
     public class SAPInterfaceADO : BaseMSSQLAccess<SAPInterfaceADO>
     {
+
+        public class SapResponse<T>{
+            public List<T> datas;
+            public int status;
+            public string message;
+            public string stacktrace;
+        }
+
         public T postSAP<T>(object datas, VOCriteria buVO, string apiUri)
             where T : class, new()
         {
@@ -21,7 +29,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public List<ZSWMRF001_OUT_SU> ZWMRF001(string reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF001_OUT_SU> ZWMRF001(string reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -39,16 +47,16 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            var res = this.postSAP<List<ZSWMRF001_OUT_SU>>(req, buVO, getURL);
-            if (res.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            var res = this.postSAP<SapResponse<ZSWMRF001_OUT_SU>>(req, buVO, getURL);
+            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
             return res;
         }
 
-        public List<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -69,11 +77,11 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            var res = this.postSAP<List<ZSWMRF002_OUT_SU>>(req, buVO, getURL);
+            var res = this.postSAP<SapResponse<ZSWMRF002_OUT_SU>>(req, buVO, getURL);
 
-            if (res.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
             return res;
