@@ -13,6 +13,7 @@ using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using ProjectAAI.ADO;
+using ProjectAAI.ADO.SAPApi;
 
 namespace ProjectAAI.Engine.Business.WorkQueue
 {
@@ -177,7 +178,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 outTableName = "OUT_SU",
                 datas = list
             };
-            var res = SAPInterfaceADO.GetInstant().postSAP<SAPResponse>(itemList, buVO.Logger, "http://localhost:51306/api/SAPConnect");
+            var res = SAPInterfaceADO.GetInstant().postSAP<SAPResponse>(itemList, buVO, "http://localhost:51306/api/SAPConnect");
             return res;
         }
     }
