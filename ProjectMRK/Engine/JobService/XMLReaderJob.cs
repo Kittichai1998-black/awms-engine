@@ -13,7 +13,7 @@ namespace ProjectMRK.Engine.JobService
         public override void ExecuteJob(IJobExecutionContext context, JobDataMap data)
         {
             ReadXMLFileAPI xml = new ReadXMLFileAPI(null);
-            var res = xml.Execute(new { apiKey = "free01"});
+            var res = xml.Execute(new { apiKey = "FREE01"});
         }
     }
 }

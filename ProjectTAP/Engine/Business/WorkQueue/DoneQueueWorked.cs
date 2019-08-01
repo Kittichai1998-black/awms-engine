@@ -67,10 +67,16 @@ namespace ProjectTAP.Engine.Business.WorkQueue
 
                         if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                         {
-                            var getSto = distos.Select(disto => disto.Sou_StorageObject_ID).Distinct().ToList().Select(stoID => 
-                            AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.PACK, false, false, buVO).eventStatus).ToList();
+                            var getDocID = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(distos.First().DocumentItem_ID, buVO).Document_ID;
 
-                            if(getSto.TrueForAll(sto => sto == StorageObjectEventStatus.RECEIVED))
+                            var getStoID = AWMSEngine.ADO.DocumentADO.GetInstant().ListStoInDocs(getDocID, buVO).Select(x=> x.Sou_StorageObject_ID).ToArray();
+
+                            var getSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[]
+                            {
+                                new SQLConditionCriteria("ID", string.Join(",", getStoID), SQLOperatorType.IN)
+                            }, buVO);
+
+                            if (getSto.TrueForAll(sto => sto.EventStatus == StorageObjectEventStatus.RECEIVED))
                                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
                         }
                     }

@@ -413,13 +413,38 @@ namespace ProjectMRK.Engine.JobService
                     var doc = ReadListFileXMLFromDirectory(file);
                     resList.Add(doc);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    break;
+                    //XmlDocument doc = new XmlDocument();
+                    //doc.Load(file.FullName);
+                    //XmlElement elem = doc.CreateElement("Error");
+                    //elem.InnerText = ex.Message;
+                    //doc.DocumentElement.AppendChild(elem);
+                    //doc.Save(file.FullName);
+                    fileError.Add(file);
                 }
             }
 
-            if(fileSuccess.Count > 0)
+            //for (int i = 0; i < 15; i++)
+            //{
+            //    try
+            //    {
+            //        var doc = ReadListFileXMLFromDirectory(getFile[i]);
+            //        resList.Add(doc);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        XmlDocument doc = new XmlDocument();
+            //        doc.Load(getFile[i].FullName);
+            //        XmlElement elem = doc.CreateElement("Error");
+            //        elem.InnerText = ex.Message;
+            //        doc.DocumentElement.AppendChild(elem);
+            //        doc.Save(getFile[i].FullName);
+            //        fileError.Add(getFile[i]);
+            //    }
+            //}
+
+            if (fileSuccess.Count > 0)
             {
                 fileSuccess.ForEach(x =>
                 {
@@ -449,11 +474,10 @@ namespace ProjectMRK.Engine.JobService
             var jsonObj = JsonConvert.DeserializeObject<XMLData>(json);
 
             var res = CreateDocumentFromXML(jsonObj);
-            if (res != null)
+            if(res != null)
                 fileSuccess.Add(xml);
             else
                 fileError.Add(xml);
-
             return res;
         }
 
@@ -470,7 +494,7 @@ namespace ProjectMRK.Engine.JobService
         private void DeleteFileXMLDirectory(string xmlPath, string xmlname)
         {
             var folderName = DateTime.Now.ToString("yyyyMMdd");
-            if (!Directory.Exists(directoryPath + "archive/" + folderName))
+            if (!Directory.Exists(directoryPath + "error/" + folderName))
             {
                 Directory.CreateDirectory(directoryPath + "error/" + folderName);
             }

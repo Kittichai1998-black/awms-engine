@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine.ADO.QueueApi;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
@@ -227,6 +228,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void ValidateWCS(List<SPOutSTOProcessQueueCriteria> _pickStos, TReq reqVO)
         {
+            var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                new SQLConditionCriteria("ID", string.Join(",", _pickStos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
+            }, this.BuVO);
+
             WCSQueueADO.TReq req = new WCSQueueADO.TReq()
             {
                 queueOut = _pickStos.Select(x => new WCSQueueADO.TReq.queueout()
@@ -238,6 +243,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     priority = 0,
                     baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
+                        eventStatus = getRsto.FirstOrDefault(y => y.ID == x.rstoID).EventStatus,
                         baseCode = x.rstoCode,
                         packInfos = null
                     }

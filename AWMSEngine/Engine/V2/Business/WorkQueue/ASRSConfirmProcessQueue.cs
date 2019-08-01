@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Exception;
 using AWMSEngine.ADO.QueueApi;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
@@ -169,6 +170,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void WCSSendQueue(List<RootStoProcess> rstos)
         {
+            var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                new SQLConditionCriteria("ID", string.Join(",", rstos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
+            }, this.BuVO);
+
             WCSQueueADO.TReq wcQueue = new WCSQueueADO.TReq() { queueOut = new List<WCSQueueADO.TReq.queueout>() };
             rstos.ForEach(rsto =>
             {
@@ -181,9 +186,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     desLocationCode = rsto.desLocationID.HasValue ?
                                            ADO.MasterADO.GetInstant().GetAreaLocationMaster(rsto.desLocationID.Value, this.BuVO).Code :
                                            null,
-
                     baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
+                        eventStatus = getRsto.FirstOrDefault(y => y.ID == rsto.rstoID).EventStatus,
                         baseCode = rsto.rstoCode,
                         packInfos = rsto.docItems.Select(x => new WCSQueueADO.TReq.queueout.baseinfo.packinfo()
                         {
