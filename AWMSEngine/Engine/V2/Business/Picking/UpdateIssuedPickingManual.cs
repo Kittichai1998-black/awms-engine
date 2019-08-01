@@ -45,84 +45,80 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var itemList = ADO.DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO);
-            var palletSTO = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletID, StorageObjectType.BASE, false, true, this.BuVO);
-            var sto = TreeUtil.ToTreeList(palletSTO);
-            object close = null;
-            reqVO.pickedList.ForEach(x =>
+            reqVO.pickedList.ForEach(list =>
             {
-                if (x.picked > x.palletQty)
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนในพาเลทได้");
-                else if (x.picked > x.canPick)
-                    throw new AMWException(this.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าเกินจำนวนที่ต้องหยิบได้");
-                
-                
-
-                var setSTO = sto.Where(s => s.id == x.STOID).FirstOrDefault();
-                //var setSTO = listSto.Where(y => y.id == x.STOID).First();
-                var basePicked = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(setSTO.skuID.Value, x.picked, setSTO.unitID);
-
-                setSTO.qty = setSTO.qty - x.picked;
-                setSTO.baseQty = setSTO.baseQty - basePicked.baseQty;
-
-                setSTO.eventStatus = setSTO.baseQty > 0 ? StorageObjectEventStatus.PICKING : StorageObjectEventStatus.PICKED;
-
-                if (x.picked > 0)
-                    ADO.StorageObjectADO.GetInstant().UpdatePicking(reqVO.palletCode, x.docItemID.Value, x.packCode, x.batch, x.lot, x.picked, basePicked.baseQty, reqVO.pickMode, this.BuVO);
-
-                ADO.StorageObjectADO.GetInstant().PutV2(setSTO, this.BuVO);
-
-                var getDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                {
-                    new SQLConditionCriteria("Sou_StorageObject_ID", x.STOID, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("Status", 0, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.GOODS_ISSUED, SQLOperatorType.EQUALS),
-                }, this.BuVO);
-
-                var chkQty = sto.FindAll(s => s.type == StorageObjectType.PACK).TrueForAll(a => a.eventStatus == StorageObjectEventStatus.PICKED);
-                if (chkQty)
-                {
-                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSTO.id.Value, StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
-                }
-                else
-                {
-                    if(getDiSto.Count == 0)
+                var palletSto = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletID, StorageObjectType.BASE, false, true, this.BuVO);
+                var stoList = TreeUtil.ToTreeList(palletSto);
+                stoList.ForEach(stosList =>
                     {
-                        if (palletSTO.parentType == StorageObjectType.LOCATION)
+                        var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                         {
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSTO.id.Value, null, EntityStatus.ACTIVE, StorageObjectEventStatus.RECEIVED, this.BuVO);
-                        }
-                    }
-                }
+                            new SQLConditionCriteria("DocumentItem_ID", list.docItemID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("Sou_StorageObject_ID", stosList.id, SQLOperatorType.EQUALS)
+                        }, this.BuVO);
 
-                itemList.ForEach(doci =>
-                {
-                    doci.DocItemStos = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(doci.ID.Value, this.BuVO).DocItemStos;
-                    if (doci.DocItemStos.TrueForAll(disto => disto.Status == EntityStatus.ACTIVE))
-                    {
-                        doci.EventStatus = DocumentEventStatus.WORKED;
-                        doci.Status = ADO.DocumentADO.GetInstant().UpdateItemEventStatus(doci.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
-                    }
-                });
+                        distos.ToList().ForEach(disto =>
+                        {
+                            if (stosList.qty == disto.Quantity)
+                            {
+                                ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
+                                            new SQLConditionCriteria("DocumentItem_ID", disto.DocumentItem_ID, SQLOperatorType.EQUALS),
+                                            new SQLConditionCriteria("Sou_StorageObject_ID", disto.Sou_StorageObject_ID, SQLOperatorType.EQUALS)
+                                            }, new KeyValuePair<string, object>[]{
+                                            new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE),
+                                            new KeyValuePair<string, object>("Des_StorageObject_ID", disto.Sou_StorageObject_ID)
+                                            }, this.BuVO);
 
-                var target = itemList.TrueForAll(z => z.EventStatus == DocumentEventStatus.WORKED);
-                if (target)
-                {
-                    ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, EntityStatus.ACTIVE, DocumentEventStatus.WORKED, this.BuVO);
-                    close = new { docIDs = new long[] { reqVO.docID }, auto = 0, _token = this.BuVO.Get<string>(BusinessVOConst.KEY_TOKEN) };
-                }
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stosList.id.Value, null, null, StorageObjectEventStatus.PICKED, this.BuVO);
+
+                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,
+                                    null, null,
+                                    DocumentEventStatus.CLOSED,
+                                    this.BuVO);
+                                
+                            }
+                            else
+                            {
+                                var updSto = new StorageObjectCriteria();
+                                updSto = stosList;
+                                updSto.baseQty -= disto.BaseQuantity.Value;
+                                updSto.qty -= disto.Quantity.Value;
+                                updSto.parentID = null;
+                                updSto.mapstos = null;
+                                updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+
+                                if (updSto.baseQty == 0)
+                                {
+                                    updSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                    var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                }
+                                else
+                                {
+                                    var issuedSto = new StorageObjectCriteria();
+                                    issuedSto = stosList;
+                                    issuedSto.id = null;
+                                    issuedSto.baseQty = disto.BaseQuantity.Value;
+                                    issuedSto.qty = disto.Quantity.Value;
+                                    issuedSto.parentID = null;
+                                    issuedSto.mapstos = null;
+                                    issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+
+                                    var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+
+                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                }
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(palletSto.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                            }
+                        });
+                    });
             });
+            //======================================================================================
 
 
-                ADO.DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID,
-                    null, null,
-                    DocumentEventStatus.CLOSED,
-                    this.BuVO);
-            
 
-            var res = ADO.DataADO.GetInstant().SelectByID<amt_Document>(reqVO.docID, this.BuVO);
 
-            return new TRes { doc = res};
+            return null;
         }
     }
 }

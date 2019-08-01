@@ -24,6 +24,14 @@ namespace AMWUtil.Common
             }
             return null;
         }
+        public static string ToISOUTCString(this DateTime? dtUTC)
+        {
+            if (dtUTC.HasValue)
+            {
+                return dtUTC.Value.ToString(DATE_FORMAT);
+            }
+            return null;
+        }
         public static string ToISODateString(this DateTime d)
         {
             return d.ToUniversalTime().ToString(DATE_FORMAT);

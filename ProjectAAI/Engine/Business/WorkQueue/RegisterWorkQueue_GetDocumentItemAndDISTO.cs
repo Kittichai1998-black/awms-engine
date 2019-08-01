@@ -34,16 +34,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var desWarehouse = new ams_Warehouse();
             var desBranch = new ams_Branch();
             var desArea = new ams_AreaMaster(); 
-            if (reqVO.ioType == IOType.INPUT)
-            {
-                desWarehouse = string.IsNullOrWhiteSpace(reqVO.desWarehouseCode) ? warehouse : 
-                    staticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
-                desBranch = staticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
-                if (desBranch == null)
-                    throw new AMWException(logger, AMWExceptionCode.V2001, "Branch Not Found");
-                desArea = null;
-            }
-            else
+            if (reqVO.ioType == IOType.OUTPUT)
             {
                 desWarehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
                 if (desWarehouse == null)
@@ -54,8 +45,6 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 desArea = staticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
                 if (desArea == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
-             
-
             }
             var stoList = stoRoot.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
 
@@ -69,15 +58,16 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : staticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Sou_Customer_ID = null,
                 Sou_Supplier_ID = null,
-                Sou_Branch_ID = branch.ID.Value,
-                Sou_Warehouse_ID = warehouse.ID.Value,
-                Sou_AreaMaster_ID = area.ID.Value,
+                Sou_Branch_ID = reqVO.ioType == IOType.INPUT ? null : branch.ID,
+                Sou_Warehouse_ID = reqVO.ioType == IOType.INPUT ? null : warehouse.ID,
+                Sou_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : area.ID,
 
                 Des_Customer_ID = null,
-                Des_Supplier_ID = null,
-                Des_Branch_ID = desBranch == null ? null : desBranch.ID,
-                Des_Warehouse_ID = desWarehouse == null ? null : desWarehouse.ID,
-                Des_AreaMaster_ID = desArea == null ? null : desArea.ID,
+                Des_Supplier_ID = null, 
+                Des_Branch_ID = reqVO.ioType == IOType.INPUT ? branch.ID : desBranch.ID,
+                Des_Warehouse_ID = reqVO.ioType == IOType.INPUT ? warehouse.ID : desWarehouse.ID,
+                Des_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : desArea.ID,
+
                 DocumentDate = DateTime.Now,
                 ActionTime = null,
                 MovementType_ID = MovementType.FG_TRANSFER_WM,
@@ -144,8 +134,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 });
 
             });
-            //if(checkMVT == true)
-                //doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
+            
             var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, buVO).ID;
             var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID.Value, buVO);
 
