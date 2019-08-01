@@ -32,7 +32,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                 var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO);
                 if (doc.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                 {
-                    if (AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                    if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                     {
                         AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
                     }
@@ -62,11 +62,16 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                         distos.Where(disto => disto.WorkQueue_ID == queue.ID.Value).ToList().ForEach(y =>
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(y.ID.Value, EntityStatus.ACTIVE, buVO);
+                            y.Status = EntityStatus.ACTIVE;
                         });
 
-                        if (AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(doc.ID.Value, buVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                        if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                         {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
+                            var getSto = distos.Select(disto => disto.Sou_StorageObject_ID).Distinct().ToList().Select(stoID => 
+                            AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.PACK, false, false, buVO).eventStatus).ToList();
+
+                            if(getSto.TrueForAll(sto => sto == StorageObjectEventStatus.RECEIVED))
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
                         }
                     }
                     else
