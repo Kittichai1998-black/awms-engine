@@ -1,4 +1,4 @@
-﻿database.mssql.connection = Server=191.20.80.120\MSSQLEXPRESS17;Uid=sa;PASSWORD=@mwte@mp@55;database=AMS_TAP1;Max Pool Size=400;Connect Timeout=600;
+﻿database.mssql.connection = Server=192.168.42.66;Uid=sqluser;PASSWORD=123456;database=AMS_TAP;Max Pool Size=400;Connect Timeout=600;
 
 logger.rootpath = D:/logs/{MachineName}/{Date}/
 logger.filename = {RefID}.{Date}.log
