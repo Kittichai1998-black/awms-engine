@@ -242,6 +242,11 @@ namespace AWMSEngine.ADO
 
             param.Add("actionBy", buVO.ActionBy);
             param.Add("productDate", sto.productDate);
+
+            param.Add("refID", sto.refID);
+            param.Add("ref1", sto.ref1);
+            param.Add("ref2", sto.ref2);
+
             param.Add("resID", null, System.Data.DbType.Int64, System.Data.ParameterDirection.Output);
             this.Execute("SP_STO_PUT_V2", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
             sto.id = param.Get<long>("resID");

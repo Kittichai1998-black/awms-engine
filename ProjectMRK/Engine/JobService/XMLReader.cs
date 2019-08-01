@@ -208,9 +208,9 @@ namespace ProjectMRK.Engine.JobService
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Branch " + jsonHeader.BranchCode + " NotFound");
             }
-            var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(jsonDetail.UOM, this.BuVO);
+            var unit = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_UnitType>(jsonDetail.ProductionUOM, this.BuVO);
             if (unit == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Unit Type " + jsonDetail.UOM + " NotFound");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Unit Type " + jsonDetail.ProductionUOM + " NotFound");
 
             var objSizeBase = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE);
             var objSizePack = StaticValue.ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
@@ -286,13 +286,13 @@ namespace ProjectMRK.Engine.JobService
                     eventStatus = StorageObjectEventStatus.NEW,
                     name = sku.Name,
                     batch = jsonDetail.ToBatch,
-                    qty = Convert.ToDecimal(jsonDetail.Quantity),
+                    qty = Convert.ToDecimal(jsonDetail.ProductionQty),
                     skuID = sku.ID,
                     unitCode = unit.Code,
                     unitID = unit.ID.Value,
                     baseUnitCode = unit.Code,
                     baseUnitID = unit.ID.Value,
-                    baseQty = Convert.ToDecimal(jsonDetail.Quantity),
+                    baseQty = Convert.ToDecimal(jsonDetail.ProductionQty),
                     objectSizeID = objSizePack.ID.Value,
                     type = StorageObjectType.PACK,
                     productDate = dt,
@@ -346,9 +346,9 @@ namespace ProjectMRK.Engine.JobService
                     SKUMaster_ID = sku.ID.Value,
                     PackMaster_ID = pack.ID,
 
-                    Quantity = Convert.ToDecimal(jsonDetail.Quantity),
+                    Quantity = Convert.ToDecimal(jsonDetail.ProductionQty),
                     UnitType_ID = unit.ID,
-                    BaseQuantity = Convert.ToDecimal(jsonDetail.Quantity),
+                    BaseQuantity = Convert.ToDecimal(jsonDetail.ProductionQty),
                     BaseUnitType_ID = unit.ID,
 
                     OrderNo = null,
@@ -459,23 +459,23 @@ namespace ProjectMRK.Engine.JobService
 
         private void MoveFileXMLDirectory(string xmlPath, string xmlname)
         {
-            var folderName = "Archive_" + DateTime.Now.ToString("dd-MM-yyyy");
-            if (!Directory.Exists(directoryPath + "Archive/" + folderName))
+            var folderName = DateTime.Now.ToString("yyyyMMdd");
+            if (!Directory.Exists(directoryPath + "archive/" + folderName))
             {
-                Directory.CreateDirectory(directoryPath + "Archive/" + folderName);
+                Directory.CreateDirectory(directoryPath + "archive/" + folderName);
             }
 
-            File.Move(xmlPath, directoryPath + "Archive/" + folderName + "/" + xmlname);
+            File.Move(xmlPath, directoryPath + "archive/" + folderName + "/" + xmlname);
         }
         private void DeleteFileXMLDirectory(string xmlPath, string xmlname)
         {
-            var folderName = "error_" + DateTime.Now.ToString("dd-MM-yyyy");
-            if (!Directory.Exists(directoryPath + "Archive/" + folderName))
+            var folderName = DateTime.Now.ToString("yyyyMMdd");
+            if (!Directory.Exists(directoryPath + "archive/" + folderName))
             {
-                Directory.CreateDirectory(directoryPath + "Error/" + folderName);
+                Directory.CreateDirectory(directoryPath + "error/" + folderName);
             }
 
-            File.Move(xmlPath, directoryPath + "Error/" + folderName + "/" + xmlname);
+            File.Move(xmlPath, directoryPath + "error/" + folderName + "/" + xmlname);
         }
     }
 }

@@ -43,6 +43,7 @@ namespace AWMSEngine.Engine.V2.Business
                     public string lot;
                     public string orderNo;
                     public DateTime? prodDate;
+                    public StorageObjectEventStatus eventStatus;
                 }
             }
         }
@@ -74,7 +75,8 @@ namespace AWMSEngine.Engine.V2.Business
                         batch = sto.batch,
                         lot = sto.lot,
                         orderNo = sto.orderNo,
-                        prodDate = sto.prodDate
+                        prodDate = sto.prodDate,
+                        eventStatus = sto.eventStatus
                     };
                 }).ToList()
             };

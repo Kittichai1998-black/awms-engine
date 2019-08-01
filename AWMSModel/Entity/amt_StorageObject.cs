@@ -20,8 +20,9 @@ namespace AWMSModel.Entity
         public decimal LengthM;
         public decimal HeightM;
         public string Options;
-        public int HoleStatus;
-        public int LockStatus;
+        public string RefID;
+        public string Ref1;
+        public string Ref2;
         public StorageObjectEventStatus EventStatus;
         public string Batch;
         public string Lot;

@@ -34,9 +34,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var docs = GetDocument(reqVO.queueID.Value);
                 docs.ForEach(x =>
                 {
-                    if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                    if (x.DocumentType_ID != DocumentTypeID.AUDIT)
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
+                        if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, this.BuVO);
+                        }
                     }
                 });
             }
@@ -49,9 +52,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var docs = GetDocument(reqVO.queueID.Value);
                 docs.ForEach(x =>
                 {
-                    if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                    if(x.DocumentType_ID != DocumentTypeID.AUDIT)
                     {
-                        ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                        if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x.ID.Value, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x.ID.Value, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                        }
                     }
                 });
             }
@@ -92,13 +98,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         if (queue.IOType == IOType.INPUT)
                         {
-
                             ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
                                     null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
 
                             distos.Where(disto => disto.WorkQueue_ID == queue.ID.Value).ToList().ForEach(y =>
                             {
                                 DocumentADO.GetInstant().UpdateMappingSTO(y.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                                y.Status = EntityStatus.ACTIVE;
                             });
                         }
                         else

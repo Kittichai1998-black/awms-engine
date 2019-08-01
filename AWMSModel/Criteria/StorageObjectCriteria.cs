@@ -49,7 +49,9 @@ namespace AWMSModel.Criteria
         public List<ObjectSizeMap> objectSizeMaps;
         public string options;
         public List<StorageObjectCriteria> mapstos;
-        
+        public string refID;
+        public string ref1;
+        public string ref2;
 
         public class ObjectSizeMap
         {
@@ -297,6 +299,9 @@ namespace AWMSModel.Criteria
                             orderNo = x.orderNo,
                             lot = x.lot,
                             batch = x.batch,
+                            refID = x.refID,
+                            ref1 = x.ref1,
+                            ref2 = x.ref2,
                             minWeiKG = sos2 != null ? sos2.MinWeigthKG : null,
                             maxWeiKG = sos2 != null ? sos2.MaxWeigthKG : null,
                             weiAccept = sos2 != null ? sos2.PercentWeightAccept : null,
