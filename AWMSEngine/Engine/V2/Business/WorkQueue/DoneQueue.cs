@@ -226,6 +226,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
                 {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
                     docItems.ForEach(docItem =>
                     {
                         stoList.ForEach(sto =>
@@ -263,8 +265,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     if (updSto.baseQty == 0)
                                     {
                                         updSto.eventStatus = StorageObjectEventStatus.PICKING;
-                                        var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
                                     }
                                     else
                                     {
@@ -278,10 +278,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
 
                                         var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-
                                         ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
                                     }
-                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
+                                    var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+
                                 }
                             });
                         });

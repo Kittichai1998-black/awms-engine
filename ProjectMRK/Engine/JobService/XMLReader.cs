@@ -193,11 +193,11 @@ namespace ProjectMRK.Engine.JobService
             var jsonHeader = json.MRK_MT_PalletID_SAP_to_WMS.Header_Pallet;
             var jsonDetail = json.MRK_MT_PalletID_SAP_to_WMS.Detail_Pallet.Record_Pallet;
 
-            var fromWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == jsonDetail.FromLocation);
-            if (fromWarehouse == null)
-            {
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Warehouse " + jsonDetail.FromLocation + " NotFound");
-            }
+            //var fromWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == jsonDetail.FromLocation);
+            //if (fromWarehouse == null)
+            //{
+            //    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Warehouse " + jsonDetail.FromLocation + " NotFound");
+            //}
             var toWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == jsonDetail.ToLocation);
             if (toWarehouse == null)
             {
@@ -217,7 +217,7 @@ namespace ProjectMRK.Engine.JobService
 
             var getBase = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(jsonDetail.PalletID, this.BuVO);
 
-            var chkPallet = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<amt_StorageObject>(jsonDetail.PalletID, this.BuVO);
+            var chksto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(jsonDetail.PalletID, null, null, false, true, this.BuVO);
 
             var sku = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[]{
                  new SQLConditionCriteria("Code", jsonDetail.ItemNumber, SQLOperatorType.EQUALS),
@@ -234,170 +234,174 @@ namespace ProjectMRK.Engine.JobService
 
             DateTime dt = DateTime.ParseExact(jsonDetail.ManufactureDate, "dd-MM-yyyy", CultureInfo.InvariantCulture);
 
-            if (chkPallet != null)
+            if (chksto != null && chksto.eventStatus == StorageObjectEventStatus.NEW)
+            {
+                var docList = AWMSEngine.ADO.DocumentADO.GetInstant().ListBySTO(chksto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToList(), this.BuVO);
+                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(docList.FirstOrDefault().ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.REMOVED, this.BuVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(chksto.id.Value, StorageObjectEventStatus.NEW, null, StorageObjectEventStatus.REMOVED, this.BuVO);
+            }
+            else if(chksto != null && chksto.eventStatus != StorageObjectEventStatus.NEW)
             {
                 return null;
             }
+
+            long baseID;
+            if (getBase == null)
+            {
+                baseID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
+                {
+                    Code = jsonDetail.PalletID,
+                    Name = jsonDetail.PalletID,
+                    BaseMasterType_ID = 6,
+                    Description = "Pallet",
+                    ObjectSize_ID = objSizeBase.ID.Value,
+                    Status = EntityStatus.ACTIVE,
+                    UnitType_ID = 1,
+                    WeightKG = null
+                }).Value;
+            }
             else
             {
-                long baseID;
-                if (getBase == null)
-                {
-                    baseID = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(this.BuVO, new ams_BaseMaster()
-                    {
-                        Code = jsonDetail.PalletID,
-                        Name = jsonDetail.PalletID,
-                        BaseMasterType_ID = 6,
-                        Description = "Pallet",
-                        ObjectSize_ID = objSizeBase.ID.Value,
-                        Status = EntityStatus.ACTIVE,
-                        UnitType_ID = 1,
-                        WeightKG = null
-                    }).Value;
-                }
-                else
-                {
-                    baseID = getBase.ID.Value;
-                }
-
-                StorageObjectCriteria baseSto = new StorageObjectCriteria()
-                {
-                    code = jsonDetail.PalletID,
-                    eventStatus = StorageObjectEventStatus.NEW,
-                    name = "Pallet",
-                    qty = 1,
-                    unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                    unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
-                    baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
-                    baseQty = 1,
-                    objectSizeID = objSizeBase.ID.Value,
-                    type = StorageObjectType.BASE,
-                    mstID = baseID,
-                    objectSizeName = objSizeBase.Name,
-                };
-
-                var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
-                var childSto = new StorageObjectCriteria()
-                {
-                    parentID = stoID,
-                    parentType = StorageObjectType.BASE,
-                    code = jsonDetail.ItemNumber,
-                    eventStatus = StorageObjectEventStatus.NEW,
-                    name = sku.Name,
-                    batch = jsonDetail.ToBatch,
-                    qty = Convert.ToDecimal(jsonDetail.ProductionQty),
-                    skuID = sku.ID,
-                    unitCode = unit.Code,
-                    unitID = unit.ID.Value,
-                    baseUnitCode = unit.Code,
-                    baseUnitID = unit.ID.Value,
-                    baseQty = Convert.ToDecimal(jsonDetail.ProductionQty),
-                    objectSizeID = objSizePack.ID.Value,
-                    type = StorageObjectType.PACK,
-                    productDate = dt,
-                    objectSizeName = objSizePack.Name,
-                    mstID = pack.ID
-                };
-                var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(childSto, this.BuVO);
-
-                var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
-
-                amt_Document doc = new amt_Document()
-                {
-                    ID = null,
-                    Code = null,
-                    ParentDocument_ID = null,
-                    Lot = null,
-                    Batch = jsonDetail.ToBatch,
-                    For_Customer_ID = null,
-                    Sou_Customer_ID = null,
-                    Sou_Supplier_ID = null,
-                    Sou_Branch_ID = branch.ID.Value,
-                    Sou_Warehouse_ID = fromWarehouse.ID.Value,
-                    Sou_AreaMaster_ID = null,
-
-                    Des_Customer_ID = null,
-                    Des_Supplier_ID = null,
-                    Des_Branch_ID = branch.ID.Value,
-                    Des_Warehouse_ID = toWarehouse.ID.Value,
-                    Des_AreaMaster_ID = null,
-                    DocumentDate = jsonHeader.TransDate,
-                    ActionTime = null,
-                    MovementType_ID = skuMovementType.Code.ToUpper() == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
-                    RefID = null,
-                    Ref1 = null,
-                    Ref2 = null,
-
-                    DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                    EventStatus = DocumentEventStatus.NEW,
-
-                    Remark = null,
-                    Options = "basecode=" + jsonDetail.PalletID,
-                    Transport_ID = null,
-
-                    DocumentItems = new List<amt_DocumentItem>(),
-
-                };
-                doc.DocumentItems.Add(new amt_DocumentItem()
-                {
-                    ID = null,
-                    Code = sku.Code,
-                    SKUMaster_ID = sku.ID.Value,
-                    PackMaster_ID = pack.ID,
-
-                    Quantity = Convert.ToDecimal(jsonDetail.ProductionQty),
-                    UnitType_ID = unit.ID,
-                    BaseQuantity = Convert.ToDecimal(jsonDetail.ProductionQty),
-                    BaseUnitType_ID = unit.ID,
-
-                    OrderNo = null,
-                    Batch = jsonDetail.ToBatch,
-                    Lot = null,
-
-                    Options = null,
-                    ExpireDate = null,
-                    ProductionDate = dt,
-                    Ref1 = null,
-                    Ref2 = null,
-                    RefID = "basecode=" + jsonDetail.PalletID,
-
-                    EventStatus = DocumentEventStatus.NEW,
-
-                });
-
-                var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, this.BuVO).ID;
-
-                var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID.Value, this.BuVO);
-                var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
-                var stoList = stos.ToTreeList();
-                var stoPack = stoList.Where(x => x.type == StorageObjectType.PACK);
-                amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject();
-                docItems.ForEach(docItem =>
-                {
-                    var sto = stoPack.FirstOrDefault(x => x.skuID == docItem.SKUMaster_ID);
-                    disto = new amt_DocumentItemStorageObject()
-                    {
-                        ID = null,
-                        DocumentItem_ID = docItem.ID.Value,
-                        Sou_StorageObject_ID = sto.id.Value,
-                        Des_StorageObject_ID = sto.id.Value,
-                        Quantity = docItem.Quantity.Value,
-                        BaseQuantity = docItem.Quantity.Value,
-                        UnitType_ID = docItem.BaseUnitType_ID.Value,
-                        BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                        Status = EntityStatus.INACTIVE
-                    };
-                });
-
-                AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
-                doc.ID = docID;
-                res.doc = doc;
-                baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
-                res.sto = baseSto;
-
-                return res;
+                baseID = getBase.ID.Value;
             }
+
+            StorageObjectCriteria baseSto = new StorageObjectCriteria()
+            {
+                code = jsonDetail.PalletID,
+                eventStatus = StorageObjectEventStatus.NEW,
+                name = "Pallet",
+                qty = 1,
+                unitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                unitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                baseUnitCode = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).Code,
+                baseUnitID = StaticValue.UnitTypes.FirstOrDefault(x => x.ObjectType == StorageObjectType.BASE).ID.Value,
+                baseQty = 1,
+                objectSizeID = objSizeBase.ID.Value,
+                type = StorageObjectType.BASE,
+                mstID = baseID,
+                objectSizeName = objSizeBase.Name,
+            };
+
+            var stoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, this.BuVO);
+            var childSto = new StorageObjectCriteria()
+            {
+                parentID = stoID,
+                parentType = StorageObjectType.BASE,
+                code = jsonDetail.ItemNumber,
+                eventStatus = StorageObjectEventStatus.NEW,
+                name = sku.Name,
+                batch = jsonDetail.ToBatch,
+                qty = Convert.ToDecimal(jsonDetail.ProductionQty),
+                skuID = sku.ID,
+                unitCode = unit.Code,
+                unitID = unit.ID.Value,
+                baseUnitCode = unit.Code,
+                baseUnitID = unit.ID.Value,
+                baseQty = Convert.ToDecimal(jsonDetail.ProductionQty),
+                objectSizeID = objSizePack.ID.Value,
+                type = StorageObjectType.PACK,
+                productDate = dt,
+                objectSizeName = objSizePack.Name,
+                mstID = pack.ID
+            };
+            var childStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(childSto, this.BuVO);
+
+            var skuMovementType = StaticValue.SKUMasterTypes.FirstOrDefault(x => x.ID == sku.SKUMasterType_ID);
+
+            amt_Document doc = new amt_Document()
+            {
+                ID = null,
+                Code = null,
+                ParentDocument_ID = null,
+                Lot = null,
+                Batch = jsonDetail.ToBatch,
+                For_Customer_ID = null,
+                Sou_Customer_ID = null,
+                Sou_Supplier_ID = null,
+                Sou_Branch_ID = branch.ID.Value,
+                Sou_Warehouse_ID = toWarehouse.ID.Value,
+                Sou_AreaMaster_ID = null,
+
+                Des_Customer_ID = null,
+                Des_Supplier_ID = null,
+                Des_Branch_ID = branch.ID.Value,
+                Des_Warehouse_ID = toWarehouse.ID.Value,
+                Des_AreaMaster_ID = null,
+                DocumentDate = jsonHeader.TransDate,
+                ActionTime = null,
+                MovementType_ID = skuMovementType.Code.ToUpper() == "FASTMOVE" ? MovementType.FG_FAST_TRANSFER_WM : MovementType.FG_TRANSFER_WM,
+                RefID = null,
+                Ref1 = null,
+                Ref2 = null,
+
+                DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
+                EventStatus = DocumentEventStatus.NEW,
+
+                Remark = null,
+                Options = "basecode=" + jsonDetail.PalletID,
+                Transport_ID = null,
+
+                DocumentItems = new List<amt_DocumentItem>(),
+
+            };
+            doc.DocumentItems.Add(new amt_DocumentItem()
+            {
+                ID = null,
+                Code = sku.Code,
+                SKUMaster_ID = sku.ID.Value,
+                PackMaster_ID = pack.ID,
+
+                Quantity = Convert.ToDecimal(jsonDetail.ProductionQty),
+                UnitType_ID = unit.ID,
+                BaseQuantity = Convert.ToDecimal(jsonDetail.ProductionQty),
+                BaseUnitType_ID = unit.ID,
+
+                OrderNo = null,
+                Batch = jsonDetail.ToBatch,
+                Lot = null,
+
+                Options = null,
+                ExpireDate = null,
+                ProductionDate = dt,
+                Ref1 = null,
+                Ref2 = null,
+                RefID = "basecode=" + jsonDetail.PalletID,
+
+                EventStatus = DocumentEventStatus.NEW,
+
+            });
+
+            var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, this.BuVO).ID;
+
+            var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(docID.Value, this.BuVO);
+            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(stoID, StorageObjectType.BASE, false, true, this.BuVO);
+            var stoList = stos.ToTreeList();
+            var stoPack = stoList.Where(x => x.type == StorageObjectType.PACK);
+            amt_DocumentItemStorageObject disto = new amt_DocumentItemStorageObject();
+            docItems.ForEach(docItem =>
+            {
+                var sto = stoPack.FirstOrDefault(x => x.skuID == docItem.SKUMaster_ID);
+                disto = new amt_DocumentItemStorageObject()
+                {
+                    ID = null,
+                    DocumentItem_ID = docItem.ID.Value,
+                    Sou_StorageObject_ID = sto.id.Value,
+                    Des_StorageObject_ID = sto.id.Value,
+                    Quantity = docItem.Quantity.Value,
+                    BaseQuantity = docItem.Quantity.Value,
+                    UnitType_ID = docItem.BaseUnitType_ID.Value,
+                    BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
+                    Status = EntityStatus.INACTIVE
+                };
+            });
+
+            AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
+            doc.ID = docID;
+            res.doc = doc;
+            baseSto.mapstos = new List<StorageObjectCriteria>() { childSto };
+            res.sto = baseSto;
+
+            return res;
 
         }
 
