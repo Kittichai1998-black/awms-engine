@@ -255,7 +255,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 else
                                 {
                                     var updSto = new StorageObjectCriteria();
-                                    updSto = sto;
+                                    updSto = sto.Clone();
                                     updSto.baseQty -= disto.BaseQuantity.Value;
                                     updSto.qty -= disto.Quantity.Value;
                                     updSto.parentID = null;
@@ -269,7 +269,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     else
                                     {
                                         var issuedSto = new StorageObjectCriteria();
-                                        issuedSto = sto;
+                                        issuedSto = sto.Clone();
                                         issuedSto.id = null;
                                         issuedSto.baseQty = disto.BaseQuantity.Value;
                                         issuedSto.qty = disto.Quantity.Value;
