@@ -252,7 +252,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
             if(wcsRes._result.resultcheck == 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);
+                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");
             }
         }
         private void ValidateReqVO(TReq reqVO)
