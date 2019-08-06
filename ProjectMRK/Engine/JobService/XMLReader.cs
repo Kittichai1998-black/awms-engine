@@ -492,8 +492,16 @@ namespace ProjectMRK.Engine.JobService
             {
                 Directory.CreateDirectory(directoryPath + "archive/" + folderName);
             }
-
-            File.Move(xmlPath, directoryPath + "archive/" + folderName + "/" + xmlname);
+            try
+            {
+                File.Move(xmlPath, directoryPath + "archive/" + folderName + "/" + xmlname);
+            }
+            catch
+            {
+                string newXmlName = DateTime.Now.ToString("yyMMddHH:mm:ss.fff") + '.' + xmlname;
+                File.Move(xmlPath, directoryPath + "archive/" + folderName + "/" + newXmlName);
+            }
+            
         }
         private void DeleteFileXMLDirectory(string xmlPath, string xmlname)
         {

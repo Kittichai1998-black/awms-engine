@@ -90,8 +90,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             };
                             getArea.Execute(this.Logger, this.BuVO, treq);
 
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                                StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                            if(disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID)
+                            {
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                                    StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                            }
+                            else
+                            {
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                            }
                         });
                     }
                     else if (x.DocumentType_ID == DocumentTypeID.AUDIT)
@@ -258,8 +269,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     updSto = sto.Clone();
                                     updSto.baseQty -= disto.BaseQuantity.Value;
                                     updSto.qty -= disto.Quantity.Value;
-                                    updSto.parentID = null;
-                                    updSto.mapstos = null;
+
                                     updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
 
                                     if (updSto.baseQty == 0)
