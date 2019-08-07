@@ -243,10 +243,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                 }).ToList()
             };
-            var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
-            if(wcsRes._result.resultcheck == 0)
+            if(req.queueOut.Count > 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);
+                var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
+                if (wcsRes._result.resultcheck == 0)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);
+                }
             }
         }
         private void ValidateReqVO(TReq reqVO)
