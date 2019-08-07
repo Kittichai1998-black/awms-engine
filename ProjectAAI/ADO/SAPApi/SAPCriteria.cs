@@ -3,10 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjectAAI.ADO
+namespace ProjectAAI.ADO.SAPApi
 {
     public class SAPCriteria
     {
+        public class SAPReq
+        {
+            public string environmentName;
+            public string functionName;
+            public string inStructureName;
+            public string inTableName;
+            public string outTableName;
+            public object datas;
+        }
+
         public class ZSWMRF001_IN_SU
         {
             /// <summary>Warehouse Code</summary>
@@ -38,8 +48,6 @@ namespace ProjectAAI.ADO
             public string GEWEI;
             /// <summary>approved batch number </summary>
             public string FVDT1;
-            /// <summary>Error message</summary>
-            public string VBELN;
             /// <summary>Error message</summary>
             public string ERR_MSG;
         }
@@ -179,46 +187,8 @@ namespace ProjectAAI.ADO
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>///
             public string GI_DOC;
         }
-        public class ZSWMRF005_OUT_SAP
+        public class ZSWMRF005_OUT_SAP : ZSWMRF004_OUT_SAP
         {
-            /// <summary>Stock Removal Mode</summary>
-            public string ZMODE;
-            /// <summary>Warehouse number</summary>
-            public string LGNUM;
-            /// <summary>Material Number</summary>
-            public string MATNR;
-            /// <summary>Batch Number</summary>
-            public string CHARG;
-            /// <summary>Stock Category</summary>
-            public string BESTQ;
-            /// <summary>Destination Storage Type </summary>
-            public string LGTYP;
-            /// <summary>Destination Storage Section</summary>
-            public string LGBER;
-            /// <summary>Destination Storage BIN</summary>
-            public string LGPLA;
-            /// <summary>Delivery Order</summary>
-            public string VBELN_VL;
-            /// <summary>Delivery Item</summary>
-            public string POSNR;
-            /// <summary>WM Movement type</summary>
-            public string BWLVS;
-            /// <summary>Storage Unit Number</summary>
-            public string LENUM;
-            /// <summary>Requirement Type</summary>
-            public string BETYP;
-            /// <summary>Requirement Number</summary>
-            public string BENUM;
-            /// <summary>Quantity</summary>
-            public string ANFME;
-            /// <summary>Unit</summary>
-            public string ALTME;
-            /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
-            public string GI_DOC;
-            /// <summary>Transfer Order Number</summary>
-            public string TANUM;
-            /// <summary>แสดงข้อความผิดพลาด</summary>
-            public string ERR_MSG;
         }
 
         /// <summary>
@@ -227,7 +197,7 @@ namespace ProjectAAI.ADO
         public class ZSWMRF006_IN_AWS : ZSWMRF005_IN_AWS
         {
         }
-        public class ZSWMRF006_OUT_SAP : ZSWMRF005_OUT_SAP
+        public class ZSWMRF006_OUT_SAP : ZSWMRF004_OUT_SAP
         {
         }
 
@@ -236,7 +206,6 @@ namespace ProjectAAI.ADO
             public string LGNUM;
             public string MATNR;
             public string CHARG;
-
         }
         public class ZSWMRF007_OUT_SAP
         {

@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.DataAccess.Http;
+using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace AWMSEngine.ADO.QueueApi
                 public class baseinfo
                 {
                     public string baseCode;
+                    public StorageObjectEventStatus eventStatus;
                     public List<packinfo> packInfos;
                     public class packinfo
                     {
@@ -49,7 +51,7 @@ namespace AWMSEngine.ADO.QueueApi
         
         public TRes SendQueue(TReq datas, VOCriteria buVO)
         {
-            //return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
+            ///return new TRes() { _result = new TRes.Result() { resultcheck = 1, resultmessage = "SUCCESS" } };
             var res = this.SendJson<TRes>("WCS_SEND_QUEUE", datas, null, buVO);
             return res;
         }

@@ -34,5 +34,10 @@ namespace AWMSModel.Criteria.SP.Response
         //public string innerSizeLevels;
         public string options;
         public DateTime? productDate;
+        public string refID;
+        public string ref1;
+        public string ref2;
+
+
     }
 }

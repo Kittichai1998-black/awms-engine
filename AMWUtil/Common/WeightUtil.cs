@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AMWUtil.Common
 {
@@ -32,7 +33,9 @@ namespace AMWUtil.Common
         }
         public static decimal ConvertToKG(decimal wei, string unit)
         {
-            WeightType wt = EnumUtil.GetValueEnum<WeightType>(unit.ToUpper());
+            string u = Regex.Replace(unit, "[.]", "");
+
+            WeightType wt = EnumUtil.GetValueEnum<WeightType>(u.ToUpper());
             return wei / (decimal)wt.Attribute<EnumValueAttribute>().ValueDouble;
         }
     }

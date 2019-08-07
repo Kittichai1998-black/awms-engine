@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AWMSModel.Constant.EnumConst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,5 +21,6 @@ namespace AWMSModel.Criteria.SP.Response
         public string lot;
         public string orderNo;
         public DateTime? prodDate;
+        public StorageObjectEventStatus eventStatus;
     }
 }

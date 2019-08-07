@@ -20,5 +20,6 @@ namespace AWMSModel.Criteria.SP.Response
         public string Lot;
         public int NeedQty;
         public int MaxQty;
+        public long Sou_StorageObject_ID;
     }
 }
