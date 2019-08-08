@@ -20,6 +20,7 @@ namespace AWMSEngine.Engine.Business.Received
         public class TDocReq
         {
             public List<long> docIDs;
+            public string remark;
             public long areaID=3;
         }
         public class TDocRes
@@ -43,6 +44,12 @@ namespace AWMSEngine.Engine.Business.Received
                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
                 //doc.DocumentItems = ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
                 docItems.AddRange(doc.DocumentItems);
+
+                ADO.DataADO.GetInstant().UpdateByID<amt_Document>(doc.ID.Value, this.BuVO,
+                new KeyValuePair<string, object>[]
+                {
+                    new KeyValuePair<string, object>("remark",reqVO.remark)
+                });
             });
 
             List<amt_Document> docIssues = new List<amt_Document>();
