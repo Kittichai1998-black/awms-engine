@@ -180,7 +180,7 @@ namespace AWMSEngine.APIService
                 ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
                 this.FinalDBLog.sendAPIEvents.ForEach(x =>
                 {
-
+                    ADO.LogingADO.GetInstant().PutSendAPIEvent(x, this.BuVO);
                 });
                 this.FinalDBLog.documentOptionMessages.ForEach(x =>
                 {

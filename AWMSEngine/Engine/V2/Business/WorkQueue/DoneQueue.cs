@@ -90,8 +90,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             };
                             getArea.Execute(this.Logger, this.BuVO, treq);
 
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
-                                StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                            if(disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID)
+                            {
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                                    StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                            }
+                            else
+                            {
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                                    StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                            }
                         });
                     }
                     else if (x.DocumentType_ID == DocumentTypeID.AUDIT)
@@ -226,6 +237,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
                 {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
                     docItems.ForEach(docItem =>
                     {
                         stoList.ForEach(sto =>
@@ -253,23 +266,20 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 else
                                 {
                                     var updSto = new StorageObjectCriteria();
-                                    updSto = sto;
+                                    updSto = sto.Clone();
                                     updSto.baseQty -= disto.BaseQuantity.Value;
                                     updSto.qty -= disto.Quantity.Value;
-                                    updSto.parentID = null;
-                                    updSto.mapstos = null;
+
                                     updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
 
                                     if (updSto.baseQty == 0)
                                     {
                                         updSto.eventStatus = StorageObjectEventStatus.PICKING;
-                                        var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
                                     }
                                     else
                                     {
                                         var issuedSto = new StorageObjectCriteria();
-                                        issuedSto = sto;
+                                        issuedSto = sto.Clone();
                                         issuedSto.id = null;
                                         issuedSto.baseQty = disto.BaseQuantity.Value;
                                         issuedSto.qty = disto.Quantity.Value;
@@ -278,10 +288,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
 
                                         var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-
                                         ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
                                     }
-                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
+                                    var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+
                                 }
                             });
                         });

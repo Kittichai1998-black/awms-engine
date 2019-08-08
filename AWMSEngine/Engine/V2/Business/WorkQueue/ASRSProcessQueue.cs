@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine.ADO.QueueApi;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Criteria.SP.Response;
 using AWMSModel.Entity;
@@ -227,6 +228,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void ValidateWCS(List<SPOutSTOProcessQueueCriteria> _pickStos, TReq reqVO)
         {
+            var getRsto = ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(new SQLConditionCriteria[] {
+                new SQLConditionCriteria("ID", string.Join(",", _pickStos.Select(x => x.rstoID).Distinct().ToArray()), SQLOperatorType.IN)
+            }, this.BuVO);
+
             WCSQueueADO.TReq req = new WCSQueueADO.TReq()
             {
                 queueOut = _pickStos.Select(x => new WCSQueueADO.TReq.queueout()
@@ -238,15 +243,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     priority = 0,
                     baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
+                        eventStatus = getRsto.FirstOrDefault(y => y.ID == x.rstoID).EventStatus,
                         baseCode = x.rstoCode,
                         packInfos = null
                     }
                 }).ToList()
             };
-            var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
-            if(wcsRes._result.resultcheck == 0)
+            if(req.queueOut.Count > 0)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.B0001, wcsRes._result.resultmessage);
+                var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
+                if (wcsRes._result.resultcheck == 0)
+                {
+                    throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Pallet has Problems.");
+                }
             }
         }
         private void ValidateReqVO(TReq reqVO)

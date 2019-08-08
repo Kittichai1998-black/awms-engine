@@ -15,7 +15,8 @@ namespace ProjectAAI.ADO.SAPApi
     public class SAPInterfaceADO : BaseMSSQLAccess<SAPInterfaceADO>
     {
 
-        public class SapResponse<T>{
+        public class SapResponse<T>
+        {
             public List<T> datas;
             public int status;
             public string message;
@@ -87,7 +88,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public dynamic ZWMRF004(ZSWMRF004_IN_AWS reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF004_OUT_SAP> ZWMRF004(ZSWMRF004_IN_AWS reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -101,23 +102,17 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<ZSWMRF004_OUT_SAP>(req, buVO, getURL);
-            var newRes = new
+            var res = this.postSAP<SapResponse<ZSWMRF004_OUT_SAP>>(req, buVO, getURL);
+
+            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
-                mode = res.MODE,
-                storageUnitNum = res.LENUM,
-                reserveNumber = res.LGTYP,
-                desStorageType = res.LGTYP,
-                desStorageBin = res.LGPLA,
-                movementType = res.BWLVS,
-                giDoc = res.GI_DOC,
-                tranOrder = res.BTANR,
-                errMSG = res.ERR_MSG,
-            };
-            return newRes;
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+            }
+
+            return res;
         }
 
-        public dynamic ZWMRF005(ZSWMRF005_IN_AWS reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF005_OUT_SAP> ZWMRF005(ZSWMRF005_IN_AWS reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -131,22 +126,16 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<ZSWMRF005_OUT_SAP>(req, buVO, getURL);
-            var newRes = new
+            var res = this.postSAP<SapResponse<ZSWMRF005_OUT_SAP>>(req, buVO, getURL);
+
+            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
-                mode = res.MODE,
-                storageUnitNum = res.LENUM,
-                reserveNumber = res.LGTYP,
-                desStorageType = res.LGTYP,
-                desStorageBin = res.LGPLA,
-                movementType = res.BWLVS,
-                giDoc = res.GI_DOC,
-                tranOrder = res.BTANR,
-                errMSG = res.ERR_MSG,
-            };
-            return newRes;
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+            }
+
+            return res;
         }
-        public dynamic ZWMRF006(ZSWMRF006_IN_AWS reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF006_OUT_SAP> ZWMRF006(ZSWMRF006_IN_AWS reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -160,23 +149,17 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<ZSWMRF006_OUT_SAP>(req, buVO, getURL);
-            var newRes = new
+            var res = this.postSAP<SapResponse<ZSWMRF006_OUT_SAP>>(req, buVO, getURL);
+
+            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
-                mode = res.MODE,
-                storageUnitNum = res.LENUM,
-                reserveNumber = res.LGTYP,
-                desStorageType = res.LGTYP,
-                desStorageBin = res.LGPLA,
-                movementType = res.BWLVS,
-                giDoc = res.GI_DOC,
-                tranOrder = res.BTANR,
-                errMSG = res.ERR_MSG,
-            };
-            return newRes;
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+            }
+
+            return res;
         }
 
-        public dynamic ZWMRF007(ZSWMRF007_IN_REQ reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF007_OUT_SAP> ZWMRF007(ZSWMRF007_IN_REQ reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -190,19 +173,17 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<ZSWMRF007_OUT_SAP>(req, buVO, getURL);
-            var newRes = new
+            var res = this.postSAP<SapResponse<ZSWMRF007_OUT_SAP>>(req, buVO, getURL);
+
+            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
-                warehouseCode = res.LGNUM,
-                materialNumber = res.MATNR,
-                batch = res.CHARG,
-                dateFromBatch = res.FVDT1,
-                errMSG = res.ERR_MSG,
-            };
-            return newRes;
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+            }
+
+            return res;
         }
 
-        public object ZWMRF003(ZSWMRF003_IN_REQ reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF003_OUT_REQ> ZWMRF003(ZSWMRF003_IN_REQ reqVO, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -216,31 +197,8 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<ZSWMRF003_OUT_REQ>(req, buVO, getURL);
-            var newRes = new
-            {
-                mode = res.ZMODE,
-                warehouseCode = res.LGNUM,
-                storageUnitNum = res.LENUM,
-                reserveNumber = res.RSNUM,
-                DONumber = res.VBELN_VL,
-                DOItem = res.POSNR,
-                materialNumber = res.MATNR,
-                batch = res.CHARG,
-                quantity = res.BDMNG,
-                desStorageType = res.LGTYP,
-                desStorageSection = res.LGBER,
-                desStorageBin = res.LGPLA,
-                availableStock = res.BESTQ_UR,
-                inQC = res.BESTQ_QI,
-                block = res.BESTQ_BLK,
-                baseUnit = res.MEINS,
-                movementType = res.BWLVS,
-                salesInstruction = res.VBELN,
-                errMSG = res.ERR_MSG,
-            };
-
-            return newRes;
+            var res = this.postSAP<SapResponse<ZSWMRF003_OUT_REQ>>(req, buVO, getURL);
+            return res;
         }
     }
 }

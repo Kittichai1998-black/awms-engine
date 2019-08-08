@@ -49,6 +49,7 @@ namespace AWMSEngine.ADO
 
         public long PutDocumentAlertMessage(long docID, string msgError, string msgWarning, string msgInfo, VOCriteria buVO)
         {
+            return 0;
             var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docID, buVO);
             var options = doc.Options;
             options = AMWUtil.Common.ObjectUtil.QryStrSetValue(options,
@@ -67,6 +68,7 @@ namespace AWMSEngine.ADO
         }
         public long PutSendAPIEvent(HttpResultModel apiEvt, VOCriteria buVO)
         {
+            return 0;
             var id = ADO.DataADO.GetInstant().Insert<aml_SendAPIEvent>(
                 buVO,
                 new aml_SendAPIEvent()

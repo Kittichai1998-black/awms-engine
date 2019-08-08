@@ -28,7 +28,14 @@ namespace RemoteFile
                 {
                     Timer timer = new Timer(x =>
                     {
-                        prg.ReadFileFromSharedFolder(souPath, desPath);
+                        try
+                        {
+                            prg.ReadFileFromSharedFolder(souPath, desPath);
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
                     }, null, 0, 5000);
                 }
             }

@@ -159,6 +159,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     var baseInfo = new WCSQueueADO.TReq.queueout.baseinfo();
                     baseInfo = new WCSQueueADO.TReq.queueout.baseinfo()
                     {
+                        eventStatus = stoCriteria.eventStatus,
                         baseCode = result.baseCode,
                         packInfos = null
                     };
