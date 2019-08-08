@@ -41,7 +41,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Date of Manufacture</summary>
             public string HSDAT;
             /// <summary>Incubated Time</summary>
-            public double WEBAZ;
+            public int WEBAZ;
             /// <summary>Gross Weight</summary>
             public decimal BRGEW;
             /// <summary>Weight Unit</summary>
@@ -78,7 +78,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Storage Unit Number</summary>
             public string LENUM;
             /// <summary>Transfer Order</summary>
-            public string TANUM;
+            public int TANUM;
             /// <summary>Error message</summary>
             public string ERR_MSG;
         }
@@ -95,17 +95,17 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Storage Unit Number</summary>
             public string LENUM;
             /// <summary>Reservation Number</summary>
-            public string RSNUM;
+            public int RSNUM;
             /// <summary>Delivery Order Number</summary>
-            public string VBELN_VL;
+            public int VBELN_VL;
             /// <summary>Delivery Item</summary>
-            public string POSNR;
+            public int POSNR;
             /// <summary>Material Number</summary>
             public string MATNR;
             /// <summary>Batch Number</summary>
             public string CHARG;
             /// <summary>Quantity</summary>
-            public string BDMNG;
+            public decimal BDMNG;
             /// <summary>Destination Storage Type</summary>
             public string LGTYP;
             /// <summary>Destination Storage Section</summary>
