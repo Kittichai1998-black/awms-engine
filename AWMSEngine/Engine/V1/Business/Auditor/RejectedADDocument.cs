@@ -14,6 +14,7 @@ namespace AWMSEngine.Engine.Business.Auditor
         public class TReq
         {
             public long[] docIDs;
+            public string remark;
         }
 
         protected override List<amt_Document> ExecuteEngine(TReq reqVO)
@@ -34,6 +35,11 @@ namespace AWMSEngine.Engine.Business.Auditor
                 getDoc.EventStatus = DocumentEventStatus.REJECTED;
                 getDoc.Status = EntityStatus.REMOVE;
 
+                ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, this.BuVO,
+                new KeyValuePair<string, object>[]
+                {
+                    new KeyValuePair<string, object>("remark",reqVO.remark)
+                });
                 docs.Add(getDoc);
             }
             return docs;

@@ -21,6 +21,7 @@ namespace ProjectMRK.Engine.Business.Received
         public class TDocReq
         {
             public List<long> docIDs;
+            public string remark;
         }
         public class TDocRes
         {
@@ -61,9 +62,16 @@ namespace ProjectMRK.Engine.Business.Received
                 }
 
                 rootStos.AddRange(rtStos);
-
+            
 
                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+
+                AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(doc.ID.Value, this.BuVO,
+                new KeyValuePair<string, object>[]
+                {
+                    new KeyValuePair<string, object>("remark",reqVO.remark)
+                });
+
                 doc.DocumentItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(doc.ID.Value, this.BuVO);
                 docItems.AddRange(doc.DocumentItems);
             });
