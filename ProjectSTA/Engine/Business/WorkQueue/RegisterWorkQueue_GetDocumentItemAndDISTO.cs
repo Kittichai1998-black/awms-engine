@@ -86,6 +86,10 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             {
                                 FG_Movement = MovementType.FG_RETURN_WM;
                             }
+                            else if (Convert.ToInt32(mvt) == (int)MovementType.WIP_FAST_TRANSFER_SUP)
+                            {
+                                FG_Movement = MovementType.WIP_FAST_TRANSFER_SUP;
+                            }
                     }
                 }
                 else
