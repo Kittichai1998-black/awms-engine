@@ -1,0 +1,451 @@
+{
+  "datas": [
+    {
+      "Code": "Action Time",
+      "Messages": "Action Time"
+    },
+    {
+      "Code": "Add",
+      "Messages": "Add"
+    },
+    {
+      "Code": "Advanced Search",
+      "Messages": "Advanced Search"
+    },
+    {
+      "Code": "APIKey",
+      "Messages": "APIKey"
+    },
+    {
+      "Code": "Area Location",
+      "Messages": "Area Location"
+    },
+    {
+      "Code": "Area Route",
+      "Messages": "Area Route"
+    },
+    {
+      "Code": "Area Zone",
+      "Messages": "Area Zone"
+    },
+    {
+      "Code": "Branch",
+      "Messages": "Branch"
+    },
+    {
+      "Code": "Counting",
+      "Messages": "Counting"
+    },
+    {
+      "Code": "Counting Jobs",
+      "Messages": "Counting Jobs"
+    },
+    {
+      "Code": "Create",
+      "Messages": "Create"
+    },
+    {
+      "Code": "Create From Customers",
+      "Messages": "Create From Customers"
+    },
+    {
+      "Code": "Create From Suppliers",
+      "Messages": "Create From Suppliers"
+    },
+    {
+      "Code": "Current",
+      "Messages": "Current"
+    },
+    {
+      "Code": "Current Inventory",
+      "Messages": "Current Inventory"
+    },
+    {
+      "Code": "Customer",
+      "Messages": "Customer"
+    },
+    {
+      "Code": "Daily Count",
+      "Messages": "Daily Count"
+    },
+    {
+      "Code": "Daily Count Sum",
+      "Messages": "Daily Count Sum"
+    },
+    {
+      "Code": "Daily Issue",
+      "Messages": "Daily Issue"
+    },
+    {
+      "Code": "Daily Issue Sum",
+      "Messages": "Daily Issue Sum"
+    },
+    {
+      "Code": "Daily Receive",
+      "Messages": "Daily Receive"
+    },
+    {
+      "Code": "Daily Receive Sum",
+      "Messages": "Daily Receive Sum"
+    },
+    {
+      "Code": "Dashboard",
+      "Messages": "Dashboard"
+    },
+    {
+      "Code": "Date/Time",
+      "Messages": "Date/Time"
+    },
+    {
+      "Code": "Des.Warehouse",
+      "Messages": "Des.Warehouse"
+    },
+    {
+      "Code": "Destination",
+      "Messages": "Destination"
+    },
+    {
+      "Code": "Destination Warehouse",
+      "Messages": "Destination Warehouse"
+    },
+    {
+      "Code": "Detail",
+      "Messages": "Detail"
+    },
+    {
+      "Code": "Doc Date",
+      "Messages": "Doc Date"
+    },
+    {
+      "Code": "Doc No.",
+      "Messages": "Doc No."
+    },
+    {
+      "Code": "Doc Status",
+      "Messages": "Doc Status"
+    },
+    {
+      "Code": "Doc.Date From",
+      "Messages": "Doc.Date From"
+    },
+    {
+      "Code": "Doc.Date To",
+      "Messages": "Doc.Date To"
+    },
+    {
+      "Code": "Document Date",
+      "Messages": "Document Date"
+    },
+    {
+      "Code": "Document No.",
+      "Messages": "Document No."
+    },
+    {
+      "Code": "EventStatus",
+      "Messages": "EventStatus"
+    },
+    {
+      "Code": "Gate",
+      "Messages": "Gate"
+    },
+    {
+      "Code": "Home",
+      "Messages": "Home"
+    },
+    {
+      "Code": "InBound Progress",
+      "Messages": "InBound Progress"
+    },
+    {
+      "Code": "Issue",
+      "Messages": "Issue"
+    },
+    {
+      "Code": "Log Out",
+      "Messages": "Log Out"
+    },
+    {
+      "Code": "Manage Queue",
+      "Messages": "Manage Queue"
+    },
+    {
+      "Code": "Manual Counting",
+      "Messages": "Manual Counting"
+    },
+    {
+      "Code": "Matser Volume",
+      "Messages": "Matser Volume"
+    },
+    {
+      "Code": "Modify",
+      "Messages": "Modify"
+    },
+    {
+      "Code": "Movement",
+      "Messages": "Movement"
+    },
+    {
+      "Code": "Movement Type",
+      "Messages": "Movement Type"
+    },
+    {
+      "Code": "Mvt",
+      "Messages": "Mvt"
+    },
+    {
+      "Code": "ObjectSize Map",
+      "Messages": "ObjectSize Map"
+    },
+    {
+      "Code": "OutBound Progress",
+      "Messages": "OutBound Progress"
+    },
+    {
+      "Code": "Pallet",
+      "Messages": "Pallet"
+    },
+    {
+      "Code": "Pallet Master",
+      "Messages": "Pallet Master"
+    },
+    {
+      "Code": "Pallet Type",
+      "Messages": "Pallet Type"
+    },
+    {
+      "Code": "Permission",
+      "Messages": "Permission"
+    },
+    {
+      "Code": "Picking Jobs",
+      "Messages": "Picking Jobs"
+    },
+    {
+      "Code": "Print Barcode Pallet",
+      "Messages": "Print Barcode Pallet"
+    },
+    {
+      "Code": "Priority",
+      "Messages": "Priority"
+    },
+    {
+      "Code": "Product",
+      "Messages": "Product"
+    },
+    {
+      "Code": "Qty",
+      "Messages": "Qty"
+    },
+    {
+      "Code": "Receive",
+      "Messages": "Receive"
+    },
+    {
+      "Code": "Reject",
+      "Messages": "Reject"
+    },
+    {
+      "Code": "Remark",
+      "Messages": "Remark"
+    },
+    {
+      "Code": "Report",
+      "Messages": "Report"
+    },
+    {
+      "Code": "Scan Pallet Infomation",
+      "Messages": "Scan Pallet Infomation"
+    },
+    {
+      "Code": "Scan Pallet Move",
+      "Messages": "Scan Pallet Move"
+    },
+    {
+      "Code": "Search",
+      "Messages": "Search"
+    },
+    {
+      "Code": "Select Area",
+      "Messages": "Select Area"
+    },
+    {
+      "Code": "Setting",
+      "Messages": "Setting"
+    },
+    {
+      "Code": "SKU",
+      "Messages": "SKU"
+    },
+    {
+      "Code": "SKU Convertor",
+      "Messages": "SKU Convertor"
+    },
+    {
+      "Code": "SKU Item",
+      "Messages": "SKU Item"
+    },
+    {
+      "Code": "SKU Type",
+      "Messages": "SKU Type"
+    },
+    {
+      "Code": "Sou.Customer",
+      "Messages": "Sou.Customer"
+    },
+    {
+      "Code": "Sou.Supplier",
+      "Messages": "Sou.Supplier"
+    },
+    {
+      "Code": "Source",
+      "Messages": "Source"
+    },
+    {
+      "Code": "Source Customer",
+      "Messages": "Source Customer"
+    },
+    {
+      "Code": "Source Supplier",
+      "Messages": "Source Supplier"
+    },
+    {
+      "Code": "Stock Card",
+      "Messages": "Stock Card"
+    },
+    {
+      "Code": "Storage Object",
+      "Messages": "Storage Object"
+    },
+    {
+      "Code": "Supplier",
+      "Messages": "Supplier"
+    },
+    {
+      "Code": "Time",
+      "Messages": "Time"
+    },
+    {
+      "Code": "User Account",
+      "Messages": "User Account"
+    },
+    {
+      "Code": "WareHouse",
+      "Messages": "WareHouse"
+    },
+    {
+      "Code": "SKU Code",
+      "Messages": "SKU Code"
+    },
+    {
+      "Code": "Search of Code",
+      "Messages": "Search of Code"
+    },
+    {
+      "Code": "Code",
+      "Messages": "Code"
+    },
+    {
+      "Code": "Queue",
+      "Messages": "Queue"
+    },
+    {
+      "Code": "Source Warehouse",
+      "Messages": "Source Warehouse"
+    },
+    {
+      "Code": "Document",
+      "Messages": "Document"
+    },
+    {
+      "Code": "Add Queue",
+      "Messages": "Add Queue"
+    },
+    {
+      "Code": "Status",
+      "Messages": "Status"
+    },
+    {
+      "Code": "Add Sorting",
+      "Messages": "Add Sorting"
+    },
+    {
+      "Code": "Edit",
+      "Messages": "Edit"
+    },
+    {
+      "Code": "Remove",
+      "Messages": "Remove"
+    },
+    {
+      "Code": "Back",
+      "Messages": "Back"
+    },
+    {
+      "Code": "Cancel",
+      "Messages": "Cancel"
+    },
+    {
+      "Code": "OK",
+      "Messages": "OK"
+    },
+    {
+      "Code": "Process",
+      "Messages": "Process"
+    },
+    {
+      "Code": "Clear",
+      "Messages": "Clear"
+    },
+    {
+      "Code": "Barcode Pallet",
+      "Messages": "Barcode Pallet"
+    },
+    {
+      "Code": "Adjust Quantity",
+      "Messages": "Adjust Quantity"
+    },
+    {
+      "Code": "Next",
+      "Messages": "Next"
+    },
+    {
+      "Code": "Area",
+      "Messages": "Area"
+    },
+    {
+      "Code": "Scan Code",
+      "Messages": "Scan Code"
+    },
+    {
+      "Code": "Scan",
+      "Messages": "Scan"
+    },
+    {
+      "Code": "Destination location",
+      "Messages": "Destination location"
+    },
+    {
+      "Code": "Select",
+      "Messages": "Select"
+    },
+    {
+      "Code": "Export Excel",
+      "Messages": "Export Excel"
+    },
+    {
+      "Code": "Delete",
+      "Messages": "Delete"
+    },
+    {
+      "Code": "Save",
+      "Messages": "Save"
+    }
+  ],
+  "counts": 110,
+  "_result": {
+    "status": 1,
+    "code": "I0000",
+    "message": "Success",
+    "stacktrace": null
+  }
+}
