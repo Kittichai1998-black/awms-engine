@@ -190,7 +190,10 @@ namespace AMWUtil.DataAccess.Http
                         if (logger != null)
                             logger.LogInfo("API_RESPONSE_DATA(" + (retry + 1) + "):: " + body);
                         result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(body);
-
+                        if (result == null)
+                        {
+                            throw new System.Exception("API_RESPONSE_DATA is NULL");
+                        }
                         if (outResult != null)
                         {
                             outResult.HttpStatus = (int)httpResponse.StatusCode;
@@ -204,8 +207,13 @@ namespace AMWUtil.DataAccess.Http
                 catch (System.Exception ex)
                 {
                     result = null;
-                    if (retry < 0 && logger != null)
-                        throw new AMWException(logger, AMWExceptionCode.S0002, ex.Message);
+                    if (retry < 0)
+                    {
+                        if (logger != null)
+                            throw new AMWException(logger, AMWExceptionCode.S0002, ex.Message);
+                        else
+                            throw ex;
+                    }
                 }
             } while (result == null);
 

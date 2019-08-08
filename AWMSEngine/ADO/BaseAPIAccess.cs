@@ -27,6 +27,7 @@ namespace AWMSEngine.ADO
             List<HttpResultModel> outResults = new List<HttpResultModel>();
             var res = RESTFulAccess.SendJson<T>(buVO.Logger, apiURL, RESTFulAccess.HttpMethod.POST, datas, outResults, authentication);
             outResults.ForEach(x => { x.APIService_Module = buVO.Logger.SubServiceName; x.APIName = apiConfigName; });
+            buVO.Set(AWMSModel.Constant.StringConst.BusinessVOConst.KEY_APIKEY_INFO, outResults);
             return res;
         }
         public T SendJson<T>(string apiConfigName, object datas, VOCriteria buVO)

@@ -17,6 +17,7 @@ namespace AWMSEngine.Engine.Business.Issued
         public class TReq
         {
             public List<long> docIDs;
+            public string remark;
         }
         public class TRes
         {
@@ -26,17 +27,26 @@ namespace AWMSEngine.Engine.Business.Issued
         protected override TRes ExecuteEngine(TReq reqVO)
         {
 
-            var docIssues = ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
-            var docNotCloseds = docIssues.Where(x => x.EventStatus != DocumentEventStatus.NEW);
-            if (docNotCloseds.Count() > 0)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ New เท่านั้น");
+         
+                var docIssues = ADO.DocumentADO.GetInstant().ListAndRelationSupper(reqVO.docIDs, this.BuVO);
+                var docNotCloseds = docIssues.Where(x => x.EventStatus != DocumentEventStatus.NEW);
+                if (docNotCloseds.Count() > 0)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "เอกสารรับเข้า '" + (string.Join(',', docNotCloseds.Select(x => x.Code).ToArray())) + "' ต้องมีสถานะ New เท่านั้น");
+
+                docIssues.ForEach(doc =>
+                {
+                    doc.EventStatus = DocumentEventStatus.REJECTED;
+                    doc.Status = ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
+
+                    ADO.DataADO.GetInstant().UpdateByID<amt_Document>(doc.ID.Value, this.BuVO,
+                        new KeyValuePair<string, object>[]
+                        {
+                            new KeyValuePair<string, object>("remark",reqVO.remark)
+                        });
+                });
+              
             
-            docIssues.ForEach(doc =>
-            {
-                doc.EventStatus = DocumentEventStatus.REJECTED;
-                doc.Status = ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, null, EntityStatus.ACTIVE, DocumentEventStatus.REJECTED, this.BuVO);
-                
-            });
+          
             return new TRes { documents= docIssues };
         }
         
