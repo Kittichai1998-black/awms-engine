@@ -185,7 +185,7 @@ const AmCreateDocument = (props) => {
         if (addData) {
             if (editData) {
                 editData[field] = value;
-                if (field === "palletcode") {
+                if (field === "palletcode" && dataObject) {
                     dataObject.Batch ? editData["batch"] = dataObject.Batch : delete editData["batch"]
                     dataObject.Quantity ? editData["quantity"] = dataObject.Quantity : delete editData["quantity"]
                 }
@@ -202,7 +202,7 @@ const AmCreateDocument = (props) => {
                 let addData = {};
                 addData["ID"] = addDataID;
                 addData[field] = value;
-                if (field === "palletcode") {
+                if (field === "palletcode" && dataObject) {
                     dataObject.Batch ? addData["batch"] = dataObject.Batch : delete addData["batch"]
                     dataObject.Quantity ? addData["quantity"] = dataObject.Quantity : delete addData["quantity"]
                 }
@@ -246,7 +246,7 @@ const AmCreateDocument = (props) => {
                     editRowX[field] = value;
                 }
             }
-            if (field === "palletcode") {
+            if (field === "palletcode" && dataObject) {
                 dataObject.Batch ? editRowX["batch"] = dataObject.Batch : delete editRowX["batch"]
                 dataObject.Quantity ? editRowX["quantity"] = dataObject.Quantity : delete editRowX["quantity"]
             }
