@@ -1,0 +1,2 @@
+﻿from_dir=D:/logs/test/inbox/
+to_dir=D:/logs/test/outbox/

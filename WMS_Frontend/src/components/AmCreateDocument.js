@@ -60,7 +60,7 @@ const cols = [
     },
 ];
 
-const AmCreateDocument = (props) => {  
+const AmCreateDocument = (props) => {
     const { t } = useTranslation();
     const [addData, setAddData] = useState(false);
     // const [editDatas, setEditDatas] = useState(false);
@@ -81,7 +81,7 @@ const AmCreateDocument = (props) => {
     const [stateDialogErr, setStateDialogErr] = useState(false);
     const [btnProps, setbtnProps] = useState(props.btnProps);
     const [skuIDs, setskuIDs] = useState();
-   
+
     const [ParentStorageObjects, setParentStorageObjects] = useState();
     const [columns, setColumns] = useState(() => {
         var rem = [
@@ -166,7 +166,7 @@ const AmCreateDocument = (props) => {
 
     const onHandleChangeinPop = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
         if (dataObject) {
-            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
+            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code, dataObject)
         } else {
             onChangeEditor(field, data, null, pair, null, null, null)
         }
@@ -181,10 +181,14 @@ const AmCreateDocument = (props) => {
         }
     }
 
-    const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode, SKUCode) => {
+    const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode, SKUCode, dataObject) => {
         if (addData) {
             if (editData) {
                 editData[field] = value;
+                if (field === "palletcode") {
+                    dataObject.Batch ? editData["batch"] = dataObject.Batch : delete editData["batch"]
+                    dataObject.Quantity ? editData["quantity"] = dataObject.Quantity : delete editData["quantity"]
+                }
                 if (field === "SKUItems") {
                     UnitCode ? editData["unitType"] = UnitCode : delete editData["unitType"]
                 }
@@ -198,6 +202,10 @@ const AmCreateDocument = (props) => {
                 let addData = {};
                 addData["ID"] = addDataID;
                 addData[field] = value;
+                if (field === "palletcode") {
+                    dataObject.Batch ? addData["batch"] = dataObject.Batch : delete addData["batch"]
+                    dataObject.Quantity ? addData["quantity"] = dataObject.Quantity : delete addData["quantity"]
+                }
                 if (field === "SKUItems") {
                     UnitCode ? addData["unitType"] = UnitCode : delete addData["unitType"]
                 }
@@ -237,6 +245,10 @@ const AmCreateDocument = (props) => {
                 } else {
                     editRowX[field] = value;
                 }
+            }
+            if (field === "palletcode") {
+                dataObject.Batch ? editRowX["batch"] = dataObject.Batch : delete editRowX["batch"]
+                dataObject.Quantity ? editRowX["quantity"] = dataObject.Quantity : delete editRowX["quantity"]
             }
             if (field === "SKUItems") {
                 UnitCode ? editRowX["unitType"] = UnitCode : delete editRowX["unitType"]
@@ -305,8 +317,6 @@ const AmCreateDocument = (props) => {
             })
         }
     }
-    
-
 
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts) => {
         if (type === "input") {
@@ -315,6 +325,7 @@ const AmCreateDocument = (props) => {
                     <LabelH>{Header} : </LabelH>
                     <InputDiv>
                         <AmInput style={style ? style : { width: "300px" }}
+                            // value={editData ? editData[accessor] : null}
                             defaultValue={data ? data[accessor] : ""}
                             validate={true}
                             msgError="Error"
@@ -414,7 +425,6 @@ const AmCreateDocument = (props) => {
                     onChange={(ele) => { onChangeEditor(cols.field, data, ele.fieldDataObject, row.pair) }}
                 />
             )
-
         } else if (type === "text") {
             return (<FormInline>
                 <LabelH>{Header}</LabelH>
@@ -464,9 +474,7 @@ const AmCreateDocument = (props) => {
                 </FormInline>
             </div>
             )
-
         }
-
     }
 
     const getDataHead = (type, key, idddls, pair, queryApi, columsddl, fieldLabel, texts, style, width, validate, valueTexts, placeholder, defaultValue) => {
@@ -568,368 +576,368 @@ const AmCreateDocument = (props) => {
         }
     }
 
+    const getHeaderCreate = () => {
+        return headerCreate.map((x, xindex) => {
+            return (
+                <Grid key={xindex} container spacing={24}>
+                    {x.map((y, yindex) => {
+                        let syn = y.label ? " :" : "";
+                        return (
+                            <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
+                                <div style={{ marginTop: "5px" }}> <FormInline>
+                                    <LabelH>{t(y.label) + syn}</LabelH>
+                                    {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue)}
+                                </FormInline></div>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+            )
+        })
+    }
 
-        const getHeaderCreate = () => {
-            return headerCreate.map((x, xindex) => {
-                return (
-                    <Grid key={xindex} container spacing={24}>
-                        {x.map((y, yindex) => {
-                            return (
-                                <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
-                                    <div style={{ marginTop: "5px" }}> <FormInline>
-                                        <LabelH>{y.label}</LabelH>
-                                        {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue)}
-                                    </FormInline></div>
-                                </Grid>
-                            )
-                        })}
-                    </Grid>
-                )
+    const CreateDoc = () => {
+        let dataCreate = createDocumentData;
+        let dataLebel = [];
+        //var options = null
+        props.headerCreate.forEach(x => {
+            x.forEach(y => {
+                if (y.type === "labeltext" && y.valueTexts) {
+                    dataLebel.push(y)
+                }
             })
-        }
+        });
+        dataLebel.forEach((x) => {
+            dataCreate[x.key] = x.valueTexts
+        })
+        if (props.createDocType === "audit" && props.columnsModifi === undefined) {
+            dataCreate.docItems = dataSource.map((x, idx) => {
+                let findPair = props.columnEdit.filter(y => y.pair)
+                findPair.forEach(z => {
+                    Object.keys(x).forEach(xx => {
+                        if (xx === z.pair) {
+                            // delete x[z.accessor]
+                        }
+                    })
+                });
 
-        const CreateDoc = () => {
-            let dataCreate = createDocumentData;
-            let dataLebel = [];
-            //var options = null
-            props.headerCreate.forEach(x => {
-                x.forEach(y => {
-                    if (y.type === "labeltext" && y.valueTexts) {
-                        dataLebel.push(y)
-                    }
-                })
+                if (x.qtyrandom)
+                    var qtyrandoms = x.qtyrandom.replace("%", "")
+                if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
+                if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
+                    var options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
+                    var options = "palletcode=" + x.palletcode
+                if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
+                    var options = "locationcode=" + x.locationcode
+                if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
+                    var options = "qtyrandom=" + qtyrandoms
+                if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
+                    var options = null
+                return {
+                    ...x, ID: null,
+                    "skuCode": x.skuCode === undefined ? null : x.skuCode,
+                    "packCode": x.packCode === undefined ? null : x.packCode,
+                    "skuID": x.skuID === undefined ? null : x.skuID,
+                    "quantity": x.quantity === undefined ? null : x.quantity,
+                    "unitType": x.unitType === undefined ? null : x.unitType,
+                    "expireDate": x.expireDate === undefined ? null : x.expireDate,
+                    "productionDate": x.productionDate === undefined ? null : x.productionDate,
+                    "orderNo": x.orderNo === undefined ? null : x.orderNo,
+                    "batch": x.batch === undefined ? null : x.batch,
+                    "lot": x.lot === undefined ? null : x.lot,
+                    "ref1": x.ref1 === undefined ? null : x.ref1,
+                    "ref2": x.ref2 === undefined ? null : x.ref2,
+                    "refID": x.refID === undefined ? null : x.refID,
+                    "options": options,
+                    "palletcode": x.palletcode === undefined ? null : x.palletcode,
+                    "locationcode": x.locationcode === undefined ? null : x.locationcode,
+                    "qtyrandom": x.qtyrandom === undefined ? null : x.qtyrandom,
+                    "x": x
+                }
             });
-            dataLebel.forEach((x) => {
-                dataCreate[x.key] = x.valueTexts
-            })
-            if (props.createDocType === "audit" && props.columnsModifi === undefined) {
-                dataCreate.docItems = dataSource.map((x, idx) => {
-                    let findPair = props.columnEdit.filter(y => y.pair)
-                    findPair.forEach(z => {
-                        Object.keys(x).forEach(xx => {
-                            if (xx === z.pair) {
-                                // delete x[z.accessor]
-                            }
-                        })
-                    });
-
-                    if (x.qtyrandom)
-                        var qtyrandoms = x.qtyrandom.replace("%", "")
-                    if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
-                    if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                    if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
-                    if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                        var options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
-                    if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                        var options = "palletcode=" + x.palletcode
-                    if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
-                        var options = "locationcode=" + x.locationcode
-                    if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                        var options = "qtyrandom=" + qtyrandoms
-                    if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                        var options = null
-                    return {
-                        ...x, ID: null,
-                        "skuCode": x.skuCode === undefined ? null : x.skuCode,
-                        "packCode": x.packCode === undefined ? null : x.packCode,
-                        "skuID": x.skuID === undefined ? null : x.skuID,
-                        "quantity": x.quantity === undefined ? null : x.quantity,
-                        "unitType": x.unitType === undefined ? null : x.unitType,
-                        "expireDate": x.expireDate === undefined ? null : x.expireDate,
-                        "productionDate": x.productionDate === undefined ? null : x.productionDate,
-                        "orderNo": x.orderNo === undefined ? null : x.orderNo,
-                        "batch": x.batch === undefined ? null : x.batch,
-                        "lot": x.lot === undefined ? null : x.lot,
-                        "ref1": x.ref1 === undefined ? null : x.ref1,
-                        "ref2": x.ref2 === undefined ? null : x.ref2,
-                        "refID": x.refID === undefined ? null : x.refID,
-                        "options": options,
-                        "palletcode": x.palletcode === undefined ? null : x.palletcode,
-                        "locationcode": x.locationcode === undefined ? null : x.locationcode,
-                        "qtyrandom": x.qtyrandom === undefined ? null : x.qtyrandom,
-                        "x": x
-                    }
-                });
-                let docItem = dataCreate.docItems;
-                let CreateData = {
-                    "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
-                    "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
-                    "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
-                    "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
-                    "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
-                    "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
-                    "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
-                    "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
-                    "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
-                    "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
-                    "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
-                    "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
-                    "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
-                    "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
-                    "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
-                    "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
-                    "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
-                    "movementTypeID": dataCreate.movementTypeID === undefined ? null : dataCreate.movementTypeID,
-                    "docItems": dataCreate.docItems === undefined ? null : dataCreate.docItems
-                }
-                CreateDocuments(CreateData, docItem);
-            } else if (props.createDocType === "issue" && props.columnsModifi === undefined) {
-                dataCreate.issueItems = dataSource.map((x, idx) => {
-                    let findPair = props.columnEdit.filter(y => y.pair)
-                    findPair.forEach(z => {
-                        Object.keys(x).forEach(xx => {
-                            if (xx === z.pair) {
-                                //delete x[z.accessor]
-                            }
-                        })
-                    });
-                    if (x.qtyrandom)
-                        var qtyrandoms = x.qtyrandom.replace("%", "")
-                    if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
-                    if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                    if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
-                    if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                        options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
-                    if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                        var options = "palletcode=" + x.palletcode
-                    if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
-                        options = "locationcode=" + x.locationcode
-                    if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                        var options = "qtyrandom=" + qtyrandoms
-                    if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                        var options = null
-                    return {
-                        ...x, ID: null,
-                        "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
-                        "SKUItems": x.SKUItems === undefined ? null : x.SKUItems,
-                        "batch": x.batch === undefined ? null : x.batch,
-                        "expireDate": x.expireDate === undefined ? null : x.expireDate,
-                        "lot": x.lot === undefined ? null : x.lot,
-                        "options": options,
-                        "orderNo": x.orderNo === undefined ? null : x.orderNo,
-                        "packCode": x.packCode === undefined ? null : x.packCode,
-                        "packItemQty": x.packItemQty === undefined ? null : x.packItemQty,
-                        "productionDate": x.productionDate === undefined ? null : x.productionDate,
-                        "quantity": x.quantity === undefined ? null : x.quantity,
-                        "ref1": x.ref1 === undefined ? null : x.ref1,
-                        "ref2": x.ref2 === undefined ? null : x.ref2,
-                        "refID": x.refID === undefined ? null : x.refID,
-                        "skuCode": x.skuCode === undefined ? null : x.skuCode,
-                        "skuID": x.skuID === undefined ? null : x.skuID,
-                        "unitType": x.unitType === undefined ? null : x.unitType
-                    }
-                });
-                // dataCreate.issueItems = mbodd3t_gorDnaja;
-                let docItem = dataCreate.issueItems;
-                let CreateData = {
-                    "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
-                    "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
-                    "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
-                    "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
-                    "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
-                    "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
-                    "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
-                    "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
-                    "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
-                    "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
-                    "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
-                    "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
-                    "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
-                    "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
-                    "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
-                    "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
-                    "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
-                    "movementTypeID": dataCreate.movementTypeID === undefined ? null : dataCreate.movementTypeID,
-                    "issueItems": dataCreate.issueItems === undefined ? null : dataCreate.issueItems,
-                }
-                CreateDocuments(CreateData, docItem);
-
-            } else if (props.createDocType === "issue" && props.columnsModifi !== undefined) {
-
-                let CreateData = {
-                    "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
-                    "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
-                    "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
-                    "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
-                    "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
-                    "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
-                    "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
-                    "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
-                    "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
-                    "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
-                    "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
-                    "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
-                    "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
-                    "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
-                    "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
-                    "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
-                    "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
-                    "movementTypeID": dataCreate.movementTypeID === undefined ? props.movementTypeID : dataCreate.movementTypeID,
-                    "issueItems": props.dataCreate["itemIssue"],
-                }
-
-                let docItem = props.dataCreate["itemIssue"];
-                CreateDocuments(CreateData, docItem);
-
-
-            } else if (props.createDocType === "receive" && props.columnsModifi === undefined) {
-                dataCreate.receiveItems = dataSource.map((x, idx) => {
-                    let findPair = props.columnEdit.filter(y => y.pair)
-                    findPair.forEach(z => {
-                        Object.keys(x).forEach(xx => {
-                            if (xx === z.pair) {
-                                //delete x[z.accessor]
-                            }
-                        })
-                    });
-                    if (x.qtyrandom)
-                        var qtyrandoms = x.perpallet
-                    if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
-                    if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                    if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                        var options = "palletcode=" + x.palletcode + "&" + "perpallet=" + qtyrandoms
-                    if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                        var options = "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
-                    if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                        var options = "palletcode=" + x.palletcode
-                    if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
-                        var options = "locationcode=" + x.locationcode
-                    if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                        var options = "perpallet=" + qtyrandoms
-                    if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                        var options = null
-                    return {
-                        ...x, ID: null,
-                        "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
-                        "skuCode": x.skuCode === undefined ? null : x.skuCode,
-                        "packCode": x.packCode === undefined ? null : x.packCode,
-                        "skuID": x.skuID === undefined ? null : x.skuID,
-                        "packItemQty": x.quantity === undefined ? null : x.quantity,
-                        "unitType": x.unitType === undefined ? null : x.unitType,
-                        "expireDate": x.expireDate === undefined ? null : x.expireDate,
-                        "productionDate": x.productionDate === undefined ? null : x.productionDate,
-                        "orderNo": x.orderNo === undefined ? null : x.orderNo,
-                        "batch": x.batch === undefined ? null : x.batch,
-                        "lot": x.lot === undefined ? null : x.lot,
-                        "ref1": x.ref1 === undefined ? null : x.ref1,
-                        "ref2": x.ref2 === undefined ? null : x.ref2,
-                        "refID": x.refID === undefined ? null : x.refID,
-                        "options": options,
-                        "x": x
-
-
-                    }
-                });
-                // dataCreate.receiveItems = mbodd3t_gorDnaja;
-                let docItem = dataCreate.receiveItems;
-                let CreateData = {
-                    "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
-                    "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
-                    "forCustomerCode": dataCreate.forCustomerCode === undefined ? null : dataCreate.forCustomerCode,
-                    "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
-                    "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
-                    "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
-                    "souSupplierID": dataCreate.souSupplierID === undefined ? null : dataCreate.souSupplierID,
-                    "souCustomerID": dataCreate.souCustomerID === undefined ? null : dataCreate.souCustomerID,
-                    "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
-                    "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
-                    "souSupplierCode": dataCreate.souSupplierCode === undefined ? null : dataCreate.souSupplierCode,
-                    "souCustomerCode": dataCreate.souCustomerCode === undefined ? null : dataCreate.souCustomerCode,
-                    "souBranchCode": dataCreate.souBranchCode === undefined ? null : dataCreate.souBranchCode,
-                    "souWarehouseID": dataCreate.souWarehouseID === undefined ? 1 : dataCreate.souWarehouseID,
-                    "souAreaMasterCode": dataCreate.souAreaMasterCode === undefined ? null : dataCreate.souAreaMasterCode,
-                    "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
-                    "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
-                    "desAreaMasterID": dataCreate.desAreaMasterID === undefined ? null : dataCreate.desAreaMasterID,
-                    "desBranchCode": dataCreate.desBranchCode === undefined ? null : dataCreate.desBranchCode,
-                    "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
-                    "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
-                    "desWarehouseCode": dataCreate.issueItems === undefined ? null : dataCreate.issueItems,
-                    "desAreaMasterCode": dataCreate.desAreaMasterCode === undefined ? null : dataCreate.desAreaMasterCode,
-                    "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
-                    "movementTypeID": dataCreate.movementTypeID === undefined ? null : dataCreate.movementTypeID,
-                    "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
-                    "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
-                    "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
-                    "receiveItems": dataCreate.receiveItems === undefined ? null : dataCreate.receiveItems,
-                }
-                CreateDocuments(CreateData, docItem);
+            let docItem = dataCreate.docItems;
+            let CreateData = {
+                "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
+                "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
+                "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
+                "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
+                "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
+                "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
+                "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
+                "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
+                "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
+                "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
+                "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
+                "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
+                "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
+                "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
+                "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
+                "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
+                "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
+                "movementTypeID": dataCreate.movementTypeID === undefined ? null : dataCreate.movementTypeID,
+                "docItems": dataCreate.docItems === undefined ? null : dataCreate.docItems
             }
-            //else if (props.columnsModifi !== undefined) {
-            //    //console.log("1")
-            //    let docItem = props.dataCreate["itemIssue"];
-
-            //    CreateDocuments(dataCreate, docItem);
-            //} else {
-            //    dataCreate.docItems = props.dataSource;
-            //    let docItem = dataCreate.docItems;
-            //    CreateDocuments(dataCreate, docItem);
-            //}
-        }
-
-        const CreateDocuments = (CreateData, docItem) => {
-            console.log(CreateData)
-            console.log(docItem)
-            var skus = null
-            if (docItem !== undefined) {
-                docItem.map((x) => {
-                    return skus = x.SKUItems
-                })
-                if (skus === null) {
-                    setMsgDialog("SKU Item invalid");
-                    setStateDialogErr(true);
-                } else {
-                    if (docItem.length > 0) {
-                        Axios.post(window.apipath + apicreate, CreateData).then((res) => {
-                            if (res.data._result.status === 1) {
-                                setMsgDialog(" Create Document success Document ID = " + res.data.ID);
-                                // setTypeDialog("success");
-                                setStateDialog(true);
-                                if (props.apiRes != undefined)
-                                    props.history.push(props.apiRes + res.data.ID)
-                            } else {
-
-                                setMsgDialog(res.data._result.message);
-                                setStateDialogErr(true);
-                            }
-                        })
-                    } else {
-                        setMsgDialog("Data DocumentItem Invalid");
-                        setStateDialogErr(true);
-                    }
+            CreateDocuments(CreateData, docItem);
+        } else if (props.createDocType === "issue" && props.columnsModifi === undefined) {
+            dataCreate.issueItems = dataSource.map((x, idx) => {
+                let findPair = props.columnEdit.filter(y => y.pair)
+                findPair.forEach(z => {
+                    Object.keys(x).forEach(xx => {
+                        if (xx === z.pair) {
+                            //delete x[z.accessor]
+                        }
+                    })
+                });
+                if (x.qtyrandom)
+                    var qtyrandoms = x.qtyrandom.replace("%", "")
+                if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
+                if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
+                    options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
+                    var options = "palletcode=" + x.palletcode
+                if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
+                    options = "locationcode=" + x.locationcode
+                if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
+                    var options = "qtyrandom=" + qtyrandoms
+                if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
+                    var options = null
+                return {
+                    ...x, ID: null,
+                    "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
+                    "SKUItems": x.SKUItems === undefined ? null : x.SKUItems,
+                    "batch": x.batch === undefined ? null : x.batch,
+                    "expireDate": x.expireDate === undefined ? null : x.expireDate,
+                    "lot": x.lot === undefined ? null : x.lot,
+                    "options": options,
+                    "orderNo": x.orderNo === undefined ? null : x.orderNo,
+                    "packCode": x.packCode === undefined ? null : x.packCode,
+                    "packItemQty": x.packItemQty === undefined ? null : x.packItemQty,
+                    "productionDate": x.productionDate === undefined ? null : x.productionDate,
+                    "quantity": x.quantity === undefined ? null : x.quantity,
+                    "ref1": x.ref1 === undefined ? null : x.ref1,
+                    "ref2": x.ref2 === undefined ? null : x.ref2,
+                    "refID": x.refID === undefined ? null : x.refID,
+                    "skuCode": x.skuCode === undefined ? null : x.skuCode,
+                    "skuID": x.skuID === undefined ? null : x.skuID,
+                    "unitType": x.unitType === undefined ? null : x.unitType
                 }
-            } else {
+            });
+            // dataCreate.issueItems = mbodd3t_gorDnaja;
+            let docItem = dataCreate.issueItems;
+            let CreateData = {
+                "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
+                "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
+                "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
+                "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
+                "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
+                "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
+                "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
+                "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
+                "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
+                "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
+                "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
+                "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
+                "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
+                "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
+                "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
+                "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
+                "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
+                "movementTypeID": dataCreate.movementTypeID === undefined ? null : dataCreate.movementTypeID,
+                "issueItems": dataCreate.issueItems === undefined ? null : dataCreate.issueItems,
+            }
+            CreateDocuments(CreateData, docItem);
+
+        } else if (props.createDocType === "issue" && props.columnsModifi !== undefined) {
+
+            let CreateData = {
+                "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
+                "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
+                "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
+                "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
+                "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
+                "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
+                "souWarehouseID": dataCreate.souWarehouseID === undefined ? null : dataCreate.souWarehouseID,
+                "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
+                "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
+                "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
+                "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
+                "refID": dataCreate.refID === undefined ? null : dataCreate.refID,
+                "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
+                "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
+                "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
+                "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
+                "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
+                "movementTypeID": dataCreate.movementTypeID === undefined ? props.movementTypeID : dataCreate.movementTypeID,
+                "issueItems": props.dataCreate["itemIssue"],
+            }
+
+            let docItem = props.dataCreate["itemIssue"];
+            CreateDocuments(CreateData, docItem);
+
+
+        } else if (props.createDocType === "receive" && props.columnsModifi === undefined) {
+            dataCreate.receiveItems = dataSource.map((x, idx) => {
+                let findPair = props.columnEdit.filter(y => y.pair)
+                findPair.forEach(z => {
+                    Object.keys(x).forEach(xx => {
+                        if (xx === z.pair) {
+                            //delete x[z.accessor]
+                        }
+                    })
+                });
+                if (x.qtyrandom)
+                    var qtyrandoms = x.perpallet
+                if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
+                if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
+                    var options = "palletcode=" + x.palletcode + "&" + "perpallet=" + qtyrandoms
+                if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
+                    var options = "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
+                    var options = "palletcode=" + x.palletcode
+                if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
+                    var options = "locationcode=" + x.locationcode
+                if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
+                    var options = "perpallet=" + qtyrandoms
+                if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
+                    var options = null
+                return {
+                    ...x, ID: null,
+                    "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
+                    "skuCode": x.skuCode === undefined ? null : x.skuCode,
+                    "packCode": x.packCode === undefined ? null : x.packCode,
+                    "skuID": x.skuID === undefined ? null : x.skuID,
+                    "packItemQty": x.quantity === undefined ? null : x.quantity,
+                    "unitType": x.unitType === undefined ? null : x.unitType,
+                    "expireDate": x.expireDate === undefined ? null : x.expireDate,
+                    "productionDate": x.productionDate === undefined ? null : x.productionDate,
+                    "orderNo": x.orderNo === undefined ? null : x.orderNo,
+                    "batch": x.batch === undefined ? null : x.batch,
+                    "lot": x.lot === undefined ? null : x.lot,
+                    "ref1": x.ref1 === undefined ? null : x.ref1,
+                    "ref2": x.ref2 === undefined ? null : x.ref2,
+                    "refID": x.refID === undefined ? null : x.refID,
+                    "options": options,
+                    "x": x
+
+
+                }
+            });
+            // dataCreate.receiveItems = mbodd3t_gorDnaja;
+            let docItem = dataCreate.receiveItems;
+            let CreateData = {
+                "actionTime": dataCreate.actionTime === undefined ? null : dataCreate.actionTime,
+                "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
+                "forCustomerCode": dataCreate.forCustomerCode === undefined ? null : dataCreate.forCustomerCode,
+                "batch": dataCreate.batch === undefined ? null : dataCreate.batch,
+                "lot": dataCreate.lot === undefined ? null : dataCreate.lot,
+                "orderno": dataCreate.orderno === undefined ? null : dataCreate.orderno,
+                "souSupplierID": dataCreate.souSupplierID === undefined ? null : dataCreate.souSupplierID,
+                "souCustomerID": dataCreate.souCustomerID === undefined ? null : dataCreate.souCustomerID,
+                "souBranchID": dataCreate.souBranchID === undefined ? null : dataCreate.souBranchID,
+                "souAreaMasterID": dataCreate.souAreaMasterID === undefined ? null : dataCreate.souAreaMasterID,
+                "souSupplierCode": dataCreate.souSupplierCode === undefined ? null : dataCreate.souSupplierCode,
+                "souCustomerCode": dataCreate.souCustomerCode === undefined ? null : dataCreate.souCustomerCode,
+                "souBranchCode": dataCreate.souBranchCode === undefined ? null : dataCreate.souBranchCode,
+                "souWarehouseID": dataCreate.souWarehouseID === undefined ? 1 : dataCreate.souWarehouseID,
+                "souAreaMasterCode": dataCreate.souAreaMasterCode === undefined ? null : dataCreate.souAreaMasterCode,
+                "desBranchID": dataCreate.desBranchID === undefined ? null : dataCreate.desBranchID,
+                "desWarehouseID": dataCreate.desWarehouseID === undefined ? null : dataCreate.desWarehouseID,
+                "desAreaMasterID": dataCreate.desAreaMasterID === undefined ? null : dataCreate.desAreaMasterID,
+                "desBranchCode": dataCreate.desBranchCode === undefined ? null : dataCreate.desBranchCode,
+                "desCustomerID": dataCreate.desCustomerID === undefined ? null : dataCreate.desCustomerID,
+                "desSupplierID": dataCreate.desSupplierID === undefined ? null : dataCreate.desSupplierID,
+                "desWarehouseCode": dataCreate.issueItems === undefined ? null : dataCreate.issueItems,
+                "desAreaMasterCode": dataCreate.desAreaMasterCode === undefined ? null : dataCreate.desAreaMasterCode,
+                "documentDate": dataCreate.documentDate === undefined ? null : dataCreate.documentDate,
+                "movementTypeID": dataCreate.movementTypeID === undefined ? null : dataCreate.movementTypeID,
+                "ref1": dataCreate.ref1 === undefined ? null : dataCreate.ref1,
+                "ref2": dataCreate.ref2 === undefined ? null : dataCreate.ref2,
+                "remark": dataCreate.remark === undefined ? null : dataCreate.remark,
+                "receiveItems": dataCreate.receiveItems === undefined ? null : dataCreate.receiveItems,
+            }
+            CreateDocuments(CreateData, docItem);
+        }
+        //else if (props.columnsModifi !== undefined) {
+        //    //console.log("1")
+        //    let docItem = props.dataCreate["itemIssue"];
+
+        //    CreateDocuments(dataCreate, docItem);
+        //} else {
+        //    dataCreate.docItems = props.dataSource;
+        //    let docItem = dataCreate.docItems;
+        //    CreateDocuments(dataCreate, docItem);
+        //}
+    }
+
+    const CreateDocuments = (CreateData, docItem) => {
+        console.log(CreateData)
+        console.log(docItem)
+        var skus = null
+        if (docItem !== undefined) {
+            docItem.map((x) => {
+                return skus = x.SKUItems
+            })
+            if (skus === null) {
                 setMsgDialog("SKU Item invalid");
                 setStateDialogErr(true);
+            } else {
+                if (docItem.length > 0) {
+                    Axios.post(window.apipath + apicreate, CreateData).then((res) => {
+                        if (res.data._result.status === 1) {
+                            setMsgDialog(" Create Document success Document ID = " + res.data.ID);
+                            // setTypeDialog("success");
+                            setStateDialog(true);
+                            if (props.apiRes != undefined)
+                                props.history.push(props.apiRes + res.data.ID)
+                        } else {
+
+                            setMsgDialog(res.data._result.message);
+                            setStateDialogErr(true);
+                        }
+                    })
+                } else {
+                    setMsgDialog("Data DocumentItem Invalid");
+                    setStateDialogErr(true);
+                }
             }
+        } else {
+            setMsgDialog("SKU Item invalid");
+            setStateDialogErr(true);
         }
+    }
 
-        return (
-            <div>
-                {/* Dialog */}
-                <AmDialogs typePopup={"success"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
-                <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
+    return (
+        <div>
+            {/* Dialog */}
+            <AmDialogs typePopup={"success"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
+            <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
 
-                {/* Modal when ADD or EDIT */}
-                <AmEditorTable
-                    style={{ width: "600px", height: "500px" }}
-                    titleText={title}
-                    open={dialog}
-                    onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
-                    data={editData}
-                    columns={editorListcolunm()}
-                />
+            {/* Modal when ADD or EDIT */}
+            <AmEditorTable
+                style={{ width: "600px", height: "500px" }}
+                titleText={title}
+                open={dialog}
+                onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+                data={editData}
+                columns={editorListcolunm()}
+            />
 
-                {/* Header */}
-                {getHeaderCreate()}
+            {/* Header */}
+            {getHeaderCreate()}
 
             {/* Btn ADD */}
             <Grid container spacing={16}>
@@ -938,34 +946,34 @@ const AmCreateDocument = (props) => {
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
                         {btnProps ? btnProps : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
-                            {'ADD'}
+                            {t('ADD')}
                         </AmButton>}
                     </div>
                 </Grid>
             </Grid>
 
-                {/* Table */}
-                <AmTable
-                    data={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
-                    reload={props.reload ? props.reload : reload}
-                    columns={props.columnsModifi ? props.columnsModifi : columns}
-                    sortable={false}
-                />
+            {/* Table */}
+            <AmTable
+                data={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
+                reload={props.reload ? props.reload : reload}
+                columns={props.columnsModifi ? props.columnsModifi : columns}
+                sortable={false}
+            />
 
-                {/* Btn CREATE */}
-                <Grid container spacing={16}>
-                    <Grid item xs container direction="column" spacing={16}>
-                    </Grid>
-                    <Grid item>
-                        <div style={{ marginTop: "10px" }}>
-                            <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>
-                                {'CREATE'}
-                            </AmButton>
-                        </div>
-                    </Grid>
+            {/* Btn CREATE */}
+            <Grid container spacing={16}>
+                <Grid item xs container direction="column" spacing={16}>
                 </Grid>
-            </div>
-        )
-    }
+                <Grid item>
+                    <div style={{ marginTop: "10px" }}>
+                        <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>
+                            {t('CREATE')}
+                        </AmButton>
+                    </div>
+                </Grid>
+            </Grid>
+        </div>
+    )
+}
 
 export default AmCreateDocument;

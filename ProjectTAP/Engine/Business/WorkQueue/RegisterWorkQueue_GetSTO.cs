@@ -117,7 +117,8 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                             orderNo = null,
                             batch = null,
                             lot = null,
-                            prodDate = reqVO.mappingPallets[0].prodDate
+                            prodDate = reqVO.mappingPallets[0].prodDate,
+                            forCustomerCode = reqVO.mappingPallets[0].forCustomerCode
 
 
                         });
