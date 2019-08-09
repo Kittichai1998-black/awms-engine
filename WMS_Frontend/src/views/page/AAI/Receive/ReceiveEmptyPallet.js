@@ -7,7 +7,7 @@ import AmDialogs from '../../../../components/AmDialogs'
 // const Axios = new apicall()
 
 
-const MappingReturnPallet = (props) => {
+const ReceiveEmptyPallet = (props) => {
     const { } = props;
  
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
@@ -39,4 +39,4 @@ const MappingReturnPallet = (props) => {
     );
 
 }
-export default MappingReturnPallet;
+export default ReceiveEmptyPallet;

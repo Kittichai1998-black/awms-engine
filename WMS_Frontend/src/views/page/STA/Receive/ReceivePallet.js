@@ -4,7 +4,6 @@ import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
-
 // const Axios = new apicall()
 
 const WarehouseQuery = {
@@ -18,11 +17,11 @@ const WarehouseQuery = {
     l: 100,
     all: "",
 }
-const ReceiveWIPSup = (props) => {
+const ReceivePallet = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
-    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 8 };
+    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 14 };
 
     // const inputHeader = [
     //     { "field": "warehouseID", "type": "dropdown", "typeDropdown": "normal", "name": "Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
@@ -132,7 +131,7 @@ const ReceiveWIPSup = (props) => {
                     if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                         qryStr[SC.OPT_SOU_WAREHOUSE_ID] = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                     }
-                    qryStr[SC.OPT_MVT] = "2023";
+                    qryStr[SC.OPT_MVT] = "1011";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                     console.log(qryStr)
                     let qryStr1 = queryString.stringify(qryStr)
@@ -196,4 +195,4 @@ const ReceiveWIPSup = (props) => {
     );
 
 }
-export default ReceiveWIPSup;
+export default ReceivePallet;

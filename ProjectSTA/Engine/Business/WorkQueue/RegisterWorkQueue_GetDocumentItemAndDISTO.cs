@@ -7,6 +7,7 @@ using AWMSEngine.Engine.V2.Business.Issued;
 using AWMSEngine.Engine.V2.Business.Received;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -75,7 +76,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     //ไม่ใช่พาเลทเปล่า
                     if (packH.options != null && packH.options.Length > 0)
                     {
-                        var mvt = ObjectUtil.QryStrGetValue(packH.options, "MVT");
+                        var mvt = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_MVT);
                         
                         if(mvt != null && mvt.Length > 0)
                             if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURN_CUS)
@@ -99,7 +100,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 amt_DocumentItem docItem = new amt_DocumentItem();
                 if (reqVO.ioType == IOType.INPUT)
                 {
-                    //หา  List<amt_DocumentItem> ที่มีสินค้าตรงกัน และเช็ค Options(CartonNo) ถ้าไม่ตรงให้เพิ่ม DocItem ใหม่
+                    //หา  List<amt_DocumentItem> ที่มีสินค้าตรงกัน 
                     if(FG_Movement == MovementType.FG_RETURN_WM)
                     {
                         var resDiSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(

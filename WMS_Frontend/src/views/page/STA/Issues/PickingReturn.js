@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { apicall, createQueryString, Clone } from '../../../components/function/CoreFunction';
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../components/function/Convert';
-import AmPickingReturn from '../../pageComponent/AmPickingReturn';
-import AmDialogs from '../../../components/AmDialogs'
+import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
+import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
+import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
+import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
+import * as SC from '../../../../constant/StringConst'
 
 // const Axios = new apicall()
 
@@ -34,7 +35,7 @@ const PickingReturn = (props) => {
         var qryStr = queryString.parse(value)
         var res = [{
             text: 'CN',
-            value: qryStr.CartonNo,
+            value: qryStr[SC.OPT_CARTON_NO],
             textToolTip: 'Carton No.'
         }]
         // , {
@@ -59,18 +60,18 @@ const PickingReturn = (props) => {
                     let skuCode = skuCode1.trim(); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
                     let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                     let rootID = reqValue.rootID;
+                    let qryStr = {};
                     //check Storage Object
                     if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                         let dataMapstos = storageObj.mapstos[0];
-                        var qryStr = queryString.parse(dataMapstos.options);
-                        let mvt = qryStr.MVT;
+                        qryStr = queryString.parse(dataMapstos.options);
                         if (skuCode !== dataMapstos.code || orderNo !== dataMapstos.orderNo) {
                             alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
                             skuCode = null;
                             orderNo = null;
                         }
                         if (rootID && skuCode && orderNo) {
-                            let oldOptions = qryStr.CartonNo;
+                            let oldOptions = qryStr[SC.OPT_CARTON_NO];
                             let resCartonNo = ConvertRangeNumToString(oldOptions);
                             let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                             let lenSplitCartonNo = splitCartonNo.length;
@@ -115,11 +116,17 @@ const PickingReturn = (props) => {
                         }
                     }
                     if (cartonNo && rootID && skuCode && orderNo) {
+                        qryStr[SC.OPT_MVT] = "1091";
+                        qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
+                        console.log(qryStr)
+                        let qryStr1 = queryString.stringify(qryStr)
+                        let uri_opt = decodeURIComponent(qryStr1);
+
                         dataScan = {
                             // rootID: rootID,
                             orderNo: orderNo,
                             scanCode: skuCode,
-                            options: cartonNo === "0" ? null : "CartonNo=" + cartonNo.toString() + "&MVT=1091",
+                            options: cartonNo === "0" ? null : uri_opt
                             // amount: 1,
                             // mode: 0,
                             // action: 1,

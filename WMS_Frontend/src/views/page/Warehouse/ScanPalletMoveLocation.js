@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect, useReducer } from "react";
-
+import * as SC from '../../../constant/StringConst'
 // import classnames from 'classnames';
 import { apicall, createQueryString } from '../../../components/function/CoreFunction2';
 // import ToListTree from '../../../components/function/ToListTree';
@@ -359,7 +359,7 @@ const ScanPalletMoveLocation = (props) => {
         var qryStr = queryString.parse(value)
         var res = [{
             text: 'CN',
-            value: qryStr.CartonNo,
+            value: qryStr[SC.OPT_CARTON_NO],
             textToolTip: 'Carton No.'
         }]
         return res;
