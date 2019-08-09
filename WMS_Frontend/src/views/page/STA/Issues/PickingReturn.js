@@ -60,11 +60,11 @@ const PickingReturn = (props) => {
                     let skuCode = skuCode1.trim(); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
                     let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                     let rootID = reqValue.rootID;
+                    let qryStr = {};
                     //check Storage Object
                     if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                         let dataMapstos = storageObj.mapstos[0];
-                        var qryStr = queryString.parse(dataMapstos.options);
-                        let mvt = qryStr[SC.OPT_MVT];
+                        qryStr = queryString.parse(dataMapstos.options);
                         if (skuCode !== dataMapstos.code || orderNo !== dataMapstos.orderNo) {
                             alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
                             skuCode = null;
@@ -116,11 +116,17 @@ const PickingReturn = (props) => {
                         }
                     }
                     if (cartonNo && rootID && skuCode && orderNo) {
+                        qryStr[SC.OPT_MVT] = "1091";
+                        qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
+                        console.log(qryStr)
+                        let qryStr1 = queryString.stringify(qryStr)
+                        let uri_opt = decodeURIComponent(qryStr1);
+
                         dataScan = {
                             // rootID: rootID,
                             orderNo: orderNo,
                             scanCode: skuCode,
-                            options: cartonNo === "0" ? null : SC.OPT_CARTON_NO + "=" + cartonNo.toString() + "&" + SC.OPT_MVT + "=1091",
+                            options: cartonNo === "0" ? null : uri_opt
                             // amount: 1,
                             // mode: 0,
                             // action: 1,

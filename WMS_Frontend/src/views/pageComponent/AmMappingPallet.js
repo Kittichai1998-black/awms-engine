@@ -33,7 +33,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import AmListSTORenderer from '../pageComponent/AmListSTORenderer';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next'
-
+import Typography from '@material-ui/core/Typography';
 const Axios = new apicall()
 
 const styles = theme => ({
@@ -51,6 +51,12 @@ const styles = theme => ({
             '"Segoe UI Emoji"',
             '"Segoe UI Symbol"',
         ].join(','),
+    },
+    title: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        textDecoration: 'underline',
+        textAlign: 'center'
     },
     block: {
         display: "block"
@@ -189,6 +195,7 @@ const AmMappingPallet = (props) => {
     const { t } = useTranslation()
     const { classes,
         headerCreate,
+        sourceCreate,
         itemCreate,
         onBeforePost,
         apiCreate,
@@ -208,6 +215,7 @@ const AmMappingPallet = (props) => {
 
     const [inputHeader, setInputHeader] = useState([]);
     const [inputItem, setInputItem] = useState([]);
+    const [inputSource, setInputSource] = useState([]);
 
     const [ddlWarehouse, setDDLWarehouse] = useState(null);
     const [ddlArea, setDDLArea] = useState(null);
@@ -260,15 +268,24 @@ const AmMappingPallet = (props) => {
         }
     }, [inputItem]);
     useEffect(() => {
-         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
+        if (sourceCreate)
+            setInputSource(createComponent(sourceCreate));
+    }, [sourceCreate]);
+    useEffect(() => {
+        if (inputSource === null) {
+            setInputSource(createComponent(sourceCreate));
+        }
+    }, [inputSource]);
+    useEffect(() => {
+        if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
             GetWarehouseDDL();
-          }
-    }, [ddlWarehouse,localStorage.getItem("Lang")])
+        }
+    }, [ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
             GetAreaDDL(selWarehouse)
         }
-    }, [selWarehouse,ddlWarehouse,localStorage.getItem("Lang")])
+    }, [selWarehouse, ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (ddlArea === null && selWarehouse) {
             if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
@@ -754,6 +771,7 @@ const AmMappingPallet = (props) => {
         setAreaDetail(null);
         setInputHeader(null);
         setInputItem(null);
+        setInputSource(null);
         setDDLWarehouse(null);
         setDDLArea(null);
     }
@@ -813,10 +831,24 @@ const AmMappingPallet = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
+                    {inputSource.length > 0 ?
+                        <>
+                            <CardContent className={classes.cardContent}>
+
+                                {inputSource.map((row, idx) => {
+                                    return row.component(row, idx)
+                                })}
+                            </CardContent>
+                            <Divider style={{ marginTop: 5 }} />
+                        </>
+                        : null}
                     <CardContent className={classes.cardContent}>
+                        <Typography className={classes.title} gutterBottom>
+                            Pallet Information
+                        </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
-                        {inputHeader ? inputHeader.map((row, idx) => {
+                        {inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
                     </CardContent>
@@ -878,6 +910,7 @@ const AmMappingPallet = (props) => {
 AmMappingPallet.propTypes = {
     classes: PropTypes.object.isRequired,
     headerCreate: PropTypes.array,
+    sourceCreate: PropTypes.array,
     itemCreate: PropTypes.array,
     onBeforePost: PropTypes.func,
     apiCreate: PropTypes.string,
