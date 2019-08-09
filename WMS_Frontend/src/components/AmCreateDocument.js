@@ -946,7 +946,7 @@ const AmCreateDocument = (props) => {
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
                         {btnProps ? btnProps : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
-                            {t('ADD')}
+                            {t('Add')}
                         </AmButton>}
                     </div>
                 </Grid>
@@ -967,7 +967,7 @@ const AmCreateDocument = (props) => {
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>
                         <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>
-                            {t('CREATE')}
+                            {t('Create')}
                         </AmButton>
                     </div>
                 </Grid>
