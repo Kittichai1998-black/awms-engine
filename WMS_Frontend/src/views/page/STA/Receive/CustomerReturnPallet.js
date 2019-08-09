@@ -8,11 +8,11 @@ import * as SC from '../../../../constant/StringConst'
 // const Axios = new apicall()
 
 
-const ReceiveWIPSup = (props) => {
+const CustomerReturnPallet = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
-    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 8 };
+    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13 };
 
     // const inputHeader = [
     //     { "field": "warehouseID", "type": "dropdown", "typeDropdown": "normal", "name": "Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
@@ -120,7 +120,7 @@ const ReceiveWIPSup = (props) => {
                         // rootID: rootID,
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : SC.OPT_CARTON_NO + "=" + cartonNo.toString() + "&" + SC.OPT_MVT + "=2023",
+                        options: cartonNo === "0" ? null : SC.OPT_CARTON_NO + "=" + cartonNo.toString() + "&" + SC.OPT_MVT + "=1092",
                         // amount: 1,
                         // mode: 0,
                         // action: 1,
@@ -173,4 +173,4 @@ const ReceiveWIPSup = (props) => {
     );
 
 }
-export default ReceiveWIPSup;
+export default CustomerReturnPallet;

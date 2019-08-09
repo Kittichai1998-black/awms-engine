@@ -45,10 +45,6 @@ const viewPI = Loadable({
   loader: () => import("../../views/page/MRK/Counting/viewPI"),
   loading: Loading
 });
-const pickingReturn = Loadable({
-  loader: () => import("../../views/page/Issue/PickingReturn"),
-  loading: Loading
-});
 const PrintLabelProduct = Loadable({
   loader: () => import("../../views/page/MRK/Product/PrintLabelProduct"),
   loading: Loading
@@ -122,12 +118,6 @@ const routes = [
     path: "/counting/manualcounting",
     name: "base5",
     compoment: CountingAdj,
-    exact: true
-  },
-  {
-    path: "/receive/scanpickingreturn",
-    name: "Picking Return",
-    compoment: pickingReturn,
     exact: true
   },
   {

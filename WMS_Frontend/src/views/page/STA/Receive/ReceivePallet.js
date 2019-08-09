@@ -3,15 +3,15 @@ import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../.
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
-
+import * as SC from '../../../../constant/StringConst'
 // const Axios = new apicall()
 
 
-const MappingReturnPallet = (props) => {
+const ReceivePallet = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
-    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13 };
+    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 14 };
 
     // const inputHeader = [
     //     { "field": "warehouseID", "type": "dropdown", "typeDropdown": "normal", "name": "Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
@@ -32,7 +32,7 @@ const MappingReturnPallet = (props) => {
         var qryStr = queryString.parse(value)
         var res = [{
             text: 'CN',
-            value: qryStr.CartonNo,
+            value: qryStr[SC.OPT_CARTON_NO],
             textToolTip: 'Carton No.'
         }]
         // , {
@@ -63,14 +63,14 @@ const MappingReturnPallet = (props) => {
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                     let dataMapstos = storageObj.mapstos[0];
                     var qryStr = queryString.parse(dataMapstos.options);
-                    let mvt = qryStr.MVT;
+                    let mvt = qryStr[SC.OPT_MVT];
                     if (skuCode !== dataMapstos.code || orderNo !== dataMapstos.orderNo) {
                         alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
                         skuCode = null;
                         orderNo = null;
                     }
                     if (rootID && skuCode && orderNo) {
-                        let oldOptions = qryStr.CartonNo;
+                        let oldOptions = qryStr[SC.OPT_CARTON_NO];
                         let resCartonNo = ConvertRangeNumToString(oldOptions);
                         let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                         let lenSplitCartonNo = splitCartonNo.length;
@@ -119,7 +119,7 @@ const MappingReturnPallet = (props) => {
                         // rootID: rootID,
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : "CartonNo=" + cartonNo.toString() + "&MVT=1092",
+                        options: cartonNo === "0" ? null : SC.OPT_CARTON_NO + "=" + cartonNo.toString() + "&" + SC.OPT_MVT + "=1011",
                         // amount: 1,
                         // mode: 0,
                         // action: 1,
@@ -172,4 +172,4 @@ const MappingReturnPallet = (props) => {
     );
 
 }
-export default MappingReturnPallet;
+export default ReceivePallet;

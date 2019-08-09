@@ -65,15 +65,15 @@ const StorageObjectExample = Loadable({
   loading: Loading
 });
 const mappingReturnPallet = Loadable({
-  loader: () => import("../../views/page/STA/Receive/MappingReturnPallet"),
+  loader: () => import("../../views/page/STA/Receive/CustomerReturnPallet"),
   loading: Loading
 });
 const mappingEmptyPallet = Loadable({
-  loader: () => import("../../views/page/STA/Receive/MappingEmptyPallet"),
+  loader: () => import("../../views/page/AAI/Receive/ReceiveEmptyPallet"),
   loading: Loading
 });
 const pickingReturn = Loadable({
-  loader: () => import("../../views/page/Issue/PickingReturn"),
+  loader: () => import("../../views/page/STA/Issues/PickingReturn"),
   loading: Loading
 });
 const TestAmRedirectInfo = Loadable({
@@ -171,19 +171,19 @@ const routes = [
     exact: true
   },
   {
-    path: "/receive/scanpalletreceive",
-    name: "Mapping Return Pallet",
+    path: "/receive/receiveforcustomer",
+    name: "Customers Return Pallet",
     compoment: mappingReturnPallet,
     exact: true
   },
   {
-    path: "/receive/scanemptypallet",
+    path: "/receive/receivemptypallet",
     name: "Mapping Empty Pallet",
     compoment: mappingEmptyPallet,
     exact: true
   },
   {
-    path: "/receive/scanpickingreturn",
+    path: "/issue/pickingreturn",
     name: "Picking Return",
     compoment: pickingReturn,
     exact: true

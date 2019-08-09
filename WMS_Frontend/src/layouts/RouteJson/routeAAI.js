@@ -22,8 +22,8 @@ const DocumentViewGR = Loadable({
   loader: () => import("../../views/page/AAI/Receive/DocumentViewGR"),
   loading: Loading
 });
-const mappingEmptyPallet = Loadable({
-  loader: () => import("../../views/page/STA/Receive/MappingEmptyPallet"),
+const ReceiveEmptyPallet = Loadable({
+  loader: () => import("../../views/page/AAI/Receive/ReceiveEmptyPallet"),
   loading: Loading
 });
 const routes = [
@@ -39,8 +39,12 @@ const routes = [
     compoment: DocumentViewGI,
     exact: true
   },
-  { path: "/receive/scanemptypallet", name: "Mapping Empty Pallet", compoment: mappingEmptyPallet, exact: true },
-
+  {
+    path: "/receive/receivemptypallet",
+    name: "Mapping Empty Pallet",
+    compoment: ReceiveEmptyPallet,
+    exact: true
+  },
   {
     path: "/receive/search",
     name: "Search GR",

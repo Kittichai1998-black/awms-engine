@@ -23,10 +23,10 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import Flip from 'react-reveal/Flip';
 import Divider from '@material-ui/core/Divider';
-
-
+import * as SC from '../../../../constant/StringConst'
 import { get } from "http";
 import color from "@material-ui/core/colors/green";
+import queryString from 'query-string'
 const Axios = new apicall()
 
 const styles = theme => ({
@@ -210,7 +210,9 @@ const Scanbarcode = (props) => {
                     setproductName(datass.name)
                     setorderNo(datass.orderNo)
                     setunitCode(datass.unitCode)
-                    setcarton(datass.options.split("=")[1].split("&")[0])
+                    var qryStr = queryString.parse(datass.options)
+
+                    setcarton(qryStr[SC.OPT_CARTON_NO])
 
                     if (datass.qty == null) {
                         setqty(0)
@@ -281,7 +283,7 @@ const Scanbarcode = (props) => {
 
     const HeadGateA = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#e91e63" }} >
-            <Grid container spacing={12}>
+            <Grid container spacing={1}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
                     <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  {getGate}</Typography>
                 </Grid>
@@ -291,7 +293,7 @@ const Scanbarcode = (props) => {
 
     const HeadGateB = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#3f51b5" }} >
-            <Grid container spacing={12}>
+            <Grid container spacing={1}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
                     <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
                 </Grid>
@@ -356,7 +358,7 @@ const Scanbarcode = (props) => {
 
                 <div>
 
-                    <Grid container spacing={24}>
+                    <Grid container spacing={1}>
                         <Grid item xs={12} style={{ paddingLeft: "350px", paddingTop: "10px" }}>
                             <FormInline>
                                 <Typography variant="h4" component="h3">Barcode : </Typography>
@@ -379,7 +381,7 @@ const Scanbarcode = (props) => {
                         </Grid>
                         <Grid item xs={6}>
                             <FormInline>
-                                {console.log(AreaMaster)}
+                                {/* {console.log(AreaMaster)} */}
                                 <Typography style={{ paddingLeft: "120px" }} variant="h4" component="h3">Area : </Typography>
                                 <AmDropdown
                                     id="area"
@@ -409,7 +411,7 @@ const Scanbarcode = (props) => {
                                         <div>{HeadGateB(gate ? gate[0].Code : "")}</div>}
                                 </div>
                                 <Card style={{ height: "500px", }}>
-                                    {gate != undefined ? areaGate === gate[0].ID ? < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
+                                    {gate != undefined ? areaGate === gate[0].ID ? < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={1} style={{ paddingTop: "10px" }} >
                                         <Grid item xs={1}></Grid><Grid item xs={11}>
                                             <FormInline style={{ paddingTop: "10px" }} >
                                                 <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
