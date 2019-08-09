@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from '../../../../components/AmCreateDocument'
 import { apicall, createQueryString } from '../../../../components/function/CoreFunction'
-import DocView from "../../../pageComponent/DocumentView";//css
 
 // import Axios from 'axios'
 const Axios = new apicall()
 
 export default (props) => {
 
-    const [dataWarehouse, setDataWarehouse] = useState("");
-    const [dataHeader, setDataHeader] = useState([]);
+    const [dataWarehouse, setDataWarehouse] = useState();
+    const [dataHeader, setDataHeader] = useState();
     const [table, setTable] = useState(null);
 
     //get api set dataWarehouse
@@ -24,7 +23,7 @@ export default (props) => {
 
     //set headerCreate check state dataWarehouse
     useEffect(() => {
-        if (dataWarehouse !== "") {
+        if (dataWarehouse) {
             const headerCreates = [
                 [
                     { label: "Document No.", type: "labeltext", key: "", texts: "-" },
@@ -48,7 +47,7 @@ export default (props) => {
     }, [dataWarehouse])
 
     useEffect(() => {
-        if (dataHeader.length > 0) {
+        if (dataHeader) {
             setTable(
                 <AmCreateDocument
                     headerCreate={dataHeader}
