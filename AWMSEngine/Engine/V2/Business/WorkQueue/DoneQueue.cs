@@ -294,6 +294,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
                                     ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
 
+                                    var GIDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
+                                        new SQLConditionCriteria("DocumentItem_ID", disto.DocumentItem_ID, SQLOperatorType.EQUALS)
+                                    }, this.BuVO);
+
+                                    if(GIDisto.TrueForAll(x=>x.Status == EntityStatus.ACTIVE))
+                                    {
+                                        ADO.DocumentADO.GetInstant().UpdateItemEventStatus(disto.DocumentItem_ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                    }
+
                                 }
                             });
                         });
