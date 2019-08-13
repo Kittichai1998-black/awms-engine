@@ -95,7 +95,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Storage Unit Number</summary>
             public string LENUM;
             /// <summary>Reservation Number</summary>
-            public int RSNUM;
+            public long RSNUM;
             /// <summary>Delivery Order Number</summary>
             public int VBELN_VL;
             /// <summary>Delivery Item</summary>
