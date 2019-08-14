@@ -22,8 +22,8 @@ namespace ProjectAAI.APIService.SAP
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<CreateIssuedDocR2.TReq>(this.RequestVO);
-            var res = new CreateIssuedDocR2();
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<SAPZWMRF003R2.TReq>(this.RequestVO);
+            var res = new SAPZWMRF003R2();
             return res.Execute(this.Logger, this.BuVO, req);
         }
     }

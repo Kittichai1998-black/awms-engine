@@ -1,6 +1,0 @@
-{
-    "name": "AreaLocation",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./AreaLocation.js"
-  }

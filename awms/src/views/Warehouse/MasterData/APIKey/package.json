@@ -1,6 +1,0 @@
-{
-    "name": "APIKey",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./APIKey.js"
-  }

@@ -1,6 +1,0 @@
-{
-    "name": "ClientSecret",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./ClientSecret.js"
-  }
