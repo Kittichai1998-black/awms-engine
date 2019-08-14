@@ -8,22 +8,22 @@ using System.Threading.Tasks;
 
 namespace ProjectAAI.APIService.SAP
 {
-    public class SAPZWMRF003R2API : BaseAPIService
+    public class SAPZWMRF003R3API : BaseAPIService
     {
-        public SAPZWMRF003R2API(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public SAPZWMRF003R3API(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
         {
         }
 
         public override int APIServiceID()
         {
-            return 765;
+            return 766;
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<SAPZWMRF003R2.TReq>(this.RequestVO);
-            var res = new SAPZWMRF003R2();
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<SAPZWMRF003R3.TReq>(this.RequestVO);
+            var res = new SAPZWMRF003R3();
             return res.Execute(this.Logger, this.BuVO, req);
         }
     }
