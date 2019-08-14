@@ -156,6 +156,9 @@ const AmTable = props => {
 
       if (type === "datetime") {
         column.Cell = data => {
+          if(data.original[x.accessor] === "" || data.original[x.accessor] === null){
+            return ('');
+          }else{
           return (
             <span>
               {Moment(data.original[x.accessor]).isValid
@@ -165,6 +168,7 @@ const AmTable = props => {
                 : ""}
             </span>
           );
+              }
         };
       }
 
