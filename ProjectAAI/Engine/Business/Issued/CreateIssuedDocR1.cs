@@ -12,6 +12,9 @@ namespace ProjectAAI.Engine.Business.Issued
         public class TReq
         {
             public string SKUCode;
+            public string LGTYP;
+            public string LGBER;
+            public string LGPLA;
         }
 
         protected override List<SAPCriteria.ZSWMRF003_OUT_REQ> ExecuteEngine(TReq reqVO)
@@ -21,9 +24,9 @@ namespace ProjectAAI.Engine.Business.Issued
                 ZMODE = "R01",
                 LGNUM = "W01",
                 LENUM = reqVO.SKUCode,
-                LGTYP = "Y",
-                LGBER = "Y",
-                LGPLA = "Y"
+                LGTYP = reqVO.LGTYP,
+                LGBER = reqVO.LGBER,
+                LGPLA = reqVO.LGPLA
             };
 
             var res = SAPInterfaceADO.GetInstant().ZWMRF003(sapCriteria, this.BuVO);
