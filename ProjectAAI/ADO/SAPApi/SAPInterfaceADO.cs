@@ -193,7 +193,7 @@ namespace ProjectAAI.ADO.SAPApi
                 functionName = "ZWMRF003",
                 inStructureName = "ZSWMRF003_IN_REQ",
                 inTableName = "IN_REQ",
-                outTableName = "OUT_REQ ",
+                outTableName = "OUT_REQ",
                 datas = reqVO
             };
 
