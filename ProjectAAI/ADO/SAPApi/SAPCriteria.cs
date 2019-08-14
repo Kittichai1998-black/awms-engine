@@ -41,7 +41,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Date of Manufacture</summary>
             public string HSDAT;
             /// <summary>Incubated Time</summary>
-            public int WEBAZ;
+            public decimal WEBAZ;
             /// <summary>Gross Weight</summary>
             public decimal BRGEW;
             /// <summary>Weight Unit</summary>
