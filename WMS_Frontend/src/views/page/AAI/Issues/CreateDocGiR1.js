@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 
 import AmCreateDocument from '../../../../components/AmCreateDocument'
@@ -62,17 +63,17 @@ export default (props) => {
         }
     }, [dataHeader])
 
-    const PalletCode = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "ID,palletcode,Code,Batch,Name",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const PalletCode = {
+    //     queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    //     t: "PalletSto",
+    //     q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "ID,palletcode,Code,Batch,Name",
+    //     g: "",
+    //     s: "[{'f':'ID','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    // }
 
     const SKUMaster = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -98,12 +99,12 @@ export default (props) => {
         all: ""
     }
 
-    const columsFindpopUpPALC = [
-        { Header: 'Pallet Code', accessor: 'palletcode', fixed: 'left', width: 200, sortable: true },
-        { Header: 'Pack Code', accessor: 'Code', width: 200, sortable: true },
-        { Header: 'Batch', accessor: 'Batch', width: 200, sortable: true },
-        { Header: 'Name', accessor: 'Name', width: 200, sortable: true }
-    ];
+    // const columsFindpopUpPALC = [
+    //     { Header: 'Pallet Code', accessor: 'palletcode', fixed: 'left', width: 200, sortable: true },
+    //     { Header: 'Pack Code', accessor: 'Code', width: 200, sortable: true },
+    //     { Header: 'Batch', accessor: 'Batch', width: 200, sortable: true },
+    //     { Header: 'Name', accessor: 'Name', width: 200, sortable: true }
+    // ];
 
     const columsFindpopUpSKU = [
         { Header: 'Code', accessor: 'Code', fixed: 'left', width: 100, sortable: true },
@@ -111,10 +112,10 @@ export default (props) => {
     ];
 
     const columnEdit = [
-        { Header: "Pallet Code", accessor: 'palletcode', type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUpPALC },
-        { Header: "SKU Item", accessor: 'SKUItems', type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUpSKU },
-        { Header: 'Batch', accessor: 'batch', type: "input" },
-        { Header: "Quantity", accessor: 'quantity', type: "inputNum" }
+        // { Header: "Pallet Code", accessor: 'palletcode', type: "findPopUp", idddl: "palletcode", queryApi: PalletCode, fieldLabel: ["palletcode"], columsddl: columsFindpopUpPALC },
+        { Header: "SKU Item", accessor: 'SKUItems', type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUpSKU }
+        // { Header: 'Batch', accessor: 'batch', type: "input" },
+        // { Header: "Quantity", accessor: 'quantity', type: "inputNum" }
     ];
 
     const columns = [
