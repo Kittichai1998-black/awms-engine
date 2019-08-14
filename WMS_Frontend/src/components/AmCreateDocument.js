@@ -9,6 +9,7 @@ import AmDialogs from '../components/AmDialogs'
 import AmDropdown from '../components/AmDropdown'
 import AmEditorTable from '../components/table/AmEditorTable'
 import AmFindPopup from '../components/AmFindPopup'
+import AmDialogConfirm from '../components/AmDialogConfirm'
 import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
 import { useTranslation } from 'react-i18next'
@@ -81,7 +82,11 @@ const AmCreateDocument = (props) => {
     const [stateDialogErr, setStateDialogErr] = useState(false);
     const [btnProps, setbtnProps] = useState(props.btnProps);
     const [skuIDs, setskuIDs] = useState();
-
+    const [cusIDs, setcusIDs] = useState();
+    const [skuByCus, setskuByCus] = useState();
+    const [palletByCus, setpalletByCus] = useState();
+    const [openDialogClear, setopenDialogClear] = useState(false)
+    const [bodyDailogClear, setbodyDailogClear] = useState();
     const [ParentStorageObjects, setParentStorageObjects] = useState();
     const [columns, setColumns] = useState(() => {
         var rem = [
@@ -105,7 +110,7 @@ const AmCreateDocument = (props) => {
                 queryString: window.apipath + "/v2/SelectDataViwAPI/",
                 t: "ParentStorageObject",
                 q: "[{ 'f': 'SKUMaster_ID', c: '=', 'v': " + skuIDs + " }]",
-                f: "SKUMaster_ID,SKUMaster_Code,SKUMaster_Name,ParentStorageObject_ID,ParentStorageObject_Code as BaseCode",
+                f: "SKUMaster_ID,SKUMaster_Code,SKUMaster_Name,ParentStorageObject_ID,ParentStorageObject_Code as baseCode",
                 g: "",
                 s: "[{'f':'SKUMaster_ID','od':'asc'}]",
                 sk: 0,
@@ -114,6 +119,41 @@ const AmCreateDocument = (props) => {
             })
         }
     }, [skuIDs])
+
+    useEffect(() => {
+        if (props.createByCus === true && cusIDs !== null) {
+            setskuByCus({
+                queryString: window.apipath + "/v2/SelectDataViwAPI/",
+                t: "SKUMaster",
+                q: "[{ 'f': 'Customer_ID', c: '=', 'v': " + cusIDs + " }]",
+                f: "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+                g: "",
+                s: "[{'f':'ID','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            })
+            console.log(dataSource)
+            if (dataSource[0] !== undefined) {
+
+                CleareDataByCus();
+            }
+        }
+    }, [cusIDs])
+
+    const CleareDataByCus = () => {
+        setopenDialogClear(true)
+        setbodyDailogClear(<div style={{ width: "500px", height: "100px" }}>
+            <LabelH>{t("Change  DesCustomer")}</LabelH>
+            <FormInline><label>Confirm Clare SKUItem</label></FormInline>
+        </div>)
+    }
+
+    const OnConfirmClear = () => {
+        setDataSource([])
+        setopenDialogClear(false)
+    }
+
 
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
@@ -124,16 +164,15 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleChangeHeaderDDL = (value, dataObject, inputID, fieldDataKey, key) => {
-        setdataDDLHead({
-            ...valueText, [inputID]: {
-                value: value,
-                dataObject: dataObject,
-                fieldDataKey: fieldDataKey,
-                key: key,
-            }
-        });
-        createDocumentData[key] = value
-        setcreateDocumentData(createDocumentData)
+        if (key === "desCustomerID" && props.createByCus === true) {
+            console.log(dataObject.ID, "CusID")
+            setcusIDs(dataObject.ID)
+            createDocumentData[key] = value
+            setcreateDocumentData(createDocumentData)
+        } else {
+            createDocumentData[key] = value
+            setcreateDocumentData(createDocumentData)
+        }
     }
 
     const onHandleDDLChange = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
@@ -144,6 +183,16 @@ const AmCreateDocument = (props) => {
                 fieldDataKey: fieldDataKey,
             }
         });
+        if (value !== null) {
+            if (dataObject[field] !== null) {
+                onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
+            }
+        }
+    };
+
+    const onHandleDDLChangeBase = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
+        console.log(dataObject)
+        console.log(value)
         if (value !== null) {
             if (dataObject[field] !== null) {
                 onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
@@ -165,30 +214,31 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleChangeinPop = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
+        console.log(dataObject)
         if (dataObject) {
-            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code, dataObject)
+            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
         } else {
             onChangeEditor(field, data, null, pair, null, null, null)
         }
     }
 
-    const onHandleDDLChangeSelectBase = (value, dataObject, inputID, fieldDataKey, pair, key) => {
-        if (value !== null) {
-            setskuIDs(value)
-            createDocumentData[key] = value
-            setcreateDocumentData(createDocumentData)
-
+    const onHandleChangeinPopSKU = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
+        if (dataObject) {
+            console.log(field)
+            setskuIDs(dataObject.ID)
+            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
+        } else {
+            setskuIDs(dataObject.ID)
+            console.log(field)
+            onChangeEditor(field, data, null, pair, null, null, null)
         }
     }
 
-    const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode, SKUCode, dataObject) => {
+    const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode, SKUCode) => {
+        console.log(field)
         if (addData) {
             if (editData) {
                 editData[field] = value;
-                if (field === "palletcode" && dataObject) {
-                    dataObject.Batch ? editData["batch"] = dataObject.Batch : delete editData["batch"]
-                    dataObject.Quantity ? editData["quantity"] = dataObject.Quantity : delete editData["quantity"]
-                }
                 if (field === "SKUItems") {
                     UnitCode ? editData["unitType"] = UnitCode : delete editData["unitType"]
                 }
@@ -202,10 +252,6 @@ const AmCreateDocument = (props) => {
                 let addData = {};
                 addData["ID"] = addDataID;
                 addData[field] = value;
-                if (field === "palletcode" && dataObject) {
-                    dataObject.Batch ? addData["batch"] = dataObject.Batch : delete addData["batch"]
-                    dataObject.Quantity ? addData["quantity"] = dataObject.Quantity : delete addData["quantity"]
-                }
                 if (field === "SKUItems") {
                     UnitCode ? addData["unitType"] = UnitCode : delete addData["unitType"]
                 }
@@ -238,17 +284,12 @@ const AmCreateDocument = (props) => {
 
                 }
             } else {
-                console.log(value)
                 if (field === "qtyrandom" && value > 100) {
                     setStateDialogErr(true)
                     setMsgDialog("Random > 100 ")
                 } else {
                     editRowX[field] = value;
                 }
-            }
-            if (field === "palletcode" && dataObject) {
-                dataObject.Batch ? editRowX["batch"] = dataObject.Batch : delete editRowX["batch"]
-                dataObject.Quantity ? editRowX["quantity"] = dataObject.Quantity : delete editRowX["quantity"]
             }
             if (field === "SKUItems") {
                 UnitCode ? editRowX["unitType"] = UnitCode : delete editRowX["unitType"]
@@ -262,6 +303,7 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleEditConfirm = (status, rowdata) => {
+
         if (status) {
             var chkData = dataSource.filter(x => {
                 return x.ID === rowdata.ID
@@ -281,17 +323,28 @@ const AmCreateDocument = (props) => {
                 }
             }
             else {
-                if (editData.qtyrandom !== undefined) {
-                    if (editData.qtyrandom > 100) {
-                        setStateDialogErr(true)
-                        setMsgDialog("Random > 100 ")
-                    } else {
-                        editData["qtyrandom"] = (editData.qtyrandom + "%")
-                        dataSource.push(editData)
-                    }
+                console.log(editData)
+                if (editData === false) {
+                    setStateDialogErr(true)
+                    setMsgDialog("Data Items Invalid")
                 } else {
-                    editData["qtyrandom"] = (0 + "%")
-                    dataSource.push(editData)
+
+                    if (editData.qtyrandom !== undefined) {
+                        if (editData.qtyrandom > 100) {
+                            setStateDialogErr(true)
+                            setMsgDialog("Random > 100 ")
+                        } else {
+                            editData["qtyrandom"] = (editData.qtyrandom + "%")
+                            dataSource.push(editData)
+                        }
+                    } else {
+
+                        if (editData["qtyrandom"] !== undefined || editData["qtyrandom"] !== null)
+                            editData["qtyrandom"] = (0 + "%")
+
+                        dataSource.push(editData)
+
+                    }
                 }
             }
         }
@@ -318,14 +371,16 @@ const AmCreateDocument = (props) => {
         }
     }
 
+
+
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts) => {
+        console.log(accessor)
         if (type === "input") {
             return (
                 <FormInline>
                     <LabelH>{Header} : </LabelH>
                     <InputDiv>
                         <AmInput style={style ? style : { width: "300px" }}
-                            // value={editData ? editData[accessor] : null}
                             defaultValue={data ? data[accessor] : ""}
                             validate={true}
                             msgError="Error"
@@ -425,6 +480,7 @@ const AmCreateDocument = (props) => {
                     onChange={(ele) => { onChangeEditor(cols.field, data, ele.fieldDataObject, row.pair) }}
                 />
             )
+
         } else if (type === "text") {
             return (<FormInline>
                 <LabelH>{Header}</LabelH>
@@ -432,48 +488,93 @@ const AmCreateDocument = (props) => {
             </FormInline>
             )
         } else if (type === "selectBase") {
-            return (<div><FormInline>
+            return (<FormInline>
                 <LabelH>{Header} : </LabelH>
+                <InputDiv>
+                    <AmFindPopup
+                        id={idddl}
+                        placeholder={placeholder ? placeholder : "Select"}
+                        // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                        // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
+                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        queryApi={queryApi} //object query string
+                        defaultValue={data ? data[accessor] : ""}
+                        columns={columsddl} //array column สำหรับแสดง table
+                        width={width ? width : 300}
+                        ddlMinWidth={width ? width : 100}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeinPopSKU(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                    />
+                </InputDiv>
+            </FormInline>
+            )
+        } else if (type === "bases") {
+            return (<FormInline>
+                <LabelH>Base : </LabelH>
                 <InputDiv>
                     <AmDropdown
                         id={idddl}
                         placeholder={placeholder ? placeholder : "Select"}
                         fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                        fieldLabel={["baseCode"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                         labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                         width={width ? width : 300} //กำหนดความกว้างของช่อง input
                         ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
                         valueData={valueText[idddl]} //ค่า value ที่เลือก
-                        queryApi={queryApi}
-                        returnDefaultValue={true}
-                        defaultValue={data !== {} && data !== null ? data[row.pair] : ""}
-                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChangeSelectBase(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                        queryApi={ParentStorageObjects}
+                        //returnDefaultValue={true}
+                        //defaultValue={data !== {} && data !== null ? data[row.pair] : ""}
+                        //onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChangeBase(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, cols.field, data, "baseCode")}
                         ddlType={"search"} //รูปแบบ Dropdown 
                     />
                 </InputDiv>
-            </FormInline>
-                <FormInline>
-                    <LabelH>Base : </LabelH>
-                    <InputDiv>
-                        <AmDropdown
-                            id={"base"}
-                            placeholder={"Select Base"}
-                            fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                            fieldLabel={["BaseCode"]}  //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-                            labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                            width={width ? width : 300} //กำหนดความกว้างของช่อง input
-                            ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
-                            valueData={valueText[idddl]} //ค่า value ที่เลือก
-                            queryApi={ParentStorageObjects}
-                            //returnDefaultValue={true}
-                            //defaultValue={data !== {} && data !== null ? data[row.pair] : ""}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
-                            ddlType={"search"} //รูปแบบ Dropdown 
-                        />
-                    </InputDiv>
-                </FormInline>
-            </div>
-            )
+            </FormInline>)
+        } else if (type === "palletbyCus") {
+            return (<FormInline>
+                <LabelH>{Header} : </LabelH>
+                <InputDiv>
+                    <AmFindPopup
+                        id={idddl}
+                        placeholder={placeholder ? placeholder : "Select"}
+                        // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                        // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
+                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        queryApi={queryApi} //object query string
+                        defaultValue={data ? data[accessor] : ""}
+                        columns={columsddl} //array column สำหรับแสดง table
+                        width={width ? width : 300}
+                        ddlMinWidth={width ? width : 100}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeinPop(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                    />
+                </InputDiv>
+            </FormInline>)
+
+        } else if (type === "skubyCus") {
+            return (<FormInline>
+                <LabelH>{Header} : </LabelH>
+                <InputDiv>
+                    <AmFindPopup
+                        id={idddl}
+                        placeholder={placeholder ? placeholder : "Select"}
+                        // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                        // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
+                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        queryApi={skuByCus} //object query string
+                        //defaultValue={data ? data[accessor] : ""}
+                        columns={columsddl} //array column สำหรับแสดง table
+                        width={width ? width : 300}
+                        ddlMinWidth={width ? width : 100}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeinPop(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                    />
+                </InputDiv>
+            </FormInline>)
+
         }
     }
 
@@ -576,16 +677,16 @@ const AmCreateDocument = (props) => {
         }
     }
 
+
     const getHeaderCreate = () => {
         return headerCreate.map((x, xindex) => {
             return (
                 <Grid key={xindex} container spacing={24}>
                     {x.map((y, yindex) => {
-                        let syn = y.label ? " :" : "";
                         return (
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
-                                    <LabelH>{t(y.label) + syn}</LabelH>
+                                    <LabelH>{y.label}</LabelH>
                                     {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue)}
                                 </FormInline></div>
                             </Grid>
@@ -920,6 +1021,24 @@ const AmCreateDocument = (props) => {
         }
     }
 
+    const Addbtn = () => {
+        if (props.createByCus === true) {
+            console.log(cusIDs)
+            if (cusIDs === undefined || cusIDs === null) {
+                setMsgDialog("DesCustomer invalid");
+                setStateDialogErr(true);
+            } else {
+                setDialog(true);
+                setAddData(true);
+                setTitle("Add");
+            }
+        } else {
+            setDialog(true);
+            setAddData(true);
+            setTitle("Add");
+        }
+    }
+
     return (
         <div>
             {/* Dialog */}
@@ -936,6 +1055,7 @@ const AmCreateDocument = (props) => {
                 columns={editorListcolunm()}
             />
 
+
             {/* Header */}
             {getHeaderCreate()}
 
@@ -945,8 +1065,10 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
-                        {btnProps ? btnProps : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
-                            {t('Add')}
+                        {btnProps ? btnProps : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
+                            Addbtn()
+                        }} >
+                            {'ADD'}
                         </AmButton>}
                     </div>
                 </Grid>
@@ -967,11 +1089,21 @@ const AmCreateDocument = (props) => {
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>
                         <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>
-                            {t('Create')}
+                            {'CREATE'}
                         </AmButton>
                     </div>
                 </Grid>
             </Grid>
+
+
+            <AmDialogConfirm
+                open={openDialogClear}
+                close={a => setopenDialogClear(a)}
+                bodyDialog={bodyDailogClear}
+                //styleDialog={{ width: "1500px", height: "500px" }}
+                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => { OnConfirmClear() }}>{t("OK")}</AmButton>}
+                customCancelBtn={<AmButton styleType="delete_clear" onClick={() => { setopenDialogClear(false) }}>{t("Cancel")}</AmButton>}
+            ></AmDialogConfirm>
         </div>
     )
 }
