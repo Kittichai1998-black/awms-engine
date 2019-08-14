@@ -9,36 +9,35 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class ClosingDocument : BaseEngine<DoneAPI.TReq, DoneAPI.TRes>
+    public class ClosingDocument : BaseEngine<List<long>, List<long>>
     {
-        protected override DoneAPI.TRes ExecuteEngine(DoneAPI.TReq reqVO)
+        protected override List<long> ExecuteEngine(List<long> reqVO)
         {
-            var res = this.ExectProject<DoneAPI.TReq, DoneAPI.TRes>(FeatureCode.EXEWM_DoneQueueClosing, reqVO);
+            var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueClosing, reqVO);
             if (res == null)
             {
-                reqVO.docIDs.ForEach(x =>
+                reqVO.ForEach(x =>
                 {
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
-
-                    if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                    if (docs != null)
                     {
-                        if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                        if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
                         {
-                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
-                        }
-                        else
-                        {
-                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item of Packs Not All Actived.");
+                            if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                            {
+                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
+                            }
                         }
                     }
+                    else
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document Not Found");
+                    }
                 });
-                res = new DoneAPI.TRes()
-                {
-                    docIDs = reqVO.docIDs
-                };
+                
             }
 
-            return res;
+            return reqVO;
         }
 
     }

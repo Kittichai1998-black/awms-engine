@@ -1,5 +1,6 @@
 ﻿using AMWUtil.Exception;
 using AWMSEngine.APIService.V2.ASRS;
+using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
 using System;
 using System.Collections.Generic;
@@ -8,41 +9,42 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class ClosedDocument : BaseEngine<DoneAPI.TReq, DoneAPI.TRes>
+    public class ClosedDocument : BaseEngine<List<long>, List<long>>
     {
-        protected override DoneAPI.TRes ExecuteEngine(DoneAPI.TReq reqVO)
+        protected override List<long> ExecuteEngine(List<long> reqVO)
         {
-            var res = this.ExectProject<DoneAPI.TReq, DoneAPI.TRes>(FeatureCode.EXEWM_DoneQueueClosed, reqVO);
+            var res = this.ExectProject<List<long>, List<long>>(FeatureCode.EXEWM_DoneQueueClosed, reqVO);
             if (res == null)
             {
-                reqVO.docIDs.ForEach(x =>
+                reqVO.ForEach(x =>
                 {
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
-
-                    if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                    if (docs != null)
                     {
-                        if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                        var distos = ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
+                        if (distos == null)
+                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item Not Found");
+
+                        if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                         {
-                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
-                        }
-                        else
-                        {
-                            ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, null, DocumentEventStatus.CLOSED, this.BuVO);
+                            if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                            {
+                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                            }
+                            else
+                            {
+                                ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, null, DocumentEventStatus.CLOSED, this.BuVO);
+                            }
                         }
                     }
                     else
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item of Packs Not All Actived.");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document Not Found");
                     }
-
-                });
-                res = new DoneAPI.TRes()
-                {
-                    docIDs = reqVO.docIDs
-                };
+                }); 
             }
 
-            return res;
+            return reqVO;
         }
 
     }

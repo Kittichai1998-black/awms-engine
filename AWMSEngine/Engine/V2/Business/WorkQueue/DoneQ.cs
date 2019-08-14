@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.ADO;
+using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
-    public class DoneQ : BaseEngine<DoneQ.TReq, DoneQ.TRes>
+    public class DoneQ : BaseEngine<DoneQ.TReq, List<long>>
     {
        
         public class TReq
@@ -25,26 +26,40 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public DateTime actualTime;
 
         }
-        public class TRes
-        {
-            public List<long> docIDs;
-        }
-        protected override TRes ExecuteEngine(TReq reqVO)
+      
+        protected override List<long> ExecuteEngine(TReq reqVO)
         {
             var queueTrx = ADO.WorkQueueADO.GetInstant().Get(reqVO.queueID.Value, this.BuVO);
             if (queueTrx.Des_Warehouse_ID != queueTrx.Warehouse_ID)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Present Location Not Equals Destination Location.");
 
-            this.UpdateStorageObjectLocation(queueTrx, reqVO);
+            this.UpdateStorageObjectLocation(reqVO, queueTrx);
 
             this.UpdateDocumentItemStorageObject(reqVO, queueTrx);
 
-            this.UpdateDoneQueueClosedDISTO(reqVO, queueTrx);
-            return null;
+            var docs = GetDocument(reqVO.queueID.Value);
+          
+            return docs;
         }
 
 
-        private StorageObjectCriteria UpdateStorageObjectLocation(SPworkQueue queueTrx, TReq reqVO)
+        private List<long> GetDocument(long queueID)
+        {
+            List<long> docsCode = new List<long>();
+
+            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueueDisto(queueID, this.BuVO);
+
+            if (docItems.Count > 0)
+            {
+               docsCode = docItems.Select(x => x.Document_ID).Distinct().ToList();
+            }
+            else
+            {
+                docsCode = null;
+            }
+            return docsCode;
+        }
+        private StorageObjectCriteria UpdateStorageObjectLocation(TReq reqVO, SPworkQueue queueTrx)
         {
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             if (mapsto.parentType != StorageObjectType.LOCATION)
@@ -77,7 +92,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).Select(x => new { x.ID, x.Document_ID }).Distinct().ToList();
 
-            var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
+            //var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
 
             if (queueTrx.Des_Warehouse_ID == warehouse.ID.Value)
             {
@@ -87,6 +102,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         docItems.ForEach(docItem =>
                         {
+                            var docs = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
+
                             stoList.ForEach(sto =>
                             {
                                 if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
@@ -103,88 +120,114 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     });
                                 }
                             });
-                        });
-                        if (docs.DocumentType_ID == DocumentTypeID.AUDIT)
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITED, this.BuVO);
-                        else
-                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
 
+                            if (docs.DocumentType_ID == DocumentTypeID.AUDIT)
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITED, this.BuVO);
+
+                            else
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                        });
+                        
                     }
                     else
                     {
                         var stoPack = stos.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
-                        var getDisto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                        var getDistos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                             {
-                            new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS),
-                            }, this.BuVO).FirstOrDefault(x => x.DocumentItem_ID == null);
+                            new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS, SQLConditionType.AND),
+                            new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS, SQLConditionType.OR),
+                            new SQLConditionCriteria("WorkQueue_ID", reqVO.queueID.Value, SQLOperatorType.EQUALS),
 
-                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDisto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
-                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                            }, this.BuVO);
+                       
+                        getDistos.ForEach(disto =>
+                        {
+                            if(disto.DocumentItem_ID == null)
+                            {
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                            }
+                            else
+                            {
+                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, EntityStatus.ACTIVE, this.BuVO);
+                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                            }
+                        });
                     }
                 }
-                else if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                else if (queueTrx.IOType == IOType.OUTPUT)
                 {
-                    docItems.ForEach(docItem =>
+                    if (docItems.Count > 0)
                     {
-                        stoList.ForEach(sto =>
+                        docItems.ForEach(docItem =>
                         {
-                            var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                            var docs = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
+                            if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
                             {
-                            new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("Sou_StorageObject_ID", sto.id, SQLOperatorType.EQUALS)
-                            }, this.BuVO);
-
-                            distos.ToList().ForEach(disto =>
-                            {
-                                if (sto.qty == disto.Quantity)
+                                stoList.ForEach(sto =>
                                 {
-                                    ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
-                                            new SQLConditionCriteria("DocumentItem_ID", disto.DocumentItem_ID, SQLOperatorType.EQUALS),
-                                            new SQLConditionCriteria("Sou_StorageObject_ID", disto.Sou_StorageObject_ID, SQLOperatorType.EQUALS)
-                                        }, new KeyValuePair<string, object>[]{
-                                            new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE),
-                                            new KeyValuePair<string, object>("Des_StorageObject_ID", disto.Sou_StorageObject_ID)
-                                        }, this.BuVO);
-
-                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
-                                }
-                                else
-                                {
-                                    var updSto = new StorageObjectCriteria();
-                                    updSto = sto;
-                                    updSto.baseQty -= disto.BaseQuantity.Value;
-                                    updSto.qty -= disto.Quantity.Value;
-                                    updSto.parentID = null;
-                                    updSto.mapstos = null;
-                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
-
-                                    if (updSto.baseQty == 0)
+                                    var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                                     {
-                                        updSto.eventStatus = StorageObjectEventStatus.PICKING;
-                                        var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                    }
-                                    else
+                                        new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
+                                        new SQLConditionCriteria("Sou_StorageObject_ID", sto.id, SQLOperatorType.EQUALS)
+                                    }, this.BuVO);
+
+                                    distos.ToList().ForEach(disto =>
                                     {
-                                        var issuedSto = new StorageObjectCriteria();
-                                        issuedSto = sto;
-                                        issuedSto.id = null;
-                                        issuedSto.baseQty = disto.BaseQuantity.Value;
-                                        issuedSto.qty = disto.Quantity.Value;
-                                        issuedSto.parentID = null;
-                                        issuedSto.mapstos = null;
-                                        issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                        if (sto.qty == disto.Quantity)
+                                        {
+                                            ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
+                                                new SQLConditionCriteria("DocumentItem_ID", disto.DocumentItem_ID, SQLOperatorType.EQUALS),
+                                                new SQLConditionCriteria("Sou_StorageObject_ID", disto.Sou_StorageObject_ID, SQLOperatorType.EQUALS)
+                                                }, new KeyValuePair<string, object>[]{
+                                                new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE),
+                                                new KeyValuePair<string, object>("Des_StorageObject_ID", disto.Sou_StorageObject_ID)
+                                                }, this.BuVO);
 
-                                        var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                        }
+                                        else
+                                        {
+                                            var updSto = new StorageObjectCriteria();
+                                            updSto = sto;
+                                            updSto.baseQty -= disto.BaseQuantity.Value;
+                                            updSto.qty -= disto.Quantity.Value;
+                                            updSto.parentID = null;
+                                            updSto.mapstos = null;
+                                            updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
 
-                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                    }
-                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
-                                }
-                            });
+                                            if (updSto.baseQty == 0)
+                                            {
+                                                updSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                                var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                            }
+                                            else
+                                            {
+                                                var issuedSto = new StorageObjectCriteria();
+                                                issuedSto = sto;
+                                                issuedSto.id = null;
+                                                issuedSto.baseQty = disto.BaseQuantity.Value;
+                                                issuedSto.qty = disto.Quantity.Value;
+                                                issuedSto.parentID = null;
+                                                issuedSto.mapstos = null;
+                                                issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+
+                                                var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+
+                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                            }
+                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                        }
+                                    });
+                                });
+
+
+                            }
+
                         });
-                    });
+                    }
                 }
 
                 if (queueTrx.EventStatus == WorkQueueEventStatus.WORKED || queueTrx.EventStatus == WorkQueueEventStatus.WORKING)
@@ -198,6 +241,49 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     queueTrx.EventStatus = WorkQueueEventStatus.CLOSED;
 
                     WorkQueueADO.GetInstant().PUT(queueTrx, this.BuVO);
+
+                    if (queueTrx.IOType == IOType.OUTPUT)
+                    {
+                        if (docItems.Count > 0)
+                        {
+                            docItems.ForEach(docItem =>
+                            {
+                                var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                                   {
+                                    new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
+                                    new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS)
+                                   }, this.BuVO);
+
+                                distos.ForEach(disto =>
+                                {
+                                    if(disto.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                                    {
+                                        var getArea = new MoveStoInGateToNextArea();
+                                        var treq = new MoveStoInGateToNextArea.TReq()
+                                        {
+                                            baseStoID = queueTrx.StorageObject_ID.Value
+                                        };
+                                        getArea.Execute(this.Logger, this.BuVO, treq);
+
+                                        if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID)
+                                        {
+                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queueTrx.StorageObject_ID.Value,
+                                                StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                                                StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                                        }
+                                        else
+                                        {
+                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queueTrx.StorageObject_ID.Value,
+                                                StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
+                                        }
+                                    }
+                                    
+                                });
+                            });
+                        }
+                    }
                 }
                 else
                 {
@@ -207,9 +293,5 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         }
 
-        private void UpdateDoneQueueClosedDISTO(TReq reqVO, SPworkQueue queueTrx)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
