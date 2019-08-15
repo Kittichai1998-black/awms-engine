@@ -33,7 +33,7 @@ const headercol2 = [
     { accessor: "Qty", Header: "Qty", width: 140, className: 'right', style: { fontWeight: '900' }, sortable: false },
     { accessor: "Destination", Header: "Destination", width: 170, sortable: false },
     { accessor: "DocNo", Header: "Doc No.", width: 160, sortable: false },
-    { accessor: "SAPRef", Header: "SAP.Doc No.", width: 160, sortable: false }
+    // { accessor: "SAPRef", Header: "SAP.Doc No.", width: 160, sortable: false }
 ]
 
 export default props => {
