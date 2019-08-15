@@ -509,6 +509,9 @@ const AmPickingReturn = (props) => {
                             if (actionValue === 1) {
                                 alertDialogRenderer("Success", "success", true);
                             }
+                            if (actionValue === 2) {
+                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
+                            }
 
                         } else {
                             if (actionValue === 0) {
