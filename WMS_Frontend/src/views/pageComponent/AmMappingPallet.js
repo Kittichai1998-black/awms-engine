@@ -831,7 +831,7 @@ const AmMappingPallet = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
-                    {inputSource.length > 0 ?
+                    {inputSource && inputSource.length > 0 ?
                         <>
                             <CardContent className={classes.cardContent}>
 
@@ -848,7 +848,7 @@ const AmMappingPallet = (props) => {
                         </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
-                        {inputHeader.length > 0 ? inputHeader.map((row, idx) => {
+                        {inputHeader && inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
                     </CardContent>
