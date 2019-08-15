@@ -132,7 +132,7 @@ const ReceiveWIPSup = (props) => {
                     if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                         qryStr[SC.OPT_SOU_WAREHOUSE_ID] = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                     }
-                    qryStr[SC.OPT_MVT] = "2023";
+                    qryStr[SC.OPT_MVT] = "2013";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                     console.log(qryStr)
                     let qryStr1 = queryString.stringify(qryStr)

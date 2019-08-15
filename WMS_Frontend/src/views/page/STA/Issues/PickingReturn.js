@@ -118,7 +118,6 @@ const PickingReturn = (props) => {
                     if (cartonNo && rootID && skuCode && orderNo) {
                         qryStr[SC.OPT_MVT] = "1091";
                         qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
-                        console.log(qryStr)
                         let qryStr1 = queryString.stringify(qryStr)
                         let uri_opt = decodeURIComponent(qryStr1);
 

@@ -502,7 +502,7 @@ const AmPickingReturn = (props) => {
                     if (res.data.bsto) {
                         setResData(res.data);
                         // inputClear();
-                        if (res.data.bsto.code === valueInput.scanCode) {
+                        if (res.data.bsto.code === req.scanCode) {
                             if (actionValue === 0) {
                                 alertDialogRenderer("Select Pallet Success", "success", true);
                             }

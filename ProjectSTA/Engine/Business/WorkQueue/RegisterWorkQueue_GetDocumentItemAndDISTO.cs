@@ -156,9 +156,9 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
                         if (mvt != null && mvt.Length > 0)
                         {
-                            if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURN_CUS)
+                            if (Convert.ToInt32(mvt) == (int)MovementType.FG_TRANSFER_CUS)
                             {   //customer return
-                                doc.MovementType_ID = MovementType.FG_RETURN_CUS;
+                                doc.MovementType_ID = MovementType.FG_TRANSFER_CUS;
                                 //เช็ค่า Sou_Customer_ID จาก options
                                 var Sou_Customer_ID = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_SOU_CUSTOMER_ID);
                                 if (Sou_Customer_ID != null && Sou_Customer_ID.Length > 0)
@@ -169,9 +169,9 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                     doc.Sou_Customer_ID = checkCusID.ID.Value;
                                 }
                             }
-                            else if (Convert.ToInt32(mvt) == (int)MovementType.WIP_FAST_TRANSFER_SUP)
+                            else if (Convert.ToInt32(mvt) == (int)MovementType.WIP_TRANSFER_SUP)
                             {
-                                doc.MovementType_ID = MovementType.WIP_FAST_TRANSFER_SUP;
+                                doc.MovementType_ID = MovementType.WIP_TRANSFER_SUP;
                             }
                             else if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURN_WM)
                             {   //picking return
