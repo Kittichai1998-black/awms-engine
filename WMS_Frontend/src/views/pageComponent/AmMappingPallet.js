@@ -508,7 +508,8 @@ const AmMappingPallet = (props) => {
                             if (res.data.id) {
                                 setStorageObj(res.data);
                                 // inputClear();
-                                alertDialogRenderer("Remove Pack Success", "success", true);
+                                // alertDialogRenderer("Remove Pack Success", "success", true);
+                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
 
                             } else {
                                 alertDialogRenderer("Remove Pallet Success", "success", true);
@@ -591,7 +592,7 @@ const AmMappingPallet = (props) => {
                         if (res.data.id) {
                             setStorageObj(res.data);
 
-                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "success", true);
+                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
                         } else {
                             alertDialogRenderer("Remove Pallet Success", "success", true);
                             onHandleClear();
