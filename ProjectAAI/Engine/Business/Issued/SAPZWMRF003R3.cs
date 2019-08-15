@@ -1,4 +1,5 @@
-﻿using AWMSEngine.Engine;
+﻿using AMWUtil.Exception;
+using AWMSEngine.Engine;
 using ProjectAAI.ADO.SAPApi;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,11 @@ namespace ProjectAAI.Engine.Business.Issued
             };
 
             var res = SAPInterfaceADO.GetInstant().ZWMRF003(sapCriteria, this.BuVO);
+
+            if(res.datas.Any(x=>x.ERR_MSG != "" || x.ERR_MSG != null))
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, res.datas.Find(x => x.ERR_MSG != "" || x.ERR_MSG != null).ERR_MSG);
+            }
 
             return res.datas;
         }
