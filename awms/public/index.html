@@ -1,94 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="CoreUI for React - Open Source Bootstrap Admin Template">
-    <meta name="author" content="Łukasz Holeczek">
-    <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,CSS,SCSS,HTML,RWD,Dashboard,React">
-    <title>AWMS</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/logo.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      /* width */
+      ::-webkit-scrollbar {
+        width: 7px;
+      }
+
+      /* Track */
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      /* Handle */
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+      }
+
+      /* Handle on hover */
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    </style>
     <!--
-      manifest.json provides metadata used when your web app is added to the
-      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <title>AMW : AMS (Auto Motion Software)</title>
     <script>
-    //window.apipath = "http://191.20.80.120:8090"; 
-    //window.apipath = "http://awms.automotionworks.com:8090";
-    window.apipath = "https://localhost:44320";
-    //window.apipath = "http://192.168.200.11:8090";
-    window.alert = function(msg, color, border){
+      //เเสดงผลสถานะ downloading
+      window.loading = {
+        countLoad: 0,
+        onLoading: function() {
+          this.countLoad++;
+          // console.log(this.countLoad);
+          window.loading.showLoading();
+        },
+        onLoaded: function() {
+          this.countLoad--;
+          // console.log(this.countLoad);
+          window.loading.showLoading();
+        },
+        showLoading: function() {
+          const x = document.getElementById("divloading");
+          if (this.countLoad === 0) {
+            x.style.display = "none";
+          } else {
+            x.style.display = "block";
+          }
+        }
+      };
+    </script>
+    <script>
+      window.apipath = "https://localhost:44366";
+      // window.apipath = "http://awms.automotionworks.com:8090";
+      window.project = "TAP";
+
+      window.alert = function(msg, backgroundColor, color, border) {
         var div = document.createElement("div");
-        div.style.textAlign = "center"
-        div.style.width = "99%"
-        div.style.background = color ? color : "rgba(255, 0, 0, 0.3)"
-        div.style.transition = "opacity 0.5s";
-        div.style.opacity = "1";
+        div.style.textAlign = "center";
+        div.style.width = "350px";
+        div.style.height = "70px";
+        div.style.paddingTop = "5px";
+        div.style.background = backgroundColor ? backgroundColor : "white";
+        (div.style.color = color ? color : "black"), (div.style.opacity = 0.8);
         div.innerHTML = msg;
         div.onclick = () => {
-          div.remove()
-        }
-        div.style.border = border ? border : "1px solid red";
+          div.remove();
+        };
+        //div.style.border = border ? border : "2px solid black";
         div.style.margin = "3px auto";
         div.style.padding = "2px";
-        div.style.cursor = "pointer"
-        const ele = document.getElementById("msg")
-        ele.prepend(div)
+        div.style.cursor = "pointer";
+        const ele = document.getElementById("msg");
+        ele.prepend(div);
         setTimeout(() => {
-            div.style.opacity = "0";
-            div.style.opacity = "pointer-events:none";
-            setTimeout(() => {ele.removeChild(div)}, 1000)
-        }, 10000)
-    }
+          div.style.opacity = "0";
+          div.style.opacity = "pointer-events:none";
+          setTimeout(() => {
+            ele.removeChild(div);
+          }, 1000);
+        }, 50000);
+      };
 
-    window.success = function(msg){
-        window.alert(msg, "rgba(76, 255, 51, 0.2)","1px solid #4dbd74")
-    }
+      window.success = function(msg, backgroundColor, color) {
+        msg = "xxxx <br/> xxxx";
+        window.alert(
+          msg,
+          backgroundColor ? backgroundColor : "#689F38",
+          color ? color : "white",
+          "2px solid white"
+        );
+      };
 
-    window.error = function(msg){
-        window.alert(msg, "rgba(255, 0, 0, 0.3)","1px solid #f86c6b")
-    }
+      window.error = function(msg, backgroundColor, color) {
+        window.alert(
+          msg,
+          backgroundColor ? backgroundColor : "#E53935",
+          color ? color : "white",
+          "2px solid white"
+        );
+      };
 
-    window.warning = function(msg){
-        window.alert(msg, "rgb(255, 193, 7, 0.5)","1px solid #ffc107")
-    }
-	</script>
+      window.warning = function(msg, backgroundColor, color) {
+        window.alert(
+          msg,
+          backgroundColor ? backgroundColor : "#FF8F00",
+          color ? color : "white",
+          "2px solid white"
+        );
+      };
+    </script>
   </head>
 
-  <!-- BODY options, add following classes to body to change options
-
-  // Header options
-  1. '.header-fixed'					- Fixed Header
-
-  // Brand options
-  1. '.brand-minimized'       - Minimized brand (Only symbol)
-
-  // Sidebar options
-  1. '.sidebar-fixed'					- Fixed Sidebar
-  2. '.sidebar-hidden'				- Hidden Sidebar
-  3. '.sidebar-off-canvas'		- Off Canvas Sidebar
-  4. '.sidebar-minimized'			- Minimized Sidebar (Only icons)
-  5. '.sidebar-compact'			  - Compact Sidebar
-
-  // Aside options
-  1. '.aside-menu-fixed'			- Fixed Aside Menu
-  2. '.aside-menu-hidden'			- Hidden Aside Menu
-  3. '.aside-menu-off-canvas'	- Off Canvas Aside Menu
-
-  // Breadcrumb options
-  1. '.breadcrumb-fixed'			- Fixed Breadcrumb
-
-  // Footer options
-  1. '.footer-fixed'					- Fixed footer
-
-  -->
-
   <body>
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -100,6 +136,9 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <div id="msg" style="position:fixed; top:0; z-index: 9999; width:100%"></div>
+    <div
+      id="msg"
+      style="float: right; z-index: 9999; position: fixed; right: 10px; top:0 "
+    ></div>
   </body>
 </html>
