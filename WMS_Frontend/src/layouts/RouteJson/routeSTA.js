@@ -57,7 +57,6 @@ const pickingReturn = Loadable({
   loader: () => import("../../views/page/STA/Issues/PickingReturn"),
   loading: Loading
 });
-
 const CountingAdj = Loadable({
   loader: () => import("../../views/page/STA/Audit/CountingAdj"),
   loading: Loading
@@ -72,6 +71,10 @@ const ProcessQueueCT = Loadable({
 });
 const dashboardPickingJob = Loadable({
   loader: () => import("../../views/page/STA/Dashboard/DashboardPickingJob"),
+  loading: Loading
+});
+const dashboardCountingJob = Loadable({
+  loader: () => import("../../views/page/STA/Dashboard/DashboardCountingJob"),
   loading: Loading
 });
 const ReceivePallet = Loadable({
@@ -96,6 +99,7 @@ const routes = [
   { path: "/issue/create", name: "base5", compoment: CreateDocGISTA, exact: true },
   { path: "/issue/detail", name: "base5", compoment: DocumentViewGISTA, exact: true },
   { path: "/dashboard/pickingjobs", name: "TestRedirect", compoment: dashboardPickingJob, exact: true },
+  { path: "/dashboard/countingjobs", name: "TestRedirect", compoment: dashboardCountingJob, exact: true },
   { path: "/counting/search", name: "base5", compoment: DocumentSearchPISTA, exact: true },
   { path: "/counting/detail", name: "base5", compoment: DocumentViewPISTA, exact: true },
   { path: "/counting/create", name: "base5", compoment: CreateDocPISTA, exact: true },
