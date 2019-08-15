@@ -104,38 +104,56 @@ const Border = styled.div`
   border-radius: 4px;
   display: block;
 `;
+
+const useAreaID = (areaID) => {
+    const [areaIDs, setareaIDs] = useState();
+
+    useEffect(() => {
+        console.log(areaID)
+        setareaIDs(areaID)
+    }, [areaID]);
+
+    return areaIDs;
+}
+
 const Scanbarcode = (props) => {
     const { classes, location, history } = props;
-    const [dataDDL, setdataDDL] = useState({});
     const [valueText, setValueText] = useState({});
     const [databar, setdatabar] = useState({});
-    const [valueBarcode, setvalueBarcode] = useState();
-    const [datas, setdatas] = useState({});
-    const [gate, setGate] = useState();
-    const [datacarton, setdatacarton] = useState();
+    const [valueBarcode, setvalueBarcode] = useState();  
     const [productCode, setproductCode] = useState();
     const [productName, setproductName] = useState();
     const [qty, setqty] = useState(0);
     const [qtyMax, setqtyMax] = useState(0);
-    const [isFull, setisFull] = useState();
     const [areaGate, setareaGate] = useState();
     const [carton, setcarton] = useState();
     const [pallet, setpallet] = useState();
     const [orderNo, setorderNo] = useState();
     const [unitCode, setunitCode] = useState('PC');
-    const [OpenError, setOpenError] = useState(false);
+
+    const [productCode2, setproductCode2] = useState();
+    const [productName2, setproductName2] = useState();
+    const [qty2, setqty2] = useState(0);
+    const [qtyMax2, setqtyMax2] = useState(0);
+    const [areaGate2, setareaGate2] = useState();
+    const [carton2, setcarton2] = useState();
+    const [pallet2, setpallet2] = useState();
+    const [orderNo2, setorderNo2] = useState();
+    const [unitCode2, setunitCode2] = useState('PC');
+
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.25);
-    const [areaIDs, setareaIDs] = useState();
+    const areaIDs = useAreaID(localStorage.getItem("areaIDs"));
     const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
     const [area2, setarea2] = useState();
     const [gateLeft, setgateLeft] = useState(false);
     const [gateRight, setgateRight] = useState(false);
     const [dafaluInputs, setdafaluInputs] = useState("");
+    const [isFull, setisFull] = useState();
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
@@ -163,34 +181,24 @@ const Scanbarcode = (props) => {
 
 
     const onHandleChangeDDL = (value, dataObject, inputID, fieldDataKey) => {
-        setareaIDs(value)
+        localStorage.setItem("areaIDs", value);
         let Area = value
         var databars = { ...databar }
         databars.areaID = Area
         setdatabar(databars)
     }
-
+    
     useEffect(() => {
-        if (databar.scanCode)
-            if (databar.scanCode.length === 26)
-                //Scanbar()    
-                if (areaIDs) {
-                    const queryEdit = AreaLocationMaster;
-                    queryEdit.q = '[{ "f": "AreaMaster_ID", "c":"=", "v": ' + areaIDs + '}]';
-                    Axios.get(createQueryString(queryEdit)).then((res) => {
-                        setGate(res.data.datas)
-                    })
-                }
-    }, areaIDs)
-
-    useEffect(() => {
-        getScanbar()
-    }, areaIDs)
+        setInterval(() => {
+            if (areaIDs != null && areaIDs != NaN) {
+                getScanbar();
+            }
+        }, 3000);
+        
+    }, [areaIDs])
 
     const Scanbar = () => {
-
         Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databar).then((res) => {
-
             if (res.data._result.status = 1) {
 
                 if (res.data.bsto != null) {
@@ -250,161 +258,71 @@ const Scanbarcode = (props) => {
     const getScanbar = () => {
         let areas = parseInt(areaIDs, 10);
         Axios.get(window.apipath + '/v2/CheckBaseReceivedAPI?areaID=' + areas).then((res) => {
+            console.log(res.data.datas)
             if (res.data._result.status = 1) {
                 if (res.data.datas != null) {
-                    console.log(res.data.datas)
                     setarea1(res.data.datas[0].areaLocationCode)
                     setarea2(res.data.datas[1].areaLocationCode)
                     if (res.data.datas[0].bsto !== null) {
                         setgateLeft(true)
                         let datas = res.data.datas[0].bsto
+                        
                         setpallet(datas.code)
                         setareaGate(datas.areaID)
                         var datass = datas.mapstos[0]
-                        var dataQtyMax = datas.objectSizeMaps[0]
-                        setproductCode(datass.code)
-                        setproductName(datass.name)
-                        setorderNo(datass.orderNo)
-                        setunitCode(datass.unitCode)
-                        setcarton(datass.options.split("=")[1].split("&")[0])
 
-                        if (datass.qty == null) {
-                            setqty(0)
-                        } else { setqty(datass.qty) }
-                        if (dataQtyMax.maxQuantity == null) {
-                            setqtyMax(0)
-                        } else {
-                            setqtyMax(dataQtyMax.maxQuantity)
+                        if (datass !== undefined) {
+                            var dataQtyMax = datass.objectSizeMaps[0]
 
-                        }
-                        if (datass.qty != null && dataQtyMax.maxQuantity != null) {
-
-                            var qtyIn = parseFloat(datass.qty)
-                            var qtyMaxIn = parseFloat(dataQtyMax.maxQuantity)
-
-                            var calQty = qtyMaxIn - qtyIn
-
-                            if (calQty < qtyMaxIn) {
-                                var MsgError = "Recive" + calQty + " is Empty";
-                                setMsgDialog(MsgError);
-                                setTypeDialog("success");
-                                setStateDialog(true);
-                            }
-                            else if (calQty == qtyMaxIn) {
-                                var MsgErrors = "Empty"
-                                setMsgDialog(MsgErrors);
-                                setTypeDialog("success");
-                                setStateDialog(true);
+                            if (datass.qty == null || datass.qty == undefined) {
+                                setqty(0)
+                            } else { setqty(datass.qty) }
+                            if (dataQtyMax.maxQuantity == null) {
+                                setqtyMax(0)
                             } else {
+                                setqtyMax(dataQtyMax.maxQuantity)
 
                             }
+                            setproductCode(datass.code)
+                            setproductName(datass.name)
+                            setorderNo(datass.orderNo)
+                            setunitCode(datass.unitCode)
+                            setcarton(datass.options.split("=")[1].split("&")[0])
                         }
-
-
-
-                    } else if (res.data.datas[1].bsto !== null) {
+                
+                    }
+                    if (res.data.datas[1].bsto !== null) 
                         setgateRight(true)
                         let datas = res.data.datas[1].bsto
-                        console.log(datas)
-                        setpallet(datas.code)
-                        setareaGate(datas.areaID)
+                        setpallet2(datas.code)
+                        setareaGate2(datas.areaID)
                         var datass = datas.mapstos[0]
-                        var dataQtyMax = datas.objectSizeMaps[0]
-                        setproductCode(datass.code)
-                        setproductName(datass.name)
-                        setorderNo(datass.orderNo)
-                        setunitCode(datass.unitCode)
-                        setcarton(datass.options.split("=")[1].split("&")[0])
 
-                        if (datass.qty == null) {
-                            setqty(0)
-                        } else { setqty(datass.qty) }
-                        if (dataQtyMax.maxQuantity == null) {
-                            setqtyMax(0)
-                        } else {
-                            setqtyMax(dataQtyMax.maxQuantity)
+                        if (datass !== undefined) {
+                            var dataQtyMax = datas.objectSizeMaps[0]
 
-                        }
-                        if (datass.qty != null && dataQtyMax.maxQuantity != null) {
-
-                            var qtyIn = parseFloat(datass.qty)
-                            var qtyMaxIn = parseFloat(dataQtyMax.maxQuantity)
-
-                            var calQty = qtyMaxIn - qtyIn
-
-                            if (calQty < qtyMaxIn) {
-                                var MsgError = "Recive" + calQty + " is Empty";
-                                setMsgDialog(MsgError);
-                                setTypeDialog("success");
-                                setStateDialog(true);
-                            }
-                            else if (calQty == qtyMaxIn) {
-                                var MsgErrors = "Empty"
-                                setMsgDialog(MsgErrors);
-                                setTypeDialog("success");
-                                setStateDialog(true);
+                            if (datass.qty == null || datass.qty == undefined) {
+                                setqty2(0)
                             } else {
-
+                                setqty2(datass.qty)
                             }
+                            if (dataQtyMax.maxQuantity == null) {
+                                setqtyMax2(0)
+                            } else {
+                                setqtyMax2(dataQtyMax.maxQuantity)
+                            }
+                            setproductCode2(datass.code)
+                            setproductName2(datass.name)
+                            setorderNo2(datass.orderNo)
+                            setunitCode2(datass.unitCode)
+                            setcarton2(datass.options.split("=")[1].split("&")[0])
                         }
+     
+
 
                     }
-                    //setpallet(res.data.bsto.code)
-                    //setareaGate(res.data.areaLocationID)
-                    //var datass = res.data.bsto.mapstos[0]
-                    //var dataQtyMax = res.data.bsto.objectSizeMaps[0]
-                    //setproductCode(datass.code)
-                    //setproductName(datass.name)
-                    //setorderNo(datass.orderNo)
-                    //setunitCode(datass.unitCode)
-                    //setcarton(datass.options.split("=")[1].split("&")[0])
-
-                    //if (datass.qty == null) {
-                    //    setqty(0)
-                    //} else { setqty(datass.qty) }
-                    //if (dataQtyMax.maxQuantity == null) {
-                    //    setqtyMax(0)
-                    //} else {
-                    //    setqtyMax(dataQtyMax.maxQuantity)
-
-                    //}
-                    //    if (datass.qty != null && dataQtyMax.maxQuantity != null) {
-
-                    //        var qtyIn = parseFloat(datass.qty)
-                    //        var qtyMaxIn = parseFloat(dataQtyMax.maxQuantity)
-
-                    //        var calQty = qtyMaxIn - qtyIn
-
-                    //        if (calQty < qtyMaxIn) {
-                    //            var MsgError = "Recive" + calQty + " is Empty";
-                    //            setMsgDialog(MsgError);
-                    //            setTypeDialog("success");
-                    //            setStateDialog(true);
-                    //        }
-                    //        else if (calQty == qtyMaxIn) {
-                    //            var MsgErrors = "Empty"
-                    //            setMsgDialog(MsgErrors);
-                    //            setTypeDialog("success");
-                    //            setStateDialog(true);
-                    //        } else {
-
-                    //        }
-                    //}
-
-                } else {
-
-                    setMsgDialog(res.data._result.message);
-                    setTypeDialog("error");
-                    setStateDialog(true);
                 }
-
-
-            } else {
-                setMsgDialog(res.data._result.message);
-                setTypeDialog("error");
-                setStateDialog(true);
-            }
-
+            
         })
 
     }
@@ -504,22 +422,31 @@ const Scanbarcode = (props) => {
                                 <FormInline>
                                     <Typography variant="h4" component="h3">Barcode : </Typography>
                                     <AmInput style={{ width: "300px" }}
+                                        id="barcodeLong"
                                         autoFocus={true}
                                         value={valueBarcode}
-                                        onChange={(value) => {
-                                            let bar = value
-                                            var databarcode = { ...databar }
-                                            databarcode.scanCode = bar
-                                            //setdatabar(databarcode)
-                                            if (value.length !== 26) {
+                                        
+                                        onKeyPress={(value, a, b, event) => {
+                                            if (event.key === "Enter") {
+                                                let bar = value
+                                                var databarcode = { ...databar }
+                                                databarcode.scanCode = bar
+                                                //setdatabar(databarcode)
+                                                if (value.length !== 26) {
 
-                                                //setMsgDialog("Barcode Invalid");
-                                                //setTypeDialog("error");
-                                                //setStateDialog(true);
+                                                    //setMsgDialog("Barcode Invalid");
+                                                    //setTypeDialog("error");
+                                                    //setStateDialog(true);
 
-                                            } else { setdatabar(databarcode) }
+                                                } else {
+                                                    setdatabar(databarcode);
 
-                                        }}>
+                                                    document.getElementById("barcodeLong").value = "";
+                                                    Scanbar();
+                                                }
+                                            }
+                                        }}
+                                    >
                                     </AmInput></FormInline></div>
                         </Grid>
                         <Grid item xs={6}>
@@ -536,6 +463,8 @@ const Scanbarcode = (props) => {
                                             width={300} //��˹��������ҧ�ͧ��ͧ input
                                             ddlMinWidth={300} //��˹��������ҧ�ͧ���ͧ dropdown
                                             valueData={valueText} //��� value ������͡
+                                            defaultValue={localStorage.getItem("areaIDs")}
+                                            returnDefaultValue={true}
                                             queryApi={AreaMaster}
                                             onChange={onHandleChangeDDL}
                                             ddlType={"search"} //�ٻẺ Dropdown 
@@ -611,27 +540,27 @@ const Scanbarcode = (props) => {
                                         <Grid item xs={1}></Grid><Grid item xs={11}>
                                             <FormInline style={{ paddingTop: "10px" }} >
                                                 <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
-                                                <Typography>{pallet}</Typography>
+                                                <Typography variant="h5" component="h3">{pallet2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
-                                                <Typography>{productCode}</Typography>
+                                                <Typography variant="h5" component="h3">{productCode2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
-                                                <Typography>{orderNo}</Typography>
+                                                <Typography variant="h5" component="h3">{orderNo2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
-                                                <Typography>{carton}</Typography>
+                                                <Typography variant="h5" component="h3">{carton2}</Typography>
                                             </FormInline>
 
                                         </Grid></Grid>
                                         <Border style={{ paddingRight: "80px" }} >
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography variant="h5" component="h3">Qty :</Typography >
-                                                <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax}</Typography>
-                                                <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode}</Typography>
+                                                <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2}</Typography>
+                                                <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode2}</Typography>
 
                                             </FormInline>
                                         </Border>
