@@ -131,11 +131,8 @@ const Scanbarcode = (props) => {
     const [calHeight, setCalHeight] = useState(0.25);
     const [areaIDs, setareaIDs] = useState();
     const { width, height } = useWindowWidth();
-    const [area1, setarea1] = useState();
-    const [area2, setarea2] = useState();
-    const [gateLeft, setgateLeft] = useState(false);
-    const [gateRight, setgateRight] = useState(false);
-    const [dafaluInputs, setdafaluInputs ] = useState("");
+
+
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
@@ -173,15 +170,17 @@ const Scanbarcode = (props) => {
     useEffect(() => {
         if (databar.scanCode)
             if (databar.scanCode.length === 26)
-                //Scanbar()    
-         if (areaIDs) {
+               // Scanbar()
+    
+        if (databar.areaID) {
             const queryEdit = AreaLocationMaster;
-            queryEdit.q = '[{ "f": "AreaMaster_ID", "c":"=", "v": ' + areaIDs + '}]';
+            queryEdit.q = '[{ "f": "AreaMaster_ID", "c":"=", "v": ' + databar.areaID + '}]';
             Axios.get(createQueryString(queryEdit)).then((res) => {
+
                 setGate(res.data.datas)
             })
         }
-    }, areaIDs)
+    }, [databar])
 
     useEffect(() => {
         getScanbar()
@@ -194,8 +193,17 @@ const Scanbarcode = (props) => {
             if (res.data._result.status = 1) {
 
                 if (res.data.bsto != null) {
+                   
+                    setpallet(res.data.bsto.code)
+                    setareaGate(res.data.areaLocationID)
                     var datass = res.data.bsto.mapstos[0]
-                    var dataQtyMax = res.data.bsto.objectSizeMaps[0]    
+                    var dataQtyMax = res.data.bsto.objectSizeMaps[0]
+                    setproductCode(datass.code)
+                    setproductName(datass.name)
+                    setorderNo(datass.orderNo)
+                    setunitCode(datass.unitCode)
+                    setcarton(datass.options.split("=")[1].split("&")[0])
+
                     if (datass.qty == null) {
                         setqty(0)
                     } else { setqty(datass.qty) }
@@ -248,20 +256,17 @@ const Scanbarcode = (props) => {
     }
 
     const getScanbar = () => {
-        let areas = parseInt(areaIDs,10);
+        console.log(areaIDs)
+        let areas = Integer.parseInt(areaIDs,10);
         Axios.get(window.apipath + '/v2/CheckBaseReceivedAPI?areaID=' + areas).then((res) => {
+            console.log(res)
             if (res.data._result.status = 1) {
-                if (res.data.datas != null) {
-                    console.log(res.data.datas)
-                    setarea1(res.data.datas[0].areaLocationCode)
-                    setarea2(res.data.datas[1].areaLocationCode)
-                    if (res.data.datas[0].bsto !== null) {                      
-                        setgateLeft(true)
-                        let datas = res.data.datas[0].bsto
-                        setpallet(datas.code)
-                        setareaGate(datas.areaID)
-                        var datass = datas.mapstos[0]
-                        var dataQtyMax = datas.objectSizeMaps[0]
+                if (res.data.bsto != null) {
+
+                    setpallet(res.data.bsto.code)
+                    setareaGate(res.data.areaLocationID)
+                    var datass = res.data.bsto.mapstos[0]
+                    var dataQtyMax = res.data.bsto.objectSizeMaps[0]
                     setproductCode(datass.code)
                     setproductName(datass.name)
                     setorderNo(datass.orderNo)
@@ -298,106 +303,15 @@ const Scanbarcode = (props) => {
                         } else {
 
                         }
-                }
-
-
-
-                    } else if (res.data.datas[1].bsto !== null) {
-                        setgateRight(true)
-                        let datas = res.data.datas[1].bsto
-                        console.log(datas)
-                        setpallet(datas.code)
-                        setareaGate(datas.areaID)
-                        var datass = datas.mapstos[0]
-                        var dataQtyMax = datas.objectSizeMaps[0]
-                        setproductCode(datass.code)
-                        setproductName(datass.name)
-                        setorderNo(datass.orderNo)
-                        setunitCode(datass.unitCode)
-                        setcarton(datass.options.split("=")[1].split("&")[0])
-
-                        if (datass.qty == null) {
-                            setqty(0)
-                        } else { setqty(datass.qty) }
-                        if (dataQtyMax.maxQuantity == null) {
-                            setqtyMax(0)
-                        } else {
-                            setqtyMax(dataQtyMax.maxQuantity)
-
-                        }
-                        if (datass.qty != null && dataQtyMax.maxQuantity != null) {
-
-                            var qtyIn = parseFloat(datass.qty)
-                            var qtyMaxIn = parseFloat(dataQtyMax.maxQuantity)
-
-                            var calQty = qtyMaxIn - qtyIn
-
-                            if (calQty < qtyMaxIn) {
-                                var MsgError = "Recive" + calQty + " is Empty";
-                                setMsgDialog(MsgError);
-                                setTypeDialog("success");
-                                setStateDialog(true);
-                            }
-                            else if (calQty == qtyMaxIn) {
-                                var MsgErrors = "Empty"
-                                setMsgDialog(MsgErrors);
-                                setTypeDialog("success");
-                                setStateDialog(true);
-                            } else {
-
-                            }
-                        }
 
                     }
-                    //setpallet(res.data.bsto.code)
-                    //setareaGate(res.data.areaLocationID)
-                    //var datass = res.data.bsto.mapstos[0]
-                    //var dataQtyMax = res.data.bsto.objectSizeMaps[0]
-                    //setproductCode(datass.code)
-                    //setproductName(datass.name)
-                    //setorderNo(datass.orderNo)
-                    //setunitCode(datass.unitCode)
-                    //setcarton(datass.options.split("=")[1].split("&")[0])
+                } else {
 
-                    //if (datass.qty == null) {
-                    //    setqty(0)
-                    //} else { setqty(datass.qty) }
-                    //if (dataQtyMax.maxQuantity == null) {
-                    //    setqtyMax(0)
-                    //} else {
-                    //    setqtyMax(dataQtyMax.maxQuantity)
+                    setMsgDialog(res.data._result.message);
+                    setTypeDialog("error");
+                    setStateDialog(true);
+                }
 
-                    //}
-                //    if (datass.qty != null && dataQtyMax.maxQuantity != null) {
-
-                //        var qtyIn = parseFloat(datass.qty)
-                //        var qtyMaxIn = parseFloat(dataQtyMax.maxQuantity)
-
-                //        var calQty = qtyMaxIn - qtyIn
-
-                //        if (calQty < qtyMaxIn) {
-                //            var MsgError = "Recive" + calQty + " is Empty";
-                //            setMsgDialog(MsgError);
-                //            setTypeDialog("success");
-                //            setStateDialog(true);
-                //        }
-                //        else if (calQty == qtyMaxIn) {
-                //            var MsgErrors = "Empty"
-                //            setMsgDialog(MsgErrors);
-                //            setTypeDialog("success");
-                //            setStateDialog(true);
-                //        } else {
-
-                //        }
-                //}
-
-            } else {
-
-                setMsgDialog(res.data._result.message);
-                setTypeDialog("error");
-                setStateDialog(true);
-            }
-        
 
             } else {
                 setMsgDialog(res.data._result.message);
@@ -504,8 +418,7 @@ const Scanbarcode = (props) => {
                                 <FormInline>
                                     <Typography variant="h4" component="h3">Barcode : </Typography>
                                     <AmInput style={{ width: "300px" }}
-                                        autoFocus={true}
-                                        value={valueBarcode}                                    
+                                        autoFocus={true} value={valueBarcode}
                                         onChange={(value) => {
                                             let bar = value
                                             var databarcode = { ...databar }
@@ -513,9 +426,9 @@ const Scanbarcode = (props) => {
                                             //setdatabar(databarcode)
                                             if (value.length !== 26) {
 
-                                                //setMsgDialog("Barcode Invalid");
-                                                //setTypeDialog("error");
-                                                //setStateDialog(true);
+                                                setMsgDialog("Barcode Invalid");
+                                                setTypeDialog("error");
+                                                setStateDialog(true);
 
                                             } else { setdatabar(databarcode) }
 
@@ -557,12 +470,11 @@ const Scanbarcode = (props) => {
                             <div style={{ paddingTop: "30px", marginRight: "5px" }}>
                                 <Card>
                                     <div>
-                                        {gateLeft === true ? gateLeft === true ? <Flash>{HeadGateA(area1 ? area1 : "")}</Flash>
-                                            : <div>{HeadGateB(area1 ? area1 : "")}</div> :
-                                            <div>{HeadGateB(area1 ? area1 : "")}</div>}
+                                        {gate != undefined ? areaGate === gate[0].ID ? <Flash>{HeadGateA(gate ? gate[0].Code : "")}</Flash> : <div>{HeadGateB(gate ? gate[0].Code : "")}</div> :
+                                            <div>{HeadGateB(gate ? gate[0].Code : "")}</div>}
                                     </div>
                                     <Card style={{ height: "500px" }}>
-                                        {gateLeft === true ? < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
+                                        {gate != undefined ? areaGate === gate[0].ID ? < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
                                             <Grid item xs={1}></Grid><Grid item xs={11}>
                                                 <FormInline style={{ paddingTop: "10px" }} >
                                                     <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
@@ -589,7 +501,7 @@ const Scanbarcode = (props) => {
 
                                                 </FormInline>
                                             </Border>
-                                        </Card></Flash></div> : null}
+                                        </Card></Flash></div> : null : null}
 
                                     </Card>
                                 </Card>
@@ -601,13 +513,12 @@ const Scanbarcode = (props) => {
                             <div style={{ paddingTop: "30px", marginLeft: "5px" }}>
                                 <Card >
                                     <div>
-                                        {gateRight === true ? gateRight === true ? <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
-                                            : <div>{HeadGateB(area2 ? area2 : "")}</div> :
-                                            <div>{HeadGateB(area2 ? area2 : "")}</div>}
+                                        {gate != undefined ? areaGate === gate[1].ID ? <Flash>{HeadGateA(gate ? gate[1].Code : "")}</Flash> : <div>{HeadGateB(gate ? gate[1].Code : "")}</div> :
+                                            <div>{HeadGateB(gate ? gate[1].Code : "")}</div>}
                                     </div>
                                 </Card>
                                 <Card style={{ height: "500px" }} >
-                                    {gateRight === true ? gateRight === true ?  < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
+                                    {gate != undefined ? areaGate === gate[1].ID ? <div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
                                         <Grid item xs={1}></Grid><Grid item xs={11}>
                                             <FormInline style={{ paddingTop: "10px" }} >
                                                 <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
@@ -635,7 +546,7 @@ const Scanbarcode = (props) => {
 
                                             </FormInline>
                                         </Border>
-                                    </Card></Flash></div> : null:null}
+                                    </Card></Flash></div> : null : null}
                                 </Card></div></Grid>
                     </Grid>
                 </div>
