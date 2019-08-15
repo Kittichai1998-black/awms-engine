@@ -175,7 +175,8 @@ const Scanbarcode = (props) => {
   useEffect(() => {
     if (databar.scanCode)
       if (databar.scanCode.length === 26)
-        Scanbar()
+              Scanbar()
+      getScanbar()
 
     if (databar.areaID) {
       const queryEdit = AreaLocationMaster;
