@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next'
 
 // import { log } from "util";
 
-// const funcClock2 = (propTime) => {
+// const FuncClock2 = (propTime) => {
 //     const [time, setTime] = useState(propTime.label + Moment().format(propTime.format));
 //     useEffect(() => {//WillUnmount
 //         var timerID = setInterval(() => tick(), 1000);
@@ -32,7 +32,7 @@ import { useTranslation } from 'react-i18next'
 // }
 
 
-const useClock = (propsTime, t) => {
+const FuncClock = (propsTime, t) => {
     const [date, setDate] = useState()
     const [time, setTime] = useState()
 
@@ -96,7 +96,7 @@ const AmPageDashboard = props => {
     })
     // const [height,setHeight] = useState(window.innerHeight)
     // const { width, height } = useWindowWidth();
-    const time = props.time ? clock : null
+    const time = props.time ? FuncClock(props.time, t) : null
 
     useEffect(() => {
         setTimeout(() => {
