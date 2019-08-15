@@ -11,7 +11,7 @@ import AmDropdown from '../components/AmDropdown'
 import SaveIcon from '@material-ui/icons/Description';
 import classnames from 'classnames';
 import AmDatepicker from '../components/AmDate'
-//import { apicall } from '../components/function/CoreFunction'
+import { apicall } from '../components/function/CoreFunction2'
 import AmEditorTable from '../components/table/AmEditorTable'
 import AmDialogs from '../components/AmDialogs'
 import AmCheckBox from '../components/AmCheckBox'
@@ -32,9 +32,8 @@ import AmDialogConfirm from '../components/AmDialogConfirm'
 import { string } from "prop-types";
 import { getPriority } from "os";
 import { width } from "@material-ui/system";
-import { apicall } from '../components/function/CoreFunction2'
 import { useTranslation } from 'react-i18next'
-import Axios from "axios";
+const Axios = new apicall()
 const styles = theme => ({
     root: {
         width: '100%',
