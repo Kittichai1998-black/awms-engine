@@ -28,9 +28,19 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x, buVO);
                 if (docs != null)
                 {
+
                     var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, buVO);
                     if (distos == null)
                         throw new AMWException(logger, AMWExceptionCode.B0001, "Document Item Not Found");
+
+                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                    {
+                        distos.ForEach(disto => {
+                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, buVO);
+                            var resSAP = ReqSTOToSAP(queue.StorageObject_Code, buVO);
+                        });
+                    }
+                    
 
                     if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
                     {
@@ -52,7 +62,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
             return reqVO;
         }
-        private SapResponse<ZSWMRF002_OUT_SU> GetObjectFromSAP(string suCode, VOCriteria buVO)
+        private SapResponse<ZSWMRF002_OUT_SU> ReqSTOToSAP(string suCode, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF002(suCode, buVO);
             return res;
