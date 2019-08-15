@@ -32,7 +32,7 @@ import { useTranslation } from 'react-i18next'
 // }
 
 
-const funcClock = (propsTime, t) => {
+const useClock = (propsTime, t) => {
     const [date, setDate] = useState()
     const [time, setTime] = useState()
 
@@ -88,7 +88,7 @@ const AmPageDashboard = props => {
     const { t } = useTranslation()
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.65);
-
+	const clock = useClock(props.time, t)
 
     const [width_height, set_width_height] = useState({
         width: window.innerWidth,
@@ -96,7 +96,7 @@ const AmPageDashboard = props => {
     })
     // const [height,setHeight] = useState(window.innerHeight)
     // const { width, height } = useWindowWidth();
-    const time = props.time ? funcClock(props.time, t) : null
+    const time = props.time ? clock : null
 
     useEffect(() => {
         setTimeout(() => {
