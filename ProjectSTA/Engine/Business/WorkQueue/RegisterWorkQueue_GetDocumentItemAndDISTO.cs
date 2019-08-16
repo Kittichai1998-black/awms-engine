@@ -141,7 +141,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     if (packH.options != null && packH.options.Length > 0)
                     {
                         //เช็คค่า Sou_Warehouse_ID จาก options
-                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_SOU_WAREHOUSE_ID);
+                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_WAREHOUSE_ID);
                         if (Sou_Warehouse_ID != null && Sou_Warehouse_ID.Length > 0)
                         { 
                             var checkWhID = StaticValue.Warehouses.First(x => x.ID == Convert.ToInt32(Sou_Warehouse_ID));
@@ -152,7 +152,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             doc.Sou_Branch_ID = StaticValue.Branchs.First(x => x.ID == checkWhID.Branch_ID).ID;
                             
                         }
-                        var mvt = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_MVT);
+                        var mvt = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_MVT);
 
                         if (mvt != null && mvt.Length > 0)
                         {
@@ -160,7 +160,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             {   //customer return
                                 doc.MovementType_ID = MovementType.FG_TRANSFER_CUS;
                                 //เช็ค่า Sou_Customer_ID จาก options
-                                var Sou_Customer_ID = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_SOU_CUSTOMER_ID);
+                                var Sou_Customer_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_CUSTOMER_ID);
                                 if (Sou_Customer_ID != null && Sou_Customer_ID.Length > 0)
                                 {
                                     var checkCusID = StaticValue.Customers.First(x => x.ID == Convert.ToInt32(Sou_Customer_ID));

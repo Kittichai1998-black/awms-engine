@@ -176,16 +176,16 @@ namespace ProjectAAI.ADO.SAPApi
         /// <summary>
         /// RESPONSE TO SAP R03, R04
         /// </summary>
-        public class ZSWMRF005_IN_AWS
+        public class ZSWMRF005_IN_AWS : ZSWMRF004_IN_AWS
         {
             ///// <summary>Stock Removal Mode</summary>
-            public string ZMODE;
+           // public string ZMODE;
             /// <summary>Warehouse number</summary>
-            public string LGNUM;
+            //public string LGNUM;
             /// <summary>Storage Unit Number</summary>
-            public string LENUM;
+            //public string LENUM;
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>///
-            public string GI_DOC;
+            //public string GI_DOC;
         }
         public class ZSWMRF005_OUT_SAP : ZSWMRF004_OUT_SAP
         {
@@ -194,7 +194,7 @@ namespace ProjectAAI.ADO.SAPApi
         /// <summary>
         /// RESPONSE TO SAP R05
         /// </summary>
-        public class ZSWMRF006_IN_AWS : ZSWMRF005_IN_AWS
+        public class ZSWMRF006_IN_AWS : ZSWMRF004_IN_AWS
         {
         }
         public class ZSWMRF006_OUT_SAP : ZSWMRF004_OUT_SAP
