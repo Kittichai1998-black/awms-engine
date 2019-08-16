@@ -248,7 +248,8 @@ const Scanbarcode = (props) => {
     }, [areaIDs])
 
     const Scanbar = () => {
-        Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databar).then((res) => {
+        var databars = {...databar}
+        Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databars).then((res) => {
             if (res.data._result.status = 1) {
 
                 if (res.data.bsto != null) {
@@ -461,21 +462,12 @@ const Scanbarcode = (props) => {
                                         onKeyPress={(value, a, b, event) => {
                                             if (event.key === "Enter") {
                                                 let bar = value
-                                                var databarcode = { ...databar }
+                                                var databarcode = databar
                                                 databarcode.scanCode = bar
                                                 //setdatabar(databarcode)
-                                                if (value.length !== 26) {
-
-                                                    //setMsgDialog("Barcode Invalid");
-                                                    //setTypeDialog("error");
-                                                    //setStateDialog(true);
-
-                                                } else {
                                                     setdatabar(databarcode);
-
                                                     document.getElementById("barcodeLong").value = "";
                                                     Scanbar();
-                                                }
                                             }
                                         }}
                                     >
