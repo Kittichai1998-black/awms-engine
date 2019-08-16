@@ -452,7 +452,7 @@ const Scanbarcode = (props) => {
                         <Grid item xs={12} style={{ paddingLeft: "350px", paddingTop: "10px" }}>
                             <div style={{ paddingTop: "30px" }}>
                                 <FormInline>
-                                    <Typography variant="h4" component="h3">Barcode : </Typography>
+                                    <Typography variant="h4" component="h3">QR Code : </Typography>
                                     <AmInput style={{ width: "300px" }}
                                         id="barcodeLong"
                                         autoFocus={true}
