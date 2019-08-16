@@ -1,11 +1,11 @@
 import * as signalR from '@aspnet/signalr';
-import Axios from 'axios'
+// import Axios from 'axios'
 import React, { useState, useEffect } from 'react'
 
-import AmDropdown from '../../../../components/AmDropdown';
+// import AmDropdown from '../../../../components/AmDropdown';
 import AmIconStatus from "../../../../components/AmIconStatus";
 import AmPageDashboard from '../../../../components/AmPageDashboard';
-import { createQueryString } from '../../../../components/function/CoreFunction'
+// import { createQueryString } from '../../../../components/function/CoreFunction'
 
 //type time,datetime,datelog
 const headercol1 = [
@@ -33,7 +33,7 @@ const headercol2 = [
     { accessor: "Qty", Header: "Qty", width: 140, className: 'right', style: { fontWeight: '900' }, sortable: false },
     { accessor: "Destination", Header: "Destination", width: 170, sortable: false },
     { accessor: "DocNo", Header: "Doc No.", width: 160, sortable: false },
-    { accessor: "SAPRef", Header: "SAP.Doc No.", width: 160, sortable: false }
+    // { accessor: "SAPRef", Header: "SAP.Doc No.", width: 160, sortable: false }
 ]
 
 export default props => {
@@ -76,12 +76,12 @@ export default props => {
     const signalrStart = () => {
         connection.start()
             .then(() => {
-                connection.on("DASHBOARD_PICKING_ALL", res => {
+                connection.on("DASHBOARD_PICKING_1", res => {
                     console.log(JSON.parse(res));
                     data[0][0].table[0].data = JSON.parse(res)
                     setData([...data])
                 })
-                connection.on("DASHBOARD_4", res => {
+                connection.on("DASHBOARD_PICKING_2", res => {
                     console.log(JSON.parse(res));
                     data[1][0].table[0].data = JSON.parse(res)
                     setData([...data])
@@ -109,7 +109,7 @@ export default props => {
 
     const time = {
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
-        label: "Date/Time : "
+        label: "Date/Time"
     }
 
     // const optionsArea = [

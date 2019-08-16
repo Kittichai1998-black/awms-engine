@@ -33,7 +33,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import AmListSTORenderer from '../pageComponent/AmListSTORenderer';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next'
-
+import Typography from '@material-ui/core/Typography';
 const Axios = new apicall()
 
 const styles = theme => ({
@@ -51,6 +51,12 @@ const styles = theme => ({
             '"Segoe UI Emoji"',
             '"Segoe UI Symbol"',
         ].join(','),
+    },
+    title: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        textDecoration: 'underline',
+        textAlign: 'center'
     },
     block: {
         display: "block"
@@ -189,6 +195,7 @@ const AmMappingPallet = (props) => {
     const { t } = useTranslation()
     const { classes,
         headerCreate,
+        sourceCreate,
         itemCreate,
         onBeforePost,
         apiCreate,
@@ -208,6 +215,7 @@ const AmMappingPallet = (props) => {
 
     const [inputHeader, setInputHeader] = useState([]);
     const [inputItem, setInputItem] = useState([]);
+    const [inputSource, setInputSource] = useState([]);
 
     const [ddlWarehouse, setDDLWarehouse] = useState(null);
     const [ddlArea, setDDLArea] = useState(null);
@@ -260,15 +268,24 @@ const AmMappingPallet = (props) => {
         }
     }, [inputItem]);
     useEffect(() => {
-         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
+        if (sourceCreate)
+            setInputSource(createComponent(sourceCreate));
+    }, [sourceCreate]);
+    useEffect(() => {
+        if (inputSource === null) {
+            setInputSource(createComponent(sourceCreate));
+        }
+    }, [inputSource]);
+    useEffect(() => {
+        if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
             GetWarehouseDDL();
-          }
-    }, [ddlWarehouse,localStorage.getItem("Lang")])
+        }
+    }, [ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
             GetAreaDDL(selWarehouse)
         }
-    }, [selWarehouse,ddlWarehouse,localStorage.getItem("Lang")])
+    }, [selWarehouse, ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (ddlArea === null && selWarehouse) {
             if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
@@ -455,11 +472,13 @@ const AmMappingPallet = (props) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             inputClear();
             if (res.data != null) {
-                if (res.data._result.message === "Success") {
+                if (res.data._result.message === "Success") { 
                     if (showArea && res.data.areaID) {
                         GetArea(res.data.areaID);
                     }
-                    if (res.data.code === valueInput.scanCode) {
+                    // console.log(res.data.code)
+                    // console.log(req.scanCode)
+                    if (res.data.code === req.scanCode) {
                         if (actionValue === 0) {
 
                             alertDialogRenderer("Select Pallet Success", "success", true);
@@ -468,11 +487,11 @@ const AmMappingPallet = (props) => {
 
                             alertDialogRenderer("Success", "success", true);
                         }
-                        // if (actionValue === 2) {
+                        if (actionValue === 2) {
 
-                        //     alertDialogRenderer("Remove Pallet Success", "success", true);
+                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
 
-                        // }
+                        }
                         setStorageObj(res.data);
 
                         // inputClear();
@@ -488,9 +507,10 @@ const AmMappingPallet = (props) => {
                             alertDialogRenderer("Success", "success", true);
                         }
                         if (actionValue === 2) {
-                            if (res.data.id) {
+                            if (res.data.mapstos) {
                                 setStorageObj(res.data);
                                 // inputClear();
+                                  
                                 alertDialogRenderer("Remove Pack Success", "success", true);
 
                             } else {
@@ -574,7 +594,7 @@ const AmMappingPallet = (props) => {
                         if (res.data.id) {
                             setStorageObj(res.data);
 
-                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "success", true);
+                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
                         } else {
                             alertDialogRenderer("Remove Pallet Success", "success", true);
                             onHandleClear();
@@ -754,6 +774,7 @@ const AmMappingPallet = (props) => {
         setAreaDetail(null);
         setInputHeader(null);
         setInputItem(null);
+        setInputSource(null);
         setDDLWarehouse(null);
         setDDLArea(null);
     }
@@ -813,10 +834,24 @@ const AmMappingPallet = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
+                    {inputSource && inputSource.length > 0 ?
+                        <>
+                            <CardContent className={classes.cardContent}>
+
+                                {inputSource.map((row, idx) => {
+                                    return row.component(row, idx)
+                                })}
+                            </CardContent>
+                            <Divider style={{ marginTop: 5 }} />
+                        </>
+                        : null}
                     <CardContent className={classes.cardContent}>
+                        <Typography className={classes.title} gutterBottom>
+                            Pallet Information
+                        </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
-                        {inputHeader ? inputHeader.map((row, idx) => {
+                        {inputHeader && inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
                     </CardContent>
@@ -878,6 +913,7 @@ const AmMappingPallet = (props) => {
 AmMappingPallet.propTypes = {
     classes: PropTypes.object.isRequired,
     headerCreate: PropTypes.array,
+    sourceCreate: PropTypes.array,
     itemCreate: PropTypes.array,
     onBeforePost: PropTypes.func,
     apiCreate: PropTypes.string,

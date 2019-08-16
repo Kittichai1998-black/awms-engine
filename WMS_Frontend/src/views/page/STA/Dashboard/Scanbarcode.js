@@ -23,11 +23,14 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import Flip from 'react-reveal/Flip';
 import Divider from '@material-ui/core/Divider';
-
+import Moment from 'moment';
+import { useTranslation } from 'react-i18next'
 
 import { get } from "http";
 import color from "@material-ui/core/colors/green";
+import Axios1 from 'axios'
 const Axios = new apicall()
+
 
 const styles = theme => ({
     root: {
@@ -52,24 +55,7 @@ const styles = theme => ({
 });
 
 
-const useWindowWidth = () => {
-    const [width, setWidth] = useState(window.innerWidth);
-    const [height, setHeight] = useState(window.innerHeight);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setWidth(window.innerWidth);
-            setHeight(window.innerHeight);
-        };
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    });
-
-    return { width, height };
-};
 
 const FormInline = styled.div`
 
@@ -103,34 +89,121 @@ const Border = styled.div`
   border-radius: 4px;
   display: block;
 `;
+
+const useAreaID = (areaID) => {
+    const [areaIDs, setareaIDs] = useState();
+
+    useEffect(() => {
+        console.log(areaID)
+        setareaIDs(areaID)
+    }, [areaID]);
+
+    return areaIDs;
+}
+
+const useClock = (propsTime, t) => {
+    const [date, setDate] = useState()
+    const [time, setTime] = useState()
+
+    useEffect(() => {
+        Axios1.get(window.apipath + "/v2/time").then((res) => {
+            console.log(res)
+            if (res) {
+                setDate({
+                    dateClient: new Date(),
+                    dateServer: new Date(res.data.dbTime + "+07:00"),
+                });
+            }
+        })  
+    }, [])
+
+    useEffect(() => {
+        if (date) {
+            var timerID = setInterval(() => runningCurrentDate(), 250);
+            return () => {
+                clearInterval(timerID);
+            };
+        }
+    }, [date, localStorage.getItem("Lang")])
+
+    useEffect(() => {
+        if (date)
+            runningCurrentDate()
+    }, [localStorage.getItem("Lang")])
+
+    const runningCurrentDate = () => {
+        let currentDateTime = new Date(date.dateServer.getTime() + (new Date().getTime() - date.dateClient.getTime()));
+        setTime(t(propsTime.label) + " : " + Moment(currentDateTime).format(propsTime.format))
+    }
+    return time
+}
+
+
 const Scanbarcode = (props) => {
+    const { t } = useTranslation()
     const { classes, location, history } = props;
-    const [dataDDL, setdataDDL] = useState({});
     const [valueText, setValueText] = useState({});
     const [databar, setdatabar] = useState({});
-    const [valueBarcode, setvalueBarcode] = useState();
-    const [datas, setdatas] = useState({});
-    const [gate, setGate] = useState();
-    const [datacarton, setdatacarton] = useState();
+    const [valueBarcode, setvalueBarcode] = useState();  
     const [productCode, setproductCode] = useState();
     const [productName, setproductName] = useState();
     const [qty, setqty] = useState(0);
     const [qtyMax, setqtyMax] = useState(0);
-    const [isFull, setisFull] = useState();
     const [areaGate, setareaGate] = useState();
     const [carton, setcarton] = useState();
     const [pallet, setpallet] = useState();
     const [orderNo, setorderNo] = useState();
     const [unitCode, setunitCode] = useState('PC');
-    const [OpenError, setOpenError] = useState(false);
+
+    const [productCode2, setproductCode2] = useState();
+    const [productName2, setproductName2] = useState();
+    const [qty2, setqty2] = useState(0);
+    const [qtyMax2, setqtyMax2] = useState(0);
+    const [areaGate2, setareaGate2] = useState();
+    const [carton2, setcarton2] = useState();
+    const [pallet2, setpallet2] = useState();
+    const [orderNo2, setorderNo2] = useState();
+    const [unitCode2, setunitCode2] = useState('PC');
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
-    const [typeDialog, setTypeDialog] = useState("");
+    const [stateDialogSuc, setStateDialogSuc] = useState(false);
+    const [msgDialogSuc, setMsgDialogSuc] = useState("");
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.25);
-    const { width, height } = useWindowWidth();
+    const areaIDs = useAreaID(localStorage.getItem("areaIDs"));
+    //const { width, height } = useWindowWidth();
+    const [area1, setarea1] = useState();
+    const [area2, setarea2] = useState();
+    const [gateLeft, setgateLeft] = useState(false);
+    const [gateRight, setgateRight] = useState(false);
+    const [isFull, setisFull] = useState();
+    const [width_height, set_width_height] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight
+    })
+    const clock = useClock({
+        format: "DD/MM/YYYY HH:mm:ss", //formet in moment
+        label: "Date/Time"
+    }, t)
+   const time = clock 
 
+    useEffect(() => {
+        setTimeout(() => {
+            set_width_height({
+                width: window.innerWidth,
+                height: window.innerHeight
+            })
+        }, 20);
+    }, [isFullScreen])
 
+ const goFull = () => {
+        setIsFullScreen(true);
+        setCalHeight(0.6);
+    }
+    const goMin = () => {
+        setIsFullScreen(false);
+        setCalHeight(0.65);
+    }
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
@@ -157,61 +230,31 @@ const Scanbarcode = (props) => {
     }
 
 
-
-
     const onHandleChangeDDL = (value, dataObject, inputID, fieldDataKey) => {
-        setdataDDL({
-            ...valueText, [inputID]: {
-                value: value,
-                dataObject: dataObject,
-                fieldDataKey: fieldDataKey,
-
-            }
-        });
+        localStorage.setItem("areaIDs", value);
         let Area = value
-        var databars = { ...databar, apiKey: "FREE01" }
+        var databars = { ...databar }
         databars.areaID = Area
         setdatabar(databars)
-
-
-
     }
-
-
-
+    
     useEffect(() => {
-        if (databar.scanCode)
-            if (databar.scanCode.length === 26)
-                Scanbar()
-
-        if (databar.areaID) {
-            const queryEdit = AreaLocationMaster;
-            queryEdit.q = '[{ "f": "AreaMaster_ID", "c":"=", "v": ' + databar.areaID + '}]';
-            Axios.get(createQueryString(queryEdit)).then((res) => {
-
-                setGate(res.data.datas)
-            })
-        }
-    }, [databar])
+        setInterval(() => {
+            if (areaIDs != null && areaIDs != NaN) {
+                getScanbar();
+            }
+        }, 3000);
+        
+    }, [areaIDs])
 
     const Scanbar = () => {
-
-        Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databar).then((res) => {
-
+        var databars = {...databar}
+        Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databars).then((res) => {
             if (res.data._result.status = 1) {
 
                 if (res.data.bsto != null) {
-
-                    setpallet(res.data.bsto.code)
-                    setareaGate(res.data.areaLocationID)
                     var datass = res.data.bsto.mapstos[0]
                     var dataQtyMax = res.data.bsto.objectSizeMaps[0]
-                    setproductCode(datass.code)
-                    setproductName(datass.name)
-                    setorderNo(datass.orderNo)
-                    setunitCode(datass.unitCode)
-                    setcarton(datass.options.split("=")[1].split("&")[0])
-
                     if (datass.qty == null) {
                         setqty(0)
                     } else { setqty(datass.qty) }
@@ -229,15 +272,13 @@ const Scanbarcode = (props) => {
                         var calQty = qtyMaxIn - qtyIn
 
                         if (calQty < qtyMaxIn) {
-                            var MsgError = "Recive" + calQty + " is Empty";
-                            setMsgDialog(MsgError);
-                            setTypeDialog("success");
-                            setStateDialog(true);
+                            var MsgError = "Recive " + calQty + "/" + qtyMaxIn;
+                            setMsgDialogSuc(MsgError);
+                            setStateDialogSuc(true);
                         }
                         else if (calQty == qtyMaxIn) {
                             var MsgErrors = "Empty"
-                            setMsgDialog(MsgErrors);
-                            setTypeDialog("success");
+                            setMsgDialog(MsgErrors);                          
                             setStateDialog(true);
                         } else {
 
@@ -247,14 +288,12 @@ const Scanbarcode = (props) => {
                 } else {
 
                     setMsgDialog(res.data._result.message);
-                    setTypeDialog("error");
                     setStateDialog(true);
                 }
 
 
             } else {
                 setMsgDialog(res.data._result.message);
-                setTypeDialog("error");
                 setStateDialog(true);
             }
 
@@ -263,23 +302,81 @@ const Scanbarcode = (props) => {
 
     }
 
-    const goFull = () => {
-        setIsFullScreen(true);
-        setCalHeight(0.2);
+    const getScanbar = () => {
+        let areas = parseInt(areaIDs, 10);
+        Axios.get(window.apipath + '/v2/CheckBaseReceivedAPI?areaID=' + areas).then((res) => {
+            console.log(res.data.datas)
+            if (res.data._result.status = 1) {
+                if (res.data.datas != null) {
+                    setarea1(res.data.datas[0].areaLocationCode)
+                    setarea2(res.data.datas[1].areaLocationCode)
+                    if (res.data.datas[0].bsto !== null) {
+                        setgateLeft(true)
+                        let datas = res.data.datas[0].bsto
+                        
+                        setpallet(datas.code)
+                        setareaGate(datas.areaID)
+                        var datass = datas.mapstos[0]
+
+                        if (datass !== undefined) {
+                            var dataQtyMax = datas.objectSizeMaps[0]
+                            console.log(dataQtyMax)
+                            if (datass.qty == null || datass.qty == undefined) {
+                                setqty(0)
+                            } else {
+                                setqty(datass.qty)
+                            }
+                            if (dataQtyMax.maxQuantity == null) {
+                                setqtyMax(0)
+                            } else {
+                                setqtyMax(dataQtyMax.maxQuantity)
+
+                            }
+                            setproductCode(datass.code)
+                            setproductName(datass.name)
+                            setorderNo(datass.orderNo)
+                            setunitCode(datass.unitCode)
+                            setcarton(datass.options.split("=")[1].split("&")[0])
+                        }
+                
+                    }
+                    if (res.data.datas[1].bsto !== null) 
+                        setgateRight(true)
+                        let datas = res.data.datas[1].bsto
+                        setpallet2(datas.code)
+                        setareaGate2(datas.areaID)
+                        var datass = datas.mapstos[0]
+
+                        if (datass !== undefined) {
+                            var dataQtyMax = datas.objectSizeMaps[0]
+
+                            if (datass.qty == null || datass.qty == undefined) {
+                                setqty2(0)
+                            } else {
+                                setqty2(datass.qty)
+                            }
+                            if (dataQtyMax.maxQuantity == null) {
+                                setqtyMax2(0)
+                            } else {
+                                setqtyMax2(dataQtyMax.maxQuantity)
+                            }
+                            setproductCode2(datass.code)
+                            setproductName2(datass.name)
+                            setorderNo2(datass.orderNo)
+                            setunitCode2(datass.unitCode)
+                            setcarton2(datass.options.split("=")[1].split("&")[0])
+                        }
+     
+
+
+                    }
+                }
+            
+        })
+
     }
-    const goMin = () => {
-        setIsFullScreen(false);
-        setCalHeight(0.25);
-    }
 
-
-    const closeFull = () => {
-        setisFull(false)
-    }
-
-
-
-    const HeadGateA = (getGate) => {
+ const HeadGateA = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#e91e63" }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
@@ -303,15 +400,12 @@ const Scanbarcode = (props) => {
         setisFull(true)
     }
 
-
-
-
     return (
         <Fullscreen
             enabled={isFullScreen}
             onChange={isFull => setIsFullScreen(isFull)}
         >
-            <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: height, width: width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
+            <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
                 <div className={classes.root}>
                     <Grid
                         container
@@ -352,133 +446,151 @@ const Scanbarcode = (props) => {
                         </Grid>
                     </Grid>
                 </div>
-                <AmDialogs typePopup={typeDialog} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
-
+                <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
+                <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
                 <div>
-
                     <Grid container spacing={24}>
                         <Grid item xs={12} style={{ paddingLeft: "350px", paddingTop: "10px" }}>
-                            <FormInline>
-                                <Typography variant="h4" component="h3">Barcode : </Typography>
-                                <AmInput style={{ width: "300px" }} autoFocus={true} value={valueBarcode} onChange={(value) => {
-                                    let bar = value
-                                    var databarcode = { ...databar }
-                                    databarcode.scanCode = bar
-                                    //setdatabar(databarcode)
-                                    if (value.length !== 26) {
-
-                                        setMsgDialog("Barcode Invalid");
-                                        setTypeDialog("error");
-                                        setStateDialog(true);
-
-                                    } else { setdatabar(databarcode) }
-
-                                }}>
-                                </AmInput>
-                            </FormInline>
+                            <div style={{ paddingTop: "30px" }}>
+                                <FormInline>
+                                    <Typography variant="h4" component="h3">QR Code : </Typography>
+                                    <AmInput style={{ width: "300px" }}
+                                        id="barcodeLong"
+                                        autoFocus={true}
+                                        value={valueBarcode}
+                                        
+                                        onKeyPress={(value, a, b, event) => {
+                                            if (event.key === "Enter") {
+                                                let bar = value
+                                                var databarcode = databar
+                                                databarcode.scanCode = bar
+                                                //setdatabar(databarcode)
+                                                    setdatabar(databarcode);
+                                                    document.getElementById("barcodeLong").value = "";
+                                                    Scanbar();
+                                            }
+                                        }}
+                                    >
+                                    </AmInput></FormInline></div>
                         </Grid>
                         <Grid item xs={6}>
-                            <FormInline>
-                                {console.log(AreaMaster)}
-                                <Typography style={{ paddingLeft: "120px" }} variant="h4" component="h3">Area : </Typography>
-                                <AmDropdown
-                                    id="area"
-                                    placeholder="Select"
-                                    fieldDataKey="ID" //���촴Column ���ç�Ѻtable �db 
-                                    fieldLabel={["Code", "Name"]}
-                                    labelPattern=" : " //�ѭ�ѡɳ����ͧ��â�������ҧ����
-                                    width={300} //��˹��������ҧ�ͧ��ͧ input
-                                    ddlMinWidth={300} //��˹��������ҧ�ͧ���ͧ dropdown
-                                    valueData={valueText} //��� value ������͡
-                                    queryApi={AreaMaster}
-                                    onChange={onHandleChangeDDL}
-                                    ddlType={"search"} //�ٻẺ Dropdown 
-                                />
-                            </FormInline>
+                            <div style={{ paddingTop: "30px" }} >
+                                <FormInline>
+                                    <Typography style={{ paddingLeft: "120px" }} variant="h4" component="h3">Area : </Typography>
+                                    <div style={{ marginRight: "10px" }}>
+                                        <AmDropdown
+                                            id="area"
+                                            placeholder="Select"
+                                            fieldDataKey="ID" //���촴Column ���ç�Ѻtable �db 
+                                            fieldLabel={["Code", "Name"]}
+                                            labelPattern=" : " //�ѭ�ѡɳ����ͧ��â�������ҧ����
+                                            width={300} //��˹��������ҧ�ͧ��ͧ input
+                                            ddlMinWidth={300} //��˹��������ҧ�ͧ���ͧ dropdown
+                                            valueData={valueText} //��� value ������͡
+                                            defaultValue={localStorage.getItem("areaIDs")}
+                                            returnDefaultValue={true}
+                                            queryApi={AreaMaster}
+                                            onChange={onHandleChangeDDL}
+                                            ddlType={"search"} //�ٻẺ Dropdown 
+                                        />
+                                    </div>
+                                </FormInline>
+                            </div>
                         </Grid>
                         <Grid item xs={6} >
-                            <FormInline>
-                                <Typography style={{ paddingLeft: "120px" }} variant="h4" component="h3">Time : </Typography>
-                            </FormInline>
+                            <div style={{ paddingTop: "30px" }}>
+                                <FormInline>
+                                    <Typography  variant="h4" component="h3">{time} </Typography>
+                                </FormInline>
+                            </div>
                         </Grid>
-                        <Grid item xs={6} >
-                            <Card >
-                                <div>
 
-                                    {gate != undefined ? areaGate === gate[0].ID ? <Flash>{HeadGateA(gate ? gate[0].Code : "")}</Flash> : <div>{HeadGateB(gate ? gate[0].Code : "")}</div> :
-                                        <div>{HeadGateB(gate ? gate[0].Code : "")}</div>}
-                                </div>
-                                <Card style={{ height: "500px", }}>
-                                    {gate != undefined ? areaGate === gate[0].ID ? < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
+
+                        <Grid item xs={6} >
+                            <div style={{ paddingTop: "30px", marginRight: "5px" }}>
+                                <Card>
+                                    <div>
+                                        {gateLeft === true ? gateLeft === true ? <Flash>{HeadGateA(area1 ? area1 : "")}</Flash>
+                                            : <div>{HeadGateB(area1 ? area1 : "")}</div> :
+                                            <div>{HeadGateB(area1 ? area1 : "")}</div>}
+                                    </div>
+                                    <Card style={{ height: "500px" }}>
+                                        {gateLeft === true ? < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
+                                            <Grid item xs={1}></Grid><Grid item xs={11}>
+                                                <FormInline style={{ paddingTop: "10px" }} >
+                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
+                                                    <Typography variant="h5" component="h3">{pallet}</Typography>
+                                                </FormInline>
+                                                <FormInline style={{ paddingTop: "10px" }}>
+                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
+                                                    <Typography variant="h5" component="h3">{productCode}</Typography>
+                                                </FormInline>
+                                                <FormInline style={{ paddingTop: "10px" }}>
+                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
+                                                    <Typography variant="h5" component="h3">{orderNo}</Typography>
+                                                </FormInline>
+                                                <FormInline style={{ paddingTop: "10px" }}>
+                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
+                                                    <Typography variant="h5" component="h3">{carton}</Typography>
+                                                </FormInline>
+                                            </Grid></Grid>
+                                            <Border style={{ paddingRight: "80px" }} >
+                                                <FormInline style={{ paddingTop: "10px" }}>
+                                                    <Typography variant="h5" component="h3">Qty :</Typography >
+                                                    <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax}</Typography>
+                                                    <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode}</Typography>
+
+                                                </FormInline>
+                                            </Border>
+                                        </Card></Flash></div> : null}
+
+                                    </Card>
+                                </Card>
+                            </div>
+                        </Grid>
+
+
+                        <Grid item xs={6}>
+                            <div style={{ paddingTop: "30px", marginLeft: "5px" }}>
+                                <Card >
+                                    <div>
+                                        {gateRight === true ? gateRight === true ? <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
+                                            : <div>{HeadGateB(area2 ? area2 : "")}</div> :
+                                            <div>{HeadGateB(area2 ? area2 : "")}</div>}
+                                    </div>
+                                </Card>
+                                <Card style={{ height: "500px" }} >
+                                    {gateRight === true ? gateRight === true ? < div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
                                         <Grid item xs={1}></Grid><Grid item xs={11}>
                                             <FormInline style={{ paddingTop: "10px" }} >
                                                 <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
-                                                <Typography variant="h5" component="h3">{pallet}</Typography>
+                                                <Typography variant="h5" component="h3">{pallet2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
-                                                <Typography variant="h5" component="h3">{productCode}</Typography>
+                                                <Typography variant="h5" component="h3">{productCode2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
-                                                <Typography variant="h5" component="h3">{orderNo}</Typography>
+                                                <Typography variant="h5" component="h3">{orderNo2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
-                                                <Typography variant="h5" component="h3">{carton}</Typography>
+                                                <Typography variant="h5" component="h3">{carton2}</Typography>
                                             </FormInline>
+
                                         </Grid></Grid>
                                         <Border style={{ paddingRight: "80px" }} >
                                             <FormInline style={{ paddingTop: "10px" }}>
                                                 <Typography variant="h5" component="h3">Qty :</Typography >
-                                                <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax}</Typography>
-                                                <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode}</Typography>
+                                                <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2}</Typography>
+                                                <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode2}</Typography>
 
                                             </FormInline>
                                         </Border>
                                     </Card></Flash></div> : null : null}
-
-                                </Card>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Card >
-                                <div>
-                                    {gate != undefined ? areaGate === gate[1].ID ? <Flash>{HeadGateA(gate ? gate[1].Code : "")}</Flash> : <div>{HeadGateB(gate ? gate[1].Code : "")}</div> :
-                                        <div>{HeadGateB(gate ? gate[1].Code : "")}</div>}
-                                </div>
-                            </Card>
-                            <Card style={{ height: "500px" }} >
-                                {gate != undefined ? areaGate === gate[1].ID ? <div > <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
-                                    <Grid item xs={1}></Grid><Grid item xs={11}>
-                                        <FormInline style={{ paddingTop: "10px" }} >
-                                            <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
-                                            <Typography>{pallet}</Typography>
-                                        </FormInline>
-                                        <FormInline style={{ paddingTop: "10px" }}>
-                                            <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
-                                            <Typography>{productCode}</Typography>
-                                        </FormInline>
-                                        <FormInline style={{ paddingTop: "10px" }}>
-                                            <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
-                                            <Typography>{orderNo}</Typography>
-                                        </FormInline>
-                                        <FormInline style={{ paddingTop: "10px" }}>
-                                            <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
-                                            <Typography>{carton}</Typography>
-                                        </FormInline>
-
-                                    </Grid></Grid>
-                                    <Border style={{ paddingRight: "80px" }} >
-                                        <FormInline style={{ paddingTop: "10px" }}>
-                                            <Typography variant="h5" component="h3">Qty :</Typography >
-                                            <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax}</Typography>
-                                            <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode}</Typography>
-
-                                        </FormInline>
-                                    </Border>
-                                </Card></Flash></div> : null : null}
-                            </Card></Grid></Grid>
+                                </Card></div></Grid>
+                    </Grid>
                 </div>
             </div>
         </Fullscreen>

@@ -105,7 +105,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         //var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
 
                         DateTime productDate = DateTime.ParseExact(pack.HSDAT,"yyyyMMdd", CultureInfo.InvariantCulture); //"20190527"
-                        DateTime incubatedate = productDate.AddDays(pack.WEBAZ - 1); 
+                        DateTime incubatedate = productDate.AddDays(Convert.ToDouble(pack.WEBAZ) - 1); 
                         var incb = DateTimeUtil.ToISOUTCString(incubatedate);
                         DateTime fvdt1 = DateTime.ParseExact(pack.FVDT1, "yyyyMMdd", CultureInfo.InvariantCulture);
                         var approveddate = DateTimeUtil.ToISOUTCString(fvdt1);

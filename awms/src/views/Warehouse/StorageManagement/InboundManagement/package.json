@@ -1,6 +1,0 @@
-{
-  "name": "StorageManagement",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./StorageManagement.js"
-}

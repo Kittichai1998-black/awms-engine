@@ -1,6 +1,0 @@
-{
-  "name": "ReceiveReport",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./ReceiveReport.js"
-}
