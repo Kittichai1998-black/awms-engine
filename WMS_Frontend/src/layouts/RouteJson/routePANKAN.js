@@ -33,12 +33,18 @@ const CreateLD = Loadable({
     loading: Loading
 });
 
+const Tranfer = Loadable({
+    loader: () => import("../../views/page/Pankan/Receive/Tranfer"),
+    loading: Loading
+});
+
 const routes = [
     { path: "/receive/search", name: "base5", compoment: searchGR, exact: true },
     { path: "/issue/create", name: "base5", compoment: CreateGI, exact: true },
     { path: "/issue/search", name: "base5", compoment: DocumentSearchGI, exact: true },
     { path: "/issue/detail", name: "base5", compoment: DocumentViewGI, exact: true },
     { path: "/receive/scanreceive", name: "Mapping Receive Pallet", compoment: MappingReceivePallet, exact: true },
+    { path: "/receive/tranfer", name: "Tranfer", compoment: Tranfer, exact: true },
     { path: "/loading/create", name: "base5", compoment: CreateLD, exact: true },
 
 ];
