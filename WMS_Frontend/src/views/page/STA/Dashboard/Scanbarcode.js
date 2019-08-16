@@ -23,12 +23,14 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import Flip from 'react-reveal/Flip';
 import Divider from '@material-ui/core/Divider';
-
+import Moment from 'moment';
+import { useTranslation } from 'react-i18next'
 
 import { get } from "http";
 import color from "@material-ui/core/colors/green";
-
+import Axios1 from 'axios'
 const Axios = new apicall()
+
 
 const styles = theme => ({
     root: {
@@ -53,24 +55,7 @@ const styles = theme => ({
 });
 
 
-const useWindowWidth = () => {
-    const [width, setWidth] = useState(window.innerWidth);
-    const [height, setHeight] = useState(window.innerHeight);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setWidth(window.innerWidth);
-            setHeight(window.innerHeight);
-        };
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    });
-
-    return { width, height };
-};
 
 const FormInline = styled.div`
 
@@ -116,7 +101,46 @@ const useAreaID = (areaID) => {
     return areaIDs;
 }
 
+const useClock = (propsTime, t) => {
+    const [date, setDate] = useState()
+    const [time, setTime] = useState()
+
+    useEffect(() => {
+        Axios1.get(window.apipath + "/v2/time").then((res) => {
+            console.log(res)
+            if (res) {
+                setDate({
+                    dateClient: new Date(),
+                    dateServer: new Date(res.data.dbTime + "+07:00"),
+                });
+            }
+        })  
+    }, [])
+
+    useEffect(() => {
+        if (date) {
+            var timerID = setInterval(() => runningCurrentDate(), 250);
+            return () => {
+                clearInterval(timerID);
+            };
+        }
+    }, [date, localStorage.getItem("Lang")])
+
+    useEffect(() => {
+        if (date)
+            runningCurrentDate()
+    }, [localStorage.getItem("Lang")])
+
+    const runningCurrentDate = () => {
+        let currentDateTime = new Date(date.dateServer.getTime() + (new Date().getTime() - date.dateClient.getTime()));
+        setTime(t(propsTime.label) + " : " + Moment(currentDateTime).format(propsTime.format))
+    }
+    return time
+}
+
+
 const Scanbarcode = (props) => {
+    const { t } = useTranslation()
     const { classes, location, history } = props;
     const [valueText, setValueText] = useState({});
     const [databar, setdatabar] = useState({});
@@ -140,20 +164,46 @@ const Scanbarcode = (props) => {
     const [pallet2, setpallet2] = useState();
     const [orderNo2, setorderNo2] = useState();
     const [unitCode2, setunitCode2] = useState('PC');
-
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
-    const [typeDialog, setTypeDialog] = useState("");
+    const [stateDialogSuc, setStateDialogSuc] = useState(false);
+    const [msgDialogSuc, setMsgDialogSuc] = useState("");
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.25);
     const areaIDs = useAreaID(localStorage.getItem("areaIDs"));
-    const { width, height } = useWindowWidth();
+    //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
     const [area2, setarea2] = useState();
     const [gateLeft, setgateLeft] = useState(false);
     const [gateRight, setgateRight] = useState(false);
-    const [dafaluInputs, setdafaluInputs] = useState("");
     const [isFull, setisFull] = useState();
+    const [width_height, set_width_height] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight
+    })
+    const clock = useClock({
+        format: "DD/MM/YYYY HH:mm:ss", //formet in moment
+        label: "Date/Time"
+    }, t)
+   const time = clock 
+
+    useEffect(() => {
+        setTimeout(() => {
+            set_width_height({
+                width: window.innerWidth,
+                height: window.innerHeight
+            })
+        }, 20);
+    }, [isFullScreen])
+
+ const goFull = () => {
+        setIsFullScreen(true);
+        setCalHeight(0.6);
+    }
+    const goMin = () => {
+        setIsFullScreen(false);
+        setCalHeight(0.65);
+    }
     const AreaMaster = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "AreaMaster",
@@ -221,15 +271,13 @@ const Scanbarcode = (props) => {
                         var calQty = qtyMaxIn - qtyIn
 
                         if (calQty < qtyMaxIn) {
-                            var MsgError = "Recive" + calQty + " is Empty";
-                            setMsgDialog(MsgError);
-                            setTypeDialog("success");
-                            setStateDialog(true);
+                            var MsgError = "Recive " + calQty + "/" + qtyMaxIn;
+                            setMsgDialogSuc(MsgError);
+                            setStateDialogSuc(true);
                         }
                         else if (calQty == qtyMaxIn) {
                             var MsgErrors = "Empty"
-                            setMsgDialog(MsgErrors);
-                            setTypeDialog("success");
+                            setMsgDialog(MsgErrors);                          
                             setStateDialog(true);
                         } else {
 
@@ -239,14 +287,12 @@ const Scanbarcode = (props) => {
                 } else {
 
                     setMsgDialog(res.data._result.message);
-                    setTypeDialog("error");
                     setStateDialog(true);
                 }
 
 
             } else {
                 setMsgDialog(res.data._result.message);
-                setTypeDialog("error");
                 setStateDialog(true);
             }
 
@@ -272,11 +318,13 @@ const Scanbarcode = (props) => {
                         var datass = datas.mapstos[0]
 
                         if (datass !== undefined) {
-                            var dataQtyMax = datass.objectSizeMaps[0]
-
+                            var dataQtyMax = datas.objectSizeMaps[0]
+                            console.log(dataQtyMax)
                             if (datass.qty == null || datass.qty == undefined) {
                                 setqty(0)
-                            } else { setqty(datass.qty) }
+                            } else {
+                                setqty(datass.qty)
+                            }
                             if (dataQtyMax.maxQuantity == null) {
                                 setqtyMax(0)
                             } else {
@@ -327,23 +375,7 @@ const Scanbarcode = (props) => {
 
     }
 
-    const goFull = () => {
-        setIsFullScreen(true);
-        setCalHeight(0.2);
-    }
-    const goMin = () => {
-        setIsFullScreen(false);
-        setCalHeight(0.25);
-    }
-
-
-    const closeFull = () => {
-        setisFull(false)
-    }
-
-
-
-    const HeadGateA = (getGate) => {
+ const HeadGateA = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#e91e63" }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
@@ -372,7 +404,7 @@ const Scanbarcode = (props) => {
             enabled={isFullScreen}
             onChange={isFull => setIsFullScreen(isFull)}
         >
-            <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: height, width: width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
+            <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
                 <div className={classes.root}>
                     <Grid
                         container
@@ -413,9 +445,9 @@ const Scanbarcode = (props) => {
                         </Grid>
                     </Grid>
                 </div>
-                <AmDialogs typePopup={typeDialog} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
+                <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
+                <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
                 <div>
-
                     <Grid container spacing={24}>
                         <Grid item xs={12} style={{ paddingLeft: "350px", paddingTop: "10px" }}>
                             <div style={{ paddingTop: "30px" }}>
@@ -476,7 +508,7 @@ const Scanbarcode = (props) => {
                         <Grid item xs={6} >
                             <div style={{ paddingTop: "30px" }}>
                                 <FormInline>
-                                    <Typography style={{ paddingLeft: "120px" }} variant="h4" component="h3">Time : </Typography>
+                                    <Typography  variant="h4" component="h3">{time} </Typography>
                                 </FormInline>
                             </div>
                         </Grid>
