@@ -21,11 +21,5 @@ namespace AWMSModel.Constant.StringConst
         public const string KEY_RESULT_API = "_result";
         public const string KEY_DB_LOGID = "_db_logID";
         public const string KEY_FINAL_DB_LOG = "_final_dblog";
-
-        public const string OPT_CARTON_NO = "carton_no";
-        public const string OPT_MVT = "mvt";
-        public const string OPT_SOU_CUSTOMER_ID = "sou_customer_id"; 
-        public const string OPT_SOU_WAREHOUSE_ID = "sou_warehouse_id";
-        public const string OPT_REMARK = "remark";
     }
 }

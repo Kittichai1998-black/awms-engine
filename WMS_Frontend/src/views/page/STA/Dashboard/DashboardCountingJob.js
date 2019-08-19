@@ -76,12 +76,12 @@ export default props => {
     const signalrStart = () => {
         connection.start()
             .then(() => {
-                connection.on("DASHBOARD_PICKING_1", res => {
+                connection.on("DASHBOARD_COUNTING_1", res => {
                     console.log(JSON.parse(res));
                     data[0][0].table[0].data = JSON.parse(res)
                     setData([...data])
                 })
-                connection.on("DASHBOARD_PICKING_2", res => {
+                connection.on("DASHBOARD_COUNTING_2", res => {
                     console.log(JSON.parse(res));
                     data[1][0].table[0].data = JSON.parse(res)
                     setData([...data])

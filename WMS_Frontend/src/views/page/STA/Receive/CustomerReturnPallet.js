@@ -132,9 +132,8 @@ const CustomerReturnPallet = (props) => {
                     if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                         qryStr[SC.OPT_SOU_CUSTOMER_ID] = reqValue[SC.OPT_SOU_CUSTOMER_ID];
                     }
-                    qryStr[SC.OPT_MVT] = "1092";
+                    qryStr[SC.OPT_MVT] = "1012";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
-                    console.log(qryStr)
                     let qryStr1 = queryString.stringify(qryStr)
                     let uri_opt = decodeURIComponent(qryStr1);
 

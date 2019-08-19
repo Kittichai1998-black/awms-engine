@@ -472,11 +472,13 @@ const AmMappingPallet = (props) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             inputClear();
             if (res.data != null) {
-                if (res.data._result.message === "Success") {
+                if (res.data._result.message === "Success") { 
                     if (showArea && res.data.areaID) {
                         GetArea(res.data.areaID);
                     }
-                    if (res.data.code === valueInput.scanCode) {
+                    // console.log(res.data.code)
+                    // console.log(req.scanCode)
+                    if (res.data.code === req.scanCode) {
                         if (actionValue === 0) {
 
                             alertDialogRenderer("Select Pallet Success", "success", true);
@@ -485,11 +487,11 @@ const AmMappingPallet = (props) => {
 
                             alertDialogRenderer("Success", "success", true);
                         }
-                        // if (actionValue === 2) {
+                        if (actionValue === 2) {
 
-                        //     alertDialogRenderer("Remove Pallet Success", "success", true);
+                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
 
-                        // }
+                        }
                         setStorageObj(res.data);
 
                         // inputClear();
@@ -505,9 +507,10 @@ const AmMappingPallet = (props) => {
                             alertDialogRenderer("Success", "success", true);
                         }
                         if (actionValue === 2) {
-                            if (res.data.id) {
+                            if (res.data.mapstos) {
                                 setStorageObj(res.data);
                                 // inputClear();
+                                  
                                 alertDialogRenderer("Remove Pack Success", "success", true);
 
                             } else {
@@ -591,7 +594,7 @@ const AmMappingPallet = (props) => {
                         if (res.data.id) {
                             setStorageObj(res.data);
 
-                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "success", true);
+                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
                         } else {
                             alertDialogRenderer("Remove Pallet Success", "success", true);
                             onHandleClear();
@@ -831,7 +834,7 @@ const AmMappingPallet = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
-                    {inputSource.length > 0 ?
+                    {inputSource && inputSource.length > 0 ?
                         <>
                             <CardContent className={classes.cardContent}>
 
@@ -848,7 +851,7 @@ const AmMappingPallet = (props) => {
                         </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
-                        {inputHeader.length > 0 ? inputHeader.map((row, idx) => {
+                        {inputHeader && inputHeader.length > 0 ? inputHeader.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
                     </CardContent>
