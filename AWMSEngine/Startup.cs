@@ -52,8 +52,8 @@ namespace AWMSEngine
                     .WithExposedHeaders("x-custom-header");
                 });
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                //.AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); ;
 
             services.AddSignalR();
 
