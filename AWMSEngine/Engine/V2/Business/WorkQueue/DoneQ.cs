@@ -121,12 +121,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     });
                                 }
                             });
-
+/*
                             if (docs.DocumentType_ID == DocumentTypeID.AUDIT)
                                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITED, this.BuVO);
 
                             else
-                                this.UpdateStorageObjectEventStatus(stos);
+                                this.UpdateStorageObjectEventStatus(stos);*/
                         });
                         
                     }

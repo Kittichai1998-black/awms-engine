@@ -38,7 +38,14 @@ namespace AWMSEngine.APIService
             this.APIServiceID = apiServiceID;
         }
 
+        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true, bool isAuthenAuthorize1 = false) : this(controllerAPI, apiServiceID, isAuthenAuthorize)
+        {
+            this.isAuthenAuthorize1 = isAuthenAuthorize1;
+        }
+
         private SqlConnection _SqlConnection = null;
+        private bool isAuthenAuthorize1;
+
         protected void BeginTransaction()
         {
             this.RollbackTransaction();
