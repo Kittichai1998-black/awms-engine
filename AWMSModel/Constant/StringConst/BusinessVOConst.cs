@@ -21,6 +21,5 @@ namespace AWMSModel.Constant.StringConst
         public const string KEY_RESULT_API = "_result";
         public const string KEY_DB_LOGID = "_db_logID";
         public const string KEY_FINAL_DB_LOG = "_final_dblog";
-
     }
 }

@@ -52,8 +52,8 @@ namespace AWMSEngine.Engine.V2.Business.Received
                       new SQLConditionCriteria[] {
                             new SQLConditionCriteria("AreaLocationMaster_ID",(int)location.ID, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
-                           // new SQLConditionCriteria("EventStatus", 10, SQLOperatorType.EQUALS, SQLConditionType.AND),
-                            new SQLConditionCriteria("Status","0,1", SQLOperatorType.IN, SQLConditionType.AND)
+                            new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.NEW, SQLOperatorType.EQUALS)
+                            //new SQLConditionCriteria("Status",E, SQLOperatorType.EQUALS, SQLConditionType.AND)
                       }, this.BuVO).FirstOrDefault();
 
                     if(stoLocationItems != null)

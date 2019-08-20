@@ -11,7 +11,7 @@ import AmDropdown from '../components/AmDropdown'
 import SaveIcon from '@material-ui/icons/Description';
 import classnames from 'classnames';
 import AmDatepicker from '../components/AmDate'
-//import { apicall } from '../components/function/CoreFunction'
+import { apicall } from '../components/function/CoreFunction2'
 import AmEditorTable from '../components/table/AmEditorTable'
 import AmDialogs from '../components/AmDialogs'
 import AmCheckBox from '../components/AmCheckBox'
@@ -32,7 +32,6 @@ import AmDialogConfirm from '../components/AmDialogConfirm'
 import { string } from "prop-types";
 import { getPriority } from "os";
 import { width } from "@material-ui/system";
-import { apicall } from '../components/function/CoreFunction2'
 import { useTranslation } from 'react-i18next'
 const Axios = new apicall()
 const styles = theme => ({
@@ -92,7 +91,7 @@ input {
 
 const LabelH = styled.label`
 font-weight: bold;
-  width: 180px;
+
 `;
 
 const LabelHDoc = styled.label`
@@ -532,8 +531,8 @@ const AmProcessQueue = (props) => {
         if (value !== null) {
             console.log(field)
             console.log(dataObject)
-            
-            
+
+
             onChangeEditorSort(field, data, dataObject.value, pair)
         }
     }
@@ -1266,6 +1265,7 @@ const AmProcessQueue = (props) => {
 
     }
     const getDetailDocuments = () => {
+        console.log("KKKKK")
         Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + props.DocType + "&docID=" + documentID + "&getMapSto=true&_token=" + localStorage.getItem("Token")).then((res) => {
             if (res.data._result.status === 1) {
                 var doc = res.data.document
@@ -1485,14 +1485,15 @@ const AmProcessQueue = (props) => {
                                     <Collapse in={toggle[idx]}>
                                         {toggle[idx] === true ? <Paper elevation={4} className={classes.paper}>
                                             <FormInline style={{ marginLeft: "15px" }}>
-                                                <div style={{ width: "800px" }}>
-                                                    <LabelH>{x.Code} : {x.SKUMaster_Name}
-                                                        {palletcode ? <LabelH> / {palletcode}</LabelH> : null}
-                                                        {locationcode ? <LabelH> / {locationcode}</LabelH> : null}
-                                                    </LabelH>
-                                                </div>
-                                                < div style={{ marginLeft: "10px" }}>
-                                                    <LabelH>{t("Qty")} :</LabelH>  <label>{x.Quantity} {x.UnitType_Name} ({qtyDocItem[idx]} {x.BaseUnitType_Code})</label></ div>
+                                                <Grid container spacing={24}>
+                                                    <Grid item xs container direction="column" spacing={14}>
+                                                        <LabelH>{x.Code} : {x.SKUMaster_Name}
+                                                            {palletcode ? <LabelH> / {palletcode}</LabelH> : null}
+                                                            {locationcode ? <LabelH> / {locationcode}</LabelH> : null}
+                                                        </LabelH>
+                                                    </Grid>
+                                                    <LabelH>{t("Qty")} :</LabelH>  <label>{x.Quantity} {x.UnitType_Name} ({qtyDocItem[idx]} {x.BaseUnitType_Code})</label>
+                                                </Grid>
                                             </FormInline >
                                             <FormInline>
                                                 <div style={{ marginLeft: "15px", paddingTop: "10px" }}>
@@ -1728,11 +1729,11 @@ const AmProcessQueue = (props) => {
                     {pagesQ === 1 ? <FormInline style={{ marginLeft: "15px" }}>
                         <Grid container spacing={24}>
                             <Grid item xs container direction="column" spacing={16}>
-                                <div style={{ paddingTop:"10px" }}>
+                                <div style={{ paddingTop: "10px" }}>
                                     <LabelHDes>Destination Warehouse :</LabelHDes> <label> {dataConfirmQ["desASRSWarehouseCode"]} :
                             {dataConfirmQ["desASRSWarehouseName"]}</label></div></Grid>
                             <Grid item >
-                                <FormInline style={{ marginRight:"10px" }}>
+                                <FormInline style={{ marginRight: "10px" }}>
                                     <div>
                                         {processDLLs}
                                     </div>

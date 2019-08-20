@@ -418,7 +418,7 @@ const DocumentView = props => {
       <br />
       {props.buttonBack === true ? (
         <AmButton styleType="default" onClick={buttonBack}>
-          Back
+          {t("Back")}
         </AmButton>
       ) : null}
     </div>

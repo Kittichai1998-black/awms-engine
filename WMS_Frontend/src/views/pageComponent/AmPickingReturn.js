@@ -32,6 +32,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import _ from 'lodash';
 import AmListSTORenderer from '../pageComponent/AmListSTORenderer';
+import Typography from '@material-ui/core/Typography';
 
 const Axios = new apicall()
 const styles = theme => ({
@@ -49,6 +50,12 @@ const styles = theme => ({
             '"Segoe UI Emoji"',
             '"Segoe UI Symbol"',
         ].join(','),
+    },
+    title: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        textDecoration: 'underline',
+        textAlign: 'center'
     },
     inline_block: {
         display: "inline-block"
@@ -495,12 +502,15 @@ const AmPickingReturn = (props) => {
                     if (res.data.bsto) {
                         setResData(res.data);
                         // inputClear();
-                        if (res.data.bsto.code === valueInput.scanCode) {
+                        if (res.data.bsto.code === req.scanCode) {
                             if (actionValue === 0) {
                                 alertDialogRenderer("Select Pallet Success", "success", true);
                             }
                             if (actionValue === 1) {
                                 alertDialogRenderer("Success", "success", true);
+                            }
+                            if (actionValue === 2) {
+                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
                             }
 
                         } else {
@@ -718,6 +728,9 @@ const AmPickingReturn = (props) => {
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
                     <CardContent className={classes.cardContent}>
+                        <Typography className={classes.title} gutterBottom>
+                            Pallet Information
+                        </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
                         {inputHeader ? inputHeader.map((row, idx) => {

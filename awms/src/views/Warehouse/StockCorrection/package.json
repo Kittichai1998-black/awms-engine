@@ -1,6 +1,0 @@
-{
-  "name": "StockCorrection",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./StockCorrection.js"
-}

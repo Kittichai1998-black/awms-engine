@@ -1,7 +1,0 @@
-{
-    "name": "CreateQueue",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./CreateQueue.js"
-  }
-  

@@ -23,7 +23,7 @@ const SKUMasterTypeQuery = {
     all: "",
 }
 //======================================================================
-const testMaster = (props) => {
+const TestMaster = (props) => {
     const [dataSrc, setDataSrc] = useState([]);
     useEffect(() => {
         getData(createQueryString(SKUMasterTypeQuery))
@@ -206,4 +206,4 @@ console.log(ObjectSizeQuery)
 }
 
 
-export default testMaster;
+export default TestMaster;

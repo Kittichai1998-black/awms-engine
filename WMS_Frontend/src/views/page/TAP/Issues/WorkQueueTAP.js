@@ -49,8 +49,8 @@ const WorkQueueTAP = (props) => {
     ];
 
     const ordersDDL = [
-        { label: 'createtime', value: 'createtime' }, 
-        { label: 'Batch', value: 'Batch' },
+        { label: 'createtime', value: 'createtime' },
+        { label: 'Lot', value: 'Lot' },
         { label: 'OrderNo', value: 'OrderNo' },
     ];
 
@@ -79,8 +79,8 @@ const WorkQueueTAP = (props) => {
     const columnCondition = [{ Header: 'Batch', accessor: 'Batch', type: "input", field: 'Batch' },
     { Header: 'Lot', accessor: 'Lot', type: "input", field: 'Lot' },
     { Header: "Order", accessor: 'OrderNo', type: "input", field: 'OrderNo' },
-        { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
-        { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
+    { Header: 'Qty', accessor: 'BaseQuantity', type: "inputnum", field: 'BaseQuantity' },
+    { Header: 'Unit', accessor: 'UnitType_Name', type: "unitType", field: 'Unit' }
 
     ];
 
@@ -95,11 +95,11 @@ const WorkQueueTAP = (props) => {
         ID: 0,
         Order: "FIFO"
     }]
-  
+
 
     const columnConfirm = [
         { Header: 'SKU', accessor: 'SKU', width: 200 },
-        { Header: 'Pallet', accessor: 'Pallet',width: 130 },
+        { Header: 'Pallet', accessor: 'Pallet', width: 130 },
         { Header: 'Batch', accessor: 'Batch', },
         { Header: 'Lot', accessor: 'Lot', },
         { Header: "Order", accessor: 'OrderNo', },

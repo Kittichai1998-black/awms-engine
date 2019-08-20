@@ -59,8 +59,17 @@ const SKUMaster = props => {
       sortable: false,
       Cell: e => getStatus(e.original)
     },
-    { Header: window.project === "TAP" ? "Part NO." : 'SKU Code', accessor: "Code", fixed: "left", width: 120 },
-    { Header: window.project === "TAP" ? "Part Name" : 'SKU Name', accessor: "Name", width: 250 },
+    {
+      Header: window.project === "TAP" ? "Part NO." : "SKU Code",
+      accessor: "Code",
+      fixed: "left",
+      width: 120
+    },
+    {
+      Header: window.project === "TAP" ? "Part Name" : "SKU Name",
+      accessor: "Name",
+      width: 250
+    },
     { Header: "SKU Type", accessor: "SKUMasterType_Name", width: 100 },
     {
       Header: "Gross Weight",
@@ -83,14 +92,14 @@ const SKUMaster = props => {
     {
       field: "Code",
       type: "input",
-      name: window.project === "TAP" ? "Part NO." : 'SKU Code',
+      name: window.project === "TAP" ? "Part NO." : "SKU Code",
       placeholder: "Code",
       required: true
     },
     {
       field: "Name",
       type: "input",
-      name: window.project === "TAP" ? "Part Name" : 'SKU Name',
+      name: window.project === "TAP" ? "Part Name" : "SKU Name",
       placeholder: "Name",
       required: true
     },
@@ -136,14 +145,14 @@ const SKUMaster = props => {
     {
       field: "Code",
       type: "input",
-      name: window.project === "TAP" ? "Part NO." : 'SKU Code',
+      name: window.project === "TAP" ? "Part NO." : "SKU Code",
       placeholder: "Code",
       validate: /^.+$/
     },
     {
       field: "Name",
       type: "input",
-      name: window.project === "TAP" ? "Part Name" : 'SKU Name',
+      name: window.project === "TAP" ? "Part Name" : "SKU Name",
       placeholder: "Name",
       validate: /^.+$/
     },
@@ -196,14 +205,14 @@ const SKUMaster = props => {
     {
       field: "Code",
       type: "input",
-      name: window.project === "TAP" ? "Part NO." : 'SKU Code',
+      name: window.project === "TAP" ? "Part NO." : "SKU Code",
       placeholder: "Code",
       validate: /^.+$/
     },
     {
       field: "Name",
       type: "input",
-      name: window.project === "TAP" ? "Part Name" : 'SKU Name',
+      name: window.project === "TAP" ? "Part Name" : "SKU Name",
       placeholder: "Name",
       validate: /^.+$/
     },
@@ -215,7 +224,7 @@ const SKUMaster = props => {
       dataDropDow: SKUMasterTypeQuery,
       placeholder: "SKU Type",
       fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
+      fieldDataKey: "Name"
     },
     {
       field: "WeightKG",
