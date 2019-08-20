@@ -83,7 +83,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         desBranchID = document.Sou_Branch_ID,
                         desWarehouseID = document.Sou_Warehouse_ID,
                         desAreaMasterID = document.Sou_AreaMaster_ID,
-                        movementTypeID = MovementType.FG_RETURN_WM,
+                        movementTypeID = MovementType.FG_PICK_RETURN_WM,
                         lot = sto.lot,
                         batch = sto.batch,
                         documentDate = DateTime.Now,

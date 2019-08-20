@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AWMSEngine.ADO;
 using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
@@ -125,8 +126,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITED, this.BuVO);
 
                             else
-                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-
+                                this.UpdateStorageObjectEventStatus(stos);
                         });
                         
                     }
@@ -290,6 +290,29 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Cannot Complete Before Working");
                 }
             }
+
+        }
+        private void UpdateStorageObjectEventStatus(StorageObjectCriteria stos)
+        {
+            var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.BASE || x.type == StorageObjectType.PACK).ToList();
+            stoList.ForEach(sto =>
+            {
+                if(sto.options != null && sto.options.Length > 0)
+                {
+                    var done_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_EVENT_STATUS);
+                    if(done_event_status == null || done_event_status.Length == 0)
+                    {
+                        ADO.StorageObjectADO.GetInstant().UpdateStatus(sto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+                    }
+                    else
+                    {
+                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_event_status);
+                        ADO.StorageObjectADO.GetInstant().UpdateStatus(sto.id.Value, StorageObjectEventStatus.RECEIVING, null, eventStatus, this.BuVO);
+                    }
+                }
+
+            });
+
 
         }
 
