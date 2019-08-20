@@ -10,13 +10,8 @@ namespace ProjectMRK.APIService
 {
     public class ReadXMLFileAPI : BaseAPIService
     {
-        public ReadXMLFileAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
+        public ReadXMLFileAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 103;
         }
 
         protected override dynamic ExecuteEngineManual()

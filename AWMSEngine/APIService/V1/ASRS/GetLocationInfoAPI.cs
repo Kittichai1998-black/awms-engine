@@ -12,11 +12,7 @@ namespace AWMSEngine.APIService.ASRS
     public class GetLocationInfoAPI : BaseAPIService
     {
 
-        public override int APIServiceID()
-        {
-            return 19;
-        }
-        public GetLocationInfoAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public GetLocationInfoAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

@@ -21,6 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public string desASRSAreaCode;
             public string desASRSLocationCode;
             public List<ProcessQueueCriteria> processQueues;
+            public bool lockNotExistsRandom = false;
             public class ProcessQueueCriteria
             {
                 public long docID;
@@ -65,6 +66,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     public decimal? baseQty;
                     public decimal? percentRandom;
                     public List<SPOutSTOProcessQueueCriteria> pickStos;
+                    public List<SPOutSTOProcessQueueCriteria> lockStos;
                 }
             }
         }
@@ -111,15 +113,17 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     baseQty = proc.baseQty,
                     priority = proc.priority,
                     percentRandom = proc.percentRandom,
-                    pickStos = new List<SPOutSTOProcessQueueCriteria>()
+                    pickStos = new List<SPOutSTOProcessQueueCriteria>(),
+                    lockStos = new List<SPOutSTOProcessQueueCriteria>()
                 };
                 processRes.processResultItems.Add(processResItem);
 
                 //res.processResults.Add(processRes);
                 foreach (var condi in proc.conditions)
                 {
-                    
+
                     List<SPOutSTOProcessQueueCriteria> pickStos = processResItem.pickStos;
+                    List<SPOutSTOProcessQueueCriteria> lockStos = processResItem.lockStos;
                     var _condi = condi.Clone();
                     if (_condi.baseQty.HasValue)//ตรวจพาเลทที่เคย query มาแล้วจากใน TEMP
                     {
@@ -190,7 +194,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             tmpStoProcs.AddRange(_pickStos.Clone());
                         else if (proc.percentRandom.HasValue)
                         {
-                            _pickStos = _pickStos.RandomList(proc.percentRandom.Value);
+                            var _tmpPickStos = _pickStos.RandomList(proc.percentRandom.Value);
+                            if(reqVO.lockNotExistsRandom)
+                                lockStos.AddRange(_pickStos.Where(x => !_tmpPickStos.Any(y => y.rstoID == x.rstoID)));
+                            _pickStos = _tmpPickStos;
                             tmpStoProcs.AddRange(_pickStos.Clone());
                         }
                         pickStos.AddRange(_pickStos);
@@ -262,6 +269,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             foreach(var proc in reqVO.processQueues)
             {
+                if (!proc.baseQty.HasValue && !proc.percentRandom.HasValue)
+                    proc.percentRandom = 100;
+
                 if (string.IsNullOrWhiteSpace(proc.locationCode)
                     && string.IsNullOrWhiteSpace(proc.baseCode)
                     && string.IsNullOrWhiteSpace(proc.skuCode))

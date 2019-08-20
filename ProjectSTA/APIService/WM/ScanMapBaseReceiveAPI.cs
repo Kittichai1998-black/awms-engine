@@ -10,11 +10,7 @@ namespace ProjectSTA.APIService.WM
 {
     public class ScanMapBaseReceiveAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 88;
-        }
-        public ScanMapBaseReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ScanMapBaseReceiveAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

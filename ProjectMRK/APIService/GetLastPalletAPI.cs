@@ -10,13 +10,8 @@ namespace ProjectMRK.APIService
 {
     public class GetLastPalletAPI : BaseAPIService
     {
-        public GetLastPalletAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public GetLastPalletAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 111;
         }
 
         protected override dynamic ExecuteEngineManual()

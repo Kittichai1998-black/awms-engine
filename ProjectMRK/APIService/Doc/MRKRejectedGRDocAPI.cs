@@ -12,11 +12,7 @@ namespace ProjectMRK.APIService.Doc
 {
     public class MRKRejectedGRDocAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 105;
-        }
-        public MRKRejectedGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public MRKRejectedGRDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

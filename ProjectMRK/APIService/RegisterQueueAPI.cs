@@ -13,15 +13,10 @@ namespace ProjectMRK.APIService
 {
     public class RegisterQueueAPI : BaseAPIService
     {
-        public RegisterQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public RegisterQueueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
-
-        public override int APIServiceID()
-        {
-            return 104;
-        }
-
+        
         protected override dynamic ExecuteEngineManual()
         {
             RegisterWorkQueue.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<RegisterWorkQueue.TReq>(this.RequestVO);

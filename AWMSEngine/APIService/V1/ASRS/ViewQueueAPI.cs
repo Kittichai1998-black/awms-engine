@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class ViewQueueAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 23;
-        }
-        public ViewQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ViewQueueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class GetSAPLogAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 70;
-        }
-        public GetSAPLogAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public GetSAPLogAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

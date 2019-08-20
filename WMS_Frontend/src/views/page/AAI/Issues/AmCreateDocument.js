@@ -2,17 +2,18 @@
 import Grid from '@material-ui/core/Grid';
 import React, { useState, useEffect } from "react";
 import styled from 'styled-components'
-import AmButton from '../components/AmButton'
-import AmDate from '../components/AmDate'
-import AmDatepicker from '../components/AmDate'
-import AmDialogs from '../components/AmDialogs'
-import AmDropdown from '../components/AmDropdown'
-import AmEditorTable from '../components/table/AmEditorTable'
-import AmFindPopup from '../components/AmFindPopup'
-import AmInput from '../components/AmInput'
-import AmTable from '../components/table/AmTable'
+import AmButton from '../../../../components/AmButton'
+import AmDate from '../../../../components/AmDate'
+import AmDatepicker from '../../../../components/AmDate'
+import AmDialogs from '../../../../components/AmDialogs'
+import AmDropdown from '../../../../components/AmDropdown'
+import AmEditorTable from '../../../../components/table/AmEditorTable'
+import AmFindPopup from '../../../../components/AmFindPopup'
+import AmDialogConfirm from '../../../../components/AmDialogConfirm'
+import AmInput from '../../../../components/AmInput'
+import AmTable from '../../../../components/table/AmTable'
 import { useTranslation } from 'react-i18next'
-import { apicall } from '../components/function/CoreFunction2'
+import { apicall } from '../../../../components/function/CoreFunction2'
 const Axios = new apicall()
 
 const FormInline = styled.div`
@@ -72,45 +73,61 @@ const AmCreateDocument = (props) => {
     const [reload, setRelaod] = useState();
     const [createDocumentData, setcreateDocumentData] = useState({});
     const [valueText, setValueText] = useState({});
-    const [dataDDLHead, setdataDDLHead] = useState({});
     const [valueFindPopup, setvalueFindPopup] = useState({});
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [stateDialogErr, setStateDialogErr] = useState(false);
     const [skuIDs, setskuIDs] = useState();
+    const [cusIDs, setcusIDs] = useState();
+    const [skuByCus, setskuByCus] = useState();
+    const [openDialogClear, setopenDialogClear] = useState(false)
+    const [bodyDailogClear, setbodyDailogClear] = useState();
+    const [ParentStorageObjects, setParentStorageObjects] = useState();
 
-    const useColumns = (columns) => {
-        const [columns, setColumns] = useState(null);
-        useEffect(()=>{
-            setColumns(()=>{
-                var rem = [
-                    { Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => { setEditData(e); setDialog(true); setTitle("Edit") }}>{t("Edit")}</AmButton>, },
-                    {
-                        Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="delete" onClick={
-                            () => {
-                                onHandleDelete(e.original.ID, e.original, e);
-                                //setRelaod({});
-                            }}>{t("Remove")}</AmButton>,
-                    }];
-    
-                return columns.concat(rem)
-            })
-            return () => {}
-        })
+    const dataDDLHead = {};
+    const setColumns = () => {
+        var rem = [
+            { Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => { setEditData(e); setDialog(true); setTitle("Edit") }}>{t("Edit")}</AmButton>, },
+            {
+                Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="delete" onClick={
+                    () => {
+                        onHandleDelete(e.original.ID, e.original, e);
+                        //setRelaod({});
+                    }}>{t("Remove")}</AmButton>,
+            }];
 
-        return columns;
+        if (props.columns !== undefined) {
+            return props.columns.concat(rem)
+        }
     }
 
-    const [ParentStorageObjects, setParentStorageObjects] = useState();
-    const columns = useColumns(props.columns);
+    const columns = setColumns();
+
+    useEffect(()=> {
+        if(props.customGetHeaderData){
+            var dataCreate = createDocumentData;
+            let dataLebel = [];
+            props.headerCreate.forEach(x => {
+                x.forEach(y => {
+                    if (y.type === "labeltext" && y.valueTexts) {
+                        dataLebel.push(y)
+                    }
+                })
+            });
+            dataLebel.forEach((x) => {
+                dataCreate[x.key] = x.valueTexts
+            })
+            props.customGetHeaderData(dataCreate)
+        }
+    }, [createDocumentData, props]);
 
     useEffect(() => {
-        if (props.selectBase === true) {
+        if (props.slectBase === true) {
             setParentStorageObjects({
                 queryString: window.apipath + "/v2/SelectDataViwAPI/",
                 t: "ParentStorageObject",
                 q: "[{ 'f': 'SKUMaster_ID', c: '=', 'v': " + skuIDs + " }]",
-                f: "SKUMaster_ID,SKUMaster_Code,SKUMaster_Name,ParentStorageObject_ID,ParentStorageObject_Code as BaseCode",
+                f: "SKUMaster_ID,SKUMaster_Code,SKUMaster_Name,ParentStorageObject_ID,ParentStorageObject_Code as baseCode",
                 g: "",
                 s: "[{'f':'SKUMaster_ID','od':'asc'}]",
                 sk: 0,
@@ -118,26 +135,59 @@ const AmCreateDocument = (props) => {
                 all: "",
             })
         }
-    }, [skuIDs])
+    }, [skuIDs, props])
+
+    useEffect(() => {
+        if (props.createByCus === true && cusIDs !== null) {
+            setskuByCus({
+                queryString: window.apipath + "/v2/SelectDataViwAPI/",
+                t: "SKUMaster",
+                q: "[{ 'f': 'Customer_ID', c: '=', 'v': " + cusIDs + " }]",
+                f: "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
+                g: "",
+                s: "[{'f':'ID','od':'asc'}]",
+                sk: 0,
+                l: 100,
+                all: "",
+            })
+            if (dataSource[0] !== undefined) {
+                CleareDataByCus();
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cusIDs])
+
+    const CleareDataByCus = () => {
+        setopenDialogClear(true)
+        setbodyDailogClear(<div style={{ width: "500px", height: "100px" }}>
+            <LabelH>{t("Change  DesCustomer")}</LabelH>
+            <FormInline><label>Confirm Clear SKUItem</label></FormInline>
+        </div>)
+    }
+
+    const OnConfirmClear = () => {
+        setDataSource([])
+        setopenDialogClear(false)
+    }
+
 
     const onHandleDelete = (v, o, rowdata) => {
         let idx = dataSource.findIndex(x => x.ID === v);
         dataSource.splice(idx, 1);
         setDataSource(dataSource);
         setRelaod({})
+        //setDeleteFlag(true)
     }
 
     const onHandleChangeHeaderDDL = (value, dataObject, inputID, fieldDataKey, key) => {
-        setdataDDLHead({
-            ...valueText, [inputID]: {
-                value: value,
-                dataObject: dataObject,
-                fieldDataKey: fieldDataKey,
-                key: key,
-            }
-        });
-        createDocumentData[key] = value
-        setcreateDocumentData(createDocumentData)
+        if (key === "desCustomerID" && props.createByCus === true) {
+            setcusIDs(dataObject.ID)
+            createDocumentData[key] = value
+            setcreateDocumentData({...createDocumentData})
+        } else {
+            createDocumentData[key] = value
+            setcreateDocumentData({...createDocumentData})
+        }
     }
 
     const onHandleDDLChange = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
@@ -155,6 +205,13 @@ const AmCreateDocument = (props) => {
         }
     };
 
+    const onHandleDDLChangeBase = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
+        if (value !== null) {
+            if (dataObject[field] !== null) {
+                onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
+            }
+        }
+    };
     //เช็ตค่าที่หัวของหน้าใน Findpopup
     const onHandleChangeFindpopup = (value, dataObject, inputID, fieldDataKey, pair, key) => {
         setvalueFindPopup({
@@ -166,56 +223,54 @@ const AmCreateDocument = (props) => {
             }
         })
         createDocumentData[key] = value
-        setcreateDocumentData(createDocumentData)
+        setcreateDocumentData({...createDocumentData})
     }
 
     const onHandleChangeinPop = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
         if (dataObject) {
-            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code, dataObject)
+            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
         } else {
             onChangeEditor(field, data, null, pair, null, null, null)
         }
     }
 
-    const onHandleDDLChangeSelectBase = (value, dataObject, inputID, fieldDataKey, pair, key) => {
-        if (value !== null) {
-            setskuIDs(value)
-            createDocumentData[key] = value
-            setcreateDocumentData(createDocumentData)
-
+    const onHandleChangeinPopSKU = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
+        if (dataObject) {
+            setskuIDs(dataObject.ID)
+            onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
+        } else {
+            setskuIDs(dataObject.ID)
+            onChangeEditor(field, data, null, pair, null, null, null)
         }
     }
 
-    const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode, SKUCode, dataObject) => {
+    const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode, SKUCode) => {
         if (addData) {
             if (editData) {
                 editData[field] = value;
-                if (field === "palletcode" && dataObject) {
-                    dataObject.Batch ? editData["batch"] = dataObject.Batch : delete editData["batch"]
-                    dataObject.Quantity ? editData["quantity"] = dataObject.Quantity : delete editData["quantity"]
-                }
                 if (field === "SKUItems") {
                     UnitCode ? editData["unitType"] = UnitCode : delete editData["unitType"]
                 }
                 if (pair) {
                     editData[pair] = dataPair;
                 }
+                //setEditRow(cloneEditRow)
                 setEditData(editData);
+                // setUnitCodes(UnitCode);
             } else {
                 let addData = {};
                 addData["ID"] = addDataID;
                 addData[field] = value;
-                if (field === "palletcode" && dataObject) {
-                    dataObject.Batch ? addData["batch"] = dataObject.Batch : delete addData["batch"]
-                    dataObject.Quantity ? addData["quantity"] = dataObject.Quantity : delete addData["quantity"]
-                }
                 if (field === "SKUItems") {
                     UnitCode ? addData["unitType"] = UnitCode : delete addData["unitType"]
                 }
                 if (pair) {
                     addData[pair] = dataPair;
                 }
+                //cloneEditRow.unshift(addData)
+                //setEditRow(cloneEditRow);
                 setEditData(addData);
+                // setUnitCodes(UnitCode);
             }
         } else { // EDIT
             let editRowX = editData.original ? { ...editData.original } : { ...editData };
@@ -233,6 +288,7 @@ const AmCreateDocument = (props) => {
 
                     }
                 } else {
+                    console.log(value)
                     editRowX["qtyrandom"] = value
 
                 }
@@ -244,10 +300,6 @@ const AmCreateDocument = (props) => {
                     editRowX[field] = value;
                 }
             }
-            if (field === "palletcode" && dataObject) {
-                dataObject.Batch ? editRowX["batch"] = dataObject.Batch : delete editRowX["batch"]
-                dataObject.Quantity ? editRowX["quantity"] = dataObject.Quantity : delete editRowX["quantity"]
-            }
             if (field === "SKUItems") {
                 UnitCode ? editRowX["unitType"] = UnitCode : delete editRowX["unitType"]
             }
@@ -255,10 +307,12 @@ const AmCreateDocument = (props) => {
                 editRowX[pair] = dataPair;
             }
             setEditData(editRowX);
+            // setUnitCodes(UnitCode)
         }
     }
 
     const onHandleEditConfirm = (status, rowdata) => {
+
         if (status) {
             var chkData = dataSource.filter(x => {
                 return x.ID === rowdata.ID
@@ -278,17 +332,27 @@ const AmCreateDocument = (props) => {
                 }
             }
             else {
-                if (editData.qtyrandom !== undefined) {
-                    if (editData.qtyrandom > 100) {
-                        setStateDialogErr(true)
-                        setMsgDialog("Random > 100 ")
-                    } else {
-                        editData["qtyrandom"] = (editData.qtyrandom + "%")
-                        dataSource.push(editData)
-                    }
+                if (editData === false) {
+                    setStateDialogErr(true)
+                    setMsgDialog("Data Items Invalid")
                 } else {
-                    editData["qtyrandom"] = (0 + "%")
-                    dataSource.push(editData)
+
+                    if (editData.qtyrandom !== undefined) {
+                        if (editData.qtyrandom > 100) {
+                            setStateDialogErr(true)
+                            setMsgDialog("Random > 100 ")
+                        } else {
+                            editData["qtyrandom"] = (editData.qtyrandom + "%")
+                            dataSource.push(editData)
+                        }
+                    } else {
+
+                        if (editData["qtyrandom"] !== undefined || editData["qtyrandom"] !== null)
+                            editData["qtyrandom"] = (0 + "%")
+
+                        dataSource.push(editData)
+
+                    }
                 }
             }
         }
@@ -296,6 +360,7 @@ const AmCreateDocument = (props) => {
         setAddDataID(addDataID - 1);
         setAddData(false)
         setDialog(false)
+        // setUnitCodes();
         setDataSource(dataSource);
     }
 
@@ -314,7 +379,10 @@ const AmCreateDocument = (props) => {
         }
     }
 
+
+
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts) => {
+
         if (type === "input") {
             return (
                 <FormInline>
@@ -420,6 +488,7 @@ const AmCreateDocument = (props) => {
                     onChange={(ele) => { onChangeEditor(cols.field, data, ele.fieldDataObject, row.pair) }}
                 />
             )
+
         } else if (type === "text") {
             return (<FormInline>
                 <LabelH>{Header}</LabelH>
@@ -427,48 +496,93 @@ const AmCreateDocument = (props) => {
             </FormInline>
             )
         } else if (type === "selectBase") {
-            return (<div><FormInline>
+            return (<FormInline>
                 <LabelH>{Header} : </LabelH>
+                <InputDiv>
+                    <AmFindPopup
+                        id={idddl}
+                        placeholder={placeholder ? placeholder : "Select"}
+                        // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                        // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
+                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        queryApi={queryApi} //object query string
+                        defaultValue={data ? data[accessor] : ""}
+                        columns={columsddl} //array column สำหรับแสดง table
+                        width={width ? width : 300}
+                        ddlMinWidth={width ? width : 100}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeinPopSKU(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                    />
+                </InputDiv>
+            </FormInline>
+            )
+        } else if (type === "bases") {
+            return (<FormInline>
+                <LabelH>Base : </LabelH>
                 <InputDiv>
                     <AmDropdown
                         id={idddl}
                         placeholder={placeholder ? placeholder : "Select"}
                         fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                        fieldLabel={["baseCode"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
                         labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                         width={width ? width : 300} //กำหนดความกว้างของช่อง input
                         ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
                         valueData={valueText[idddl]} //ค่า value ที่เลือก
-                        queryApi={queryApi}
-                        returnDefaultValue={true}
-                        defaultValue={data !== {} && data !== null ? data[row.pair] : ""}
-                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChangeSelectBase(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                        queryApi={ParentStorageObjects}
+                        //returnDefaultValue={true}
+                        //defaultValue={data !== {} && data !== null ? data[row.pair] : ""}
+                        //onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChangeBase(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, cols.field, data, "baseCode")}
                         ddlType={"search"} //รูปแบบ Dropdown 
                     />
                 </InputDiv>
-            </FormInline>
-                <FormInline>
-                    <LabelH>Base : </LabelH>
-                    <InputDiv>
-                        <AmDropdown
-                            id={"base"}
-                            placeholder={"Select Base"}
-                            fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                            fieldLabel={["BaseCode"]}  //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-                            labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                            width={width ? width : 300} //กำหนดความกว้างของช่อง input
-                            ddlMinWidth={width ? width : 300} //กำหนดความกว้างของกล่อง dropdown
-                            valueData={valueText[idddl]} //ค่า value ที่เลือก
-                            queryApi={ParentStorageObjects}
-                            //returnDefaultValue={true}
-                            //defaultValue={data !== {} && data !== null ? data[row.pair] : ""}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onHandleDDLChange(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
-                            ddlType={"search"} //รูปแบบ Dropdown 
-                        />
-                    </InputDiv>
-                </FormInline>
-            </div>
-            )
+            </FormInline>)
+        } else if (type === "palletbyCus") {
+            return (<FormInline>
+                <LabelH>{Header} : </LabelH>
+                <InputDiv>
+                    <AmFindPopup
+                        id={idddl}
+                        placeholder={placeholder ? placeholder : "Select"}
+                        // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                        // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
+                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        queryApi={queryApi} //object query string
+                        defaultValue={data ? data[accessor] : ""}
+                        columns={columsddl} //array column สำหรับแสดง table
+                        width={width ? width : 300}
+                        ddlMinWidth={width ? width : 100}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeinPop(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                    />
+                </InputDiv>
+            </FormInline>)
+
+        } else if (type === "skubyCus") {
+            return (<FormInline>
+                <LabelH>{Header} : </LabelH>
+                <InputDiv>
+                    <AmFindPopup
+                        id={idddl}
+                        placeholder={placeholder ? placeholder : "Select"}
+                        // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                        labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                        fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                        // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
+                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        queryApi={skuByCus} //object query string
+                        //defaultValue={data ? data[accessor] : ""}
+                        columns={columsddl} //array column สำหรับแสดง table
+                        width={width ? width : 300}
+                        ddlMinWidth={width ? width : 100}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeinPop(value, dataObject, inputID, fieldDataKey, cols.field, data, row.pair)}
+                    />
+                </InputDiv>
+            </FormInline>)
+
         }
     }
 
@@ -483,7 +597,7 @@ const AmCreateDocument = (props) => {
                         if (e !== null) {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
-                            setcreateDocumentData(docData)
+                            setcreateDocumentData({...docData})
                         } else { }
                     }}
                 />
@@ -498,7 +612,7 @@ const AmCreateDocument = (props) => {
                         if (e !== null) {
                             let docData = createDocumentData
                             docData[key] = e.fieldDataObject
-                            setcreateDocumentData(docData)
+                            setcreateDocumentData({...docData})
                         } else { }
                     }}
                 />
@@ -514,7 +628,7 @@ const AmCreateDocument = (props) => {
                     onChange={(e) => {
                         let docData = createDocumentData
                         docData[key] = e
-                        setcreateDocumentData(docData)
+                        setcreateDocumentData({...docData})
                     }}
                 />
             )
@@ -547,7 +661,7 @@ const AmCreateDocument = (props) => {
                     onChange={(e) => {
                         let docData = createDocumentData
                         docData[key] = e
-                        setcreateDocumentData(docData)
+                        setcreateDocumentData({...docData})
                     }}
                 />
             )
@@ -571,16 +685,16 @@ const AmCreateDocument = (props) => {
         }
     }
 
+
     const getHeaderCreate = () => {
         return props.headerCreate.map((x, xindex) => {
             return (
                 <Grid key={xindex} container spacing={24}>
                     {x.map((y, yindex) => {
-                        let syn = y.label ? " :" : "";
                         return (
                             <Grid item key={yindex} xs={12} sm={6} style={{ paddingLeft: "20px", paddingTop: "10px" }}>
                                 <div style={{ marginTop: "5px" }}> <FormInline>
-                                    <LabelH>{t(y.label) + syn}</LabelH>
+                                    <LabelH>{y.label}</LabelH>
                                     {getDataHead(y.type, y.key, y.idddls, y.pair, y.queryApi, y.columsddl, y.fieldLabel, y.texts, y.style, y.width, y.validate, y.valueTexts, y.placeholder, y.defaultValue)}
                                 </FormInline></div>
                             </Grid>
@@ -594,7 +708,7 @@ const AmCreateDocument = (props) => {
     const CreateDoc = () => {
         let dataCreate = createDocumentData;
         let dataLebel = [];
-        //var options = null
+        var options = null;
         props.headerCreate.forEach(x => {
             x.forEach(y => {
                 if (y.type === "labeltext" && y.valueTexts) {
@@ -619,21 +733,21 @@ const AmCreateDocument = (props) => {
                 if (x.qtyrandom)
                     var qtyrandoms = x.qtyrandom.replace("%", "")
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms !== undefined)
+                    options = "palletcode=" + x.palletcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode
+                    options = "palletcode=" + x.palletcode
                 if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
-                    var options = "locationcode=" + x.locationcode
+                    options = "locationcode=" + x.locationcode
                 if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                    var options = "qtyrandom=" + qtyrandoms
+                    options = "qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = null
+                    options = null
                 return {
                     ...x, ID: null,
                     "skuCode": x.skuCode === undefined ? null : x.skuCode,
@@ -692,21 +806,21 @@ const AmCreateDocument = (props) => {
                 if (x.qtyrandom)
                     var qtyrandoms = x.qtyrandom.replace("%", "")
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms !== undefined)
+                    options = "palletcode=" + x.palletcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    options = "locationcode=" + x.locationcode + "&" + "qtyrandom=" + qtyrandoms
+                    options = "locationcode=" + x.locationcode + "&qtyrandom=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode
+                    options = "palletcode=" + x.palletcode
                 if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
                     options = "locationcode=" + x.locationcode
                 if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                    var options = "qtyrandom=" + qtyrandoms
+                    options = "qtyrandom=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = null
+                    options = null
                 return {
                     ...x, ID: null,
                     "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
@@ -728,7 +842,6 @@ const AmCreateDocument = (props) => {
                     "unitType": x.unitType === undefined ? null : x.unitType
                 }
             });
-            // dataCreate.issueItems = mbodd3t_gorDnaja;
             let docItem = dataCreate.issueItems;
             let CreateData = {
                 "forCustomerID": dataCreate.forCustomerID === undefined ? null : dataCreate.forCustomerID,
@@ -794,21 +907,21 @@ const AmCreateDocument = (props) => {
                 if (x.qtyrandom)
                     var qtyrandoms = x.perpallet
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode + "&perpallet=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode !== undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "locationcode=" + x.locationcode
-                if (x.palletcode !== undefined && x.locationcode == undefined && qtyrandoms !== undefined)
-                    var options = "palletcode=" + x.palletcode + "&" + "perpallet=" + qtyrandoms
+                    options = "palletcode=" + x.palletcode + "&locationcode=" + x.locationcode
+                if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms !== undefined)
+                    options = "palletcode=" + x.palletcode + "&perpallet=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode !== undefined && qtyrandoms !== undefined)
-                    var options = "locationcode=" + x.locationcode + "&" + "perpallet=" + qtyrandoms
+                    options = "locationcode=" + x.locationcode + "&perpallet=" + qtyrandoms
                 if (x.palletcode !== undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = "palletcode=" + x.palletcode
+                    options = "palletcode=" + x.palletcode
                 if (x.locationcode !== undefined && x.palletcode === undefined && qtyrandoms === undefined)
-                    var options = "locationcode=" + x.locationcode
+                    options = "locationcode=" + x.locationcode
                 if (qtyrandoms !== undefined && x.palletcode === undefined && x.locationcode === undefined)
-                    var options = "perpallet=" + qtyrandoms
+                    options = "perpallet=" + qtyrandoms
                 if (x.palletcode === undefined && x.locationcode === undefined && qtyrandoms === undefined)
-                    var options = null
+                    options = null
                 return {
                     ...x, ID: null,
                     "SKUIDs": x.SKUIDs === undefined ? null : x.SKUIDs,
@@ -871,21 +984,16 @@ const AmCreateDocument = (props) => {
         //    let docItem = props.dataCreate["itemIssue"];
 
         //    CreateDocuments(dataCreate, docItem);
-        //} else {
-        //    dataCreate.docItems = props.dataSource;
-        //    let docItem = dataCreate.docItems;
-        //    CreateDocuments(dataCreate, docItem);
-        //}
+        else {
+            console.log(dataCreate)
+            const docData = props.customDocumentData;
+            CreateDocuments(docData.document, docData.docItem);
+        }
     }
 
     const CreateDocuments = (CreateData, docItem) => {
-        console.log(CreateData)
-        console.log(docItem)
-        var skus = null
         if (docItem !== undefined) {
-            docItem.map((x) => {
-                return skus = x.SKUItems
-            })
+            /*docItem.forEach((x) => {skus = x.SKUItems})
             if (skus === null) {
                 setMsgDialog("SKU Item invalid");
                 setStateDialogErr(true);
@@ -896,7 +1004,7 @@ const AmCreateDocument = (props) => {
                             setMsgDialog(" Create Document success Document ID = " + res.data.ID);
                             // setTypeDialog("success");
                             setStateDialog(true);
-                            if (props.apiRes != undefined)
+                            if (props.apiRes !== undefined)
                                 props.history.push(props.apiRes + res.data.ID)
                         } else {
 
@@ -908,10 +1016,46 @@ const AmCreateDocument = (props) => {
                     setMsgDialog("Data DocumentItem Invalid");
                     setStateDialogErr(true);
                 }
+            }*/
+            if (docItem.length > 0) {
+                Axios.post(window.apipath + props.apicreate, CreateData).then((res) => {
+                    if (res.data._result.status === 1) {
+                        setMsgDialog(" Create Document success Document ID = " + res.data.ID);
+                        // setTypeDialog("success");
+                        setStateDialog(true);
+                        if (props.apiRes !== undefined)
+                            props.history.push(props.apiRes + res.data.ID)
+                    } else {
+
+                        setMsgDialog(res.data._result.message);
+                        setStateDialogErr(true);
+                    }
+                })
+            } else {
+                setMsgDialog("Data DocumentItem Invalid");
+                setStateDialogErr(true);
             }
         } else {
             setMsgDialog("SKU Item invalid");
             setStateDialogErr(true);
+        }
+    }
+
+    const Addbtn = () => {
+        if (props.createByCus === true) {
+            console.log(cusIDs)
+            if (cusIDs === undefined || cusIDs === null) {
+                setMsgDialog("DesCustomer invalid");
+                setStateDialogErr(true);
+            } else {
+                setDialog(true);
+                setAddData(true);
+                setTitle("Add");
+            }
+        } else {
+            setDialog(true);
+            setAddData(true);
+            setTitle("Add");
         }
     }
 
@@ -922,14 +1066,17 @@ const AmCreateDocument = (props) => {
             <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
 
             {/* Modal when ADD or EDIT */}
-            {customAdd ? null : <AmEditorTable
+            {
+                props.customAddComponentRender ? props.customAddComponentRender : <AmEditorTable
                 style={{ width: "600px", height: "500px" }}
                 titleText={title}
                 open={dialog}
                 onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
                 data={editData}
                 columns={editorListcolunm()}
-            />}
+            />
+            }
+
 
             {/* Header */}
             {getHeaderCreate()}
@@ -940,8 +1087,10 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
-                        {props.btnProps ? props.btnProps : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }} >
-                            {t('Add')}
+                        {props.customAddBtnRender ? props.customAddBtnRender : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
+                            Addbtn()
+                        }} >
+                            {'ADD'}
                         </AmButton>}
                     </div>
                 </Grid>
@@ -949,24 +1098,32 @@ const AmCreateDocument = (props) => {
 
             {/* Table */}
             <AmTable
-                data={props.dataSource ? props.dataSource : dataSource ? dataSource : []}
+                data={props.customDataSource ? props.customDataSource : dataSource ? dataSource : []}
                 reload={props.reload ? props.reload : reload}
-                columns={props.columnsModifi ? props.columnsModifi : columns}
+                columns={props.customTableColumns ? props.customTableColumns : columns}
                 sortable={false}
             />
 
             {/* Btn CREATE */}
             <Grid container spacing={16}>
-                <Grid item xs container direction="column" spacing={16}>
-                </Grid>
+                <Grid item xs container direction="column" spacing={16}></Grid>
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>
                         <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>
-                            {t('Create')}
+                            {'CREATE'}
                         </AmButton>
                     </div>
                 </Grid>
             </Grid>
+
+            <AmDialogConfirm
+                open={openDialogClear}
+                close={a => setopenDialogClear(a)}
+                bodyDialog={bodyDailogClear}
+                //styleDialog={{ width: "1500px", height: "500px" }}
+                customAcceptBtn={<AmButton styleType="confirm_clear" onClick={() => { OnConfirmClear() }}>{t("OK")}</AmButton>}
+                customCancelBtn={<AmButton styleType="delete_clear" onClick={() => { setopenDialogClear(false) }}>{t("Cancel")}</AmButton>}
+            ></AmDialogConfirm>
         </div>
     )
 }

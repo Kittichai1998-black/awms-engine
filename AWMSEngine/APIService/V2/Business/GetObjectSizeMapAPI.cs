@@ -9,13 +9,8 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class GetObjectSizeMapAPI : BaseAPIService
     {
-        public GetObjectSizeMapAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public GetObjectSizeMapAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 108;
         }
 
         public class TRes

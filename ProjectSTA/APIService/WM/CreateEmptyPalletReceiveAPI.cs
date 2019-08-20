@@ -10,11 +10,7 @@ namespace ProjectSTA.APIService.WM
 {
     public class CreateEmptyPalletReceiveAPI : AWMSEngine.APIService.BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 92;
-        }
-        public CreateEmptyPalletReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public CreateEmptyPalletReceiveAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

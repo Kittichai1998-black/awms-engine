@@ -9,11 +9,7 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class MappingEmptyPalletToLocationAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 90;
-        }
-        public MappingEmptyPalletToLocationAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public MappingEmptyPalletToLocationAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

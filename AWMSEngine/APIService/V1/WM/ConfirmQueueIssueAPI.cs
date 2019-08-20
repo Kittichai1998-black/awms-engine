@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class ConfirmQueueIssueAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 65;
-        }
-        public ConfirmQueueIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ConfirmQueueIssueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

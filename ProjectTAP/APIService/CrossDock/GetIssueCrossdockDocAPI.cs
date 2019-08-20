@@ -11,12 +11,8 @@ namespace ProjectTAP.APIService.CrossDock
 {
     public class GetIssueCrossdockDocAPI : BaseAPIService
     {
-        public GetIssueCrossdockDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
+        public GetIssueCrossdockDocAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = false) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-        public override int APIServiceID()
-        {
-            return 92;
         }
 
         protected override dynamic ExecuteEngineManual()

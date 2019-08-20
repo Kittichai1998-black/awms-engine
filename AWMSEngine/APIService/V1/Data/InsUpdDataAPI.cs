@@ -14,11 +14,7 @@ namespace AWMSEngine.APIService.Data
 {
     public class InsUpdDataAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 27;
-        }
-        public InsUpdDataAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public InsUpdDataAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

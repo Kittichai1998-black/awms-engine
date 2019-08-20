@@ -9,13 +9,8 @@ namespace AWMSEngine.APIService.V2.ProcessQueue
 {
     public class ASRSConfirmProcessQueueAPI : BaseAPIService
     {
-        public ASRSConfirmProcessQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ASRSConfirmProcessQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 101;
         }
 
         protected override dynamic ExecuteEngineManual()

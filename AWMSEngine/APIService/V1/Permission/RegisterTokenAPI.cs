@@ -12,11 +12,7 @@ namespace AWMSEngine.APIService.Permission
 {
     public class RegisterTokenAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 58;
-        }
-        public RegisterTokenAPI(ControllerBase controllerAPI) : base(controllerAPI, false)
+        public RegisterTokenAPI(ControllerBase controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
         {
         }
 
