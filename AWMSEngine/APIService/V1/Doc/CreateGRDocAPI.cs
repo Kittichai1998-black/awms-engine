@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.Doc
 {
     public class CreateGRDocAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 38;
-        }
-        public CreateGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public CreateGRDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

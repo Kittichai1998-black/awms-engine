@@ -11,11 +11,7 @@ namespace AWMSEngine.APIService.Doc
 {
     public class RejectedGRDocAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 36;
-        }
-        public RejectedGRDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public RejectedGRDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

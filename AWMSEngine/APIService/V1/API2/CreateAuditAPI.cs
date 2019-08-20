@@ -14,12 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AWMSEngine.APIService.Api2
 {
     public class CreateAuditAPI : BaseAPIService
-    {
-        public override int APIServiceID()
-        {
-            return 12;
-        }
-
+    { 
         public class TModel
         {
             public List<TDocument> documents;
@@ -43,7 +38,7 @@ namespace AWMSEngine.APIService.Api2
                 }
             }
         }
-        public CreateAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public CreateAuditAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

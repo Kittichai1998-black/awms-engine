@@ -12,11 +12,7 @@ namespace AWMSEngine.APIService.Mst
 {
     public class PutWarehouseAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 54;
-        }
-        public PutWarehouseAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public PutWarehouseAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

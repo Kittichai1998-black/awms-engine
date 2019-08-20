@@ -9,11 +9,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class MoveLocationAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 76;
-        }
-        public MoveLocationAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public MoveLocationAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

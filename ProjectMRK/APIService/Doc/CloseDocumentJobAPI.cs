@@ -10,13 +10,8 @@ namespace ProjectMRK.APIService.Doc
 {
     public class CloseDocumentJobAPI : BaseAPIService
     {
-        public CloseDocumentJobAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = false) : base(controllerAPI, isAuthenAuthorize)
+        public CloseDocumentJobAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 102;
         }
 
         protected override dynamic ExecuteEngineManual()

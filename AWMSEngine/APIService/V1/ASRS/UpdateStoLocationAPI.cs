@@ -11,10 +11,6 @@ namespace AWMSEngine.APIService.ASRS
     public class UpdateStoLocationAPI : BaseAPIService
     {
 
-        public override int APIServiceID()
-        {
-            return 22;
-        }
         public class TReq
         {
 
@@ -28,7 +24,7 @@ namespace AWMSEngine.APIService.ASRS
             public DateTime actualTime;
             
         }
-        public UpdateStoLocationAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public UpdateStoLocationAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

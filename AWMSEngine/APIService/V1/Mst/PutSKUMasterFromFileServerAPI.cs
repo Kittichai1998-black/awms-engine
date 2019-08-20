@@ -10,12 +10,7 @@ namespace AWMSEngine.APIService.Mst
 {
     public class PutSKUMasterFromFileServerAPI : BaseAPIService
     {
-
-        public override int APIServiceID()
-        {
-            return 51;
-        }
-        public PutSKUMasterFromFileServerAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public PutSKUMasterFromFileServerAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

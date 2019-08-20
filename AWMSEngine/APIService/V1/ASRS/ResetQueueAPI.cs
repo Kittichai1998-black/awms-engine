@@ -8,11 +8,7 @@ namespace AWMSEngine.APIService.ASRS
 {
     public class ResetQueueAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 21;
-        }
-        public ResetQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ResetQueueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

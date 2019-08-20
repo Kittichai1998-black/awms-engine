@@ -11,11 +11,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class SearchStorageObjectAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 82;
-        }
-        public SearchStorageObjectAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public SearchStorageObjectAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

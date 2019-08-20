@@ -10,12 +10,7 @@ namespace AWMSEngine.APIService.V2.ASRS
     
     public class DoneAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 16;
-        }
-
-        public DoneAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public DoneAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
         public class TReq

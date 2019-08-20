@@ -46,6 +46,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 public long pstoUnitID;
                 public decimal pstoBaseQty;
                 public long pstoBaseUnitID;
+
+                public bool lockOnly = false;
             }
             public long? workQueueID;
             public int priority;
@@ -218,8 +220,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<RootStoProcess> rstoProcs = new List<RootStoProcess>();
             reqVO.processResults.ForEach(
                 x => x.processResultItems.ForEach(
-                    y => y.pickStos.ForEach(
-                        z =>
+                    y =>
+                    {
+                        y.pickStos.ForEach(z => { AddRootStoProcess(z, false); });
+                        if (y.lockStos != null)
+                            y.lockStos.ForEach(z => { AddRootStoProcess(z, true); });
+                        void AddRootStoProcess(SPOutSTOProcessQueueCriteria z, bool lockOnly)
                         {
                             var doc = docs.First(a => a.ID == x.docID);
                             var rsto = rstoProcs.FirstOrDefault(a => a.rstoID == z.rstoID);
@@ -271,7 +277,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                                     rstoID = z.rstoID,
                                     rstoCode = z.rstoCode,
-                                    
+
                                     warehouseID = z.warehouseID,
                                     areaID = z.areaID,
                                     locationID = z.locationID,
@@ -284,7 +290,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     desLocationID = desALM == null ? null : desALM.ID,
                                 });
                             }
-                        })));
+                        }
+                    }));
             return rstoProcs;
         }
         private void ValidateDocAndInitDisto(List<amt_Document> docs)

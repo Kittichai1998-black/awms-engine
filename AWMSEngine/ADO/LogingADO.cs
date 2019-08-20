@@ -11,7 +11,7 @@ namespace AWMSEngine.ADO
 {
     public class LogingADO : BaseMSSQLAccess<LogingADO>
     {
-        public long BeginAPIService(int? serviceID,string serviceName,string url, string ipRemote, string ipLocal, string serverName, object request, VOCriteria buVO)
+        public long BeginAPIService(long? serviceID,string serviceName,string url, string ipRemote, string ipLocal, string serverName, object request, VOCriteria buVO)
         {
             var service = StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == serviceID);
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
@@ -47,15 +47,15 @@ namespace AWMSEngine.ADO
             return id;
         }
 
-        public long PutDocumentAlertMessage(long docID, string msgError, string msgWarning, string msgInfo, VOCriteria buVO)
+        public long PutDocumentAlertMessage(FinalDatabaseLogCriteria.DocumentOptionMessage docMsg, VOCriteria buVO)
         {
-            return 0;
-            var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docID, buVO);
+            //return 0;
+            var doc = ADO.DataADO.GetInstant().SelectByID<amt_Document>(docMsg.docID, buVO);
             var options = doc.Options;
             options = AMWUtil.Common.ObjectUtil.QryStrSetValue(options,
-                new KeyValuePair<string, object>("_error", msgError),
-                new KeyValuePair<string, object>("_warning", msgWarning),
-                new KeyValuePair<string, object>("_info", msgInfo));
+                new KeyValuePair<string, object>("_error", docMsg.msgError),
+                new KeyValuePair<string, object>("_warning", docMsg.msgWarning),
+                new KeyValuePair<string, object>("_info", docMsg.msgInfo));
 
             ADO.DataADO.GetInstant().UpdateBy<amt_Document>(
                 new SQLConditionCriteria[]{
@@ -68,7 +68,7 @@ namespace AWMSEngine.ADO
         }
         public long PutSendAPIEvent(HttpResultModel apiEvt, VOCriteria buVO)
         {
-            return 0;
+            //return 0;
             var id = ADO.DataADO.GetInstant().Insert<aml_SendAPIEvent>(
                 buVO,
                 new aml_SendAPIEvent()

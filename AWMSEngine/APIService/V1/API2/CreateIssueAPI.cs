@@ -13,11 +13,6 @@ namespace AWMSEngine.APIService.Api2
 {
     public class CreateIssueAPI : BaseAPIService
     {
-
-        public override int APIServiceID()
-        {
-            return 13;
-        }
         public class TModel
         {
             public List<TDocument> documents;
@@ -48,7 +43,7 @@ namespace AWMSEngine.APIService.Api2
                 }
             }
         }
-        public CreateIssueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public CreateIssueAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

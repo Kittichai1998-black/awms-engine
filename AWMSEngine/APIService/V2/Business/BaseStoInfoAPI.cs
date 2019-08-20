@@ -9,13 +9,8 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class BaseStoInfoAPI : BaseAPIService
     {
-        public BaseStoInfoAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public BaseStoInfoAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 106;
         }
 
         protected override dynamic ExecuteEngineManual()

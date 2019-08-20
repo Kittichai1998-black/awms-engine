@@ -11,11 +11,7 @@ namespace AWMSEngine.APIService.Permission
 {
     public class EnquiryTokenAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 55;
-        }
-        public EnquiryTokenAPI(ControllerBase controllerAPI) : base(controllerAPI, false)
+        public EnquiryTokenAPI(ControllerBase controllerAPI, int apiServiceID = 0) : base(controllerAPI, apiServiceID, false)
         {
         }
 

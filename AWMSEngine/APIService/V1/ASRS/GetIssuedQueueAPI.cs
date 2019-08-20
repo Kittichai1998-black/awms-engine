@@ -9,12 +9,7 @@ namespace AWMSEngine.APIService.ASRS
     public class GetIssuedQueueAPI : BaseAPIService
     {
 
-        public override int APIServiceID()
-        {
-            return 18;
-        }
-
-        public GetIssuedQueueAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public GetIssuedQueueAPI(ControllerBase controllerAPI, int apiSeriveID, bool isAuthenAuthorize = true) : base(controllerAPI, apiSeriveID, isAuthenAuthorize)
         {
         }
 
