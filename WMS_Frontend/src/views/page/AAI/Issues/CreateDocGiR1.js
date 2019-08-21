@@ -68,17 +68,22 @@ export default props => {
         ]
     ];
 
+    const columnEdit = [
+        { Header: "Storage Unit Number", accessor: 'LENUM', type: "input" },
+        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input" },
+        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input" },
+        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input" },
+    ];
+
     var columnsModify = [
-        { Header: 'Reservation', accessor: 'RSNUM' },
-        { Header: 'Material', accessor: 'MATNR' },
-        { Header: 'Batch', accessor: 'CHARG' },
-        { Header: 'Quantity', accessor: 'BDMNG' },
-        { Header: 'Unit', accessor: 'MEINS' },
-        { Header: 'BIN', accessor: 'LGPLA' },
-        { Header: 'MVT', accessor: 'BWLVS' },
-        { Header: 'UR', accessor: 'BESTQ_UR' },
-        { Header: 'QI', accessor: 'BESTQ_QI' },
-        { Header: 'Blocked', accessor: 'BESTQ_BLK' }
+        { Header: 'lenum', accessor: 'lenum' },
+        { Header: 'lgtyp', accessor: 'lgtyp' },
+        { Header: 'lgber', accessor: 'lgber' },
+        { Header: 'lgpla', accessor: 'lgpla' },
+        { Header: 'bwlvs', accessor: 'bwlvs' },
+        { Header: 'bestQ_BLK', accessor: 'bestQ_BLK' },
+        { Header: 'bestQ_QI', accessor: 'bestQ_QI' },
+        { Header: 'bestQ_UR', accessor: 'bestQ_UR' }
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
@@ -86,50 +91,82 @@ export default props => {
 
     const sapConnectorR1 = postData => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {
-            if (res.data._result.status === 1) {
+            if (res.data._result.status && res.data.datas.erR_MSG === undefined) {
                 setSAPResponse(res.data.datas);
+            } else {
+
             }
         });
     };
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            var postData = {};
-            sapReq.forEach(x => {
-                postData[x.field] = x.value;
-            });
-            postData['_token'] = localStorage.getItem('Token');
-            sapConnectorR1(postData);
+            rowdata._token = localStorage.getItem('Token');
+            sapConnectorR1(rowdata);
         }
         setEditPopup(false);
     };
 
-    const onChangeEditor = (field, value) => {
-        setSAPReq([{ field: field, value: value }]);
+    const onChangeEditor = (field, data) => {
+        editData[field] = data
+        setEditData(editData)
     };
 
-    const editorList = [
-        {
-            field: 'Storage Unit Number',
-            component: (data, cols, key) => {
-                return (
-                    <div key={key}>
-                        <FormInline>
-                            <LabelH>Storage Unit Number :</LabelH>
-                            <InputDiv>
-                                <AmInput
-                                    defaultValue={data ? data.Name2 : ''}
-                                    onChange={value => {
-                                        onChangeEditor('LENUM', value);
-                                    }}
-                                />
-                            </InputDiv>
-                        </FormInline>
-                    </div>
-                );
-            }
+    const editorListcolunm = () => {
+        if (columnEdit) {
+            return columnEdit.map(row => {
+                return {
+                    field: row.accessor,
+                    component: (data = null, cols, key) => {
+                        return <div key={key}>
+                            {getTypeEditor(row, data, cols)}
+                        </div>
+                    }
+                }
+            })
         }
-    ];
+    }
+    const getTypeEditor = (row, data, cols) => {
+        if (row.type === "input") {
+            return (
+                <FormInline>
+                    <LabelH>{row.Header} : </LabelH>
+                    <InputDiv>
+                        <AmInput style={row.style ? row.style : { width: "300px" }}
+                            // defaultValue={data ? data[row.accessor] : ""}
+                            validate={true}
+                            msgError="Error"
+                            regExp={row.validate ? row.validate : ""}
+                            onChange={(ele) => { onChangeEditor(row.accessor, ele) }}
+                        />
+                    </InputDiv>
+                </FormInline>
+            )
+        }
+    }
+
+    // const editorList = [
+    //     {
+    //         field: 'Storage Unit Number',
+    //         component: (data, cols, key) => {
+    //             return (
+    //                 <div key={key}>
+    //                     <FormInline>
+    //                         <LabelH>Storage Unit Number :</LabelH>
+    //                         <InputDiv>
+    //                             <AmInput
+    //                                 defaultValue={data ? data.Name2 : ''}
+    //                                 onChange={value => {
+    //                                     onChangeEditor('LENUM', value);
+    //                                 }}
+    //                             />
+    //                         </InputDiv>
+    //                     </FormInline>
+    //                 </div>
+    //             );
+    //         }
+    //     }
+    // ];
 
     const CreateDocument = () => {
         let document = {
@@ -260,7 +297,7 @@ export default props => {
                 open={editPopup}
                 onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
                 data={editData}
-                columns={editorList}
+                columns={editorListcolunm()}
             />
         );
     };

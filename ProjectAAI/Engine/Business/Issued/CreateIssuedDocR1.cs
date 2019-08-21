@@ -12,9 +12,9 @@ namespace ProjectAAI.Engine.Business.Issued
         public class TReq
         {
             public string LENUM;
-            public string LGTYP;
-            public string LGBER;
-            public string LGPLA;
+            public string LGTYP="";
+            public string LGBER="";
+            public string LGPLA="";
         }
 
         protected override List<SAPCriteria.ZSWMRF003_OUT_REQ> ExecuteEngine(TReq reqVO)
