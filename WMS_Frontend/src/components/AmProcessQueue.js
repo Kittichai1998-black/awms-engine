@@ -1223,7 +1223,6 @@ const AmProcessQueue = (props) => {
 
         Axios.post(window.apipath + '/v2/confirm_process_wq', confirmProcess).then((res) => {
             if (res.data._result.status === 1) {
-
                 setMsgDialogSuc(res.data._result.message);
                 setStateDialogSuc(true);
                 setopenDialogCon(false)
@@ -1234,8 +1233,6 @@ const AmProcessQueue = (props) => {
                 setdataQueue();
                 setdataSorting();
                 setDataSource();
-
-
                 props.history.push(props.apiResConfirm)
             } else {
                 setMsgDialogErr(res.data._result.message);
@@ -1265,7 +1262,6 @@ const AmProcessQueue = (props) => {
 
     }
     const getDetailDocuments = () => {
-        console.log("KKKKK")
         Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + props.DocType + "&docID=" + documentID + "&getMapSto=true&_token=" + localStorage.getItem("Token")).then((res) => {
             if (res.data._result.status === 1) {
                 var doc = res.data.document
