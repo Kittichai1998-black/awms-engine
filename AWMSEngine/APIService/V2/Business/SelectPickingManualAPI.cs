@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.V2.Business
 {
     public class SelectPickingManualAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 109;
-        }
-        public SelectPickingManualAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public SelectPickingManualAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

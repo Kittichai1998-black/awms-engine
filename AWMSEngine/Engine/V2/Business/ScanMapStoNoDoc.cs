@@ -33,6 +33,7 @@ namespace AWMSEngine.Engine.V2.Business
             public bool isRoot = true;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
+            public List<string> validateSKUTypeCodes;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
@@ -45,7 +46,16 @@ namespace AWMSEngine.Engine.V2.Business
 
             return mapsto;
         }
-
+        private void CheckSKUType(TReq reqVO, ams_PackMaster pm)
+        {
+            if (reqVO.validateSKUTypeCodes != null && reqVO.validateSKUTypeCodes.Count > 0)
+            {
+                ams_SKUMaster sm = ADO.MasterADO.GetInstant().GetSKUMaster(pm.ID.Value, this.BuVO);
+                ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == sm.SKUMasterType_ID);
+                if (!reqVO.validateSKUTypeCodes.Any(x => x == smt.Code))
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type Not Match");
+            }
+        }
         private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parentMapsto, TReq reqVO)
         {
             var objSize = this.StaticValue.ObjectSizes.Find(x => x.ID == ObjectSize_ID);
@@ -151,6 +161,8 @@ namespace AWMSEngine.Engine.V2.Business
                     if (reqVO.action == VirtualMapSTOActionType.SELECT || reqVO.action == VirtualMapSTOActionType.REMOVE)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'" + reqVO.scanCode + "' Not Found");
                     ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
+                    this.CheckSKUType(reqVO, pm);
+
                     ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
                     ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
                     if (bm != null)
@@ -244,6 +256,8 @@ namespace AWMSEngine.Engine.V2.Business
         {
             var firstMapSto = this.GetMapStoLastFocus(mapsto);
             ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
+            this.CheckSKUType(reqVO, pm);
+
             ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
 

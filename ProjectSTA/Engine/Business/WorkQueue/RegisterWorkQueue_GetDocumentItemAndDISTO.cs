@@ -141,7 +141,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     if (packH.options != null && packH.options.Length > 0)
                     {
                         //เช็คค่า Sou_Warehouse_ID จาก options
-                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_SOU_WAREHOUSE_ID);
+                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_WAREHOUSE_ID);
                         if (Sou_Warehouse_ID != null && Sou_Warehouse_ID.Length > 0)
                         { 
                             var checkWhID = StaticValue.Warehouses.First(x => x.ID == Convert.ToInt32(Sou_Warehouse_ID));
@@ -152,7 +152,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             doc.Sou_Branch_ID = StaticValue.Branchs.First(x => x.ID == checkWhID.Branch_ID).ID;
                             
                         }
-                        var mvt = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_MVT);
+                        var mvt = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_MVT);
 
                         if (mvt != null && mvt.Length > 0)
                         {
@@ -160,7 +160,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             {   //customer return
                                 doc.MovementType_ID = MovementType.FG_TRANSFER_CUS;
                                 //เช็ค่า Sou_Customer_ID จาก options
-                                var Sou_Customer_ID = ObjectUtil.QryStrGetValue(packH.options, BusinessVOConst.OPT_SOU_CUSTOMER_ID);
+                                var Sou_Customer_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_CUSTOMER_ID);
                                 if (Sou_Customer_ID != null && Sou_Customer_ID.Length > 0)
                                 {
                                     var checkCusID = StaticValue.Customers.First(x => x.ID == Convert.ToInt32(Sou_Customer_ID));
@@ -169,31 +169,74 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                                     doc.Sou_Customer_ID = checkCusID.ID.Value;
                                 }
                             }
-                            else if (Convert.ToInt32(mvt) == (int)MovementType.WIP_TRANSFER_SUP)
+                            else if (Convert.ToInt32(mvt) == (int)MovementType.WIP_TRANSFER_WM)
                             {
-                                doc.MovementType_ID = MovementType.WIP_TRANSFER_SUP;
+                                doc.MovementType_ID = MovementType.WIP_TRANSFER_WM;
                             }
-                            else if (Convert.ToInt32(mvt) == (int)MovementType.FG_RETURN_WM)
+                            else if (Convert.ToInt32(mvt) == (int)MovementType.FG_PICK_RETURN_WM)
                             {   //picking return
-                                doc.MovementType_ID = MovementType.FG_RETURN_WM;
+                                doc.MovementType_ID = MovementType.FG_PICK_RETURN_WM;
 
                                 var resDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { packH.id.Value }, DocumentTypeID.GOODS_RECEIVED, EntityStatus.INACTIVE, buVO);
                                 if (resDocItems == null)
                                     throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item of Pack Code '" + packH.code + "' Not Found");
                                 return resDocItems;
-                               /* var resDiSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                                         new SQLConditionCriteria[] {
-                                               new SQLConditionCriteria("Sou_StorageObject_ID",packH.id, SQLOperatorType.EQUALS),
-                                               new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
-                                         }, buVO).FirstOrDefault();
-                                if (resDiSto == null)
-                                    throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item Storage Object of Pack Code '" + packH.code + "' Not Found");
-                                var resDocItem = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(resDiSto.DocumentItem_ID, buVO);
-                                if (resDocItem == null)
-                                    throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item of Pack Code '" + packH.code + "' Not Found");
-                                resDocItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { resDiSto };
+                                /* var resDiSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                                          new SQLConditionCriteria[] {
+                                                new SQLConditionCriteria("Sou_StorageObject_ID",packH.id, SQLOperatorType.EQUALS),
+                                                new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
+                                          }, buVO).FirstOrDefault();
+                                 if (resDiSto == null)
+                                     throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item Storage Object of Pack Code '" + packH.code + "' Not Found");
+                                 var resDocItem = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(resDiSto.DocumentItem_ID, buVO);
+                                 if (resDocItem == null)
+                                     throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item of Pack Code '" + packH.code + "' Not Found");
+                                 resDocItem.DocItemStos = new List<amt_DocumentItemStorageObject>() { resDiSto };
 
-                                 */
+                                  */
+                            }
+                            else if (Convert.ToInt32(mvt) == (int)MovementType.FG_LOAD_RETURN_WM)
+                            {
+                                doc.MovementType_ID = MovementType.FG_LOAD_RETURN_WM;
+                                doc.Sou_Warehouse_ID = warehouse.ID.Value;
+                                doc.Sou_Branch_ID = branch.ID.Value;
+                                //หา docGI
+                                /* var STOPicked = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
+                                          new SQLConditionCriteria[] {
+                                                new SQLConditionCriteria("Code",packH.code, SQLOperatorType.EQUALS),
+                                                new SQLConditionCriteria("OrderNo",packH.orderNo, SQLOperatorType.EQUALS),
+                                                new SQLConditionCriteria("EventStatus",StorageObjectEventStatus.PICKED, SQLOperatorType.EQUALS)
+                                               // new SQLConditionCriteria("Status", EntityStatus.DONE, SQLOperatorType.NOTEQUALS)
+                                          }, buVO);
+
+                               STOPicked.ForEach(stopick => {
+                                    if(stopick.Options != null && stopick.Options.Length > 0)
+                                    {
+                                        var stopick_CARTON_NO = ObjectUtil.QryStrGetValue(stopick.Options, OptionVOConst.OPT_CARTON_NO);
+                                        //1-100 --90-95
+                                        //101-200 --105
+                                        var packH_CARTON_NO = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_CARTON_NO);
+                                        //90-95,105
+                                        
+                                        if (stopick_CARTON_NO == packH_CARTON_NO)
+                                        {
+                                            var resDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemBySTO(new List<long> { packH.id.Value }, DocumentTypeID.GOODS_ISSUED, EntityStatus.ACTIVE, buVO).FirstOrDefault();
+                                            if (resDocItems == null)
+                                                throw new AMWException(logger, AMWExceptionCode.V1001, "GR Document Item of Pack Code '" + packH.code + "' Not Found");
+
+                                            var docpiked = AWMSEngine.ADO.DocumentADO.GetInstant().Get(resDocItems.Document_ID, buVO);
+                                            doc.ParentDocument_ID = resDocItems.Document_ID;
+
+                                            doc.Sou_Branch_ID = docpiked.Des_Branch_ID;
+                                            doc.Sou_Warehouse_ID = docpiked.Des_Warehouse_ID;
+                                            //doc.souAreaMasterID = document.Des_AreaMaster_ID,
+                                            doc.Des_Branch_ID = docpiked.Sou_Branch_ID;
+                                            doc.Des_Warehouse_ID = docpiked.Sou_Warehouse_ID;
+                                            //desAreaMasterID = document.Sou_AreaMaster_ID,
+                                        }
+                                    }
+                                });
+                                */
                             }
                             else
                             {   //FG_TRANSFER_WM รับเข้าเเบบปกติ

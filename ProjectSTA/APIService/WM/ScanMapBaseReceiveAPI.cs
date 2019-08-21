@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.APIService;
 using Microsoft.AspNetCore.Mvc;
 using ProjectSTA.Engine.Business.Received;
 
 namespace ProjectSTA.APIService.WM   
 {
-    public class ScanMapBaseReceiveAPI : AWMSEngine.APIService.BaseAPIService
+    public class ScanMapBaseReceiveAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 88;
-        }
-        public ScanMapBaseReceiveAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ScanMapBaseReceiveAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

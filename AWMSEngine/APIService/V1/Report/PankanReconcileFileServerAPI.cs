@@ -9,11 +9,7 @@ namespace AWMSEngine.APIService.Report
 {
     public class PankanReconcileFileServerAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 62;
-        }
-        public PankanReconcileFileServerAPI(ControllerBase controllerAPI) : base(controllerAPI)
+        public PankanReconcileFileServerAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

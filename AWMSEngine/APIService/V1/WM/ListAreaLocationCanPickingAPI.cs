@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class ListAreaLocationCanPickingAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 73;
-        }
-        public ListAreaLocationCanPickingAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ListAreaLocationCanPickingAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

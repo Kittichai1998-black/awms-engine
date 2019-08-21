@@ -10,13 +10,8 @@ namespace AWMSEngine.APIService.API2
 {
     public class CheckAPI : BaseAPIService
     {
-        public CheckAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public CheckAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 10;
         }
 
         protected override dynamic ExecuteEngineManual()

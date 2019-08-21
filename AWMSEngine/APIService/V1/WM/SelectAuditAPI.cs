@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class SelectAuditAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 83;
-        }
-        public SelectAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public SelectAuditAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

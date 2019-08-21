@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class GetWorkQueueAuditAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 71;
-        }
-        public GetWorkQueueAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public GetWorkQueueAuditAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

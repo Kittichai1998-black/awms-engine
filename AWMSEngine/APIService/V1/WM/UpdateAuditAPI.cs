@@ -10,13 +10,8 @@ namespace AWMSEngine.APIService.WM
 {
     public class UpdateAuditAPI : BaseAPIService
     {
-        public UpdateAuditAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public UpdateAuditAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 85;
         }
 
         protected override dynamic ExecuteEngineManual()

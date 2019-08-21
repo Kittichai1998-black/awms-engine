@@ -12,12 +12,7 @@ namespace AWMSEngine.APIService.Data
     public class SelectDataViwAPI : BaseAPIService
     {
 
-        public override int APIServiceID()
-        {
-            return 32;
-        }
-
-        public SelectDataViwAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public SelectDataViwAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

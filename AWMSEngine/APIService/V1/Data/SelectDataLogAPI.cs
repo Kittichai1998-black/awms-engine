@@ -11,11 +11,7 @@ namespace AWMSEngine.APIService.Data
 {
     public class SelectDataLogAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 29;
-        }
-        public SelectDataLogAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public SelectDataLogAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

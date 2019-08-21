@@ -40,13 +40,17 @@ namespace AWMSModel.Constant.EnumConst
         FG_DELIVERY_ORDER_CUS = 1082,
         FG_DELIVERY_ORDER_SUP = 1083,
 
-        FG_RETURN_WM = 1091,
-        FG_RETURN_CUS = 1092,
-        FG_RETURN_SUP = 1093,
+        FG_PICK_RETURN_WM = 1091,
+        FG_PICK_RETURN_CUS = 1092,
+        FG_PICK_RETURN_SUP = 1093,
 
         FG_CORRECTIONS_WM = 1101,
         FG_CORRECTIONS_CUS = 1102,
         FG_CORRECTIONS_SUP = 1103,
+
+        FG_LOAD_RETURN_WM = 1111,
+        FG_LOAD_RETURN_CUS = 1112,
+        FG_LOAD_RETURN_SUP = 1113,
         // WIP
         WIP_TRANSFER_WM = 2011,
         WIP_TRANSFER_CUS = 2012,

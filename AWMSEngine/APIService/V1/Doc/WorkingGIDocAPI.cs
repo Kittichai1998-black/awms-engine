@@ -9,11 +9,7 @@ namespace AWMSEngine.APIService.Doc
 {
     public class WorkingGIDocAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 46;
-        }
-        public WorkingGIDocAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public WorkingGIDocAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

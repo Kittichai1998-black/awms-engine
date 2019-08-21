@@ -11,11 +11,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class UpdateIssuedPickingAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 86;
-        }
-        public UpdateIssuedPickingAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public UpdateIssuedPickingAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

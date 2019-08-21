@@ -34,6 +34,7 @@ import AmListSTORenderer from '../pageComponent/AmListSTORenderer';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next'
 import Typography from '@material-ui/core/Typography';
+import * as SC from '../../constant/StringConst'
 const Axios = new apicall()
 
 const styles = theme => ({
@@ -211,6 +212,7 @@ const AmMappingPallet = (props) => {
         showArea = false,
         modeMultiSKU = false,
         confirmReceiveMapSTO = false,
+        doneEventStatus
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -409,6 +411,7 @@ const AmMappingPallet = (props) => {
                         mode: 0,
                         amount: parseInt(valueInput['amount'], 10) ? valueInput['amount'] : 1,
                         action: actionValue,
+                        options: doneEventStatus ? SC.OPT_DONE_EVENT_STATUS + "=" + doneEventStatus : null
                     }
                     resValuePost = { ...valueInput, ...dataScan }
                 }
@@ -472,7 +475,7 @@ const AmMappingPallet = (props) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             inputClear();
             if (res.data != null) {
-                if (res.data._result.message === "Success") { 
+                if (res.data._result.message === "Success") {
                     if (showArea && res.data.areaID) {
                         GetArea(res.data.areaID);
                     }
@@ -510,7 +513,7 @@ const AmMappingPallet = (props) => {
                             if (res.data.mapstos) {
                                 setStorageObj(res.data);
                                 // inputClear();
-                                  
+
                                 alertDialogRenderer("Remove Pack Success", "success", true);
 
                             } else {

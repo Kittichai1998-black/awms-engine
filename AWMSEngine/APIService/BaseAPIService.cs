@@ -20,7 +20,7 @@ namespace AWMSEngine.APIService
 {
     public abstract class BaseAPIService
     {
-        public abstract int APIServiceID();
+        public long APIServiceID;
         public VOCriteria BuVO { get; set; }
         public ControllerBase ControllerAPI { get; set; }
         public dynamic RequestVO { get => this.BuVO.GetDynamic(BusinessVOConst.KEY_REQUEST); }
@@ -31,13 +31,21 @@ namespace AWMSEngine.APIService
 
         protected abstract dynamic ExecuteEngineManual();
 
-        public BaseAPIService(ControllerBase controllerAPI, bool isAuthenAuthorize = true)
+        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true)
         {
             this.IsAuthenAuthorize = isAuthenAuthorize;
             this.ControllerAPI = controllerAPI;
+            this.APIServiceID = apiServiceID;
+        }
+
+        public BaseAPIService(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true, bool isAuthenAuthorize1 = false) : this(controllerAPI, apiServiceID, isAuthenAuthorize)
+        {
+            this.isAuthenAuthorize1 = isAuthenAuthorize1;
         }
 
         private SqlConnection _SqlConnection = null;
+        private bool isAuthenAuthorize1;
+
         protected void BeginTransaction()
         {
             this.RollbackTransaction();
@@ -119,11 +127,16 @@ namespace AWMSEngine.APIService
                         sendAPIEvents = new List<HttpResultModel>()
                     });
 
-                this.Permission(token,apiKey, APIServiceID());
+                var apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == this.APIServiceID);
+                if (apiService == null)
+                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
+                this.APIServiceID = apiService.ID.Value;
+
+                this.Permission(token,apiKey);
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
-                    this.APIServiceID(),
+                    this.APIServiceID,
                     this.GetType().Name,
                     this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Request.Headers["Referer"].ToString(),
                     this.ControllerAPI == null ? string.Empty : this.ControllerAPI.HttpContext.Connection.RemoteIpAddress.ToString(),
@@ -184,7 +197,7 @@ namespace AWMSEngine.APIService
                 });
                 this.FinalDBLog.documentOptionMessages.ForEach(x =>
                 {
-                    ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x.docID, x.msgError, x.msgWarning, x.msgInfo, this.BuVO);
+                    ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
                 });
                 this.Logger.LogInfo("RESPONSE_DATA:: " + ObjectUtil.Json(response));
                 this.Logger.LogInfo("####### END TRANSACTION #######");
@@ -198,7 +211,7 @@ namespace AWMSEngine.APIService
         //}
 
 
-        private void Permission(string token, string apiKey,int APIServiceID)
+        private void Permission(string token, string apiKey)
         {
             var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
@@ -213,11 +226,8 @@ namespace AWMSEngine.APIService
             if (!this.IsAuthenAuthorize)
                 return;
 
-            var apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.FullClassName == this.GetType().FullName);
-            if (apiService == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
 
-            ADO.TokenADO.GetInstant().Authen(token, apiKey, apiService.ID.Value, this.BuVO);
+            ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
 
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)

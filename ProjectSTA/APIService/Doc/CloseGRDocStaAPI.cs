@@ -11,14 +11,10 @@ namespace ProjectSTA.APIService.Doc
 {
     public class CloseGRDocStaAPI : BaseAPIService
     {
-        public CloseGRDocStaAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public CloseGRDocStaAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
-        public override int APIServiceID()
-        {
-            return 95;
-        }
 
         protected override dynamic ExecuteEngineManual()
         {

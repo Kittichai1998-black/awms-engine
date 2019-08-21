@@ -9,11 +9,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class HoldStorageObjectAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 72;
-        }
-        public HoldStorageObjectAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public HoldStorageObjectAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

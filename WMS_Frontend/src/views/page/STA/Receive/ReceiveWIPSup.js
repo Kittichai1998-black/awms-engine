@@ -132,7 +132,7 @@ const ReceiveWIPSup = (props) => {
                     if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                         qryStr[SC.OPT_SOU_WAREHOUSE_ID] = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                     }
-                    qryStr[SC.OPT_MVT] = "2013";
+                    qryStr[SC.OPT_MVT] = "2011";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                     console.log(qryStr)
                     let qryStr1 = queryString.stringify(qryStr)
@@ -143,6 +143,7 @@ const ReceiveWIPSup = (props) => {
                         orderNo: orderNo,
                         scanCode: skuCode,
                         options: cartonNo === "0" ? null : uri_opt,
+                        validateSKUTypeCodes: ["WIP"]
                         // amount: 1,
                         // mode: 0,
                         // action: 1,

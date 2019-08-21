@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.Mst
 {
     public class PutSupplierFromFileServerAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 53;
-        }
-        public PutSupplierFromFileServerAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public PutSupplierFromFileServerAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

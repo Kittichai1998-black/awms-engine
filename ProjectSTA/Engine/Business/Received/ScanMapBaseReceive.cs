@@ -137,7 +137,7 @@ namespace ProjectSTA.Engine.Business.Received
                             {  //ข้อมูลตรง เช็คว่ามีค่า Options มั้ย ถ้ามี เช็คหาค่า CartonNo.
                                 if (stoPack.Options != null && stoPack.Options.Length > 0)
                                 {
-                                    var optionsCartonNo = ObjectUtil.QryStrGetValue(stoPack.Options, BusinessVOConst.OPT_CARTON_NO);
+                                    var optionsCartonNo = ObjectUtil.QryStrGetValue(stoPack.Options, OptionVOConst.OPT_CARTON_NO);
 
                                          //มีค่า CartonNo 
                                             if (optionsCartonNo.Length > 0) {
@@ -169,9 +169,12 @@ namespace ProjectSTA.Engine.Business.Received
                                                 }
 
                                                 /// รับเข้า วางสินค้าลงบนพาเลทได้
-                                                var optionsNew = BusinessVOConst.OPT_CARTON_NO + "=" + newCartonNos;
+                                                //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + newCartonNos;
+                                        var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stoPack.Options,
+                                            new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, newCartonNos),
+                                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
 
-                                                var objectSizePack = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)skuItem.ObjectSize_ID).FirstOrDefault();
+                                        var objectSizePack = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)skuItem.ObjectSize_ID).FirstOrDefault();
                                                 if (objectSizePack == null)
                                                 {
                                                     throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Object Size of SKU Code: " + skuItem.Code + " Not Found");
@@ -238,7 +241,11 @@ namespace ProjectSTA.Engine.Business.Received
                                     //มีข้อมูล base เปล่า ก่อนหน้าที่สามารถวางสินค้าได้
                                     if (tempAreaLoc.Count() > 0)
                                     {
-                                        var optionsNew = BusinessVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
+                                        //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
+                                        var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
+
                                         if (tempStoBaseItems.Count() > 0)
                                         {
                                             //ที่ ObjectType = Base
@@ -272,7 +279,11 @@ namespace ProjectSTA.Engine.Business.Received
                         if (numLoc == lenghtAreaLocItems)
                         {
                             //เตรียมข้อมูลinsert 
-                            var optionsNew = BusinessVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
+                            //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
+                            var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
+
                             List<StorageObjectCriteria> mapStosPack = new List<StorageObjectCriteria> { };
 
                             if (tempAreaLoc.Count() > 0)
@@ -307,7 +318,11 @@ namespace ProjectSTA.Engine.Business.Received
                         //มีข้อมูล base เปล่า ก่อนหน้าที่สามารถวางสินค้าได้
                         if(tempAreaLoc.Count() > 0)
                         {
-                            var optionsNew = BusinessVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
+                           // var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
+                            var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
+
                             if (tempStoBaseItems.Count() > 0)
                             {
                                 //ที่ ObjectType = Base

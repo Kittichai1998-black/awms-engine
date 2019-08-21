@@ -10,11 +10,7 @@ namespace AWMSEngine.APIService.WM
 {
     public class ListBaseConsoCanLoadingAPI : BaseAPIService
     {
-        public override int APIServiceID()
-        {
-            return 74;
-        }
-        public ListBaseConsoCanLoadingAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public ListBaseConsoCanLoadingAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 

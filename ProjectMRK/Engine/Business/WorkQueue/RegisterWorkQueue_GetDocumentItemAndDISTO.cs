@@ -100,7 +100,7 @@ namespace ProjectMRK.Engine.Business.WorkQueue
                 Des_AreaMaster_ID = null,
                 DocumentDate = DateTime.Now,
                 ActionTime = null,
-                MovementType_ID = MovementType.FG_RETURN_WM,
+                MovementType_ID = MovementType.FG_PICK_RETURN_WM,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,

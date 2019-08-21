@@ -10,14 +10,11 @@ namespace AWMSEngine.APIService.V2.ASRS
     
     public class ClosedDocumentAPI : BaseAPIService
     {
-        public override int APIServiceID()
+        
+        public ClosedDocumentAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-            return 98;
         }
 
-        public ClosedDocumentAPI(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
-        {
-        }
         public class TReq
         {
             public List<long> docIDs;
