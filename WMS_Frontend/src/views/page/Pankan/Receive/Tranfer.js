@@ -10,10 +10,11 @@ import Tabs from '@material-ui/core/Tabs';
 import CardActions from '@material-ui/core/CardActions';
 import AmInput from '../../../../components/AmInput'
 import AmButton from '../../../../components/AmButton'
+import AmDialogs from '../../../../components/AmDialogs'
 import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
-import AmDialog from '../../../../components/AmDialogs'
+import { apicall, createQueryString } from '../../../../components/function/CoreFunction2'
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -24,7 +25,8 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import AmListSTORenderer from '../../../pageComponent/AmListSTORenderer'
 import { indigo, deepPurple, lightBlue, red, grey, green } from '@material-ui/core/colors';
-
+import Axios1 from 'axios'
+const Axios = new apicall()
 
 const styles = theme => ({
     root: {
@@ -159,7 +161,7 @@ const Tranfer = (props) => {
     const { t } = useTranslation()
 
     const { classes,
-            confirmReceiveMapSTO = false,
+        confirmReceiveMapSTO = false,
     } = props;
     const [valueInput, setValueInput] = useState({});
     const [dataShow, setDataShow] = useState(null);
@@ -169,40 +171,117 @@ const Tranfer = (props) => {
     const [typeDialog, setTypeDialog] = useState("");
     const [activeStep, setActiveStep] = useState(0);
     const [newStorageObj, setNewStorageObj] = useState(null);
+    const [stateDialogErr, setStateDialogErr] = useState(false);
+    const [msgDialogErr, setMsgDialogErr] = useState("");
     const [expanded, setExpanded] = useState(false);
+    const [barCodeDes, setbarCodeDes] = useState();
+    const [objectSizeMaps, setobjectSizeMaps] = useState();
 
     const handleExpandClick = () => {
     }
 
     const onHandleConfirmReceive = () => {
 
-        
+
     }
 
     const onHandleClear = () => {
-       
-    }
- 
 
+    }
+    const onHandleChangeInputDes = (value, dataObject, field, fieldDataKey, event) => {
+        console.log(value)
+
+    }
+    const onHandleChangeInputSou = () => {
+
+    }
+
+    const getDesScan = () => {
+        let datas = {
+            "warehouseID": 1,
+            "scanCode": barCodeDes,
+            "mode": 1,
+            "amount": 0,
+            "action": 0,
+
+        }
+        console.log(datas)
+        Axios.post(window.apipath + '/v2/ScanMapStoAPI', datas).then((res) => {
+            console.log(res)
+            if (res.data._result.status === 1) {
+                let datas = res.data
+                console.log(datas)
+                setobjectSizeMaps(datas.objectSizeMaps)
+                setNewStorageObj(<AmListSTORenderer
+                    dataSrc={datas.objectSizeMaps}
+                    showOptions={null}
+                    customOptions={null}
+                />);
+            } else {
+                setStateDialogErr(true)
+                setMsgDialogErr(res.data._result.message)
+
+            }
+        })
+
+    }
+    console.log(objectSizeMaps)
     return (
         <div className={classes.root}>
             {stateDialog ? showDialog ? showDialog : null : null}
             <Paper square className={classes.paper1}>
+                <AmDialogs typePopup={"error"} content={msgDialogErr} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
+
                 <Tabs
                     classes={{ indicator: classnames(classes.bigIndicator, classes['indicator_']) }}
-                    >
-                 </Tabs>
+                >
+                </Tabs>
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_'])}>
                 <Card className={classes.card}>
                     <CardContent className={classes.cardContent}>
-                <div>
-                    <FormInline><LabelH>Dase base : </LabelH>
-                        <AmInput></AmInput>
+                        <div>
+                            <FormInline><LabelH>Dase base : </LabelH>
+                                <AmInput
+                                    id={"desbase"}
+                                    autoFocus={true}
+                                    placeholder={"Scan"}
+                                    type="input"
+                                    style={{ width: "330px" }}
+                                    defaultValue={""}
+                                    onKeyPress={(value, a, b, event) => {
+                                        if (event.key === "Enter") {
+                                            setbarCodeDes(value)
+                                            document.getElementById("desbase").value = "";
+                                            getDesScan();
+                                        }
+                                    }}
+                                >
+                                </AmInput>
                             </FormInline>
                             <FormInline><LabelH>Sou Scan : </LabelH>
-                                <AmInput></AmInput>
+                                <AmInput
+                                    id={"desbase"}
+                                    autoFocus={true}
+                                    placeholder={"Scan"}
+                                    type="input"
+                                    style={{ width: "330px" }}
+                                    defaultValue={""}
+                                    onKeyPress={(value, a, b, event) => {
+                                        if (event.key === "Enter") {
+                                            setbarCodeDes(value)
+                                            document.getElementById("desbase").value = "";
+                                            getDesScan();
+                                        }
+                                    }}
+                                ></AmInput>
                             </FormInline>
+                            {objectSizeMaps ? <AmListSTORenderer
+                                dataSrc={objectSizeMaps}
+                            //showOptions={showOptions}
+                            //customOptions={customOptions}
+                               
+                            />: null}
 
                         </div>
                     </CardContent>
@@ -245,12 +324,13 @@ const Tranfer = (props) => {
                             </AmButton>
                         </CardActions>
                     </Collapse>
-                   
+
                 </Card>
-                      
+                <div>{console.log(newStorageObj)}</div>
+
             </Paper>
         </div>
-        )
+    )
 }
 
 Tranfer.prototype = {
