@@ -11,7 +11,7 @@ import AmDropdown from '../components/AmDropdown'
 import SaveIcon from '@material-ui/icons/Description';
 import classnames from 'classnames';
 import AmDatepicker from '../components/AmDate'
-import { apicall } from '../components/function/CoreFunction2'
+//import { apicall } from '../components/function/CoreFunction'
 import AmEditorTable from '../components/table/AmEditorTable'
 import AmDialogs from '../components/AmDialogs'
 import AmCheckBox from '../components/AmCheckBox'
@@ -32,8 +32,10 @@ import AmDialogConfirm from '../components/AmDialogConfirm'
 import { string } from "prop-types";
 import { getPriority } from "os";
 import { width } from "@material-ui/system";
+import { apicall } from '../components/function/CoreFunction2'
 import { useTranslation } from 'react-i18next'
-const Axios = new apicall()
+import Axios from "axios";
+const Axios1 = new apicall()
 const styles = theme => ({
     root: {
         width: '100%',
@@ -1098,7 +1100,7 @@ const AmProcessQueue = (props) => {
         //dataConfirmQ["apiKey"] = "WCS_KEY"
         dataConfirmQ["desASRSLocationCode"] = null
         if (dataConfirmQ !== undefined) {
-            Axios.post(window.apipath + '/v2/process_wq', dataConfirmQ).then((res) => {
+            Axios1.post(window.apipath + '/v2/process_wq', dataConfirmQ).then((res) => {
                 if (res.data._result.status === 1) {
                     bodyDialogConfirm(res.data.processResults)
                     setprocessResultsCon(res.data.processResults)
@@ -1221,8 +1223,9 @@ const AmProcessQueue = (props) => {
         confirmProcess["desASRSAreaCode"] = dataConfirmQ["desASRSAreaCode"]
         confirmProcess["processResults"] = processResultsCon
 
-        Axios.post(window.apipath + '/v2/confirm_process_wq', confirmProcess).then((res) => {
+        Axios1.post(window.apipath + '/v2/confirm_process_wq', confirmProcess).then((res) => {
             if (res.data._result.status === 1) {
+
                 setMsgDialogSuc(res.data._result.message);
                 setStateDialogSuc(true);
                 setopenDialogCon(false)
@@ -1233,6 +1236,8 @@ const AmProcessQueue = (props) => {
                 setdataQueue();
                 setdataSorting();
                 setDataSource();
+
+
                 props.history.push(props.apiResConfirm)
             } else {
                 setMsgDialogErr(res.data._result.message);
