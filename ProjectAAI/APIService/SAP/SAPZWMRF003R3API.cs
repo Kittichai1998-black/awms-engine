@@ -10,13 +10,8 @@ namespace ProjectAAI.APIService.SAP
 {
     public class SAPZWMRF003R3API : BaseAPIService
     {
-        public SAPZWMRF003R3API(ControllerBase controllerAPI, bool isAuthenAuthorize = true) : base(controllerAPI, isAuthenAuthorize)
+        public SAPZWMRF003R3API(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
-        }
-
-        public override int APIServiceID()
-        {
-            return 766;
         }
 
         protected override dynamic ExecuteEngineManual()
