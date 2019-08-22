@@ -1099,6 +1099,7 @@ const AmProcessQueue = (props) => {
 
         //dataConfirmQ["apiKey"] = "WCS_KEY"
         dataConfirmQ["desASRSLocationCode"] = null
+        dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false
         if (dataConfirmQ !== undefined) {
             Axios1.post(window.apipath + '/v2/process_wq', dataConfirmQ).then((res) => {
                 if (res.data._result.status === 1) {
@@ -1130,16 +1131,18 @@ const AmProcessQueue = (props) => {
                                     x.processResultItems.map((a, idx) => {
                                         processResults.push(a)
                                         var datasConfirms = []
+                                        var datasConfirmsLock = []
                                         if (a.pickStos.length === 0) {
                                             setMsgDialogErr("Data Not Found");
                                             setStateDialogErr(true);
                                         } else {
 
                                             setopenDialogCon(true)
-                                            return <div><div><FormInline>
-                                                <div style={{ marginLeft: "5px" }}>
-                                                    <label>DocumentItem: {a.docItemCode}</label></div>
-                                            </FormInline></div>
+                                            return <div>
+                                                <div><FormInline>
+                                                    <div style={{ marginLeft: "5px" }}>
+                                                        <label>DocumentItem: {a.docItemCode}</label></div>
+                                                </FormInline></div>
 
                                                 {
 
@@ -1161,8 +1164,29 @@ const AmProcessQueue = (props) => {
                                                         setReload({})
 
                                                     })
+                                                }
+                                                {
+                                                    a.lockStos.map((x) => {
+                                                        //setsumBase();
+                                                        //setsumBaseMax();
+                                                        var dataTBConLock = []
+                                                        var dataSorceTBsLock = {
+                                                            "SKU": x.pstoCode,
+                                                            "Pallet": x.rstoCode,
+                                                            "Batch": x.pstoBatch,
+                                                            "Lot": x.pstoLot,
+                                                            "OrderNo": x.pstoOrderNo,
+                                                            "BaseQuantity": x.pickBaseQty + "/" + x.pstoBaseQty,
+                                                            "Unit": x.pstoBaseUnitCode
+                                                        }
+                                                        dataTBConLock.push(dataSorceTBsLock)
+                                                        datasConfirmsLock.push(dataSorceTBsLock)
+                                                        setReload({})
+
+                                                    })
 
                                                 }
+
                                                 < AmTable
                                                     data={datasConfirms === undefined ? [] : datasConfirms}
                                                     columns={props.columnConfirm}
@@ -1171,6 +1195,18 @@ const AmProcessQueue = (props) => {
                                                     reload={reload}
                                                     sortable={false}
                                                 ></AmTable>
+
+                                                <div style={{ paddingTop: "10px" }}>
+                                                    < AmTable
+                                                        data={datasConfirmsLock === undefined ? [] : datasConfirmsLock}
+                                                        columns={props.columnConfirm}
+                                                        minRows={1}
+                                                        sumFooter={SumTables(a.lockStos)}
+                                                        reload={reload}
+                                                        sortable={false}
+                                                        style={{ color: 'red'}}
+                                                    ></AmTable>
+                                                </div>
 
                                             </div>
 
@@ -1222,7 +1258,7 @@ const AmProcessQueue = (props) => {
         confirmProcess["desASRSLocationCode"] = null
         confirmProcess["desASRSAreaCode"] = dataConfirmQ["desASRSAreaCode"]
         confirmProcess["processResults"] = processResultsCon
-
+        //console.log(confirmProcess)
         Axios1.post(window.apipath + '/v2/confirm_process_wq', confirmProcess).then((res) => {
             if (res.data._result.status === 1) {
 

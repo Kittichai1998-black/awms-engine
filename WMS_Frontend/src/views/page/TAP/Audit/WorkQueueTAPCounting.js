@@ -164,6 +164,7 @@ const WorkQueueTAPCounting = (props) => {
             random={true}
             docType={"audit"}
             dataSort={false}
+            lockRandom={true}
             apiResConfirm={"/counting/managequeue"}
             apidetail={"/counting/detail?docID="}
         ></AmProcessQueue>
