@@ -143,7 +143,7 @@ const ReceiveWIPSup = (props) => {
                         orderNo: orderNo,
                         scanCode: skuCode,
                         options: cartonNo === "0" ? null : uri_opt,
-                        validateSKUTypeCodes: ["WIP"]
+                        validateSKUTypeCodes: ["WIP","FG"]
                         // amount: 1,
                         // mode: 0,
                         // action: 1,

@@ -117,7 +117,7 @@ const PickingReturn = (props) => {
                     }
                     if (cartonNo && rootID && skuCode && orderNo) {
                         qryStr[SC.OPT_MVT] = "1091";
-                        qryStr[SC.OPT_DONE_EVENT_STATUS] = "97";
+                        // qryStr[SC.OPT_DONE_EVENT_STATUS] = "97";
                         qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                         let qryStr1 = queryString.stringify(qryStr)
                         let uri_opt = decodeURIComponent(qryStr1);
@@ -174,7 +174,7 @@ const PickingReturn = (props) => {
                 // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
                 customOptions={customOptions}
                 showOptions={true}
-                doneEventStatus={97}
+                doneDesEventStatus={97}
 
             // useMultiSKU={false}
             />

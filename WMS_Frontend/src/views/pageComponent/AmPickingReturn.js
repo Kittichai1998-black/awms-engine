@@ -235,7 +235,7 @@ const AmPickingReturn = (props) => {
         customConfirmMapSTO,
         setVisibleTabMenu,
         useMultiSKU,
-        doneEventStatus
+        doneDesEventStatus
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -414,7 +414,8 @@ const AmPickingReturn = (props) => {
                                 docItemID: docItemrow ? docItemrow[0].id : null,
                                 amount: valueInput['amount'] ? valueInput['amount'] : 1,
                                 mode: 0,
-                                action: actionValue
+                                action: actionValue,
+                                rootDoneDesEventStatus: doneDesEventStatus ? doneDesEventStatus : null
                             };
                             dataScan = await onBeforePost(resInput, bstoData);
                             if (dataScan) {
@@ -446,7 +447,7 @@ const AmPickingReturn = (props) => {
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,
                             action: actionValue,
-                            options: doneEventStatus ? SC.OPT_DONE_EVENT_STATUS + "=" + doneEventStatus : null
+                            rootDoneDesEventStatus: doneDesEventStatus ? doneDesEventStatus : null
                         }
                         resValuePost = { ...valueInput, ...dataScan }
                     }

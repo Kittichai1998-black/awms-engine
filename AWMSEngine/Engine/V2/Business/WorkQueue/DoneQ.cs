@@ -299,7 +299,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 if(sto.options != null && sto.options.Length > 0)
                 {
-                    var done_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_EVENT_STATUS);
+                    var done_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
                     if(done_event_status == null || done_event_status.Length == 0)
                     {
                         ADO.StorageObjectADO.GetInstant().UpdateStatus(sto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
