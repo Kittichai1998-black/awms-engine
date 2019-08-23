@@ -141,7 +141,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Sou_StorageObject_ID = x.pstoID,
                     Des_StorageObject_ID = null,
                     DocumentItem_ID = x.docItemID,
-                    Quantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick && ? null : (decimal?)x.pstoQty,// เซตค่าตอน DoneWQ
+                    Quantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick ? null : (decimal?)x.pstoQty,// เซตค่าตอน DoneWQ
                     BaseQuantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick ? null : (decimal?)x.pstoBaseQty,// เซตค่าตอน DoneWQ
                     UnitType_ID = x.pstoUnitID,
                     BaseUnitType_ID = x.pstoBaseUnitID,
