@@ -17,6 +17,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         public class TReq : ASRSProcessQueue.TRes
         {
+            public bool isSetQtyAfterDoneWQ = false;
         }
         public class TRes
         {
@@ -47,7 +48,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 public decimal pstoBaseQty;
                 public long pstoBaseUnitID;
 
-                public bool lockOnly = false;
+                public bool useFullPick;
             }
             public long? workQueueID;
             public int priority;
@@ -55,6 +56,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public long rstoID;
             public string rstoCode;
 
+            public bool lockOnly = false;
             //public decimal pstoQty;
             //public long pstoUnitID;
 
@@ -92,42 +94,46 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
             foreach (var rsto in rstos)
             {
-                var wq = new SPworkQueue()
+                if(!rsto.lockOnly)
                 {
-                    ID = null,
-                    RefID = AMWUtil.Common.ObjectUtil.GenUniqID(),
-                    Seq = 1,
-                    IOType = IOType.OUTPUT,
-                    Priority = rsto.priority,
-                    StorageObject_ID = rsto.rstoID,
-                    StorageObject_Code = rsto.rstoCode,
+                    var wq = new SPworkQueue()
+                    {
+                        ID = null,
+                        RefID = AMWUtil.Common.ObjectUtil.GenUniqID(),
+                        Seq = 1,
+                        IOType = IOType.OUTPUT,
+                        Priority = rsto.priority,
+                        StorageObject_ID = rsto.rstoID,
+                        StorageObject_Code = rsto.rstoCode,
 
-                    Warehouse_ID = rsto.warehouseID,
-                    AreaMaster_ID = rsto.areaID,
-                    AreaLocationMaster_ID = rsto.locationID,
+                        Warehouse_ID = rsto.warehouseID,
+                        AreaMaster_ID = rsto.areaID,
+                        AreaLocationMaster_ID = rsto.locationID,
 
-                    Sou_Warehouse_ID = rsto.warehouseID,
-                    Sou_AreaMaster_ID = rsto.areaID,
-                    Sou_AreaLocationMaster_ID = rsto.locationID,
+                        Sou_Warehouse_ID = rsto.warehouseID,
+                        Sou_AreaMaster_ID = rsto.areaID,
+                        Sou_AreaLocationMaster_ID = rsto.locationID,
 
-                    Des_AreaMaster_ID = rsto.desAreaID,
-                    Des_Warehouse_ID = rsto.desWarehouseID,
-                    Des_AreaLocationMaster_ID = rsto.desLocationID,
+                        Des_AreaMaster_ID = rsto.desAreaID,
+                        Des_Warehouse_ID = rsto.desWarehouseID,
+                        Des_AreaLocationMaster_ID = rsto.desLocationID,
 
-                    EventStatus = WorkQueueEventStatus.NEW,
-                    Status = EntityStatus.ACTIVE,
+                        EventStatus = WorkQueueEventStatus.NEW,
+                        Status = EntityStatus.ACTIVE,
 
-                    ActualTime = DateTime.Now,
-                    StartTime = DateTime.Now,
-                    EndTime = null,
+                        ActualTime = DateTime.Now,
+                        StartTime = DateTime.Now,
+                        EndTime = null,
 
-                    Parent_WorkQueue_ID = null,
-                    TargetStartTime = null,
-                    DocumentItemWorkQueues = null,
+                        Parent_WorkQueue_ID = null,
+                        TargetStartTime = null,
+                        DocumentItemWorkQueues = null,
 
-                };
-                wq = ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
-                rsto.workQueueID = wq.ID;
+                    };
+                    wq = ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
+                    rsto.workQueueID = wq.ID;
+                }
+                
 
                 var _distos = rsto.docItems.Select(x => new amt_DocumentItemStorageObject()
                 {
@@ -135,12 +141,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Sou_StorageObject_ID = x.pstoID,
                     Des_StorageObject_ID = null,
                     DocumentItem_ID = x.docItemID,
-                    Quantity = x.pstoQty,
-                    BaseQuantity = x.pstoBaseQty,
+                    Quantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick && ? null : (decimal?)x.pstoQty,// เซตค่าตอน DoneWQ
+                    BaseQuantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick ? null : (decimal?)x.pstoBaseQty,// เซตค่าตอน DoneWQ
                     UnitType_ID = x.pstoUnitID,
                     BaseUnitType_ID = x.pstoBaseUnitID,
-                    Status = EntityStatus.INACTIVE,
-                    WorkQueue_ID = wq.ID.Value,
+                    Status = rsto.lockOnly ? EntityStatus.ACTIVE : EntityStatus.INACTIVE,
+                    WorkQueue_ID = rsto.workQueueID,
                 }).ToList();
                 _distos = ADO.DocumentADO.GetInstant().InsertMappingSTO(_distos, this.BuVO);
                 distos.AddRange(_distos);
@@ -231,6 +237,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             var rsto = rstoProcs.FirstOrDefault(a => a.rstoID == z.rstoID);
                             if (rsto != null)
                             {
+                                rsto.lockOnly = lockOnly;
                                 rsto.docItems.Add(new RootStoProcess.DocItem()
                                 {
                                     docID = x.docID,
@@ -245,6 +252,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     pstoBaseQty = z.pstoBaseQty,
                                     pstoUnitID = z.pstoUnitID,
                                     pstoBaseUnitID = z.pstoBaseUnitID,
+
+                                    useFullPick = z.useFullPick
                                 });
                                 //rsto.pstoQty += z.pstoQty;
                                 //rsto.pstoBaseQty += z.pstoBaseQty;
@@ -254,6 +263,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             {
                                 rstoProcs.Add(new RootStoProcess()
                                 {
+                                    lockOnly = lockOnly,
                                     //docID = x.docID,
                                     //docItemID = y.docItemID,
                                     docItems = new List<RootStoProcess.DocItem>() {
