@@ -120,9 +120,10 @@ const SearchText = withStyles(theme => ({
             onClickClear()
         }
     }
+
     return (
         <div className={classes.root} >
-            <AmInput id={id} required={required} readOnly={true} styleType={styleType} autoComplete="off" value={value}
+            <AmInput id={id} inputRef={props.popupref} required={required} readOnly={true} styleType={styleType} autoComplete="off" value={value}
                 onFocus={value ? null : (val, obj, element, event) => element.blur()}
                 // onFocus={onClickOpen}
                 onClick={(val, obj, element, event) => onHandleClick(event)}
@@ -215,8 +216,10 @@ const FindPopup = (props) => {
         columns,
         width,
         placeholder,
-        onChange
+        onChange,
+        popupref
     } = props;
+
     const [open, setOpen] = useState(false);
     // const [keywordMain, setKeywordMain] = useState(null);
     const [keywordSub, setKeywordSub] = useState(null);
@@ -435,7 +438,7 @@ const FindPopup = (props) => {
     }
     return (
         <div>
-            <SearchText id={id} placeholder={placeholder} styleType={styleType} required={required} value={valueKey} disabled={disabled}
+            <SearchText id={id} popupref={popupref} placeholder={placeholder} styleType={styleType} required={required} value={valueKey} disabled={disabled}
                 onClickOpen={onHandleClickOpen} inputWidth={width} onClickClear={onHandleClickClear} />
             <Dialog
                 onClose={onHandleClickClose}
