@@ -33,6 +33,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import _ from 'lodash';
 import AmListSTORenderer from '../pageComponent/AmListSTORenderer';
 import Typography from '@material-ui/core/Typography';
+import * as SC from '../../constant/StringConst'
 
 const Axios = new apicall()
 const styles = theme => ({
@@ -233,7 +234,8 @@ const AmPickingReturn = (props) => {
         chipRenderer,
         customConfirmMapSTO,
         setVisibleTabMenu,
-        useMultiSKU
+        useMultiSKU,
+        doneEventStatus
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -444,6 +446,7 @@ const AmPickingReturn = (props) => {
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,
                             action: actionValue,
+                            options: doneEventStatus ? SC.OPT_DONE_EVENT_STATUS + "=" + doneEventStatus : null
                         }
                         resValuePost = { ...valueInput, ...dataScan }
                     }

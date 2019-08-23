@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.Business.Auditor
 
                 ActionTime = DateTime.Now,
                 DocumentDate = DateTime.Now,
-                DocumentType_ID = DocumentTypeID.STOCK_CORRECTIONS,
+                DocumentType_ID = DocumentTypeID.LOADING,
 
                 Remark = reqVO.remark,
 

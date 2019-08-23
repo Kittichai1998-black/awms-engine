@@ -29,9 +29,9 @@ const ReceivePallet = (props) => {
     //     // { "field": "MovementType_ID", "type": "dropdown", "typeDropdown": "search", "name": "Movement Type", "dataDropDown": MVTQuery, "placeholder": "Movement Type", "fieldLabel": ["Code"], "fieldDataKey": "ID" },
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
-    const inputSource = [
-        { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
-    ]
+    // const inputSource = [
+    //     { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
+    // ]
     const inputItem = [
         // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
@@ -128,11 +128,11 @@ const ReceivePallet = (props) => {
                     }
                 }
                 if (cartonNo && rootID && skuCode && orderNo) {
-                    if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
-                        qryStr[SC.OPT_SOU_WAREHOUSE_ID] = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
-                    }
-                    qryStr[SC.OPT_DONE_EVENT_STATUS] = "98";
-                    qryStr[SC.OPT_MVT] = "1011";
+                    // if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
+                    //     qryStr[SC.OPT_SOU_WAREHOUSE_ID] = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
+                    // }
+                    qryStr[SC.OPT_DONE_EVENT_STATUS] = "97";
+                    qryStr[SC.OPT_MVT] = "1111";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                     console.log(qryStr)
                     let qryStr1 = queryString.stringify(qryStr)
@@ -180,7 +180,7 @@ const ReceivePallet = (props) => {
             <AmMappingPallet
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
-                sourceCreate={inputSource}
+                // sourceCreate={inputSource}
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
                 // apiCreate={apiCreate} // api สร้าง sto default => "/v2/ScanMapStoAPI"
@@ -189,8 +189,8 @@ const ReceivePallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                doneEventStatus={98}
-            //--//
+                doneEventStatus={97}
+                //--//
             // modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
             />
         </div>

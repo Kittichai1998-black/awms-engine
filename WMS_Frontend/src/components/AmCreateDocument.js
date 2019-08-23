@@ -125,7 +125,7 @@ const AmCreateDocument = (props) => {
             setskuByCus({
                 queryString: window.apipath + "/v2/SelectDataViwAPI/",
                 t: "SKUMaster",
-                q: "[{ 'f': 'Customer_ID', c: '=', 'v': " + cusIDs + " }]",
+                q: '[{ "f": "Status", "c": "<", "v": "2" },{ "f": "Customer_ID", "c": "=", "v": "' + cusIDs + ' "}]',
                 f: "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
                 g: "",
                 s: "[{'f':'ID','od':'asc'}]",
@@ -133,9 +133,7 @@ const AmCreateDocument = (props) => {
                 l: 100,
                 all: "",
             })
-            console.log(dataSource)
             if (dataSource[0] !== undefined) {
-
                 CleareDataByCus();
             }
         }
@@ -165,10 +163,16 @@ const AmCreateDocument = (props) => {
 
     const onHandleChangeHeaderDDL = (value, dataObject, inputID, fieldDataKey, key) => {
         if (key === "desCustomerID" && props.createByCus === true) {
-            console.log(dataObject.ID, "CusID")
-            setcusIDs(dataObject.ID)
-            createDocumentData[key] = value
-            setcreateDocumentData(createDocumentData)
+            if (dataObject !== null) {
+                setcusIDs(dataObject.ID)
+                createDocumentData[key] = value
+                setcreateDocumentData(createDocumentData)
+            } else {
+                setcusIDs();
+                setStateDialogErr(true)
+                setMsgDialog("Descustomer invalid")
+
+            }
         } else {
             createDocumentData[key] = value
             setcreateDocumentData(createDocumentData)
@@ -374,7 +378,6 @@ const AmCreateDocument = (props) => {
 
 
     const getTypeEditor = (type, Header, accessor, data, cols, row, idddl, queryApi, columsddl, fieldLabel, style, width, validate, placeholder, TextInputnum, texts) => {
-        console.log(accessor)
         if (type === "input") {
             return (
                 <FormInline>
@@ -564,9 +567,9 @@ const AmCreateDocument = (props) => {
                         labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
                         fieldLabel={fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
                         // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
-                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                        labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup                  
                         queryApi={skuByCus} //object query string
-                        //defaultValue={data ? data[accessor] : ""}
+                        //defaultValue={ ""}
                         columns={columsddl} //array column สำหรับแสดง table
                         width={width ? width : 300}
                         ddlMinWidth={width ? width : 100}

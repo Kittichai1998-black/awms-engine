@@ -109,7 +109,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 foreach (var docid in grDocs)
                                 {
                                     var resDoc = ADO.DocumentADO.GetInstant().Get(docid, this.BuVO);
-                                    if (resDoc.MovementType_ID != MovementType.FG_RETURN_WM)
+                                    if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                                     {
                                         continue;
                                     }
@@ -304,7 +304,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                     }
                                 });
                                 var resDoc = ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
-                                if (resDoc.MovementType_ID != MovementType.FG_RETURN_WM)
+                                if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Movement Type of GR Document didn't 'FG_RETURN_WM'");
 
                                 resDoc.DocumentItems = new List<amt_DocumentItem>() { resDocItem };
@@ -482,7 +482,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
             var resDoc = ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
-            if (resDoc.MovementType_ID != MovementType.FG_RETURN_WM)
+            if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Movement Type of GR Document didn't 'FG_RETURN_WM'");
 
             resDoc.DocumentItems = new List<amt_DocumentItem>() { resDocItem };
@@ -566,7 +566,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
             var resDoc = ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
-            if (resDoc.MovementType_ID != MovementType.FG_RETURN_WM)
+            if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Movement Type of GR Document didn't 'FG_RETURN_WM'");
 
             resDoc.DocumentItems = new List<amt_DocumentItem>() { resDocItem };

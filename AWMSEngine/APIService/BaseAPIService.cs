@@ -37,8 +37,9 @@ namespace AWMSEngine.APIService
             this.ControllerAPI = controllerAPI;
             this.APIServiceID = apiServiceID;
         }
-
+        
         private SqlConnection _SqlConnection = null;
+
         protected void BeginTransaction()
         {
             this.RollbackTransaction();
@@ -122,10 +123,14 @@ namespace AWMSEngine.APIService
 
                 var apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == this.APIServiceID);
                 if (apiService == null)
-                    throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
+                {
+                    apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.FullClassName == this.GetType().FullName);
+                    if (apiService == null)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
+                }
                 this.APIServiceID = apiService.ID.Value;
 
-                this.Permission(token,apiKey);
+                this.Permission(token, apiKey);
 
                 this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(

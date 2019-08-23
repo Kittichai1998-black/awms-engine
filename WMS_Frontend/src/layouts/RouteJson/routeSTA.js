@@ -53,7 +53,7 @@ const ReceiveEmptyPallet = Loadable({
   loader: () => import("../../views/page/STA/Receive/ReceiveEmptyPallet"),
   loading: Loading
 });
-const pickingReturn = Loadable({
+const PickingReturn = Loadable({
   loader: () => import("../../views/page/STA/Issues/PickingReturn"),
   loading: Loading
 });
@@ -85,16 +85,20 @@ const ReceiveWIPSup = Loadable({
   loader: () => import("../../views/page/STA/Receive/ReceiveWIPSup"),
   loading: Loading
 });
-
+const LoadingReturn = Loadable({
+  loader: () => import("../../views/page/STA/Issues/ReturnLoad"),
+  loading: Loading
+});
 const routes = [
   { path: "/dashboard/scanreceiveproduct", name: "Scan Receive Product Line", compoment: Scanbarcode, exact: true },
   { path: "/receive/detail", name: "base5", compoment: DocumentViewSTA, exact: true },
   { path: "/receive/search", name: "Search GR", compoment: DocumentSearchSTA, exact: true },
   { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: CustomerReturnPallet, exact: true },
   { path: "/receive/receivemptypallet", name: "Empty Pallet", compoment: ReceiveEmptyPallet, exact: true },
-  { path: "/receive/receivepallet", name: "Receive Pallet", compoment: ReceivePallet, exact: true },
+  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
   { path: "/receive/receivewipsup", name: "Receive WIP Supplier", compoment: ReceiveWIPSup, exact: true },
-  { path: "/issue/pickingreturn", name: "Picking Return", compoment: pickingReturn, exact: true },
+  { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
+  { path: "/issue/pickingreturn", name: "Picking Return", compoment: PickingReturn, exact: true },
   { path: "/issue/search", name: "base5", compoment: DocumentSearchGISTA, exact: true },
   { path: "/issue/create", name: "base5", compoment: CreateDocGISTA, exact: true },
   { path: "/issue/detail", name: "base5", compoment: DocumentViewGISTA, exact: true },

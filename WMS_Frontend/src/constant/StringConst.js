@@ -3,3 +3,4 @@ export const OPT_MVT = "mvt";
 export const OPT_SOU_CUSTOMER_ID = "sou_customer_id"; 
 export const OPT_SOU_WAREHOUSE_ID = "sou_warehouse_id"; 
 export const OPT_REMARK = "remark";
+export const OPT_DONE_EVENT_STATUS = "done_event_status";

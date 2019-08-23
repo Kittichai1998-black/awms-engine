@@ -10,10 +10,10 @@ namespace AWMSEngine.APIService.V2.ASRS
     
     public class DoneQueueAPI : BaseAPIService
     {
-        public DoneAPI(ControllerBase controllerAPI,int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public DoneQueueAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
-         
+
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();

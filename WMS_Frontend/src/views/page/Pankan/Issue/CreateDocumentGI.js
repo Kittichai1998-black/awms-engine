@@ -193,7 +193,7 @@ const CreateDocumentGI = (props) => {
 
     const columns = [
         { Header: "SKU Items", accessor: 'SKUItems', },
-        { Header: "Base", accessor: 'base' },
+        { Header: "Base", accessor: 'baseCode' },
         { Header: "Quantity", accessor: 'quantity' },
         { Header: "Unit", accessor: 'unitType', },
     ];
@@ -204,7 +204,8 @@ const CreateDocumentGI = (props) => {
             queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp,
             placeholder: "Select SKU"
         },
-        { Header: "Quantity", accessor: 'quantity', type: "inputNum" },,
+        { Header: "Base", accessor: 'baseCode', type: "bases", key: "baseCode", idddl: "baseCode", placeholder: "Select Base" },
+        { Header: "Quantity", accessor: 'quantity', type: "inputNum" }, ,
         { Header: "Unit", accessor: 'unitType', type: "unitType" },
     ]
 
@@ -466,8 +467,8 @@ const CreateDocumentGI = (props) => {
         <div>
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
-                dataSource={dataSource}
-                reload={reload}
+                // dataSource={dataSource}
+                // reload={reload}
                 columns={columns}  //colums 
                 columnEdit={columnEdit} //ข้อมูลที่จะแก้ไขใน popUp 
                 apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
@@ -476,7 +477,7 @@ const CreateDocumentGI = (props) => {
                 history={props.history} //ส่ง porps.history ไปทุกรอบ
                 apiRes={apiRes} //หน้ารายละเอียดเอกสาร    
                 // btnProps={btnAdd}
-                dataCreate={dataCreate}
+                //dataCreate={dataCreate}
                 slectBase={true}
                 movementTypeID={"1011"}
             >

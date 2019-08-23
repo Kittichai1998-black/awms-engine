@@ -11,7 +11,7 @@ import AmDropdown from '../components/AmDropdown'
 import SaveIcon from '@material-ui/icons/Description';
 import classnames from 'classnames';
 import AmDatepicker from '../components/AmDate'
-import { apicall } from '../components/function/CoreFunction2'
+//import { apicall } from '../components/function/CoreFunction'
 import AmEditorTable from '../components/table/AmEditorTable'
 import AmDialogs from '../components/AmDialogs'
 import AmCheckBox from '../components/AmCheckBox'
@@ -32,8 +32,10 @@ import AmDialogConfirm from '../components/AmDialogConfirm'
 import { string } from "prop-types";
 import { getPriority } from "os";
 import { width } from "@material-ui/system";
+import { apicall } from '../components/function/CoreFunction2'
 import { useTranslation } from 'react-i18next'
-const Axios = new apicall()
+import Axios from "axios";
+const Axios1 = new apicall()
 const styles = theme => ({
     root: {
         width: '100%',
@@ -1097,8 +1099,9 @@ const AmProcessQueue = (props) => {
 
         //dataConfirmQ["apiKey"] = "WCS_KEY"
         dataConfirmQ["desASRSLocationCode"] = null
+        dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false
         if (dataConfirmQ !== undefined) {
-            Axios.post(window.apipath + '/v2/process_wq', dataConfirmQ).then((res) => {
+            Axios1.post(window.apipath + '/v2/process_wq', dataConfirmQ).then((res) => {
                 if (res.data._result.status === 1) {
                     bodyDialogConfirm(res.data.processResults)
                     setprocessResultsCon(res.data.processResults)
@@ -1128,16 +1131,18 @@ const AmProcessQueue = (props) => {
                                     x.processResultItems.map((a, idx) => {
                                         processResults.push(a)
                                         var datasConfirms = []
+                                        var datasConfirmsLock = []
                                         if (a.pickStos.length === 0) {
                                             setMsgDialogErr("Data Not Found");
                                             setStateDialogErr(true);
                                         } else {
 
                                             setopenDialogCon(true)
-                                            return <div><div><FormInline>
-                                                <div style={{ marginLeft: "5px" }}>
-                                                    <label>DocumentItem: {a.docItemCode}</label></div>
-                                            </FormInline></div>
+                                            return <div>
+                                                <div><FormInline>
+                                                    <div style={{ marginLeft: "5px" }}>
+                                                        <label>DocumentItem: {a.docItemCode}</label></div>
+                                                </FormInline></div>
 
                                                 {
 
@@ -1159,8 +1164,29 @@ const AmProcessQueue = (props) => {
                                                         setReload({})
 
                                                     })
+                                                }
+                                                {
+                                                    a.lockStos.map((x) => {
+                                                        //setsumBase();
+                                                        //setsumBaseMax();
+                                                        var dataTBConLock = []
+                                                        var dataSorceTBsLock = {
+                                                            "SKU": x.pstoCode,
+                                                            "Pallet": x.rstoCode,
+                                                            "Batch": x.pstoBatch,
+                                                            "Lot": x.pstoLot,
+                                                            "OrderNo": x.pstoOrderNo,
+                                                            "BaseQuantity": x.pickBaseQty + "/" + x.pstoBaseQty,
+                                                            "Unit": x.pstoBaseUnitCode
+                                                        }
+                                                        dataTBConLock.push(dataSorceTBsLock)
+                                                        datasConfirmsLock.push(dataSorceTBsLock)
+                                                        setReload({})
+
+                                                    })
 
                                                 }
+
                                                 < AmTable
                                                     data={datasConfirms === undefined ? [] : datasConfirms}
                                                     columns={props.columnConfirm}
@@ -1169,6 +1195,18 @@ const AmProcessQueue = (props) => {
                                                     reload={reload}
                                                     sortable={false}
                                                 ></AmTable>
+
+                                                <div style={{ paddingTop: "10px" }}>
+                                                    < AmTable
+                                                        data={datasConfirmsLock === undefined ? [] : datasConfirmsLock}
+                                                        columns={props.columnConfirm}
+                                                        minRows={1}
+                                                        sumFooter={SumTables(a.lockStos)}
+                                                        reload={reload}
+                                                        sortable={false}
+                                                        style={{ color: 'red'}}
+                                                    ></AmTable>
+                                                </div>
 
                                             </div>
 
@@ -1220,8 +1258,8 @@ const AmProcessQueue = (props) => {
         confirmProcess["desASRSLocationCode"] = null
         confirmProcess["desASRSAreaCode"] = dataConfirmQ["desASRSAreaCode"]
         confirmProcess["processResults"] = processResultsCon
-
-        Axios.post(window.apipath + '/v2/confirm_process_wq', confirmProcess).then((res) => {
+        //console.log(confirmProcess)
+        Axios1.post(window.apipath + '/v2/confirm_process_wq', confirmProcess).then((res) => {
             if (res.data._result.status === 1) {
 
                 setMsgDialogSuc(res.data._result.message);
@@ -1265,7 +1303,6 @@ const AmProcessQueue = (props) => {
 
     }
     const getDetailDocuments = () => {
-        console.log("KKKKK")
         Axios.get(window.apipath + "/v2/GetDocAPI/?docTypeID=" + props.DocType + "&docID=" + documentID + "&getMapSto=true&_token=" + localStorage.getItem("Token")).then((res) => {
             if (res.data._result.status === 1) {
                 var doc = res.data.document

@@ -3,6 +3,7 @@ using AMWUtil.Exception;
 using AWMSEngine.ADO;
 using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -33,6 +34,8 @@ namespace AWMSEngine.Engine.V2.Business
             public bool isRoot = true;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
+            public List<string> validateSKUTypeCodes;
+            public int? rootDoneEventStatus;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
@@ -45,7 +48,16 @@ namespace AWMSEngine.Engine.V2.Business
 
             return mapsto;
         }
-
+        private void CheckSKUType(TReq reqVO, ams_PackMaster pm)
+        {
+            if (reqVO.validateSKUTypeCodes != null && reqVO.validateSKUTypeCodes.Count > 0)
+            {
+                ams_SKUMaster sm = ADO.MasterADO.GetInstant().GetSKUMaster(pm.ID.Value, this.BuVO);
+                ams_SKUMasterType smt = this.StaticValue.SKUMasterTypes.Find(x => x.ID == sm.SKUMasterType_ID);
+                if (!reqVO.validateSKUTypeCodes.Any(x => x == smt.Code))
+                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "SKU Type Not Match");
+            }
+        }
         private StorageObjectCriteria GenerateStoCrit(BaseEntitySTD obj, long ObjectSize_ID, StorageObjectCriteria parentMapsto, TReq reqVO)
         {
             var objSize = this.StaticValue.ObjectSizes.Find(x => x.ID == ObjectSize_ID);
@@ -151,11 +163,21 @@ namespace AWMSEngine.Engine.V2.Business
                     if (reqVO.action == VirtualMapSTOActionType.SELECT || reqVO.action == VirtualMapSTOActionType.REMOVE)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'" + reqVO.scanCode + "' Not Found");
                     ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
+                    this.CheckSKUType(reqVO, pm);
+
                     ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
                     ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
                     if (bm != null)
                     {
                         mapsto = this.GenerateStoCrit(bm, bm.ObjectSize_ID, null, reqVO);
+                        if (reqVO.rootDoneEventStatus != null)
+                        {
+                            var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(mapsto.options,
+                                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, reqVO.rootDoneEventStatus));
+                            mapsto.options = optionsNew;
+                            this.ADOSto.PutV2(mapsto, this.BuVO);
+                        }
+
                         this.ADOSto.PutV2(mapsto, this.BuVO);
                     }
                     else if (alm != null)
@@ -186,6 +208,15 @@ namespace AWMSEngine.Engine.V2.Business
                 mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
                 if (mapsto == null)
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
+
+                if (reqVO.rootDoneEventStatus != null)
+                {
+                    var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(mapsto.options,
+                                             new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, reqVO.rootDoneEventStatus));
+                    mapsto.options = optionsNew;
+                    this.ADOSto.PutV2(mapsto, this.BuVO);
+                }
+
                 if (mapsto.warehouseID != reqVO.warehouseID)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Warehouse doesn't match");
 
@@ -244,6 +275,8 @@ namespace AWMSEngine.Engine.V2.Business
         {
             var firstMapSto = this.GetMapStoLastFocus(mapsto);
             ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
+            this.CheckSKUType(reqVO, pm);
+
             ams_BaseMaster bm = pm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.scanCode, this.BuVO);
             ams_AreaLocationMaster alm = bm != null ? null : ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.scanCode, this.BuVO);
 
@@ -271,6 +304,7 @@ namespace AWMSEngine.Engine.V2.Business
                         matchStomap.baseQty += regisMap.baseQty;
                         this.ADOSto.PutV2(matchStomap, this.BuVO);
                     }
+                    
                 }
                 else if (bm != null)
                 {
@@ -285,6 +319,7 @@ namespace AWMSEngine.Engine.V2.Business
                     firstMapSto.mapstos.Add(regisMap);
 
                 }
+                
             }
             else if (reqVO.mode == VirtualMapSTOModeType.TRANSFER)
             {

@@ -14,7 +14,7 @@ namespace AWMSModel.Constant.EnumConst
         GOODS_SHIPPING = 1011,//GS
         GOODS_LOADING = 1012,//GL
         AUDIT = 2004,//AD
-
+        LOADING = 10012,
         SUPER_GOODS_RECEIVED = 1101,//SGR
         SUPER_GOODS_ISSUED = 1102,//SGI
     }

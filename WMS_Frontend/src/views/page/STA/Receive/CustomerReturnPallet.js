@@ -132,6 +132,7 @@ const CustomerReturnPallet = (props) => {
                     if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                         qryStr[SC.OPT_SOU_CUSTOMER_ID] = reqValue[SC.OPT_SOU_CUSTOMER_ID];
                     }
+                    qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                     qryStr[SC.OPT_MVT] = "1012";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                     let qryStr1 = queryString.stringify(qryStr)
@@ -188,7 +189,8 @@ const CustomerReturnPallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-            //--//
+                doneEventStatus={96}
+                //--//
             // modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
             />
         </div>

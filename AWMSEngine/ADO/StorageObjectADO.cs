@@ -155,8 +155,8 @@ namespace AWMSEngine.ADO
             return res;
         }*/
 
-        public int UpdateStatusToChild(long stoRootID, 
-            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus, 
+        public int UpdateStatusToChild(long stoRootID,
+            StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus,
             VOCriteria buVO)
         {
             EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(toEventStatus);
@@ -169,6 +169,27 @@ namespace AWMSEngine.ADO
             param.Add("actionBy", buVO.ActionBy);
             var res = this.Execute(
                 "SP_STO_UPDATE_STATUS_TO_CHILD",
+                System.Data.CommandType.StoredProcedure,
+                param,
+                buVO.Logger,
+                buVO.SqlTransaction);
+            return res;
+        }
+
+        public int UpdateStatus(long stoID, StorageObjectEventStatus? fromEventStatus, EntityStatus? fromStatus, StorageObjectEventStatus? toEventStatus,
+            VOCriteria buVO)
+        {
+            EntityStatus? toStatus = StaticValueManager.GetInstant().GetStatusInConfigByEventStatus<StorageObjectEventStatus>(toEventStatus);
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("stoid", stoID);
+            param.Add("fromEventStatus", fromEventStatus);
+            param.Add("fromStatus", fromStatus);
+            param.Add("toEventStatus", toEventStatus);
+            param.Add("toStatus", toStatus);
+            param.Add("actionBy", buVO.ActionBy);
+
+            var res = this.Execute(
+                "SP_STO_UPDATE_STATUS",
                 System.Data.CommandType.StoredProcedure,
                 param,
                 buVO.Logger,
