@@ -19,8 +19,8 @@ function ConvertRangeNumToString(value) {
             if (value.includes(",")) {
                 strVal = value.split(",");
                 strVal.forEach(element => {
-                    // console.log(element)
-                    newArray = newArray.concat(TransferToArray(element));
+                    if(element != null && element.length > 0)
+                        newArray = newArray.concat(TransferToArray(element));
                 });
             } else {
                 newArray = newArray.concat(TransferToArray(value))
@@ -43,12 +43,20 @@ function ConvertRangeNumToString(value) {
 function TransferToArray(element) {
     let newArray = [];
     if (element.includes("-")) {
-        let eleArray = element.split("-");
-        let i = Number(eleArray[0]);
-        let end = Number(eleArray[1]);
-        while (i <= end) {
+        let eleArray = element.split("-").map((a) => {
+            return a = a ? parseInt(a) : 0;
+        });
+        console.log(eleArray)
+        let i = eleArray[0];
+        let end = eleArray[1];
+        
+        if(end === 0) {
             newArray.push(i);
-            i++;
+        }else{
+            while (i <= end) {
+                newArray.push(i);
+                i++;
+            }
         }
     } else {
         newArray.push(Number(element));
@@ -57,8 +65,8 @@ function TransferToArray(element) {
 }
 
 function ConvertStringToRangeNum(value) {
-    let res = ToRanges(value.split(',').map((number) => {
-        return Number(number)
+    let res = ToRanges(value.split(',').map((a) => {
+        return a = a ? parseInt(a) : 0;
     }));
     console.log(res)
     return res.join();
@@ -81,5 +89,13 @@ function ToRanges(value) {
     tonums.push(value[lng - 1]);
     return fromnums.map((x, i) => x.toString() + (tonums[i] === x ? "" : "-" + tonums[i].toString()));
 }
-
-export { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges }
+const match = (arr, arr2) => {
+    var ret = [];
+    for (var i in arr) {
+        if (arr2.indexOf(arr[i]) > -1) {
+            ret.push(arr[i]);
+        }
+    }
+    return ret;
+};
+export { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match }

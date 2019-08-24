@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, createRef } from 'react';
 
 import { AmEditorTable } from '../../../../components/table';
 
@@ -10,6 +10,10 @@ import AmCreateDocument from './AmCreateDocument';
 import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import styled from 'styled-components'
+import AmFindPopup from '../../../../components/AmFindPopup'
+import { createQueryString } from '../../../../components/function/CoreFunction2'
+import AmDialogs from '../../../../components/AmDialogs'
+import AmAux from '../../../../components/AmAux'
 
 const Axios = new apicall();
 
@@ -44,10 +48,21 @@ const InputDiv = styled.div`
 
 export default props => {
     const [sapResponse, setSAPResponse] = useState([]);
-    const [editData, setEditData] = useState({});
-    const [editPopup, setEditPopup] = useState(false);
-    const [sapReq, setSAPReq] = useState([]);
     const [headerData, setHeaderData] = useState([]);
+    const [dataSource, setDataSource] = useState([])
+    const [editPopup, setEditPopup] = useState(false);
+    const [editData, setEditData] = useState({
+        LGTYP: "C00",
+        LGBER: "001",
+        LGPLA: "C00"
+    });
+
+    // const [sapReq, setSAPReq] = useState([]);
+    const [dialog, setDialog] = useState({
+        status: false,
+        type: null,
+        message: null
+    });
 
     const headerCreates = [
         [
@@ -68,22 +83,56 @@ export default props => {
         ]
     ];
 
-    const columnEdit = [
-        { Header: "Storage Unit Number", accessor: 'LENUM', type: "input" },
-        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input" },
-        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input" },
-        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input" },
+    const Sto = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "PalletSto",
+        q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+        f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch",
+        g: "",
+        s: "[{'f':'ID','od':'ASC'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    }
+
+    const BaseCode = {
+        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+        t: "StorageObject",
+        q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+        f: "Code",
+        g: "Code",
+        s: "[{'f':'Code','od':'ASC'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    }
+
+    const columsFindpopUpPalletCode = [
+        {
+            Header: 'SU No.',
+            accessor: 'Code',
+            fixed: 'left',
+            // width: 130,
+            sortable: true
+        }
     ];
 
+    const columnEdit = [
+        { Header: "SU Code", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input", defultValue: "C00" },
+        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input", defultValue: "001" },
+        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input", defultValue: "C00" }
+    ];
+
+    const ref = useRef(columnEdit.map(() => createRef()))
+
     var columnsModify = [
-        { Header: 'lenum', accessor: 'lenum' },
-        { Header: 'lgtyp', accessor: 'lgtyp' },
-        { Header: 'lgber', accessor: 'lgber' },
-        { Header: 'lgpla', accessor: 'lgpla' },
-        { Header: 'bwlvs', accessor: 'bwlvs' },
-        { Header: 'bestQ_BLK', accessor: 'bestQ_BLK' },
-        { Header: 'bestQ_QI', accessor: 'bestQ_QI' },
-        { Header: 'bestQ_UR', accessor: 'bestQ_UR' }
+        { Header: 'SU No.', accessor: 'BaseCode' },
+        { Header: 'SKU Code', accessor: 'PackCode' },
+        { Header: 'SKU Name', accessor: 'Name' },
+        { Header: 'Qty', accessor: 'Quantity' },
+        { Header: 'Batch', accessor: 'Batch' },
+        { Header: 'UnitType', accessor: 'UnitTypeName' }
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
@@ -91,53 +140,98 @@ export default props => {
 
     const sapConnectorR1 = postData => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {
-            if (res.data._result.status && res.data.datas.erR_MSG === undefined) {
-                setSAPResponse(res.data.datas);
+            if (res.data._result.status) {
+                if (!res.data.datas[0].erR_MSG) {
+                    setSAPResponse(res.data.datas);
+                    GetDataByBaesCode(postData.LENUM)
+                } else {
+                    setDialog({
+                        status: true,
+                        type: "error",
+                        message: res.data.datas[0].erR_MSG
+                    });
+                }
             } else {
-
+                setDialog({
+                    status: true,
+                    type: "error",
+                    message: res.data._result.message
+                });
             }
-        });
+        })
     };
+
+    const GetDataByBaesCode = baseCode => {
+        Sto.q = `[{ "f": "BaseCode", "c":"=", "v": '${baseCode}'}]`
+        Axios.get(createQueryString(Sto)).then(res => {
+            setDataSource(res.data.datas)
+        });
+    }
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            rowdata._token = localStorage.getItem('Token');
-            sapConnectorR1(rowdata);
+            let postData = {}
+            postData.LENUM = rowdata.Code
+            postData.LGBER = rowdata.LGBER
+            postData.LGPLA = rowdata.LGPLA
+            postData.LGTYP = rowdata.LGTYP
+            postData._token = localStorage.getItem('Token');
+            sapConnectorR1(postData);
         }
         setEditPopup(false);
     };
 
-    const onChangeEditor = (field, data) => {
-        editData[field] = data
-        setEditData(editData)
-    };
-
     const editorListcolunm = () => {
         if (columnEdit) {
-            return columnEdit.map(row => {
+            return columnEdit.map((row, index) => {
                 return {
                     field: row.accessor,
                     component: (data = null, cols, key) => {
                         return <div key={key}>
-                            {getTypeEditor(row, data, cols)}
+                            {getTypeEditor(row, index, data, cols)}
                         </div>
                     }
                 }
             })
         }
     }
-    const getTypeEditor = (row, data, cols) => {
+    const getTypeEditor = (row, index, data, cols) => {
         if (row.type === "input") {
             return (
                 <FormInline>
                     <LabelH>{row.Header} : </LabelH>
                     <InputDiv>
                         <AmInput style={row.style ? row.style : { width: "300px" }}
-                            // defaultValue={data ? data[row.accessor] : ""}
+                            defaultValue={row.defultValue ? row.defultValue : ""}
+                            inputRef={ref.current[index]}
                             validate={true}
                             msgError="Error"
                             regExp={row.validate ? row.validate : ""}
-                            onChange={(ele) => { onChangeEditor(row.accessor, ele) }}
+                            onChange={(value) => { onChangeEditor(row.accessor, value) }}
+                        />
+                    </InputDiv>
+                </FormInline>
+            )
+        } else if (row.type === "findPopUp") {
+            return (
+                <FormInline>
+                    <LabelH>{row.Header} : </LabelH>
+                    <InputDiv>
+                        <AmFindPopup
+                            id={row.idddl}
+                            popupref={ref.current[index]}
+                            placeholder={row.placeholder ? row.placeholder : "Select"}
+                            // fieldDataKey="ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                            labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                            fieldLabel={row.fieldLabel} //ฟิล์ดที่ต้องการเเสดงผลใน ช่อง input
+                            // valueData={valueFindPopupin[idddl]} //ค่า value ที่เลือก
+                            labelTitle="Search of Code" //ข้อความแสดงในหน้าpopup
+                            queryApi={row.queryApi} //object query string
+                            // defaultValue={row.data ? data[accessor] : ""}
+                            columns={row.columsddl} //array column สำหรับแสดง table
+                            width={row.width ? row.width : 300}
+                            ddlMinWidth={row.width ? row.width : 100}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject[row.accessor], dataObject)}
                         />
                     </InputDiv>
                 </FormInline>
@@ -145,28 +239,13 @@ export default props => {
         }
     }
 
-    // const editorList = [
-    //     {
-    //         field: 'Storage Unit Number',
-    //         component: (data, cols, key) => {
-    //             return (
-    //                 <div key={key}>
-    //                     <FormInline>
-    //                         <LabelH>Storage Unit Number :</LabelH>
-    //                         <InputDiv>
-    //                             <AmInput
-    //                                 defaultValue={data ? data.Name2 : ''}
-    //                                 onChange={value => {
-    //                                     onChangeEditor('LENUM', value);
-    //                                 }}
-    //                             />
-    //                         </InputDiv>
-    //                     </FormInline>
-    //                 </div>
-    //             );
-    //         }
-    //     }
-    // ];
+    const onChangeEditor = (field, value, valueObject) => {
+        if (field === "BaseCode") {
+            valueObject ? editData.skuCode = valueObject.Code : delete editData["skuCode"]
+        }
+        editData[field] = value
+        setEditData(editData)
+    };
 
     const CreateDocument = () => {
         let document = {
@@ -255,27 +334,24 @@ export default props => {
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
         };
 
-        let documentItem = sapResponse.map((item, idx) => {
+        let documentItem = dataSource.map((item, idx) => {
             let options =
-                'bestq_ur=' +
-                item.BESTQ_UR +
-                '&bestq_qi=' +
-                item.BESTQ_QI +
-                '&bestq_blk=' +
-                item.BESTQ_BLK +
-                '&bwlvs=' +
-                item.BWLVS +
-                '&lgpla=' +
-                item.LGPLA +
-                '&rsnum=' +
-                item.RSNUM;
+                'bwlvs=' + sapResponse[0].bwlvs +
+                '&lenum=' + sapResponse[0].lenum +
+                '&lgtyp=' + sapResponse[0].lgtyp +
+                '&lgber=' + sapResponse[0].lgber +
+                '&lgpla=' + sapResponse[0].lgpla +
+                '&bestq_ur=' + sapResponse[0].bestQ_UR +
+                '&bestq_qi=' + sapResponse[0].bestQ_QI +
+                '&bestq_blk=' + sapResponse[0].bestQ_BLK;
             return {
                 ID: null,
-                skuCode: item.MATNR,
-                packCode: item.MATNR,
-                quantity: item.BDMNG,
-                unitType: item.MEINS,
-                batch: item.CHARG,
+                palletcode: item.BaseCode,
+                skuCode: item.PackCode,
+                packCode: item.PackCode,
+                quantity: item.Quantity,
+                unitType: item.UnitTypeName,
+                batch: item.Batch,
                 options: options
             };
         });
@@ -303,33 +379,36 @@ export default props => {
     };
 
     return (
-        <AmCreateDocument
-            headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
-            //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
-            columns={[]} //colums
-            columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
-            apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
-            createDocType={'custom'} //createDocType มี audit issue recive
-            history={props.history} //ส่ง porps.history ไปทุกรอบ
-            apiRes={apiRes} //หน้ารายละเอียดเอกสาร
-            //btnProps={btnAdd}  //ปุ่มที่ส่งเข้าไป
-            //dataSource={dataSou} //ข้อมูลที่จัดการจากปุ่มที่ส่งเข้าไป
-            // dataCreate={} //dataที่จะส่งไปสร้างเอกสาร
+        <AmAux>
+            <AmDialogs typePopup={dialog.type} content={dialog.message} onAccept={(e) => { setDialog(e) }} open={dialog.status}></AmDialogs >
+            <AmCreateDocument
+                headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
+                //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
+                columns={[]} //colums
+                columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
+                apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
+                createDocType={'custom'} //createDocType มี audit issue recive
+                history={props.history} //ส่ง porps.history ไปทุกรอบ
+                apiRes={apiRes} //หน้ารายละเอียดเอกสาร
+                //btnProps={btnAdd}  //ปุ่มที่ส่งเข้าไป
+                //dataSource={dataSou} //ข้อมูลที่จัดการจากปุ่มที่ส่งเข้าไป
+                // dataCreate={} //dataที่จะส่งไปสร้างเอกสาร
 
-            //customEditData={(editData)=> setEditData(editData)}
-            customAddBtnRender={
-                <AmButton
-                    className='float-right'
-                    styleType='add'
-                    style={{ width: '150px' }}
-                    onClick={() => setEditPopup(true)}
-                >Add</AmButton>
-            }
-            customAddComponentRender={customAdd()}
-            customDataSource={sapResponse}
-            customTableColumns={columnsModify}
-            customDocumentData={CreateDocument()}
-            customGetHeaderData={headerData => setHeaderData(headerData)}
-        />
+                //customEditData={(editData)=> setEditData(editData)}
+                customAddBtnRender={
+                    <AmButton
+                        className='float-right'
+                        styleType='add'
+                        style={{ width: '150px' }}
+                        onClick={() => setEditPopup(true)}
+                    >Load</AmButton>
+                }
+                customAddComponentRender={customAdd()}
+                customDataSource={dataSource}
+                customTableColumns={columnsModify}
+                customDocumentData={CreateDocument()}
+                customGetHeaderData={headerData => setHeaderData(headerData)}
+            />
+        </AmAux>
     )
 };

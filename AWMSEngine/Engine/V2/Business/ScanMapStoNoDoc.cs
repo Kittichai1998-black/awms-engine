@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.V2.Business
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
             public List<string> validateSKUTypeCodes;
-            public int? rootDoneEventStatus;
+            public int? rootDoneDesEventStatus;
         }
         protected override StorageObjectCriteria ExecuteEngine(TReq reqVO)
         {
@@ -170,10 +170,10 @@ namespace AWMSEngine.Engine.V2.Business
                     if (bm != null)
                     {
                         mapsto = this.GenerateStoCrit(bm, bm.ObjectSize_ID, null, reqVO);
-                        if (reqVO.rootDoneEventStatus != null)
+                        if (reqVO.rootDoneDesEventStatus != null)
                         {
                             var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(mapsto.options,
-                                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, reqVO.rootDoneEventStatus));
+                                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, reqVO.rootDoneDesEventStatus));
                             mapsto.options = optionsNew;
                             this.ADOSto.PutV2(mapsto, this.BuVO);
                         }
@@ -209,10 +209,10 @@ namespace AWMSEngine.Engine.V2.Business
                 if (mapsto == null)
                     throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
 
-                if (reqVO.rootDoneEventStatus != null)
+                if (reqVO.rootDoneDesEventStatus != null)
                 {
                     var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(mapsto.options,
-                                             new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, reqVO.rootDoneEventStatus));
+                                             new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, reqVO.rootDoneDesEventStatus));
                     mapsto.options = optionsNew;
                     this.ADOSto.PutV2(mapsto, this.BuVO);
                 }

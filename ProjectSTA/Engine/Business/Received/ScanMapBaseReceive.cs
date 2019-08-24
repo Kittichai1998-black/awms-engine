@@ -172,7 +172,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                 //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + newCartonNos;
                                         var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stoPack.Options,
                                             new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, newCartonNos),
-                                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
+                                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
 
                                         var objectSizePack = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)skuItem.ObjectSize_ID).FirstOrDefault();
                                                 if (objectSizePack == null)
@@ -244,7 +244,7 @@ namespace ProjectSTA.Engine.Business.Received
                                         //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
                                         var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
                                            new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
 
                                         if (tempStoBaseItems.Count() > 0)
                                         {
@@ -282,7 +282,7 @@ namespace ProjectSTA.Engine.Business.Received
                             //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
                             var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
                                            new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
 
                             List<StorageObjectCriteria> mapStosPack = new List<StorageObjectCriteria> { };
 
@@ -321,7 +321,7 @@ namespace ProjectSTA.Engine.Business.Received
                            // var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
                             var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
                                            new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_EVENT_STATUS, StorageObjectEventStatus.QC));
+                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
 
                             if (tempStoBaseItems.Count() > 0)
                             {

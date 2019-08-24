@@ -247,24 +247,24 @@ const AmCreateDocumentR2 = props => {
     let documentItem = sapResponse.map((item, idx) => {
       let options =
         'bestq_ur=' +
-        item.BESTQ_UR +
+        item.bestQ_UR +
         '&bestq_qi=' +
-        item.BESTQ_QI +
+        item.bestQ_QI +
         '&bestq_blk=' +
-        item.BESTQ_BLK +
+        item.bestQ_BLK +
         '&bwlvs=' +
-        item.BWLVS +
+        item.bwlvs +
         '&lgpla=' +
-        item.LGPLA +
+        item.lgpla +
         '&rsnum=' +
-        item.RSNUM;
+        item.rsnum;
       return {
         ID: null,
-        skuCode: item.MATNR,
-        packCode: item.MATNR,
-        quantity: item.BDMNG,
-        unitType: item.MEINS,
-        batch: item.CHARG,
+        skuCode: item.matnr,
+        packCode: item.matnr,
+        quantity: item.bdmng,
+        unitType: item.meins,
+        batch: item.charg,
         options: options
       };
     });

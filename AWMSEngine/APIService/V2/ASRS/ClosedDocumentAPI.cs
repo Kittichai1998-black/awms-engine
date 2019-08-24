@@ -10,7 +10,6 @@ namespace AWMSEngine.APIService.V2.ASRS
     
     public class ClosedDocumentAPI : BaseAPIService
     {
-        
         public ClosedDocumentAPI(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }

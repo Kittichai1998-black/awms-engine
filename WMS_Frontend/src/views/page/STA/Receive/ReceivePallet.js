@@ -131,7 +131,7 @@ const ReceivePallet = (props) => {
                     if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                         qryStr[SC.OPT_SOU_WAREHOUSE_ID] = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                     }
-                    qryStr[SC.OPT_DONE_EVENT_STATUS] = "98";
+                    //qryStr[SC.OPT_DONE_EVENT_STATUS] = "98";
                     qryStr[SC.OPT_MVT] = "1011";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                     console.log(qryStr)
@@ -189,7 +189,7 @@ const ReceivePallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                doneEventStatus={98}
+                doneDesEventStatus={98}
             //--//
             // modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
             />

@@ -11,7 +11,8 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_SOU_CUSTOMER_ID = "sou_customer_id";
         public const string OPT_SOU_WAREHOUSE_ID = "sou_warehouse_id";
         public const string OPT_REMARK = "remark";
-        public const string OPT_DONE_EVENT_STATUS = "done_event_status";
+        public const string OPT_DONE_DES_EVENT_STATUS = "_done_des_estatus";
+        public const string OPT_DONE_SOU_EVENT_STATUS = "_done_sou_estatus";
         //AAI
         public const string OPT_LGTYP = "lgtyp";
         public const string OPT_LGBER = "lgber";

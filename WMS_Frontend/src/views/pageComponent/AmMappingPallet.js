@@ -212,7 +212,8 @@ const AmMappingPallet = (props) => {
         showArea = false,
         modeMultiSKU = false,
         confirmReceiveMapSTO = false,
-        doneEventStatus
+        doneDesEventStatus,
+        autoPost = true
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -227,7 +228,7 @@ const AmMappingPallet = (props) => {
 
     const [storageObj, setStorageObj] = useState(null);
     const [newStorageObj, setNewStorageObj] = useState(null);
-    // const [reqPost, setReqPost] = useState({});
+    const [resValuePost, setResValuePost] = useState(null);
 
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -239,7 +240,9 @@ const AmMappingPallet = (props) => {
     // );
     const [valueInput, setValueInput] = useState({});
     const [keyEnter, setKeyEnter] = useState(false);
-
+    const [curInput, setCurInput] = useState(null);
+    const [preAutoPost, setPreAutoPost] = useState(false);
+    
     const [actionValue, setActionValue] = useState(defaultActionValue);
     const [areaDetail, setAreaDetail] = useState(null);
 
@@ -349,14 +352,42 @@ const AmMappingPallet = (props) => {
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
+        setCurInput(field);
+
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
+
         if (event && event.key == 'Enter') {
+            setKeyEnter(true);
+        } 
+        // if (autoPost) {
+        //     if (event && event.key == 'Enter') {
+        //         setKeyEnter(true);
+        //     }
+        // } else {
+
+        //     if (field !== "scanCode") {
+        //         // console.log(event)
+        //         if (event && event.key == 'Enter') {
+        //             setKeyEnter(true);
+        //         } 
+        //     } else {
+        //         if (event && event.key == 'Enter') {
+        //             setKeyEnter(true);
+        //         }
+        //     }
+        // }
+
+
+    };
+    const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
+        valueInput[field] = value;
+        if (field !== "scanCode") {
+            setCurInput(field);
             setKeyEnter(true);
         }
     };
-
     async function onHandleBeforePost() {
         setKeyEnter(false);
         getValueInput();
@@ -375,21 +406,23 @@ const AmMappingPallet = (props) => {
                         var resInput = {
                             ...valueInput,
                             rootID: rootFocusID,
-                            amount: parseInt(valueInput['amount'], 10) ? valueInput['amount'] : 1,
+                            amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                             mode: 0,
-                            action: actionValue
+                            action: actionValue,
+                            rootDoneDesEventStatus: doneDesEventStatus ? doneDesEventStatus : null
                         };
-                        dataScan = await onBeforePost(resInput, storageObj);
+                        dataScan = await onBeforePost(resInput, storageObj, curInput);
                         console.log(dataScan)
                         if (dataScan) {
                             resValuePost = { ...dataScan }
                         } else {
+                            console.log("clear")
                             inputClear();
                         }
                     } else {
                         dataScan = {
                             rootID: rootFocusID,
-                            amount: parseInt(valueInput['amount'], 10) ? valueInput['amount'] : 1,
+                            amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                             mode: 0,
                             action: actionValue,
                             // scanCode: ,
@@ -409,40 +442,63 @@ const AmMappingPallet = (props) => {
                     dataScan = {
                         // rootID: null,
                         mode: 0,
-                        amount: parseInt(valueInput['amount'], 10) ? valueInput['amount'] : 1,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                         action: actionValue,
-                        options: doneEventStatus ? SC.OPT_DONE_EVENT_STATUS + "=" + doneEventStatus : null
+                        rootDoneDesEventStatus: doneDesEventStatus ? doneDesEventStatus : null
                     }
                     resValuePost = { ...valueInput, ...dataScan }
                 }
 
             } else {
-                alertDialogRenderer("ScanCode must be value", "error", true);
+                if (curInput === 'scanCode') {
+                    alertDialogRenderer("ScanCode must be value", "error", true);
+                }
             }
         }
-        console.log(resValuePost);
         if (resValuePost) {
+            console.log(resValuePost);
+
+            setResValuePost(resValuePost);
+            if (autoPost) {
+                onSubmitToAPI(resValuePost);
+            }else{
+                if(preAutoPost){
+                    onSubmitToAPI(resValuePost);
+                }
+            }
+
+        }
+    }
+    const onPreSubmitToAPI =()=>{
+        setKeyEnter(true); 
+        // onSubmitToAPI(resValuePost)
+        setPreAutoPost(true);
+    }
+
+    const onSubmitToAPI = (resValuePosts) => {
+        console.log(resValuePosts);
+        if (resValuePosts) {
             if (modeEmptyPallet === false) {
                 if (actionValue !== 0 && actionValue !== 2 && storageObj) {
                     var dataLastPack = findPack(storageObj);
                     if (!modeMultiSKU) {
-                        if (dataLastPack && dataLastPack.code !== resValuePost.scanCode) {
+                        if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
                             alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
                         } else {
-                            scanBarcodeApi(resValuePost);
+                            scanBarcodeApi(resValuePosts);
                         }
                     } else {
-                        scanBarcodeApi(resValuePost);
+                        scanBarcodeApi(resValuePosts);
                     }
                 } else {
-                    scanBarcodeApi(resValuePost);
+                    scanBarcodeApi(resValuePosts);
                 }
             } else {
-                scanBarcodeEmptyPalletApi(resValuePost);
+                scanBarcodeEmptyPalletApi(resValuePosts);
             }
         }
+        setPreAutoPost(false);
     }
-
     const findRootMapping = (storageObj) => {
         var mapstosToTree = ToListTree(storageObj, 'mapstos');
         mapstosToTree.reverse();
@@ -688,7 +744,8 @@ const AmMappingPallet = (props) => {
                         style={{ width: "330px" }}
                         defaultValue={defaultValue ? defaultValue : ""}
                         onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                        onChange={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+
                     />
 
                 </FormInline>
@@ -702,7 +759,7 @@ const AmMappingPallet = (props) => {
                         type="number"
                         style={{ width: "330px" }}
                         defaultValue={defaultValue ? defaultValue : ""}
-                        onChange={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                     />
                 </FormInline>
             )
@@ -780,6 +837,7 @@ const AmMappingPallet = (props) => {
         setInputSource(null);
         setDDLWarehouse(null);
         setDDLArea(null);
+        setResValuePost(null);
     }
     const inputClearAll = () => {
         // setReqPost({});
@@ -865,7 +923,7 @@ const AmMappingPallet = (props) => {
                         }) : null}
                     </CardContent>
                     <CardActions>
-                        <AmButton styleType="confirm" className={classnames(classes.button)} onClick={onHandleBeforePost}>
+                        <AmButton styleType="confirm" className={classnames(classes.button)} onClick={() => onPreSubmitToAPI()}>
                             {t('Scan')}
                         </AmButton>
                     </CardActions>
