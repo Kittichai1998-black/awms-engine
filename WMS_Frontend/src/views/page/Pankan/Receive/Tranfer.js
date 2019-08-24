@@ -175,6 +175,9 @@ const Tranfer = (props) => {
     const [msgDialogErr, setMsgDialogErr] = useState("");
     const [expanded, setExpanded] = useState(false);
     const [barCodeDes, setbarCodeDes] = useState();
+    const [barCodeSou, setbarCodeSou] = useState();
+    const [qtys, setqtys] = useState();
+    const [soupack, setsoupack] = useState();
     const [objectSizeMaps, setobjectSizeMaps] = useState();
 
     const handleExpandClick = () => {
@@ -182,7 +185,6 @@ const Tranfer = (props) => {
     }
 
     const onHandleConfirmReceive = () => {
-
 
     }
 
@@ -269,10 +271,55 @@ const Tranfer = (props) => {
                                     type="input"
                                     style={{ width: "330px" }}
                                     defaultValue={""}
+                                    onKeyPress={(value, a, b, event) => {
+                                        if (event.key === "Enter") {
+                                            console.log(value)
+                                            setbarCodeDes(value)
+                                            document.getElementById("desbase").value = "";
+                                            getDesScan();
+                                        }
+                                    }}
                                   
                                 ></AmInput>
                             </FormInline>
+                            <FormInline><LabelH>Sou Pack : </LabelH>
+                                <AmInput
+                                    id={"desbase"}
+                                    autoFocus={true}
+                                    placeholder={"Scan"}
+                                    type="input"
+                                    style={{ width: "330px" }}
+                                    defaultValue={""}
+                                    onKeyPress={(value, a, b, event) => {
+                                        if (event.key === "Enter") {
+                                            console.log(value)
+                                            setbarCodeDes(value)
+                                            document.getElementById("desbase").value = "";
+                                            getDesScan();
+                                        }
+                                    }}
 
+                                ></AmInput>
+                            </FormInline>
+                            <FormInline><LabelH>Qty : </LabelH>
+                                <AmInput
+                                    id={"desbase"}
+                                    autoFocus={true}
+                                    placeholder={"Scan"}
+                                    type="input"
+                                    style={{ width: "330px" }}
+                                    defaultValue={""}
+                                    onKeyPress={(value, a, b, event) => {
+                                        if (event.key === "Enter") {
+                                            console.log(value)
+                                            setbarCodeDes(value)
+                                            document.getElementById("desbase").value = "";
+                                            getDesScan();
+                                        }
+                                    }}
+
+                                ></AmInput>
+                            </FormInline>
                         </div>
                     </CardContent>
                     {newStorageObj ?

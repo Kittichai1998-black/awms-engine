@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.202
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AWMSEngine", "AWMSEngine\AWMSEngine.csproj", "{CF0D3166-2C4F-4591-9CA4-00C03FC7BC15}"
 EndProject
@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectAAI", "ProjectAAI\Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAPNCO", "SAPNCO\SAPNCO.csproj", "{698485D6-8232-4867-8CEC-DDA3A22AED41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteFile", "RemoteFile\RemoteFile.csproj", "{E77B05ED-913A-4447-A9F3-29BB1BE142F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteFile", "RemoteFile\RemoteFile.csproj", "{E77B05ED-913A-4447-A9F3-29BB1BE142F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectPanKan", "ProjectPanKan\ProjectPanKan.csproj", "{9AE7F5BE-D0BF-4350-B72E-F63D12C84BB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{E77B05ED-913A-4447-A9F3-29BB1BE142F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E77B05ED-913A-4447-A9F3-29BB1BE142F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E77B05ED-913A-4447-A9F3-29BB1BE142F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AE7F5BE-D0BF-4350-B72E-F63D12C84BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AE7F5BE-D0BF-4350-B72E-F63D12C84BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AE7F5BE-D0BF-4350-B72E-F63D12C84BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AE7F5BE-D0BF-4350-B72E-F63D12C84BB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
