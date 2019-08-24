@@ -178,6 +178,7 @@ const Tranfer = (props) => {
     const [objectSizeMaps, setobjectSizeMaps] = useState();
 
     const handleExpandClick = () => {
+        setExpanded(!expanded);
     }
 
     const onHandleConfirmReceive = () => {
@@ -211,11 +212,11 @@ const Tranfer = (props) => {
             if (res.data._result.status === 1) {
                 let datas = res.data
                 console.log(datas)
-                setobjectSizeMaps(datas.objectSizeMaps)
+                //setobjectSizeMaps(datas.objectSizeMaps)
                 setNewStorageObj(<AmListSTORenderer
-                    dataSrc={datas.objectSizeMaps}
-                    showOptions={null}
-                    customOptions={null}
+                    dataSrc={datas}
+                    //showOptions={}
+                    //customOptions={null}
                 />);
             } else {
                 setStateDialogErr(true)
@@ -225,7 +226,7 @@ const Tranfer = (props) => {
         })
 
     }
-    console.log(objectSizeMaps)
+    console.log(newStorageObj)
     return (
         <div className={classes.root}>
             {stateDialog ? showDialog ? showDialog : null : null}
@@ -251,6 +252,7 @@ const Tranfer = (props) => {
                                     defaultValue={""}
                                     onKeyPress={(value, a, b, event) => {
                                         if (event.key === "Enter") {
+                                            console.log(value)
                                             setbarCodeDes(value)
                                             document.getElementById("desbase").value = "";
                                             getDesScan();
@@ -267,21 +269,9 @@ const Tranfer = (props) => {
                                     type="input"
                                     style={{ width: "330px" }}
                                     defaultValue={""}
-                                    onKeyPress={(value, a, b, event) => {
-                                        if (event.key === "Enter") {
-                                            setbarCodeDes(value)
-                                            document.getElementById("desbase").value = "";
-                                            getDesScan();
-                                        }
-                                    }}
+                                  
                                 ></AmInput>
                             </FormInline>
-                            {objectSizeMaps ? <AmListSTORenderer
-                                dataSrc={objectSizeMaps}
-                            //showOptions={showOptions}
-                            //customOptions={customOptions}
-                               
-                            />: null}
 
                         </div>
                     </CardContent>
@@ -326,8 +316,6 @@ const Tranfer = (props) => {
                     </Collapse>
 
                 </Card>
-                <div>{console.log(newStorageObj)}</div>
-
             </Paper>
         </div>
     )
