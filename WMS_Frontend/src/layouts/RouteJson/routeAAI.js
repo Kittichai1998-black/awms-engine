@@ -33,6 +33,10 @@ const CreateDocGIR2 = Loadable({
   loader: () => import('../../views/page/AAI/Issues/CreateDocGIR2'),
   loading: Loading
 });
+const CreateDocGIR3 = Loadable({
+  loader: () => import('../../views/page/AAI/Issues/CreateDocGIR3'),
+  loading: Loading
+});
 
 const routes = [
   {
@@ -75,6 +79,12 @@ const routes = [
     path: '/issue/createR2',
     name: 'base5',
     compoment: CreateDocGIR2,
+    exact: true
+  },
+  {
+    path: '/issue/createR3',
+    name: 'base5',
+    compoment: CreateDocGIR3,
     exact: true
   }
 ];
