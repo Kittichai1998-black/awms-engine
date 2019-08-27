@@ -9,13 +9,14 @@ import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import AmToolTip from "../../components/AmToolTip";
 import Divider from '@material-ui/core/Divider';
-
+import queryString from 'query-string'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import AmStorageObjectStatus from "../../components/AmStorageObjectStatus";
 import AmEntityStatus from "../../components/AmEntityStatus";
+import * as SC from '../../constant/StringConst'
 
 const styles = theme => ({
     root: {
@@ -94,6 +95,8 @@ const AmListSTORenderer = (props) => {
         chipRenderer = customOptionsRender } = props;
 
     const showDataPalletRenderer = (row) => {
+        var qryOpt = queryString.parse(row.options);
+        var remark = qryOpt[SC.OPT_REMARK] ? qryOpt[SC.OPT_REMARK] : null;
         return <List className={classnames({ root: classnames(classes.listRoot, classes.root) })} component="div" disablePadding>
             <ListItem alignItems="center" divider disableGutters className={classnames(classes.guttersHead, row.isFocus ? classes.bgFocus : null)}>
                 <ListItemAvatar className={classnames(classes.listItemAvatarRoot)}>
@@ -117,6 +120,13 @@ const AmListSTORenderer = (props) => {
                                 text: row.qty + " " + row.unitCode,
                                 textAvatar: 'Q',
                                 textToolTip: 'Quantity',
+                                className: classes.chip,
+                                classNameAvatar: classnames(classes.avatar)
+                            }) : null}
+                            {remark ? oriChipRenderer({
+                                text: remark,
+                                textAvatar: 'RM',
+                                textToolTip: 'Remark',
                                 className: classes.chip,
                                 classNameAvatar: classnames(classes.avatar)
                             }) : null}

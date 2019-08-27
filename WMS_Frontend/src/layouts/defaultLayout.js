@@ -248,6 +248,7 @@ const Default = props => {
     let Path = window.location.pathname.split('/');
     useEffect(() => {
         var data = route(localStorage.getItem('MenuItems'));
+       
         setRoutes(data);
     }, []);
 
@@ -264,22 +265,23 @@ const Default = props => {
         if (json === undefined || json.items === null) {
         } else {
             jsonresult.forEach(row => {
+                
                 if (
-                    Path[1] === row.name
+                    Path[1] === row.Name
                         .replace(' ', '')
                         .replace(' ', '')
                         .toLowerCase()
                 ) {
-                    row.webPages.map(res => {
+                    row.WebPages.map(res => {
                         if (res.pathLV2 === Path[2]) {
                             name = t(res.pageName.trim());
                             // name = res.pageName;
-                            icon_s = iconMenuTree[res.icon];
-                        } else if (Path[2] === "inbound" && res.pathLV2.match("inbound")) {
+                            icon_s = iconMenuTree[res.Icon];
+                        } else if (Path[2] === "inbound" && res.PathLV2.match("inbound")) {
                             name = t(res.pageName.trim());
                             // name = "Inbound Progress";
                             icon_s = iconMenuTree["ReceiveingSub"];
-                        } else if (Path[2] === "outbound" && res.pathLV2.match("outbound")) {
+                        } else if (Path[2] === "outbound" && res.PathLV2.match("outbound")) {
                             name = t(res.pageName.trim());
                             // name = "Outbound Progress";
                             icon_s = iconMenuTree["IssuingSub"];
@@ -313,6 +315,7 @@ const Default = props => {
         if (Path[1] === "") {
         } else {
             return routes.map((x, idx) => {
+               
                 if (x.text.toString().toLowerCase() === Path[1]) {
                     return <div
                         key={idx}
@@ -613,7 +616,9 @@ const Default = props => {
                     </Paper>
 
                     <Switch>
+                   
                         {routeLink.map((x, idx) => (
+                           
                             <Route
                                 key={idx}
                                 path={x.path}

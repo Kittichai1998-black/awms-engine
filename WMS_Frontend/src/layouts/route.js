@@ -9,15 +9,15 @@ const items = menuItems => {
   } else {
     jsonresult.forEach(row => {
       items.push({
-        text: row.name,
-        language_code:row.language_code,
-        icon: iconMenuTree[row.icon],
-        child: row.webPages.map(res => {
+        text: row.Name,
+        language_code: row.language_code,
+        icon: iconMenuTree[row.Icon],
+        child: row.WebPages.map(res => {
           return {
-            to: "/" + res.pathLV1 + "/" + res.pathLV2,
+            to: "/" + res.PathLV1 + "/" + res.PathLV2,
             text: res.pageName,
-            language_code:res.language_code,
-            iconSub: iconMenuTree[res.icon]
+            language_code: res.language_code,
+            iconSub: iconMenuTree[res.Icon]
           };
         })
       });

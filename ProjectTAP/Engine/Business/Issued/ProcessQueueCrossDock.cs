@@ -29,12 +29,13 @@ namespace ProjectTAP.Engine.Business.Issued
                         ParentDocument_ID = reqDoc.ID.Value,
                         Lot = reqDoc.Lot,
                         Batch = reqDoc.Batch,
-                        For_Customer_ID = null,
+                        For_Customer_ID = reqDoc.For_Customer_ID,
                         Sou_Customer_ID = null,
                         Sou_Supplier_ID = null,
                         Sou_Branch_ID = reqDoc.Sou_Warehouse_ID,
                         Sou_Warehouse_ID = reqDoc.Sou_Warehouse_ID,
                         Sou_AreaMaster_ID = null,
+                        
 
                         Des_Customer_ID = null,
                         Des_Supplier_ID = null,
@@ -76,6 +77,7 @@ namespace ProjectTAP.Engine.Business.Issued
                                 BaseQuantity = item.BaseQuantity - sumQtyDisto,
                                 BaseUnitType_ID = item.BaseUnitType_ID,
 
+                                
                                 OrderNo = item.OrderNo,
                                 Batch = item.Batch,
                                 Lot = item.Lot,
