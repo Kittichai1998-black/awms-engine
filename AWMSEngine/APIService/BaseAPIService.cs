@@ -152,6 +152,7 @@ namespace AWMSEngine.APIService
                 result.code = AMWExceptionCode.I0000.ToString();
                 result.message = "Success";
                 result.stacktrace = string.Empty;
+                result.logref = this.Logger.LogRefID;
                 this.CommitTransaction();
             }
             catch (AMWException ex)
@@ -160,6 +161,7 @@ namespace AWMSEngine.APIService
                 result.code = ex.GetAMWCode();
                 result.message = ex.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
+                result.logref = this.Logger.LogRefID;
                 this.RollbackTransaction();
             }
             catch (Exception ex)
@@ -169,6 +171,7 @@ namespace AWMSEngine.APIService
                 result.code = e.GetAMWCode();
                 result.message = e.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
+                result.logref = this.Logger.LogRefID;
                 this.Logger.LogError(ex.StackTrace);
                 this.RollbackTransaction();
             }
