@@ -6,6 +6,7 @@ import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import moment from 'moment';
 import ToListTree from '../../../../components/function/ToListTree';
+import * as SC from '../../../../constant/StringConst'
 
 const Axios = new apicall();
 
@@ -98,7 +99,7 @@ const MappingReceivePallet = (props) => {
                 var options = null;
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                     var dataMapSto = findMapSto(storageObj, reqValue.scanCode)
-                    console.log(dataMapSto)
+                    // console.log(dataMapSto)
                     var oldOptions = null;
                     if (dataMapSto) {
                         oldOptions = dataMapSto.options !== undefined ? queryString.parse(dataMapSto.options) : null;
@@ -109,26 +110,31 @@ const MappingReceivePallet = (props) => {
                         var newdate = "";
 
                         if (reqValue.action === 2) {
-                            var date = oldOptions.date ? oldOptions.date.split(',') : [];
+                            var date = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE].split(',') : [];
                             var newdates = date.slice(0, date.length - reqValue.amount);
                             newdate = newdates.join(',');
 
-                            var supplier_id = oldOptions.supplier_id ? oldOptions.supplier_id.split(',') : [];
+                            var supplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID].split(',') : [];
                             var newsupplier_ids = supplier_id.slice(0, supplier_id.length - reqValue.amount);
                             newsupplier_id = newsupplier_ids.join(',');
 
                         } else {
-                            newsupplier_id = oldOptions.supplier_id ? oldOptions.supplier_id + "," + runOptions(reqValue.amount, reqValue.supplierID) : reqValue.supplierID;
-                            newdate = oldOptions.date ? oldOptions.date + "," + runOptions(reqValue.amount, reqValue.donateDate) : reqValue.donateDate;
+                            newsupplier_id = oldOptions[SC.OPT_SUPPLIER_ID] ? oldOptions[SC.OPT_SUPPLIER_ID] + "," + runOptions(reqValue.amount, reqValue.supplierID) : reqValue.supplierID;
+                            newdate = oldOptions[SC.OPT_DATE] ? oldOptions[SC.OPT_DATE] + "," + runOptions(reqValue.amount, reqValue.donateDate) : reqValue.donateDate;
                         }
-                        oldOptions.date = newdate;
-                        oldOptions.supplier_id = newsupplier_id;
+                        oldOptions[SC.OPT_DATE] = newdate;
+                        oldOptions[SC.OPT_SUPPLIER_ID] = newsupplier_id;
                         var qryStr1 = queryString.stringify(oldOptions);
                         options = decodeURIComponent(qryStr1)
                     }
 
                 } else {
-                    options = "date=" + runOptions(reqValue.amount, reqValue.donateDate) + "&supplier_id=" + runOptions(reqValue.amount, reqValue.supplierID)
+                    let opt = {};
+                    opt[SC.OPT_DATE] = runOptions(reqValue.amount, reqValue.donateDate);
+                    opt[SC.OPT_SUPPLIER_ID] = runOptions(reqValue.amount, reqValue.supplierID);
+                    var qryStr1 = queryString.stringify(oldOptions);
+                    options = decodeURIComponent(qryStr1)
+                    // options = "date=" + runOptions(reqValue.amount, reqValue.donateDate) + "&supplier_id=" + runOptions(reqValue.amount, reqValue.supplierID)
                 }
                 dataScan = {
                     options: options,
