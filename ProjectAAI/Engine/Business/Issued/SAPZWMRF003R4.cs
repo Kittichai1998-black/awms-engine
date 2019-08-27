@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectAAI.Engine.Business.Issued
 {
-    public class SAPZWMRF003R4 : BaseEngine<CreateIssuedDocR1.TReq, List<SAPCriteria.ZSWMRF003_OUT_REQ>>
+    public class SAPZWMRF003R4 : BaseEngine<SAPZWMRF003R4.TReq, List<SAPCriteria.ZSWMRF003_OUT_REQ>>
     {
         public class TReq
         {

@@ -18,7 +18,7 @@ namespace ProjectAAI.APIService.SAP
         {
             this.BeginTransaction();
             var req = AMWUtil.Common.ObjectUtil.DynamicToModel<SAPZWMRF003R1.TReq>(this.RequestVO);
-            var res = new CreateIssuedDocR1();
+            var res = new SAPZWMRF003R1();
             return res.Execute(this.Logger, this.BuVO, req);
         }
     }
