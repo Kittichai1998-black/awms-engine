@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace ProjectAAI.APIService.SAP
 {
-    public class SAPZWMRF003R1API : BaseAPIService
+    public class SAPZWMRF003R4API : BaseAPIService
     {
-        public SAPZWMRF003R1API(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
+        public SAPZWMRF003R4API(ControllerBase controllerAPI, int apiServiceID = 0, bool isAuthenAuthorize = true) : base(controllerAPI, apiServiceID, isAuthenAuthorize)
         {
         }
 
         protected override dynamic ExecuteEngineManual()
         {
             this.BeginTransaction();
-            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<SAPZWMRF003R1.TReq>(this.RequestVO);
-            var res = new CreateIssuedDocR1();
+            var req = AMWUtil.Common.ObjectUtil.DynamicToModel<CreateIssuedDocR4.TReq>(this.RequestVO);
+            var res = new CreateIssuedDocR4();
             return res.Execute(this.Logger, this.BuVO, req);
         }
     }
