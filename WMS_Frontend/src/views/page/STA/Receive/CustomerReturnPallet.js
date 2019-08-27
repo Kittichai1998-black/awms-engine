@@ -21,8 +21,8 @@ const CustomerQuery = {
 const CustomerReturnPallet = (props) => {
     const { } = props;
 
-    const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
-    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13 };
+    const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
+    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 13}" };
 
     // const inputHeader = [
     //     { "field": "warehouseID", "type": "dropdown", "typeDropdown": "normal", "name": "Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
@@ -36,6 +36,13 @@ const CustomerReturnPallet = (props) => {
     const inputItem = [
         // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        {    //  "visible": false, 
+            "field": "rootDoneDesEventStatus", "type": "radiogroup", "name": "Status", "fieldLabel": [
+                { value: '96', label: "RETURN" },
+            ],
+            "defaultValue": { value: '96', disabled: true }
+        }
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -63,8 +70,7 @@ const CustomerReturnPallet = (props) => {
         //split ค่า
         var resValuePost = null;
         var dataScan = {};
-        console.log(reqValue);
-
+        
         if (reqValue) {
 
             if (reqValue['scanCode'].length === 26) {
@@ -133,7 +139,6 @@ const CustomerReturnPallet = (props) => {
                         qryStr[SC.OPT_SOU_CUSTOMER_ID] = reqValue[SC.OPT_SOU_CUSTOMER_ID];
                     }
                     // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
-                    qryStr[SC.OPT_MVT] = "1012";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
                     let qryStr1 = queryString.stringify(qryStr)
                     let uri_opt = decodeURIComponent(qryStr1);
@@ -143,16 +148,11 @@ const CustomerReturnPallet = (props) => {
                         orderNo: orderNo,
                         scanCode: skuCode,
                         options: cartonNo === "0" ? null : uri_opt
-                        // amount: 1,
-                        // mode: 0,
-                        // action: 1,
-                        // isRoot: false
                     };
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {
                         alertDialogRenderer("Please scan the pallet before scanning the product or CartonNo Not Found.", "error", true);
-
                     }
                 }
             } else {
@@ -189,9 +189,8 @@ const CustomerReturnPallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                doneDesEventStatus={96}
-                //--//
-            // modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
+                setMovementType={"1012"}
+                autoPost={false}
             />
         </div>
     );

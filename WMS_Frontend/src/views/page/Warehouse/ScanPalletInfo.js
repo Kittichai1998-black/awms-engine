@@ -27,7 +27,7 @@ const ScanPalletInfo = (props) => {
         <div>
             <AmMappingPallet
                 showWarehouseDDL={inputWarehouse}
-                showAreaDDL={inputArea}
+                // showAreaDDL={inputArea}
                 //headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
                 setVisibleTabMenu={['Select', null, null]}

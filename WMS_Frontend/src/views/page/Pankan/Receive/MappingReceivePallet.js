@@ -17,7 +17,7 @@ const MappingReceivePallet = (props) => {
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
     // const [supplierData, setSupplierData] = useState(null);
- 
+
     const SupplierQuery = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
         t: "Supplier",
@@ -28,15 +28,15 @@ const MappingReceivePallet = (props) => {
         sk: 0,
         l: 100,
         all: "",
-    } 
-    const inputWarehouse = {"visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
-    const inputArea = {"visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID" , "defaultValue": 2 };
+    }
+    const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
+    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 2 };
     const inputHeader = [
-        { "field": "supplierID", "type": "dropdown", "typeDropdown": "normal", "name": "Supplier", "dataDropDown": SupplierQuery, "placeholder": "Select Supplier", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID"},
+        { "field": "supplierID", "type": "dropdown", "typeDropdown": "normal", "name": "Supplier", "dataDropDown": SupplierQuery, "placeholder": "Select Supplier", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID" },
         { "field": "donateDate", "type": "datetimepicker", "name": "Donate Date/Time" },
     ]
     const inputItem = [
-        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1  },
+        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1 },
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
     ]
     // useEffect(() => {
@@ -98,14 +98,18 @@ const MappingReceivePallet = (props) => {
                 var options = null;
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                     var dataMapSto = findMapSto(storageObj, reqValue.scanCode)
-                    var oldOptions = dataMapSto.options ? queryString.parse(dataMapSto.options) : null;
+                    console.log(dataMapSto)
+                    var oldOptions = null;
+                    if (dataMapSto) {
+                        oldOptions = dataMapSto.options !== undefined ? queryString.parse(dataMapSto.options) : null;
+                    }
 
                     if (oldOptions) {
                         var newsupplier_id = "";
                         var newdate = "";
 
                         if (reqValue.action === 2) {
-                            var date = oldOptions.date ? oldOptions.date.split(',') : []; 
+                            var date = oldOptions.date ? oldOptions.date.split(',') : [];
                             var newdates = date.slice(0, date.length - reqValue.amount);
                             newdate = newdates.join(',');
 
@@ -136,7 +140,7 @@ const MappingReceivePallet = (props) => {
         }
         return resValuePost;
     }
-  
+
     const runOptions = (amount, val) => {
         var text = "";
         for (var i = 0; i < amount; i++) {
