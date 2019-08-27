@@ -140,19 +140,25 @@ export default props => {
 
     const sapConnectorR1 = postData => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {
-            // if (res.data._result.status && !res.data.datas[0].erR_MSG) {
             if (res.data._result.status) {
-                setSAPResponse(res.data.datas);
-                GetDataByBaesCode(postData.LENUM)
+                if (!res.data.datas[0].erR_MSG) {
+                    setSAPResponse(res.data.datas);
+                    GetDataByBaesCode(postData.LENUM)
+                } else {
+                    setDialog({
+                        status: true,
+                        type: "error",
+                        message: res.data.datas[0].erR_MSG
+                    });
+                }
             } else {
                 setDialog({
                     status: true,
                     type: "error",
-                    message: res.data.datas[0].erR_MSG
+                    message: res.data._result.message
                 });
             }
         })
-
     };
 
     const GetDataByBaesCode = baseCode => {

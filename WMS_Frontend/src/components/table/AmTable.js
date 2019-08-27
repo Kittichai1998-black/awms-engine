@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import ReactTable from "react-table";
-import "react-table/react-table.css";
-import "./style.css";
-import classNames from "classnames";
-import withFixedColumns from "react-table-hoc-fixed-columns";
-import "react-table-hoc-fixed-columns/lib/styles.css";
 import Checkbox from "@material-ui/core/Checkbox";
-import Radio from "@material-ui/core/Radio";
-import AmExportDataTable from "./AmExportDataTable";
+import classNames from "classnames";
 import Moment from "moment";
+import PropTypes from "prop-types";
+import Radio from "@material-ui/core/Radio";
+import ReactTable from "react-table";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next'
+import withFixedColumns from "react-table-hoc-fixed-columns";
+
+import "react-table-hoc-fixed-columns/lib/styles.css";
+import "react-table/react-table.css";
+
+import AmExportDataTable from "./AmExportDataTable";
+
+import "./style.css";
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
@@ -46,6 +49,7 @@ const AmTable = props => {
               padding: 0,
               margin: 0
             }}
+            title={e.original[x.accessor]}
           >
             {e.original[x.accessor]}
           </pre>
@@ -156,19 +160,19 @@ const AmTable = props => {
 
       if (type === "datetime") {
         column.Cell = data => {
-          if(data.original[x.accessor] === "" || data.original[x.accessor] === null){
+          if (data.original[x.accessor] === "" || data.original[x.accessor] === null) {
             return ('');
-          }else{
-          return (
-            <span>
-              {Moment(data.original[x.accessor]).isValid
-                ? Moment(data.original[x.accessor]).format(
-                  x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
-                )
-                : ""}
-            </span>
-          );
-              }
+          } else {
+            return (
+              <span>
+                {Moment(data.original[x.accessor]).isValid
+                  ? Moment(data.original[x.accessor]).format(
+                    x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
+                  )
+                  : ""}
+              </span>
+            );
+          }
         };
       }
 
@@ -255,7 +259,6 @@ const AmTable = props => {
           row._original ? row._original : row
         );
         selectionData.forEach((x, idx) => {
-          console.log(x[props.primaryKey]);
           getData.forEach(row => {
             if (x[props.primaryKey] === row[props.primaryKey]) {
               selectionData.splice(idx, 1);

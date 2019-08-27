@@ -9,16 +9,36 @@ import AmCreateDocument from "./AmCreateDocument";
 import AmButton from "../../../../components/AmButton";
 import AmInput from "../../../../components/AmInput";
 import Grid from "@material-ui/core/Grid";
+import styled from "styled-components";
 
 const Axios = new apicall();
+const InputDiv = styled.div``;
+const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 10px 0 10px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+const LabelH = styled.label`
+  font-weight: bold;
+  width: 200px;
+`;
 
-const AmCreateDocumentR2 = props => {
+const AmCreateDocumentR5 = props => {
   const [sapResponse, setSAPResponse] = useState([]);
   const [editData, setEditData] = useState({});
   const [editPopup, setEditPopup] = useState(false);
   const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
-
   const headerCreates = [
     [
       { label: "SAP Document", type: "labeltext", key: "sapdoc", texts: "-" },
@@ -61,16 +81,16 @@ const AmCreateDocumentR2 = props => {
         label: "Mode",
         type: "labeltext",
         key: "ref1",
-        texts: "R02",
-        valueTexts: "R02"
+        texts: "R05",
+        valueTexts: "R05"
       }
     ]
   ];
 
   var columnsModify = [
     {
-      Header: "Reservation",
-      accessor: "RSNUM"
+      Header: "Delivery Order",
+      accessor: "VBELN_VL"
     },
     {
       Header: "Material",
@@ -87,10 +107,6 @@ const AmCreateDocumentR2 = props => {
     {
       Header: "Unit",
       accessor: "MEINS"
-    },
-    {
-      Header: "BIN",
-      accessor: "LGPLA"
     },
     {
       Header: "MVT",
@@ -111,10 +127,10 @@ const AmCreateDocumentR2 = props => {
   ];
 
   const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
-  const apiRes = "/";
+  const apiRes = "/issue/detail?docID=";
 
-  const sapConnectorR2 = postData => {
-    Axios.post(window.apipath + "/v2/SAPZWMRF003R2API", postData).then(res => {
+  const sapConnectorR5 = postData => {
+    Axios.post(window.apipath + "/v2/SAPZWMRF003R5API", postData).then(res => {
       if (res.data._result.status === 1) {
         setSAPResponse(res.data.datas);
       } else {
@@ -129,28 +145,107 @@ const AmCreateDocumentR2 = props => {
         postData[x.field] = x.value;
       });
       postData["_token"] = localStorage.getItem("Token");
-      sapConnectorR2(postData);
+      sapConnectorR5(postData);
     }
     setEditPopup(false);
+    setSAPReq([]);
   };
 
   const onChangeEditor = (field, value) => {
-    setSAPReq([{ field: field, value: value }]);
+    console.log(sapReq);
+    let DataValue = sapReq.map(x => {
+      console.log(field);
+      // console.log(x);
+      if (x.field != field) {
+        return x;
+      }
+    });
+    DataValue.push({ field: field, value: value });
+    console.log(DataValue);
+    setSAPReq(DataValue);
   };
 
   const editorList = [
     {
-      field: "Reservation Number",
+      field: "Delivery Order Number",
       component: (data, cols, key) => {
         return (
           <div key={key}>
-            Reservation Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ""}
-              onChange={value => {
-                onChangeEditor("RSNUM", value);
-              }}
-            />
+            <FormInline>
+              {" "}
+              <LabelH> {"Delivery Order Number :"} </LabelH>
+              <InputDiv>
+                <AmInput
+                  defaultValue={data ? data.Name2 : ""}
+                  onChange={value => {
+                    onChangeEditor("VBELN_VL", value);
+                  }}
+                />
+              </InputDiv>{" "}
+            </FormInline>
+          </div>
+        );
+      }
+    },
+    {
+      field: "Delivery Item",
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            <FormInline>
+              {" "}
+              <LabelH> {"Delivery Item :"} </LabelH>
+              <InputDiv>
+                <AmInput
+                  defaultValue={data ? data.Name2 : ""}
+                  onChange={value => {
+                    onChangeEditor("POSNR", value);
+                  }}
+                />
+              </InputDiv>{" "}
+            </FormInline>
+          </div>
+        );
+      }
+    },
+    {
+      field: "Material Number",
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            <FormInline>
+              {" "}
+              <LabelH> {"Material Number :"} </LabelH>
+              <InputDiv>
+                <AmInput
+                  defaultValue={data ? data.Name2 : ""}
+                  onChange={value => {
+                    onChangeEditor("MATNR", value);
+                  }}
+                />
+              </InputDiv>{" "}
+            </FormInline>
+          </div>
+        );
+      }
+    },
+    {
+      field: "Batch Number",
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            <FormInline>
+              {" "}
+              <LabelH> {"Batch Number :"} </LabelH>
+              <InputDiv>
+                <AmInput
+                  defaultValue={data ? data.Name2 : ""}
+                  onChange={value => {
+                    onChangeEditor("CHARG", value);
+                  }}
+                />
+              </InputDiv>{" "}
+            </FormInline>
           </div>
         );
       }
@@ -238,33 +333,40 @@ const AmCreateDocumentR2 = props => {
         headerData.movementTypeID === undefined
           ? null
           : headerData.movementTypeID,
-      ref1: "R02",
+      ref1: "R05",
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
     };
 
     let documentItem = sapResponse.map((item, idx) => {
+      console.log(item);
+      var matnr = parseInt(item.MATNR).toString();
+      console.log(matnr);
       let options =
         "bestq_ur=" +
-        item.bestQ_UR +
+        item.BESTQ_UR +
         "&bestq_qi=" +
-        item.bestQ_QI +
+        item.BESTQ_QI +
         "&bestq_blk=" +
-        item.bestQ_BLK +
+        item.BESTQ_BLK +
         "&bwlvs=" +
-        item.bwlvs +
-        "&lgpla=" +
-        item.lgpla +
-        "&rsnum=" +
-        item.rsnum;
+        item.BWLVS +
+        "&lgtyp=" +
+        item.LGTYP +
+        "&vbeln_vl=" +
+        item.VBELN_VL +
+        "&posnr=" +
+        item.POSNR +
+        "&vbeln=" +
+        item.VBELN;
       return {
         ID: null,
-        skuCode: item.matnr,
-        packCode: item.matnr,
-        quantity: item.bdmng,
-        unitType: item.meins,
-        batch: item.charg,
+        skuCode: matnr,
+        packCode: matnr,
+        quantity: item.BDMNG,
+        unitType: item.MEINS,
+        batch: item.CHARG,
         options: options
       };
     });
@@ -329,4 +431,4 @@ const AmCreateDocumentR2 = props => {
   );
 };
 
-export default AmCreateDocumentR2;
+export default AmCreateDocumentR5;

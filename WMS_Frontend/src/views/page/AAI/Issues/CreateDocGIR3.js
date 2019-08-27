@@ -1,14 +1,15 @@
-import React, { Component, useEffect, useState } from "react";
-import { AmEditorTable } from "../../../../components/table";
+import React, { Component, useEffect, useState } from 'react';
+import { AmEditorTable } from '../../../../components/table';
 import {
   apicall,
   createQueryString
-} from "../../../../components/function/CoreFunction";
+} from '../../../../components/function/CoreFunction';
 
-import AmCreateDocument from "./AmCreateDocument";
-import AmButton from "../../../../components/AmButton";
-import AmInput from "../../../../components/AmInput";
-import Grid from "@material-ui/core/Grid";
+import AmCreateDocument from './AmCreateDocument';
+import AmButton from '../../../../components/AmButton';
+import AmInput from '../../../../components/AmInput';
+import AmCheckBox from '../../../../components/AmCheckBox';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const Axios = new apicall();
 
@@ -18,103 +19,111 @@ const AmCreateDocumentR2 = props => {
   const [editPopup, setEditPopup] = useState(false);
   const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
+  const [flagStock, setFlagStock] = useState(false);
+  const [stockStatus, setStockStatus] = useState([
+    {
+      BESTQ_QI: { field: 'BESTQ_QI', value: false },
+      BESTQ_UR: { field: 'BESTQ_UR', value: false },
+      BESTQ_BLK: { field: 'BESTQ_BLK', value: false }
+    }
+  ]);
 
   const headerCreates = [
     [
-      { label: "SAP Document", type: "labeltext", key: "sapdoc", texts: "-" },
-      { label: "Document Date", type: "dateTime", key: "documentDate" }
+      { label: 'SAP Document', type: 'labeltext', key: 'sapdoc', texts: '-' },
+      { label: 'Document Date', type: 'dateTime', key: 'documentDate' }
     ],
     [
-      { label: "Action Time", type: "dateTime", key: "actionTime" },
+      { label: 'Action Time', type: 'dateTime', key: 'actionTime' },
       {
-        label: "Remark",
-        type: "input",
-        key: "remark",
-        style: { width: "200px" }
+        label: 'Remark',
+        type: 'input',
+        key: 'remark',
+        style: { width: '200px' }
       }
     ],
     [
       {
-        label: "Source Branch",
-        type: "labeltext",
-        key: "souBranchID",
-        texts: "1100 : THIP",
+        label: 'Source Branch',
+        type: 'labeltext',
+        key: 'souBranchID',
+        texts: 'W01',
         valueTexts: 1
       },
       {
-        label: "Warehouse",
-        type: "labeltext",
-        key: "souWarehouseID",
-        texts: "5005 : ASRS",
+        label: 'Warehouse',
+        type: 'labeltext',
+        key: 'souWarehouseID',
+        texts: 'W01',
         valueTexts: 1
       }
     ],
     [
       {
-        label: "MoveMent Type",
-        type: "labeltext",
-        key: "movementTypeID",
-        texts: "FG ISSUED",
-        valueTexts: "1002"
+        label: 'MoveMent Type',
+        type: 'labeltext',
+        key: 'movementTypeID',
+        texts: 'FG ISSUED',
+        valueTexts: '1002'
       },
       {
-        label: "Mode",
-        type: "labeltext",
-        key: "ref1",
-        texts: "R02",
-        valueTexts: "R02"
+        label: 'Mode',
+        type: 'labeltext',
+        key: 'ref1',
+        texts: 'R03',
+        valueTexts: 'R03'
       }
     ]
   ];
 
   var columnsModify = [
     {
-      Header: "Reservation",
-      accessor: "RSNUM"
+      Header: 'Reservation',
+      accessor: 'RSNUM'
     },
     {
-      Header: "Material",
-      accessor: "MATNR"
+      Header: 'Material',
+      accessor: 'MATNR'
     },
     {
-      Header: "Batch",
-      accessor: "CHARG"
+      Header: 'Batch',
+      accessor: 'CHARG'
     },
     {
-      Header: "Quantity",
-      accessor: "BDMNG"
+      Header: 'Quantity',
+      accessor: 'BDMNG'
     },
     {
-      Header: "Unit",
-      accessor: "MEINS"
+      Header: 'Unit',
+      accessor: 'MEINS'
     },
     {
-      Header: "BIN",
-      accessor: "LGPLA"
+      Header: 'BIN',
+      accessor: 'LGPLA'
     },
     {
-      Header: "MVT",
-      accessor: "BWLVS"
+      Header: 'MVT',
+      accessor: 'BWLVS'
     },
     {
-      Header: "UR",
-      accessor: "BESTQ_UR"
+      Header: 'UR',
+      accessor: 'BESTQ_UR'
     },
     {
-      Header: "QI",
-      accessor: "BESTQ_QI"
+      Header: 'QI',
+      accessor: 'BESTQ_QI'
     },
     {
-      Header: "Blocked",
-      accessor: "BESTQ_BLK"
+      Header: 'Blocked',
+      accessor: 'BESTQ_BLK'
     }
   ];
 
-  const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
-  const apiRes = "/";
+  const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
+  const apiRes = '/';
 
-  const sapConnectorR2 = postData => {
-    Axios.post(window.apipath + "/v2/SAPZWMRF003R2API", postData).then(res => {
+  const sapConnectorR3 = postData => {
+    Axios.post(window.apipath + '/v2/SAPZWMRF003R3API', postData).then(res => {
       if (res.data._result.status === 1) {
         setSAPResponse(res.data.datas);
       } else {
@@ -128,28 +137,141 @@ const AmCreateDocumentR2 = props => {
       sapReq.forEach(x => {
         postData[x.field] = x.value;
       });
-      postData["_token"] = localStorage.getItem("Token");
-      sapConnectorR2(postData);
+      postData['_token'] = localStorage.getItem('Token');
+      sapConnectorR3(postData);
     }
     setEditPopup(false);
   };
 
   const onChangeEditor = (field, value) => {
+    let setsap = [];
     setSAPReq([{ field: field, value: value }]);
+    if (flagStock) {
+      //stockStatus
+      setsap.push();
+    }
   };
 
   const editorList = [
     {
-      field: "Reservation Number",
+      field: 'Storage Unit Number',
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            Storage Unit Number :
+            <AmInput
+              defaultValue={data ? data.Name2 : ''}
+              onChange={value => {
+                onChangeEditor('LENUM', value);
+              }}
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: 'Reservation Number',
       component: (data, cols, key) => {
         return (
           <div key={key}>
             Reservation Number :
             <AmInput
-              defaultValue={data ? data.Name2 : ""}
+              defaultValue={data ? data.Name2 : ''}
               onChange={value => {
-                onChangeEditor("RSNUM", value);
+                onChangeEditor('RSNUM', value);
               }}
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: 'Material Number',
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            Material Number :
+            <AmInput
+              defaultValue={data ? data.Name2 : ''}
+              onChange={value => {
+                onChangeEditor('MATNR', value);
+              }}
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: 'Select Include : ',
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            Include Stock :
+            <Checkbox
+              onChange={e => {
+                if (e.target.checked) setFlagStock(true);
+                else setFlagStock(false);
+              }}
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: 'Include UR',
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            <label>Include UR :</label>
+            <Checkbox
+              onChange={e => {
+                onChangeEditor('BESTQ_UR', e.checked ? true : false);
+                stockStatus.BESTQ_UR = {
+                  field: 'BESTQ_UR',
+                  value: e.checked ? true : false
+                };
+              }}
+              disabled={!flagStock}
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: 'Include QI',
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            <label>Include QI :</label>
+            <Checkbox
+              onChange={e => {
+                onChangeEditor('BESTQ_QI', e.checked ? true : false);
+                stockStatus.BESTQ_QI = {
+                  field: 'BESTQ_QI',
+                  value: e.checked ? true : false
+                };
+              }}
+              disabled={!flagStock}
+            />
+          </div>
+        );
+      }
+    },
+    {
+      field: 'Include Blocked',
+      component: (data, cols, key) => {
+        return (
+          <div key={key}>
+            <label>Include Blocked :</label>
+            <Checkbox
+              onChange={e => {
+                onChangeEditor('BESTQ_BLK', e.checked ? true : false);
+                stockStatus.BESTQ_BLK = {
+                  field: 'BESTQ_BLK',
+                  value: e.checked ? true : false
+                };
+              }}
+              disabled={!flagStock}
             />
           </div>
         );
@@ -238,7 +360,7 @@ const AmCreateDocumentR2 = props => {
         headerData.movementTypeID === undefined
           ? null
           : headerData.movementTypeID,
-      ref1: "R02",
+      ref1: 'R02',
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -246,31 +368,30 @@ const AmCreateDocumentR2 = props => {
 
     let documentItem = sapResponse.map((item, idx) => {
       let options =
-        "bestq_ur=" +
-        item.bestQ_UR +
-        "&bestq_qi=" +
-        item.bestQ_QI +
-        "&bestq_blk=" +
-        item.bestQ_BLK +
-        "&bwlvs=" +
-        item.bwlvs +
-        "&lgpla=" +
-        item.lgpla +
-        "&rsnum=" +
-        item.rsnum;
+        'bestq_ur=' +
+        item.BESTQ_UR +
+        '&bestq_qi=' +
+        item.BESTQ_QI +
+        '&bestq_blk=' +
+        item.BESTQ_BLK +
+        '&bwlvs=' +
+        item.BWLVS +
+        '&lgpla=' +
+        item.LGPLA +
+        '&rsnum=' +
+        item.RSNUM;
       return {
         ID: null,
-        skuCode: item.matnr,
-        packCode: item.matnr,
-        quantity: item.bdmng,
-        unitType: item.meins,
-        batch: item.charg,
+        skuCode: item.MATNR,
+        packCode: item.MATNR,
+        quantity: item.BDMNG,
+        unitType: item.MEINS,
+        batch: item.CHARG,
         options: options
       };
     });
 
     document.issueItems = documentItem;
-
     let documentData = {
       document: document,
       docItem: documentItem
@@ -281,8 +402,8 @@ const AmCreateDocumentR2 = props => {
   const customAdd = () => {
     return (
       <AmEditorTable
-        style={{ width: "600px", height: "500px" }}
-        titleText={"Add"}
+        style={{ width: '600px', height: '500px' }}
+        titleText={'Add'}
         open={editPopup}
         onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
         data={editData}
@@ -299,7 +420,7 @@ const AmCreateDocumentR2 = props => {
         columns={[]} //colums
         columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
         apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
-        createDocType={"custom"} //createDocType มี audit issue recive
+        createDocType={'custom'} //createDocType มี audit issue recive
         history={props.history} //ส่ง porps.history ไปทุกรอบ
         apiRes={apiRes} //หน้ารายละเอียดเอกสาร
         //btnProps={btnAdd}  //ปุ่มที่ส่งเข้าไป
@@ -309,9 +430,9 @@ const AmCreateDocumentR2 = props => {
         //customEditData={(editData)=> setEditData(editData)}
         customAddBtnRender={
           <AmButton
-            className="float-right"
-            styleType="add"
-            style={{ width: "150px" }}
+            className='float-right'
+            styleType='add'
+            style={{ width: '150px' }}
             onClick={() => setEditPopup(true)}
           >
             Add

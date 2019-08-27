@@ -59,7 +59,7 @@ namespace AWMSEngine.Engine
             var result = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             long dbLogID = this.BuVO.Get<long>(BusinessVOConst.KEY_DB_LOGID);
             //long dbLogActionID = 0;
-            var resultStatus = new { status = -1,code="", message = "", techmessage = "" };
+            var resultStatus = new { status = -1,code="", message = "", logref = "", techmessage = "" };
             try
             {
                 this.Logger = logger;
@@ -69,17 +69,17 @@ namespace AWMSEngine.Engine
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 resVO = this.ExecuteEngine(reqVO);
 
-                resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", techmessage = "" };
+                resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", logref = logger.LogRefID, techmessage = "" };
             }
             catch (AMWException ex)
             {
-                resultStatus = new { status = 0, code = ex.GetAMWCode(), message = ex.Message, techmessage = ex.StackTrace };
+                resultStatus = new { status = 0, code = ex.GetAMWCode(), message = ex.Message, logref = logger.LogRefID, techmessage = ex.StackTrace };
                 throw ex;
             }
             catch (System.Exception ex)
             {
                 this.Logger.LogError(ex.StackTrace);
-                resultStatus = new { status = 0, code = AMWExceptionCode.U0000.ToString(), message = ex.Message, techmessage = ex.StackTrace };
+                resultStatus = new { status = 0, code = AMWExceptionCode.U0000.ToString(), message = ex.Message, logref = logger.LogRefID, techmessage = ex.StackTrace };
                 throw ex;
             }
             finally
