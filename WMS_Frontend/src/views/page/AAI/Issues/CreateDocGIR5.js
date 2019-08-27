@@ -148,10 +148,18 @@ const AmCreateDocumentR5 = props => {
       sapConnectorR5(postData);
     }
     setEditPopup(false);
+    setSAPReq([]);
   };
 
   const onChangeEditor = (field, value) => {
-    let DataValue = sapReq.map(x => x.field != field);
+    console.log(sapReq);
+    let DataValue = sapReq.map(x => {
+      console.log(field);
+      // console.log(x);
+      if (x.field != field) {
+        return x;
+      }
+    });
     DataValue.push({ field: field, value: value });
     console.log(DataValue);
     setSAPReq(DataValue);
