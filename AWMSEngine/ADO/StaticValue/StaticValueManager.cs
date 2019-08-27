@@ -280,8 +280,13 @@ namespace AWMSEngine.ADO.StaticValue
                 else if (tableName == typeof(ams_PackMasterType).Name) this._PackMasterTypes = null;
                 else if (tableName == typeof(ams_SKUMasterType).Name) this._SKUMasterTypes = null;
                 else if (tableName == typeof(ams_BaseMasterType).Name) this._BaseMasterTypes = null;
-                else if (tableName == typeof(ams_PackMaster).Name) { this._PackUnitConverts = null; this._PackMasterEmptyPallets = null; }
-                else if (tableName == typeof(ams_SKUMaster).Name) { this._SKUMasterEmptyPallets = null; }
+                else if (tableName == typeof(ams_PackMaster).Name) {
+                    this._PackUnitConverts = null;
+                    this._PackMasterEmptyPallets = null; }
+                else if (tableName == typeof(ams_SKUMaster).Name) {
+                    this._SKUMasterEmptyPallets = null;
+                    this._PackUnitConverts = null;
+                    this._PackMasterEmptyPallets = null; }
             }
         }
 
