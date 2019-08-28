@@ -8,31 +8,27 @@ import queryString from "query-string";
 const DocumentViewGI = props => {
   const TextHeader = [
     [
-      { label: "Document No", values: "code" },
+      { label: "Document No", values: "Code" },
       { label: "Document Date", values: "documentDate", type: "date" }
     ],
     [
-      { label: "Movement Type", values: "movementName" },
+      { label: "Movement Type", values: "MovementName" },
       { label: "Action Time", values: "actionTime", type: "dateTime" }
     ],
-    [
-      { label: "Source Warehouse", values: "souWarehouseName" },
-      { label: "Destination Warehouse", values: "desWarehouseName" }
-    ],
+    [{ label: "Source Warehouse", values: "SouWarehouseName" }],
     [
       {
         label: "Doc Status",
         values: "renderDocumentStatus()",
         type: "function"
-      },
-      { label: "Remark", values: "remark" }
+      }
     ]
   ];
 
   const columns = [
     //{"width": 70,"accessor":"palletCode", "Header":"palletCode"},
-    { width: 120, accessor: "SKUMaster_Name", Header: "SU No." },
-    { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
+    //{ width: 120, accessor: "SKUMaster_Name", Header: "SU No." },
+    //{ width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
     { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
     { accessor: "skuMaster_Name", Header: "SKU Name" },
     { width: 130, accessor: "Batch", Header: "Batch" },
