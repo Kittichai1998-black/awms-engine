@@ -97,30 +97,25 @@ export default props => {
         all: ""
     }
 
-    const BaseCode = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
-        t: "StorageObject",
-        q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "Code",
-        g: "Code",
-        s: "[{'f':'Code','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const BaseCode = {
+    //     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+    //     t: "StorageObject",
+    //     q: '[{ "f": "ObjectType", "c":"=", "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "Code",
+    //     g: "Code",
+    //     s: "[{'f':'Code','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    // }
 
-    const columsFindpopUpPalletCode = [
-        {
-            Header: 'SU No.',
-            accessor: 'Code',
-            fixed: 'left',
-            // width: 130,
-            sortable: true
-        }
-    ];
+    // const columsFindpopUpPalletCode = [
+    //     {  Header: 'SU No.',accessor: 'Code',fixed: 'left'}
+    // ];
 
     const columnEdit = [
-        { Header: "SU Code", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "SU No.", accessor: 'LENUM', type: "input" },
+        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: Sto, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
         { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input" },
         { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input" },
         { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input" }
@@ -149,14 +144,12 @@ export default props => {
                 } else {
                     setDialogError({
                         status: true,
-                        type: "error",
                         message: res.data.datas ? res.data.datas[0].ERR_MSG : "Please input Reservation No."
                     });
                 }
             } else {
                 setDialogError({
                     status: true,
-                    type: "error",
                     message: res.data._result.message
                 });
             }
@@ -166,19 +159,26 @@ export default props => {
     const GetDataByBaesCode = baseCode => {
         Sto.q = `[{ "f": "BaseCode", "c":"=", "v": '${baseCode}'}]`
         Axios.get(createQueryString(Sto)).then(res => {
-            setDataSource(res.data.datas)
+            if(res.data.count>0){
+                setDataSource(res.data.datas)
+            }else{
+                setDialogError({
+                    status: true,
+                    message: "Base Code is Empty in StorageObject."
+                });
+            }
         });
     }
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            let postData = {}
-            postData.LENUM = rowdata.Code
-            postData.LGBER = rowdata.LGBER
-            postData.LGPLA = rowdata.LGPLA
-            postData.LGTYP = rowdata.LGTYP
-            postData._token = localStorage.getItem('Token');
-            sapConnectorR1(postData);
+            // let postData = {}
+            // postData.LENUM = rowdata.LENUM
+            // postData.LGBER = rowdata.LGBER
+            // postData.LGPLA = rowdata.LGPLA
+            // postData.LGTYP = rowdata.LGTYP
+            rowdata._token = localStorage.getItem('Token');
+            sapConnectorR1(rowdata);
         }
         setEditData({})
         setEditPopup(false);
@@ -243,9 +243,9 @@ export default props => {
     }
 
     const onChangeEditor = (field, value, valueObject) => {
-        if (field === "BaseCode") {
-            valueObject ? editData.skuCode = valueObject.Code : delete editData["skuCode"]
-        }
+        // if (field === "BaseCode") {
+        //     valueObject ? editData.skuCode = valueObject.Code : delete editData["skuCode"]
+        // }
         editData[field] = value
         setEditData(editData)
     };

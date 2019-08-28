@@ -84,31 +84,32 @@ export default props => {
         ]
     ];
 
-    const BaseCode = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
-        t: "StorageObject",
-        q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "Code",
-        g: "Code",
-        s: "[{'f':'Code','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const BaseCode = {
+    //     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+    //     t: "StorageObject",
+    //     q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "Code",
+    //     g: "Code",
+    //     s: "[{'f':'Code','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    // }
 
-    const columsFindpopUpPalletCode = [
-        {
-            Header: 'SU No.',
-            accessor: 'Code',
-            fixed: 'left',
-            // width: 130,
-            sortable: true
-        }
-    ];
+    // const columsFindpopUpPalletCode = [
+    //     {
+    //         Header: 'SU No.',
+    //         accessor: 'Code',
+    //         fixed: 'left',
+    //         // width: 130,
+    //         sortable: true
+    //     }
+    // ];
 
     const columnEdit = [
         { Header: "Reservation Number", accessor: 'RSNUM', type: "input", sub_type: "number" },
-        { Header: "SU Code", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "SU No.", accessor: 'LENUM', type: "input"},
+        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
         { Header: "Available Stock", accessor: 'BESTQ_UR', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
         { Header: "Stock in Quality Control", accessor: 'BESTQ_QI', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
         { Header: "Blocked Stock", accessor: 'BESTQ_BLK', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] }
@@ -155,14 +156,14 @@ export default props => {
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            let postData = {}
-            postData.RSNUM = rowdata.RSNUM
-            postData.LENUM = rowdata.Code
-            postData.BESTQ_BLK = rowdata.BESTQ_BLK
-            postData.BESTQ_QI = rowdata.BESTQ_QI
-            postData.BESTQ_UR = rowdata.BESTQ_UR
-            postData._token = localStorage.getItem('Token');
-            sapConnectorR4(postData);
+            // let postData = {}
+            // postData.RSNUM = rowdata.RSNUM
+            // postData.LENUM = rowdata.Code
+            // postData.BESTQ_BLK = rowdata.BESTQ_BLK
+            // postData.BESTQ_QI = rowdata.BESTQ_QI
+            // postData.BESTQ_UR = rowdata.BESTQ_UR
+            rowdata._token = localStorage.getItem('Token');
+            sapConnectorR4(rowdata);
         }
         setEditData({})
         setEditPopup(false);
