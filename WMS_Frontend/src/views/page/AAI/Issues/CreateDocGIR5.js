@@ -4,7 +4,7 @@ import {
   apicall,
   createQueryString
 } from "../../../../components/function/CoreFunction";
-
+import AmDialogs from "../../../../components/AmDialogs";
 import AmCreateDocument from "./AmCreateDocument";
 import AmButton from "../../../../components/AmButton";
 import AmInput from "../../../../components/AmInput";
@@ -39,33 +39,21 @@ const AmCreateDocumentR5 = props => {
   const [editPopup, setEditPopup] = useState(false);
   const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
+  const [openError, setOpenError] = useState(false);
+  const [textError, setTextError] = useState("");
+
   const headerCreates = [
     [
-      { label: "SAP Document", type: "labeltext", key: "sapdoc", texts: "-" },
+      { label: "Document No", type: "labeltext", key: "sapdoc", texts: "-" },
       { label: "Document Date", type: "dateTime", key: "documentDate" }
     ],
-    [
-      { label: "Action Time", type: "dateTime", key: "actionTime" },
-      {
-        label: "Remark",
-        type: "input",
-        key: "remark",
-        style: { width: "200px" }
-      }
-    ],
+    [{ label: "Action Time", type: "dateTime", key: "actionTime" }],
     [
       {
-        label: "Source Branch",
-        type: "labeltext",
-        key: "souBranchID",
-        texts: "1100 : THIP",
-        valueTexts: 1
-      },
-      {
-        label: "Warehouse",
+        label: "Source Warehouse",
         type: "labeltext",
         key: "souWarehouseID",
-        texts: "5005 : ASRS",
+        texts: "Warehouse1/ASRS",
         valueTexts: 1
       }
     ],
@@ -74,8 +62,8 @@ const AmCreateDocumentR5 = props => {
         label: "MoveMent Type",
         type: "labeltext",
         key: "movementTypeID",
-        texts: "FG ISSUED",
-        valueTexts: "1002"
+        texts: "STO TRANSFER",
+        valueTexts: "1010"
       },
       {
         label: "Mode",
@@ -90,11 +78,13 @@ const AmCreateDocumentR5 = props => {
   var columnsModify = [
     {
       Header: "Delivery Order",
-      accessor: "VBELN_VL"
+      accessor: "VBELN_VL",
+      width: 170
     },
     {
       Header: "Material",
-      accessor: "MATNR"
+      accessor: "MATNR",
+      width: 150
     },
     {
       Header: "Batch",
@@ -132,8 +122,15 @@ const AmCreateDocumentR5 = props => {
   const sapConnectorR5 = postData => {
     Axios.post(window.apipath + "/v2/SAPZWMRF003R5API", postData).then(res => {
       if (res.data._result.status === 1) {
+        res.data.datas.forEach(x => {
+          x.MATNR = parseInt(x.MATNR);
+        });
+
         setSAPResponse(res.data.datas);
       } else {
+        console.log(res.data._result.message);
+        setOpenError(true);
+        setTextError(res.data._result.message);
       }
     });
   };
@@ -142,7 +139,9 @@ const AmCreateDocumentR5 = props => {
     if (status) {
       var postData = {};
       sapReq.forEach(x => {
-        postData[x.field] = x.value;
+        if (x !== undefined) {
+          postData[x.field] = x.value;
+        }
       });
       postData["_token"] = localStorage.getItem("Token");
       sapConnectorR5(postData);
@@ -152,16 +151,14 @@ const AmCreateDocumentR5 = props => {
   };
 
   const onChangeEditor = (field, value) => {
-    console.log(sapReq);
     let DataValue = sapReq.map(x => {
-      console.log(field);
-      // console.log(x);
-      if (x.field != field) {
-        return x;
+      if (x !== undefined) {
+        if (x.field !== field) {
+          return x;
+        }
       }
     });
     DataValue.push({ field: field, value: value });
-    console.log(DataValue);
     setSAPReq(DataValue);
   };
 
@@ -395,6 +392,15 @@ const AmCreateDocumentR5 = props => {
 
   return (
     <div>
+      <AmDialogs
+        typePopup={"error"}
+        onAccept={e => {
+          setOpenError(e);
+        }}
+        open={openError}
+        content={textError}
+      ></AmDialogs>
+
       <AmCreateDocument
         headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
         //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่

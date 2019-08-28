@@ -257,7 +257,8 @@ const DocumentView = props => {
 
   const renderDocumentStatus = () => {
     const res = DocumentEventStatus.filter(row => {
-      return row.code === dataHeader.eventStatus;
+      console.log(row);
+      return row.code === dataHeader.EventStatus;
     });
     return res.map(row => row.status);
   };

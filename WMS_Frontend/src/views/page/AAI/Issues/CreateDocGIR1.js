@@ -51,11 +51,13 @@ export default props => {
     const [headerData, setHeaderData] = useState([]);
     const [dataSource, setDataSource] = useState([])
     const [editPopup, setEditPopup] = useState(false);
-    const [editData, setEditData] = useState({
-        LGTYP: "C00",
-        LGBER: "001",
-        LGPLA: "C00"
-    });
+    const [editData, setEditData] = useState({}
+        // {
+        //     LGTYP: "C00",
+        //     LGBER: "001",
+        //     LGPLA: "C00"
+        // }
+    );
 
     // const [sapReq, setSAPReq] = useState([]);
     const [dialog, setDialog] = useState({
@@ -119,9 +121,9 @@ export default props => {
 
     const columnEdit = [
         { Header: "SU Code", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
-        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input", defultValue: "C00" },
-        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input", defultValue: "001" },
-        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input", defultValue: "C00" }
+        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input" },
+        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input" },
+        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input" }
     ];
 
     const ref = useRef(columnEdit.map(() => createRef()))
@@ -136,19 +138,19 @@ export default props => {
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
-    const apiRes = '/';
+    const apiRes = "/issue/detail?docID=";
 
     const sapConnectorR1 = postData => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {
             if (res.data._result.status) {
-                if (!res.data.datas[0].erR_MSG) {
+                if (res.data.datas && !res.data.datas[0].ERR_MSG) {
                     setSAPResponse(res.data.datas);
                     GetDataByBaesCode(postData.LENUM)
                 } else {
                     setDialog({
                         status: true,
                         type: "error",
-                        message: res.data.datas[0].erR_MSG
+                        message: res.data.datas ? res.data.datas[0].ERR_MSG : "Please input Reservation No."
                     });
                 }
             } else {
@@ -178,6 +180,7 @@ export default props => {
             postData._token = localStorage.getItem('Token');
             sapConnectorR1(postData);
         }
+        setEditData({})
         setEditPopup(false);
     };
 
@@ -336,14 +339,14 @@ export default props => {
 
         let documentItem = dataSource.map((item, idx) => {
             let options =
-                'bwlvs=' + sapResponse[0].bwlvs +
-                '&lenum=' + sapResponse[0].lenum +
-                '&lgtyp=' + sapResponse[0].lgtyp +
-                '&lgber=' + sapResponse[0].lgber +
-                '&lgpla=' + sapResponse[0].lgpla +
-                '&bestq_ur=' + sapResponse[0].bestQ_UR +
-                '&bestq_qi=' + sapResponse[0].bestQ_QI +
-                '&bestq_blk=' + sapResponse[0].bestQ_BLK;
+                'bwlvs=' + sapResponse[0].BWLVS +
+                '&lenum=' + sapResponse[0].LENUM +
+                '&lgtyp=' + sapResponse[0].LGTYP +
+                '&lgber=' + sapResponse[0].LGBER +
+                '&lgpla=' + sapResponse[0].LGPLA +
+                '&bestq_ur=' + sapResponse[0].BESTQ_UR +
+                '&bestq_qi=' + sapResponse[0].BESTQ_QI +
+                '&bestq_blk=' + sapResponse[0].BESTQ_BLK;
             return {
                 ID: null,
                 palletcode: item.BaseCode,

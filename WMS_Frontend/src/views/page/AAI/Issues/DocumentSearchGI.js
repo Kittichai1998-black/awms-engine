@@ -118,16 +118,6 @@ const DocumentSearchGI = props => {
       width: 150
     },
     {
-      Header: "Des.Warehouse",
-      accessor: "DesWarehouseName",
-      width: 150
-    },
-    {
-      Header: "Remark",
-      accessor: "Remark",
-      width: 150
-    },
-    {
       Header: "Doc.Date",
       accessor: "DocumentDate",
       width: 150,
@@ -162,16 +152,7 @@ const DocumentSearchGI = props => {
       fieldDataKey: "Name",
       fieldLabel: "Name"
     },
-    {
-      label: "Des.Warehouse",
-      field: "DouWarehouseName",
-      searchType: "dropdown",
-      dropdownData: dataWarehouse,
-      fieldDataKey: "Name",
-      fieldLabel: "Name"
-    },
 
-    { label: "Remark", field: "Remark", searchType: "input" },
     {
       label: "Doc.Date From",
       field: "DocumentDate",
