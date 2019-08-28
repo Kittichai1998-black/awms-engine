@@ -11,7 +11,7 @@ import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import styled from 'styled-components'
 import AmFindPopup from '../../../../components/AmFindPopup'
-import { createQueryString } from '../../../../components/function/CoreFunction2'
+// import { createQueryString } from '../../../../components/function/CoreFunction2'
 import AmDialogs from '../../../../components/AmDialogs'
 import AmAux from '../../../../components/AmAux'
 import Radio from '@material-ui/core/Radio';
@@ -59,9 +59,9 @@ export default props => {
         //     LGPLA: "C00"
         // }
     );
-    const [dialog, setDialog] = useState({
+    const [dialogError, setDialogError] = useState({
         status: false,
-        type: null,
+        type: 'error',
         message: null
     });
 
@@ -122,11 +122,12 @@ export default props => {
         { Header: 'Batch', accessor: 'CHARG' },
         { Header: 'Quantity', accessor: 'BDMNG' },
         { Header: 'Unit', accessor: 'MEINS' },
+        { Header: "Dest. Styp.", accessor: "LGTYP" },
         { Header: 'BIN', accessor: 'LGPLA' },
         { Header: 'MVT', accessor: 'BWLVS' },
         { Header: 'UR', accessor: 'BESTQ_UR' },
         { Header: 'QI', accessor: 'BESTQ_QI' },
-        { Header: 'Blocked', accessor: 'BESTQ_BLK' }
+        { Header: 'Blocked', accessor: 'BESTQ_BLK' },
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
@@ -138,16 +139,14 @@ export default props => {
                 if (!res.data.datas[0].ERR_MSG) {
                     setSAPResponse(res.data.datas);
                 } else {
-                    setDialog({
+                    setDialogError({
                         status: true,
-                        type: "error",
                         message: res.data.datas[0].ERR_MSG
                     });
                 }
             } else {
-                setDialog({
+                setDialogError({
                     status: true,
-                    type: "error",
                     message: res.data._result.message
                 });
             }
@@ -385,7 +384,7 @@ export default props => {
 
     return (
         <AmAux>
-            <AmDialogs typePopup={dialog.type} content={dialog.message} onAccept={(e) => { setDialog(e) }} open={dialog.status}></AmDialogs >
+            <AmDialogs typePopup={dialogError.type} content={dialogError.message} onAccept={(e) => { setDialogError(e) }} open={dialogError.status}></AmDialogs >
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
                 //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่

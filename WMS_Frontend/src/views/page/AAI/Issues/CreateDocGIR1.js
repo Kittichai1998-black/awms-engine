@@ -60,7 +60,7 @@ export default props => {
     );
 
     // const [sapReq, setSAPReq] = useState([]);
-    const [dialog, setDialog] = useState({
+    const [dialogError, setDialogError] = useState({
         status: false,
         type: null,
         message: null
@@ -147,14 +147,14 @@ export default props => {
                     setSAPResponse(res.data.datas);
                     GetDataByBaesCode(postData.LENUM)
                 } else {
-                    setDialog({
+                    setDialogError({
                         status: true,
                         type: "error",
                         message: res.data.datas ? res.data.datas[0].ERR_MSG : "Please input Reservation No."
                     });
                 }
             } else {
-                setDialog({
+                setDialogError({
                     status: true,
                     type: "error",
                     message: res.data._result.message
@@ -383,7 +383,7 @@ export default props => {
 
     return (
         <AmAux>
-            <AmDialogs typePopup={dialog.type} content={dialog.message} onAccept={(e) => { setDialog(e) }} open={dialog.status}></AmDialogs >
+            <AmDialogs typePopup={dialogError.type} content={dialogError.message} onAccept={(e) => { setDialogError(e) }} open={dialogError.status}></AmDialogs >
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
                 //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
