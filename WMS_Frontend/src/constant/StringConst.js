@@ -5,3 +5,5 @@ export const OPT_SOU_WAREHOUSE_ID = "sou_warehouse_id";
 export const OPT_REMARK = "remark";
 export const OPT_DONE_SOU_EVENT_STATUS = "_done_sou_estatus";
 export const OPT_DONE_DES_EVENT_STATUS = "_done_des_estatus";
+export const OPT_DATE = "date";
+export const OPT_SUPPLIER_ID = "supplier_id";

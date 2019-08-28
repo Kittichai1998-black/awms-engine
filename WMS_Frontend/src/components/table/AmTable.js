@@ -1,24 +1,23 @@
-import Checkbox from "@material-ui/core/Checkbox";
-import classNames from "classnames";
-import Moment from "moment";
-import PropTypes from "prop-types";
-import Radio from "@material-ui/core/Radio";
-import ReactTable from "react-table";
-import React, { useState, useEffect, useRef } from "react";
-import { useTranslation } from 'react-i18next'
-import withFixedColumns from "react-table-hoc-fixed-columns";
+import Checkbox from '@material-ui/core/Checkbox';
+import classNames from 'classnames';
+import Moment from 'moment';
+import PropTypes from 'prop-types';
+import Radio from '@material-ui/core/Radio';
+import ReactTable from 'react-table';
+import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import 'react-table/react-table.css';
+import withFixedColumns from 'react-table-hoc-fixed-columns';
+import 'react-table-hoc-fixed-columns/lib/styles.css';
 
-import "react-table-hoc-fixed-columns/lib/styles.css";
-import "react-table/react-table.css";
+import AmExportDataTable from './AmExportDataTable';
 
-import AmExportDataTable from "./AmExportDataTable";
-
-import "./style.css";
+//import './style.css';
 
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 const AmTable = props => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(props.data);
   const [selection, setSelection] = useState([]);
@@ -41,11 +40,11 @@ const AmTable = props => {
         x.Cell = e => (
           <pre
             style={{
-              fontSize: "inherit",
-              fontFamily: "inherit",
-              overflow: "hidden",
-              color: "inherit",
-              textOverflow: "inherit",
+              fontSize: 'inherit',
+              fontFamily: 'inherit',
+              overflow: 'hidden',
+              color: 'inherit',
+              textOverflow: 'inherit',
               padding: 0,
               margin: 0
             }}
@@ -57,10 +56,10 @@ const AmTable = props => {
     });
 
     if (props.selection) {
-      if (props.selectionType === "radio") {
+      if (props.selectionType === 'radio') {
         cols.unshift({
-          mode: "selection",
-          fixed: "left",
+          mode: 'selection',
+          fixed: 'left',
           width: 34,
           sortable: false,
           Cell: e => {
@@ -68,13 +67,13 @@ const AmTable = props => {
               checkSelection(e.original[props.primaryKey]).length > 0;
             return (
               <Radio
-                type="radio"
+                type='radio'
                 checked={checked}
-                className={classNames("selection")}
+                className={classNames('selection')}
                 style={{ padding: 0 }}
-                name="selection"
+                name='selection'
                 onChange={ele =>
-                  onHandleSelection(e, "radio", ele.target.checked)
+                  onHandleSelection(e, 'radio', ele.target.checked)
                 }
               />
             );
@@ -82,8 +81,8 @@ const AmTable = props => {
         });
       } else {
         const obj = {
-          mode: "selection",
-          fixed: "left",
+          mode: 'selection',
+          fixed: 'left',
           Header: e => {
             return (
               <Checkbox
@@ -92,7 +91,7 @@ const AmTable = props => {
                 onClick={ele => {
                   onHandleSelection(
                     null,
-                    "selectAll",
+                    'selectAll',
                     ele.target.checked,
                     e.data
                   );
@@ -108,10 +107,10 @@ const AmTable = props => {
             return (
               <Checkbox
                 checked={checked}
-                className={classNames("selection")}
+                className={classNames('selection')}
                 style={{ padding: 0 }}
                 onChange={ele =>
-                  onHandleSelection(e, "checkbox", ele.target.checked)
+                  onHandleSelection(e, 'checkbox', ele.target.checked)
                 }
               />
             );
@@ -122,7 +121,7 @@ const AmTable = props => {
     }
     if (props.currentPage !== undefined) {
       cols.unshift({
-        fixed: "left",
+        fixed: 'left',
         width: 50,
         sortable: false,
         Cell: e => {
@@ -137,7 +136,7 @@ const AmTable = props => {
               numrow = e.viewIndex + 1;
             }
           }
-          return <span style={{ fontWeight: "bold" }}>{numrow}</span>;
+          return <span style={{ fontWeight: 'bold' }}>{numrow}</span>;
         }
       });
     }
@@ -149,27 +148,33 @@ const AmTable = props => {
         (x.sortable || x.sortable === undefined) &&
         (props.sortable || props.sortable === undefined)
       ) {
-        const header = typeof x.Header === "string" ? t(x.Header) : x.Header();
+        const header = typeof x.Header === 'string' ? t(x.Header) : x.Header();
         column = {
-          Header: () => <div className="sortable">{header}</div>,
+          Header: () => <div className='sortable'>{header}</div>,
           ...row
         };
       } else {
-        column = { ...x, Header: typeof Header === "string" ? t(Header) : Header };
+        column = {
+          ...x,
+          Header: typeof Header === 'string' ? t(Header) : Header
+        };
       }
 
-      if (type === "datetime") {
+      if (type === 'datetime') {
         column.Cell = data => {
-          if (data.original[x.accessor] === "" || data.original[x.accessor] === null) {
-            return ('');
+          if (
+            data.original[x.accessor] === '' ||
+            data.original[x.accessor] === null
+          ) {
+            return '';
           } else {
             return (
               <span>
                 {Moment(data.original[x.accessor]).isValid
                   ? Moment(data.original[x.accessor]).format(
-                    x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
-                  )
-                  : ""}
+                      x.dateFormat ? x.dateFormat : 'DD-MM-YYYY HH:mm'
+                    )
+                  : ''}
               </span>
             );
           }
@@ -191,7 +196,7 @@ const AmTable = props => {
           ...row,
           getFooterProps: () => ({
             style: {
-              backgroundColor: "#c8ced3"
+              backgroundColor: '#c8ced3'
             }
           })
         };
@@ -234,7 +239,7 @@ const AmTable = props => {
   useEffect(() => {
     let cols = createColumn();
     setColumns(cols);
-  }, [props.currentPage, props.sumFooter, localStorage.getItem("Lang")]);
+  }, [props.currentPage, props.sumFooter, localStorage.getItem('Lang')]);
 
   const checkSelection = id => {
     return selection.filter(x => x[props.primaryKey] === id);
@@ -242,7 +247,7 @@ const AmTable = props => {
 
   const onHandleSelection = (rowdata, type, status, tableData) => {
     let selectionData = selection;
-    if (type === "checkbox") {
+    if (type === 'checkbox') {
       if (selectionData.length > 0) {
         selectionData.forEach((row, index) => {
           if (row[props.primaryKey] === rowdata.original[props.primaryKey])
@@ -253,7 +258,7 @@ const AmTable = props => {
         if (status) selectionData.push(rowdata.original);
       }
       setSelection([...selectionData]);
-    } else if (type === "selectAll") {
+    } else if (type === 'selectAll') {
       if (status) {
         let getData = tableData.map(row =>
           row._original ? row._original : row
@@ -287,18 +292,18 @@ const AmTable = props => {
 
   return (
     <div>
-      <div style={{ display: "inline-flex", float: "right" }}>
+      <div style={{ display: 'inline-flex', float: 'right' }}>
         {props.renderCustomButtonB4}
         {props.exportData ? (
           <AmExportDataTable
             data={props.excelData ? props.excelData : []}
-            fileName={"Table"}
+            fileName={'Table'}
             cols={exportColumns()}
           />
         ) : null}
         {props.renderCustomButtonAF}
       </div>
-      <div style={{ clear: "both" }} />
+      <div style={{ clear: 'both' }} />
       <ReactTableFixedColumns
         ref={tableRef}
         loading={loading}
@@ -312,26 +317,26 @@ const AmTable = props => {
         showPagination={false}
         multiSort={false}
         minRows={props.minRows ? props.minRows : 5}
-        headerStyle={{ background: "red" }}
+        headerStyle={{ background: 'red' }}
         style={{
-          marginTop: "3px",
-          backgroundColor: "white",
-          maxHeight: "550px",
-          border: "0.5px solid #eceff1",
+          marginTop: '3px',
+          backgroundColor: 'white',
+          maxHeight: '550px',
+          border: '0.5px solid #eceff1',
           zIndex: 0,
-          fontSize: "14px",
+          fontSize: '14px',
           ...props.style
         }}
         onSortedChange={sorted => {
           setData([]);
           props.sort({
             id: sorted[0].id,
-            sortDirection: sorted[0].desc ? "desc" : "asc"
+            sortDirection: sorted[0].desc ? 'desc' : 'asc'
           });
         }}
         getTdProps={(state, row, col, instance) => {
-          if (col.type === "number") {
-            return { style: { textAlign: "right" } };
+          if (col.type === 'number') {
+            return { style: { textAlign: 'right' } };
           } else return {};
         }}
         getTrProps={(state, rowInfo) => {
@@ -345,7 +350,7 @@ const AmTable = props => {
                     props.onRowClick
                       ? props.onRowClick(rowInfo.original)
                       : null,
-                  className: "editData"
+                  className: 'editData'
                 };
               } else {
                 return {
@@ -363,10 +368,10 @@ const AmTable = props => {
         }}
       />
 
-      <div style={{ display: "inline-flex", float: "left" }}>
+      <div style={{ display: 'inline-flex', float: 'left' }}>
         {props.renderCustomButtonBTMLeft}
       </div>
-      <div style={{ display: "inline-flex", float: "right" }}>
+      <div style={{ display: 'inline-flex', float: 'right' }}>
         {props.renderCustomButtonBTMRight}
       </div>
     </div>
