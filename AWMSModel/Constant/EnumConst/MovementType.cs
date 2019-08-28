@@ -6,8 +6,10 @@ namespace AWMSModel.Constant.EnumConst
 {
     public enum MovementType
     {
+
         /// new MVT
         /// FG
+        FG_TRANSFER = 1010,
         FG_TRANSFER_WM = 1011,
         FG_TRANSFER_CUS = 1012,
         FG_TRANSFER_SUP = 1013,

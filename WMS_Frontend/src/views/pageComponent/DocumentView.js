@@ -160,6 +160,7 @@ const DocumentView = props => {
                   : qryStr[x.optionName];
             });
           }
+          console.log(row);
           row.palletcode =
             qryStr.palletcode === "undefined" ? null : qryStr.palletcode;
           row.locationcode =
@@ -171,11 +172,11 @@ const DocumentView = props => {
               typeDoc === "issued"
                 ? row._sumQtyDisto +
                   " / " +
-                  (row.quantity === null ? "-" : row.quantity)
+                  (row.Quantity === null ? "-" : row.Quantity)
                 : typeDoc === "received"
                 ? row._sumQtyDisto +
                   " / " +
-                  (row.quantity === null ? " - " : row.quantity)
+                  (row.Quantity === null ? " - " : row.Quantity)
                 : null
           });
         });
@@ -256,7 +257,8 @@ const DocumentView = props => {
 
   const renderDocumentStatus = () => {
     const res = DocumentEventStatus.filter(row => {
-      return row.code === dataHeader.eventStatus;
+      console.log(row);
+      return row.code === dataHeader.EventStatus;
     });
     return res.map(row => row.status);
   };

@@ -288,7 +288,6 @@ const AmCreateDocument = (props) => {
 
                     }
                 } else {
-                    console.log(value)
                     editRowX["qtyrandom"] = value
 
                 }
@@ -980,12 +979,10 @@ const AmCreateDocument = (props) => {
             CreateDocuments(CreateData, docItem);
         }
         //else if (props.columnsModifi !== undefined) {
-        //    //console.log("1")
         //    let docItem = props.dataCreate["itemIssue"];
 
         //    CreateDocuments(dataCreate, docItem);
         else {
-            console.log(dataCreate)
             const docData = props.customDocumentData;
             CreateDocuments(docData.document, docData.docItem);
         }
@@ -1043,7 +1040,6 @@ const AmCreateDocument = (props) => {
 
     const Addbtn = () => {
         if (props.createByCus === true) {
-            console.log(cusIDs)
             if (cusIDs === undefined || cusIDs === null) {
                 setMsgDialog("DesCustomer invalid");
                 setStateDialogErr(true);

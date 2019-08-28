@@ -97,37 +97,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                 var resSAP = SendDataToSAP_ZWMRF006(reqData, buVO);
                             }
                         });
-                        /* if (docs.Ref1 == "R01" || docs.Ref1 == "R02" || docs.Ref1 == "R06")
-                         {
-                             distos.ForEach(disto => {
-                                 var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, true, false, buVO);
-                                 var bsto = stos.ToTreeList().Where(y => y.type == StorageObjectType.BASE).FirstOrDefault();
-
-                                 var options = ObjectUtil.QryStrToDynamic(docs.Options);
-                                 //ObjectUtil.QryStrGetValue(stos.options, "lgber")
-                                 ZSWMRF004_IN_AWS reqData = new ZSWMRF004_IN_AWS()
-                                 {
-                                     MODE = docs.Ref1,
-                                     LENUM = bsto.code,
-                                     LGTYP = options[OptionVOConst.OPT_LGTYP],
-                                     LGBER = options[OptionVOConst.OPT_LGBER],
-                                     LGPLA = options[OptionVOConst.OPT_LGPLA],
-                                     BWLVS = options[OptionVOConst.OPT_BWLVS],
-                                     GI_DOC = docs.Code
-                                 };
-                                 var resSAP = SendDataToSAP_ZWMRF004(reqData, buVO);
-
-                             });
-
-                         }
-                         else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
-                         {
-
-                         }
-                         else if (docs.Ref1 == "R05")
-                         {
-
-                         }*/
+                         
                     }
                     
 

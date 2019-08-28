@@ -71,7 +71,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                 DocumentDate = DateTime.Now,
                 ActionTime = null,
-                MovementType_ID = MovementType.FG_TRANSFER_WM,
+                MovementType_ID = MovementType.FG_TRANSFER,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,

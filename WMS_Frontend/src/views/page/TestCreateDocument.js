@@ -1,11 +1,9 @@
-import React, { Component, useState, useEffect } from "react";
+import React from "react";
+
+// import AmButton from "../../components/AmButton";
 import AmCreateDocument from '../../components/AmCreateDocument'
-import AmButton from "../../components/AmButton";
 
-
-
-
-const TestCreateDocument = (props) => {
+export default (props) => {
 
     const SKUMaster = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -19,17 +17,17 @@ const TestCreateDocument = (props) => {
         all: "",
     }
 
-    const MovementType = {
-        queryString: window.apipath + "/v2/SelectDataMstAPI/",
-        t: "MovementType",
-        q: '[{ "f": "Status", "c":"<", "v": 2}]',
-        f: "ID, ID as MoveID,Code,Name,concat(Code, ':' ,Name) as Movements",
-        g: "",
-        s: "[{'f':'ID','od':'asc'}]",
-        sk: 0,
-        l: 100,
-        all: "",
-    }
+    // const MovementType = {
+    //     queryString: window.apipath + "/v2/SelectDataMstAPI/",
+    //     t: "MovementType",
+    //     q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    //     f: "ID, ID as MoveID,Code,Name,concat(Code, ':' ,Name) as Movements",
+    //     g: "",
+    //     s: "[{'f':'ID','od':'asc'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: "",
+    // }
 
     const Locations = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -44,7 +42,7 @@ const TestCreateDocument = (props) => {
     }
 
     const columsFindpopUp = [
-    {
+        {
             Header: 'Code',
             accessor: 'Code',
             fixed: 'left',
@@ -96,20 +94,32 @@ const TestCreateDocument = (props) => {
      
      
      */
-    
+
 
 
 
     const headerCreates = [
-        [{ label: "SAP Document", type: "labeltext", key: "sapdoc", texts: "-" }, { label: "Document Date", type: "dateTime", key: "documentDate" }],
-        [{ label: "Action Time", type: "dateTime", key: "actionTime" }, { label: "Remark", type: "input", key: "remark", style: { width: "200px" } }],
-        [{ label: "Source Branch", type: "labeltext", key: "souBranchID", texts: "1100 : THIP", valueTexts: 1 }, { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "5005 : ASRS", valueTexts: 1 }],
-        [{ label: "MoveMent Type", type: "labeltext", key: "movementTypeID", texts: "Text MoveMentType", valueTexts: "100101" }],
-       // [{ label: "Movement Type :", type: "dropdown", key: "movementTypeID", pair: "MoveID", idddl: "Movements", queryApi: MovementType, fieldLabel: ["Code", "Name"], placeholder: "Select", defaultValue: "1013" }],
+        [
+            { label: "SAP Document", type: "labeltext", key: "sapdoc", texts: "-" },
+            { label: "Document Date", type: "dateTime", key: "documentDate" }
+        ],
+        [
+            { label: "Action Time", type: "dateTime", key: "actionTime" },
+            { label: "Remark", type: "input", key: "remark", style: { width: "200px" } }
+        ],
+        [
+            { label: "Source Branch", type: "labeltext", key: "souBranchID", texts: "1100 : THIP", valueTexts: 1 },
+            { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "5005 : ASRS", valueTexts: 1 }
+        ],
+        [
+            { label: "MoveMent Type", type: "labeltext", key: "movementTypeID", texts: "Text MoveMentType", valueTexts: "100101" }
+        ],
+        // [{ label: "Movement Type :", type: "dropdown", key: "movementTypeID", pair: "MoveID", idddl: "Movements", queryApi: MovementType, fieldLabel: ["Code", "Name"], placeholder: "Select", defaultValue: "1013" }],
 
     ];
-   
-    const columnEdit = [{ Header: 'Pallet Code', accessor: 'palletcode', type: "input" },
+
+    const columnEdit = [
+        { Header: 'Pallet Code', accessor: 'palletcode', type: "input" },
         {
             Header: 'Location Code',
             accessor: 'locationcode',
@@ -117,16 +127,25 @@ const TestCreateDocument = (props) => {
             idddl: "locationcode",
             queryApi: Locations,
             fieldLabel: ["Code", "Name"],
-            columsddl:columsFindpopUpLocation,
+            columsddl: columsFindpopUpLocation,
             placeholder: "Select Locations"
         },
-    //{ Header: "SKU Items", accessor: 'SKUItems', type: "dropdown", pair: "SKUIDs", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"] },   
-        { Header: "SKU Items", accessor: 'SKUItems', type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp, placeholder:"Select SKU"},
-        { Header: 'Batch', accessor: 'Batch', type: "input", validate: /^[0-9\.]+$/  },
+        //{ Header: "SKU Items", accessor: 'SKUItems', type: "dropdown", pair: "SKUIDs", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"] },   
+        {
+            Header: "SKU Items",
+            accessor: 'SKUItems',
+            type: "findPopUp",
+            pair: "skuCode",
+            idddl: "skuitems",
+            queryApi: SKUMaster,
+            fieldLabel: ["Code", "Name"],
+            columsddl: columsFindpopUp,
+            placeholder: "Select SKU"
+        },
+        { Header: 'Batch', accessor: 'Batch', type: "input", validate: /^[0-9\.]+$/ },
         { Header: "Quantity", accessor: 'quantity', type: "inputNum" },
         { Header: "Random", accessor: 'qtyrandom', type: "inputNum", TextInputnum: "%" },
         { Header: "Unit", accessor: 'unitType', type: "unitType", },
-
     ];
 
 
@@ -143,14 +162,14 @@ const TestCreateDocument = (props) => {
     //];
 
 
-    const columns = [{ Header: 'Pallet Code', accessor: 'palletcode', },
-    { Header: 'Location Code', accessor: 'locationcode', },
-    { Header: "SKU Items", accessor: 'SKUItems', },
-    { Header: 'Batch', accessor: 'Batch', },
-    { Header: "Quantity", accessor: 'quantity' },
-    { Header: "Random", accessor: 'qtyrandom' },
-    { Header: "Unit", accessor: 'unitType', },
-
+    const columns = [
+        { Header: 'Pallet Code', accessor: 'palletcode', },
+        { Header: 'Location Code', accessor: 'locationcode', },
+        { Header: "SKU Items", accessor: 'SKUItems', },
+        { Header: 'Batch', accessor: 'Batch', },
+        { Header: "Quantity", accessor: 'quantity' },
+        { Header: "Random", accessor: 'qtyrandom' },
+        { Header: "Unit", accessor: 'unitType', },
     ];
 
     const apicreate = "/v2/CreateADDocAPI/"  //API สร้าง Doc
@@ -164,30 +183,19 @@ const TestCreateDocument = (props) => {
 
 
     return (
-
-        <div>
-            <AmCreateDocument
-                headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
-                //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
-                columns={columns}  //colums 
-                columnEdit={columnEdit} //ข้อมูลที่จะแก้ไขใน popUp 
-                apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
-                createDocType={"audit"} //createDocType มี audit issue recive
-                history={props.history} //ส่ง porps.history ไปทุกรอบ
-                apiRes={apiRes} //หน้ารายละเอียดเอกสาร
-                //btnProps={btnAdd}  //ปุ่มที่ส่งเข้าไป
-                //dataSource={dataSou} //ข้อมูลที่จัดการจากปุ่มที่ส่งเข้าไป
-               // dataCreate={} //dataที่จะส่งไปสร้างเอกสาร
-            >
-            </AmCreateDocument>
-
-            <div >
-
-            </div>
-
-        </div>
-
+        <AmCreateDocument
+            typeAdd={"sku"}
+            headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
+            //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
+            columns={columns}  //colums 
+            columnEdit={columnEdit} //ข้อมูลที่จะแก้ไขใน popUp 
+            apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
+            createDocType={"audit"} //createDocType มี audit issue recive
+            history={props.history} //ส่ง porps.history ไปทุกรอบ
+            apiRes={apiRes} //หน้ารายละเอียดเอกสาร
+        //btnProps={btnAdd}  //ปุ่มที่ส่งเข้าไป
+        //dataSource={dataSou} //ข้อมูลที่จัดการจากปุ่มที่ส่งเข้าไป
+        // dataCreate={} //dataที่จะส่งไปสร้างเอกสาร
+        />
     )
 }
-
-export default TestCreateDocument;

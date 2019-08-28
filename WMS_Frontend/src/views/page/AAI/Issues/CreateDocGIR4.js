@@ -11,9 +11,11 @@ import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import styled from 'styled-components'
 import AmFindPopup from '../../../../components/AmFindPopup'
-import { createQueryString } from '../../../../components/function/CoreFunction2'
+// import { createQueryString } from '../../../../components/function/CoreFunction2'
 import AmDialogs from '../../../../components/AmDialogs'
 import AmAux from '../../../../components/AmAux'
+import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const Axios = new apicall();
 
@@ -49,18 +51,17 @@ const InputDiv = styled.div`
 export default props => {
     const [sapResponse, setSAPResponse] = useState([]);
     const [headerData, setHeaderData] = useState([]);
-    const [dataSource, setDataSource] = useState([])
     const [editPopup, setEditPopup] = useState(false);
-    const [editData, setEditData] = useState({
-        LGTYP: "C00",
-        LGBER: "001",
-        LGPLA: "C00"
-    });
-
-    // const [sapReq, setSAPReq] = useState([]);
-    const [dialog, setDialog] = useState({
+    const [editData, setEditData] = useState({}
+        // {
+        //     LGTYP: "C00",
+        //     LGBER: "001",
+        //     LGPLA: "C00"
+        // }
+    );
+    const [dialogError, setDialogError] = useState({
         status: false,
-        type: null,
+        type: 'error',
         message: null
     });
 
@@ -79,105 +80,92 @@ export default props => {
         ],
         [
             { label: 'MoveMent Type', type: 'labeltext', key: 'movementTypeID', texts: 'FG ISSUED', valueTexts: '1002' },
-            { label: 'Mode', type: 'labeltext', key: 'ref1', texts: 'R01', valueTexts: 'R01' }
+            { label: 'Mode', type: 'labeltext', key: 'ref1', texts: 'R04', valueTexts: 'R04' }
         ]
     ];
 
-    const Sto = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const BaseCode = {
+    //     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+    //     t: "StorageObject",
+    //     q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "Code",
+    //     g: "Code",
+    //     s: "[{'f':'Code','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    // }
 
-    const BaseCode = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
-        t: "StorageObject",
-        q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "Code",
-        g: "Code",
-        s: "[{'f':'Code','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
-
-    const columsFindpopUpPalletCode = [
-        {
-            Header: 'SU No.',
-            accessor: 'Code',
-            fixed: 'left',
-            // width: 130,
-            sortable: true
-        }
-    ];
+    // const columsFindpopUpPalletCode = [
+    //     {
+    //         Header: 'SU No.',
+    //         accessor: 'Code',
+    //         fixed: 'left',
+    //         // width: 130,
+    //         sortable: true
+    //     }
+    // ];
 
     const columnEdit = [
-        { Header: "SU Code", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
-        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input", defultValue: "C00" },
-        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input", defultValue: "001" },
-        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input", defultValue: "C00" }
+        { Header: "Reservation Number", accessor: 'RSNUM', type: "input", sub_type: "number" },
+        { Header: "SU No.", accessor: 'LENUM', type: "input"},
+        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "Available Stock", accessor: 'BESTQ_UR', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
+        { Header: "Stock in Quality Control", accessor: 'BESTQ_QI', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
+        { Header: "Blocked Stock", accessor: 'BESTQ_BLK', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] }
     ];
 
     const ref = useRef(columnEdit.map(() => createRef()))
 
     var columnsModify = [
-        { Header: 'SU No.', accessor: 'BaseCode' },
-        { Header: 'SKU Code', accessor: 'PackCode' },
-        { Header: 'SKU Name', accessor: 'Name' },
-        { Header: 'Qty', accessor: 'Quantity' },
-        { Header: 'Batch', accessor: 'Batch' },
-        { Header: 'UnitType', accessor: 'UnitTypeName' }
+        { Header: 'Reservation', accessor: 'RSNUM' },
+        { Header: 'Material', accessor: 'MATNR' },
+        { Header: 'Batch', accessor: 'CHARG' },
+        { Header: 'Quantity', accessor: 'BDMNG' },
+        { Header: 'Unit', accessor: 'MEINS' },
+        { Header: "Dest. Styp.", accessor: "LGTYP" },
+        { Header: 'BIN', accessor: 'LGPLA' },
+        { Header: 'MVT', accessor: 'BWLVS' },
+        { Header: 'UR', accessor: 'BESTQ_UR' },
+        { Header: 'QI', accessor: 'BESTQ_QI' },
+        { Header: 'Blocked', accessor: 'BESTQ_BLK' },
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
-    const apiRes = '/';
+    const apiRes = "/issue/detail?docID=";
 
-    const sapConnectorR1 = postData => {
-        Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {
+    const sapConnectorR4 = postData => {
+        Axios.post(window.apipath + '/v2/SAPZWMRF003R4API', postData).then(res => {
             if (res.data._result.status) {
-                if (!res.data.datas[0].erR_MSG) {
+                if (!res.data.datas[0].ERR_MSG) {
                     setSAPResponse(res.data.datas);
-                    GetDataByBaesCode(postData.LENUM)
                 } else {
-                    setDialog({
+                    setDialogError({
                         status: true,
-                        type: "error",
-                        message: res.data.datas[0].erR_MSG
+                        message: res.data.datas[0].ERR_MSG
                     });
                 }
             } else {
-                setDialog({
+                setDialogError({
                     status: true,
-                    type: "error",
                     message: res.data._result.message
                 });
             }
         })
     };
 
-    const GetDataByBaesCode = baseCode => {
-        Sto.q = `[{ "f": "BaseCode", "c":"=", "v": '${baseCode}'}]`
-        Axios.get(createQueryString(Sto)).then(res => {
-            setDataSource(res.data.datas)
-        });
-    }
-
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            let postData = {}
-            postData.LENUM = rowdata.Code
-            postData.LGBER = rowdata.LGBER
-            postData.LGPLA = rowdata.LGPLA
-            postData.LGTYP = rowdata.LGTYP
-            postData._token = localStorage.getItem('Token');
-            sapConnectorR1(postData);
+            // let postData = {}
+            // postData.RSNUM = rowdata.RSNUM
+            // postData.LENUM = rowdata.Code
+            // postData.BESTQ_BLK = rowdata.BESTQ_BLK
+            // postData.BESTQ_QI = rowdata.BESTQ_QI
+            // postData.BESTQ_UR = rowdata.BESTQ_UR
+            rowdata._token = localStorage.getItem('Token');
+            sapConnectorR4(rowdata);
         }
+        setEditData({})
         setEditPopup(false);
     };
 
@@ -202,6 +190,7 @@ export default props => {
                     <LabelH>{row.Header} : </LabelH>
                     <InputDiv>
                         <AmInput style={row.style ? row.style : { width: "300px" }}
+                            type={row.sub_type ? row.sub_type : null}
                             defaultValue={row.defultValue ? row.defultValue : ""}
                             inputRef={ref.current[index]}
                             validate={true}
@@ -231,8 +220,29 @@ export default props => {
                             columns={row.columsddl} //array column สำหรับแสดง table
                             width={row.width ? row.width : 300}
                             ddlMinWidth={row.width ? row.width : 100}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject[row.accessor], dataObject)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject ? dataObject[row.accessor] : null, dataObject)}
                         />
+                    </InputDiv>
+                </FormInline>
+            )
+        } else if (row.type === "radio") {
+            return (
+                <FormInline>
+                    <LabelH>{row.Header} : </LabelH>
+                    <InputDiv>
+                        {row.value.map((x, idx) => {
+                            return (
+                                <FormControlLabel
+                                    key={idx}
+                                    value={x}
+                                    name={row.accessor}
+                                    checked={editData[row.accessor] === x}
+                                    onChange={(e) => onChangeEditor(row.accessor, e.target.value)}
+                                    control={<Radio color="primary" />}
+                                    label={row.labelHeader[idx]}
+                                />
+                            )
+                        })}
                     </InputDiv>
                 </FormInline>
             )
@@ -240,11 +250,8 @@ export default props => {
     }
 
     const onChangeEditor = (field, value, valueObject) => {
-        if (field === "BaseCode") {
-            valueObject ? editData.skuCode = valueObject.Code : delete editData["skuCode"]
-        }
         editData[field] = value
-        setEditData(editData)
+        setEditData({ ...editData })
     };
 
     const CreateDocument = () => {
@@ -328,30 +335,28 @@ export default props => {
                 headerData.movementTypeID === undefined
                     ? null
                     : headerData.movementTypeID,
-            ref1: 'R01',
+            ref1: 'R04',
             remark: headerData.remark === undefined ? null : headerData.remark,
             receiveItems:
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
         };
 
-        let documentItem = dataSource.map((item, idx) => {
+        let documentItem = sapResponse.map((item, idx) => {
             let options =
-                'bwlvs=' + sapResponse[0].bwlvs +
-                '&lenum=' + sapResponse[0].lenum +
-                '&lgtyp=' + sapResponse[0].lgtyp +
-                '&lgber=' + sapResponse[0].lgber +
-                '&lgpla=' + sapResponse[0].lgpla +
-                '&bestq_ur=' + sapResponse[0].bestQ_UR +
-                '&bestq_qi=' + sapResponse[0].bestQ_QI +
-                '&bestq_blk=' + sapResponse[0].bestQ_BLK;
+                'bestq_ur=' + item.BESTQ_UR +
+                '&bestq_qi=' + item.BESTQ_QI +
+                '&bestq_blk=' + item.BESTQ_BLK +
+                '&bwlvs=' + item.BWLVS +
+                '&lgpla=' + item.LGPLA +
+                '&rsnum=' + item.RSNUM +
+                '&lgtyp=' + item.LGTYP;
             return {
                 ID: null,
-                palletcode: item.BaseCode,
-                skuCode: item.PackCode,
-                packCode: item.PackCode,
-                quantity: item.Quantity,
-                unitType: item.UnitTypeName,
-                batch: item.Batch,
+                skuCode: item.MATNR,
+                packCode: item.MATNR,
+                quantity: item.BDMNG,
+                unitType: item.MEINS,
+                batch: item.CHARG,
                 options: options
             };
         });
@@ -380,7 +385,7 @@ export default props => {
 
     return (
         <AmAux>
-            <AmDialogs typePopup={dialog.type} content={dialog.message} onAccept={(e) => { setDialog(e) }} open={dialog.status}></AmDialogs >
+            <AmDialogs typePopup={dialogError.type} content={dialogError.message} onAccept={(e) => { setDialogError(e) }} open={dialogError.status}></AmDialogs >
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
                 //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
@@ -404,7 +409,7 @@ export default props => {
                     >Load</AmButton>
                 }
                 customAddComponentRender={customAdd()}
-                customDataSource={dataSource}
+                customDataSource={sapResponse}
                 customTableColumns={columnsModify}
                 customDocumentData={CreateDocument()}
                 customGetHeaderData={headerData => setHeaderData(headerData)}

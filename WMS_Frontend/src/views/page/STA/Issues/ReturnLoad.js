@@ -6,22 +6,11 @@ import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
 // const Axios = new apicall()
 
-const WarehouseQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Warehouse",
-    q: '[{ "f": "Status", "c":"=", "v": 1}]',
-    f: "*",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: "",
-}
 const ReceivePallet = (props) => {
     const { } = props;
 
-    const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 };
-    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 14 };
+    const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
+    const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'in', 'v': '13'}" };
 
     // const inputHeader = [
     //     { "field": "warehouseID", "type": "dropdown", "typeDropdown": "normal", "name": "Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
@@ -34,6 +23,13 @@ const ReceivePallet = (props) => {
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
         { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        {
+            "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
+                { value: '97', label: "PARTIAL" }
+            ],
+            "defaultValue": { value: '97', disabled: true }
+        }
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -84,7 +80,7 @@ const ReceivePallet = (props) => {
                     if (reqValue['cartonNo']) {
                         let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
                         cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
-                       
+
                     }
                 }
                 //check Storage Object
@@ -114,18 +110,18 @@ const ReceivePallet = (props) => {
                                     let indexCartonNo = splitCartonNo.indexOf(diffCarton[no]);
                                     if (indexCartonNo < 0) {
                                         noHasCartonList.push(diffCarton[no]);
-                                        
+
                                     } else {
                                         delCartonList.push(diffCarton[no]);
                                         splitCartonNo.splice(indexCartonNo, 1);
                                     }
                                     if (numCarton === lenDiffCarton) {
-                                        if(noHasCartonList.length > 0){
+                                        if (noHasCartonList.length > 0) {
                                             let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
                                             alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
-    
+
                                             cartonNo = null;
-                                        }else{
+                                        } else {
                                             lenNewCarton = delCartonList.length;
                                             if (splitCartonNo.length === 0) {
                                                 cartonNo = "0";
@@ -136,7 +132,7 @@ const ReceivePallet = (props) => {
                                                 cartonNo = rangcartonNo.join();
                                             }
                                         }
-                                        break; 
+                                        break;
                                     } else {
                                         continue;
                                     }
@@ -149,19 +145,19 @@ const ReceivePallet = (props) => {
 
                             if (curInput === 'amount') {
                                 if (parseInt(reqValue['amount'], 10) !== lenNewCarton) {
-        
+
                                     alertDialogRenderer("The quantity of carton doesn't match.", "error", true);
-        
+
                                 }
                             } else {
-                                 
+
                                 let eleAmount = document.getElementById('amount');
                                 if (eleAmount) {
                                     eleAmount.value = lenNewCarton;
                                     reqValue['amount'] = lenNewCarton;
                                 }
                             }
-                          
+
                         } else {
                             let diffCarton = match(splitCartonNo, cartonNoList);
                             if (diffCarton.length > 0) {
@@ -206,8 +202,8 @@ const ReceivePallet = (props) => {
                 }
                 if (cartonNo && rootID && skuCode && orderNo) {
 
-                    qryStr[SC.OPT_MVT] = "1111";
                     qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
+                    // qryStr[SC.OPT_DONE_DES_EVENT_STATUS] = reqValue[SC.OPT_DONE_DES_EVENT_STATUS];
                     console.log(qryStr)
                     let qryStr1 = queryString.stringify(qryStr)
                     let uri_opt = decodeURIComponent(qryStr1);
@@ -216,13 +212,12 @@ const ReceivePallet = (props) => {
                     dataScan = {
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : uri_opt,
+                        options: cartonNo === "0" ? null : uri_opt
                     };
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {
                         alertDialogRenderer("Please scan the pallet before scanning the product or CartonNo Not Found.", "error", true);
-
                     }
                 }
             } else {
@@ -258,10 +253,8 @@ const ReceivePallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                doneDesEventStatus={97}
                 autoPost={false}
-            //--//
-            // modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
+                setMovementType={"1111"}
             />
         </div>
     );
