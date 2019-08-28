@@ -87,11 +87,12 @@ namespace ProjectSTA.Engine.Business.Received
                         new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.NEW, SQLOperatorType.EQUALS, SQLConditionType.AND),
                         new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.LESS, SQLConditionType.AND)
                   }, this.BuVO).FirstOrDefault();
-
+                //อัพเดต root_options
                
                 //เช็คข้อมูลBase ที่มี AreaLocationMaster_ID ที่ตรงกับ location.ID
                 if (stoBaseItems != null)
                 {
+
                     var baseItemsCheck = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>((long)stoBaseItems.BaseMaster_ID, this.BuVO);
                     if (baseItemsCheck == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Data of Base Not Found");
@@ -170,10 +171,8 @@ namespace ProjectSTA.Engine.Business.Received
 
                                                 /// รับเข้า วางสินค้าลงบนพาเลทได้
                                                 //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + newCartonNos;
-                                        var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stoPack.Options,
-                                            new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, newCartonNos),
-                                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
-
+                                        var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stoPack.Options, OptionVOConst.OPT_CARTON_NO, newCartonNos);
+                                        
                                         var objectSizePack = this.StaticValue.ObjectSizes.Where(ob => ob.ID == (long)skuItem.ObjectSize_ID).FirstOrDefault();
                                                 if (objectSizePack == null)
                                                 {
@@ -220,7 +219,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     options = optionsNew
                                                 });
 
-                                                return this.GenerateMapSto(reqVO, orderNo, optionsNew, stoBaseItems, skuItem, mapStosPack, areaItem, location);
+                                                return this.GenerateMapSto(reqVO, orderNo, optionsNew, stoBaseItems, skuItem, mapStosPack, areaItem, location, null);
                                             }
                                             else
                                             {
@@ -242,15 +241,15 @@ namespace ProjectSTA.Engine.Business.Received
                                     if (tempAreaLoc.Count() > 0)
                                     {
                                         //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
-                                        var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
+                                        var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null, OptionVOConst.OPT_CARTON_NO, cartonNo.ToString());
 
                                         if (tempStoBaseItems.Count() > 0)
                                         {
                                             //ที่ ObjectType = Base
+                                            var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+
                                             List<StorageObjectCriteria> mapStosPack = new List<StorageObjectCriteria> { };
-                                            return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0]);
+                                            return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0], root_optionsNew);
                                         }
                                         else
                                         {
@@ -280,9 +279,7 @@ namespace ProjectSTA.Engine.Business.Received
                         {
                             //เตรียมข้อมูลinsert 
                             //var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
-                            var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
+                            var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,OptionVOConst.OPT_CARTON_NO, cartonNo.ToString());
 
                             List<StorageObjectCriteria> mapStosPack = new List<StorageObjectCriteria> { };
 
@@ -290,7 +287,9 @@ namespace ProjectSTA.Engine.Business.Received
                             {
                                 if (tempStoBaseItems.Count() > 0)
                                 {
-                                    return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0]);
+                                    var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+
+                                    return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0], root_optionsNew);
                                 }
                                 else
                                 {
@@ -299,7 +298,9 @@ namespace ProjectSTA.Engine.Business.Received
                             }
                             else
                             {
-                                return this.GenerateMapSto(reqVO, orderNo, optionsNew, stoBaseItems, skuItem, mapStosPack, areaItem, location);
+                                var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(stoBaseItems.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+
+                                return this.GenerateMapSto(reqVO, orderNo, optionsNew, stoBaseItems, skuItem, mapStosPack, areaItem, location, root_optionsNew);
                             }
                         }
                         // แต่ว่าถ้ายังมีพาเลทอีกอันที่ยังไม่เช็ค
@@ -319,15 +320,15 @@ namespace ProjectSTA.Engine.Business.Received
                         if(tempAreaLoc.Count() > 0)
                         {
                            // var optionsNew = OptionVOConst.OPT_CARTON_NO + "=" + cartonNo.ToString();
-                            var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null,
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_CARTON_NO, cartonNo.ToString()),
-                                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC));
+                            var optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(null, OptionVOConst.OPT_CARTON_NO, cartonNo.ToString());
 
                             if (tempStoBaseItems.Count() > 0)
                             {
                                 //ที่ ObjectType = Base
+                                var root_optionsNew = AMWUtil.Common.ObjectUtil.QryStrSetValue(tempStoBaseItems[0].Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC);
+
                                 List<StorageObjectCriteria> mapStosPack = new List<StorageObjectCriteria> { };
-                                return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0]);
+                                return this.GenerateMapSto(reqVO, orderNo, optionsNew, tempStoBaseItems[0], skuItem, mapStosPack, areaItem, tempAreaLoc[0], root_optionsNew);
                             }
                             else {
                                 throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Empty Pallet Not Found or Order No. or SKU Code doesn't match");
@@ -349,7 +350,7 @@ namespace ProjectSTA.Engine.Business.Received
                             throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Can't add product in this pallet. Because Empty Pallet Not Found or Order No. or SKU Code doesn't match");
         }
 
-        private TRes GenerateMapSto(TReq reqVO, string orderNo, string newOptions, amt_StorageObject stoBaseItem, ams_SKUMaster skuItem, List<StorageObjectCriteria> mapStosPack, ams_AreaMaster areaItem, ams_AreaLocationMaster arealocation)
+        private TRes GenerateMapSto(TReq reqVO, string orderNo, string newOptions, amt_StorageObject stoBaseItem, ams_SKUMaster skuItem, List<StorageObjectCriteria> mapStosPack, ams_AreaMaster areaItem, ams_AreaLocationMaster arealocation, string root_optionsNew)
         {
             TRes res = new TRes() { };
 
@@ -420,7 +421,8 @@ namespace ProjectSTA.Engine.Business.Received
                 options = newOptions,
                 isRoot = false,
                 mode = VirtualMapSTOModeType.REGISTER,
-                action = VirtualMapSTOActionType.ADD
+                action = VirtualMapSTOActionType.ADD,
+                rootOptions = root_optionsNew
             };
 
             var resScanMapStoNoDoc = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO, reqScan); ;
