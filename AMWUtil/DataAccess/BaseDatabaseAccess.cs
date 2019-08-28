@@ -64,7 +64,7 @@ namespace AMWUtil.DataAccess
             SqlConnection conn = null)
         {
             T res;
-            if (logger != null) logger.LogDebug("[SCALAR] " + cmdTxt + " " + this.DynamicParametersToString(parameter));
+            if (logger != null) logger.LogDebug("[SCALAR] " + cmdTxt + " | " + this.DynamicParametersToString(parameter));
             if (transaction != null)
             {
                 res = transaction.Connection.ExecuteScalar<T>(cmdTxt, parameter, transaction, 60, commandType);
