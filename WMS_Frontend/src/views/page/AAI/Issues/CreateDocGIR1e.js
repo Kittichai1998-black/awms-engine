@@ -138,7 +138,7 @@ export default props => {
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
-    const apiRes = '/';
+    const apiRes = "/issue/detail?docID=";
 
     const sapConnectorR1 = postData => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {

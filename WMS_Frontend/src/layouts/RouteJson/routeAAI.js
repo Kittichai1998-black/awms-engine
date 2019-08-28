@@ -25,8 +25,8 @@ const ReceiveEmptyPallet = Loadable({
   loader: () => import("../../views/page/AAI/Receive/ReceiveEmptyPallet"),
   loading: Loading
 });
-const CreateDocGiR1 = Loadable({
-  loader: () => import("../../views/page/AAI/Issues/CreateDocGiR1"),
+const CreateDocGIR1 = Loadable({
+  loader: () => import("../../views/page/AAI/Issues/CreateDocGIR1"),
   loading: Loading
 });
 const CreateDocGIR2 = Loadable({
@@ -52,7 +52,7 @@ const routes = [
   { path: "/receive/receivemptypallet", name: "Mapping Empty Pallet", compoment: ReceiveEmptyPallet, exact: true },
   { path: "/receive/search", name: "Search GR", compoment: DocumentSearchGR, exact: true },
   { path: "/receive/detail", name: "base5", compoment: DocumentViewGR, exact: true },
-  { path: "/issue/createR1", name: "base5", compoment: CreateDocGiR1, exact: true },
+  { path: "/issue/createR1", name: "base5", compoment: CreateDocGIR1, exact: true },
   { path: "/issue/createR2", name: "base5", compoment: CreateDocGIR2, exact: true },
   { path: '/issue/createR3', name: 'base5', compoment: CreateDocGIR3, exact: true },
   { path: '/issue/createR4', name: 'base5', compoment: CreateDocGIR4, exact: true },

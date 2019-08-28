@@ -51,7 +51,6 @@ const InputDiv = styled.div`
 export default props => {
     const [sapResponse, setSAPResponse] = useState([]);
     const [headerData, setHeaderData] = useState([]);
-    // const [dataSource, setDataSource] = useState([])
     const [editPopup, setEditPopup] = useState(false);
     const [editData, setEditData] = useState({}
         // {
@@ -60,8 +59,6 @@ export default props => {
         //     LGPLA: "C00"
         // }
     );
-
-    // const [sapReq, setSAPReq] = useState([]);
     const [dialog, setDialog] = useState({
         status: false,
         type: null,
@@ -86,18 +83,6 @@ export default props => {
             { label: 'Mode', type: 'labeltext', key: 'ref1', texts: 'R04', valueTexts: 'R04' }
         ]
     ];
-
-    // const Sto = {
-    //     queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    //     t: "PalletSto",
-    //     q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-    //     f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch",
-    //     g: "",
-    //     s: "[{'f':'ID','od':'ASC'}]",
-    //     sk: 0,
-    //     l: 100,
-    //     all: ""
-    // }
 
     const BaseCode = {
         queryString: window.apipath + "/v2/SelectDataTrxAPI/",
@@ -131,15 +116,6 @@ export default props => {
 
     const ref = useRef(columnEdit.map(() => createRef()))
 
-    // var columnsModify = [
-    //     { Header: 'SU No.', accessor: 'BaseCode' },
-    //     { Header: 'SKU Code', accessor: 'PackCode' },
-    //     { Header: 'SKU Name', accessor: 'Name' },
-    //     { Header: 'Qty', accessor: 'Quantity' },
-    //     { Header: 'Batch', accessor: 'Batch' },
-    //     { Header: 'UnitType', accessor: 'UnitTypeName' }
-    // ];
-
     var columnsModify = [
         { Header: 'Reservation', accessor: 'RSNUM' },
         { Header: 'Material', accessor: 'MATNR' },
@@ -154,7 +130,7 @@ export default props => {
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
-    const apiRes = '/';
+    const apiRes = "/issue/detail?docID=";
 
     const sapConnectorR4 = postData => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R4API', postData).then(res => {
@@ -177,13 +153,6 @@ export default props => {
             }
         })
     };
-
-    // const GetDataByBaesCode = baseCode => {
-    //     Sto.q = `[{ "f": "BaseCode", "c":"=", "v": '${baseCode}'}]`
-    //     Axios.get(createQueryString(Sto)).then(res => {
-    //         setDataSource(res.data.datas)
-    //     });
-    // }
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
@@ -372,29 +341,6 @@ export default props => {
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
         };
 
-        // let documentItem = dataSource.map((item, idx) => {
-        //     let options =
-        //         'bwlvs=' + sapResponse[0].bwlvs +
-        //         '&lenum=' + sapResponse[0].lenum +
-        //         '&lgtyp=' + sapResponse[0].lgtyp +
-        //         '&lgber=' + sapResponse[0].lgber +
-        //         '&lgpla=' + sapResponse[0].lgpla +
-        //         '&bestq_ur=' + sapResponse[0].bestQ_UR +
-        //         '&bestq_qi=' + sapResponse[0].bestQ_QI +
-        //         '&bestq_blk=' + sapResponse[0].bestQ_BLK;
-        //     return {
-        //         ID: null,
-        //         palletcode: item.BaseCode,
-        //         skuCode: item.PackCode,
-        //         packCode: item.PackCode,
-        //         quantity: item.Quantity,
-        //         unitType: item.UnitTypeName,
-        //         batch: item.Batch,
-        //         options: options
-        //     };
-        // });
-        // console.log(sapResponse);
-
         let documentItem = sapResponse.map((item, idx) => {
             let options =
                 'bestq_ur=' + item.BESTQ_UR +
@@ -414,7 +360,6 @@ export default props => {
                 options: options
             };
         });
-
 
         document.issueItems = documentItem;
 
