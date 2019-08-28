@@ -149,6 +149,10 @@ const CountingAdj = Loadable({
   loader: () => import("../../views/page/MRK/Counting/CountingAdj"),
   loading: Loading
 });
+const TestCreateDocument = Loadable({
+  loader: () => import("../../views/page/TestCreateDocument"),
+  loading: Loading
+});
 
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
@@ -190,7 +194,8 @@ let routes = [
   { path: "/exbutton", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/exdropdown", name: "base5", compoment: FindpopupDDL, exact: true },
   { path: "/wm/sto/picking", name: "base5", compoment: FindpopupDDL, exact: true },
-  { path: "/wm/issue/manage", name: "base5", compoment: ButtonInputExcel, exact: true }
+  { path: "/wm/issue/manage", name: "base5", compoment: ButtonInputExcel, exact: true },
+  { path: "/createdoc", name: "base5", compoment: TestCreateDocument, exact: true }
 ];
 
 export default routes;

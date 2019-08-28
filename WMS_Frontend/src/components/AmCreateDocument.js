@@ -14,6 +14,7 @@ import AmInput from '../components/AmInput'
 import AmTable from '../components/table/AmTable'
 import { useTranslation } from 'react-i18next'
 import { apicall } from '../components/function/CoreFunction2'
+import ModalTableAddBySto from './AmCreateDocument_ModalTableAddBySto'
 const Axios = new apicall()
 
 const FormInline = styled.div`
@@ -84,7 +85,8 @@ const AmCreateDocument = (props) => {
     const [skuIDs, setskuIDs] = useState();
     const [cusIDs, setcusIDs] = useState();
     const [skuByCus, setskuByCus] = useState();
-    const [palletByCus, setpalletByCus] = useState();
+    // const [palletByCus, setpalletByCus] = useState();
+    const [showTableAdd,setShowTableAdd] = useState(false)
     const [openDialogClear, setopenDialogClear] = useState(false)
     const [bodyDailogClear, setbodyDailogClear] = useState();
     const [ParentStorageObjects, setParentStorageObjects] = useState();
@@ -195,8 +197,6 @@ const AmCreateDocument = (props) => {
     };
 
     const onHandleDDLChangeBase = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
-        console.log(dataObject)
-        console.log(value)
         if (value !== null) {
             if (dataObject[field] !== null) {
                 onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
@@ -218,7 +218,6 @@ const AmCreateDocument = (props) => {
     }
 
     const onHandleChangeinPop = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
-        console.log(dataObject)
         if (dataObject) {
             onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
         } else {
@@ -228,18 +227,15 @@ const AmCreateDocument = (props) => {
 
     const onHandleChangeinPopSKU = (value, dataObject, inputID, fieldDataKey, field, data, pair) => {
         if (dataObject) {
-            console.log(field)
             setskuIDs(dataObject.ID)
             onChangeEditor(field, data, dataObject[field], pair, dataObject[pair], dataObject.UnitTypeCode, dataObject.Code)
         } else {
             setskuIDs(dataObject.ID)
-            console.log(field)
             onChangeEditor(field, data, null, pair, null, null, null)
         }
     }
 
     const onChangeEditor = (field, rowdata, value, pair, dataPair, UnitCode, SKUCode) => {
-        console.log(field)
         if (addData) {
             if (editData) {
                 editData[field] = value;
@@ -283,7 +279,6 @@ const AmCreateDocument = (props) => {
 
                     }
                 } else {
-                    console.log(value)
                     editRowX["qtyrandom"] = value
 
                 }
@@ -327,7 +322,6 @@ const AmCreateDocument = (props) => {
                 }
             }
             else {
-                console.log(editData)
                 if (editData === false) {
                     setStateDialogErr(true)
                     setMsgDialog("Data Items Invalid")
@@ -976,7 +970,6 @@ const AmCreateDocument = (props) => {
             CreateDocuments(CreateData, docItem);
         }
         //else if (props.columnsModifi !== undefined) {
-        //    //console.log("1")
         //    let docItem = props.dataCreate["itemIssue"];
 
         //    CreateDocuments(dataCreate, docItem);
@@ -988,8 +981,6 @@ const AmCreateDocument = (props) => {
     }
 
     const CreateDocuments = (CreateData, docItem) => {
-        console.log(CreateData)
-        console.log(docItem)
         var skus = null
         if (docItem !== undefined) {
             docItem.map((x) => {
@@ -1026,7 +1017,6 @@ const AmCreateDocument = (props) => {
 
     const Addbtn = () => {
         if (props.createByCus === true) {
-            console.log(cusIDs)
             if (cusIDs === undefined || cusIDs === null) {
                 setMsgDialog("DesCustomer invalid");
                 setStateDialogErr(true);
@@ -1068,11 +1058,17 @@ const AmCreateDocument = (props) => {
                 </Grid>
                 <Grid item>
                     <div style={{ marginTop: "20px" }}>
-                        {btnProps ? btnProps : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
-                            Addbtn()
-                        }} >
-                            {'ADD'}
-                        </AmButton>}
+                        {btnProps ? btnProps : props.typeAdd === "sku" ?
+                           <ModalTableAddBySto
+                           onChange={()=>{console.log()
+                           }}
+                           />
+                            :
+                            <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
+                                Addbtn()
+                            }} >
+                                {'ADD'}
+                            </AmButton>}
                     </div>
                 </Grid>
             </Grid>
@@ -1097,6 +1093,7 @@ const AmCreateDocument = (props) => {
                     </div>
                 </Grid>
             </Grid>
+            
 
 
             <AmDialogConfirm
