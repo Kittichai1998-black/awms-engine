@@ -8,19 +8,19 @@ import queryString from "query-string";
 const DocumentViewGR = props => {
   const TextHeader = [
     [
-      { label: "Document No", values: "code" },
+      { label: "Document No", values: "Code" },
       { label: "Document Date", values: "documentDate", type: "date" }
     ],
     [
-      { label: "Source Customer", values: "souCustomerName" },
+      { label: "Source Customer", values: "SouCustomerName" },
       { label: "Action Time", values: "actionTime", type: "dateTime" }
     ],
     [
-      { label: "Source Warehouse", values: "souWarehouseName" },
-      { label: "Destination Warehouse", values: "desWarehouseName" }
+      { label: "Source Warehouse", values: "SouWarehouseName" },
+      { label: "Destination Warehouse", values: "DesWarehouseName" }
     ],
     [
-      { label: "Movement Type", values: "movementName" },
+      { label: "Movement Type", values: "MovementName" },
       { label: "", values: "" }
     ],
     [
@@ -29,16 +29,16 @@ const DocumentViewGR = props => {
         values: "renderDocumentStatus()",
         type: "function"
       },
-      { label: "Remark", values: "remark" }
+      { label: "Remark", values: "Remark" }
     ]
   ];
 
   const columns = [
-    { width: 200, accessor: "skuMaster_Code", Header: "SKU Code" },
-    { accessor: "skuMaster_Name", Header: "SKU Name" },
-    { width: 130, accessor: "orderNo", Header: "Order No" },
+    { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
+    { accessor: "SKUMaster_Name", Header: "SKU Name" },
+    { width: 130, accessor: "OrderNo", Header: "Order No" },
     { width: 120, accessor: "_qty", Header: "Qty" },
-    { width: 70, accessor: "unitType_Name", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
 
   const columnsDetailSOU = [
@@ -48,22 +48,22 @@ const DocumentViewGR = props => {
       Header: "Task",
       Cell: e => getStatusGR(e.original)
     },
-    { width: 100, accessor: "code", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "SKU Code" },
-    { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No" },
+    { width: 100, accessor: "Code", Header: "Pallet" },
+    { width: 150, accessor: "PackCode", Header: "SKU Code" },
+    { accessor: "PackName", Header: "SKU Name" },
+    { width: 125, accessor: "OrderNo", Header: "Order No" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "packUnitCode", Header: "Unit" }
+    { width: 60, accessor: "UnitType_Name", Header: "Unit" }
   ];
 
   const columnsDetailDES = [
     //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
-    { width: 100, accessor: "code ", Header: "Pallet" },
-    { width: 150, accessor: "packCode", Header: "SKU Code" },
-    { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "orderNo", Header: "Order No" },
+    { width: 100, accessor: "Code ", Header: "Pallet" },
+    { width: 150, accessor: "PackCode", Header: "SKU Code" },
+    { accessor: "PackName", Header: "SKU Name" },
+    { width: 125, accessor: "OrderNo", Header: "Order No" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "packUnitCode", Header: "Unit" }
+    { width: 60, accessor: "PackUnitCode", Header: "Unit" }
   ];
 
   const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];

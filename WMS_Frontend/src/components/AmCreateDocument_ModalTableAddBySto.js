@@ -25,6 +25,7 @@ import AmInput from "./AmInput";
 import AmTable from './table/AmTable';
 import { apicall, createQueryString, Clone } from './function/CoreFunction2'
 import Pagination from './table/AmPagination';
+import MaterialTable from './AmCreateDocument_TableNew'
 
 const Axios = new apicall()
 const SearchInput = withStyles(theme => ({
@@ -259,13 +260,13 @@ export default (props) => {
     // }, [value, defaultVal]);
 
     const columns = [
-        { Header: 'Pallet Code', accessor: 'BaseCode' },
-        { Header: "SKU Code", accessor: 'PackCode' },
-        { Header: "SKU Name", accessor: 'Name' },
-        { Header: 'Lot', accessor: 'Lot' },
-        { Header: 'Batch', accessor: 'Batch' },
-        { Header: 'Order', accessor: 'OrderNo' },
-        { Header: "Qty", accessor: 'Quantity' },
+        { title: 'Pallet Code', field: 'BaseCode' },
+        { title: "SKU Code", field: 'PackCode' },
+        { title: "SKU Name", field: 'Name' },
+        { title: 'Lot', field: 'Lot' },
+        { title: 'Batch', field: 'Batch' },
+        { title: 'Order', field: 'OrderNo' },
+        { title: "Qty", field: 'Quantity' },
     ]
 
     const Sto = {
@@ -493,26 +494,26 @@ export default (props) => {
                 >
                     {"Add"}
                 </DialogTitle>
-                <StyledSearch>
+                {/* <StyledSearch>
                     <SearchInput
                         name="searchSub"
                         styleType={props.styleType}
                         onClickSearch={onHandleClick} />
-                </StyledSearch>
+                </StyledSearch> */}
                 <DialogContent>
-                    <AmTable
+                    <MaterialTable
                         //ข้อมูลตาราง
                         data={data}
                         //ข้อมูลหัวตาราง
                         columns={columns}
                         //จำนวนข้อมูลต่อหน้า
-                        pageSize={10}
+                        // pageSize={10}
                     //func sort argument = Obj
                     // sort={(sort) => setSort({ field: sort.id, order: sort.sortDirection })}
                     // onRowClick={onHandleClickChange}
                     />
                 </DialogContent>
-                <DialogActions>
+                {/* <DialogActions>
                     <Pagination
                         //จำนวนข้อมูลทั้งหมด
                         totalSize={totalSize}
@@ -520,7 +521,7 @@ export default (props) => {
                         pageSize={10}
                         //return หน้าที่ถูกกด : function
                         onPageChange={(page) => 0} />
-                </DialogActions>
+                </DialogActions> */}
             </Dialog>
         </AmAux>
     );

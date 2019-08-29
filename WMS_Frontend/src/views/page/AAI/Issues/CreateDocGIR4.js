@@ -67,20 +67,19 @@ export default props => {
 
     const headerCreates = [
         [
-            { label: 'SAP Document', type: 'labeltext', key: 'sapdoc', texts: '-' },
-            { label: 'Document Date', type: 'dateTime', key: 'documentDate' }
+            { label: "Document No.", type: "labeltext", key: "sapdoc", texts: "-" },
+            { label: "Document Date", type: "dateTime", key: "documentDate" }
         ],
         [
-            { label: 'Action Time', type: 'dateTime', key: 'actionTime' },
-            { label: 'Remark', type: 'input', key: 'remark', style: { width: '200px' } }
+            { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "STO_TRANSFER", valueTexts: "5100" },
+            { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
         [
-            { label: 'Source Branch', type: 'labeltext', key: 'souBranchID', texts: '1100 : THIP', valueTexts: 1 },
-            { label: 'Warehouse', type: 'labeltext', key: 'souWarehouseID', texts: '5005 : ASRS', valueTexts: 1 }
+            { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "Warehouse1/ASRS", valueTexts: 1 }
         ],
         [
-            { label: 'MoveMent Type', type: 'labeltext', key: 'movementTypeID', texts: 'FG ISSUED', valueTexts: '1002' },
-            { label: 'Mode', type: 'labeltext', key: 'ref1', texts: 'R04', valueTexts: 'R04' }
+            { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
+            { label: "Mode", type: "labeltext", key: "ref1", texts: "R04", valueTexts: "R04" }
         ]
     ];
 
@@ -108,7 +107,7 @@ export default props => {
 
     const columnEdit = [
         { Header: "Reservation Number", accessor: 'RSNUM', type: "input", sub_type: "number" },
-        { Header: "SU No.", accessor: 'LENUM', type: "input"},
+        { Header: "SU No.", accessor: 'LENUM', type: "input" },
         // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
         { Header: "Available Stock", accessor: 'BESTQ_UR', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
         { Header: "Stock in Quality Control", accessor: 'BESTQ_QI', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },

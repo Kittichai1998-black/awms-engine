@@ -12,7 +12,7 @@ const DocumentViewGI = props => {
       { label: "Document Date", values: "documentDate", type: "date" }
     ],
     [
-      { label: "Movement Type", values: "MovementName" },
+      { label: "SAP Movement", values: "Ref2" },
       { label: "Action Time", values: "actionTime", type: "dateTime" }
     ],
     [{ label: "Source Warehouse", values: "SouWarehouseName" }],
@@ -21,7 +21,8 @@ const DocumentViewGI = props => {
         label: "Doc Status",
         values: "renderDocumentStatus()",
         type: "function"
-      }
+      },
+      { label: "Mode", values: "Ref1" }
     ]
   ];
 
@@ -29,9 +30,18 @@ const DocumentViewGI = props => {
     //{"width": 70,"accessor":"palletCode", "Header":"palletCode"},
     //{ width: 120, accessor: "SKUMaster_Name", Header: "SU No." },
     //{ width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
-    { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
-    { accessor: "skuMaster_Name", Header: "SKU Name" },
-    { width: 130, accessor: "Batch", Header: "Batch" },
+    { width: 120, accessor: "SKUMaster_Code", Header: "SKU Code" },
+    { width: 120, accessor: "SKUMaster_Name", Header: "SKU Name" },
+    { width: 120, accessor: "lenum", Header: "SU" },
+    { width: 100, accessor: "posnr", Header: "Delivery Item" },
+    { width: 150, accessor: "matnr", Header: "Material" },
+    { width: 100, accessor: "charg", Header: "Batch" },
+    { width: 100, accessor: "lgtyp", Header: "Dest. Styp." },
+    { width: 100, accessor: "lgbtr", Header: "Dest. Sec" },
+    { width: 100, accessor: "lgpla", Header: "Dest. BIN" },
+    { width: 50, accessor: "bestq_ur", Header: "UR" },
+    { width: 50, accessor: "bestq_qi", Header: "QI" },
+    { width: 50, accessor: "bestq_blk", Header: "BLK" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
@@ -43,10 +53,11 @@ const DocumentViewGI = props => {
       Header: "Task",
       Cell: e => getStatusGI(e.original)
     },
-    { width: 100, accessor: "Code", Header: "Pallet" },
-    { width: 150, accessor: "PackCode", Header: "SKU Code" },
+    { width: 100, accessor: "code", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "SKU Code" },
     { accessor: "packName", Header: "SKU Name" },
-    { width: 115, accessor: "Batch", Header: "Batch" },
+    { width: 115, accessor: "batch", Header: "Batch" },
+    { width: 125, accessor: "btanr", Header: "Transfer Order" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
@@ -58,24 +69,36 @@ const DocumentViewGI = props => {
       Header: "Task",
       Cell: e => getStatusGI(e.original)
     },
-    { width: 100, accessor: "Code", Header: "Pallet" },
-    { width: 150, accessor: "PackCode", Header: "SKU Code" },
+    { width: 100, accessor: "code", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "SKU Code" },
     { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "Batch", Header: "Batch" },
+    { width: 125, accessor: "batch", Header: "Batch" },
+    { width: 125, accessor: "btanr", Header: "Transfer Order" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "PackUnitCode", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
   // const optionDocItems = [
   //     {"optionName": "palletCode"},
   //     {"optionName": "locationCode"},
   // ]
-
+  const optionDocItems = [
+    { optionName: "lenum" },
+    { optionName: "posnr" },
+    { optionName: "matnr" },
+    { optionName: "charg" },
+    { optionName: "lgtyp" },
+    { optionName: "lgbtr" },
+    { optionName: "lgpla" },
+    { optionName: "bestq_ur" },
+    { optionName: "bastq_qi" },
+    { optionName: "bastq_blk" }
+  ];
   const getStatusGI = value => {
     //console.log(value)
-    if (value.Status === 0)
+    if (value.status === 0)
       return <AmStorageObjectStatus key={17} statusCode={17} />;
-    else if (value.Status === 1)
+    else if (value.status === 1)
       return <AmStorageObjectStatus key={18} statusCode={18} />;
     else return null;
   };
@@ -85,7 +108,8 @@ const DocumentViewGI = props => {
     var ID = values.docID.toString();
     return ID;
   };
-
+  const optionSouBstos = [{ optionName: "btanr" }];
+  const optionDesBstos = [{ optionName: "btanr" }];
   //received
   //issued
   return (
@@ -93,7 +117,7 @@ const DocumentViewGI = props => {
       <DocView
         openSOU={true}
         openDES={false}
-        //optionDocItems={optionDocItems}
+        optionDocItems={optionDocItems}
         columnsDetailSOU={columnsDetailSOU}
         columnsDetailDES={columnsDetailDES}
         columns={columns}
@@ -104,6 +128,8 @@ const DocumentViewGI = props => {
         buttonBack={true}
         linkBack={"/issue/search"}
         history={props.history}
+        optionSouBstos={optionSouBstos}
+        optionDesBstos={optionDesBstos}
       />
     </div>
   );

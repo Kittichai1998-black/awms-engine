@@ -11,9 +11,11 @@ import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import styled from 'styled-components'
 import AmFindPopup from '../../../../components/AmFindPopup'
-import { createQueryString } from '../../../../components/function/CoreFunction2'
+// import { createQueryString } from '../../../../components/function/CoreFunction2'
 import AmDialogs from '../../../../components/AmDialogs'
 import AmAux from '../../../../components/AmAux'
+import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const Axios = new apicall();
 
@@ -49,7 +51,6 @@ const InputDiv = styled.div`
 export default props => {
     const [sapResponse, setSAPResponse] = useState([]);
     const [headerData, setHeaderData] = useState([]);
-    const [dataSource, setDataSource] = useState([])
     const [editPopup, setEditPopup] = useState(false);
     const [editData, setEditData] = useState({}
         // {
@@ -58,11 +59,9 @@ export default props => {
         //     LGPLA: "C00"
         // }
     );
-
-    // const [sapReq, setSAPReq] = useState([]);
     const [dialogError, setDialogError] = useState({
         status: false,
-        type: null,
+        type: 'error',
         message: null
     });
 
@@ -80,26 +79,14 @@ export default props => {
         ],
         [
             { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
-            { label: "Mode", type: "labeltext", key: "ref1", texts: "R01", valueTexts: "R01" }
+            { label: "Mode", type: "labeltext", key: "ref1", texts: "R06", valueTexts: "R06" }
         ]
     ];
-
-    const Sto = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
 
     // const BaseCode = {
     //     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
     //     t: "StorageObject",
-    //     q: '[{ "f": "ObjectType", "c":"=", "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     //     f: "Code",
     //     g: "Code",
     //     s: "[{'f':'Code','od':'ASC'}]",
@@ -109,41 +96,52 @@ export default props => {
     // }
 
     // const columsFindpopUpPalletCode = [
-    //     {  Header: 'SU No.',accessor: 'Code',fixed: 'left'}
+    //     {
+    //         Header: 'SU No.',
+    //         accessor: 'Code',
+    //         fixed: 'left',
+    //         // width: 130,
+    //         sortable: true
+    //     }
     // ];
 
     const columnEdit = [
+        { Header: "Reservation Number", accessor: 'RSNUM', type: "input", sub_type: "number" },
         { Header: "SU No.", accessor: 'LENUM', type: "input" },
-        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: Sto, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
-        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input" },
-        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input" },
-        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input" }
+        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "Available Stock", accessor: 'BESTQ_UR', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
+        { Header: "Stock in Quality Control", accessor: 'BESTQ_QI', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
+        { Header: "Blocked Stock", accessor: 'BESTQ_BLK', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] }
     ];
 
     const ref = useRef(columnEdit.map(() => createRef()))
 
     var columnsModify = [
-        { Header: 'SU No.', accessor: 'BaseCode' },
-        { Header: 'SKU Code', accessor: 'PackCode' },
-        { Header: 'SKU Name', accessor: 'Name' },
-        { Header: 'Qty', accessor: 'Quantity' },
-        { Header: 'Batch', accessor: 'Batch' },
-        { Header: 'UnitType', accessor: 'UnitTypeName' }
+        { Header: 'Reservation', accessor: 'RSNUM' },
+        { Header: 'Material', accessor: 'MATNR' },
+        { Header: 'Batch', accessor: 'CHARG' },
+        { Header: 'Quantity', accessor: 'BDMNG' },
+        { Header: 'Unit', accessor: 'MEINS' },
+        { Header: "Dest. Styp.", accessor: "LGTYP" },
+        { Header: 'BIN', accessor: 'LGPLA' },
+        { Header: 'MVT', accessor: 'BWLVS' },
+        { Header: 'UR', accessor: 'BESTQ_UR' },
+        { Header: 'QI', accessor: 'BESTQ_QI' },
+        { Header: 'Blocked', accessor: 'BESTQ_BLK' },
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
     const apiRes = "/issue/detail?docID=";
 
-    const sapConnectorR1 = postData => {
-        Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {
+    const sapConnectorR6 = postData => {
+        Axios.post(window.apipath + '/v2/SAPZWMRF003R6API', postData).then(res => {
             if (res.data._result.status) {
-                if (res.data.datas && !res.data.datas[0].ERR_MSG) {
+                if (!res.data.datas[0].ERR_MSG) {
                     setSAPResponse(res.data.datas);
-                    GetDataByBaesCode(postData.LENUM)
                 } else {
                     setDialogError({
                         status: true,
-                        message: res.data.datas ? res.data.datas[0].ERR_MSG : "Please input Reservation No."
+                        message: res.data.datas[0].ERR_MSG
                     });
                 }
             } else {
@@ -155,29 +153,16 @@ export default props => {
         })
     };
 
-    const GetDataByBaesCode = baseCode => {
-        Sto.q = `[{ "f": "BaseCode", "c":"=", "v": '${baseCode}'}]`
-        Axios.get(createQueryString(Sto)).then(res => {
-            if (res.data.count > 0) {
-                setDataSource(res.data.datas)
-            } else {
-                setDialogError({
-                    status: true,
-                    message: "Base Code is Empty in StorageObject."
-                });
-            }
-        });
-    }
-
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
             // let postData = {}
-            // postData.LENUM = rowdata.LENUM
-            // postData.LGBER = rowdata.LGBER
-            // postData.LGPLA = rowdata.LGPLA
-            // postData.LGTYP = rowdata.LGTYP
+            // postData.RSNUM = rowdata.RSNUM
+            // postData.LENUM = rowdata.Code
+            // postData.BESTQ_BLK = rowdata.BESTQ_BLK
+            // postData.BESTQ_QI = rowdata.BESTQ_QI
+            // postData.BESTQ_UR = rowdata.BESTQ_UR
             rowdata._token = localStorage.getItem('Token');
-            sapConnectorR1(rowdata);
+            sapConnectorR6(rowdata);
         }
         setEditData({})
         setEditPopup(false);
@@ -204,6 +189,7 @@ export default props => {
                     <LabelH>{row.Header} : </LabelH>
                     <InputDiv>
                         <AmInput style={row.style ? row.style : { width: "300px" }}
+                            type={row.sub_type ? row.sub_type : null}
                             defaultValue={row.defultValue ? row.defultValue : ""}
                             inputRef={ref.current[index]}
                             validate={true}
@@ -233,8 +219,29 @@ export default props => {
                             columns={row.columsddl} //array column สำหรับแสดง table
                             width={row.width ? row.width : 300}
                             ddlMinWidth={row.width ? row.width : 100}
-                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject[row.accessor], dataObject)}
+                            onChange={(value, dataObject, inputID, fieldDataKey) => onChangeEditor(row.accessor, dataObject ? dataObject[row.accessor] : null, dataObject)}
                         />
+                    </InputDiv>
+                </FormInline>
+            )
+        } else if (row.type === "radio") {
+            return (
+                <FormInline>
+                    <LabelH>{row.Header} : </LabelH>
+                    <InputDiv>
+                        {row.value.map((x, idx) => {
+                            return (
+                                <FormControlLabel
+                                    key={idx}
+                                    value={x}
+                                    name={row.accessor}
+                                    checked={editData[row.accessor] === x}
+                                    onChange={(e) => onChangeEditor(row.accessor, e.target.value)}
+                                    control={<Radio color="primary" />}
+                                    label={row.labelHeader[idx]}
+                                />
+                            )
+                        })}
                     </InputDiv>
                 </FormInline>
             )
@@ -242,11 +249,8 @@ export default props => {
     }
 
     const onChangeEditor = (field, value, valueObject) => {
-        // if (field === "BaseCode") {
-        //     valueObject ? editData.skuCode = valueObject.Code : delete editData["skuCode"]
-        // }
         editData[field] = value
-        setEditData(editData)
+        setEditData({ ...editData })
     };
 
     const CreateDocument = () => {
@@ -330,30 +334,28 @@ export default props => {
                 headerData.movementTypeID === undefined
                     ? null
                     : headerData.movementTypeID,
-            ref1: 'R01',
+            ref1: 'R06',
             remark: headerData.remark === undefined ? null : headerData.remark,
             receiveItems:
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
         };
 
-        let documentItem = dataSource.map((item, idx) => {
+        let documentItem = sapResponse.map((item, idx) => {
             let options =
-                'bwlvs=' + sapResponse[0].BWLVS +
-                '&lenum=' + sapResponse[0].LENUM +
-                '&lgtyp=' + sapResponse[0].LGTYP +
-                '&lgber=' + sapResponse[0].LGBER +
-                '&lgpla=' + sapResponse[0].LGPLA +
-                '&bestq_ur=' + sapResponse[0].BESTQ_UR +
-                '&bestq_qi=' + sapResponse[0].BESTQ_QI +
-                '&bestq_blk=' + sapResponse[0].BESTQ_BLK;
+                'bestq_ur=' + item.BESTQ_UR +
+                '&bestq_qi=' + item.BESTQ_QI +
+                '&bestq_blk=' + item.BESTQ_BLK +
+                '&bwlvs=' + item.BWLVS +
+                '&lgpla=' + item.LGPLA +
+                '&rsnum=' + item.RSNUM +
+                '&lgtyp=' + item.LGTYP;
             return {
                 ID: null,
-                palletcode: item.BaseCode,
-                skuCode: item.PackCode,
-                packCode: item.PackCode,
-                quantity: item.Quantity,
-                unitType: item.UnitTypeName,
-                batch: item.Batch,
+                skuCode: item.MATNR,
+                packCode: item.MATNR,
+                quantity: item.BDMNG,
+                unitType: item.MEINS,
+                batch: item.CHARG,
                 options: options
             };
         });
@@ -406,7 +408,7 @@ export default props => {
                     >Load</AmButton>
                 }
                 customAddComponentRender={customAdd()}
-                customDataSource={dataSource}
+                customDataSource={sapResponse}
                 customTableColumns={columnsModify}
                 customDocumentData={CreateDocument()}
                 customGetHeaderData={headerData => setHeaderData(headerData)}
