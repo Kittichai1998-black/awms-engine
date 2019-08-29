@@ -25,7 +25,7 @@ namespace ProjectAAI.ADO.SAPApi
             public string LENUM;
         }
         public class ZSWMRF001_OUT_SU : ZSWMRF001_IN_SU
-        {
+        { 
             /// <summary>Storage Type</summary>
             public string LGTYP;
             /// <summary>Material Number</summary>

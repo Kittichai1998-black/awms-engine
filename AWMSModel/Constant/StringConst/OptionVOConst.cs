@@ -14,7 +14,8 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_DONE_DES_EVENT_STATUS = "_done_des_estatus";
         public const string OPT_DONE_SOU_EVENT_STATUS = "_done_sou_estatus";
         //AAI
-        public const string OPT_LGTYP = "lgtyp";
+        public const string OPT_LGNUM = "lgnum"; 
+        public const string OPT_LGTYP = "lgtyp"; 
         public const string OPT_LGBER = "lgber";
         public const string OPT_LGPLA = "lgpla";
         public const string OPT_BWLVS = "bwlvs";

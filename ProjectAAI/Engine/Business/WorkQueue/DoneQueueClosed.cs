@@ -115,17 +115,20 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     }
                     
 
-                    if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
-                    {
-                        if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
-                        {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
-                        }
-                        else
-                        {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, null, DocumentEventStatus.CLOSED, buVO);
-                        }
-                    }
+                
+                       // if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                       // {
+                            var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, buVO);
+                            if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
+                            {
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
+                            }
+                       // }
+                       // else
+                       // {
+                       //     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, null, DocumentEventStatus.CLOSED, buVO);
+                       // }
+                  
                 }
                 else
                 {

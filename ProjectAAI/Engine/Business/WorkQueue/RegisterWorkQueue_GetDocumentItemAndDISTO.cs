@@ -5,6 +5,7 @@ using AWMSEngine.Common;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -21,6 +22,14 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var reqVO = data.reqVO;
             var stoRoot = data.sto;
             var staticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+
+            var opt_LGNUM = ObjectUtil.QryStrGetValue(stoRoot.options, OptionVOConst.OPT_LGNUM);
+            var sou_warehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == opt_LGNUM);
+            if (sou_warehouse == null)
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Source Warehouse " + opt_LGNUM + " Not Found");
+            var sou_branch = staticValue.Branchs.FirstOrDefault(x => x.ID == sou_warehouse.Branch_ID);
+            if (sou_branch == null)
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Source Branch Not Found");
 
             var warehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (warehouse == null)
@@ -59,8 +68,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : staticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Sou_Customer_ID = null,
                 Sou_Supplier_ID = null,
-                Sou_Branch_ID = reqVO.ioType == IOType.INPUT ? null : branch.ID,
-                Sou_Warehouse_ID = reqVO.ioType == IOType.INPUT ? null : warehouse.ID,
+                Sou_Branch_ID = reqVO.ioType == IOType.INPUT ? sou_branch.ID.Value : branch.ID,
+                Sou_Warehouse_ID = reqVO.ioType == IOType.INPUT ? sou_warehouse.ID.Value : warehouse.ID,
                 Sou_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : area.ID,
 
                 Des_Customer_ID = null,
@@ -70,7 +79,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 Des_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : desArea.ID,
 
                 DocumentDate = DateTime.Now,
-                ActionTime = null,
+                ActionTime = DateTime.Now,
                 MovementType_ID = MovementType.FG_TRANSFER,
                 RefID = null,
                 Ref1 = null,
@@ -99,6 +108,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 {
                     doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
                 }
+                        
                 var baseUnitTypeConvt = staticValue.ConvertToBaseUnitByPack(pack.ID.Value, sto.qty, pack.UnitType_ID);
                 decimal? baseQuantity = null;
                 if (sto.qty >= 0)
