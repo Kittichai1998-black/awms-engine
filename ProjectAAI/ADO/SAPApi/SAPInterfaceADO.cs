@@ -13,7 +13,7 @@ using static ProjectAAI.ADO.SAPApi.SAPCriteria;
 
 namespace ProjectAAI.ADO.SAPApi
 {
-    public class SAPInterfaceADO : BaseMSSQLAccess<SAPInterfaceADO>
+    public class SAPInterfaceADO : BaseAPIAccess<SAPInterfaceADO>
     {
 
         public class SapResponse<T>
@@ -24,16 +24,16 @@ namespace ProjectAAI.ADO.SAPApi
             public string stacktrace;
         }
 
-        public T postSAP<T>(object datas, VOCriteria buVO, string apiUri)
+        /*public T postSAP<T>(object datas, VOCriteria buVO, string apiUri)
             where T : class, new()
         {
-            var res = RESTFulAccess.SendJson<T>(buVO.Logger, apiUri, RESTFulAccess.HttpMethod.POST, datas);
+            var res = RESTFulAccess.SendJson<T>(buVO.Logger, "SAPCONNECT_LOCATION", RESTFulAccess.HttpMethod.POST, datas);
             return res;
-        }
+        }*/
 
         public SapResponse<ZSWMRF001_OUT_SU> ZWMRF001(string reqVO, VOCriteria buVO)
         {
-            var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
             {
@@ -49,7 +49,7 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            var res = this.postSAP<SapResponse<ZSWMRF001_OUT_SU>>(req, buVO, getURL);
+            var res = this.SendJson<SapResponse<ZSWMRF001_OUT_SU>>("SAPCONNECT_LOCATION", req,  buVO);
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
                 throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
@@ -60,7 +60,7 @@ namespace ProjectAAI.ADO.SAPApi
 
         public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, long docID, VOCriteria buVO)
         {
-            var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
             {
@@ -79,8 +79,7 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
             
-            var res = this.postSAP<SapResponse<ZSWMRF002_OUT_SU>>(req, buVO, getURL);
-
+            var res = this.SendJson<SapResponse<ZSWMRF002_OUT_SU>>("SAPCONNECT_LOCATION", req, buVO);
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -97,7 +96,7 @@ namespace ProjectAAI.ADO.SAPApi
 
         public SapResponse<ZSWMRF004_OUT_SAP> ZWMRF004(ZSWMRF004_IN_AWS reqVO, VOCriteria buVO)
         {
-            var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
             {
@@ -109,8 +108,7 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<SapResponse<ZSWMRF004_OUT_SAP>>(req, buVO, getURL);
-
+            var res = this.SendJson<SapResponse<ZSWMRF004_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -127,7 +125,7 @@ namespace ProjectAAI.ADO.SAPApi
 
         public SapResponse<ZSWMRF005_OUT_SAP> ZWMRF005(ZSWMRF005_IN_AWS reqVO, VOCriteria buVO)
         {
-            var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
             {
@@ -139,8 +137,7 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<SapResponse<ZSWMRF005_OUT_SAP>>(req, buVO, getURL);
-
+            var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -155,7 +152,7 @@ namespace ProjectAAI.ADO.SAPApi
         }
         public SapResponse<ZSWMRF006_OUT_SAP> ZWMRF006(ZSWMRF006_IN_AWS reqVO, VOCriteria buVO)
         {
-            var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
             {
@@ -166,9 +163,8 @@ namespace ProjectAAI.ADO.SAPApi
                 outTableName = "OUT_SAP",
                 datas = reqVO
             };
-
-            var res = this.postSAP<SapResponse<ZSWMRF006_OUT_SAP>>(req, buVO, getURL);
-
+            
+            var res = this.SendJson<SapResponse<ZSWMRF006_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -184,7 +180,7 @@ namespace ProjectAAI.ADO.SAPApi
 
         public SapResponse<ZSWMRF007_OUT_SAP> ZWMRF007(ZSWMRF007_IN_REQ reqVO, VOCriteria buVO)
         {
-            var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
             {
@@ -196,8 +192,7 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.postSAP<SapResponse<ZSWMRF007_OUT_SAP>>(req, buVO, getURL);
-
+            var res = this.SendJson<SapResponse<ZSWMRF007_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
@@ -212,7 +207,7 @@ namespace ProjectAAI.ADO.SAPApi
 
         public SapResponse<ZSWMRF003_OUT_REQ> ZWMRF003(ZSWMRF003_IN_REQ reqVO, VOCriteria buVO)
         {
-            var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
             {
@@ -223,8 +218,7 @@ namespace ProjectAAI.ADO.SAPApi
                 outTableName = "OUT_REQ",
                 datas = reqVO
             };
-
-            var res = this.postSAP<SapResponse<ZSWMRF003_OUT_REQ>>(req, buVO, getURL);
+            var res = this.SendJson<SapResponse<ZSWMRF003_OUT_REQ>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
     }

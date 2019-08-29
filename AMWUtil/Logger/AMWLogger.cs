@@ -17,21 +17,20 @@ namespace AMWUtil.Logger
         //public FileStream FileLogger { get; set; }
         private string _LogRefID;
         public string LogRefID { get { return this._LogRefID; } }
-        private string _RefID;
-        public string ServiceRefID { get { return _RefID; } }
+        private string _LogName;
+        public string ServiceRefID { get { return _LogName; } }
         public string SubServiceName { get; set; }
         private string _ServiceName { get; set; }
         private string _FileName { get; set; }
         private StackTrace _StackTrace;
 
         
-        public AMWLogger(string fileName, string refID, string serviceName)
+        public AMWLogger(string fileName, string logName, string serviceName)
         {
             this._LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
-            this._RefID = refID;
+            this._LogName = logName;
             this._ServiceName = serviceName;
             this._FileName = fileName;
-            this._StackTrace = new StackTrace();
             //this.FileLogger = File.Open(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
             //this.UpdateLastUse();
             //this.LogBeginTransaction();
@@ -40,22 +39,17 @@ namespace AMWUtil.Logger
 
 
 
-        public void LogWrite(string logLV, string message, [CallerLineNumber]int lineNumber = 0, string className = "", string methodName = "")
+        public void LogWrite(string logLV, string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            className = string.IsNullOrWhiteSpace(className) ? _StackTrace.GetFrame(2).GetMethod().DeclaringType.FullName : className;
-            methodName = string.IsNullOrWhiteSpace(methodName) ? _StackTrace.GetFrame(2).GetMethod().Name : methodName;
-
-            message = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} [{4}] [{8}] {5}({3}) {9}",
+            this._StackTrace = new StackTrace();
+            message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) >> {6}",
                                         DateTime.Now,
-                                        className,
-                                        methodName,
-                                        lineNumber,
                                         this.LogRefID,
-                                        this._ServiceName + (string.IsNullOrWhiteSpace(this.SubServiceName) ? string.Empty : "/" + this.SubServiceName),
-                                        this.ServiceRefID,
-                                        this._RefID,
                                         logLV,
-                                        message.Replace("\r", string.Empty).Replace("\n", "_$$$_"));
+                                        string.IsNullOrWhiteSpace(this.SubServiceName) ? this._ServiceName : this.SubServiceName,
+                                        sourceFile.Split('\\').Last(),
+                                        lineNumber,
+                                        message.Replace("\r", string.Empty).Replace("\n", @"\n"));
             lock (AMWLoggerManager.LogMessagesTMPLock)
             {
                 AMWLoggerManager.LogMessagesTMP.Add(new KeyValuePair<string, string>(this._FileName, message));
@@ -64,37 +58,37 @@ namespace AMWUtil.Logger
             
         }
 
-        public void LogAll(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogAll(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("ALL" , message, lineNumber);
+            this.LogWrite("ALL" , message, sourceFile, lineNumber);
         }
-        public void LogInfo(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogInfo(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("INF" ,message, lineNumber);
+            this.LogWrite("INFO" ,message, sourceFile, lineNumber);
         }
-        public void LogDebug(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogDebug(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("DEB", message, lineNumber);
+            this.LogWrite("DEBUG", message, sourceFile, lineNumber);
         }
-        public void LogError(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogError(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("ERR", message, lineNumber);
+            this.LogWrite("ERROR", message, sourceFile, lineNumber);
         }
-        public void LogWarning(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogWarning(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("WAR", message, lineNumber);
+            this.LogWrite("WARNING", message, sourceFile, lineNumber);
         }
-        public void LogFatal(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogFatal(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("FAT", message, lineNumber);
+            this.LogWrite("FATAL", message, sourceFile, lineNumber);
         }
-        public void LogTrace(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogTrace(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("TRA", message, lineNumber);
+            this.LogWrite("TRACE", message, sourceFile, lineNumber);
         }
-        public void LogOff(string message, [CallerLineNumber]int lineNumber = 0)
+        public void LogOff(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("OFF", message, lineNumber);
+            this.LogWrite("OFF", message, sourceFile, lineNumber);
         }
 
         public void Dispose()

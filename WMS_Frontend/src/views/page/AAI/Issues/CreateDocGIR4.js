@@ -11,7 +11,7 @@ import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import styled from 'styled-components'
 import AmFindPopup from '../../../../components/AmFindPopup'
-import { createQueryString } from '../../../../components/function/CoreFunction2'
+// import { createQueryString } from '../../../../components/function/CoreFunction2'
 import AmDialogs from '../../../../components/AmDialogs'
 import AmAux from '../../../../components/AmAux'
 import Radio from '@material-ui/core/Radio';
@@ -59,9 +59,9 @@ export default props => {
         //     LGPLA: "C00"
         // }
     );
-    const [dialog, setDialog] = useState({
+    const [dialogError, setDialogError] = useState({
         status: false,
-        type: null,
+        type: 'error',
         message: null
     });
 
@@ -84,31 +84,32 @@ export default props => {
         ]
     ];
 
-    const BaseCode = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
-        t: "StorageObject",
-        q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "Code",
-        g: "Code",
-        s: "[{'f':'Code','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const BaseCode = {
+    //     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+    //     t: "StorageObject",
+    //     q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "Code",
+    //     g: "Code",
+    //     s: "[{'f':'Code','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    // }
 
-    const columsFindpopUpPalletCode = [
-        {
-            Header: 'SU No.',
-            accessor: 'Code',
-            fixed: 'left',
-            // width: 130,
-            sortable: true
-        }
-    ];
+    // const columsFindpopUpPalletCode = [
+    //     {
+    //         Header: 'SU No.',
+    //         accessor: 'Code',
+    //         fixed: 'left',
+    //         // width: 130,
+    //         sortable: true
+    //     }
+    // ];
 
     const columnEdit = [
         { Header: "Reservation Number", accessor: 'RSNUM', type: "input", sub_type: "number" },
-        { Header: "SU Code", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "SU No.", accessor: 'LENUM', type: "input"},
+        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
         { Header: "Available Stock", accessor: 'BESTQ_UR', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
         { Header: "Stock in Quality Control", accessor: 'BESTQ_QI', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
         { Header: "Blocked Stock", accessor: 'BESTQ_BLK', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] }
@@ -122,11 +123,12 @@ export default props => {
         { Header: 'Batch', accessor: 'CHARG' },
         { Header: 'Quantity', accessor: 'BDMNG' },
         { Header: 'Unit', accessor: 'MEINS' },
+        { Header: "Dest. Styp.", accessor: "LGTYP" },
         { Header: 'BIN', accessor: 'LGPLA' },
         { Header: 'MVT', accessor: 'BWLVS' },
         { Header: 'UR', accessor: 'BESTQ_UR' },
         { Header: 'QI', accessor: 'BESTQ_QI' },
-        { Header: 'Blocked', accessor: 'BESTQ_BLK' }
+        { Header: 'Blocked', accessor: 'BESTQ_BLK' },
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
@@ -138,16 +140,14 @@ export default props => {
                 if (!res.data.datas[0].ERR_MSG) {
                     setSAPResponse(res.data.datas);
                 } else {
-                    setDialog({
+                    setDialogError({
                         status: true,
-                        type: "error",
                         message: res.data.datas[0].ERR_MSG
                     });
                 }
             } else {
-                setDialog({
+                setDialogError({
                     status: true,
-                    type: "error",
                     message: res.data._result.message
                 });
             }
@@ -156,14 +156,14 @@ export default props => {
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            let postData = {}
-            postData.RSNUM = rowdata.RSNUM
-            postData.LENUM = rowdata.Code
-            postData.BESTQ_BLK = rowdata.BESTQ_BLK
-            postData.BESTQ_QI = rowdata.BESTQ_QI
-            postData.BESTQ_UR = rowdata.BESTQ_UR
-            postData._token = localStorage.getItem('Token');
-            sapConnectorR4(postData);
+            // let postData = {}
+            // postData.RSNUM = rowdata.RSNUM
+            // postData.LENUM = rowdata.Code
+            // postData.BESTQ_BLK = rowdata.BESTQ_BLK
+            // postData.BESTQ_QI = rowdata.BESTQ_QI
+            // postData.BESTQ_UR = rowdata.BESTQ_UR
+            rowdata._token = localStorage.getItem('Token');
+            sapConnectorR4(rowdata);
         }
         setEditData({})
         setEditPopup(false);
@@ -385,7 +385,7 @@ export default props => {
 
     return (
         <AmAux>
-            <AmDialogs typePopup={dialog.type} content={dialog.message} onAccept={(e) => { setDialog(e) }} open={dialog.status}></AmDialogs >
+            <AmDialogs typePopup={dialogError.type} content={dialogError.message} onAccept={(e) => { setDialogError(e) }} open={dialogError.status}></AmDialogs >
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
                 //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
