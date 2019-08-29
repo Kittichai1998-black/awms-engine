@@ -827,6 +827,7 @@ const AmMappingPallet = (props) => {
             if (visible) {
                 return <FormInline> <LabelH>{t(name)} : </LabelH>
                     <AmRadioGroup
+                        row={true}
                         name={field}
                         dataValue={fieldLabel}
                         returnDefaultValue={true}
