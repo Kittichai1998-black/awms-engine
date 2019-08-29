@@ -45,6 +45,10 @@ const CreateDocGIR5 = Loadable({
   loader: () => import("../../views/page/AAI/Issues/CreateDocGIR5"),
   loading: Loading
 });
+const CreateDocGIR6 = Loadable({
+  loader: () => import("../../views/page/AAI/Issues/CreateDocGIR6"),
+  loading: Loading
+});
 
 const routes = [
   { path: "/issue/search", name: "Search GI", compoment: DocumentSearchGI, exact: true },
@@ -57,6 +61,7 @@ const routes = [
   { path: '/issue/createR3', name: 'base5', compoment: CreateDocGIR3, exact: true },
   { path: '/issue/createR4', name: 'base5', compoment: CreateDocGIR4, exact: true },
   { path: "/issue/createR5", name: "base5", compoment: CreateDocGIR5, exact: true },
+  { path: "/issue/createR6", name: "base5", compoment: CreateDocGIR6, exact: true },
 ];
 
 export default routes;
