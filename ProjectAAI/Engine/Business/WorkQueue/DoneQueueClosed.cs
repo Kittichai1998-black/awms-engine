@@ -37,8 +37,13 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                     {
                         distos.ForEach(disto => {
-                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, buVO);
-                            var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, buVO);
+                            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, true, false, buVO);
+                            var bsto = stos.ToTreeList().Where(y => y.type == StorageObjectType.BASE).FirstOrDefault();
+                             
+                            var resSAP = SendDataToSAP_ZWMRF002(bsto.code, docs.ID.Value, buVO);
+
+                            var TANUM = resSAP.datas.Find(data => data.TANUM != 0).TANUM;
+                            UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_TANUM, TANUM, buVO);
                         });
                     }
                     else
@@ -65,6 +70,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                 };
 
                                 var resSAP = SendDataToSAP_ZWMRF004(reqData, buVO);
+                                var BTANR = resSAP.datas.Find(data => data.BTANR != 0).BTANR;
+                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANR.ToString(), buVO);
+
                             }
                             else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
                             {
@@ -80,6 +88,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                 };
 
                                 var resSAP = SendDataToSAP_ZWMRF005(reqData, buVO);
+                                var BTANR = resSAP.datas.Find(data => data.BTANR != 0).BTANR;
+                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANR.ToString(), buVO);
+
 
                             }
                             else if (docs.Ref1 == "R05")
@@ -95,6 +106,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     GI_DOC = docs.Code
                                 };
                                 var resSAP = SendDataToSAP_ZWMRF006(reqData, buVO);
+                                var BTANR = resSAP.datas.Find(data => data.BTANR != 0).BTANR;
+                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANR.ToString(), buVO);
+
                             }
                         });
                          
@@ -121,9 +135,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
             return reqVO;
         }
-        private SapResponse<ZSWMRF002_OUT_SU> SendDataToSAP_ZWMRF002(string suCode, VOCriteria buVO)
+        private SapResponse<ZSWMRF002_OUT_SU> SendDataToSAP_ZWMRF002(string suCode, long docID, VOCriteria buVO)
         {
-            var res = SAPInterfaceADO.GetInstant().ZWMRF002(suCode, buVO);
+            var res = SAPInterfaceADO.GetInstant().ZWMRF002(suCode, docID, buVO);
             return res;
         }
         private SapResponse<ZSWMRF004_OUT_SAP> SendDataToSAP_ZWMRF004(ZSWMRF004_IN_AWS data, VOCriteria buVO)
@@ -141,5 +155,14 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var res = SAPInterfaceADO.GetInstant().ZWMRF006(data, buVO);
             return res;
         } 
+ 
+        private void UpdateBaseStorageObject(long bstoID, string options, string key, dynamic value, VOCriteria buVO)
+        {
+            var optionsNew = ObjectUtil.QryStrSetValue(options, key, value);
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bstoID, buVO,
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string, object>("Options", optionsNew)
+                });
+        }
     }
 }

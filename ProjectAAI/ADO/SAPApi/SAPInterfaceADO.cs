@@ -4,6 +4,7 @@ using AMWUtil.Logger;
 using AWMSEngine.ADO;
 using AWMSEngine.ADO.StaticValue;
 using AWMSModel.Criteria;
+using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, long docID, VOCriteria buVO)
         {
             var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -77,11 +78,17 @@ namespace ProjectAAI.ADO.SAPApi
                     NLBER = "001"
                 }
             };
-
+            
             var res = this.postSAP<SapResponse<ZSWMRF002_OUT_SU>>(req, buVO, getURL);
 
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
+                var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
+                    docID = docID,
+                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                };
+                buVO.FinalLogDocMessage.Add(msg);
                 throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
@@ -106,6 +113,12 @@ namespace ProjectAAI.ADO.SAPApi
 
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
+                var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
+                    docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
+                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                };
+                buVO.FinalLogDocMessage.Add(msg);
                 throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
@@ -130,6 +143,11 @@ namespace ProjectAAI.ADO.SAPApi
 
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
+                var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
+                    docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
+                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                };
                 throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
@@ -153,6 +171,11 @@ namespace ProjectAAI.ADO.SAPApi
 
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
+                var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
+                    docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
+                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                };
                 throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
@@ -177,6 +200,10 @@ namespace ProjectAAI.ADO.SAPApi
 
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
+                var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
+                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                };
                 throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
