@@ -22,6 +22,8 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_WEBAZ = "webaz";
         public const string OPT_INCBD = "incubatedate";
         public const string OPT_FVDT1 = "fvdt1";
+        public const string OPT_TANUM = "tanum";
+        public const string OPT_BTANR = "btanr";
 
     }
 }

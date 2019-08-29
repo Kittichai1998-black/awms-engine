@@ -22,12 +22,13 @@ namespace AMWUtil.DataAccess.Http
             PATCH
         }
         public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class, new()
+            where T : class
         {
             return SendForm<T>(logger, apiUrl, method, datas, null, authen, retry, timeout);
         }
+        
         public static T SendForm<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class, new()
+            where T : class
         {
             T result = null;
             var values = new Dictionary<string, string>();
@@ -99,12 +100,12 @@ namespace AMWUtil.DataAccess.Http
             return result;
         }
         public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class, new()
+            where T : class
         {
             return SendJson<T>(logger, apiUrl, method, datas, null, authen, retry, timeout);
         }
         public static T SendJson<T>(AMWLogger logger, string apiUrl, HttpMethod method, object datas, List<HttpResultModel> outResults, IAuthentication authen = null, int retry = 0, int timeout = 30000)
-            where T : class, new()
+            where T : class
         {
             T result = null;
             if (logger != null)

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -59,28 +60,29 @@ namespace AWMSEngine.Engine
             var result = this.BuVO.Get<dynamic>(BusinessVOConst.KEY_RESULT_API);
             long dbLogID = this.BuVO.Get<long>(BusinessVOConst.KEY_DB_LOGID);
             //long dbLogActionID = 0;
-            var resultStatus = new { status = -1,code="", message = "", logref = "", techmessage = "" };
+            //var resultStatus = new { status = -1,code="", message = "", logref = "", techmessage = "" };
             try
             {
                 this.Logger = logger;
-                this.Logger.LogInfo("REQUEST_DATA:: " + resVO.Json());
+                this.Logger.LogInfo("--------- Begin Engine.Exec ---------");
+                this.Logger.LogInfo("reqVO=" + resVO.Json());
                 //dbLogActionID = ADO.LogingADO.GetInstant().BeginAPIServiceAction(dbLogID, this.GetType().FullName, reqVO, this.BuVO);
                 this.StaticValue = StaticValueManager.GetInstant();
                 //this.Logger.LogInfo("BuVO : " + this.BuVO.ToString());
                 resVO = this.ExecuteEngine(reqVO);
-
-                resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", logref = logger.LogRefID, techmessage = "" };
+                //resultStatus = new { status = 1, code = "I0000", message = "SUCCESS", logref = logger.LogRefID, techmessage = "" };
             }
-            catch (AMWException ex)
+            catch (AMWException)
             {
-                resultStatus = new { status = 0, code = ex.GetAMWCode(), message = ex.Message, logref = logger.LogRefID, techmessage = ex.StackTrace };
-                throw ex;
+                //resultStatus = new { status = 0, code = ex.GetAMWCode(), message = ex.Message, logref = logger.LogRefID, techmessage = ex.StackTrace };
+                throw;
             }
             catch (System.Exception ex)
             {
                 this.Logger.LogError(ex.StackTrace);
-                resultStatus = new { status = 0, code = AMWExceptionCode.U0000.ToString(), message = ex.Message, logref = logger.LogRefID, techmessage = ex.StackTrace };
-                throw ex;
+                //resultStatus = new { status = 0, code = AMWExceptionCode.U0000.ToString(), message = ex.Message, logref = logger.LogRefID, techmessage = ex.StackTrace };
+                //throw ex;
+                throw;
             }
             finally
             {
@@ -88,7 +90,8 @@ namespace AWMSEngine.Engine
 
                 if (this.Logger != null)
                 {
-                    this.Logger.LogInfo("RESPONSE_DATA:: " + resVO.Json());
+                    this.Logger.LogInfo("resVO=" + resVO.Json());
+                    this.Logger.LogInfo("--------- End Engine.Exec ---------");
                 }
                 logger.SubServiceName = this._subServiceNameTMP;
             }

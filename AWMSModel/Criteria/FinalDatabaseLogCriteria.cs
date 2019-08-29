@@ -15,6 +15,14 @@ namespace AWMSModel.Criteria
             public string msgWarning;
             public string msgInfo;
             public string msgError;
+            public DocumentOptionMessage() { }
+            public DocumentOptionMessage(long docID, string msgInfo, string msgWarning, string msgError)
+            {
+                this.docID = docID;
+                this.msgInfo = msgInfo;
+                this.msgWarning = msgWarning;
+                this.msgError = msgError;
+            }
         }
     }
 }

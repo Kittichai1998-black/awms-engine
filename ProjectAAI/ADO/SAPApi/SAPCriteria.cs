@@ -78,7 +78,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Storage Unit Number</summary>
             public string LENUM;
             /// <summary>Transfer Order</summary>
-            public int TANUM;
+            public long TANUM;
             /// <summary>Error message</summary>
             public string ERR_MSG;
         }
@@ -168,7 +168,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
             public string GI_DOC;
             /// <summary>Transfer Order</summary>
-            public string BTANR;
+            public long BTANR;
             /// <summary>แสดงข้อความผิดพลาด</summary>
             public string ERR_MSG;
         }

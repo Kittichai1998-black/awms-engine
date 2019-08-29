@@ -27,7 +27,7 @@ const styles = theme => ({
 });
 
 const RadioButtonsGroup = props => {
-  const { classes, dataValue, name, formLabel, onChange, defaultValue, returnDefaultValue } = props;
+  const { classes, dataValue, name, formLabel, row, onChange, defaultValue, returnDefaultValue } = props;
 
   // const [Data, setData] = useState({});
   const [value, setValue] = useState(defaultValue.value);
@@ -49,6 +49,7 @@ const RadioButtonsGroup = props => {
       <FormControl component='fieldset' className={classes.formControl}>
         <FormLabel component="legend">{formLabel}</FormLabel>
         <RadioGroup
+          row={row !== undefined ? row : false}
           aria-label={name}
           name={name}
           className={classes.group}
@@ -85,6 +86,7 @@ RadioButtonsGroup.propTypes = {
   returnDefaultValue: PropTypes.bool,
   defaultValue: PropTypes.object,
   onChange: PropTypes.func,
+  row: PropTypes.bool
 };
 
 export default withStyles(styles)(RadioButtonsGroup);
