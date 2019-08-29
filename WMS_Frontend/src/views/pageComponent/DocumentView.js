@@ -116,6 +116,7 @@ const DocumentView = props => {
 
   useEffect(() => {
     getData();
+    console.log(props.optionDocItems);
   }, []);
 
   const getData = () => {
@@ -151,7 +152,9 @@ const DocumentView = props => {
           row._sumQtyDisto = sumQty;
 
           // === getOption === DocItem
-          var qryStr = queryString.parse(row.options);
+
+          var qryStr = queryString.parse(row.Options);
+
           if (optionHeader) {
             optionHeader.forEach(x => {
               row[x.optionName] =
@@ -160,7 +163,23 @@ const DocumentView = props => {
                   : qryStr[x.optionName];
             });
           }
-          console.log(row);
+
+          if (window.project === "AAI") {
+            row.lenum = qryStr.lenum === "undefined" ? null : qryStr.lenum;
+            row.posnr = qryStr.rosnr === "undefined" ? null : qryStr.posnr;
+            row.matnr = qryStr.matnr === "undefined" ? null : qryStr.matnr;
+            row.charg = qryStr.charg === "undefined" ? null : qryStr.charg;
+            row.lgtyp = qryStr.lgtyp === "undefined" ? null : qryStr.lgtyp;
+            row.lgbtr = qryStr.lgbtr === "undefined" ? null : qryStr.lgbtr;
+            row.lgpla = qryStr.lgpla === "undefined" ? null : qryStr.lgpla;
+            row.bestq_ur =
+              qryStr.bestq_ur === "undefined" ? null : qryStr.bestq_ur;
+            row.bastq_qi =
+              qryStr.bastq_qi === "undefined" ? null : qryStr.bastq_qi;
+            row.bastq_blk =
+              qryStr.bastq_blk === "undefined" ? null : qryStr.bastq_blk;
+          }
+
           row.palletcode =
             qryStr.palletcode === "undefined" ? null : qryStr.palletcode;
           row.locationcode =
@@ -192,7 +211,7 @@ const DocumentView = props => {
           // === getOption ===
           //var qryStr = queryString.parse(rowDetail.options)
           //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-          var qryStr = queryString.parse(rowDetail.options);
+          var qryStr = queryString.parse(rowDetail.Options);
           if (optionSouBstos) {
             optionSouBstos.forEach(x => {
               rowDetail[x.optionName] =
@@ -201,6 +220,14 @@ const DocumentView = props => {
                   : qryStr[x.optionName];
             });
           }
+
+          if (window.project === "AAI") {
+            rowDetail.tanum =
+              qryStr.tanum === "undefined" ? null : qryStr.tanum;
+            rowDetail.btanr =
+              qryStr.btanr === "undefined" ? null : qryStr.btanr;
+          }
+
           dataTableDetailSOU.push({
             ...rowDetail,
             _packQty:
@@ -209,7 +236,7 @@ const DocumentView = props => {
                 : typeDoc === "received"
                 ? rowDetail.packQty
                 : typeDoc === "audit"
-                ? rowDetail.distoQtyMax
+                ? rowDetail.distoQty
                 : null
           });
         });
@@ -224,7 +251,7 @@ const DocumentView = props => {
           // === getOption ===
           //var qryStr = queryString.parse(rowDetail.options)
           //rowDetail.locationCode = qryStr.locationCode === "undefined" ? null : qryStr.locationCode;
-          var qryStr = queryString.parse(rowDetail.options);
+          var qryStr = queryString.parse(rowDetail.Options);
           if (optionDesBstos) {
             optionDesBstos.forEach(x => {
               rowDetail[x.optionName] =
@@ -232,6 +259,12 @@ const DocumentView = props => {
                   ? null
                   : qryStr[x.optionName];
             });
+          }
+          if (window.project === "AAI") {
+            rowDetail.tanum =
+              qryStr.tanum === "undefined" ? null : qryStr.tanum;
+            rowDetail.btanr =
+              qryStr.btanr === "undefined" ? null : qryStr.btanr;
           }
           dataTableDetailDES.push({
             ...rowDetail,
@@ -241,7 +274,7 @@ const DocumentView = props => {
                 : typeDoc === "received"
                 ? rowDetail.packQty
                 : typeDoc === "audit"
-                ? rowDetail.distoQtyMax
+                ? rowDetail.distoQty
                 : null
           });
         });
@@ -257,7 +290,6 @@ const DocumentView = props => {
 
   const renderDocumentStatus = () => {
     const res = DocumentEventStatus.filter(row => {
-      console.log(row);
       return row.code === dataHeader.EventStatus;
     });
     return res.map(row => row.status);
@@ -289,7 +321,7 @@ const DocumentView = props => {
     } else if (type === "function") {
       return eval(value);
     } else if (type === "option") {
-      var qryStr = queryString.parse(dataHeader.options);
+      var qryStr = queryString.parse(dataHeader.Options);
       return qryStr[value] === "undefined" ? null : qryStr[value];
     } else {
       return dataHeader[value];

@@ -10,7 +10,8 @@ import AmButton from "../../../../components/AmButton";
 import AmInput from "../../../../components/AmInput";
 import Grid from "@material-ui/core/Grid";
 import styled from "styled-components";
-
+import _ from "lodash";
+import { array } from "prop-types";
 const Axios = new apicall();
 const InputDiv = styled.div``;
 const FormInline = styled.div`
@@ -41,13 +42,25 @@ const AmCreateDocumentR5 = props => {
   const [headerData, setHeaderData] = useState([]);
   const [openError, setOpenError] = useState(false);
   const [textError, setTextError] = useState("");
+  const [refID, setRefID] = useState("");
+  const [groupMVT, setGroupMVT] = useState([]);
+  const [groupValueMVT, setGroupValueMVT] = useState("");
 
   const headerCreates = [
     [
-      { label: "Document No", type: "labeltext", key: "sapdoc", texts: "-" },
+      { label: "Document No.", type: "labeltext", key: "sapdoc", texts: "-" },
       { label: "Document Date", type: "dateTime", key: "documentDate" }
     ],
-    [{ label: "Action Time", type: "dateTime", key: "actionTime" }],
+    [
+      {
+        label: "Movement Type",
+        type: "labeltext",
+        key: "movementTypeID",
+        texts: "STO_TRANSFER",
+        valueTexts: "5100"
+      },
+      { label: "Action Time", type: "dateTime", key: "actionTime" }
+    ],
     [
       {
         label: "Source Warehouse",
@@ -58,13 +71,7 @@ const AmCreateDocumentR5 = props => {
       }
     ],
     [
-      {
-        label: "MoveMent Type",
-        type: "labeltext",
-        key: "movementTypeID",
-        texts: "STO TRANSFER",
-        valueTexts: "1010"
-      },
+      { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
       {
         label: "Mode",
         type: "labeltext",
@@ -148,6 +155,7 @@ const AmCreateDocumentR5 = props => {
     }
     setEditPopup(false);
     setSAPReq([]);
+    setRefID("");
   };
 
   const onChangeEditor = (field, value) => {
@@ -250,6 +258,20 @@ const AmCreateDocumentR5 = props => {
   ];
 
   const CreateDocument = () => {
+    let DataValueItem = "";
+    let DataValueRefID = "";
+    sapResponse.map((item, idx) => {
+      DataValueItem = item.BWLVS;
+      DataValueRefID = item.VBELN_VL;
+      groupMVT.push(DataValueItem);
+      var dataGroup = groupMVT.filter((x, i, a) => a.indexOf(x) == i);
+      dataGroup.forEach(x => {
+        strMVT = x + ",";
+      });
+      var l = strMVT.length;
+      var dataResultMVT = strMVT.substring(0, l - 1);
+      console.log(dataResultMVT);
+    });
     let document = {
       actionTime:
         headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -331,15 +353,24 @@ const AmCreateDocumentR5 = props => {
           ? null
           : headerData.movementTypeID,
       ref1: "R05",
+      ref2: DataValueItem,
+      refID: DataValueRefID,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
     };
-
+    var strMVT = "";
     let documentItem = sapResponse.map((item, idx) => {
-      console.log(item);
+      // let DataValueItem = item.BWLVS;
+      // groupMVT.push(DataValueItem);
+      // var dataGroup = groupMVT.filter((x, i, a) => a.indexOf(x) == i);
+      // dataGroup.forEach(x => {
+      //   strMVT = x + ",";
+      // });
+      // var l = strMVT.length;
+      // var dataResultMVT = strMVT.substring(0, l - 1);
+      // console.log(dataResultMVT);
       var matnr = parseInt(item.MATNR).toString();
-      console.log(matnr);
       let options =
         "bestq_ur=" +
         item.BESTQ_UR +
@@ -357,6 +388,7 @@ const AmCreateDocumentR5 = props => {
         item.POSNR +
         "&vbeln=" +
         item.VBELN;
+
       return {
         ID: null,
         skuCode: matnr,
@@ -364,6 +396,9 @@ const AmCreateDocumentR5 = props => {
         quantity: item.BDMNG,
         unitType: item.MEINS,
         batch: item.CHARG,
+        refID: item.VBELN_VL,
+        ref1: "R05",
+        ref2: item.BWLVS,
         options: options
       };
     });
@@ -422,7 +457,7 @@ const AmCreateDocumentR5 = props => {
             style={{ width: "150px" }}
             onClick={() => setEditPopup(true)}
           >
-            Add
+            LOAD
           </AmButton>
         }
         customAddComponentRender={customAdd()}

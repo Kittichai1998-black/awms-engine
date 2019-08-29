@@ -108,10 +108,21 @@ const DocumentSearchGI = props => {
       Cell: dataRow => getRedirect(dataRow.original)
     },
     {
-      Header: "Movement",
-      accessor: "MovementName",
-      width: 200
+      Header: "Mode",
+      accessor: "Ref1",
+      width: 100
     },
+    {
+      Header: "SAP Movement",
+      accessor: "Ref2",
+      width: 150
+    },
+    {
+      Header: "SAP Ref.",
+      accessor: "RefID",
+      width: 150
+    },
+
     {
       Header: "Sou.Warehouse",
       accessor: "SouWarehouseName",
@@ -179,14 +190,7 @@ const DocumentSearchGI = props => {
       fieldLabel: "Name"
     },
     { label: "Doc No.", field: "Code", searchType: "input" },
-    {
-      label: "Movement",
-      field: "MovementName",
-      searchType: "dropdown",
-      dropdownData: dataMovementType,
-      fieldDataKey: "Name",
-      fieldLabel: "Name"
-    }
+    { label: "SAP Movement", field: "Ref2", searchType: "input" }
   ];
 
   const getRedirect = data => {

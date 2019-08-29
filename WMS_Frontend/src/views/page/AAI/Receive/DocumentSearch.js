@@ -120,11 +120,6 @@ const DocumentSearch = props => {
       width: 150
     },
     {
-      Header: "Movement",
-      accessor: "MovementName",
-      width: 150
-    },
-    {
       Header: "Doc.Date",
       accessor: "DocumentDate",
       width: 150,
@@ -152,15 +147,6 @@ const DocumentSearch = props => {
 
   const search = [
     {
-      label: "EventStatus",
-      field: "EventStatus",
-      searchType: "dropdown",
-      dropdownData: DocumentEventStatusSearch,
-      fieldDataKey: "Name",
-      fieldLabel: "Name"
-    },
-
-    {
       label: "Sou.Warehouse",
       field: "SouWarehouseName",
       searchType: "dropdown",
@@ -173,22 +159,6 @@ const DocumentSearch = props => {
       field: "DesWarehouseName",
       searchType: "dropdown",
       dropdownData: dataWarehouse,
-      fieldDataKey: "Name",
-      fieldLabel: "Name"
-    },
-    {
-      label: "For Customer",
-      field: "ForCustomerName",
-      searchType: "dropdown",
-      dropdownData: dataCustomer,
-      fieldDataKey: "Name",
-      fieldLabel: "Name"
-    },
-    {
-      label: "Movement",
-      field: "MovementName",
-      searchType: "dropdown",
-      dropdownData: dataMovementType,
       fieldDataKey: "Name",
       fieldLabel: "Name"
     },
