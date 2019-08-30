@@ -112,11 +112,11 @@ namespace AMWUtil.DataAccess.Http
                 logger.LogInfo("API_CONNECTION:: URL=" + apiUrl + " | RETRY=" + retry + " | TIMEOUT=" + timeout);
             do
             {
+                var outResult = new HttpResultModel();
+                if (outResults != null)
+                    outResults.Add(outResult);
                 try
                 {
-                    var outResult = new HttpResultModel();
-                    if (outResults != null)
-                        outResults.Add(outResult);
 
                     retry--;
                     HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(apiUrl);
@@ -159,7 +159,7 @@ namespace AMWUtil.DataAccess.Http
                     //return new T();
 
 
-                    if (outResult == null)
+                    if (outResult != null)
                     {
                         var heads = httpWebRequest.Headers.AllKeys.ToList().Select(x => x + "=" + httpWebRequest.Headers.Get(x)).JoinString();
                         outResult.APIUrl = apiUrl;
@@ -200,6 +200,8 @@ namespace AMWUtil.DataAccess.Http
                             outResult.HttpStatus = (int)httpResponse.StatusCode;
                             outResult.OutputText = body;
                             outResult.EndTime = DateTime.Now;
+                            outResult.ResultStatus = 1;
+                            outResult.ResultMessage = "SUCCESS";
                         }
                     }
 
@@ -207,6 +209,14 @@ namespace AMWUtil.DataAccess.Http
                 }
                 catch (System.Exception ex)
                 {
+                    if (outResult != null)
+                    {
+                        outResult.HttpStatus = -1;
+                        outResult.OutputText = string.Empty;
+                        outResult.EndTime = DateTime.Now;
+                        outResult.ResultStatus = 0;
+                        outResult.ResultMessage = ex.Message;
+                    }
                     result = null;
                     if (retry < 0)
                     {

@@ -54,10 +54,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                docsCode = docItems.Select(x => x.Document_ID).Distinct().ToList();
             }
-            else
+           /* else
             {
-                docsCode = null;
-            }
+                docsCode = new List<long>() { };
+            }*/
             return docsCode;
         }
         private StorageObjectCriteria UpdateStorageObjectLocation(TReq reqVO, SPworkQueue queueTrx)
@@ -121,27 +121,33 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     });
                                 }
                             });
-/*
-                            if (docs.DocumentType_ID == DocumentTypeID.AUDIT)
-                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.AUDITING, null, StorageObjectEventStatus.AUDITED, this.BuVO);
-
-                            else
-                                this.UpdateStorageObjectEventStatus(stos);*/
                         });
                         
                     }
                     else
                     {
                         var stoPack = stos.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).FirstOrDefault();
-                        var getDistos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                        var getDisto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
+                        {
+                            new SQLConditionCriteria("WorkQueue_ID", queueTrx.ID.Value, SQLOperatorType.EQUALS),
+                        }, this.BuVO).First();
+
+
+                        if (getDisto != null)
+                        {
+                            ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDisto.ID.Value, stoPack.id.Value, null, null, EntityStatus.ACTIVE, this.BuVO);
+                        }
+
+                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
+
+                        /*var getDistos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
                             {
                             new SQLConditionCriteria("Sou_StorageObject_ID", stoPack.id, SQLOperatorType.EQUALS, SQLConditionType.AND),
                             new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS, SQLConditionType.OR),
                             new SQLConditionCriteria("WorkQueue_ID", reqVO.queueID.Value, SQLOperatorType.EQUALS),
 
                             }, this.BuVO);
-                       
-                        getDistos.ForEach(disto =>
+                         getDistos.ForEach(disto =>
                         {
                             if(disto.DocumentItem_ID == null)
                             {
@@ -153,7 +159,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
 
                             }
-                        });
+                        });   
+                         */
                     }
                 }
                 else if (queueTrx.IOType == IOType.OUTPUT)

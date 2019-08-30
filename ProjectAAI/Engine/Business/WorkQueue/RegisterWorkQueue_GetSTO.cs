@@ -85,7 +85,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                 var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
                 
-                    var packList = GetObjectFromSAP(reqVO.baseCode, reqVO.warehouseCode, buVO);
+                    var packList = GetObjectFromSAP(reqVO.baseCode, buVO);
                     packList.datas.ForEach(pack =>
                     {
 
@@ -111,6 +111,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         DateTime fvdt1 = DateTime.ParseExact(pack.FVDT1, "yyyyMMdd", CultureInfo.InvariantCulture);
                         var approveddate = DateTimeUtil.ToISOUTCString(fvdt1);
                         var options = ObjectUtil.QryStrSetValue(null, 
+                            //new KeyValuePair<string, object>(OptionVOConst.OPT_LGNUM, pack.LGNUM), //warehouse 
                             new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ, pack.BESTQ), //Stock Category 
                             new KeyValuePair<string, object>(OptionVOConst.OPT_WEBAZ, pack.WEBAZ), //Incubated Time
                             new KeyValuePair<string, object>(OptionVOConst.OPT_INCBD, incb),
@@ -146,13 +147,36 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, buVO);
                     });
+
+                //amt_StorageObject bstos = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(baseStoID, buVO);
+                var BESTQ = packList.datas.Select(x => x.BESTQ).Distinct().First();
+                var LGNUM = packList.datas.Select(x => x.LGNUM).Distinct().First();
+                var opt_done = ObjectUtil.QryStrSetValue(null, OptionVOConst.OPT_LGNUM, LGNUM);
                 
+                    if(BESTQ == "Q")
+                    {
+                        opt_done = AMWUtil.Common.ObjectUtil.QryStrSetValue(opt_done, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC.GetValueInt()); 
+                }
+                else if (BESTQ == "S")
+                    {
+                        opt_done = AMWUtil.Common.ObjectUtil.QryStrSetValue(opt_done, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.HOLD.GetValueInt());
+                    }
+                    else 
+                    {
+                        opt_done = AMWUtil.Common.ObjectUtil.QryStrSetValue(opt_done, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.RECEIVED.GetValueInt());
+                    }
+                
+                AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(baseStoID, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
+
                 var mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(baseStoID, StorageObjectType.BASE, false, true, buVO);
                 return mapsto;
             }
         }
 
-        private SapResponse<ZSWMRF001_OUT_SU> GetObjectFromSAP(string barcode, string warehouse, VOCriteria buVO)
+        private SapResponse<ZSWMRF001_OUT_SU> GetObjectFromSAP(string barcode, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF001(barcode, buVO);
             return res;

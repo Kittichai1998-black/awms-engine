@@ -109,7 +109,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 Des_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : desArea.ID,
 
                 DocumentDate = DateTime.Now,
-                ActionTime = null,
+                ActionTime = DateTime.Now,
                 MovementType_ID = mvtDoc,
                 RefID = null,
                 Ref1 = null,
