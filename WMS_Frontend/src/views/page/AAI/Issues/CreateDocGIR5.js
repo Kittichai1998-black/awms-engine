@@ -57,7 +57,7 @@ const AmCreateDocumentR5 = props => {
         type: "labeltext",
         key: "movementTypeID",
         texts: "STO_TRANSFER",
-        valueTexts: "5100"
+        valueTexts: "5010"
       },
       { label: "Action Time", type: "dateTime", key: "actionTime" }
     ],
