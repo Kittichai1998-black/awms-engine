@@ -39,11 +39,13 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         distos.ForEach(disto => {
                             var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, true, false, buVO);
                             var bsto = stos.ToTreeList().Where(y => y.type == StorageObjectType.BASE).FirstOrDefault();
-                             
+                           
                             var resSAP = SendDataToSAP_ZWMRF002(bsto.code, docs.ID.Value, buVO);
 
                             var TANUM = resSAP.datas.Find(data => data.TANUM != 0).TANUM;
-                            UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_TANUM, TANUM, buVO);
+                            var TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
+                            UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_TANUM, TANUMs, buVO);
+                            UpdateSTOEvenStatus(bsto, buVO);
                         });
                     }
                     else
@@ -71,7 +73,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                                 var resSAP = SendDataToSAP_ZWMRF004(reqData, buVO);
                                 var BTANR = resSAP.datas.Find(data => data.BTANR != 0).BTANR;
-                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANR.ToString(), buVO);
+                                var BTANRs = resSAP.datas.Select(data => data.BTANR).Distinct().First().ToString();
+                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANRs, buVO);
 
                             }
                             else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
@@ -89,9 +92,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                                 var resSAP = SendDataToSAP_ZWMRF005(reqData, buVO);
                                 var BTANR = resSAP.datas.Find(data => data.BTANR != 0).BTANR;
-                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANR.ToString(), buVO);
-
-
+                                var BTANRs = resSAP.datas.Select(data => data.BTANR).Distinct().First().ToString();
+                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANRs, buVO);
                             }
                             else if (docs.Ref1 == "R05")
                             {
@@ -106,9 +108,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     GI_DOC = docs.Code
                                 };
                                 var resSAP = SendDataToSAP_ZWMRF006(reqData, buVO);
-                                var BTANR = resSAP.datas.Find(data => data.BTANR != 0).BTANR;
-                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANR.ToString(), buVO);
-
+                                var BTANRs = resSAP.datas.Select(data => data.BTANR).Distinct().First().ToString();
+                                UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_BTANR, BTANRs, buVO);
                             }
                         });
                          
@@ -166,6 +167,58 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string, object>("Options", optionsNew)
                 });
+        }
+
+        private void UpdateSTOEvenStatus(StorageObjectCriteria bsto, VOCriteria buVO)
+        {
+            //uOPT_DONE_DES_EVENT_STATUS
+            var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+            if (done_des_event_status == null || done_des_event_status.Length == 0)
+            {
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+            }
+            else
+            {
+                StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, null, null, eventStatus, buVO);
+            }
+
+
+            //remove OPT_DONE_DES_EVENT_STATUS
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto.options);
+            //List<KeyValuePair<string, object>> outList = new List<KeyValuePair<string, object>>();
+            var opt_done = "";
+
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x=> x.Key.Equals(OptionVOConst.OPT_DONE_DES_EVENT_STATUS));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+
+                /*
+                foreach (KeyValuePair<string, string> v in listkeyRoot)
+                {
+                   
+                     if(v.Key != OptionVOConst.OPT_DONE_DES_EVENT_STATUS)
+                    {
+                        opt_done = ObjectUtil.QryStrSetValue(opt_done, v.Key, v.Value);
+                    }
+                }
+
+                foreach (KeyValuePair<string, string> item in listkeyRoot)
+
+                {
+                    if (item.Key != OptionVOConst.OPT_DONE_DES_EVENT_STATUS)
+
+                        outList.Add(new KeyValuePair<string, object>(item.Key, item.Value));
+
+                }*/
+
+                //listkeyRoot = outList;
+            }
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.id.Value, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
         }
     }
 }

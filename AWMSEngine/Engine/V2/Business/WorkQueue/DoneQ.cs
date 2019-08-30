@@ -88,7 +88,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
 
-            var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, warehouse.ID.Value, area.ID.Value, false, true, this.BuVO);
+            var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, warehouse.ID.Value, null, false, true, this.BuVO);
             var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
 
             var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).Select(x => new { x.ID, x.Document_ID }).Distinct().ToList();

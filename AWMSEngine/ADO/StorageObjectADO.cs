@@ -263,6 +263,7 @@ namespace AWMSEngine.ADO
 
             param.Add("actionBy", buVO.ActionBy);
             param.Add("productDate", sto.productDate);
+            param.Add("expiryDate", sto.expiryDate);
 
             param.Add("refID", sto.refID);
             param.Add("ref1", sto.ref1);

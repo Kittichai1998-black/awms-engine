@@ -168,6 +168,7 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, buVO ?? new VOCriteria()));
             var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, buVO ?? new VOCriteria()));
+            subVals = subVals.Where(x => this._ObjectSizes.Any(y => y.ID == x.InnerObjectSize_ID) && this._ObjectSizes.Any(y => y.ID == x.OuterObjectSize_ID)).ToList();
             this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
             return this._ObjectSizes;
         }
