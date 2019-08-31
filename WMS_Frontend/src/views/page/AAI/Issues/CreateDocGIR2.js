@@ -1,14 +1,14 @@
-import React, { Component, useEffect, useState } from "react";
-import { AmEditorTable } from "../../../../components/table";
+import React, { Component, useEffect, useState } from 'react';
+import { AmEditorTable } from '../../../../components/table';
 import {
   apicall,
   createQueryString
-} from "../../../../components/function/CoreFunction";
+} from '../../../../components/function/CoreFunction';
 
-import AmCreateDocument from "./AmCreateDocument";
-import AmButton from "../../../../components/AmButton";
-import AmInput from "../../../../components/AmInput";
-import Grid from "@material-ui/core/Grid";
+import AmCreateDocument from './AmCreateDocument';
+import AmButton from '../../../../components/AmButton';
+import AmInput from '../../../../components/AmInput';
+import Grid from '@material-ui/core/Grid';
 
 const Axios = new apicall();
 
@@ -21,100 +21,88 @@ const AmCreateDocumentR2 = props => {
 
   const headerCreates = [
     [
-      { label: "SAP Document", type: "labeltext", key: "sapdoc", texts: "-" },
-      { label: "Document Date", type: "dateTime", key: "documentDate" }
-    ],
-    [
-      { label: "Action Time", type: "dateTime", key: "actionTime" },
-      {
-        label: "Remark",
-        type: "input",
-        key: "remark",
-        style: { width: "200px" }
-      }
+      { label: 'Document No.', type: 'labeltext', key: 'sapdoc', texts: '-' },
+      { label: 'Document Date', type: 'dateTime', key: 'documentDate' }
     ],
     [
       {
-        label: "Source Branch",
-        type: "labeltext",
-        key: "souBranchID",
-        texts: "1100 : THIP",
-        valueTexts: 1
+        label: 'Movement Type',
+        type: 'labeltext',
+        key: 'movementTypeID',
+        texts: 'STO_TRANSFER',
+        valueTexts: '5010'
       },
+      { label: 'Action Time', type: 'dateTime', key: 'actionTime' }
+    ],
+    [
       {
-        label: "Warehouse",
-        type: "labeltext",
-        key: "souWarehouseID",
-        texts: "5005 : ASRS",
+        label: 'Source Warehouse',
+        type: 'labeltext',
+        key: 'souWarehouseID',
+        texts: 'Warehouse1/ASRS',
         valueTexts: 1
       }
     ],
     [
+      { label: 'Doc Status', type: 'labeltext', key: '', texts: 'New' },
       {
-        label: "MoveMent Type",
-        type: "labeltext",
-        key: "movementTypeID",
-        texts: "FG ISSUED",
-        valueTexts: "1002"
-      },
-      {
-        label: "Mode",
-        type: "labeltext",
-        key: "ref1",
-        texts: "R02",
-        valueTexts: "R02"
+        label: 'Mode',
+        type: 'labeltext',
+        key: 'ref1',
+        texts: 'R03',
+        valueTexts: 'R03'
       }
     ]
   ];
 
   var columnsModify = [
     {
-      Header: "Reservation",
-      accessor: "RSNUM"
+      Header: 'Reservation',
+      accessor: 'RSNUM'
     },
     {
-      Header: "Material",
-      accessor: "MATNR"
+      Header: 'Material',
+      accessor: 'MATNR'
     },
     {
-      Header: "Batch",
-      accessor: "CHARG"
+      Header: 'Batch',
+      accessor: 'CHARG'
     },
     {
-      Header: "Quantity",
-      accessor: "BDMNG"
+      Header: 'Quantity',
+      accessor: 'BDMNG'
     },
     {
-      Header: "Unit",
-      accessor: "MEINS"
+      Header: 'Unit',
+      accessor: 'MEINS'
     },
     {
-      Header: "BIN",
-      accessor: "LGPLA"
+      Header: 'BIN',
+      accessor: 'LGPLA'
     },
     {
-      Header: "MVT",
-      accessor: "BWLVS"
+      Header: 'MVT',
+      accessor: 'BWLVS'
     },
     {
-      Header: "UR",
-      accessor: "BESTQ_UR"
+      Header: 'UR',
+      accessor: 'BESTQ_UR'
     },
     {
-      Header: "QI",
-      accessor: "BESTQ_QI"
+      Header: 'QI',
+      accessor: 'BESTQ_QI'
     },
     {
-      Header: "Blocked",
-      accessor: "BESTQ_BLK"
+      Header: 'Blocked',
+      accessor: 'BESTQ_BLK'
     }
   ];
 
-  const apicreate = "/v2/CreateGIDocAPI/"; //API สร้าง Doc
-  const apiRes = "/";
+  const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
+  const apiRes = '/';
 
   const sapConnectorR2 = postData => {
-    Axios.post(window.apipath + "/v2/SAPZWMRF003R2API", postData).then(res => {
+    Axios.post(window.apipath + '/v2/SAPZWMRF003R2API', postData).then(res => {
       if (res.data._result.status === 1) {
         setSAPResponse(res.data.datas);
       } else {
@@ -128,7 +116,7 @@ const AmCreateDocumentR2 = props => {
       sapReq.forEach(x => {
         postData[x.field] = x.value;
       });
-      postData["_token"] = localStorage.getItem("Token");
+      postData['_token'] = localStorage.getItem('Token');
       sapConnectorR2(postData);
     }
     setEditPopup(false);
@@ -140,15 +128,15 @@ const AmCreateDocumentR2 = props => {
 
   const editorList = [
     {
-      field: "Reservation Number",
+      field: 'Reservation Number',
       component: (data, cols, key) => {
         return (
           <div key={key}>
             Reservation Number :
             <AmInput
-              defaultValue={data ? data.Name2 : ""}
+              defaultValue={data ? data.Name2 : ''}
               onChange={value => {
-                onChangeEditor("RSNUM", value);
+                onChangeEditor('RSNUM', value);
               }}
             />
           </div>
@@ -158,6 +146,12 @@ const AmCreateDocumentR2 = props => {
   ];
 
   const CreateDocument = () => {
+    var groupMVT = sapResponse
+      .map((item, idx) => {
+        return item.BWLVS;
+      })
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .join(',');
     let document = {
       actionTime:
         headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -238,7 +232,9 @@ const AmCreateDocumentR2 = props => {
         headerData.movementTypeID === undefined
           ? null
           : headerData.movementTypeID,
-      ref1: "R02",
+      ref1: 'R02',
+      ref2: groupMVT,
+      refID: sapResponse[0].RSNUM,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -246,25 +242,28 @@ const AmCreateDocumentR2 = props => {
 
     let documentItem = sapResponse.map((item, idx) => {
       let options =
-        "bestq_ur=" +
-        item.bestQ_UR +
-        "&bestq_qi=" +
-        item.bestQ_QI +
-        "&bestq_blk=" +
-        item.bestQ_BLK +
-        "&bwlvs=" +
-        item.bwlvs +
-        "&lgpla=" +
-        item.lgpla +
-        "&rsnum=" +
-        item.rsnum;
+        'bestq_ur=' +
+        item.BESTQ_UR +
+        '&bestq_qi=' +
+        item.BESTQ_QI +
+        '&bestq_blk=' +
+        item.BESTQ_BLK +
+        '&lgpla=' +
+        item.LGPLA;
+
+      if (item.LENUM !== '' && item.LENUM !== null) {
+        options = options + '&lgpla=' + item.LENUM;
+      }
       return {
         ID: null,
-        skuCode: item.matnr,
-        packCode: item.matnr,
-        quantity: item.bdmng,
-        unitType: item.meins,
-        batch: item.charg,
+        skuCode: item.MATNR,
+        packCode: item.MATNR,
+        quantity: item.BDMNG,
+        unitType: item.MEINS,
+        batch: item.CHARG,
+        ref1: 'R02',
+        ref2: item.BWLVS,
+        refID: item.RSNUM,
         options: options
       };
     });
@@ -281,8 +280,8 @@ const AmCreateDocumentR2 = props => {
   const customAdd = () => {
     return (
       <AmEditorTable
-        style={{ width: "600px", height: "500px" }}
-        titleText={"Add"}
+        style={{ width: '600px', height: '500px' }}
+        titleText={'Add'}
         open={editPopup}
         onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
         data={editData}
@@ -299,7 +298,7 @@ const AmCreateDocumentR2 = props => {
         columns={[]} //colums
         columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
         apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
-        createDocType={"custom"} //createDocType มี audit issue recive
+        createDocType={'custom'} //createDocType มี audit issue recive
         history={props.history} //ส่ง porps.history ไปทุกรอบ
         apiRes={apiRes} //หน้ารายละเอียดเอกสาร
         //btnProps={btnAdd}  //ปุ่มที่ส่งเข้าไป
@@ -309,9 +308,9 @@ const AmCreateDocumentR2 = props => {
         //customEditData={(editData)=> setEditData(editData)}
         customAddBtnRender={
           <AmButton
-            className="float-right"
-            styleType="add"
-            style={{ width: "150px" }}
+            className='float-right'
+            styleType='add'
+            style={{ width: '150px' }}
             onClick={() => setEditPopup(true)}
           >
             Add

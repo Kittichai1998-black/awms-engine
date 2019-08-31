@@ -31,10 +31,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         distos.ForEach(disto => {
                             var queue = ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, this.BuVO);
                             var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, this.BuVO);
-
-                           // var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, true, false, this.BuVO).
-                           //     ToTreeList().Where(y => y.type == StorageObjectType.BASE).FirstOrDefault();
-                             
+   
                             UpdateSTOEvenStatus(bsto, this.BuVO);
 
                         });
@@ -45,17 +42,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                         }
-                        /* if (distos.TrueForAll(y => y.Status == EntityStatus.ACTIVE))
-                         {
-                             if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
-                             {
-                                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
-                             }
-                             else
-                             {
-                                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, null, DocumentEventStatus.CLOSED, this.BuVO);
-                             }
-                         }*/
                     }
                     else
                     {
@@ -89,8 +75,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                 listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_DONE_DES_EVENT_STATUS));
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
-
-                
             }
             AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.ID.Value, buVO,
                     new KeyValuePair<string, object>[] {

@@ -37,14 +37,16 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                     {
                         distos.ForEach(disto => {
-                            var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, true, false, buVO);
-                            var bsto = stos.ToTreeList().Where(y => y.type == StorageObjectType.BASE).FirstOrDefault();
-                           
-                            var resSAP = SendDataToSAP_ZWMRF002(bsto.code, docs.ID.Value, buVO);
+                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, buVO);
+                            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
 
-                            var TANUM = resSAP.datas.Find(data => data.TANUM != 0).TANUM;
+                            if(bsto == null)
+                                throw new AMWException(logger, AMWExceptionCode.B0001, "Pallet Not Found");
+
+                            var resSAP = SendDataToSAP_ZWMRF002(bsto.Code, docs.ID.Value, buVO);
+
                             var TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
-                            UpdateBaseStorageObject(bsto.id.Value, bsto.options, OptionVOConst.OPT_TANUM, TANUMs, buVO);
+                            UpdateBaseStorageObject(bsto.ID.Value, bsto.Options, OptionVOConst.OPT_TANUM, TANUMs, buVO);
                             UpdateSTOEvenStatus(bsto, buVO);
                         });
                     }
@@ -54,6 +56,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         distos.ForEach(disto => {
                             var stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(disto.Sou_StorageObject_ID, StorageObjectType.PACK, true, false, buVO);
                             var bsto = stos.ToTreeList().Where(y => y.type == StorageObjectType.BASE).FirstOrDefault();
+                            if (bsto == null)
+                                throw new AMWException(logger, AMWExceptionCode.B0001, "Pallet Not Found");
 
                             var options = ObjectUtil.QryStrToDynamic(docs.Options);
                             //ObjectUtil.QryStrGetValue(stos.options, "lgber")
@@ -115,21 +119,11 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                          
                     }
                     
-
-                
-                       // if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
-                       // {
                             var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, buVO);
                             if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                             {
                                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
                             }
-                       // }
-                       // else
-                       // {
-                       //     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, null, null, DocumentEventStatus.CLOSED, buVO);
-                       // }
-                  
                 }
                 else
                 {
@@ -169,53 +163,30 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 });
         }
 
-        private void UpdateSTOEvenStatus(StorageObjectCriteria bsto, VOCriteria buVO)
+        private void UpdateSTOEvenStatus(amt_StorageObject bsto, VOCriteria buVO)
         {
             //uOPT_DONE_DES_EVENT_STATUS
-            var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+            var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
             if (done_des_event_status == null || done_des_event_status.Length == 0)
             {
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
             }
             else
             {
                 StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.id.Value, null, null, eventStatus, buVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, null, null, eventStatus, buVO);
             }
 
-
             //remove OPT_DONE_DES_EVENT_STATUS
-            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto.options);
-            //List<KeyValuePair<string, object>> outList = new List<KeyValuePair<string, object>>();
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto.Options);
             var opt_done = "";
 
             if (listkeyRoot != null && listkeyRoot.Count > 0)
             {
                 listkeyRoot.RemoveAll(x=> x.Key.Equals(OptionVOConst.OPT_DONE_DES_EVENT_STATUS));
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
-
-                /*
-                foreach (KeyValuePair<string, string> v in listkeyRoot)
-                {
-                   
-                     if(v.Key != OptionVOConst.OPT_DONE_DES_EVENT_STATUS)
-                    {
-                        opt_done = ObjectUtil.QryStrSetValue(opt_done, v.Key, v.Value);
-                    }
-                }
-
-                foreach (KeyValuePair<string, string> item in listkeyRoot)
-
-                {
-                    if (item.Key != OptionVOConst.OPT_DONE_DES_EVENT_STATUS)
-
-                        outList.Add(new KeyValuePair<string, object>(item.Key, item.Value));
-
-                }*/
-
-                //listkeyRoot = outList;
             }
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.id.Value, buVO,
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.ID.Value, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });
