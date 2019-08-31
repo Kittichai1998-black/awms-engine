@@ -1060,8 +1060,7 @@ const AmCreateDocument = (props) => {
                     <div style={{ marginTop: "20px" }}>
                         {btnProps ? btnProps : props.typeAdd === "sku" ?
                            <ModalTableAddBySto
-                           onChange={()=>{console.log()
-                           }}
+                           onSubmit={(data)=>{console.log(data)}}
                            />
                             :
                             <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {

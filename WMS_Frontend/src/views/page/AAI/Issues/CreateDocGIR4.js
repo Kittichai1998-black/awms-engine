@@ -71,7 +71,7 @@ export default props => {
             { label: "Document Date", type: "dateTime", key: "documentDate" }
         ],
         [
-            { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "STO_TRANSFER", valueTexts: "5100" },
+            { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "STO_TRANSFER", valueTexts: "5010" },
             { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
         [
