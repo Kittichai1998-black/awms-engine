@@ -50,10 +50,11 @@ const InputDiv = styled.div`
 
 export default props => {
     const [ID, setID] = useState(1)
-    const [sapResponse, setSAPResponse] = useState([]);
+    const [dataSource, setDataSource] = useState([]);
     const [headerData, setHeaderData] = useState([]);
     const [editPopup, setEditPopup] = useState(false);
     const [titleEditor, setTitleEditor] = useState()
+    const [reload, setRelaod] = useState()
     const [editData, setEditData] = useState({}
         // {
         //     LGTYP: "C00",
@@ -148,55 +149,23 @@ export default props => {
     const apiRes = "/issue/detail?docID=";
 
     const sapConnectorR6 = postData => {
-        // console.log(postData);
-
         Axios.post(window.apipath + '/v2/SAPZWMRF003R6API', postData).then(res => {
             if (res.data._result.status) {
                 if (!res.data.datas[0].ERR_MSG) {
-                    // let Id = ID
-                    // let dataSap = res.data.datas.map(x => {
-                    //     return { ...x, ID: Id++ }
-                    // })
-                    let dataSource =[...sapResponse]
-
-                    let checkData = dataSource.filter(x => {
+                    let checkData = dataSource.find(x => {
                         return x.ID === postData.ID
                     })
-
-
-                    if(checkData.length>0){
-                        // sapResponse
-                    //    console.log("EDIT");
-                       
-                        // checkData[0] = res.data.datas[0]
-                        // checkData[0].ID = postData.ID
-                        // sapResponse.map(x=>{
-                        //     if(x.ID===postData.ID)
-                        // })
-                    }else{ //ADD
+                    if (checkData) {//EDIT
+                        for (let row in checkData) {
+                            checkData[row] = postData[row]
+                        }
+                        checkData.ID = postData.ID
+                    } else { //ADD
                         res.data.datas[0].ID = postData.ID
                         dataSource.push(res.data.datas[0])
-                        // console.log(res.data.datas[0]);
-                        
                     }
-                    // if (sapResponse) {
-                    //     sapResponse.map(x => {
-                    //         if(x.ID===postData.ID){
-                    //             return res.data.datas[0].ID 
-                    //         }else{
-
-                    //         }
-                          
-                    //     })
-                    // } else {
-
-                    // }
-                  
-                    // console.log(dataSource);
-
-
-                    setID(ID+1)
-                    setSAPResponse(dataSource);
+                    setID(ID + 1)
+                    setDataSource(dataSource);
                 } else {
                     setDialogError({
                         status: true,
@@ -244,8 +213,6 @@ export default props => {
         }
     }
     const getTypeEditor = (row, index, data, cols) => {
-        // console.log(data);
-
         if (row.type === "input") {
             return (
                 <FormInline>
@@ -316,14 +283,14 @@ export default props => {
             editData.ID = ID
         }
         editData[field] = value
-        console.log(editData);
-        
         setEditData({ ...editData })
     };
 
-    const onHandleDelete = (e) => {
-        console.log(e);
-
+    const onHandleDelete = (row) => {
+        let idx = dataSource.findIndex(x => x.ID === row.ID);
+        dataSource.splice(idx, 1);
+        setDataSource(dataSource);
+        setRelaod({})
     }
 
     const CreateDocument = () => {
@@ -413,7 +380,7 @@ export default props => {
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
         };
 
-        let documentItem = sapResponse.map((item, idx) => {
+        let documentItem = dataSource.map((item, idx) => {
             let options =
                 'bestq_ur=' + item.BESTQ_UR +
                 '&bestq_qi=' + item.BESTQ_QI +
@@ -461,6 +428,7 @@ export default props => {
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
                 //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
+                reload={reload}
                 columns={[]} //colums
                 columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
                 apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
@@ -481,7 +449,7 @@ export default props => {
                     >Add</AmButton>
                 }
                 customAddComponentRender={customAdd()}
-                customDataSource={sapResponse}
+                customDataSource={dataSource}
                 customTableColumns={columnsModify}
                 customDocumentData={CreateDocument()}
                 customGetHeaderData={headerData => setHeaderData(headerData)}
