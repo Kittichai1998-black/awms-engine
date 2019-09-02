@@ -34,11 +34,11 @@ const CreateDocGIR2 = Loadable({
   loading: Loading
 });
 const CreateDocGIR3 = Loadable({
-  loader: () => import('../../views/page/AAI/Issues/CreateDocGIR3'),
+  loader: () => import("../../views/page/AAI/Issues/CreateDocGIR3"),
   loading: Loading
 });
 const CreateDocGIR4 = Loadable({
-  loader: () => import('../../views/page/AAI/Issues/CreateDocGIR4'),
+  loader: () => import("../../views/page/AAI/Issues/CreateDocGIR4"),
   loading: Loading
 });
 const CreateDocGIR5 = Loadable({
@@ -50,18 +50,83 @@ const CreateDocGIR6 = Loadable({
   loading: Loading
 });
 
+const WorkQueue = Loadable({
+  loader: () => import("../../views/page/AAI/Issues/WorkQueueAAI"),
+  loading: Loading
+});
 const routes = [
-  { path: "/issue/search", name: "Search GI", compoment: DocumentSearchGI, exact: true },
-  { path: "/issue/detail", name: "GI View", compoment: DocumentViewGI, exact: true },
-  { path: "/receive/receivemptypallet", name: "Mapping Empty Pallet", compoment: ReceiveEmptyPallet, exact: true },
-  { path: "/receive/search", name: "Search GR", compoment: DocumentSearchGR, exact: true },
-  { path: "/receive/detail", name: "base5", compoment: DocumentViewGR, exact: true },
-  { path: "/issue/createR1", name: "base5", compoment: CreateDocGIR1, exact: true },
-  { path: "/issue/createR2", name: "base5", compoment: CreateDocGIR2, exact: true },
-  { path: '/issue/createR3', name: 'base5', compoment: CreateDocGIR3, exact: true },
-  { path: '/issue/createR4', name: 'base5', compoment: CreateDocGIR4, exact: true },
-  { path: "/issue/createR5", name: "base5", compoment: CreateDocGIR5, exact: true },
-  { path: "/issue/createR6", name: "base5", compoment: CreateDocGIR6, exact: true },
+  {
+    path: "/issue/search",
+    name: "Search GI",
+    compoment: DocumentSearchGI,
+    exact: true
+  },
+  {
+    path: "/issue/detail",
+    name: "GI View",
+    compoment: DocumentViewGI,
+    exact: true
+  },
+  {
+    path: "/receive/receivemptypallet",
+    name: "Mapping Empty Pallet",
+    compoment: ReceiveEmptyPallet,
+    exact: true
+  },
+  {
+    path: "/receive/search",
+    name: "Search GR",
+    compoment: DocumentSearchGR,
+    exact: true
+  },
+  {
+    path: "/receive/detail",
+    name: "base5",
+    compoment: DocumentViewGR,
+    exact: true
+  },
+  {
+    path: "/issue/createR1",
+    name: "base5",
+    compoment: CreateDocGIR1,
+    exact: true
+  },
+  {
+    path: "/issue/createR2",
+    name: "base5",
+    compoment: CreateDocGIR2,
+    exact: true
+  },
+  {
+    path: "/issue/createR3",
+    name: "base5",
+    compoment: CreateDocGIR3,
+    exact: true
+  },
+  {
+    path: "/issue/createR4",
+    name: "base5",
+    compoment: CreateDocGIR4,
+    exact: true
+  },
+  {
+    path: "/issue/createR5",
+    name: "base5",
+    compoment: CreateDocGIR5,
+    exact: true
+  },
+  {
+    path: "/issue/createR6",
+    name: "base5",
+    compoment: CreateDocGIR6,
+    exact: true
+  },
+  {
+    path: "/issue/managequeue",
+    name: "base5",
+    compoment: WorkQueue,
+    exact: true
+  }
 ];
 
 export default routes;

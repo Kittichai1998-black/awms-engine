@@ -4,6 +4,8 @@ import AmIconStatus from "../../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";
 import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import queryString from "query-string";
+import CheckCircle from "@material-ui/icons/CheckCircle";
+import HighlightOff from "@material-ui/icons/HighlightOff";
 
 const DocumentViewGI = props => {
   const TextHeader = [
@@ -96,10 +98,9 @@ const DocumentViewGI = props => {
   ];
   const getStatusGI = value => {
     //console.log(value)
-    if (value.status === 0)
-      return <AmStorageObjectStatus key={17} statusCode={17} />;
-    else if (value.status === 1)
-      return <AmStorageObjectStatus key={18} statusCode={18} />;
+    if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+    else if (value.status === 0)
+      return <HighlightOff style={{ color: "red" }} />;
     else return null;
   };
 
