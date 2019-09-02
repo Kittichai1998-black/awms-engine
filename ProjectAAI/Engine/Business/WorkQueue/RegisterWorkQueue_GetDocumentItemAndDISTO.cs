@@ -23,10 +23,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var stoRoot = data.sto;
             var staticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
 
-            var opt_LGNUM = ObjectUtil.QryStrGetValue(stoRoot.options, OptionVOConst.OPT_LGNUM);
-            var sou_warehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == opt_LGNUM);
+            var sou_warehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == "W01");
             if (sou_warehouse == null)
-                throw new AMWException(logger, AMWExceptionCode.V2001, "Source Warehouse " + opt_LGNUM + " Not Found");
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Source Warehouse 'W01' Not Found");
             var sou_branch = staticValue.Branchs.FirstOrDefault(x => x.ID == sou_warehouse.Branch_ID);
             if (sou_branch == null)
                 throw new AMWException(logger, AMWExceptionCode.V2001, "Source Branch Not Found");
@@ -109,10 +108,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
                 }
                         
-                var baseUnitTypeConvt = staticValue.ConvertToBaseUnitByPack(pack.ID.Value, sto.qty, pack.UnitType_ID);
-                decimal? baseQuantity = null;
-                if (sto.qty >= 0)
-                    baseQuantity = baseUnitTypeConvt.baseQty;
+               // var baseUnitTypeConvt = staticValue.ConvertToBaseUnitByPack(pack.ID.Value, sto.qty, pack.UnitType_ID);
+               // decimal? baseQuantity = null;
+               //if (sto.qty >= 0)
+               //     baseQuantity = baseUnitTypeConvt.baseQty;
 
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
@@ -122,19 +121,19 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     PackMaster_ID = pack.ID.Value,
 
                     Quantity = sto.qty,
-                    //UnitType_ID = sto.unitID,
-                    //BaseQuantity = sto.baseQty,
-                    //BaseUnitType_ID = sto.baseUnitID,
-                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
-                    BaseQuantity = baseQuantity,
-                    BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
+                    UnitType_ID = sto.unitID,
+                    BaseQuantity = sto.baseQty,
+                    BaseUnitType_ID = sto.baseUnitID,
+                    //UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    //BaseQuantity = baseQuantity,
+                    //BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
 
                     OrderNo = sto.orderNo,
                     Batch = sto.batch,
                     Lot = sto.lot,
 
                     Options = null,
-                    ExpireDate = null,
+                    ExpireDate = sto.expiryDate,
                     ProductionDate = sto.productDate,
                     Ref1 = null,
                     Ref2 = null,

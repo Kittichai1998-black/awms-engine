@@ -204,7 +204,7 @@ const StyledSearch = styled.div`
   top: 0;
   margin: 10px;
 `
-export default (props) => {
+const BtnAddSkuByItem = (props) => {
     // const { t } = useTranslation()
     // const {
     //     id,
@@ -226,17 +226,36 @@ export default (props) => {
     // } = props;
 
     const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState({
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "PalletSto",
+        q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+        f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch,OrderNo,Lot",
+        g: "",
+        s: "[{'f':'ID','od':'ASC'}]",
+        sk: 0,
+        l: 9,
+        all: ""
+    })
+    const [data, setData] = useState([]);
+    const [sort, setSort] = useState()
+    const [dataSelect, setDataSelect] = useState([])
+    const [page, setPage] = useState()
     // // const [keywordMain, setKeywordMain] = useState(null);
-    const [keywordSub, setKeywordSub] = useState(null);
+    const [keySearch, setKeySearch] = useState(null);
+
+
     // //Query Select from Main Page
     // const [query, setQuery] = useState(null);
-    const [data, setData] = useState([]);
+
     // const [valueKey, setValueKey] = useState("");
     // const [defaultVal, setDefaultVal] = useState(null);
     // const [dataObjects, setDataObjects] = useState(null);
 
     // //table
     const [totalSize, setTotalSize] = useState(0);
+
+
     // const [page, setPage] = useState();
     // const [sort, setSort] = useState(0);
 
@@ -260,35 +279,93 @@ export default (props) => {
     // }, [value, defaultVal]);
 
     const columns = [
-        { title: 'Pallet Code', field: 'BaseCode' },
-        { title: "SKU Code", field: 'PackCode' },
-        { title: "SKU Name", field: 'Name' },
-        { title: 'Lot', field: 'Lot' },
-        { title: 'Batch', field: 'Batch' },
-        { title: 'Order', field: 'OrderNo' },
-        { title: "Qty", field: 'Quantity' },
+        { Header: 'Pallet Code', accessor: 'BaseCode' },
+        { Header: "SKU Code", accessor: 'PackCode' },
+        { Header: "SKU Name", accessor: 'Name' },
+        { Header: 'Lot', accessor: 'Lot' },
+        { Header: 'Batch', accessor: 'Batch' },
+        { Header: 'Order', accessor: 'OrderNo' },
+        { Header: "Qty", accessor: 'Quantity' },
     ]
 
-    const Sto = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch,OrderNo,Lot",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const Sto = {
+    //     queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    //     t: "PalletSto",
+    //     q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch,OrderNo,Lot",
+    //     g: "",
+    //     s: "[{'f':'ID','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 8,
+    //     all: ""
+    // }
+
 
     useEffect(() => {
-        Axios.get(createQueryString(Sto)).then(res => {
-            if (res.data.counts > 0) {
-                setData(res.data.datas)
-                setTotalSize(res.data.counts)
-            }
-        })
-    }, [])
+        if (open) {
+            Axios.get(createQueryString(query)).then(res => {
+                // console.log(res.data.datas);
+
+                if (res.data.counts > 0) {
+                    setData([...res.data.datas])
+                    setTotalSize(res.data.counts)
+                }
+            })
+        }
+
+
+    }, [query, open])
+
+    useEffect(() => {
+        if (typeof (page) === "number") {
+            // const queryEdit = JSON.parse(JSON.stringify(query));
+            query.sk = page === 0 ? 0 : page * parseInt(query.l, 10);
+            setQuery({ ...query })
+        }
+    }, [page])
+
+    useEffect(() => {
+        if (sort) {
+            // console.log(query);
+
+            // const queryEdit = JSON.parse(JSON.stringify(query));
+            query.s = '[{"f":"' + sort.field + '", "od":"' + sort.order + '"}]';
+            setQuery({ ...query })
+
+        }
+    }, [sort])
+
+    useEffect(() => {
+        let newSel = [];
+        if (query.q) {
+            newSel = JSON.parse(query.q)
+        }
+        if (keySearch) {
+            // console.log(keySearch);
+
+            columns.forEach((x, idx) => {
+                if (x.accessor) {
+                    if (idx === 0) {
+                        newSel.push({
+                            // "o": "and",
+                            "f": x.accessor,
+                            "c": "like",
+                            "v": encodeURIComponent(keySearch)
+                        })
+                    } else {
+                        newSel.push({
+                            "o": "or",
+                            "f": x.accessor,
+                            "c": "like",
+                            "v": encodeURIComponent(keySearch)
+                        })
+                    }
+                }
+            })
+            query.q = JSON.stringify(newSel);
+            setQuery({ ...query })
+        }
+    }, [keySearch])
     // useEffect(() => {
     //     if (typeof (page) === "number") {
     //         const queryEdit = JSON.parse(JSON.stringify(query));
@@ -436,7 +513,7 @@ export default (props) => {
 
 
     const onHandleClick = (e) => {
-        setKeywordSub(e)
+        setKeySearch(e)
     }
     // const onHandleClickChange = (dataObject) => {
     //     setOpen(false);
@@ -494,14 +571,50 @@ export default (props) => {
                 >
                     {"Add"}
                 </DialogTitle>
-                {/* <StyledSearch>
+                <StyledSearch>
                     <SearchInput
                         name="searchSub"
-                        styleType={props.styleType}
+                        // styleType={props.styleType}
                         onClickSearch={onHandleClick} />
-                </StyledSearch> */}
+                </StyledSearch>
                 <DialogContent>
-                    <MaterialTable
+                    <AmTable
+                        primaryKey="ID"
+                        data={data}
+                        //data={props.dataSourceModefybuttonB4}
+                        columns={columns}
+                        pageSize={9}
+                        sort={(sort) => setSort({ field: sort.id, order: sort.sortDirection })}
+                        style={{ maxHeight: "397px" }}
+                        currentPage={page}
+                        selection={true}
+                        selectionType="checkbox"
+                        getSelection={(data) => setDataSelect(data)}
+                        // exportData={props.export}
+                        // excelData={excelDataSrouce}
+                        // renderCustomButtonB4={<AmExportDataTable
+                        //   data={excelDataSrouce ? excelDataSrouce : []}
+                        //   fileName={"Table"}
+                        //   cols={exportColumns()}
+                        // />}
+                        // renderCustomButtonB4={
+                        // props.modifyRemark === true && props.selection === true ?   
+                        // <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{FuncRanderRemark();setAddData(true); setDialog(true)}} >Remark</AmButton>
+                        //   :props.randerModefybuttonB4?props.randerModefybuttonB4:""}
+                        renderCustomButtonBTMRight={
+                            <div style={{ paddingTop: "10px" }}>
+                                <AmButton style={{ margin: "5px" }} styleType="add" onClick={() => { props.onSubmit(dataSelect); setOpen(false); }}>OK</AmButton>
+                            </div>
+                        }
+                    />
+                    <Pagination
+                        //จำนวนข้อมูลทั้งหมด
+                        totalSize={totalSize}
+                        //จำนวนข้อมูลต่อหน้า
+                        pageSize={9}
+                        //return หน้าที่ถูกกด : function
+                        onPageChange={(page) => setPage(page)} />
+                    {/* <MaterialTable
                         //ข้อมูลตาราง
                         data={data}
                         //ข้อมูลหัวตาราง
@@ -511,16 +624,10 @@ export default (props) => {
                     //func sort argument = Obj
                     // sort={(sort) => setSort({ field: sort.id, order: sort.sortDirection })}
                     // onRowClick={onHandleClickChange}
-                    />
+                    /> */}
                 </DialogContent>
                 {/* <DialogActions>
-                    <Pagination
-                        //จำนวนข้อมูลทั้งหมด
-                        totalSize={totalSize}
-                        //จำนวนข้อมูลต่อหน้า
-                        pageSize={10}
-                        //return หน้าที่ถูกกด : function
-                        onPageChange={(page) => 0} />
+                  
                 </DialogActions> */}
             </Dialog>
         </AmAux>
@@ -528,21 +635,8 @@ export default (props) => {
 
 }
 
-// FindPopup.propTypes = {
-//     queryApi: PropTypes.object.isRequired,
-//     width: PropTypes.number,
-//     id: PropTypes.string.isRequired,
-//     value: PropTypes.oneOfType([
-//         PropTypes.string,
-//         PropTypes.number,
-//     ]),
-//     defaultValue: PropTypes.oneOfType([
-//         PropTypes.string,
-//         PropTypes.number,
-//     ]),
-//     labelTitle: PropTypes.string,
-//     fieldDataKey: PropTypes.string,
-//     fieldLabel: PropTypes.array.isRequired,
-//     disabled: PropTypes.bool,
-//     onChange: PropTypes.func.isRequired
-// }
+BtnAddSkuByItem.propTypes = {
+    onSubmit: PropTypes.func.isRequired
+}
+
+export default BtnAddSkuByItem;

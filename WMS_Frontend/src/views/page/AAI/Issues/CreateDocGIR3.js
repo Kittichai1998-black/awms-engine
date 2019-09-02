@@ -30,42 +30,30 @@ const AmCreateDocumentR2 = props => {
 
   const headerCreates = [
     [
-      { label: 'SAP Document', type: 'labeltext', key: 'sapdoc', texts: '-' },
+      { label: 'Document No.', type: 'labeltext', key: 'sapdoc', texts: '-' },
       { label: 'Document Date', type: 'dateTime', key: 'documentDate' }
     ],
     [
-      { label: 'Action Time', type: 'dateTime', key: 'actionTime' },
       {
-        label: 'Remark',
-        type: 'input',
-        key: 'remark',
-        style: { width: '200px' }
-      }
-    ],
-    [
-      {
-        label: 'Source Branch',
-        type: 'labeltext',
-        key: 'souBranchID',
-        texts: 'W01',
-        valueTexts: 1
-      },
-      {
-        label: 'Warehouse',
-        type: 'labeltext',
-        key: 'souWarehouseID',
-        texts: 'W01',
-        valueTexts: 1
-      }
-    ],
-    [
-      {
-        label: 'MoveMent Type',
+        label: 'Movement Type',
         type: 'labeltext',
         key: 'movementTypeID',
-        texts: 'FG ISSUED',
-        valueTexts: '1002'
+        texts: 'STO_TRANSFER',
+        valueTexts: '5010'
       },
+      { label: 'Action Time', type: 'dateTime', key: 'actionTime' }
+    ],
+    [
+      {
+        label: 'Source Warehouse',
+        type: 'labeltext',
+        key: 'souWarehouseID',
+        texts: 'Warehouse1/ASRS',
+        valueTexts: 1
+      }
+    ],
+    [
+      { label: 'Doc Status', type: 'labeltext', key: '', texts: 'New' },
       {
         label: 'Mode',
         type: 'labeltext',
@@ -280,6 +268,12 @@ const AmCreateDocumentR2 = props => {
   ];
 
   const CreateDocument = () => {
+    var groupMVT = sapResponse
+      .map((item, idx) => {
+        return item.BWLVS;
+      })
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .join(',');
     let document = {
       actionTime:
         headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -360,7 +354,9 @@ const AmCreateDocumentR2 = props => {
         headerData.movementTypeID === undefined
           ? null
           : headerData.movementTypeID,
-      ref1: 'R02',
+      ref1: 'R03',
+      ref2: groupMVT,
+      refID: sapResponse[0].RSNUM,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -374,12 +370,12 @@ const AmCreateDocumentR2 = props => {
         item.BESTQ_QI +
         '&bestq_blk=' +
         item.BESTQ_BLK +
-        '&bwlvs=' +
-        item.BWLVS +
         '&lgpla=' +
-        item.LGPLA +
-        '&rsnum=' +
-        item.RSNUM;
+        item.LGPLA;
+
+      if (item.LENUM !== '' && item.LENUM !== null) {
+        options = options + '&lgpla=' + item.LENUM;
+      }
       return {
         ID: null,
         skuCode: item.MATNR,
@@ -387,6 +383,9 @@ const AmCreateDocumentR2 = props => {
         quantity: item.BDMNG,
         unitType: item.MEINS,
         batch: item.CHARG,
+        ref1: 'R03',
+        ref2: item.BWLVS,
+        refID: item.RSNUM,
         options: options
       };
     });

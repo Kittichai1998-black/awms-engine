@@ -49,9 +49,12 @@ const InputDiv = styled.div`
 `;
 
 export default props => {
-    const [sapResponse, setSAPResponse] = useState([]);
+    const [ID, setID] = useState(1)
+    const [dataSource, setDataSource] = useState([]);
     const [headerData, setHeaderData] = useState([]);
     const [editPopup, setEditPopup] = useState(false);
+    const [titleEditor, setTitleEditor] = useState()
+    const [reload, setRelaod] = useState()
     const [editData, setEditData] = useState({}
         // {
         //     LGTYP: "C00",
@@ -71,7 +74,7 @@ export default props => {
             { label: "Document Date", type: "dateTime", key: "documentDate" }
         ],
         [
-            { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "STO_TRANSFER", valueTexts: "5100" },
+            { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "STO_TRANSFER", valueTexts: "5010" },
             { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
         [
@@ -106,9 +109,11 @@ export default props => {
     // ];
 
     const columnEdit = [
-        { Header: "Reservation Number", accessor: 'RSNUM', type: "input", sub_type: "number" },
-        { Header: "SU No.", accessor: 'LENUM', type: "input" },
-        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "Material Number", accessor: 'MATNR', type: "input" },
+        { Header: "Batch", accessor: 'CHARG', type: "input" },
+        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input" },
+        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input" },
+        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input" },
         { Header: "Available Stock", accessor: 'BESTQ_UR', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
         { Header: "Stock in Quality Control", accessor: 'BESTQ_QI', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] },
         { Header: "Blocked Stock", accessor: 'BESTQ_BLK', type: "radio", value: ['Y', "N"], labelHeader: ["Yes", "No"] }
@@ -128,6 +133,16 @@ export default props => {
         { Header: 'UR', accessor: 'BESTQ_UR' },
         { Header: 'QI', accessor: 'BESTQ_QI' },
         { Header: 'Blocked', accessor: 'BESTQ_BLK' },
+        {
+            Header: "", Cell: (e) => {
+                return <AmButton styleType="info" onClick={() => { setEditData(e.original); setEditPopup(true); setTitleEditor("Edit") }}>Edit</AmButton>
+            }
+        },
+        {
+            Header: "", Cell: (e) => {
+                return <AmButton styleType="delete" onClick={() => onHandleDelete(e.original)}>Remove</AmButton>
+            }
+        }
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
@@ -137,7 +152,20 @@ export default props => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R6API', postData).then(res => {
             if (res.data._result.status) {
                 if (!res.data.datas[0].ERR_MSG) {
-                    setSAPResponse(res.data.datas);
+                    let checkData = dataSource.find(x => {
+                        return x.ID === postData.ID
+                    })
+                    if (checkData) {//EDIT
+                        for (let row in checkData) {
+                            checkData[row] = postData[row]
+                        }
+                        checkData.ID = postData.ID
+                    } else { //ADD
+                        res.data.datas[0].ID = postData.ID
+                        dataSource.push(res.data.datas[0])
+                    }
+                    setID(ID + 1)
+                    setDataSource(dataSource);
                 } else {
                     setDialogError({
                         status: true,
@@ -155,6 +183,8 @@ export default props => {
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
+            // console.log(rowdata);
+
             // let postData = {}
             // postData.RSNUM = rowdata.RSNUM
             // postData.LENUM = rowdata.Code
@@ -195,7 +225,7 @@ export default props => {
                             validate={true}
                             msgError="Error"
                             regExp={row.validate ? row.validate : ""}
-                            onChange={(value) => { onChangeEditor(row.accessor, value) }}
+                            onChange={(value) => { onChangeEditor(row.accessor, value, null, data) }}
                         />
                     </InputDiv>
                 </FormInline>
@@ -235,8 +265,8 @@ export default props => {
                                     key={idx}
                                     value={x}
                                     name={row.accessor}
-                                    checked={editData[row.accessor] === x}
-                                    onChange={(e) => onChangeEditor(row.accessor, e.target.value)}
+                                    checked={data ? data[row.accessor] === x : editData[row.accessor] === x}
+                                    onChange={(e) => onChangeEditor(row.accessor, e.target.value, null, data)}
                                     control={<Radio color="primary" />}
                                     label={row.labelHeader[idx]}
                                 />
@@ -248,10 +278,20 @@ export default props => {
         }
     }
 
-    const onChangeEditor = (field, value, valueObject) => {
+    const onChangeEditor = (field, value, valueObject, data) => {
+        if (titleEditor === "Add") {
+            editData.ID = ID
+        }
         editData[field] = value
         setEditData({ ...editData })
     };
+
+    const onHandleDelete = (row) => {
+        let idx = dataSource.findIndex(x => x.ID === row.ID);
+        dataSource.splice(idx, 1);
+        setDataSource(dataSource);
+        setRelaod({})
+    }
 
     const CreateDocument = () => {
         let document = {
@@ -340,7 +380,7 @@ export default props => {
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
         };
 
-        let documentItem = sapResponse.map((item, idx) => {
+        let documentItem = dataSource.map((item, idx) => {
             let options =
                 'bestq_ur=' + item.BESTQ_UR +
                 '&bestq_qi=' + item.BESTQ_QI +
@@ -373,7 +413,7 @@ export default props => {
         return (
             <AmEditorTable
                 style={{ width: '600px', height: '500px' }}
-                titleText={'Add'}
+                titleText={titleEditor}
                 open={editPopup}
                 onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
                 data={editData}
@@ -388,6 +428,7 @@ export default props => {
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
                 //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
+                reload={reload}
                 columns={[]} //colums
                 columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
                 apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
@@ -404,11 +445,11 @@ export default props => {
                         className='float-right'
                         styleType='add'
                         style={{ width: '150px' }}
-                        onClick={() => setEditPopup(true)}
-                    >Load</AmButton>
+                        onClick={() => { setTitleEditor("Add"); setEditPopup(true) }}
+                    >Add</AmButton>
                 }
                 customAddComponentRender={customAdd()}
-                customDataSource={sapResponse}
+                customDataSource={dataSource}
                 customTableColumns={columnsModify}
                 customDocumentData={CreateDocument()}
                 customGetHeaderData={headerData => setHeaderData(headerData)}

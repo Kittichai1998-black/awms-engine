@@ -32,12 +32,16 @@ namespace ProjectAAI.ADO.SAPApi
             public string MATNR;
             /// <summary>Batch Number</summary>
             public string CHARG;
+            /// <summary>Material Description</summary>
+            public string MAKTX;
             /// <summary>Stock Category</summary>
             public string BESTQ;
             /// <summary>Available Stock</summary>
             public decimal VERME;
             /// <summary>Base Unit of Measure</summary>
             public string MEINS;
+            /// <summary>Shelf Life Expiration or Best-Before Date</summary>
+            public string VFDAT;
             /// <summary>Date of Manufacture</summary>
             public string HSDAT;
             /// <summary>Incubated Time</summary>
@@ -48,6 +52,8 @@ namespace ProjectAAI.ADO.SAPApi
             public string GEWEI;
             /// <summary>approved batch number </summary>
             public string FVDT1;
+            /// <summary>Standard Instruction (sales order)</summary>
+            public string VBELN;
             /// <summary>Error message</summary>
             public string ERR_MSG;
         }

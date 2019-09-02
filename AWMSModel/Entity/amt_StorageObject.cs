@@ -32,6 +32,7 @@ namespace AWMSModel.Entity
         public decimal Quantity;
         public decimal BaseQuantity;
         public DateTime? ProductDate;
+        public DateTime? ExpiryDate;
 
     }
 }

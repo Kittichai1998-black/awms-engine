@@ -52,6 +52,11 @@ namespace ProjectAAI.ADO.SAPApi
             var res = this.SendJson<SapResponse<ZSWMRF001_OUT_SU>>("SAPCONNECT_LOCATION", req,  buVO);
             if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
             {
+                var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
+                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                };
+                buVO.FinalLogDocMessage.Add(msg);
                 throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
             }
 
