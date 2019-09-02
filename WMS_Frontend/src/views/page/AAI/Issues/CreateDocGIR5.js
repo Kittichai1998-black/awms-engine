@@ -256,7 +256,7 @@ const AmCreateDocumentR5 = props => {
       }
     }
   ];
-
+  var dataResultMVT = "";
   const CreateDocument = () => {
     let DataValueItem = "";
     let DataValueRefID = "";
@@ -269,7 +269,7 @@ const AmCreateDocumentR5 = props => {
         strMVT = x + ",";
       });
       var l = strMVT.length;
-      var dataResultMVT = strMVT.substring(0, l - 1);
+      dataResultMVT = strMVT.substring(0, l - 1);
       console.log(dataResultMVT);
     });
     let document = {
@@ -353,7 +353,7 @@ const AmCreateDocumentR5 = props => {
           ? null
           : headerData.movementTypeID,
       ref1: "R05",
-      ref2: DataValueItem,
+      ref2: dataResultMVT,
       refID: DataValueRefID,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:

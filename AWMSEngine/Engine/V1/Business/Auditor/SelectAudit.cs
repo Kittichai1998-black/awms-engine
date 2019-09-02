@@ -61,6 +61,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                             batch = sto.batch,
                             orderNo = sto.orderNo,
                             lot = sto.lot
+                           
                         });
                     }
                     

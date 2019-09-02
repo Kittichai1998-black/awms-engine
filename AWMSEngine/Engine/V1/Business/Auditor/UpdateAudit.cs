@@ -26,6 +26,8 @@ namespace AWMSEngine.Engine.Business.Auditor
                 public decimal baseQty;
                 public long unitID;
                 public long baseUnitID;
+                public string option;
+
             }
         }
 
@@ -37,7 +39,7 @@ namespace AWMSEngine.Engine.Business.Auditor
                 {
                     var getPack = ADO.StorageObjectADO.GetInstant().Get(x.stoID, StorageObjectType.PACK, false, false, this.BuVO);
                     var baseAudited = ADO.StaticValue.StaticValueManager.GetInstant().ConvertToBaseUnitBySKU(getPack.skuID.Value, x.auditQty.HasValue ? x.auditQty.Value : 0, x.unitID);
-                    ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.baseQty, this.BuVO);
+                    ADO.StorageObjectADO.GetInstant().UpdateAuditing(x.stoID, x.docItemID, x.packCode, x.auditQty.HasValue ? x.auditQty.Value : 0, baseAudited.baseQty,x.option, getPack.parentID.Value, this.BuVO);
                 });
 
                 var res = ADO.StorageObjectADO.GetInstant().Get(reqVO.palletCode, (long?)null, (long?)null, false, true, this.BuVO);

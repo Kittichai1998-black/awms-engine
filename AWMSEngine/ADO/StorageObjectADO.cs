@@ -385,7 +385,7 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public void UpdateAuditing(long stoID, long docItemID, string packCode, decimal auditQty, decimal auditBaseQty, VOCriteria buVO)
+        public void UpdateAuditing(long stoID, long docItemID, string packCode, decimal auditQty, decimal auditBaseQty, string option ,long parentID, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("stoID", stoID);
@@ -394,7 +394,10 @@ namespace AWMSEngine.ADO
             param.Add("auditQty", auditQty);
             param.Add("auditBaseQty", auditBaseQty);
             param.Add("userID", buVO.ActionBy);
-            var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STO_UPDATE_AUDIT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
+            param.Add("option", option);
+            param.Add("parentID", parentID);
+
+        var stoids = this.Query<SPOutSTORootCanUseCriteria>("SP_STO_UPDATE_AUDIT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction);
         }
 
         public List<amt_DocumentItemStorageObject> ListStoBacth(string stoBatch,long docItemID, VOCriteria buVO)
