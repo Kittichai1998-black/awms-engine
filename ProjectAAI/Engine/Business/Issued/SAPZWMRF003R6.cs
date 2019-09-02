@@ -11,7 +11,7 @@ namespace ProjectAAI.Engine.Business.Issued
     {
         public class TReq
         {
-            public string MATNR;
+            public string MATNR="";
             public string CHARG = "";
             public string LGTYP = "";
             public string LGBER = "";

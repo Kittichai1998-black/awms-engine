@@ -183,7 +183,6 @@ export default props => {
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            // console.log(rowdata);
 
             // let postData = {}
             // postData.RSNUM = rowdata.RSNUM
@@ -213,6 +212,7 @@ export default props => {
         }
     }
     const getTypeEditor = (row, index, data, cols) => {
+
         if (row.type === "input") {
             return (
                 <FormInline>
@@ -220,12 +220,12 @@ export default props => {
                     <InputDiv>
                         <AmInput style={row.style ? row.style : { width: "300px" }}
                             type={row.sub_type ? row.sub_type : null}
-                            defaultValue={row.defultValue ? row.defultValue : ""}
+                            defaultValue={editData ? editData[row.accessor] : null}
                             inputRef={ref.current[index]}
                             validate={true}
                             msgError="Error"
                             regExp={row.validate ? row.validate : ""}
-                            onChange={(value) => { onChangeEditor(row.accessor, value, null, data) }}
+                            onChange={(value) => { onChangeEditor(row.accessor, value, null) }}
                         />
                     </InputDiv>
                 </FormInline>
@@ -265,8 +265,8 @@ export default props => {
                                     key={idx}
                                     value={x}
                                     name={row.accessor}
-                                    checked={data ? data[row.accessor] === x : editData[row.accessor] === x}
-                                    onChange={(e) => onChangeEditor(row.accessor, e.target.value, null, data)}
+                                    checked={editData ? editData[row.accessor] === x : null}
+                                    onChange={(e) => onChangeEditor(row.accessor, e.target.value, null)}
                                     control={<Radio color="primary" />}
                                     label={row.labelHeader[idx]}
                                 />
@@ -278,7 +278,7 @@ export default props => {
         }
     }
 
-    const onChangeEditor = (field, value, valueObject, data) => {
+    const onChangeEditor = (field, value, valueObject) => {
         if (titleEditor === "Add") {
             editData.ID = ID
         }

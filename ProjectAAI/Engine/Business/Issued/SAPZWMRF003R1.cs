@@ -11,7 +11,7 @@ namespace ProjectAAI.Engine.Business.Issued
     {
         public class TReq
         {
-            public string LENUM;
+            public string LENUM="";
             public string LGTYP="";
             public string LGBER="";
             public string LGPLA="";
