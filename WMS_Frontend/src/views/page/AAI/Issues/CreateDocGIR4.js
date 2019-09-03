@@ -117,9 +117,10 @@ export default props => {
     const ref = useRef(columnEdit.map(() => createRef()))
 
     var columnsModify = [
+        { Header: 'SU No.', accessor: 'LENUM' },
         { Header: 'Reservation', accessor: 'RSNUM' },
         { Header: 'Material', accessor: 'MATNR' },
-        { Header: 'Batch', accessor: 'CHARG' },
+        // { Header: 'Batch', accessor: 'CHARG' },
         { Header: 'Quantity', accessor: 'BDMNG' },
         { Header: 'Unit', accessor: 'MEINS' },
         { Header: "Dest. Styp.", accessor: "LGTYP" },
@@ -137,6 +138,10 @@ export default props => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R4API', postData).then(res => {
             if (res.data._result.status) {
                 if (!res.data.datas[0].ERR_MSG) {
+                    res.data.datas.forEach((row, i) => {
+                        if (row.LENUM)
+                            res.data.datas[i].LENUM = postData.LENUM  
+                    });
                     setSAPResponse(res.data.datas);
                 } else {
                     setDialogError({
@@ -249,11 +254,21 @@ export default props => {
     }
 
     const onChangeEditor = (field, value, valueObject) => {
-        editData[field] = value
+        if (value) {
+            editData[field] = value
+        } else {
+            delete editData[field]
+        }
         setEditData({ ...editData })
     };
 
     const CreateDocument = () => {
+        let MVTgroup = sapResponse.map(row => row.BWLVS)
+            .filter((val, i, obj) => obj.indexOf(val) === i)
+            .join()
+        let RSNUMgroup = sapResponse.map(row => row.RSNUM)
+            .filter((val, i, obj) => obj.indexOf(val) === i)
+            .join()
         let document = {
             actionTime:
                 headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -334,7 +349,9 @@ export default props => {
                 headerData.movementTypeID === undefined
                     ? null
                     : headerData.movementTypeID,
-            ref1: 'R04',
+            ref1: "R04",
+            ref2: MVTgroup,
+            refID: RSNUMgroup,
             remark: headerData.remark === undefined ? null : headerData.remark,
             receiveItems:
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -348,6 +365,8 @@ export default props => {
                 '&bwlvs=' + item.BWLVS +
                 '&lgpla=' + item.LGPLA +
                 '&rsnum=' + item.RSNUM +
+                '&lenum=' + item.LENUM +
+                '&basecode=' + item.LENUM +
                 '&lgtyp=' + item.LGTYP;
             return {
                 ID: null,
@@ -355,7 +374,10 @@ export default props => {
                 packCode: item.MATNR,
                 quantity: item.BDMNG,
                 unitType: item.MEINS,
-                batch: item.CHARG,
+                // batch: item.CHARG,
+                ref1: "R04",
+                ref2: item.BWLVS,
+                refID: item.RSNUM,
                 options: options
             };
         });

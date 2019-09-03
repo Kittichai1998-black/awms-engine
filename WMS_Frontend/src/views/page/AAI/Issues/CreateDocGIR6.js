@@ -122,11 +122,11 @@ export default props => {
     const ref = useRef(columnEdit.map(() => createRef()))
 
     var columnsModify = [
-        { Header: 'Reservation', accessor: 'RSNUM' },
+        // { Header: 'Reservation', accessor: 'RSNUM' },
         { Header: 'Material', accessor: 'MATNR' },
         { Header: 'Batch', accessor: 'CHARG' },
-        { Header: 'Quantity', accessor: 'BDMNG' },
-        { Header: 'Unit', accessor: 'MEINS' },
+        // { Header: 'Quantity', accessor: 'BDMNG' },
+        // { Header: 'Unit', accessor: 'MEINS' },
         { Header: "Dest. Styp.", accessor: "LGTYP" },
         { Header: 'BIN', accessor: 'LGPLA' },
         { Header: 'MVT', accessor: 'BWLVS' },
@@ -294,6 +294,12 @@ export default props => {
     }
 
     const CreateDocument = () => {
+        let MVTgroup = dataSource.map(row => row.BWLVS)
+            .filter((val, i, obj) => obj.indexOf(val) === i)
+            .join()
+        let MATgroup = dataSource.map(row => row.MATNR)
+            .filter((val, i, obj) => obj.indexOf(val) === i)
+            .join()
         let document = {
             actionTime:
                 headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -374,7 +380,9 @@ export default props => {
                 headerData.movementTypeID === undefined
                     ? null
                     : headerData.movementTypeID,
-            ref1: 'R06',
+            ref1: "R06",
+            ref2: MVTgroup,
+            refID: MATgroup,
             remark: headerData.remark === undefined ? null : headerData.remark,
             receiveItems:
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -382,20 +390,25 @@ export default props => {
 
         let documentItem = dataSource.map((item, idx) => {
             let options =
-                'bestq_ur=' + item.BESTQ_UR +
-                '&bestq_qi=' + item.BESTQ_QI +
-                '&bestq_blk=' + item.BESTQ_BLK +
-                '&bwlvs=' + item.BWLVS +
+
+                'bwlvs=' + item.BWLVS +
+                // '&rsnum=' + item.RSNUM +
                 '&lgpla=' + item.LGPLA +
-                '&rsnum=' + item.RSNUM +
-                '&lgtyp=' + item.LGTYP;
+                '&lgber=' + item.LGBER +
+                '&lgtyp=' + item.LGTYP +
+                '&bestq_ur=' + item.BESTQ_UR +
+                '&bestq_qi=' + item.BESTQ_QI +
+                '&bestq_blk=' + item.BESTQ_BLK;
             return {
                 ID: null,
                 skuCode: item.MATNR,
                 packCode: item.MATNR,
-                quantity: item.BDMNG,
-                unitType: item.MEINS,
+                // quantity: item.BDMNG,
+                // unitType: item.MEINS,
                 batch: item.CHARG,
+                ref1: "R06",
+                ref2: item.BWLVS,
+                refID: item.MATNR,
                 options: options
             };
         });
