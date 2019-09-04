@@ -48,7 +48,7 @@ const WorkQueueAAI = props => {
   ];
 
   const ordersDDL = [
-    { label: "ReceiveDate", value: "Receivedate" },
+    { label: "createtime", value: "createtime" },
     { label: "Batch", value: "Batch" }
   ];
 
@@ -60,33 +60,6 @@ const WorkQueueAAI = props => {
     { label: "Very High", value: "4" },
     { label: "Critical", value: "5" }
   ];
-  const [DataSource, setDataSource] = useState();
-  const [query, setQuery] = useState(Document);
-  const [documentID, setDocumentID] = useState();
-  const [dataDetail, setdataDetail] = useState();
-  const [datasDetails, setdatasDetails] = useState([]);
-  const [DeswarehouseID, setDeswarehouseID] = useState();
-  const [movement, setmovement] = useState();
-  const [remark, setremark] = useState();
-  const [souware, setsouware] = useState();
-  const [desware, setdesware] = useState();
-
-  const detailDocument = [
-    [
-      { label: "Movement Type :", type: "label", values: movement },
-      { label: "Remark :", values: remark, type: "label" },
-      { label: "Source Warehouse :", values: souware, type: "label" },
-      { label: "Destination Warehouse :", values: desware, type: "label" }
-    ]
-  ];
-
-  useEffect(() => {
-    setdatasDetails([...detailDocument]);
-  }, [desware, documentID]);
-
-  useEffect(() => {
-    getDetailDoc();
-  }, [documentID]);
 
   const Document = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -101,31 +74,16 @@ const WorkQueueAAI = props => {
     all: ""
   };
 
-  const getDetailDoc = () => {
-    Axios.get(
-      window.apipath +
-        "/v2/GetDocAPI/?docTypeID=" +
-        "2004" +
-        "&docID=" +
-        documentID +
-        "&getMapSto=true&_token=" +
-        localStorage.getItem("Token")
-    ).then(res => {
-      if (res.data._result.status === 1) {
-        var doc = res.data.document;
-        setmovement(doc.movementName);
-        setremark(doc.remark);
-        setsouware(doc.souWarehouseName);
-        setdesware(doc.desWarehouseName);
-      } else {
-      }
-    });
-  };
-
   const columnCondition = [
     { Header: "Batch", accessor: "Batch", type: "input", field: "Batch" },
-    { Header: "Lot", accessor: "Lot", type: "input", field: "Lot" },
-    { Header: "Order", accessor: "OrderNo", type: "input", field: "OrderNo" },
+    // { Header: "Lot", accessor: "Lot", type: "input", field: "Lot" },
+    //{ Header: "Order", accessor: "OrderNo", type: "input", field: "OrderNo" },
+    {
+      Header: "Qty",
+      accessor: "BaseQuantity",
+      type: "inputnum",
+      field: "BaseQuantity"
+    },
     {
       Header: "Unit",
       accessor: "UnitType_Name",
@@ -152,12 +110,19 @@ const WorkQueueAAI = props => {
       idddls: "By"
     }
   ];
+
+  const DefaulSorting = [
+    {
+      By: "createtime",
+      ID: -1,
+      Order: "FIFO"
+    }
+  ];
+
   const columnConfirm = [
     { Header: "SKU", accessor: "SKU", width: 200 },
     { Header: "Pallet", accessor: "Pallet", width: 200 },
     { Header: "Batch", accessor: "Batch" },
-    { Header: "Lot", accessor: "Lot" },
-    { Header: "Order", accessor: "OrderNo" },
     { Header: "Qty", accessor: "BaseQuantity", Footer: true },
     { Header: "Unit", accessor: "Unit" }
   ];
@@ -176,27 +141,26 @@ const WorkQueueAAI = props => {
   return (
     <div>
       <AmProcessQueue
-        // apiDocument={Document}
-        detailDocument={datasDetails}
         orderDDL={orderDDL}
         ordersDDL={ordersDDL}
         columnCondition={columnCondition}
         columnSort={columnSort}
         columnConfirm={columnConfirm}
         ProcessQ={ProcessQ}
+        DefaulSorting={DefaulSorting}
         history={props.history}
         apiwarehouse={Warehouse}
         advanceCondition={true}
         fullPallet={true}
         receive={true}
         priolity={Priolity}
-        DocType={2004}
+        DocType={1002}
+        docType={"issue"}
         status={true}
-        random={true}
-        docType={"audit"}
-        dataSort={false}
-        apiResConfirm={"/counting/managequeue"}
-        apidetail={"/counting/detail?docID="}
+        random={false}
+        dataSortShow={true}
+        apidetail={"/issue/detail?docID="}
+        apiResConfirm={"/issue/managequeue"}
       ></AmProcessQueue>
     </div>
   );
