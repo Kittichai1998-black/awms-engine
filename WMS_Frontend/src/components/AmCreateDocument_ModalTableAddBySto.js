@@ -613,7 +613,8 @@ const BtnAddSkuByItem = (props) => {
                         //จำนวนข้อมูลต่อหน้า
                         pageSize={9}
                         //return หน้าที่ถูกกด : function
-                        onPageChange={(page) => setPage(page)} />
+                        onPageChange={(page) => setPage(page)}
+                    />
                     {/* <MaterialTable
                         //ข้อมูลตาราง
                         data={data}

@@ -110,7 +110,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                         var palletList = new List<PalletDataCriteriaV2>();
                         palletList.Add(new PalletDataCriteriaV2()
                         {
-                            option = reqVO.mappingPallets[0].option,
+                            options = reqVO.mappingPallets[0].options,
                             code = reqVO.baseCode,
                             qty = "1",
                             unit = null,
@@ -127,7 +127,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                         {
                             palletList.Add(new PalletDataCriteriaV2()
                             {
-                                option = row.option,
+                                options = row.options,
                                 code = row.code,
                                 qty = row.qty,
                                 unit = row.unit,
