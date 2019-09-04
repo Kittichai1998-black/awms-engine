@@ -264,7 +264,7 @@ const AmProcessQueue = props => {
 
   useEffect(() => {
     setdataDetialdoc([...detailDocuments]);
-  }, [movement, remark, souware, textDes, desdoc]);
+  }, [movement, remark, souware, textDes, desdoc, ref1, refID]);
 
   useEffect(() => {
     setdocHeaderdetail(DetailDoc());
