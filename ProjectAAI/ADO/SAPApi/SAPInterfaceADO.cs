@@ -63,7 +63,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, long docID, VOCriteria buVO)
+        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, long? docID, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -89,7 +89,7 @@ namespace ProjectAAI.ADO.SAPApi
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
                 {
-                    docID = docID,
+                    docID = docID.Value,
                     msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
                 };
                 buVO.FinalLogDocMessage.Add(msg);

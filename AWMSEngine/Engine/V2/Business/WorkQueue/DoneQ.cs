@@ -54,10 +54,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             {
                docsCode = docItems.Select(x => x.Document_ID).Distinct().ToList();
             }
-           /* else
-            {
-                docsCode = new List<long>() { };
-            }*/
+            
             return docsCode;
         }
         private StorageObjectCriteria UpdateStorageObjectLocation(TReq reqVO, SPworkQueue queueTrx)
@@ -90,10 +87,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             var stos = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, warehouse.ID.Value, null, false, true, this.BuVO);
             var stoList = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).Select(x => new { x.ID, x.Document_ID, x.Quantity, x.BaseQuantity, x.DocItemStos }).Distinct().ToList();
 
-            var docItems = ADO.DocumentADO.GetInstant().ListItemByWorkQueue(reqVO.queueID.Value, this.BuVO).Select(x => new { x.ID, x.Document_ID }).Distinct().ToList();
-
-            //var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
+            var docs = ADO.DocumentADO.GetInstant().List(docItems.Select(x => x.Document_ID).Distinct().ToList(), this.BuVO).FirstOrDefault();
 
             if (queueTrx.Des_Warehouse_ID == warehouse.ID.Value)
             {
@@ -103,17 +99,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         docItems.ForEach(docItem =>
                         {
-                            var docs = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
-
+                             
                             stoList.ForEach(sto =>
                             {
                                 if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
                                 {
-                                    var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                                    {
-                                    new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
-                                    new SQLConditionCriteria("Sou_StorageObject_ID", sto.id, SQLOperatorType.EQUALS)
-                                    }, this.BuVO);
+                                    var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
 
                                     distos.ForEach(disto =>
                                     {
@@ -138,80 +129,145 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             ADO.DocumentADO.GetInstant().UpdateMappingSTO(getDisto.ID.Value, stoPack.id.Value, null, null, EntityStatus.ACTIVE, this.BuVO);
                         }
-
+                        //update STO Event = Received เลย
                         ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                     }
                 }
-                else if (queueTrx.IOType == IOType.OUTPUT)
+                else if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
                 {
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
                     if (docItems.Count > 0)
                     {
                         docItems.ForEach(docItem =>
                         {
-                            var docs = ADO.DocumentADO.GetInstant().Get(docItem.Document_ID, this.BuVO);
-                            if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
-                            {
-                                stoList.ForEach(sto =>
+                            var qtyIssue = docItem.Quantity;//1500
+                            var baseqtyIssue = docItem.BaseQuantity;
+                            decimal? sumDiSTOQty = docItem.DocItemStos.Sum(x => x.Quantity);
+                            decimal? sumDiSTOBaseQty = docItem.DocItemStos.Sum(x => x.BaseQuantity);
+                            stoList.ForEach(sto =>
                                 {
-                                    var distos = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]
-                                    {
-                                        new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS),
-                                        new SQLConditionCriteria("Sou_StorageObject_ID", sto.id, SQLOperatorType.EQUALS)
-                                    }, this.BuVO);
-
+                                    var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
+                                    
                                     distos.ToList().ForEach(disto =>
                                     {
-                                        if (sto.qty == disto.Quantity)
+                                        if(disto.Quantity == null)
                                         {
-                                            ADO.DataADO.GetInstant().UpdateBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
-                                                new SQLConditionCriteria("DocumentItem_ID", disto.DocumentItem_ID, SQLOperatorType.EQUALS),
-                                                new SQLConditionCriteria("Sou_StorageObject_ID", disto.Sou_StorageObject_ID, SQLOperatorType.EQUALS)
-                                                }, new KeyValuePair<string, object>[]{
-                                                new KeyValuePair<string, object>("Status", EntityStatus.ACTIVE),
-                                                new KeyValuePair<string, object>("Des_StorageObject_ID", disto.Sou_StorageObject_ID)
-                                                }, this.BuVO);
+                                                                                       
+                                            var remainQty = qtyIssue - sumDiSTOQty;
+                                            var remainBaseQty = baseqtyIssue - sumDiSTOBaseQty;
+                                            //จำนวนที่ต้องการเบิก - ผลรวมของจำนวนที่ถูกเบิกเเล้วในdisto = จำนวนที่ยังต้องเบิกเพิ่ม  
+                                             
+                                            //1) 1500 - 0 = 1500  sto1 เบิกเต็ม สถานะเปลี่ยนเป็น picking  , disto_sou = disto_des
+                                            if (remainQty >= sto.qty) //1500 > 1000
+                                            { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
+                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, sto.qty, sto.baseQty, EntityStatus.ACTIVE, this.BuVO);
+                                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                            }
+                                            //2) 1500 - 1000 = 500 sto2 ของเหลือ สถานะยังเป็น received ส่วนที่เบิกสร้างstoใหม่ สถานะเปนpicking
+                                            else
+                                            {  //500 < 1000
+                                               //จำนวนที่ยังต้องเบิกเพิ่ม น้อยกว่า จำนวนของที่ stoมีอยู่ 
+                                               //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
+                                                var updSto = new StorageObjectCriteria();
+                                                updSto = sto.Clone();
+                                                updSto.baseQty -= remainQty.Value;  //1000 - 500 = เหลือของ 500
+                                                updSto.qty -= remainBaseQty.Value;
+                                                var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+                                                if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
+                                                {
+                                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
 
-                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                                }
+                                                else
+                                                {
+                                                    StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
+                                                    updSto.eventStatus = eventStatus;
+                                                }
+                                                if (updSto.baseQty == 0)
+                                                {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
+                                                    updSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                                }
+                                                else
+                                                {   //ส่วนที่ตัดเบิก สร้างissueSto เป็นpicking 
+                                                    var issuedSto = new StorageObjectCriteria();
+                                                    issuedSto = sto;
+                                                    issuedSto.id = null;
+                                                    issuedSto.baseQty = remainQty.Value; //500 จำนวนที่ต้องเบิกเพิ่ม
+                                                    issuedSto.qty = remainBaseQty.Value;
+                                                    issuedSto.parentID = null;
+                                                    issuedSto.mapstos = null;
+                                                    issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+
+                                                    var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+                                                    //อัพเดท des_stoID ของ pack ที่สร้างใหม่
+                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
+
+                                                }
+
+                                                var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                                //ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+
+                                            }
+
                                         }
                                         else
                                         {
-                                            var updSto = new StorageObjectCriteria();
-                                            updSto = sto;
-                                            updSto.baseQty -= disto.BaseQuantity.Value;
-                                            updSto.qty -= disto.Quantity.Value;
-                                            updSto.parentID = null;
-                                            updSto.mapstos = null;
-                                            updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
-
-                                            if (updSto.baseQty == 0)
+                                            if (sto.qty == disto.Quantity)
                                             {
-                                                updSto.eventStatus = StorageObjectEventStatus.PICKING;
-                                                var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
                                             }
                                             else
                                             {
-                                                var issuedSto = new StorageObjectCriteria();
-                                                issuedSto = sto;
-                                                issuedSto.id = null;
-                                                issuedSto.baseQty = disto.BaseQuantity.Value;
-                                                issuedSto.qty = disto.Quantity.Value;
-                                                issuedSto.parentID = null;
-                                                issuedSto.mapstos = null;
-                                                issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                                var updSto = new StorageObjectCriteria();
+                                                updSto = sto.Clone(); 
+                                                updSto.baseQty -= disto.BaseQuantity.Value;
+                                                updSto.qty -= disto.Quantity.Value;
 
-                                                var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+                                                //พาเลทเดิม มีของเหลือ เปลี่ยนสถานะเป็น RECEIVED  ถ้ามี sou_done_evenstatus 
+                                                //updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                                                var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+                                                if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
+                                                {
+                                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
 
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                                }
+                                                else
+                                                {
+                                                    StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
+                                                    updSto.eventStatus = eventStatus;
+                                                }
+
+
+                                                if (updSto.baseQty == 0)
+                                                {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
+                                                    updSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                                }
+                                                else
+                                                {   //สร้างpack ใหม่ที่ไม่ได้ผูก parent base สถานะ PICKING , qty = จำนวนที่เบิก
+                                                    var issuedSto = new StorageObjectCriteria();
+                                                    issuedSto = sto;
+                                                    issuedSto.id = null;
+                                                    issuedSto.baseQty = disto.BaseQuantity.Value;
+                                                    issuedSto.qty = disto.Quantity.Value;
+                                                    issuedSto.parentID = null;
+                                                    issuedSto.mapstos = null;
+                                                    issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+
+                                                    var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+                                                    //อัพเดท des_stoID ของ pack ที่สร้างใหม่
+                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                                }
+                                                var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+
                                             }
-                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
                                         }
+                                        
                                     });
                                 });
-
-
-                            }
-
+ 
                         });
                     }
                 }
@@ -250,20 +306,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                             baseStoID = queueTrx.StorageObject_ID.Value
                                         };
                                         getArea.Execute(this.Logger, this.BuVO, treq);
-
-                                        if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID)
-                                        {
-                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queueTrx.StorageObject_ID.Value,
-                                                StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
-
-                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
-                                                StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
-                                        }
-                                        else
-                                        {
-                                            ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queueTrx.StorageObject_ID.Value,
-                                                StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, this.BuVO);
-                                        }
+                                        
                                     }
                                     
                                 });
@@ -273,11 +316,39 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                   // throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Cannot Complete Before Working");
+                   throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Cannot Complete Before Working");
                 }
             }
 
         }
+        private void UpdateSTOEvenStatus(amt_StorageObject bsto, VOCriteria buVO)
+        {
+            // OPT_DONE_SOU_EVENT_STATUS
+            var done_sou_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+            if (done_sou_event_status == null || done_sou_event_status.Length == 0)
+            {
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+            }
+            else
+            {
+                StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_sou_event_status);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, null, null, eventStatus, buVO);
+            }
 
+
+            //remove OPT_DONE_SOU_EVENT_STATUS
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto.Options);
+            var opt_done = "";
+
+            if (listkeyRoot != null && listkeyRoot.Count > 0)
+            {
+                listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_DONE_SOU_EVENT_STATUS));
+                opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
+            }
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.ID.Value, buVO,
+                    new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string, object>("Options", opt_done)
+                    });
+        }
     }
 }

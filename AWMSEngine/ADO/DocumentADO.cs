@@ -506,6 +506,13 @@ namespace AWMSEngine.ADO
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();
+            res.ForEach(x => {
+                var disto = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[] {
+                    new SQLConditionCriteria("DocumentItem_ID", x.ID.Value, SQLOperatorType.EQUALS)
+                }, buVO);
+                x.DocItemStos = disto;
+            });
+
             return res;
         }
         public List<amt_DocumentItem> ListItemBySTO(List<long> storageObjectIDs, VOCriteria buVO)

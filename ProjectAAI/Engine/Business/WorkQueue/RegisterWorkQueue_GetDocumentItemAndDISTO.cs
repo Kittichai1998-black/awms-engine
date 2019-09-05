@@ -79,7 +79,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                 DocumentDate = DateTime.Now,
                 ActionTime = DateTime.Now,
-                MovementType_ID = MovementType.FG_TRANSFER,
+                MovementType_ID = MovementType.STO_TRANSFER,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
@@ -148,29 +148,6 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
             var docID = AWMSEngine.ADO.DocumentADO.GetInstant().Create(doc, buVO).ID;
             var docItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docID.Value, buVO);
-
-            /* var docItemsAndSTO = new List<amt_DocumentItem>();
-
-           docItems.ForEach(docItem =>
-           {
-             var sto = stoList.FirstOrDefault(x => x.skuID == docItem.SKUMaster_ID && x.batch == docItem.Batch);
-               var disto = new amt_DocumentItemStorageObject()
-               {
-                   ID = null,
-                   DocumentItem_ID = docItem.ID.Value,
-                   Sou_StorageObject_ID = sto.id.Value,
-                   Des_StorageObject_ID = sto.id.Value,
-                   Quantity = docItem.Quantity.Value,
-                   BaseQuantity = docItem.Quantity.Value,
-                   UnitType_ID = docItem.BaseUnitType_ID.Value,
-                   BaseUnitType_ID = docItem.BaseUnitType_ID.Value,
-                   Status = EntityStatus.INACTIVE
-               };
-
-               AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
-               docItemsAndSTO.Add(AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docItem.ID.Value, buVO));
-           });
-*/
             return docItems;
         }
     }

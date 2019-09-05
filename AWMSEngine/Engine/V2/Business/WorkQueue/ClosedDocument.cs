@@ -29,11 +29,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         if (distos == null)
                             throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item Not Found");
                         distos.ForEach(disto => {
-                            var queue = ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, this.BuVO);
-                            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, this.BuVO);
-   
-                            UpdateSTOEvenStatus(bsto, this.BuVO);
-
+                            UpdateStorageObject(disto, this.BuVO); 
                         });
 
                         //update document to closed
@@ -42,31 +38,65 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                         }
-                    }
-                    else
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document Not Found");
-                    }
-                }); 
+                    } 
+                });
+                res = reqVO;
             }
 
-            return reqVO;
+            return res;
         }
-        private void UpdateSTOEvenStatus(amt_StorageObject bsto, VOCriteria buVO)
+        private void UpdateStorageObject(amt_DocumentItemStorageObject disto, VOCriteria buVO)
         {
+            var queue = ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, buVO);
+            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
+
             //uOPT_DONE_DES_EVENT_STATUS
             var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-            if (done_des_event_status == null || done_des_event_status.Length == 0)
+
+            if (disto.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
             {
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                if (done_des_event_status == null || done_des_event_status.Length == 0)
+                {
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                }
+                else
+                {
+                    StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, eventStatus, buVO);
+                }
             }
             else
             {
-                StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, null, null, eventStatus, buVO);
+                if (done_des_event_status == null || done_des_event_status.Length == 0)
+                {
+                    if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบไม่เต็ม
+                    {
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                            StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
+
+                    }
+                    else
+                    {
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                            StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
+                    }
+                }
+                else
+                {
+                    if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบไม่เต็ม
+                    {
+                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, null, null, eventStatus, buVO);
+
+                    }
+                    else
+                    {
+                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, eventStatus, buVO);
+                    }
+                }
             }
-
-
+             
             //remove OPT_DONE_DES_EVENT_STATUS
             var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto.Options);
             var opt_done = "";
