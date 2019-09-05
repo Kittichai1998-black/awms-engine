@@ -55,6 +55,7 @@ const CreateDocumentGI = (props) => {
     const [addData, setAddData] = useState(false);
     const [editDatas, setEditDatas] = useState(false);
     const [dialog, setDialog] = useState(false);
+    const [dialogAdd, setDialogAdd] = useState(false);
     const [editData, setEditData] = useState(false);
     const [addDataID, setAddDataID] = useState(0);
     const [title, setTitle] = useState("");
@@ -68,25 +69,56 @@ const CreateDocumentGI = (props) => {
     const [stateDialogErr, setStateDialogErr] = useState(false);
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
-    const [baseIDs, setbaseIDs] = useState();
+    const [baseIDs, setbaseIDs] = useState(25);
+    const [skubyBase, setskubyBase] = useState();
     const [dataCreate, setdataCreate] = useState([]);
 
 
 
+    //useEffect(() => {
+    //    setParentStorageObjects({
+    //        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    //        t: "ParentStorageObject",
+    //        q: "[{ 'f': 'SKUMaster_ID', c: '=', 'v': " + skuIDs + " }]",
+    //        f: "SKUMaster_ID,SKUMaster_Code,SKUMaster_Name,ParentStorageObject_ID,ParentStorageObject_Code as BaseCode",
+    //        g: "",
+    //        s: "[{'f':'SKUMaster_ID','od':'asc'}]",
+    //        sk: 0,
+    //        l: 100,
+    //        all: "",
+    //    })
+    //}, [skuIDs, units])
+
+
+
     useEffect(() => {
-        setParentStorageObjects({
+        setskubyBase({
             queryString: window.apipath + "/v2/SelectDataViwAPI/",
-            t: "ParentStorageObject",
-            q: "[{ 'f': 'SKUMaster_ID', c: '=', 'v': " + skuIDs + " }]",
-            f: "SKUMaster_ID,SKUMaster_Code,SKUMaster_Name,ParentStorageObject_ID,ParentStorageObject_Code as BaseCode",
+            t: "BstoAndPsto",
+            q: '[{ "f": "bstoID", c: "=", "v":" ' + baseIDs + ' "}]',
+            f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode,pstoCode as skuCode,pstoCode as Code",
             g: "",
-            s: "[{'f':'SKUMaster_ID','od':'asc'}]",
+            s: "[{'f':'bstoID','od':'asc'}]",
             sk: 0,
             l: 100,
             all: "",
         })
-    }, [skuIDs, units])
 
+    }, [baseIDs])
+
+
+
+    const SKUbyPallet = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "BstoAndPsto",
+        q: '[{ "f": "bstoID", c: "=", "v":" ' + baseIDs +' "}]',
+        f: "bstoID,bstoCode,pstoCode,pstoName,pstoID,concat(pstoCode, ':' ,pstoName) as SKUItems,pstoUnitCode as UnitTypeCode",
+        g: "",
+        s: "[{'f':'bstoID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+ }
 
 
     const SKUMaster = {
@@ -136,6 +168,20 @@ const CreateDocumentGI = (props) => {
         all: "",
 
     }
+
+
+    const BaseSto = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "BstoAndPsto",
+        q: '[{ "f": "bstoStatus", "c":"=", "v": 1}]',
+        f: "bstoID,bstoCode,pstoCode,pstoName,bstoCode as BaseCode",
+        g: "",
+        s: "[{'f':'bstoID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: "",
+
+    }
     const columsFindpopUp = [
         {
             Header: 'Code',
@@ -147,6 +193,23 @@ const CreateDocumentGI = (props) => {
         {
             Header: 'Name',
             accessor: 'Name',
+            width: 200,
+            sortable: true,
+        },
+    ];
+
+
+    const columsFindpopUpSKUbase = [
+        {
+            Header: 'Code',
+            accessor: 'pstoCode',
+            fixed: 'left',
+            width: 130,
+            sortable: true,
+        },
+        {
+            Header: 'Name',
+            accessor: 'pstoName',
             width: 200,
             sortable: true,
         },
@@ -175,9 +238,10 @@ const CreateDocumentGI = (props) => {
 
 
 
-    const columnsModifi = [{ Header: "SKU Items", accessor: 'SKUItems', },
+    const columnsModifi = [
+        { Header: "Base", accessor: 'BaseCode' },
+        { Header: "SKU Items", accessor: 'SKUItems', },
     { Header: "Quantity", accessor: 'quantity' },
-    { Header: "Base", accessor: 'base' },
     { Header: "Unit", accessor: 'unitType', },
     { Header: "", width: 110, Cell: (e) => <AmButton style={{ width: "100px" }} styleType="info" onClick={() => { setEditData(e); setDialog(true); setTitle("Edit") }}>Edit</AmButton>, },
     {
@@ -204,7 +268,11 @@ const CreateDocumentGI = (props) => {
             queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp,
             placeholder: "Select SKU"
         },
-        { Header: "Base", accessor: 'baseCode', type: "bases", key: "baseCode", idddl: "baseCode", placeholder: "Select Base" },
+        {
+            Header: "Base", accessor: 'base', type: "bases",
+            key: "baseCode", idddl: "baseCode", placeholder: "Select Base",
+            pair: "baseCode",
+        },
         { Header: "Quantity", accessor: 'quantity', type: "inputNum" }, ,
         { Header: "Unit", accessor: 'unitType', type: "unitType" },
     ]
@@ -217,12 +285,117 @@ const CreateDocumentGI = (props) => {
         //setDeleteFlag(true)
     }
 
-    const btnAdd = <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }}>
+    const btnAdd = <div>     
+        <AmButton className="float-right" styleType="info" style={{ width: "100px",paddingLeft:"10px" }} onClick={() => { setDialog(true); setAddData(true); setTitle("Add"); }}>
+            {'Base'}
+            </AmButton>
+        <AmButton className="float-right" styleType="add" style={{ width: "100px",marginLeft:"10px" }} onClick={() => { setDialogAdd(true); setAddData(true); setTitle("Add"); }}>
         {'ADD'}
-    </AmButton>
-
+            </AmButton>             
+    </div>
+     
 
     const primaryFilterList = [
+        {
+
+            "field": "BaseCode",
+            "component": (condition, cols, key) => {
+                return (
+                    <div key={key} style={{ display: "inline-block" }}>
+                        <FormInline>
+                            <LabelH>Base : </LabelH>
+
+                            <InputDiv>
+                                <AmDropdown
+                                    id={"BaseCode"}
+                                    placeholder={"Select Base"}
+                                    fieldDataKey="bstoID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                                    fieldLabel={["bstoCode"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                                    labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                                    width={300} //กำหนดความกว้างของช่อง input
+                                    ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
+                                    //valueData={value} //ค่า value ที่เลือก
+                                    queryApi={BaseSto}
+                                    //returnDefaultValue={true}
+                                    //defaultValue={baseIDs}
+                                    onChange={(value, dataObject, field) => onHandleDDLChangeBse(value, dataObject, field)}
+                                    ddlType={"search"} //รูปแบบ Dropdown 
+                                />
+                            </InputDiv>
+                        </FormInline>
+                    </div>
+                )
+
+            }
+        },
+
+        {
+            "field": "SKUItems",
+            "component": (condition, cols, key) => {
+                return (
+                    <div key={key} style={{ display: "inline-block" }}>
+                        <FormInline>
+                            <LabelH>SKU : </LabelH>
+                            <InputDiv>
+                                <AmFindPopup
+                                    id={"SKUItems"}
+                                    placeholder={"Select SKU"}
+                                    fieldDataKey="pstoID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
+                                    fieldLabel={["pstoCode", "pstoName"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
+                                    labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
+                                    width={300} //กำหนดความกว้างของช่อง input
+                                    columns={columsFindpopUpSKUbase}
+                                    ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
+                                    //valueData={value} //ค่า value ที่เลือก
+                                    queryApi={skubyBase}
+                                    //returnDefaultValue={true}
+                                    //defaultValue={skuIDs}
+                                    onChange={(value, dataObject, field) => onHandleDDLChangeSKU(value, dataObject, field)}
+                                    ddlType={"search"} //รูปแบบ Dropdown 
+                                />
+                            </InputDiv>
+                        </FormInline>
+                    </div>
+                )
+            }
+        },
+        {
+            "field": "quantity",
+            "component": (condition, cols, key) => {
+                return (
+                    <div key={key} style={{ display: "inline-block" }}>
+                        <FormInline>
+                            <LabelH>Quantity : </LabelH>
+                            <InputDiv>
+                                <AmInput style={{ width: "300px" }}
+                                    defaultValue={""}
+                                    type="number"
+                                    onChange={(ele) => { onChangeEditor(cols.field, ele.value, ele) }}
+                                />
+                            </InputDiv>
+                        </FormInline>
+                    </div>
+                )
+            }
+        },
+        {
+            "field": "unitType",
+            "component": (condition, cols, key) => {
+                return (
+                    <div key={key} style={{ display: "inline-block" }}>
+                        <FormInline>
+                            <LabelH>Unit : </LabelH>
+                            <InputDiv>
+                                {<label>{units}</label>}
+                            </InputDiv>
+                        </FormInline>
+                    </div>
+                )
+            }
+        },];
+
+
+    const primaryFilterListAdd = [
         {
             "field": "SKUItems",
             "component": (condition, cols, key) => {
@@ -272,38 +445,7 @@ const CreateDocumentGI = (props) => {
                 )
             }
         },
-        {
-
-            "field": "base",
-            "component": (condition, cols, key) => {
-                return (
-                    <div key={key} style={{ display: "inline-block" }}>
-                        <FormInline>
-                            <LabelH>Base : </LabelH>
-
-                            <InputDiv>
-                                <AmDropdown
-                                    id={"base"}
-                                    placeholder={"Select Base"}
-                                    fieldDataKey="ParentStorageObject_ID" //ฟิล์ดดColumn ที่ตรงกับtable ในdb 
-                                    fieldLabel={["BaseCode"]} //ฟิล์ดที่ต้องการเเสดงผลใน optionList และ ช่อง input
-                                    labelPattern=" : " //สัญลักษณ์ที่ต้องการขั้นระหว่างฟิล์ด
-                                    width={300} //กำหนดความกว้างของช่อง input
-                                    ddlMinWidth={300} //กำหนดความกว้างของกล่อง dropdown
-                                    //valueData={value} //ค่า value ที่เลือก
-                                    queryApi={ParentStorageObjects}
-                                    //returnDefaultValue={true}
-                                    //defaultValue={baseIDs}
-                                    onChange={(value, dataObject, field) => onHandleDDLChange(value, dataObject, field)}
-                                    ddlType={"search"} //รูปแบบ Dropdown 
-                                />
-                            </InputDiv>
-                        </FormInline>
-                    </div>
-                )
-
-            }
-        }, {
+         {
             "field": "unitType",
             "component": (condition, cols, key) => {
                 return (
@@ -320,11 +462,17 @@ const CreateDocumentGI = (props) => {
         },];
 
 
-    const onHandleDDLChange = (value, dataObject, field) => {
+
+
+    const onHandleDDLChangeBse = (value, dataObject, field) => {
+        console.log(field)
         if (value !== null || value !== undefined) {
             if (dataObject !== null) {
-                setbaseIDs(value)
-                onChangeEditor(field, value, dataObject.BaseCode, dataObject[field])
+                if (field === "base")
+                    setbaseIDs(value)
+
+                //onChangeEditor(field, value, dataObject.BaseCode, "bstoCode", dataObject[field])
+                onChangeEditor(field, value, dataObject[field], dataObject.UnitTypeCode, "Code", dataObject.Code)
             }
         } else { }
     }
@@ -421,7 +569,7 @@ const CreateDocumentGI = (props) => {
             dataSource.map((x, idx) => {
                 console.log(x)
                 BaseSto = {
-                    "baseCode": x.base !== undefined ? x.base : null,
+                    "baseCode": x.BaseCode !== undefined ? x.BaseCode : null,
                     "quantity": null,
                     "isRegisBaseCode": null,
                     "isRegisBaseCode": null
@@ -467,17 +615,17 @@ const CreateDocumentGI = (props) => {
         <div>
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
-                // dataSource={dataSource}
+                dataSource={dataSource}
                 // reload={reload}
-                columns={columns}  //colums 
-                columnEdit={columnEdit} //ข้อมูลที่จะแก้ไขใน popUp 
+                //columns={columns}  //colums 
+                //columnEdit={columnEdit} //ข้อมูลที่จะแก้ไขใน popUp 
                 apicreate={apicreate} //api ที่จะทำการสร้างเอกสาร
                 createDocType={"issue"} //createDocType มี audit issue recive
-                //columnsModifi={columnsModifi}
+                columnsModifi={columnsModifi}
                 history={props.history} //ส่ง porps.history ไปทุกรอบ
                 apiRes={apiRes} //หน้ารายละเอียดเอกสาร    
-                // btnProps={btnAdd}
-                //dataCreate={dataCreate}
+                btnProps={btnAdd}
+                dataCreate={dataCreate}
                 slectBase={true}
                 movementTypeID={"1011"}
             >
@@ -491,6 +639,16 @@ const CreateDocumentGI = (props) => {
                 data={editData}
                 columns={primaryFilterList}
             />
+
+            <AmEditorTable
+                style={{ width: "600px", height: "500px" }}
+                titleText={title}
+                open={dialogAdd}
+                onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
+                data={editData}
+                columns={primaryFilterListAdd}
+            />
+
             <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
             <div >
             </div>

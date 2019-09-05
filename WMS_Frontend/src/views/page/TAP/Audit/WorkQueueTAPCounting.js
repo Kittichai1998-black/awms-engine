@@ -146,6 +146,7 @@ const WorkQueueTAPCounting = (props) => {
     return (<div>
         <AmProcessQueue
             // apiDocument={Document}
+            Defaulwarehouse={1}
             detailDocument={datasDetails}
             orderDDL={orderDDL}
             ordersDDL={ordersDDL}      
