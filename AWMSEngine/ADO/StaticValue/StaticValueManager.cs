@@ -168,6 +168,7 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, buVO ?? new VOCriteria()));
             var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, buVO ?? new VOCriteria()));
+            subVals = subVals.Where(x => this._ObjectSizes.Any(y => y.ID == x.InnerObjectSize_ID) && this._ObjectSizes.Any(y => y.ID == x.OuterObjectSize_ID)).ToList();
             this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
             return this._ObjectSizes;
         }
@@ -280,8 +281,13 @@ namespace AWMSEngine.ADO.StaticValue
                 else if (tableName == typeof(ams_PackMasterType).Name) this._PackMasterTypes = null;
                 else if (tableName == typeof(ams_SKUMasterType).Name) this._SKUMasterTypes = null;
                 else if (tableName == typeof(ams_BaseMasterType).Name) this._BaseMasterTypes = null;
-                else if (tableName == typeof(ams_PackMaster).Name) { this._PackUnitConverts = null; this._PackMasterEmptyPallets = null; }
-                else if (tableName == typeof(ams_SKUMaster).Name) { this._SKUMasterEmptyPallets = null; }
+                else if (tableName == typeof(ams_PackMaster).Name) {
+                    this._PackUnitConverts = null;
+                    this._PackMasterEmptyPallets = null; }
+                else if (tableName == typeof(ams_SKUMaster).Name) {
+                    this._SKUMasterEmptyPallets = null;
+                    this._PackUnitConverts = null;
+                    this._PackMasterEmptyPallets = null; }
             }
         }
 

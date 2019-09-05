@@ -14,14 +14,20 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_DONE_DES_EVENT_STATUS = "_done_des_estatus";
         public const string OPT_DONE_SOU_EVENT_STATUS = "_done_sou_estatus";
         //AAI
-        public const string OPT_LGTYP = "lgtyp";
+        public const string OPT_LGNUM = "lgnum"; 
+        public const string OPT_LGTYP = "lgtyp"; 
         public const string OPT_LGBER = "lgber";
         public const string OPT_LGPLA = "lgpla";
         public const string OPT_BWLVS = "bwlvs";
         public const string OPT_BESTQ = "bestq";
+        public const string OPT_MAKTX = "maktx";
+        public const string OPT_VFDAT = "vfdat";
+        public const string OPT_VBELN = "vbeln";
         public const string OPT_WEBAZ = "webaz";
         public const string OPT_INCBD = "incubatedate";
         public const string OPT_FVDT1 = "fvdt1";
+        public const string OPT_TANUM = "tanum";
+        public const string OPT_BTANR = "btanr";
 
     }
 }

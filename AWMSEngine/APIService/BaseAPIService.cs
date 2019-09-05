@@ -110,8 +110,9 @@ namespace AWMSEngine.APIService
                 else if (this.Logger == null)
                     this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
 
-                this.Logger.LogInfo("####### START TRANSACTION #######");
-                this.Logger.LogInfo("REQUEST_DATA:: " + ObjectUtil.Json(request));
+                this.Logger.LogInfo("############## START TRANSACTION ##############");
+                string _request_str = ObjectUtil.Json(request);
+                this.Logger.LogInfo("request=" + _request_str);
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
                 this.BuVO.Set(BusinessVOConst.KEY_REQUEST, request);
                 this.BuVO.Set(BusinessVOConst.KEY_FINAL_DB_LOG,
@@ -152,6 +153,7 @@ namespace AWMSEngine.APIService
                 result.code = AMWExceptionCode.I0000.ToString();
                 result.message = "Success";
                 result.stacktrace = string.Empty;
+                result.logref = this.Logger.LogRefID;
                 this.CommitTransaction();
             }
             catch (AMWException ex)
@@ -160,16 +162,18 @@ namespace AWMSEngine.APIService
                 result.code = ex.GetAMWCode();
                 result.message = ex.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
+                result.logref = this.Logger.LogRefID;
                 this.RollbackTransaction();
             }
             catch (Exception ex)
             {
                 var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
+                this.Logger.LogError(ex.StackTrace);
                 result.status = 0;
                 result.code = e.GetAMWCode();
                 result.message = e.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
-                this.Logger.LogError(ex.StackTrace);
+                result.logref = this.Logger.LogRefID;
                 this.RollbackTransaction();
             }
             finally
@@ -185,8 +189,6 @@ namespace AWMSEngine.APIService
                 string _code = result.code;
                 string _message = result.message;
                 string _stacktrace = result.stacktrace;
-                if (!string.IsNullOrEmpty(apiKey))
-                    result.stacktrace = null;
 
                 ADO.LogingADO.GetInstant().EndAPIService(dbLogID, response, _status, _code, _message, _stacktrace, this.BuVO);
                 this.FinalDBLog.sendAPIEvents.ForEach(x =>
@@ -197,8 +199,12 @@ namespace AWMSEngine.APIService
                 {
                     ADO.LogingADO.GetInstant().PutDocumentAlertMessage(x, this.BuVO);
                 });
-                this.Logger.LogInfo("RESPONSE_DATA:: " + ObjectUtil.Json(response));
-                this.Logger.LogInfo("####### END TRANSACTION #######");
+                string _response_str = ObjectUtil.Json(response);
+                this.Logger.LogInfo("response=" + _response_str);
+                this.Logger.LogInfo("############## END TRANSACTION ##############");
+
+                if (!string.IsNullOrEmpty(apiKey))
+                    result.stacktrace = null;
             }
             return response;
         }
@@ -214,15 +220,16 @@ namespace AWMSEngine.APIService
             var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
-            this.Logger.LogInfo("TOKEN:: " + token);
+            this.Logger.LogInfo("token=" + token);
 
             var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("APIKey", apiKey, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
-            this.Logger.LogInfo("APIKEY:: " + apiKey);
+            this.Logger.LogInfo("apikey=" + apiKey);
 
             if (!this.IsAuthenAuthorize)
                 return;
+            this.Logger.LogInfo("AuthenAuthorize!");
 
 
             ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
@@ -239,9 +246,11 @@ namespace AWMSEngine.APIService
             {
                 if (DateTime.Now > tokenInfo.ExpireTime)
                     throw new AMWException(this.Logger, AMWExceptionCode.A0001, "Token Expire");
-                
-
             }
+
+            var userInfo = ADO.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo != null ? tokenInfo.User_ID : apiKeyInfo.User_ID, this.BuVO);
+            if (userInfo != null)
+                this.Logger.LogInfo("username=" + userInfo.Code);
         }
     }
 }

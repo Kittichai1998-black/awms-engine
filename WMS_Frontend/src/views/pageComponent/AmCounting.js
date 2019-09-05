@@ -26,8 +26,8 @@ import _ from "lodash";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styled from "styled-components";
-import { useTranslation } from 'react-i18next'
-
+import { useTranslation } from "react-i18next";
+import AmRadioGroup from "../../components/AmRadioGroup";
 const Axios = new apicall();
 
 const styles = theme => ({
@@ -120,7 +120,32 @@ const styles = theme => ({
     marginTop: 45
   }
 });
+const FormInline = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
+    margin: 5px 0 5px 0;
+  }
+  input {
+    vertical-align: middle;
+  }
+  @media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
 
+const LabelH = styled.label`
+  font-weight: bold;
+  width: 100px;
+  paddingleft: 20px;
+`;
+const LabelH1 = styled.label`
+  font-weight: bold;
+  width: 90px;
+  paddingleft: 20px;
+`;
 const DivHidden = styled.div`
   overflow: hidden;
   height: 0;
@@ -138,7 +163,7 @@ const StorageObjectViw = {
 };
 
 const AmCounting = props => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { classes } = props;
 
   const [valueInput, setValueInput] = useState({});
@@ -162,6 +187,7 @@ const AmCounting = props => {
   const [palletCode, setPalletCode] = useState("");
   const [valueEdit, setValueEdit] = useState(0);
   const [docName, setDocName] = useState("");
+  const [option, setOption] = useState();
 
   const alertDialogRenderer = (message, type, state) => {
     setMsgDialog(message);
@@ -184,7 +210,7 @@ const AmCounting = props => {
       setShowDialog(null);
     }
   }, [stateDialog, msgDialog, typeDialog]);
-  useEffect(() => { }, [valueInput]);
+  useEffect(() => {}, [valueInput]);
   const onHandleChangeInput = (
     value,
     dataObject,
@@ -238,7 +264,6 @@ const AmCounting = props => {
     await Axios.get(createQueryString(QueryDocName)).then(res => {
       if (res.data.datas.length !== 0) {
         res.data.datas.forEach(x => {
-          console.log(x);
           setDocName(x.Code);
           doc = x.Code;
         });
@@ -301,9 +326,9 @@ const AmCounting = props => {
     if (reqPalletCode) {
       Axios.get(
         window.apipath +
-        "/v2/SelectAuditAPI/?palletCode=" +
-        reqPalletCode +
-        "&apiKey=free01"
+          "/v2/SelectAuditAPI/?palletCode=" +
+          reqPalletCode +
+          "&apiKey=free01"
       ).then(res => {
         if (res.data._result.status === 0) {
           alertDialogRenderer(res.data._result.message, "error", true);
@@ -322,6 +347,8 @@ const AmCounting = props => {
     setValueEdit(value);
   };
   const DataShowRenderer = (data, doc) => {
+    var dataRadio = props.dataRadio;
+    var defaultDataRadio = props.defaultDataRadio;
     return data.map((list, index) => {
       return (
         <Card
@@ -334,13 +361,21 @@ const AmCounting = props => {
         >
           <CardContent>
             <div>
-              <label style={{ fontWeight: "bolder" }}>Doc. No. : </label> {doc}
+              <FormInline>
+                <LabelH>Doc. No. :</LabelH>
+                {doc}
+              </FormInline>
+              {/* <label style={{ fontWeight: "bolder" }}>Doc. No. : </label> {doc} */}
             </div>
             {props.displayDetail.map((x, index) => {
               return (
                 <div key={index}>
-                  <label style={{ fontWeight: "bolder" }}>{x.Name}: </label>{" "}
-                  {list[x.field]}
+                  <FormInline>
+                    <LabelH>{x.Name} :</LabelH>
+                    {list[x.field]}
+                  </FormInline>
+                  {/* <label style={{ fontWeight: "bolder" }}>{x.Name}: </label>{" "} */}
+                  {/* {list[x.field]} */}
                 </div>
               );
             })}
@@ -348,25 +383,48 @@ const AmCounting = props => {
             {/* <div><label style={{fontWeight: "bolder"}}>Pack Code : </label> {list["packCode"]}</div>
                   <div><label style={{fontWeight: "bolder"}}>Batch : </label> {list.batch}</div> */}
             <div>
-              <label style={{ fontWeight: "bolder" }}>Adj.Qty : </label>{" "}
-              <AmInput
-                defaultValue={list.qty}
-                style={{ width: "70px" }}
-                type="number"
-                id="QtyEdit"
-                name="QtyEdit"
-                onChange={(value, obj, element, event) => {
-                  createAuditEdit(value, data);
-                }}
-              />{" "}
-              / {list.qty} {list.unitCode}
+              {/* <label style={{ fontWeight: "bolder" }}>Adj.Qty : </label>{" "} */}
+              <FormInline>
+                <LabelH>Adj.Qty : </LabelH>{" "}
+                <AmInput
+                  defaultValue={list.qty}
+                  style={{ width: "70px", padding: "0px" }}
+                  type="number"
+                  id="QtyEdit"
+                  name="QtyEdit"
+                  onChange={(value, obj, element, event) => {
+                    createAuditEdit(value, data);
+                  }}
+                />{" "}
+                / {list.qty} {list.unitCode}
+              </FormInline>
+              {props.stateDone === true ? (
+                <FormInline>
+                  {" "}
+                  <LabelH1>Status : </LabelH1>
+                  <AmRadioGroup
+                    row={true}
+                    name={"Status"}
+                    dataValue={dataRadio}
+                    returnDefaultValue={true}
+                    defaultValue={defaultDataRadio}
+                    onChange={(value, obj, element, event) =>
+                      onHandleChangeRadio(value)
+                    }
+                  />
+                </FormInline>
+              ) : null}
             </div>
           </CardContent>
         </Card>
       );
     });
   };
-
+  const onHandleChangeRadio = (value, field) => {
+    //valueInput[field] = parseInt(value, 10);
+    // table["Status"] = parseInt(value, 10);
+    setOption(parseInt(value, 10));
+  };
   const onConfirmAudit = () => {
     let dataList = table.map(x => {
       let auditQty = x.auditQty - x.qty;
@@ -378,7 +436,8 @@ const AmCounting = props => {
         qty: x.qty,
         baseQty: x.baseQty,
         unitID: x.unitID,
-        baseUnitID: x.baseUnitID
+        baseUnitID: x.baseUnitID,
+        option: props.stateDone === true ? "_done_des_estatus=" + option : ""
       };
     });
     const data = {
@@ -458,14 +517,14 @@ const AmCounting = props => {
                         {t("Confirm")}
                       </AmButton>
                     ) : (
-                        <AmButton
-                          styleType="confirm"
-                          onClick={() => handleNext(index)}
-                          className={classes.button}
-                        >
-                          {t("Next")}
+                      <AmButton
+                        styleType="confirm"
+                        onClick={() => handleNext(index)}
+                        className={classes.button}
+                      >
+                        {t("Next")}
                       </AmButton>
-                      )}
+                    )}
                   </div>
                 </div>
               </StepContent>

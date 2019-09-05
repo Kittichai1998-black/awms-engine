@@ -74,7 +74,7 @@ namespace AMWUtil.Logger
         {
             return GetLogger(refID.ToString(), serviceName.ToString());
         }
-        public static AMWLogger GetLogger(string refID, string serviceName)
+        public static AMWLogger GetLogger(string logName, string serviceName)
         {
             lock (InitLock)
             {
@@ -85,7 +85,7 @@ namespace AMWUtil.Logger
                 Dictionary<string, string> dicMapKey = new Dictionary<string, string>();
                 dicMapKey.Add("{MachineName}", System.Environment.MachineName);
                 dicMapKey.Add("{Date}", DateTime.Now.ToString("yyyyMMdd"));
-                dicMapKey.Add("{RefID}", refID);
+                dicMapKey.Add("{LogName}", logName);
                 dicMapKey.Add("{ServiceName}", serviceName);
 
                 logManager.LogUri = logManager.LogUriFormat.EndsWith("/") || logUriFormat.EndsWith("\\") ? logUriFormat : logUriFormat + "/";
@@ -106,7 +106,7 @@ namespace AMWUtil.Logger
 
                 //logManager.ClearLogUnWrite();
                 string keyFile = logManager.LogUri + logManager.LogFileName;
-                AMWLogger logger = new AMWLogger(keyFile, refID, serviceName);
+                AMWLogger logger = new AMWLogger(keyFile, logName, serviceName);
                 return logger;
 
             }

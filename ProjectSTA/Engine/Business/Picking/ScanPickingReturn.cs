@@ -1,6 +1,7 @@
 ﻿using AMWUtil.Common;
 using AMWUtil.Exception;
 using AWMSEngine.Common;
+using AWMSEngine.Engine.V2.Business;
 using AWMSEngine.Engine.V2.Validation;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -10,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AWMSEngine.Engine.V2.Business.Picking
+namespace ProjectSTA.Engine.V2.Business.Picking
 {
-    public class ScanPickingReturn : BaseEngine<ScanPickingReturn.TReq, ScanPickingReturn.TRes>
+    public class ScanPickingReturn : AWMSEngine.Engine.BaseEngine<ScanPickingReturn.TReq, ScanPickingReturn.TRes>
     {
         public class TReq
         {
@@ -32,6 +33,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             public bool isRoot = true;
             public VirtualMapSTOModeType mode;
             public VirtualMapSTOActionType action;
+            public string rootOptions;
         }
 
         public class TRes
@@ -86,7 +88,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                         if (reqVO.docItemID == null)
                         {
                             //2 case  
-                            var resDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                            var resDiSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                                       new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("Sou_StorageObject_ID",packs.id, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
@@ -96,7 +98,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 //เพิ่มเข้าไปใหม่
                                 //add new Pack ลงใน new pallet ก่อนหน้านี้ โดยยังไม่มี docItemID ให้อ้างอิง
                                 //ต้องเซ็คหา docItem ที่มี pack master id ตรงกัน 
-                                var docItems = ADO.DocumentADO.GetInstant()
+                                var docItems = AWMSEngine.ADO.DocumentADO.GetInstant()
                                          .ListItem(DocumentTypeID.GOODS_RECEIVED, packs.mstID, null, null, null, null, packs.unitID, packs.baseUnitID, packs.orderNo, packs.batch, packs.lot, null, this.BuVO)
                                          .FindAll(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
                                 if (docItems == null || docItems.Count() == 0)
@@ -108,7 +110,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                                 foreach (var docid in grDocs)
                                 {
-                                    var resDoc = ADO.DocumentADO.GetInstant().Get(docid, this.BuVO);
+                                    var resDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(docid, this.BuVO);
                                     if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                                     {
                                         continue;
@@ -118,7 +120,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                         tempDoc = resDoc;
                                         docItems.Where(x => x.Document_ID == docid).ToList().ForEach(x=>
                                         {
-                                            tempDocItems.Add(ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID.Value, this.BuVO));
+                                            tempDocItems.Add(AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID.Value, this.BuVO));
                                         });
 
                                         break;
@@ -195,7 +197,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                                     disto.Quantity = packConvert.qty;
                                                     disto.BaseQuantity = packConvert.baseQty;
 
-                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
+                                                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
                                                    
                                             }else
                                                 {
@@ -210,7 +212,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                                         if (haveSto)
                                         {
-                                            var newDocItems = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(dix.ID.Value, this.BuVO);
+                                            var newDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(dix.ID.Value, this.BuVO);
                                             tempDoc.DocumentItems = new List<amt_DocumentItem>() { newDocItems };
                                             break;
                                         }
@@ -263,7 +265,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                         else
                         {
                             //add Pack แล้ว map เข้า DiSto ตัวเดิม อิงจาก reqVO.docItemID
-                            var resDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(reqVO.docItemID.Value, this.BuVO);
+                            var resDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(reqVO.docItemID.Value, this.BuVO);
                             if (resDocItem == null)
                                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
@@ -294,7 +296,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                             disto.Quantity = packConvert.qty;
                                             disto.BaseQuantity = packConvert.baseQty;
 
-                                            var diStoID = ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
+                                            var diStoID = AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
                                         
                                         }
                                         else
@@ -303,7 +305,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                         }
                                     }
                                 });
-                                var resDoc = ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
+                                var resDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
                                 if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Movement Type of GR Document didn't 'FG_RETURN_WM'");
 
@@ -331,7 +333,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
                         //จะลบ base ส่ง rootID ของ base , scancode ของ base => rootID-base =IDของscancode
 
-                        var mapstoScan = ADO.StorageObjectADO.GetInstant().Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
+                        var mapstoScan = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
                         var mapstoScanTree = mapstoScan.ToTreeList();
                         var packsScan = mapstoScanTree.FindLast(x => x.type == StorageObjectType.PACK && x.eventStatus == StorageObjectEventStatus.NEW);
 
@@ -341,7 +343,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                         {
                             if (packsScan != null)
                             {
-                                var resDiSto1 = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                                var resDiSto1 = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                                       new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("Sou_StorageObject_ID",packsScan.id.Value, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
@@ -352,7 +354,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 resDiSto1.Quantity = 0;
                                 resDiSto1.BaseQuantity = 0;
                                 resDiSto1.Status = EntityStatus.REMOVE;
-                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDiSto1.ID.Value, null, resDiSto1.Quantity, resDiSto1.BaseQuantity, resDiSto1.Status, this.BuVO);
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDiSto1.ID.Value, null, resDiSto1.Quantity, resDiSto1.BaseQuantity, resDiSto1.Status, this.BuVO);
                                 
                                 result.docs = ListDocument(resDiSto1.DocumentItem_ID.Value, reqVO);
                             }
@@ -373,7 +375,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 var resdocumentItems = new amt_DocumentItem();
                                 if (reqVO.docItemID != null)
                                 { 
-                                    resdocumentItems = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem((long)reqVO.docItemID, this.BuVO);
+                                    resdocumentItems = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem((long)reqVO.docItemID, this.BuVO);
                                     if (resdocumentItems != null)
                                     {
                                         resdocumentItems.DocItemStos.ForEach(disto =>
@@ -384,10 +386,10 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                                 var packConvert = StaticValue.ConvertToBaseUnitByPack(resStoPack.mstID.Value, qty.Value, resStoPack.unitID);
                                                 disto.Quantity = packConvert.qty;
                                                 disto.BaseQuantity = packConvert.baseQty;
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
+                                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
                                             }
                                         });
-                                        var docx = ADO.DocumentADO.GetInstant().Get(resdocumentItems.Document_ID, this.BuVO);
+                                        var docx = AWMSEngine.ADO.DocumentADO.GetInstant().Get(resdocumentItems.Document_ID, this.BuVO);
 
                                         docx.DocumentItems = new List<amt_DocumentItem>() { resdocumentItems }; 
                                         result.docs = new List<amt_Document>() { docx }; 
@@ -399,7 +401,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 }
                                 else
                                 {
-                                    var resDiSto1 = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                                    var resDiSto1 = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                                       new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("Sou_StorageObject_ID",resStoPack.id.Value, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Status", EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
@@ -410,8 +412,8 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                     var packConvert = StaticValue.ConvertToBaseUnitByPack(resStoPack.mstID.Value, qty.Value, resStoPack.unitID);
                                     ////
                                     resDiSto1.Quantity = packConvert.qty;
-                                    resDiSto1.BaseQuantity = packConvert.baseQty; 
-                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDiSto1.ID.Value, null, resDiSto1.Quantity, resDiSto1.BaseQuantity, resDiSto1.Status, this.BuVO);
+                                    resDiSto1.BaseQuantity = packConvert.baseQty;
+                                    AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDiSto1.ID.Value, null, resDiSto1.Quantity, resDiSto1.BaseQuantity, resDiSto1.Status, this.BuVO);
 
                                     result.docs = ListDocument(resDiSto1.DocumentItem_ID.Value, reqVO);
                                 }
@@ -422,7 +424,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                 if (reqVO.docItemID != null)
                                 {
                                     //ลบ  pallet จนถึง sku ที่มีใน pallet
-                                    var reqDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem((long)reqVO.docItemID, this.BuVO);
+                                    var reqDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem((long)reqVO.docItemID, this.BuVO);
                                     if(reqDocItem != null)
                                     {
                                         reqDocItem.DocItemStos.ForEach(disto =>
@@ -432,10 +434,10 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                                                 disto.Quantity = 0;
                                                 disto.BaseQuantity = 0;
                                                 disto.Status = EntityStatus.REMOVE;
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
+                                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
                                             }
                                         });
-                                        var docx = ADO.DocumentADO.GetInstant().Get(reqDocItem.Document_ID, this.BuVO);
+                                        var docx = AWMSEngine.ADO.DocumentADO.GetInstant().Get(reqDocItem.Document_ID, this.BuVO);
 
                                         docx.DocumentItems = new List<amt_DocumentItem>() { reqDocItem };
                                         result.docs = new List<amt_Document>() { docx };
@@ -469,7 +471,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 return null;
             }
 
-            var resDiSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            var resDiSto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                                        new SQLConditionCriteria[] {
                                             new SQLConditionCriteria("Sou_StorageObject_ID",packs.id, SQLOperatorType.EQUALS),
                                             new SQLConditionCriteria("Status", EntityStatus.REMOVE, SQLOperatorType.NOTEQUALS)
@@ -477,11 +479,11 @@ namespace AWMSEngine.Engine.V2.Business.Picking
             if(resDiSto == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item Storage Object of Scan Code '" + reqVO.scanCode + "' Not Found");
 
-            var resDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(resDiSto.DocumentItem_ID.Value, this.BuVO);
+            var resDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(resDiSto.DocumentItem_ID.Value, this.BuVO);
             if (resDocItem == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
-            var resDoc = ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
+            var resDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
             if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Movement Type of GR Document didn't 'FG_RETURN_WM'");
 
@@ -510,6 +512,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
                 isRoot = reqVO.isRoot,
                 mode = reqVO.mode,
                 action = reqVO.action,
+                rootOptions = reqVO.rootOptions
             };
 
             var res = selectPalletSTO.Execute(this.Logger, this.BuVO, createPalletData);
@@ -533,7 +536,7 @@ namespace AWMSEngine.Engine.V2.Business.Picking
         private List<amt_DocumentItem> InsertDiSTO(StorageObjectCriteria packs,long diID, TReq reqVO)
         {
             var addDocItemStos = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(ConverterModel.ToDocumentItemStorageObject(packs, packs.baseQty, packs.unitID, diID), this.BuVO);
-            var newDocItems = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(addDocItemStos.DocumentItem_ID.Value, this.BuVO);
+            var newDocItems = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(addDocItemStos.DocumentItem_ID.Value, this.BuVO);
             return new List<amt_DocumentItem>() { newDocItems };
         }
 
@@ -561,11 +564,11 @@ namespace AWMSEngine.Engine.V2.Business.Picking
 
         private List<amt_Document> ListDocument(long diID, TReq reqVO)
         {
-            var resDocItem = ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(diID, this.BuVO);
+            var resDocItem = AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(diID, this.BuVO);
             if (resDocItem == null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
-            var resDoc = ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
+            var resDoc = AWMSEngine.ADO.DocumentADO.GetInstant().Get(resDocItem.Document_ID, this.BuVO);
             if (resDoc.MovementType_ID != MovementType.FG_PICK_RETURN_WM)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Movement Type of GR Document didn't 'FG_RETURN_WM'");
 

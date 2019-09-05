@@ -5,11 +5,10 @@ import PropTypes from "prop-types";
 import Radio from "@material-ui/core/Radio";
 import ReactTable from "react-table";
 import React, { useState, useEffect, useRef } from "react";
-import { useTranslation } from 'react-i18next'
-import withFixedColumns from "react-table-hoc-fixed-columns";
-
-import "react-table-hoc-fixed-columns/lib/styles.css";
+import { useTranslation } from "react-i18next";
 import "react-table/react-table.css";
+import withFixedColumns from "react-table-hoc-fixed-columns";
+import "react-table-hoc-fixed-columns/lib/styles.css";
 
 import AmExportDataTable from "./AmExportDataTable";
 
@@ -18,7 +17,7 @@ import "./style.css";
 const ReactTableFixedColumns = withFixedColumns(ReactTable);
 
 const AmTable = props => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(props.data);
   const [selection, setSelection] = useState([]);
@@ -155,20 +154,26 @@ const AmTable = props => {
           ...row
         };
       } else {
-        column = { ...x, Header: typeof Header === "string" ? t(Header) : Header };
+        column = {
+          ...x,
+          Header: typeof Header === "string" ? t(Header) : Header
+        };
       }
 
       if (type === "datetime") {
         column.Cell = data => {
-          if (data.original[x.accessor] === "" || data.original[x.accessor] === null) {
-            return ('');
+          if (
+            data.original[x.accessor] === "" ||
+            data.original[x.accessor] === null
+          ) {
+            return "";
           } else {
             return (
               <span>
                 {Moment(data.original[x.accessor]).isValid
                   ? Moment(data.original[x.accessor]).format(
-                    x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
-                  )
+                      x.dateFormat ? x.dateFormat : "DD-MM-YYYY HH:mm"
+                    )
                   : ""}
               </span>
             );

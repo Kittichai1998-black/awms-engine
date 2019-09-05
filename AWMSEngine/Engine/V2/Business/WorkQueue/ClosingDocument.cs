@@ -23,7 +23,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         if (docs.DocumentType_ID != DocumentTypeID.AUDIT)
                         {
-                            if (ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO).TrueForAll(y => y.Status == EntityStatus.ACTIVE))
+                            var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                            if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                             {
                                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
                             }

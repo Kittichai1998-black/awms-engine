@@ -16,47 +16,62 @@ const styles = theme => ({
     margin: theme.spacing(0)
   },
   group: {
-    margin: `${theme.spacing(1)}px 0`
-  }
+    margin: theme.spacing(1, 0)  //`${theme.spacing(1)}px 0`
+  },
+  radio: {
+    '&$checked': {
+      color: '#4B8DF8'
+    }
+  },
+  checked: {}
 });
 
 const RadioButtonsGroup = props => {
-  const [Data, setData] = useState({});
-  const [value, setValue] = useState();
+  const { classes, dataValue, name, formLabel, row, onChange, defaultValue, returnDefaultValue } = props;
+
+  // const [Data, setData] = useState({});
+  const [value, setValue] = useState(defaultValue.value);
 
   useEffect(() => {
-    props.onChange(Data);
-  });
+    if (returnDefaultValue) {
+      onChange(defaultValue.value, null, null, true);
+    }
+  }, []);
 
   const handleChange = event => {
-    setValue(value);
+    setValue(event.target.value);
+    onChange(event.target.value, null, event.target, event);
   };
 
-  var RadioValue = props.value;
-  const { classes } = props;
+  //var RadioValue = props.value;
   return (
     <div className={classes.root}>
       <FormControl component='fieldset' className={classes.formControl}>
-        <FormLabel component='legend' />
+        <FormLabel component="legend">{formLabel}</FormLabel>
         <RadioGroup
-          aria-label='Gender'
-          name='gender1'
+          row={row !== undefined ? row : false}
+          aria-label={name}
+          name={name}
           className={classes.group}
           value={value}
           onChange={handleChange}
         >
-          {RadioValue.map(row => {
+          {dataValue ? dataValue.map((row, i) => {
             return (
               <FormControlLabel
+                key={i}
                 value={row.value}
-                control={<Radio color='primary' />}
-                label={row.label}
-                onChange={e => {
-                  setData({ checked: e.target.checked, value: e.target.value });
-                }}
+                control={<Radio
+                  color='primary'
+                // disableRipple
+                // classes={{root: classes.radio, checked: classes.checked}}
+                />}
+                checked={row.checked}
+                disabled={row.value === defaultValue.value ? defaultValue.disabled !== null  ? defaultValue.disabled : row.disabled : row.disabled !== null  ? row.disabled : false}
+                label={row.label} 
               />
             );
-          })}
+          }) : null}
         </RadioGroup>
       </FormControl>
     </div>
@@ -64,7 +79,14 @@ const RadioButtonsGroup = props => {
 };
 
 RadioButtonsGroup.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  formLabel: PropTypes.string,
+  name: PropTypes.string,
+  dataValue: PropTypes.array,
+  returnDefaultValue: PropTypes.bool,
+  defaultValue: PropTypes.object,
+  onChange: PropTypes.func,
+  row: PropTypes.bool
 };
 
 export default withStyles(styles)(RadioButtonsGroup);

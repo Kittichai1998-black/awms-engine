@@ -44,6 +44,7 @@ namespace AWMSModel.Criteria
         public decimal? minWeiKG;
         public decimal? maxWeiKG;
         public DateTime? productDate;
+        public DateTime? expiryDate;
         public bool isFocus;
         public StorageObjectEventStatus eventStatus;
         public List<ObjectSizeMap> objectSizeMaps;
@@ -289,7 +290,7 @@ namespace AWMSModel.Criteria
                             widthM = x.widthM,
                             heightM = x.heightM,
                             productDate = x.productDate,
-
+                            expiryDate = x.expiryDate,
                             options = x.options ?? string.Empty,
                             mapstos = generateMapstos(x.id, x.type, out isFocus),
                             isFocus = isFocus,

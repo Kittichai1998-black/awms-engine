@@ -5,6 +5,7 @@ using AWMSEngine.Common;
 using AWMSEngine.Engine;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Entity;
 using System;
@@ -21,6 +22,13 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var reqVO = data.reqVO;
             var stoRoot = data.sto;
             var staticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+
+            var sou_warehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == "W01");
+            if (sou_warehouse == null)
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Source Warehouse 'W01' Not Found");
+            var sou_branch = staticValue.Branchs.FirstOrDefault(x => x.ID == sou_warehouse.Branch_ID);
+            if (sou_branch == null)
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Source Branch Not Found");
 
             var warehouse = staticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (warehouse == null)
@@ -59,8 +67,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 For_Customer_ID = string.IsNullOrWhiteSpace(reqVO.forCustomerCode) ? null : staticValue.Customers.First(x => x.Code == reqVO.forCustomerCode).ID,
                 Sou_Customer_ID = null,
                 Sou_Supplier_ID = null,
-                Sou_Branch_ID = reqVO.ioType == IOType.INPUT ? null : branch.ID,
-                Sou_Warehouse_ID = reqVO.ioType == IOType.INPUT ? null : warehouse.ID,
+                Sou_Branch_ID = reqVO.ioType == IOType.INPUT ? sou_branch.ID.Value : branch.ID,
+                Sou_Warehouse_ID = reqVO.ioType == IOType.INPUT ? sou_warehouse.ID.Value : warehouse.ID,
                 Sou_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : area.ID,
 
                 Des_Customer_ID = null,
@@ -70,8 +78,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 Des_AreaMaster_ID = reqVO.ioType == IOType.INPUT ? null : desArea.ID,
 
                 DocumentDate = DateTime.Now,
-                ActionTime = null,
-                MovementType_ID = MovementType.FG_TRANSFER_WM,
+                ActionTime = DateTime.Now,
+                MovementType_ID = MovementType.FG_TRANSFER,
                 RefID = null,
                 Ref1 = null,
                 Ref2 = null,
@@ -99,10 +107,11 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 {
                     doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
                 }
-                var baseUnitTypeConvt = staticValue.ConvertToBaseUnitByPack(pack.ID.Value, sto.qty, pack.UnitType_ID);
-                decimal? baseQuantity = null;
-                if (sto.qty >= 0)
-                    baseQuantity = baseUnitTypeConvt.baseQty;
+                        
+               // var baseUnitTypeConvt = staticValue.ConvertToBaseUnitByPack(pack.ID.Value, sto.qty, pack.UnitType_ID);
+               // decimal? baseQuantity = null;
+               //if (sto.qty >= 0)
+               //     baseQuantity = baseUnitTypeConvt.baseQty;
 
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
@@ -112,19 +121,19 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     PackMaster_ID = pack.ID.Value,
 
                     Quantity = sto.qty,
-                    //UnitType_ID = sto.unitID,
-                    //BaseQuantity = sto.baseQty,
-                    //BaseUnitType_ID = sto.baseUnitID,
-                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
-                    BaseQuantity = baseQuantity,
-                    BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
+                    UnitType_ID = sto.unitID,
+                    BaseQuantity = sto.baseQty,
+                    BaseUnitType_ID = sto.baseUnitID,
+                    //UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    //BaseQuantity = baseQuantity,
+                    //BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
 
                     OrderNo = sto.orderNo,
                     Batch = sto.batch,
                     Lot = sto.lot,
 
                     Options = null,
-                    ExpireDate = null,
+                    ExpireDate = sto.expiryDate,
                     ProductionDate = sto.productDate,
                     Ref1 = null,
                     Ref2 = null,

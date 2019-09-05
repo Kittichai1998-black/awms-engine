@@ -47,137 +47,172 @@ const InputDiv = styled.div`
 `;
 
 export default props => {
-    const [sapResponse, setSAPResponse] = useState([]);
     const [headerData, setHeaderData] = useState([]);
     const [dataSource, setDataSource] = useState([])
     const [editPopup, setEditPopup] = useState(false);
-    const [editData, setEditData] = useState({
-        LGTYP: "C00",
-        LGBER: "001",
-        LGPLA: "C00"
-    });
-
-    // const [sapReq, setSAPReq] = useState([]);
-    const [dialog, setDialog] = useState({
+    const [titleEditor, setTitleEditor] = useState()
+    const [reload, setRelaod] = useState()
+    const [ID, setID] = useState(1)
+    const [editData, setEditData] = useState({}
+        // {
+        //     LGTYP: "C00",
+        //     LGBER: "001",
+        //     LGPLA: "C00"
+        // }
+    );
+    const [dialogError, setDialogError] = useState({
         status: false,
-        type: null,
+        type: 'error',
         message: null
     });
 
     const headerCreates = [
         [
-            { label: 'SAP Document', type: 'labeltext', key: 'sapdoc', texts: '-' },
-            { label: 'Document Date', type: 'dateTime', key: 'documentDate' }
+            { label: "Document No.", type: "labeltext", key: "sapdoc", texts: "-" },
+            { label: "Document Date", type: "dateTime", key: "documentDate" }
         ],
         [
-            { label: 'Action Time', type: 'dateTime', key: 'actionTime' },
-            { label: 'Remark', type: 'input', key: 'remark', style: { width: '200px' } }
+            { label: "Movement Type", type: "labeltext", key: "movementTypeID", texts: "STO_TRANSFER", valueTexts: "5010" },
+            { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
         [
-            { label: 'Source Branch', type: 'labeltext', key: 'souBranchID', texts: '1100 : THIP', valueTexts: 1 },
-            { label: 'Warehouse', type: 'labeltext', key: 'souWarehouseID', texts: '5005 : ASRS', valueTexts: 1 }
+            { label: "Source Warehouse", type: "labeltext", key: "souWarehouseID", texts: "Warehouse1/ASRS", valueTexts: 1 }
         ],
         [
-            { label: 'MoveMent Type', type: 'labeltext', key: 'movementTypeID', texts: 'FG ISSUED', valueTexts: '1002' },
-            { label: 'Mode', type: 'labeltext', key: 'ref1', texts: 'R01', valueTexts: 'R01' }
+            { label: "Doc Status", type: "labeltext", key: "", texts: "New" },
+            { label: "Mode", type: "labeltext", key: "ref1", texts: "R01", valueTexts: "R01" }
         ]
     ];
 
-    const Sto = {
-        queryString: window.apipath + "/v2/SelectDataViwAPI/",
-        t: "PalletSto",
-        q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch",
-        g: "",
-        s: "[{'f':'ID','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const Sto = {
+    //     queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    //     t: "PalletSto",
+    //     q: '', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "ID,BaseCode,PackCode,Name,Quantity,UnitTypeName,Batch",
+    //     g: "",
+    //     s: "[{'f':'ID','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    // }
 
-    const BaseCode = {
-        queryString: window.apipath + "/v2/SelectDataTrxAPI/",
-        t: "StorageObject",
-        q: '[{ "f": "ParentStorageObject_ID", "c":"is not null"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
-        f: "Code",
-        g: "Code",
-        s: "[{'f':'Code','od':'ASC'}]",
-        sk: 0,
-        l: 100,
-        all: ""
-    }
+    // const BaseCode = {
+    //     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
+    //     t: "StorageObject",
+    //     q: '[{ "f": "ObjectType", "c":"=", "v": "1"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
+    //     f: "Code",
+    //     g: "Code",
+    //     s: "[{'f':'Code','od':'ASC'}]",
+    //     sk: 0,
+    //     l: 100,
+    //     all: ""
+    // }
 
-    const columsFindpopUpPalletCode = [
-        {
-            Header: 'SU No.',
-            accessor: 'Code',
-            fixed: 'left',
-            // width: 130,
-            sortable: true
-        }
-    ];
+    // const columsFindpopUpPalletCode = [
+    //     {  Header: 'SU No.',accessor: 'Code',fixed: 'left'}
+    // ];
 
     const columnEdit = [
-        { Header: "SU Code", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: BaseCode, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
-        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input", defultValue: "C00" },
-        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input", defultValue: "001" },
-        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input", defultValue: "C00" }
+        { Header: "SU No.", accessor: 'LENUM', type: "input" },
+        // { Header: "SU No.", accessor: 'Code', type: "findPopUp", idddl: "SUCode", queryApi: Sto, fieldLabel: ["Code"], columsddl: columsFindpopUpPalletCode, placeholder: "Select SU" },
+        { Header: "Dest. Storage Type", accessor: 'LGTYP', type: "input" },
+        { Header: "Dest. Storage Section", accessor: 'LGBER', type: "input" },
+        { Header: "Dest. Storage BIN", accessor: 'LGPLA', type: "input" }
     ];
 
     const ref = useRef(columnEdit.map(() => createRef()))
 
     var columnsModify = [
-        { Header: 'SU No.', accessor: 'BaseCode' },
-        { Header: 'SKU Code', accessor: 'PackCode' },
-        { Header: 'SKU Name', accessor: 'Name' },
-        { Header: 'Qty', accessor: 'Quantity' },
-        { Header: 'Batch', accessor: 'Batch' },
-        { Header: 'UnitType', accessor: 'UnitTypeName' }
+        { Header: 'SU No.', accessor: 'LENUM' },
+        { Header: "Dest. Storage Type", accessor: "LGTYP" },
+        { Header: 'Dest. Storage Section', accessor: 'LGBER' },
+        { Header: 'Dest. Storage BIN', accessor: 'LGPLA' },
+        { Header: 'WM MVT', accessor: 'BWLVS' },
+        { Header: 'UR', accessor: 'BESTQ_UR' },
+        { Header: 'QI', accessor: 'BESTQ_QI' },
+        { Header: 'Blocked', accessor: 'BESTQ_BLK' },
+        {
+            Header: "", Cell: (e) => {
+                return <AmButton styleType="info" onClick={() => { setEditData(e.original); setEditPopup(true); setTitleEditor("Edit") }}>Edit</AmButton>
+            }
+        },
+        {
+            Header: "", Cell: (e) => {
+                return <AmButton styleType="delete" onClick={() => onHandleDelete(e.original)}>Remove</AmButton>
+            }
+        }
     ];
 
     const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
-    const apiRes = '/';
+    const apiRes = "/issue/detail?docID=";
 
     const sapConnectorR1 = postData => {
+
         Axios.post(window.apipath + '/v2/SAPZWMRF003R1API', postData).then(res => {
             if (res.data._result.status) {
-                if (!res.data.datas[0].erR_MSG) {
-                    setSAPResponse(res.data.datas);
-                    GetDataByBaesCode(postData.LENUM)
+                if (!res.data.datas[0].ERR_MSG) {
+                    // setSAPResponse(res.data.datas);
+                    // GetDataByBaesCode(postData.LENUM)
+
+                    let checkData = dataSource.find(x => {
+                        return x.ID === postData.ID
+                    })
+                    if (checkData) {//EDIT
+                        for (let row in checkData) {
+                            if (row === "LENUM") {
+                                checkData[row] = postData[row]
+                            } else {
+                                checkData[row] = res.data.datas[0][row]
+                            }
+                        }
+                        checkData.ID = postData.ID
+                    } else { //ADD
+                        res.data.datas[0].ID = postData.ID
+                        res.data.datas[0].LENUM = postData.LENUM
+                        dataSource.push(res.data.datas[0])
+                    }
+                    setID(ID + 1)
+                    setDataSource(dataSource);
                 } else {
-                    setDialog({
+                    setDialogError({
                         status: true,
-                        type: "error",
-                        message: res.data.datas[0].erR_MSG
+                        message: res.data.datas[0].ERR_MSG
                     });
                 }
             } else {
-                setDialog({
+                setDialogError({
                     status: true,
-                    type: "error",
                     message: res.data._result.message
                 });
             }
         })
     };
 
-    const GetDataByBaesCode = baseCode => {
-        Sto.q = `[{ "f": "BaseCode", "c":"=", "v": '${baseCode}'}]`
-        Axios.get(createQueryString(Sto)).then(res => {
-            setDataSource(res.data.datas)
-        });
-    }
+    // const GetDataByBaesCode = baseCode => {
+    //     Sto.q = `[{ "f": "BaseCode", "c":"=", "v": '${baseCode}'}]`
+    //     Axios.get(createQueryString(Sto)).then(res => {
+    //         if (res.data.count > 0) {
+    //             setDataSource(res.data.datas)
+    //         } else {
+    //             setDialogError({
+    //                 status: true,
+    //                 message: "Base Code is Empty in StorageObject."
+    //             });
+    //         }
+    //     });
+    // }
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
-            let postData = {}
-            postData.LENUM = rowdata.Code
-            postData.LGBER = rowdata.LGBER
-            postData.LGPLA = rowdata.LGPLA
-            postData.LGTYP = rowdata.LGTYP
-            postData._token = localStorage.getItem('Token');
-            sapConnectorR1(postData);
+            // let postData = {}
+            // postData.LENUM = rowdata.LENUM
+            // postData.LGBER = rowdata.LGBER
+            // postData.LGPLA = rowdata.LGPLA
+            // postData.LGTYP = rowdata.LGTYP
+            rowdata._token = localStorage.getItem('Token');
+            sapConnectorR1(rowdata);
         }
+        setEditData({})
         setEditPopup(false);
     };
 
@@ -202,7 +237,7 @@ export default props => {
                     <LabelH>{row.Header} : </LabelH>
                     <InputDiv>
                         <AmInput style={row.style ? row.style : { width: "300px" }}
-                            defaultValue={row.defultValue ? row.defultValue : ""}
+                            defaultValue={editData ? editData[row.accessor] : null}
                             inputRef={ref.current[index]}
                             validate={true}
                             msgError="Error"
@@ -240,14 +275,26 @@ export default props => {
     }
 
     const onChangeEditor = (field, value, valueObject) => {
-        if (field === "BaseCode") {
-            valueObject ? editData.skuCode = valueObject.Code : delete editData["skuCode"]
+        // if (field === "BaseCode") {
+        //     valueObject ? editData.skuCode = valueObject.Code : delete editData["skuCode"]
+        // }
+
+        if (titleEditor === "Add") {
+
+            editData.ID = ID
         }
         editData[field] = value
-        setEditData(editData)
+
+        setEditData({ ...editData })
     };
 
     const CreateDocument = () => {
+        let MVTgroup = dataSource.map(row => row.BWLVS)
+            .filter((val, i, obj) => obj.indexOf(val) === i)
+            .join()
+        let SUgroup = dataSource.map(row => row.LENUM)
+            .filter((val, i, obj) => obj.indexOf(val) === i)
+            .join()
         let document = {
             actionTime:
                 headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -328,7 +375,9 @@ export default props => {
                 headerData.movementTypeID === undefined
                     ? null
                     : headerData.movementTypeID,
-            ref1: 'R01',
+            ref1: "R01",
+            ref2: MVTgroup,
+            refID: SUgroup,
             remark: headerData.remark === undefined ? null : headerData.remark,
             receiveItems:
                 headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -336,22 +385,20 @@ export default props => {
 
         let documentItem = dataSource.map((item, idx) => {
             let options =
-                'bwlvs=' + sapResponse[0].bwlvs +
-                '&lenum=' + sapResponse[0].lenum +
-                '&lgtyp=' + sapResponse[0].lgtyp +
-                '&lgber=' + sapResponse[0].lgber +
-                '&lgpla=' + sapResponse[0].lgpla +
-                '&bestq_ur=' + sapResponse[0].bestQ_UR +
-                '&bestq_qi=' + sapResponse[0].bestQ_QI +
-                '&bestq_blk=' + sapResponse[0].bestQ_BLK;
+                'bwlvs=' + item.BWLVS +
+                '&lenum=' + item.LENUM +
+                '&lgtyp=' + item.LGTYP +
+                '&lgber=' + item.LGBER +
+                '&lgpla=' + item.LGPLA +
+                '&bestq_ur=' + item.BESTQ_UR +
+                '&bestq_qi=' + item.BESTQ_QI +
+                '&bestq_blk=' + item.BESTQ_BLK +
+                '&basecode=' + item.LENUM;
             return {
                 ID: null,
-                palletcode: item.BaseCode,
-                skuCode: item.PackCode,
-                packCode: item.PackCode,
-                quantity: item.Quantity,
-                unitType: item.UnitTypeName,
-                batch: item.Batch,
+                ref1: "R01",
+                ref2: item.BWLVS,
+                refID: item.LENUM,
                 options: options
             };
         });
@@ -369,7 +416,7 @@ export default props => {
         return (
             <AmEditorTable
                 style={{ width: '600px', height: '500px' }}
-                titleText={'Add'}
+                titleText={titleEditor}
                 open={editPopup}
                 onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
                 data={editData}
@@ -378,11 +425,19 @@ export default props => {
         );
     };
 
+    const onHandleDelete = (row) => {
+        let idx = dataSource.findIndex(x => x.ID === row.ID);
+        dataSource.splice(idx, 1);
+        setDataSource(dataSource);
+        setRelaod({})
+    }
+
     return (
         <AmAux>
-            <AmDialogs typePopup={dialog.type} content={dialog.message} onAccept={(e) => { setDialog(e) }} open={dialog.status}></AmDialogs >
+            <AmDialogs typePopup={dialogError.type} content={dialogError.message} onAccept={(e) => { setDialogError(e) }} open={dialogError.status}></AmDialogs >
             <AmCreateDocument
                 headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
+                reload={reload}
                 //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่
                 columns={[]} //colums
                 columnEdit={[]} //ข้อมูลที่จะแก้ไขใน popUp
@@ -400,8 +455,8 @@ export default props => {
                         className='float-right'
                         styleType='add'
                         style={{ width: '150px' }}
-                        onClick={() => setEditPopup(true)}
-                    >Load</AmButton>
+                        onClick={() => { setTitleEditor("Add"); setEditPopup(true) }}
+                    >Add</AmButton>
                 }
                 customAddComponentRender={customAdd()}
                 customDataSource={dataSource}
