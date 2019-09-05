@@ -54,6 +54,12 @@ const WorkQueue = Loadable({
   loader: () => import("../../views/page/AAI/Issues/WorkQueueAAI"),
   loading: Loading
 });
+
+// const StorageObjectAAI = Loadable({
+//   loader: () => import("../../views/page/StorageObjectExample"),
+//   loading: Loading
+// });
+
 const routes = [
   {
     path: "/issue/search",
@@ -127,6 +133,12 @@ const routes = [
     compoment: WorkQueue,
     exact: true
   }
+  // {
+  //   path: "/warehouse/storageobject",
+  //   name: "base5",
+  //   compoment: StorageObjectAAI,
+  //   exact: true
+  // }
 ];
 
 export default routes;

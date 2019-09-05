@@ -139,7 +139,10 @@ const WorkQueueMRKCounting = (props) => {
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster },
+        {
+            Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"],
+            idddls: "desASRSAreaCode", queryApi: AreaMaster, defaultValue: 5
+        },
 
     ];
 
@@ -147,6 +150,7 @@ const WorkQueueMRKCounting = (props) => {
         <AmProcessQueue
             // apiDocument={Document}
             detailDocument={datasDetails}
+            Defaulwarehouse={1}
             orderDDL={orderDDL}
             ordersDDL={ordersDDL}      
             columnCondition={columnCondition}

@@ -107,7 +107,11 @@ const WorkQueueMRK = (props) => {
     ];
 
     const ProcessQ = [
-        { Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"], idddls: "desASRSAreaCode", queryApi: AreaMaster },
+        {
+            Label: 'Destination Area', key: 'desASRSAreaCode', type: "dropdownapi", fieldLabel: ["Code", "Name"],
+            idddls: "desASRSAreaCode", queryApi: AreaMaster,
+            defaultValue: 5
+        },
 
     ];
 
@@ -120,6 +124,7 @@ const WorkQueueMRK = (props) => {
             columnConfirm={columnConfirm}
             ProcessQ={ProcessQ}
             DefaulSorting={DefaulSorting}
+            Defaulwarehouse={1}
             history={props.history}
             apiwarehouse={Warehouse}
             advanceCondition={true}

@@ -17,7 +17,7 @@ namespace AWMSModel.Criteria
         public string lot;
         public string batch;
         public string itemNo;
-        public string option;
+        public string options;
 
     }
 }

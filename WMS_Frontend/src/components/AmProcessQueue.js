@@ -264,7 +264,7 @@ const AmProcessQueue = props => {
 
   useEffect(() => {
     setdataDetialdoc([...detailDocuments]);
-  }, [movement, remark, souware, textDes, desdoc]);
+  }, [movement, remark, souware, textDes, desdoc, ref1, refID]);
 
   useEffect(() => {
     setdocHeaderdetail(DetailDoc());
@@ -1389,8 +1389,9 @@ const AmProcessQueue = props => {
                   processResults.push(a);
                   var datasConfirms = [];
                   var datasConfirmsLock = [];
+                  var dataTBs = [];
                   if (a.pickStos.length === 0) {
-                    setMsgDialogErr("Data Not Found");
+                    setMsgDialogErr("SKU not in storage");
                     setStateDialogErr(true);
                   } else {
                     setopenDialogCon(true);
@@ -1415,56 +1416,75 @@ const AmProcessQueue = props => {
                             Lot: x.pstoLot,
                             OrderNo: x.pstoOrderNo,
                             BaseQuantity: x.pickBaseQty + "/" + x.pstoBaseQty,
-                            Unit: x.pstoBaseUnitCode
+                            Unit: x.pstoBaseUnitCode,
+                            StatusData: 1
                           };
                           dataTBCon.push(dataSorceTBs);
                           datasConfirms.push(dataSorceTBs);
+                          dataTBs.push(dataSorceTBs);
                           setReload({});
                         })}
-                        {a.lockStos.map(x => {
-                          //setsumBase();
-                          //setsumBaseMax();
-                          var dataTBConLock = [];
-                          var dataSorceTBsLock = {
-                            SKU: x.pstoCode,
-                            Pallet: x.rstoCode,
-                            Batch: x.pstoBatch,
-                            Lot: x.pstoLot,
-                            OrderNo: x.pstoOrderNo,
-                            BaseQuantity: x.pickBaseQty + "/" + x.pstoBaseQty,
-                            Unit: x.pstoBaseUnitCode
-                          };
-                          dataTBConLock.push(dataSorceTBsLock);
-                          datasConfirmsLock.push(dataSorceTBsLock);
-                          setReload({});
-                        })}
+                        {a.lockStos
+                          ? a.lockStos.map(x => {
+                              //setsumBase();
+                              //setsumBaseMax();
+                              var dataTBConLock = [];
+                              var dataSorceTBsLock = {
+                                SKU: x.pstoCode,
+                                Pallet: x.rstoCode,
+                                Batch: x.pstoBatch,
+                                Lot: x.pstoLot,
+                                OrderNo: x.pstoOrderNo,
+                                BaseQuantity:
+                                  x.pickBaseQty + "/" + x.pstoBaseQty,
+                                Unit: x.pstoBaseUnitCode,
+                                StatusData: 2
+                              };
+                              dataTBConLock.push(dataSorceTBsLock);
+                              datasConfirmsLock.push(dataSorceTBsLock);
+                              dataTBs.push(dataSorceTBsLock);
+                              setReload({});
+                            })
+                          : null}
 
                         <AmTable
-                          data={
-                            datasConfirms === undefined ? [] : datasConfirms
-                          }
+                          data={dataTBs === undefined ? [] : dataTBs}
                           columns={props.columnConfirm}
                           minRows={1}
                           sumFooter={SumTables(a.pickStos)}
                           reload={reload}
                           sortable={false}
+                          getTrProps={(state, rowInfo) => {
+                            let result = false;
+                            let rmv = false;
+                            let classStatus = "";
+                            if (rowInfo && rowInfo.row) {
+                              result = true;
+                              if (rowInfo.original.StatusData === 2) {
+                                rmv = true;
+                                classStatus = "working";
+                              } else {
+                                rmv = false;
+                              }
+                            }
+                            if (result && rmv)
+                              return { className: classStatus };
+                            else return {};
+                          }}
                         ></AmTable>
 
-                        <div style={{ paddingTop: "10px" }}>
-                          <AmTable
-                            data={
-                              datasConfirmsLock === undefined
-                                ? []
-                                : datasConfirmsLock
-                            }
-                            columns={props.columnConfirm}
-                            minRows={1}
-                            sumFooter={SumTables(a.lockStos)}
-                            reload={reload}
-                            sortable={false}
-                            style={{ color: "red" }}
-                          ></AmTable>
-                        </div>
+                        {/*a.lockStos ? < div style={{ paddingTop: "10px" }}>
+                                                    < AmTable
+                                                        data={datasConfirmsLock === undefined ? [] : datasConfirmsLock}
+                                                        columns={props.columnConfirm}
+                                                        minRows={1}
+                                                        sumFooter={SumTables(a.lockStos)}
+                                                        reload={reload}
+                                                        sortable={false}
+                                                        style={{ color: 'red' }}
+                                                    ></AmTable>
+
+                                                </div>:null*/}
                       </div>
                     );
                   }

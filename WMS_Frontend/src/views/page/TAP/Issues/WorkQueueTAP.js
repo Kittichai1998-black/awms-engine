@@ -141,6 +141,7 @@ const WorkQueueTAP = (props) => {
             status={true}
             random={false}
             dataSortShow={true}
+            lockRandom={false}
             apidetail={"/issue/detail?docID="}
             apiResConfirm={"/issue/managequeue"}
 

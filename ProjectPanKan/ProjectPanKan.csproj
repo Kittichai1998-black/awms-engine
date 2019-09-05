@@ -11,8 +11,6 @@
 
   <ItemGroup>
     <Folder Include="ADO\" />
-    <Folder Include="APIService\WM\" />
-    <Folder Include="Engine\Business\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

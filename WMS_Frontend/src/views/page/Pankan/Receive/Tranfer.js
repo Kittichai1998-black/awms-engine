@@ -169,57 +169,136 @@ const Tranfer = (props) => {
     const [stateDialog, setStateDialog] = useState(false);
     const [msgDialog, setMsgDialog] = useState("");
     const [typeDialog, setTypeDialog] = useState("");
-    const [activeStep, setActiveStep] = useState(0);
     const [newStorageObj, setNewStorageObj] = useState(null);
     const [stateDialogErr, setStateDialogErr] = useState(false);
     const [msgDialogErr, setMsgDialogErr] = useState("");
-    const [expanded, setExpanded] = useState(false);
+    const [stateDialogSuc, setStateDialogSuc] = useState(false);
+    const [msgDialogSuc, setMsgDialogSuc] = useState("");
+    const [expanded, setExpanded] = useState(true);
     const [barCodeDes, setbarCodeDes] = useState();
     const [barCodeSou, setbarCodeSou] = useState();
     const [qtys, setqtys] = useState();
+    const [activeStep, setActiveStep] = useState(0);
     const [soupack, setsoupack] = useState();
     const [objectSizeMaps, setobjectSizeMaps] = useState();
+
+    const steps = getSteps();
+
+    function getSteps() {
+        var desbase = "";
+        var soubase = "";
+        var soupack = "";
+        var qtys = "";
+
+        //if (valueInput) {
+        //    if (valueInput.LocationCode) { locaCode = valueInput.LocationCode; }
+
+        //    if (valueInput.PalletCode) { baseCode = valueInput.PalletCode; }
+        //}
+        return [{ label: 'Destination Base', value: desbase },
+        { label: 'Source Base', value: soubase },
+        { label: 'Source SKU', value: soupack },
+        { label: 'Quantity', value: qtys },
+        { label: 'Confirm Tranfer', value: null },
+        ];
+    }
+
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     }
 
-    const onHandleConfirmReceive = () => {
-
+    const handleReset = () => {
+        setActiveStep(0);
+        setValueInput({});
+        setDataShow(null);
+        setNewStorageObj(null);
+        setbarCodeDes();
+        setbarCodeSou();
+        setsoupack();
+        setqtys();
     }
 
-    const onHandleClear = () => {
 
-    }
-    const onHandleChangeInputDes = (value, dataObject, field, fieldDataKey, event) => {
-        console.log(value)
 
+    const handleNext = (index) => {
+        console.log(index)
+        if (index === 0) {
+            CheckDesbase();
+        }
+        if (index === 1) {
+            CheckSoubase();
+        }
+        if (index === 2) {
+            CheckSoupack();
+        }
+        if (index === 3) {
+            CheckQty();
+        }
     }
-    const onHandleChangeInputSou = () => {
 
+
+    const CheckDesbase = () => {
+        if (valueInput.desbase === undefined || valueInput.desbase === '' || valueInput.desbase === null) {
+            setMsgDialogErr("Destination Base invalid")
+            setStateDialogErr(true)
+        } else {
+            setActiveStep(prevActiveStep => prevActiveStep + 1);
+
+        }
     }
+
+    const CheckSoubase = () => {
+        if (valueInput.soubase === undefined || valueInput.soubase === '' || valueInput.soubase === null) {
+            setMsgDialogErr("Source Base invalid")
+            setStateDialogErr(true)
+        } else {
+            setActiveStep(prevActiveStep => prevActiveStep + 1);
+
+        }
+    }
+
+    const CheckSoupack = () => {
+        if (valueInput.soupack === undefined || valueInput.soupack === '' || valueInput.soupack === null) {
+            setMsgDialogErr("SKU invalid")
+            setStateDialogErr(true)
+        } else {
+            setActiveStep(prevActiveStep => prevActiveStep + 1);
+
+        }
+    }
+
+
+    const CheckQty = () => {
+        if (valueInput.qty === undefined || valueInput.qty === '' || valueInput.qty === null) {
+            setMsgDialogErr("Quantity  invalid")
+            setStateDialogErr(true)
+        } else {
+            setActiveStep(prevActiveStep => prevActiveStep + 1);
+
+        }
+    }
+
+
 
     const getDesScan = () => {
         let datas = {
-            "warehouseID": 1,
-            "scanCode": barCodeDes,
-            "mode": 1,
-            "amount": 0,
-            "action": 0,
-
+            "desBase": valueInput.desbase,
+            "souBase": valueInput.soubase,
+            "souPack": valueInput.soupack,
+            "quantity": valueInput.qty,
+            "areaID": 1,
+            "warehouseID" : 1
         }
-        console.log(datas)
-        Axios.post(window.apipath + '/v2/ScanMapStoAPI', datas).then((res) => {
-            console.log(res)
+        Axios.post(window.apipath + '/v2/TransferPanKanAPI', datas).then((res) => {
             if (res.data._result.status === 1) {
                 let datas = res.data
-                console.log(datas)
-                //setobjectSizeMaps(datas.objectSizeMaps)
                 setNewStorageObj(<AmListSTORenderer
                     dataSrc={datas}
-                    //showOptions={}
-                    //customOptions={null}
+
                 />);
+                setMsgDialogSuc("Sucess")
+                setStateDialogSuc(true)
             } else {
                 setStateDialogErr(true)
                 setMsgDialogErr(res.data._result.message)
@@ -228,122 +307,198 @@ const Tranfer = (props) => {
         })
 
     }
-    console.log(newStorageObj)
+
+    const handleBack = (index) => {
+        console.log(index)
+        if (index === 1) {
+            console.log(valueInput)
+            setbarCodeDes(valueInput.desbase);
+            setValueInput({ ...valueInput, ['desbase']: null, ['soubase']: null })
+            // setValueInput({ ...valueInput, ['PalletCode']: null })
+        }
+        if (index === 2) {
+            setbarCodeSou(valueInput.soubase)
+            setValueInput({ ...valueInput, ['soubase']: null, ['soupack']: null  })
+            //setBaseID(null);
+            //setDataShow(null);
+        }
+        if (index === 3) {
+            setsoupack(valueInput.soupack)
+            setValueInput({ ...valueInput, ['soupack']: null, ['qty']: null })
+            //setBaseID(null);
+            //setDataShow(null);
+        }
+        if (index === 4) {
+            setsoupack(valueInput.qty)
+            setValueInput({ ...valueInput, ['qty']: null })
+            //setBaseID(null);
+            //setDataShow(null);
+        }
+
+        setActiveStep(prevActiveStep => prevActiveStep - 1);
+    }
+
+    const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
+        valueInput[field] = value;
+
+    };
+
+    const onHandleChangeInputDesbase = (value, dataObject, field, fieldDataKey, event) => {
+        if (event && event.key == 'Enter') {
+            valueInput[field] = value;
+            setbarCodeDes(value)
+             //CheckDesbase();
+        }
+    }
+
+    const onHandleChangeInputSoubase = (value, dataObject, field, fieldDataKey, event) => {
+        if (event && event.key == 'Enter') {
+            valueInput[field] = value;
+            setbarCodeSou(value)
+            // CheckDesbase(value);
+        }
+    }
+    const onHandleChangeInputSoupack = (value, dataObject, field, fieldDataKey, event) => {
+        if (event && event.key == 'Enter') {
+            valueInput[field] = value;
+            setsoupack(value)
+            // CheckDesbase(value);
+        }
+    }
+    const onHandleChangeInputQty = (value, dataObject, field, fieldDataKey, event) => {
+        if (event && event.key == 'Enter') {
+            valueInput[field] = value;
+            setqtys(value)
+        }
+    }
+
+
+
+    const getStepContent = (step) => {
+        switch (step) {
+            case 0:
+                return <div>
+                    <AmInput
+                        id={"desbase"}
+                        autoFocus={true}
+                        placeholder={"Scan"}  
+                        style={{ width: "100%" }} 
+                        defaultValue={barCodeDes}
+                        onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "desbase", null, event)}
+                        onKeyPress={(value, obj, element, event) => onHandleChangeInputDesbase(value, null, "desbase", null, event)}
+
+                    ></AmInput>
+                </div>;
+            case 1:
+                return <div>
+
+                    <AmInput
+                        id={"soubase"}
+                        autoFocus={true}
+                        placeholder={"Scan "}
+                        style={{ width: "100%" }}                     
+                        defaultValue={barCodeSou}                                
+                        onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "soubase", null, event)}
+                        onKeyPress={(value, obj, element, event) => onHandleChangeInputSoubase(value, null, "soubase", null, event)}
+                    ></AmInput>
+
+                </div>;
+            case 2: return <div>
+                <AmInput
+                    id={"soupack"}
+                    autoFocus={true}
+                    placeholder={"Scan SKU"}
+                    style={{ width: "100%" }}
+                    defaultValue={soupack}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "soupack", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleChangeInputSoupack(value, null, "soupack", null, event)}
+                ></AmInput>
+            </div>;
+            case 3: return <div>
+
+                <AmInput
+                    id={"qty"}
+                    autoFocus={true}
+                    placeholder={"Scan"}
+                    style={{ width: "100%" }}
+                    type="number"
+                    defaultValue={"1"}
+                    //onChange={CheckStaps()}
+                    onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "qty", null, event)}
+                    onKeyPress={(value, obj, element, event) => onHandleChangeInputQty(value, null, "qty", null, event)}
+                ></AmInput>
+            </div>;
+           case 4: return <div></div>;
+            default:
+                return 'Unknown step';
+        }
+
+    }
     return (
         <div className={classes.root}>
+            <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
+            <AmDialogs typePopup={"error"} content={msgDialogErr} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
             {stateDialog ? showDialog ? showDialog : null : null}
-            <Paper square className={classes.paper1}>
-                <AmDialogs typePopup={"error"} content={msgDialogErr} onAccept={(e) => { setStateDialogErr(e) }} open={stateDialogErr}></AmDialogs >
+            <Paper className={classes.paperContainer}>
+                <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepperContainer}>
+                    {steps.map((row, index) => (
+                        <Step key={row.label}>
+                            <StepLabel>
+                                <Typography variant="h6">{t(row.label)}{row.value ? " : " : ""}
+                                    <label style={{ fontWeight: 'bolder', textDecorationLine: 'underline', textDecorationColor: indigo[700] }}>{row.value}</label>
+                                </Typography>
+                            </StepLabel>
+                            <StepContent>
+                                {getStepContent(index)}
+                                <div className={classes.actionsContainer}>
+                                    <div>
+                                        {activeStep === 4 ?
+                                            <AmButton styleType="delete_clear"
+                                                onClick={handleReset}
+                                                className={classes.button}
+                                            >
+                                                {t("Clear")}
+                                            </AmButton> : null}
+                                        { activeStep !== 0 ?<AmButton styleType="dark_clear"
+                                            disabled={activeStep === 0}
+                                            onClick={() => handleBack(index)}
+                                            className={classes.button}
+                                        >
+                                            {t("Back")}
+                                        </AmButton> : null}
+                                        {activeStep !== 4 ?<AmButton
+                                            styleType="confirm"
+                                            onClick={() => handleNext(index)}
+                                            className={classes.button}
+                                        >{t("Next")}
+                                        </AmButton> : null}
 
-                <Tabs
-                    classes={{ indicator: classnames(classes.bigIndicator, classes['indicator_']) }}
-                >
-                </Tabs>
-            </Paper>
-            <Paper square className={classnames(classes.paper2, classes['paperBG_'])}>
+                                        {activeStep == 4 ? <AmButton
+                                            styleType="confirm"
+                                            onClick={() => getDesScan()}
+                                            className={classes.button}
+                                        >{t("Confirm")}
+                                        </AmButton> : null}
+                                    </div>
+                                </div>
+                            </StepContent>
+                        </Step>
+                    ))}
+                </Stepper>
+
                 <Card className={classes.card}>
-                    <CardContent className={classes.cardContent}>
-                        <div>
-                            <FormInline><LabelH>Dase base : </LabelH>
-                                <AmInput
-                                    id={"desbase"}
-                                    autoFocus={true}
-                                    placeholder={"Scan"}
-                                    type="input"
-                                    style={{ width: "330px" }}
-                                    defaultValue={""}
-                                    onKeyPress={(value, a, b, event) => {
-                                        if (event.key === "Enter") {
-                                            console.log(value)
-                                            setbarCodeDes(value)
-                                            document.getElementById("desbase").value = "";
-                                            getDesScan();
-                                        }
-                                    }}
-                                >
-                                </AmInput>
-                            </FormInline>
-                            <FormInline><LabelH>Sou Scan : </LabelH>
-                                <AmInput
-                                    id={"desbase"}
-                                    autoFocus={true}
-                                    placeholder={"Scan"}
-                                    type="input"
-                                    style={{ width: "330px" }}
-                                    defaultValue={""}
-                                    onKeyPress={(value, a, b, event) => {
-                                        if (event.key === "Enter") {
-                                            console.log(value)
-                                            setbarCodeDes(value)
-                                            document.getElementById("desbase").value = "";
-                                            getDesScan();
-                                        }
-                                    }}
-                                  
-                                ></AmInput>
-                            </FormInline>
-                            <FormInline><LabelH>Sou Pack : </LabelH>
-                                <AmInput
-                                    id={"desbase"}
-                                    autoFocus={true}
-                                    placeholder={"Scan"}
-                                    type="input"
-                                    style={{ width: "330px" }}
-                                    defaultValue={""}
-                                    onKeyPress={(value, a, b, event) => {
-                                        if (event.key === "Enter") {
-                                            console.log(value)
-                                            setbarCodeDes(value)
-                                            document.getElementById("desbase").value = "";
-                                            getDesScan();
-                                        }
-                                    }}
-
-                                ></AmInput>
-                            </FormInline>
-                            <FormInline><LabelH>Qty : </LabelH>
-                                <AmInput
-                                    id={"desbase"}
-                                    autoFocus={true}
-                                    placeholder={"Scan"}
-                                    type="input"
-                                    style={{ width: "330px" }}
-                                    defaultValue={""}
-                                    onKeyPress={(value, a, b, event) => {
-                                        if (event.key === "Enter") {
-                                            console.log(value)
-                                            setbarCodeDes(value)
-                                            document.getElementById("desbase").value = "";
-                                            getDesScan();
-                                        }
-                                    }}
-
-                                ></AmInput>
-                            </FormInline>
-                        </div>
-                    </CardContent>
                     {newStorageObj ?
                         <CardActions >
                             {/* disableActionSpacing */}
-                            <label className={classes.titleDetail}>{t("Mapping Pallet Details")}:</label>
-                            <IconButton
-                                className={classnames(classes.iconButton, classes.expand, {
-                                    [classes.expandOpen]: expanded,
-                                })}
-                                onClick={handleExpandClick}
-                                aria-expanded={expanded}
-                                aria-label="Show more"
-                                size="small"
-                            >
-                                <ExpandMoreIcon fontSize="small" />
-                            </IconButton>
+                            <label className={classes.titleDetail}>{t("Details Base")}:</label>
+                          
                         </CardActions>
                         : null}
                     <Collapse in={expanded} timeout="auto" unmountOnExit>
                         <CardContent className={classes.cardContent}>
                             {newStorageObj ? newStorageObj : null}
                         </CardContent>
-                        <CardActions style={{ justifyContent: 'center' }}>
+                        { /* <CardActions style={{ justifyContent: 'center' }}>
                             {confirmReceiveMapSTO ?
                                 <div>
                                     <AmButton styleType="confirm_outline" className={classnames(classes.buttonAuto)}
@@ -359,11 +514,14 @@ const Tranfer = (props) => {
                             <AmButton styleType="delete_outline" className={classnames(classes.buttonAuto)} onClick={onHandleClear}>
                                 {t('Clear')}
                             </AmButton>
-                        </CardActions>
+                        </CardActions>*/}
                     </Collapse>
 
                 </Card>
+
+
             </Paper>
+           
         </div>
     )
 }
