@@ -69,59 +69,62 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                 var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
                                 var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
 
-                                string BTANRs = null;
+                                string TANUMs = null;
                                 if (docItem.Ref1 == "R01" || docItem.Ref1 == "R02" || docItem.Ref1 == "R06")
                                 {
-                                    ZTWMRF004_IN_AWS reqData = new ZTWMRF004_IN_AWS()
+                                    ZSWMRF004_IN_AWS reqData = new ZSWMRF004_IN_AWS()
                                     {
-                                        MODE = docs.Ref1,
+                                        ZMODE = docs.Ref1,
+                                        LGNUM = "W01",
                                         LENUM = queue.StorageObject_Code,
-                                        LGTYP = options[OptionVOConst.OPT_LGTYP],//SType
-                                        LGBER = options[OptionVOConst.OPT_LGBER],//Sec
-                                        LGPLA = options[OptionVOConst.OPT_LGPLA],//BIN
-                                        BWLVS = docItem.Ref2, //MVT
                                         GI_DOC = docs.Code
+                                        //LGTYP = options[OptionVOConst.OPT_LGTYP],//SType
+                                        //LGBER = options[OptionVOConst.OPT_LGBER],//Sec
+                                        //LGPLA = options[OptionVOConst.OPT_LGPLA],//BIN
+                                        //BWLVS = docItem.Ref2, //MVT
                                     };
 
                                     var resSAP = SendDataToSAP_ZWMRF004(reqData, buVO);
-                                    BTANRs = resSAP.datas.Select(data => data.BTANR).Distinct().First().ToString();
+                                    TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
 
                                 }
 
                                 else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
                                 {
-                                    ZTWMRF005_IN_AWS reqData = new ZTWMRF005_IN_AWS()
+                                    ZSWMRF005_IN_AWS reqData = new ZSWMRF005_IN_AWS()
                                     {
-                                        MODE = docs.Ref1,
+                                        ZMODE = docs.Ref1,
+                                        LGNUM = "W01",
                                         LENUM = queue.StorageObject_Code,
-                                        LGTYP = options[OptionVOConst.OPT_LGTYP],//SType
-                                        //LGBER = options[OptionVOConst.OPT_LGBER],//Sec --
-                                        LGPLA = options[OptionVOConst.OPT_LGPLA],//BIN
-                                        BWLVS = docItem.Ref2, //MVT
                                         GI_DOC = docs.Code
+                                        //LGTYP = options[OptionVOConst.OPT_LGTYP],//SType
+                                        //LGBER = options[OptionVOConst.OPT_LGBER],//Sec --
+                                        //LGPLA = options[OptionVOConst.OPT_LGPLA],//BIN
+                                        //BWLVS = docItem.Ref2, //MVT
                                     };
                                     var resSAP = SendDataToSAP_ZWMRF005(reqData, buVO);
-                                    BTANRs = resSAP.datas.Select(data => data.BTANR).Distinct().First().ToString();
+                                    TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
 
                                 }
                                 else if (docs.Ref1 == "R05")
                                 {
-                                    ZTWMRF006_IN_AWS reqData = new ZTWMRF006_IN_AWS()
+                                    ZSWMRF006_IN_AWS reqData = new ZSWMRF006_IN_AWS()
                                     {
-                                        MODE = docs.Ref1,
+                                        ZMODE = docs.Ref1,
+                                        LGNUM = "W01",
                                         LENUM = queue.StorageObject_Code,
-                                        LGTYP = options[OptionVOConst.OPT_LGTYP],//SType
-                                       // LGBER = options[OptionVOConst.OPT_LGBER],//Sec --
-                                        //LGPLA = options[OptionVOConst.OPT_LGPLA],//BIN --
-                                        BWLVS = docItem.Ref2, //MVT
                                         GI_DOC = docs.Code
+                                        //LGTYP = options[OptionVOConst.OPT_LGTYP],//SType
+                                        // LGBER = options[OptionVOConst.OPT_LGBER],//Sec --
+                                        //LGPLA = options[OptionVOConst.OPT_LGPLA],//BIN --
+                                        //BWLVS = docItem.Ref2, //MVT
                                     };
                                     var resSAP = SendDataToSAP_ZWMRF006(reqData, buVO);
-                                    BTANRs = resSAP.datas.Select(data => data.BTANR).Distinct().First().ToString();
+                                    TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
                                 }
-                                if (BTANRs != null)
+                                if (TANUMs != null)
                                 {
-                                    UpdateBaseSTO(bsto, OptionVOConst.OPT_BTANR, BTANRs, buVO);
+                                    UpdateBaseSTO(bsto, OptionVOConst.OPT_BTANR, TANUMs, buVO);
                                 }
                                 else
                                 {
@@ -156,17 +159,17 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var res = SAPInterfaceADO.GetInstant().ZWMRF002(suCode, docID, buVO);
             return res;
         }
-        private SapResponse<ZTWMRF004_OUT_SAP> SendDataToSAP_ZWMRF004(ZTWMRF004_IN_AWS data, VOCriteria buVO)
+        private SapResponse<ZSWMRF004_OUT_SAP> SendDataToSAP_ZWMRF004(ZSWMRF004_IN_AWS data, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF004(data, buVO);
             return res;
         }
-        private SapResponse<ZTWMRF005_OUT_SAP> SendDataToSAP_ZWMRF005(ZTWMRF005_IN_AWS data, VOCriteria buVO)
+        private SapResponse<ZSWMRF005_OUT_SAP> SendDataToSAP_ZWMRF005(ZSWMRF005_IN_AWS data, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF005(data, buVO);
             return res;
         }
-        private SapResponse<ZTWMRF006_OUT_SAP> SendDataToSAP_ZWMRF006(ZTWMRF006_IN_AWS data, VOCriteria buVO)
+        private SapResponse<ZSWMRF006_OUT_SAP> SendDataToSAP_ZWMRF006(ZSWMRF006_IN_AWS data, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF006(data, buVO);
             return res;

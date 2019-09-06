@@ -140,31 +140,27 @@ namespace ProjectAAI.ADO.SAPApi
         /// <summary>
         /// RESPONSE TO SAP R01, R02, R06
         /// </summary>
-        public class ZTWMRF004_IN_AWS
+        public class ZSWMRF004_IN_AWS
         {
             /// <summary>Stock Removal Mode</summary>
-            public string MODE;
+            public string ZMODE;
+            /// <summary>Warehouse Code</summary>
+            public string LGNUM;
             /// <summary>Storage Unit Number</summary>
-            public string LENUM;
-            /// <summary>Destination Storage Type</summary>
-            public string LGTYP;
-            /// <summary>Destination Storage Section</summary>
-            public string LGBER;
-            /// <summary>Destination Storage BIN</summary>
-            public string LGPLA;
-            /// <summary>WM Movement type</summary>
-            public string BWLVS;
+            public string LENUM; 
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
             public string GI_DOC;
         }
-        public class ZTWMRF004_OUT_SAP
+        public class ZSWMRF004_OUT_SAP
         {
             /// <summary>Stock Removal Mode</summary>
-            public string MODE;
-            /// <summary>Storage Unit Number</summary>
-            public string LENUM;
+            public string ZMODE;
+            /// <summary>Warehouse Code</summary>
+            public string LGNUM;
             /// <summary>Destination Storage Type</summary>
             public string LGTYP;
+            /// <summary>Storage Unit Number</summary>
+            public string LENUM;
             /// <summary>Destination Storage Section</summary>
             public string LGBER;
             /// <summary>Destination Storage BIN</summary>
@@ -174,7 +170,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
             public string GI_DOC;
             /// <summary>Transfer Order</summary>
-            public long BTANR;
+            public long TANUM;
             /// <summary>แสดงข้อความผิดพลาด</summary>
             public string ERR_MSG;
         }
@@ -182,42 +178,39 @@ namespace ProjectAAI.ADO.SAPApi
         /// <summary>
         /// RESPONSE TO SAP R03, R04
         /// </summary>
-        public class ZTWMRF005_IN_AWS
+        public class ZSWMRF005_IN_AWS : ZSWMRF004_IN_AWS
         {
-            /// <summary>Stock Removal Mode</summary>
-            public string MODE;
-            /// <summary>Storage Unit Number</summary>
-            public string LENUM;
-            /// <summary>Destination Storage Type</summary>
-            public string LGTYP;
-            /// <summary>Destination Storage BIN</summary>
-            public string LGPLA;
-            /// <summary>WM Movement type</summary>
-            public string BWLVS;
-            /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>///
-            public string GI_DOC;
         }
-        public class ZTWMRF005_OUT_SAP : ZTWMRF004_OUT_SAP
+        public class ZSWMRF005_OUT_SAP : ZSWMRF004_OUT_SAP
         {
+            /// <summary>Material Number</summary>
+            public string MATNR;
+            /// <summary>Batch Number</summary>
+            public string CHARG;
+            /// <summary>Stock Category</summary>
+            public string BESTQ;
+            /// <summary>Delivery Order</summary>
+            public string VBELN_VL;
+            /// <summary>Delivery Item</summary>
+            public string POSNR;
+            /// <summary>Requirement Type</summary>
+            public string BETYP;
+            /// <summary>Requirement Number</summary>
+            public string BENUM;
+            /// <summary>Quantity</summary>
+            public decimal ANFME;
+            /// <summary>Unit</summary>
+            public string ALTME;
+
         }
 
         /// <summary>
         /// RESPONSE TO SAP R05
         /// </summary>
-        public class ZTWMRF006_IN_AWS
+        public class ZSWMRF006_IN_AWS : ZSWMRF004_IN_AWS
         {
-            /// <summary>Stock Removal Mode</summary>
-            public string MODE;
-            /// <summary>Storage Unit Number</summary>
-            public string LENUM;
-            /// <summary>Destination Storage Type</summary>
-            public string LGTYP;
-            /// <summary>WM Movement type</summary>
-            public string BWLVS;
-            /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>///
-            public string GI_DOC;
         }
-        public class ZTWMRF006_OUT_SAP : ZTWMRF004_OUT_SAP
+        public class ZSWMRF006_OUT_SAP : ZSWMRF005_OUT_SAP
         {
         }
 
