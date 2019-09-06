@@ -190,6 +190,8 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 ams_PackMaster packMst = null;
                 ams_SKUMaster skuMst = null;
+                dynamic baseUnitTypeConvt = null;
+                decimal? baseQuantity = null;
 
                 if (Item.packID.HasValue)
                 {
@@ -214,23 +216,23 @@ namespace AWMSEngine.Engine.V2.Business
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่พบข้อมูลสินค้าใน SKU Master");
                     packMst = ADO.MasterADO.GetInstant().GetPackMasterBySKU(skuMst.ID.Value, Item.unitType, this.BuVO);
                 }
-                else if(!Item.options.Contains("basecode"))
+                else if (!Item.options.Contains("basecode"))
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
                 }
+                if (packMst != null)
+                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, Item.quantity ?? 1, packMst.UnitType_ID);
 
-                var baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, Item.quantity ?? 1, packMst.UnitType_ID);
-                decimal? baseQuantity = null;
-                if (Item.quantity.HasValue)
+                if (Item.quantity.HasValue && baseUnitTypeConvt != null)
                     baseQuantity = baseUnitTypeConvt.baseQty;
 
                 if (Item.baseStos.Count > 0)
                 {
                     foreach (var Sto in MappingSto(Item))
                     {
-                        if(Item.docItemStos == null)
+                        if (Item.docItemStos == null)
                             Item.docItemStos = new List<amt_DocumentItemStorageObject>();
-                        
+
                         List<amt_DocumentItemStorageObject> disto = Sto.mapstos.Select(x => new amt_DocumentItemStorageObject()
                         {
                             Sou_StorageObject_ID = x.id.Value,
@@ -248,14 +250,14 @@ namespace AWMSEngine.Engine.V2.Business
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
-                    Code = skuMst.Code,
-                    SKUMaster_ID = skuMst.ID.Value,
-                    PackMaster_ID = packMst.ID.Value,
+                    Code = skuMst != null ? skuMst.Code : "",
+                    SKUMaster_ID = skuMst != null ? skuMst.ID.Value : 0,
+                    PackMaster_ID = packMst != null ? packMst.ID.Value : 0,
 
                     Quantity = Item.quantity,
-                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    UnitType_ID = baseUnitTypeConvt != null ? baseUnitTypeConvt.unitType_ID : null,
                     BaseQuantity = baseQuantity,
-                    BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
+                    BaseUnitType_ID = baseUnitTypeConvt != null ? baseUnitTypeConvt.baseUnitType_ID : null,
 
                     OrderNo = Item.orderNo,
                     Batch = Item.batch,
@@ -303,7 +305,8 @@ namespace AWMSEngine.Engine.V2.Business
                         UnitType_ID = 1,
                         WeightKG = null
                     });
-                }else if (bm == null && !baseSto.isRegisBaseCode.Value)
+                }
+                else if (bm == null && !baseSto.isRegisBaseCode.Value)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "BaseCode : " + baseSto.baseCode + " Not Found");
 
                 var mapBaseSto = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO,
