@@ -61,9 +61,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             var mapsto = ADO.StorageObjectADO.GetInstant().Get(queueTrx.StorageObject_ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
             if (mapsto.parentType != StorageObjectType.LOCATION)
-                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "ข้อมูลพาเลทไม่ถูกต้อง");
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Pallet information is incorrect.");
 
             var location = DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+            if (location == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V2002, "Location Code is incorrect.");
 
             ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(mapsto, location.ID.Value, this.BuVO);
 
