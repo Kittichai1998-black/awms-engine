@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import AmProcessQueue from "../../../../components/AmProcessQueue";
 import Axios from "axios";
+import { fade } from "@material-ui/core/styles";
 
 const createQueryString = select => {
   let queryS =
@@ -141,26 +142,47 @@ const WorkQueueAAI = props => {
   return (
     <div>
       <AmProcessQueue
-        orderDDL={orderDDL}
-        ordersDDL={ordersDDL}
-        columnCondition={columnCondition}
-        columnSort={columnSort}
-        columnConfirm={columnConfirm}
-        ProcessQ={ProcessQ}
-        DefaulSorting={DefaulSorting}
-        history={props.history}
-        apiwarehouse={Warehouse}
-        advanceCondition={true}
-        fullPallet={true}
-        receive={true}
-        priolity={Priolity}
-        DocType={1002}
-        docType={"issue"}
-        status={true}
-        random={false}
-        dataSortShow={true}
-        apidetail={"/issue/detail?docID="}
-        apiResConfirm={"/issue/managequeue"}
+              orderDDL={orderDDL}
+              ordersDDL={ordersDDL}
+              columnCondition={columnCondition}
+              columnSort={columnSort}
+              columnConfirm={columnConfirm}
+              ProcessQ={ProcessQ}
+              DefaulSorting={DefaulSorting}
+              history={props.history}
+              apiwarehouse={Warehouse}
+              advanceCondition={true}
+              //fullPallet={true}
+              //receive={true}
+              priolity={Priolity}
+              DocType={1002}
+              docType={"issue"}
+              status={true}
+              random={false}
+              dataSortShow={true}
+              apidetail={"/issue/detail?docID="}
+              apiResConfirm={"/issue/managequeue"}
+
+              //Advance Conditions
+              ShelfLifeDate={true}
+              defaultShelfLifeDate={true}
+              disibleShelfLifeDate={false}
+
+              FullPallet={true}
+              defaultFullPallete={true}
+              disibleFullPallet={false}
+
+              ExpireDate={true}
+              defaultExpireDate={true}
+              disibleExpireDate={true}
+
+              IncubateDate={true}
+              defaultIncubateDate={true}
+              disibleIncubateDate={true}
+
+              //Status from Doc  สถานะที่เอามาจาก Options
+              OptionGIdoc={true}
+
       ></AmProcessQueue>
     </div>
   );
