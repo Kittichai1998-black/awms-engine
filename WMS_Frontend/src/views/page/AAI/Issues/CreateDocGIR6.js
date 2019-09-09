@@ -11,7 +11,7 @@ import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import styled from 'styled-components'
 import AmFindPopup from '../../../../components/AmFindPopup'
-// import { createQueryString } from '../../../../components/function/CoreFunction2'
+import { createQueryString } from '../../../../components/function/CoreFunction2'
 import AmDialogs from '../../../../components/AmDialogs'
 import AmAux from '../../../../components/AmAux'
 import Radio from '@material-ui/core/Radio';
@@ -86,6 +86,18 @@ export default props => {
         ]
     ];
 
+    const viewSKUMaster = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "SKUMaster",
+        // q: '[{ "f": "Status", "c": "<", "v": "2" },{ "f": "Customer_ID", "c": "=", "v": "' + cusIDs + ' "}]',
+        f: "UnitTypeCode",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 1,
+        all: "",
+    }
+
     // const BaseCode = {
     //     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
     //     t: "StorageObject",
@@ -126,7 +138,7 @@ export default props => {
         { Header: 'Material', accessor: 'MATNR' },
         { Header: 'Batch', accessor: 'CHARG' },
         // { Header: 'Quantity', accessor: 'BDMNG' },
-        // { Header: 'Unit', accessor: 'MEINS' },
+        { Header: 'Unit', accessor: 'unitType' },
         { Header: "Dest. Styp.", accessor: "LGTYP" },
         { Header: 'BIN', accessor: 'LGPLA' },
         { Header: 'MVT', accessor: 'BWLVS' },
@@ -152,20 +164,31 @@ export default props => {
         Axios.post(window.apipath + '/v2/SAPZWMRF003R6API', postData).then(res => {
             if (res.data._result.status) {
                 if (!res.data.datas[0].ERR_MSG) {
-                    let checkData = dataSource.find(x => {
-                        return x.ID === postData.ID
-                    })
-                    if (checkData) {//EDIT
-                        for (let row in checkData) {
-                            checkData[row] = postData[row]
+                    getUnitTypeCode(res.data.datas[0].MATNR).then(unit => {
+                        if (unit) {
+                            let checkData = dataSource.find(x => {
+                                return x.ID === postData.ID
+                            })
+                            if (checkData) {//EDIT
+                                for (let row in checkData) {
+                                    checkData[row] = postData[row]
+                                }
+                                checkData.ID = postData.ID
+                                checkData.unitType = unit
+                            } else { //ADD
+                                res.data.datas[0].ID = postData.ID
+                                res.data.datas[0].unitType = unit
+                                dataSource.push(res.data.datas[0])
+                            }
+                            setID(ID + 1)
+                            setDataSource(dataSource);
+                        } else {
+                            setDialogError({
+                                status: true,
+                                message: "ไม่มี Material Number ใน SKUMaster"
+                            });
                         }
-                        checkData.ID = postData.ID
-                    } else { //ADD
-                        res.data.datas[0].ID = postData.ID
-                        dataSource.push(res.data.datas[0])
-                    }
-                    setID(ID + 1)
-                    setDataSource(dataSource);
+                    })
                 } else {
                     setDialogError({
                         status: true,
@@ -175,11 +198,22 @@ export default props => {
             } else {
                 setDialogError({
                     status: true,
-                    message: res.data._result.message
+                    message: res.data._result.code + " : " + res.data._result.message
                 });
             }
         })
     };
+
+    const getUnitTypeCode = MATNR => {
+        viewSKUMaster.q = `[{ "f": "Code", "c": "=", "v": "${MATNR}" }]`
+        return Axios.get(createQueryString(viewSKUMaster)).then(res => {
+                if (res.data.counts > 0) {
+                    return res.data.datas[0].UnitTypeCode
+                } else {
+                    return null
+                }
+        });
+    }
 
     const onHandleEditConfirm = (status, rowdata) => {
         if (status) {
@@ -404,7 +438,7 @@ export default props => {
                 skuCode: item.MATNR,
                 packCode: item.MATNR,
                 // quantity: item.BDMNG,
-                // unitType: item.MEINS,
+                unitType: item.unitType,
                 batch: item.CHARG,
                 ref1: "R06",
                 ref2: item.BWLVS,

@@ -33,23 +33,30 @@ namespace AWMSEngine.WorkerService
             int idx = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_INDEX).GetTry<int>() ?? 0;
             int delay = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_DELAY).GetTry<int>() ?? 0;
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                for(int i = 1; i <= idx; i++)
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_SPNAME, i));
-                    var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, i));
-                    var hubname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_HUBNAME, i));
-                    Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
-                    AMWUtil.Common.ObjectUtil.QryStrToDictionary(param).ToList().ForEach(x =>
+                    for (int i = 1; i <= idx; i++)
                     {
-                        parameter.Add(x.Key, x.Value);
-                    });
-                    var res = ADO.DataADO.GetInstant().QuerySP(spname, parameter, null);
-                    await commonMsgHub.Clients.All.SendAsync(hubname, res.Json());
+                        var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_SPNAME, i));
+                        var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, i));
+                        var hubname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_HUBNAME, i));
+                        Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
+                        AMWUtil.Common.ObjectUtil.QryStrToDictionary(param).ToList().ForEach(x =>
+                        {
+                            parameter.Add(x.Key, x.Value);
+                        });
+                        var res = ADO.DataADO.GetInstant().QuerySP(spname, parameter, null);
+                        await commonMsgHub.Clients.All.SendAsync(hubname, res.Json());
+                    }
+                    await Task.Delay(delay);
                 }
-                await Task.Delay(delay);
             }
+            catch (Exception e)
+            {
+            }
+
         }
     }
 }

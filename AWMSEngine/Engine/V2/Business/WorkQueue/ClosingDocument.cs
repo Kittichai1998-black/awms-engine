@@ -29,16 +29,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
                             }
                         }
-                    }
-                    else
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document Not Found");
-                    }
+                    } 
                 });
-                
+
+                res = reqVO;
             }
 
-            return reqVO;
+            return res;
         }
 
     }
