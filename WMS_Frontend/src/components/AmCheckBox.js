@@ -39,10 +39,12 @@ const AmCheckBox = props => {
           <FormControlLabel
             control={
               <Checkbox
-                color='primary'
-                onChange={handleChange}
-                value={props.value}
-                checked={props.checked}
+                              color='primary'
+                              onChange={handleChange}
+                              value={props.value}
+                              checked={props.checked}
+                              defaultValue={props.defaultValue}
+                              defaultChecked={props.defaultChecked}
               />
             }
             label={props.label}

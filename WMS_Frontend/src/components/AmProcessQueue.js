@@ -211,6 +211,7 @@ const AmProcessQueue = props => {
     const [btnAdd, setbtnAdd] = useState(false);
     const [dataConditions, setdataConditions] = useState([]);
 
+
     //======== AAI============
     const [ref1, setref1] = useState();
     const [refID, setrefID] = useState();
@@ -632,12 +633,14 @@ const AmProcessQueue = props => {
 
     //Advance Condition
     const onChangCheckboxCon = (e, indx) => {
+        console.log(e)
         if (e.checked === true) {
             let dataCheckCon = datacheckboxCon;
             datacheckboxCon[e.value] = e.checked;
             setdatacheckboxCon(dataCheckCon);
             dataSource[indx][0][e.value] = e.checked;
         } else {
+            dataSource[indx][0][e.value] = e.checked;
         }
     };
 
@@ -646,9 +649,35 @@ const AmProcessQueue = props => {
         dataSource[indx][0]["FullPallet"] = true;
     };
 
+    const onChangCheckboxExpire= (e, v, indx) => {
+        datacheckboxCon["ExpireDate"] = true;
+        dataSource[indx][0]["ExpireDate"] = true;
+    };
+
+    const onChangCheckboxIncubase = (e, v, indx) => {
+        datacheckboxCon["IncubateDate"] = true;
+        dataSource[indx][0]["IncubateDate"] = true;
+    };
+
+    const onChangCheckboxConsSelfLife = (e, v, indx) => {
+        datacheckboxCon["ShelfLifeDate"] = true;
+        dataSource[indx][0]["ShelfLifeDate"] = true;
+    };
+
+    //Status
+
     const onChangCheckboxConsRecieve = (e, v, indx) => {
         datacheckboxCon["Receive"] = true;
         dataSource[indx][0]["Receive"] = true;
+    };
+
+    const onChangCheckboxConsBlock = (e, v, indx) => {
+        datacheckboxCon["Block"] = true;
+        dataSource[indx][0]["Block"] = true;
+    };
+    const onChangCheckboxConsQC = (e, v, indx) => {
+        datacheckboxCon["QC"] = true;
+        dataSource[indx][0]["QC"] = true;
     };
 
     const onChangCheckboxStatus = (e, indx) => {
@@ -1954,11 +1983,24 @@ const AmProcessQueue = props => {
                                             onChangeRandom(es, idx, qtyrandoms);
                                         }
 
-                                        if (props.fullPallet === true)
+                                        if (props.fullPallets === true )
                                             onChangCheckboxConsFull(null, null, idx);
 
-                                        if (props.receive === true)
+                                        if (props.receives === true || props.defaultExpireDate === true)
                                             onChangCheckboxConsRecieve(null, null, idx);
+
+                                        if (props.disibleShelfLifeDate === true || props.defaultExpireDate === true)
+                                            onChangCheckboxConsSelfLife(null, null, idx);
+
+                                        if (props.disibleFullPallet === true || props.defaultFullPallet === true)
+                                            onChangCheckboxConsFull(null, null, idx);
+
+                                        if (props.disibleExpireDate === true || props.defaultExpireDate=== true)
+                                            onChangCheckboxExpire(null, null, idx);
+
+                                        if (props.disibleIncubateDate === true || props.defaultIncubateDate === true)
+                                            onChangCheckboxIncubase(null, null, idx);
+
 
                                         if (btnBack === false) {
                                             if ((dataSource[idx][0]["Priority"] = null)) {
@@ -1967,7 +2009,41 @@ const AmProcessQueue = props => {
                                                 Onchangepriolity(values, dataObject, idx);
                                             }
                                         }
-                                        return (
+
+                                        //option เอกสาร จาก Sap
+
+                                        var RecieveFromDoc = false
+                                        var QcFromDoc = false
+                                        var BlockFromDoc = false
+                                         
+                                        if (props.OptionGIdoc === true) {
+                                            console.log(x.Options)
+                                            if (
+                                                x.Options.split("=")[6] !== undefined &&
+                                                x.Options.split("=")[7] !== undefined &&
+                                                x.Options.split("=")[8] !== undefined
+                                            )
+                                            var RecieveDoc = x.Options.split("=")[6].split("&")[0];
+                                            console.log(RecieveDoc)
+                                            if (RecieveDoc === "Y") {
+                                                RecieveFromDoc = true
+                                                onChangCheckboxConsRecieve(null, null, idx);
+                                            }
+
+                                            var QcDoc = x.Options.split("=")[7].split("&")[0];
+                                            if (QcDoc === "Y") {
+                                                QcFromDoc = true
+                                                onChangCheckboxConsQC(null, null, idx);
+                                            }
+
+                                            var BlockDoc = x.Options.split("=")[8].split("&")[0];
+                                            if (BlockDoc === "Y") {
+                                                BlockFromDoc = true
+                                                onChangCheckboxConsBlock(null, null, idx);
+                                            }
+                                        }
+
+                                   return (
                                             <div style={{ marginLeft: "10px", marginRight: "10px" }}>
                                                 <BorderAdd>
                                                     <Card>
@@ -2071,7 +2147,7 @@ const AmProcessQueue = props => {
                                                                             <FormInline>
                                                                                 <div>
                                                                                     {" "}
-                                                                                    {props.fullPallet === true ? (
+                                                                                    {props.fullPallets === true ? (
                                                                                         <AmCheckBox
                                                                                             value="FullPallet"
                                                                                             label="FullPallet"
@@ -2086,57 +2162,65 @@ const AmProcessQueue = props => {
                                                                                         >
                                                                                             >
                                             </AmCheckBox>
-                                                                                    ) : (
+                                                                                    ) :
+
+                                                                                        (
                                                                                             <div>
                                                                                                 <FormInline>
-                                                                                                    <AmCheckBox
+                                                                                                    {props.ShelfLifeDate === true  ? <AmCheckBox
                                                                                                         value="ShelfLifeDate"
                                                                                                         label="ShelfLifeDate"
                                                                                                         checked={
-                                                                                                            x.ShelfLife ? true : null
+                                                                                                            x.ShelfLife ? true : props.disibleShelfLifeDate ? props.disibleShelfLifeDate :  null
                                                                                                         }
+                                                                                                   defaultChecked={props.defaultShelfLifeDate ? props.defaultShelfLifeDate : null}
+                                                                                                   defaultValue={props.defaultShelfLifeDate ? props.defaultShelfLifeDate : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxCon(e, idx)
                                                                                                         }
                                                                                                     >
                                                                                                         >
-                                                </AmCheckBox>
-                                                                                                    <AmCheckBox
+                                                                                       </AmCheckBox>:null}
+                                                                                                    {props.IncubateDate === true ? <AmCheckBox
                                                                                                         value="IncubateDate"
                                                                                                         label="IncubateDate"
                                                                                                         checked={
-                                                                                                            x.Incubate ? true : null
+                                                                                                            x.Incubate ? true : props.disibleIncubateDate ? props.disibleIncubateDate : null
                                                                                                         }
+                                                                                                   defaultChecked={props.defaultIncubateDate ? props.defaultIncubateDate : null}
+                                                                                                   defaultValue={props.defaultIncubateDate ? props.defaultIncubateDate : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxCon(e, idx)
                                                                                                         }
                                                                                                     >
                                                                                                         >
-                                                </AmCheckBox>
-                                                                                                    <AmCheckBox
+                                                </AmCheckBox> : null}
+                                                                                                    {props.ExpireDate === true ? <AmCheckBox
                                                                                                         value="ExpireDate"
                                                                                                         label="ExpireDate"
                                                                                                         checked={
-                                                                                                            x.ExpiredDate ? true : null
+                                                                                                            x.ExpiredDate ? true : props.disibleExpireDate ? props.disibleExpireDate : null
                                                                                                         }
+                                                                                                        defaultChecked={props.defaultExpireDate ? props.defaultExpireDate : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxCon(e, idx)
                                                                                                         }
                                                                                                     >
                                                                                                         >
-                                                </AmCheckBox>
-                                                                                                    <AmCheckBox
+                                                </AmCheckBox>: null}
+                                                                                                    {props.FullPallet === true ?<AmCheckBox
                                                                                                         value="FullPallet"
                                                                                                         label="FullPallet"
                                                                                                         checked={
-                                                                                                            x.FullPallet ? true : null
+                                                                                                            x.FullPallet ? true : props.disibleFullPallet ? props.disibleFullPallet: null
                                                                                                         }
+                                                                                                        defaultChecked={props.defaultFullPallet ? props.defaultFullPallet : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxCon(e, idx)
                                                                                                         }
                                                                                                     >
                                                                                                         >
-                                                </AmCheckBox>
+                                                </AmCheckBox>:null}
                                                                                                 </FormInline>
                                                                                             </div>
                                                                                         )}
@@ -2148,7 +2232,7 @@ const AmProcessQueue = props => {
                                                                         <FormInline style={{ marginLeft: "15px" }}>
                                                                             <LabelH>{t("Status")} : </LabelH>
                                                                             <FormInline>
-                                                                                {props.receive === true ? (
+                                                                                {props.receives === true ? (
                                                                                     <AmCheckBox
                                                                                         value="Receive"
                                                                                         label="Receive"
@@ -2168,8 +2252,8 @@ const AmProcessQueue = props => {
                                                                                             <FormInline>
                                                                                                 <AmCheckBox
                                                                                                     value="Receive"
-                                                                                                    label="Receive"
-                                                                                                    checked={x.Recive ? true : null}
+                                                                                               label="Receive"
+                                                                                               checked={x.Recive ? true : RecieveFromDoc  ? RecieveFromDoc  :  null}
                                                                                                     onChange={(e, v) =>
                                                                                                         onChangCheckboxStatus(e, idx)
                                                                                                     }
@@ -2178,8 +2262,8 @@ const AmProcessQueue = props => {
                                               </AmCheckBox>
                                                                                                 <AmCheckBox
                                                                                                     value="Block"
-                                                                                                    label="Block"
-                                                                                                    checked={x.Block ? true : null}
+                                                                                               label="Block"
+                                                                                               checked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
                                                                                                     onChange={(e, v) =>
                                                                                                         onChangCheckboxStatus(e, idx)
                                                                                                     }
@@ -2188,8 +2272,8 @@ const AmProcessQueue = props => {
                                               </AmCheckBox>
                                                                                                 <AmCheckBox
                                                                                                     value="QC"
-                                                                                                    label="QC"
-                                                                                                    checked={x.QC ? true : null}
+                                                                                               label="QC"
+                                                                                               checked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
                                                                                                     onChange={(e, v) =>
                                                                                                         onChangCheckboxStatus(e, idx)
                                                                                                     }
@@ -2527,7 +2611,7 @@ const AmProcessQueue = props => {
                                                                                                 <LabelH>{t("Qty")} :</LabelH>{" "}
                                                                                                 <label>
                                                                                                     {y.Quantity} {y.UnitType_Name}(
-                                                {y.BaseqtyMax}{" "}
+                                                                                                      {y.BaseqtyMax}{" "}
                                                                                                     {y.BaseUnitType_Code} ){" "}
                                                                                                 </label>
                                                                                             </div>
