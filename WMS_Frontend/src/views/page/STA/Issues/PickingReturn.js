@@ -26,7 +26,7 @@ const PickingReturn = (props) => {
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
-            "field": "rootDoneDesEventStatus", "type": "radiogroup", "name": "Status", "fieldLabel": [
+            "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '97', label: "PARTIAL" }
             ],
             "defaultValue": { value: '97', disabled: true }

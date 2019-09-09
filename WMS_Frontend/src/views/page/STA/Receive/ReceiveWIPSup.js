@@ -38,7 +38,7 @@ const ReceiveWIPSup = (props) => {
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
-            "field": "rootDoneDesEventStatus", "type": "radiogroup", "name": "Status", "fieldLabel": [
+            "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '12', label: "RECEIVED" }
             ],
             "defaultValue": { value: '12', disabled: true }
