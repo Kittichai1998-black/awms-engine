@@ -588,11 +588,10 @@ const CreateDocumentGI = (props) => {
                     "refID": null,
                     "ref1": null,
                     "ref2": null,
-                    "options": null,
+                    "options": x.BaseCode !== undefined ? "basecode=" + x.BaseCode : null,
                     "expireDate": null,
                     "productionDate": null,
                     "BaseSto": BaseSto
-
 
                 }
                 itemIssue.push(Items)

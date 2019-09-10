@@ -216,24 +216,40 @@ const AmProcessQueue = props => {
     const [ref1, setref1] = useState();
     const [refID, setrefID] = useState();
 
-  const docQuery = {
-    queryString: window.apipath + "/v2/SelectDataViwAPI/",
-    t: "Document",
-    q:
-      "[{ 'f': 'Sou_Warehouse_ID', c:'=', 'v': " +
-      warehouseID +
-      "},{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'=', 'v': 10},{ 'f': 'DocumentType_ID', c:'=', 'v': " +
-      props.DocType +
-      "},{ 'f': 'DocumentType_ID', c:'=', 'v': " +
-      props.DocType +
-      "}]",
-    f: "ID as value, Code as label, ID, Code",
-    g: "",
-    s: "[{'f':'ID','od':'asc'}]",
-    sk: 0,
-    l: 100,
-    all: ""
-  };
+
+    const docQueryAAI  = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "Document",
+        q:
+            "[{ 'f': 'Sou_Warehouse_ID', c:'=', 'v': " +
+            warehouseID +
+            "},{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'=', 'v': 10},{ 'f': 'DocumentType_ID', c:'=', 'v': " +
+            props.DocType +
+            "},"+props.ConditionsQryDoc+"]",
+        f: "ID as value, Code as label, ID, Code",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
+
+    const docQuery = {
+        queryString: window.apipath + "/v2/SelectDataViwAPI/",
+        t: "Document",
+        q: "[{ 'f': 'Sou_Warehouse_ID', c:'=', 'v': " +
+            warehouseID +
+            warehouseID +
+            "},{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'=', 'v': 10},{ 'f': 'DocumentType_ID', c:'=', 'v': " +
+            props.DocType +
+            "}]",
+        f: "ID as value, Code as label, ID, Code",
+        g: "",
+        s: "[{'f':'ID','od':'asc'}]",
+        sk: 0,
+        l: 100,
+        all: ""
+    };
 
   const detailDocuments = [
     window.project === "AAI"
@@ -289,11 +305,20 @@ const AmProcessQueue = props => {
     }
   }, [openDialogCon]);
 
-  useEffect(() => {
-    Axios.get(createQueryString(docQuery)).then(res => {
-      let docSelection = res.data.datas;
-      setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
-    });
+    useEffect(() => {
+        if (window.project === "AAI") {
+            Axios.get(createQueryString(docQueryAAI)).then(res => {
+                let docSelection = res.data.datas;
+                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+            });
+
+
+        } else {
+            Axios.get(createQueryString(docQuery)).then(res => {
+                let docSelection = res.data.datas;
+                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+            });
+        }
   }, [warehouseID, dataClears]);
 
   const priolity = () => {
@@ -2180,8 +2205,8 @@ const AmProcessQueue = props => {
                                                                                                 <FormInline>
                                                                                                     {props.ShelfLifeDate === true  ? <AmCheckBox
                                                                                                         value="ShelfLifeDate"
-                                                                                                        label="ShelfLifeDate"
-                                                                                                        checked={
+                                                                                                   label="ShelfLifeDate"
+                                                                                                   disable={
                                                                                                             x.ShelfLife ? true : props.disibleShelfLifeDate ? props.disibleShelfLifeDate :  null
                                                                                                         }
                                                                                                    defaultChecked={props.defaultShelfLifeDate ? props.defaultShelfLifeDate : null}
@@ -2195,7 +2220,7 @@ const AmProcessQueue = props => {
                                                                                                     {props.IncubateDate === true ? <AmCheckBox
                                                                                                         value="IncubateDate"
                                                                                                         label="IncubateDate"
-                                                                                                        checked={
+                                                                                                   disable={
                                                                                                             x.Incubate ? true : props.disibleIncubateDate ? props.disibleIncubateDate : null
                                                                                                         }
                                                                                                    defaultChecked={props.defaultIncubateDate ? props.defaultIncubateDate : null}
@@ -2209,7 +2234,7 @@ const AmProcessQueue = props => {
                                                                                                     {props.ExpireDate === true ? <AmCheckBox
                                                                                                         value="ExpireDate"
                                                                                                         label="ExpireDate"
-                                                                                                        checked={
+                                                                                                   disable={
                                                                                                             x.ExpiredDate ? true : props.disibleExpireDate ? props.disibleExpireDate : null
                                                                                                         }
                                                                                                         defaultChecked={props.defaultExpireDate ? props.defaultExpireDate : null}
@@ -2222,9 +2247,10 @@ const AmProcessQueue = props => {
                                                                                                     {props.FullPallet === true ?<AmCheckBox
                                                                                                         value="FullPallet"
                                                                                                         label="FullPallet"
-                                                                                                        checked={
-                                                                                                            x.FullPallet ? true : props.disibleFullPallet ? props.disibleFullPallet: null
-                                                                                                        }
+                                                                                                   disabled={
+                                                                                                          x.FullPallet ? true : props.disibleFullPallet ? props.disibleFullPallet: null
+                                                                                                      }
+                                                                                                
                                                                                                         defaultChecked={props.defaultFullPallet ? props.defaultFullPallet : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxCon(e, idx)
