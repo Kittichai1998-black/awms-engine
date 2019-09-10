@@ -43,8 +43,8 @@ const Tranfer = Loadable({
     loading: Loading
 });
 
-const Console = Loadable({
-    loader: () => import("../../views/page/Pankan/Issue/Console"),
+const ConsolePankan = Loadable({
+    loader: () => import("../../views/page/Pankan/Issue/ConsolePankan"),
     loading: Loading
 });
 
@@ -54,7 +54,7 @@ const routes = [
     { path: "/issue/create", name: "base5", compoment: CreateGI, exact: true },
     { path: "/issue/search", name: "base5", compoment: DocumentSearchGI, exact: true },
     { path: "/issue/detail", name: "base5", compoment: DocumentViewGI, exact: true },
-    { path: "/issue/console", name: "base5", compoment: Console, exact: true },
+    { path: "/issue/console", name: "base5", compoment: ConsolePankan, exact: true },
     { path: "/receive/scanreceive", name: "Mapping Receive Pallet", compoment: MappingReceivePallet, exact: true },
     { path: "/receive/tranfer", name: "Tranfer", compoment: Tranfer, exact: true },
     { path: "/loading/create", name: "base5", compoment: CreateLD, exact: true },

@@ -88,6 +88,8 @@ namespace AWMSModel.Constant.EnumConst
         [EnumValueAttribute(ValueString = "ACPQCCD01")]
         EXEWM_ASRSConfirmProcessQueue_CreateGRCrossDock,
 
+        [EnumValueAttribute(ValueString = "MP01")]
+        EXEPJ_MappingDistoLD,
 
     }
 }

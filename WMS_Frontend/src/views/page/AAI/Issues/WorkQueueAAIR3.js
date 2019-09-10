@@ -18,11 +18,12 @@ const createQueryString = select => {
     "&apikey=free01";
   return queryS;
 };
-const WorkQueueAAI = props => {
+const WorkQueueAAIR3 = props => {
   const AreaMaster = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaMaster",
-    q: '[{ "f": "Status", "c":"=", "v": 1}]',
+    q:
+      '[{ "f": "Status", "c":"=", "v": 1},{ "f": "Name", "c":"=", "v":"Out Full Partial"}]',
     f: "ID,Code,Name",
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
@@ -131,10 +132,10 @@ const WorkQueueAAI = props => {
   const ProcessQ = [
     {
       Label: "Destination Area",
-      key: "desASRSAreaCode",
+      key: "desASRSAreaName",
       type: "dropdownapi",
       fieldLabel: ["Code", "Name"],
-      idddls: "desASRSAreaCode",
+      idddls: "desASRSAreaName",
       queryApi: AreaMaster
     }
   ];
@@ -142,50 +143,45 @@ const WorkQueueAAI = props => {
   return (
     <div>
       <AmProcessQueue
-              orderDDL={orderDDL}
-              ordersDDL={ordersDDL}
-              columnCondition={columnCondition}
-              columnSort={columnSort}
-              columnConfirm={columnConfirm}
-              ProcessQ={ProcessQ}
-              DefaulSorting={DefaulSorting}
-              history={props.history}
-              apiwarehouse={Warehouse}
-              advanceCondition={true}
-              //fullPallet={true}
-              //receive={true}
-              priolity={Priolity}
-              DocType={1002}
-              docType={"issue"}
-              status={true}
-              random={false}
-              dataSortShow={true}
-              apidetail={"/issue/detail?docID="}
-              apiResConfirm={"/issue/managequeue"}
+        orderDDL={orderDDL}
+        ordersDDL={ordersDDL}
+        columnCondition={columnCondition}
+        columnSort={columnSort}
+        columnConfirm={columnConfirm}
+        ProcessQ={ProcessQ}
+        DefaulSorting={DefaulSorting}
+        history={props.history}
+        apiwarehouse={Warehouse}
+        advanceCondition={true}
+        //fullPallet={true}
+        //receive={true}
+        priolity={Priolity}
+        DocType={1002}
+        docType={"issue"}
+        status={true}
+        random={false}
+        dataSortShow={true}
+        apidetail={"/issue/detail?docID="}
+        apiResConfirm={"/issue/managequeue"}
+        //Advance Conditions
+        // ShelfLifeDate={true}
+        // defaultShelfLifeDate={true}
+        // disibleShelfLifeDate={false}
 
-              //Advance Conditions
-              ShelfLifeDate={true}
-              defaultShelfLifeDate={true}
-              disibleShelfLifeDate={false}
-
-              FullPallet={true}
-              defaultFullPallete={true}
-              disibleFullPallet={false}
-
-              ExpireDate={true}
-              defaultExpireDate={true}
-              disibleExpireDate={true}
-
-              IncubateDate={true}
-              defaultIncubateDate={true}
-              disibleIncubateDate={true}
-
-              //Status from Doc  Ê¶Ò¹Ð·ÕèàÍÒÁÒ¨Ò¡ Options
-              OptionGIdoc={true}
-
+        FullPallet={true}
+        defaultFullPallete={false}
+        disibleFullPallet={true}
+        ExpireDate={true}
+        defaultExpireDate={false}
+        disibleExpireDate={false}
+        IncubateDate={true}
+        defaultIncubateDate={false}
+        disibleIncubateDate={false}
+        //Status from Doc  Ê¶Ò¹Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò¨Ò¡ Options
+        OptionGIdoc={true}
       ></AmProcessQueue>
     </div>
   );
 };
 
-export default WorkQueueAAI;
+export default WorkQueueAAIR3;
