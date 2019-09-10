@@ -2025,7 +2025,7 @@ const AmProcessQueue = props => {
                                         if (props.receives === true || props.defaultExpireDate === true)
                                             onChangCheckboxConsRecieve(null, null, idx);
 
-                                        if (props.disibleShelfLifeDate === true || props.defaultExpireDate === true)
+                                      if (props.disibleShelfLifeDate === true || props.defaultShelfLifeDate === true)
                                             onChangCheckboxConsSelfLife(null, null, idx);
 
                                         if (props.disibleFullPallet === true || props.defaultFullPallet === true)
