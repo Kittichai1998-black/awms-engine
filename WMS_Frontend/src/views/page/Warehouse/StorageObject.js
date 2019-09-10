@@ -80,8 +80,16 @@ const StorageObject = props => {
       Cell: e => getStatus(e.original)
     },
     { Header: "Pallet", accessor: "Pallet", width: 150 },
-    { Header: window.project === "TAP" ? "Part NO." : 'SKU Code', accessor: "SKU_Code", width: 200 },
-    { Header: window.project === "TAP" ? "Part Name" : 'SKU Name', accessor: "SKU_Name", width: 300 },
+    {
+      Header: window.project === "TAP" ? "Part NO." : "SKU Code",
+      accessor: "SKU_Code",
+      width: 200
+    },
+    {
+      Header: window.project === "TAP" ? "Part Name" : "SKU Name",
+      accessor: "SKU_Name",
+      width: 300
+    },
     { Header: "Warehouse", accessor: "Warehouse", width: 150 },
     { Header: "Area", accessor: "Area", width: 130 },
     { Header: "Location", accessor: "Location", width: 120 },
@@ -91,9 +99,8 @@ const StorageObject = props => {
     {
       Header: "Qty",
       accessor: "Qty",
-      width: 100,
-      type: "number",
-      Cell: e => getNumberQty(e.original)
+      width: 100
+      // Cell: e => getNumberQty(e.original)
     },
     { Header: "Base Unit", accessor: "Base_Unit", width: 100 },
     {
@@ -182,10 +189,10 @@ const StorageObject = props => {
       placeholder: "Pallet"
     },
     {
-      label: window.project === "TAP" ? "Part NO." : 'SKU Code',
+      label: window.project === "TAP" ? "Part NO." : "SKU Code",
       field: "SKU_Code",
       searchType: "input",
-      placeholder: window.project === "TAP" ? "Part NO." : 'SKU Code'
+      placeholder: window.project === "TAP" ? "Part NO." : "SKU Code"
     }
   ];
 
@@ -214,10 +221,10 @@ const StorageObject = props => {
       placeholder: "Status"
     },
     {
-      label: window.project === "TAP" ? "Part Name" : 'SKU Name',
+      label: window.project === "TAP" ? "Part Name" : "SKU Name",
       field: "SKU_Name",
       searchType: "input",
-      placeholder: window.project === "TAP" ? "Part Name" : 'SKU Name'
+      placeholder: window.project === "TAP" ? "Part Name" : "SKU Name"
     },
     {
       label: "Warehouse",
