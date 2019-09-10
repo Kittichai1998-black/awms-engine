@@ -1,4 +1,5 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AWMSEngine.ADO.StaticValue;
 using AWMSEngine.Common;
 using AWMSModel.Constant.EnumConst;
@@ -250,9 +251,9 @@ namespace AWMSEngine.Engine.V2.Business
                 doc.DocumentItems.Add(new amt_DocumentItem()
                 {
                     ID = null,
-                    Code = skuMst != null ? skuMst.Code : "",
-                    SKUMaster_ID = skuMst != null ? skuMst.ID.Value : 0,
-                    PackMaster_ID = packMst != null ? packMst.ID.Value : 0,
+                    Code = skuMst != null ? skuMst.Code : ObjectUtil.QryStrGetValue(Item.options,"basecode"),
+                    SKUMaster_ID = skuMst != null ? skuMst.ID : null,
+                    PackMaster_ID = packMst != null ? packMst.ID : null,
 
                     Quantity = Item.quantity,
                     UnitType_ID = baseUnitTypeConvt != null ? baseUnitTypeConvt.unitType_ID : null,
