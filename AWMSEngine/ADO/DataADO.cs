@@ -146,6 +146,11 @@ namespace AWMSEngine.ADO
             return res;
         }
 
+        public object Get(long? distoLD, object p1, object p2, bool v1, bool v2, VOCriteria buVO)
+        {
+            throw new NotImplementedException();
+        }
+
         public int CountBy<T>(SQLConditionCriteria[] wheres, VOCriteria buVO)
              where T : IEntityModel
         {

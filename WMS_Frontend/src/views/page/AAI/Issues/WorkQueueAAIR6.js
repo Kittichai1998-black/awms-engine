@@ -17,7 +17,7 @@ const createQueryString = select => {
     "&apikey=free01";
   return queryS;
 };
-const WorkQueueAAI = props => {
+const WorkQueueAAIR6 = props => {
   const AreaMaster = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaMaster",
@@ -65,7 +65,7 @@ const WorkQueueAAI = props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
     q:
-      '[{ "f": "Status", "c":"=", "v": 1},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+      '[{ "f": "Name", "c":"in", "v": "Out Full Right,Out Full Left"},{ "f": "Status", "c":"=", "v": 1}]',
     f: "ID as value, Code as label, ID, Code",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -130,10 +130,10 @@ const WorkQueueAAI = props => {
   const ProcessQ = [
     {
       Label: "Destination Area",
-      key: "desASRSAreaCode",
+      key: "desASRSAreaName",
       type: "dropdownapi",
       fieldLabel: ["Code", "Name"],
-      idddls: "desASRSAreaCode",
+      idddls: "desASRSAreaName",
       queryApi: AreaMaster
     }
   ];
@@ -166,4 +166,4 @@ const WorkQueueAAI = props => {
   );
 };
 
-export default WorkQueueAAI;
+export default WorkQueueAAIR6;
