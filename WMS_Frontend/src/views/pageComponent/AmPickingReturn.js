@@ -426,7 +426,7 @@ const AmPickingReturn = (props) => {
                 if (valueInput['scanCode']) {
                     let rootFocusID = null;
                     if (resData) {
-                        var docItemrow = resData.docs && resData.docs[0] ? resData.docs[0].documentItems !== null && resData.docs[0].documentItems.length > 0 ? resData.docs[0].documentItems : null : null;
+                        var docItemrow = resData.docs && resData.docs[0] ? resData.docs[0].DocumentItems !== null && resData.docs[0].DocumentItems.length > 0 ? resData.docs[0].DocumentItems : null : null;
                         var bstoData = resData.bsto;
                         var dataRootFocus = findRootMapping(bstoData);
                         rootFocusID = dataRootFocus.id;
@@ -444,7 +444,7 @@ const AmPickingReturn = (props) => {
                             var resInput = {
                                 ...valueInput,
                                 rootID: rootFocusID,
-                                docItemID: docItemrow ? docItemrow[0].id : null,
+                                docItemID: docItemrow ? docItemrow[0].ID : null,
                                 amount: valueInput['amount'] ? valueInput['amount'] : 1,
                                 mode: 0,
                                 action: actionValue,
@@ -458,7 +458,7 @@ const AmPickingReturn = (props) => {
                         } else {
                             dataScan = {
                                 rootID: rootFocusID,
-                                docItemID: docItemrow ? docItemrow[0].id : null,
+                                docItemID: docItemrow ? docItemrow[0].ID : null,
                                 amount: valueInput['amount'] ? valueInput['amount'] : 1,
                                 mode: 0,
                                 action: actionValue,
@@ -617,7 +617,7 @@ const AmPickingReturn = (props) => {
 
     const SumQty = (arr, field) => {
         _.forEach(arr, function (value, key) {
-            value.quantity = parseInt(value.quantity, 10);
+            value.Quantity = parseInt(value.Quantity, 10);
         });
         return _.sumBy(arr, field)
     }
@@ -630,15 +630,15 @@ const AmPickingReturn = (props) => {
 
         } else {
             return <div className={classes.detail}>
-                <label className={classnames(classes.textNowrap, classes.areadetail)}><span className={classes.labelHead}>Doc No. </span> {docrow.code}</label>
-                {docrow.documentItems !== null && docrow.documentItems.length > 0 ? docrow.documentItems.map((docItemrow, idx2) => {
+                <label className={classnames(classes.textNowrap, classes.areadetail)}><span className={classes.labelHead}>Doc No. </span> {docrow.Code}</label>
+                {docrow.DocumentItems !== null && docrow.DocumentItems.length > 0 ? docrow.DocumentItems.map((docItemrow, idx2) => {
                     return <div key={idx2}>
                         <div className={classnames(classes.column2)}>
-                            <label className={classnames(classes.textNowrap, classes.areadetail)} style={{ marginRight: 10 }}><span className={classes.labelHead}>SKU:</span> {docItemrow.code}</label>
+                            <label className={classnames(classes.textNowrap, classes.areadetail)} style={{ marginRight: 10 }}><span className={classes.labelHead}>SKU:</span> {docItemrow.Code}</label>
                             <div className={classnames(classes.showQty)} style={{ textAlign: 'right' }} >
                                 <Chip className={classnames(classes.chip, classes.chipQty)}
                                     avatar={<Avatar className={classnames(classes.avatar)}>{"Q"}</Avatar>}
-                                    label={docItemrow.quantity ? docItemrow.docItemStos !== null && docItemrow.docItemStos.length > 0 ? SumQty(docItemrow.docItemStos, "quantity") + "/" + parseInt(docItemrow.quantity, 10) : "- /" + parseInt(docItemrow.quantity, 10) : "/ -"} variant="outlined" />
+                                    label={docItemrow.Quantity ? docItemrow.DocItemStos !== null && docItemrow.DocItemStos.length > 0 ? SumQty(docItemrow.DocItemStos, "Quantity") + "/" + parseInt(docItemrow.Quantity, 10) : "- /" + parseInt(docItemrow.Quantity, 10) : "/ -"} variant="outlined" />
                             </div>
                         </div>
                         <hr />
