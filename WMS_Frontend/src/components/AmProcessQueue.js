@@ -2025,7 +2025,7 @@ const AmProcessQueue = props => {
                                         if (props.receives === true || props.defaultExpireDate === true)
                                             onChangCheckboxConsRecieve(null, null, idx);
 
-                                        if (props.disibleShelfLifeDate === true || props.defaultExpireDate === true)
+                                      if (props.disibleShelfLifeDate === true || props.defaultShelfLifeDate === true)
                                             onChangCheckboxConsSelfLife(null, null, idx);
 
                                         if (props.disibleFullPallet === true || props.defaultFullPallet === true)
@@ -2208,7 +2208,8 @@ const AmProcessQueue = props => {
                                                                                                    label="ShelfLifeDate"
                                                                                                    disable={
                                                                                                             x.ShelfLife ? true : props.disibleShelfLifeDate ? props.disibleShelfLifeDate :  null
-                                                                                                        }
+                                                                                                   }
+                                                                                                   checked={props.checkedShelfLifeDate ? props.checkedShelfLifeDate : null }
                                                                                                    defaultChecked={props.defaultShelfLifeDate ? props.defaultShelfLifeDate : null}
                                                                                                    defaultValue={props.defaultShelfLifeDate ? props.defaultShelfLifeDate : null}
                                                                                                         onChange={(e, v) =>
@@ -2222,7 +2223,8 @@ const AmProcessQueue = props => {
                                                                                                         label="IncubateDate"
                                                                                                    disable={
                                                                                                             x.Incubate ? true : props.disibleIncubateDate ? props.disibleIncubateDate : null
-                                                                                                        }
+                                                                                                   }
+                                                                                                   checked={props.checkedIncubateDate ? props.checkedIncubateDate : null}
                                                                                                    defaultChecked={props.defaultIncubateDate ? props.defaultIncubateDate : null}
                                                                                                    defaultValue={props.defaultIncubateDate ? props.defaultIncubateDate : null}
                                                                                                         onChange={(e, v) =>
@@ -2233,7 +2235,8 @@ const AmProcessQueue = props => {
                                                 </AmCheckBox> : null}
                                                                                                     {props.ExpireDate === true ? <AmCheckBox
                                                                                                         value="ExpireDate"
-                                                                                                        label="ExpireDate"
+                                                                                                   label="ExpireDate"
+                                                                                                   checked={props.checkedExpireDate ? props.checkedExpireDate : null}
                                                                                                    disable={
                                                                                                             x.ExpiredDate ? true : props.disibleExpireDate ? props.disibleExpireDate : null
                                                                                                         }
@@ -2247,9 +2250,10 @@ const AmProcessQueue = props => {
                                                                                                     {props.FullPallet === true ?<AmCheckBox
                                                                                                         value="FullPallet"
                                                                                                         label="FullPallet"
-                                                                                                   disabled={
+                                                                                                        disabled={
                                                                                                           x.FullPallet ? true : props.disibleFullPallet ? props.disibleFullPallet: null
-                                                                                                      }
+                                                                                                   }
+                                                                                                   checked={props.checkedFullPallet ? props.checkedFullPallet : null}
                                                                                                 
                                                                                                         defaultChecked={props.defaultFullPallet ? props.defaultFullPallet : null}
                                                                                                         onChange={(e, v) =>

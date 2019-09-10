@@ -98,7 +98,7 @@ namespace AWMSEngine.Engine.Business.Loading
 
                 ActionTime = reqVO.actionTime,
                 DocumentDate = reqVO.documentDate,
-                DocumentType_ID = DocumentTypeID.LOADING,
+                DocumentType_ID = DocumentTypeID.GOODS_LOADING,
 
                 Remark = reqVO.remark,
 
