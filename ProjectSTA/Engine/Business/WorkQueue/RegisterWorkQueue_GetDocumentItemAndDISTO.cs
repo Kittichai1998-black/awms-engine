@@ -82,7 +82,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             }
 
             var mvt = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_MVT);
-            MovementType mvtDoc = mvt != null ? (MovementType)Enum.Parse(typeof(MovementType), mvt) : MovementType.FG_TRANSFER_WM;
+            MovementType mvtDoc = mvt != null && mvt.Length > 0 ? (MovementType)Enum.Parse(typeof(MovementType), mvt) : MovementType.FG_TRANSFER_WM;
 
             var pstos = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
             if (pstos == null || pstos.Count() == 0)

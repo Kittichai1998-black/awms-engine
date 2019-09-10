@@ -466,7 +466,7 @@ const AmMappingPallet = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePost["rootOptions"] = uri_opt;
-            // console.log(resValuePost);
+            console.log(resValuePost);
 
             setResValuePost(resValuePost);
 

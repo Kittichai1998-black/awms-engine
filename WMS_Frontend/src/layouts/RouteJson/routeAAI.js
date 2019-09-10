@@ -50,15 +50,20 @@ const CreateDocGIR6 = Loadable({
   loading: Loading
 });
 
-const WorkQueue = Loadable({
-  loader: () => import("../../views/page/AAI/Issues/WorkQueueAAI"),
+const WorkQueueGroup1 = Loadable({
+  loader: () => import("../../views/page/AAI/Issues/WorkQueueAAIGroup"), //R1 R2 R4 R5
   loading: Loading
 });
 
-// const StorageObjectAAI = Loadable({
-//   loader: () => import("../../views/page/StorageObjectExample"),
-//   loading: Loading
-// });
+const WorkQueueAAIR3 = Loadable({
+  loader: () => import("../../views/page/AAI/Issues/WorkQueueAAIR3"),
+  loading: Loading
+});
+
+const WorkQueueAAIR6 = Loadable({
+  loader: () => import("../../views/page/AAI/Issues/WorkQueueAAIR6"),
+  loading: Loading
+});
 
 const routes = [
   {
@@ -130,15 +135,21 @@ const routes = [
   {
     path: "/issue/managequeue",
     name: "base5",
-    compoment: WorkQueue,
+    compoment: WorkQueueGroup1,
+    exact: true
+  },
+  {
+    path: "/issue/managequeueR3",
+    name: "base5",
+    compoment: WorkQueueAAIR3,
+    exact: true
+  },
+  {
+    path: "/issue/managequeueR6",
+    name: "base5",
+    compoment: WorkQueueAAIR6,
     exact: true
   }
-  // {
-  //   path: "/warehouse/storageobject",
-  //   name: "base5",
-  //   compoment: StorageObjectAAI,
-  //   exact: true
-  // }
 ];
 
 export default routes;

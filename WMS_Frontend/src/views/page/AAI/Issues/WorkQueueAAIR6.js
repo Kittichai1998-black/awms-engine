@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import AmProcessQueue from "../../../../components/AmProcessQueue";
 import Axios from "axios";
-import { fade } from "@material-ui/core/styles";
 
 const createQueryString = select => {
   let queryS =
@@ -18,7 +17,7 @@ const createQueryString = select => {
     "&apikey=free01";
   return queryS;
 };
-const WorkQueueAAI = props => {
+const WorkQueueAAIR6 = props => {
   const AreaMaster = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaMaster",
@@ -66,7 +65,7 @@ const WorkQueueAAI = props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
     q:
-      '[{ "f": "Status", "c":"=", "v": 1},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+      '[{ "f": "Name", "c":"in", "v": "Out Full Right,Out Full Left"},{ "f": "Status", "c":"=", "v": 1}]',
     f: "ID as value, Code as label, ID, Code",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -131,10 +130,10 @@ const WorkQueueAAI = props => {
   const ProcessQ = [
     {
       Label: "Destination Area",
-      key: "desASRSAreaCode",
+      key: "desASRSAreaName",
       type: "dropdownapi",
       fieldLabel: ["Code", "Name"],
-      idddls: "desASRSAreaCode",
+      idddls: "desASRSAreaName",
       queryApi: AreaMaster
     }
   ];
@@ -142,50 +141,29 @@ const WorkQueueAAI = props => {
   return (
     <div>
       <AmProcessQueue
-              orderDDL={orderDDL}
-              ordersDDL={ordersDDL}
-              columnCondition={columnCondition}
-              columnSort={columnSort}
-              columnConfirm={columnConfirm}
-              ProcessQ={ProcessQ}
-              DefaulSorting={DefaulSorting}
-              history={props.history}
-              apiwarehouse={Warehouse}
-              advanceCondition={true}
-              //fullPallet={true}
-              //receive={true}
-              priolity={Priolity}
-              DocType={1002}
-              docType={"issue"}
-              status={true}
-              random={false}
-              dataSortShow={true}
-              apidetail={"/issue/detail?docID="}
-              apiResConfirm={"/issue/managequeue"}
-
-              //Advance Conditions
-              ShelfLifeDate={true}
-              defaultShelfLifeDate={true}
-              disibleShelfLifeDate={false}
-
-              FullPallet={true}
-              defaultFullPallete={true}
-              disibleFullPallet={false}
-
-              ExpireDate={true}
-              defaultExpireDate={true}
-              disibleExpireDate={true}
-
-              IncubateDate={true}
-              defaultIncubateDate={true}
-              disibleIncubateDate={true}
-
-              //Status from Doc  สถานะที่เอามาจาก Options
-              OptionGIdoc={true}
-
+        orderDDL={orderDDL}
+        ordersDDL={ordersDDL}
+        columnCondition={columnCondition}
+        columnSort={columnSort}
+        columnConfirm={columnConfirm}
+        ProcessQ={ProcessQ}
+        DefaulSorting={DefaulSorting}
+        history={props.history}
+        apiwarehouse={Warehouse}
+        advanceCondition={true}
+        fullPallet={true}
+        receive={true}
+        priolity={Priolity}
+        DocType={1002}
+        docType={"issue"}
+        status={true}
+        random={false}
+        dataSortShow={true}
+        apidetail={"/issue/detail?docID="}
+        apiResConfirm={"/issue/managequeue"}
       ></AmProcessQueue>
     </div>
   );
 };
 
-export default WorkQueueAAI;
+export default WorkQueueAAIR6;
