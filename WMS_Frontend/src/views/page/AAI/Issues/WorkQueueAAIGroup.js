@@ -152,8 +152,8 @@ const WorkQueueAAIGroup = props => {
         history={props.history}
         apiwarehouse={Warehouse}
         advanceCondition={true}
-        fullPallet={true}
-        receive={true}
+        //fullPallet={true}
+        //receive={true}
         priolity={Priolity}
         DocType={1002}
         docType={"issue"}
@@ -162,6 +162,23 @@ const WorkQueueAAIGroup = props => {
         dataSortShow={true}
         apidetail={"/issue/detail?docID="}
         apiResConfirm={"/issue/managequeue"}
+        //ShelfLifeDate={true}
+        //defaultShelfLifeDate={true}
+        //disibleShelfLifeDate={false}
+        FullPallet={true}
+        defaultFullPallete={true}
+        disibleFullPallet={true}
+        checkedFullPallet={true}
+        ExpireDate={true}
+        defaultExpireDate={true}
+        disibleExpireDate={false}
+        IncubateDate={true}
+        defaultIncubateDate={true}
+        disibleIncubateDate={false}
+        //Status from Doc  สถานะที่เอามาจาก Options
+        OptionGIdoc={true}
+        //QryDoc
+        ConditionsQryDoc="{ 'f': 'Ref1', c: 'in', 'v': 'R01,R02,R04,R05' }"
       ></AmProcessQueue>
     </div>
   );

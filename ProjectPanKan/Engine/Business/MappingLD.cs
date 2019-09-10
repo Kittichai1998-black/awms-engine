@@ -28,17 +28,17 @@ namespace ProjectPanKan.Engine.Business
             {
                 var LinkLDid = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                     new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Document_ID",reqVO.docIDs),
-                    new KeyValuePair<string,object>("EventStatus", DocumentEventStatus.WORKED)
+                    new KeyValuePair<string,object>("LinkDocument_ID",reqVO.docIDs),
+                    new KeyValuePair<string,object>("EventStatus", DocumentEventStatus.NEW)
                 }, buVO).FirstOrDefault();
 
-                if(LinkLDid.LinkDocument_ID != null) //มี LD ผูกอยู่
+                if(LinkLDid != null) //มี LD ผูกอยู่
                 {
                    var DocItemsMap = new List<amt_DocumentItemStorageObject>();
 
                    var docItemsLD = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
                         new KeyValuePair<string, object>[] {
-                        new KeyValuePair<string,object>("Document_ID",LinkLDid.LinkDocument_ID),
+                        new KeyValuePair<string,object>("Document_ID",LinkLDid.Document_ID),
                         new KeyValuePair<string,object>("EventStatus", DocumentEventStatus.NEW)
                    }, buVO).FirstOrDefault();
 

@@ -43,24 +43,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
-                        }
-                        /*
-                            var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, buVO).ToList();
-                        var docItemID = distos.Select(y => y.DocumentItem_ID).Distinct().ToList();
-
-                        docItemID.ForEach(y =>
-                        {
-                            var docItem = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_DocumentItem>(y, buVO);
-
-                            if (distos.FindAll(z => z.DocumentItem_ID == y).TrueForAll(z => z.Status == EntityStatus.ACTIVE))
-                            {
-                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateItemEventStatus(y.Value, DocumentEventStatus.WORKED, buVO);
-
-                                
-                            }
-
-                        });
-                        */
+                        } 
 
                     }
                 }

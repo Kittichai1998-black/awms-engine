@@ -207,7 +207,7 @@ const CreateDocumentLD = (props) => {
                 return (
                     <div key={key} style={{ display: "inline-block" }}>
                         <FormInline>
-                            <LabelH>SKU : </LabelH>
+                            <LabelH>Document : </LabelH>
                             <InputDiv>
                                 <AmDropdown
                                     id={"issuedDocID"}
@@ -289,9 +289,7 @@ const CreateDocumentLD = (props) => {
         if (addData) {
             if (editData) {
                 editData[field] = value;
-                if (field === "SKUItems") {
-                    UnitCode ? editData["unitType"] = UnitCode : delete editData["unitType"]
-                }
+                
                 if (pair) {
                     editData[pair] = dataPair;
                 }
@@ -301,10 +299,7 @@ const CreateDocumentLD = (props) => {
             } else {            
                 let addData = {};
                 addData["ID"] = addDataID;
-                addData[field] = value;
-                if (field === "SKUItems") {
-                    UnitCode ? addData["unitType"] = UnitCode : delete addData["unitType"]
-                }
+                addData[field] = value;            
                 if (pair) {
                     addData[pair] = dataPair;
                 }
@@ -314,10 +309,6 @@ const CreateDocumentLD = (props) => {
         } else { // EDIT
             if (editData !== undefined) {
                 let editRowX = editData.original ? { ...editData.original } : { ...editData };
-                if (field === "SKUItems") {
-                    UnitCode ? editRowX["unitType"] = UnitCode : delete editRowX["unitType"]
-                }
-
                 if (pair) {
                     editRowX[pair] = dataPair;
                 }
@@ -370,8 +361,6 @@ const CreateDocumentLD = (props) => {
             //dataCreate["BaseSto"] = BaseSto
         }
     
-        console.log(dataCreate)
-
     }
 
     const apicreate = "/v2/CreateGIDocAPI/"  //API สร้าง Doc
