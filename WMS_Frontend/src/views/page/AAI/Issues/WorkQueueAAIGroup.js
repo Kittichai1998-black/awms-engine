@@ -167,7 +167,8 @@ const WorkQueueAAIGroup = props => {
         //disibleShelfLifeDate={false}
         FullPallet={true}
         defaultFullPallete={true}
-        disibleFullPallet={true}
+              disibleFullPallet={true}
+             // checkedFullPallet={true}
         ExpireDate={true}
         defaultExpireDate={true}
         disibleExpireDate={false}
