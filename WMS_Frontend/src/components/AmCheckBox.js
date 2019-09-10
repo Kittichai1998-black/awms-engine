@@ -45,6 +45,7 @@ const AmCheckBox = props => {
                               checked={props.checked}
                               defaultValue={props.defaultValue}
                               defaultChecked={props.defaultChecked}
+                              disabled={props.disabled}
               />
             }
             label={props.label}
