@@ -21,7 +21,8 @@ const WorkQueueAAIR6 = props => {
   const AreaMaster = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "AreaMaster",
-    q: '[{ "f": "Status", "c":"=", "v": 1}]',
+    q:
+      '[{ "f": "Name", "c":"in", "v": "Out Full Right,Out Full Left"},{ "f": "Status", "c":"=", "v": 1}]',
     f: "ID,Code,Name",
     g: "",
     s: "[{'f':'ID','od':'desc'}]",
@@ -65,7 +66,7 @@ const WorkQueueAAIR6 = props => {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "Document",
     q:
-      '[{ "f": "Name", "c":"in", "v": "Out Full Right,Out Full Left"},{ "f": "Status", "c":"=", "v": 1}]',
+      '[{ "f": "Status", "c":"=", "v": 1},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
     f: "ID as value, Code as label, ID, Code",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -151,8 +152,8 @@ const WorkQueueAAIR6 = props => {
         history={props.history}
         apiwarehouse={Warehouse}
         advanceCondition={true}
-        fullPallet={true}
-        receive={true}
+        //fullPallet={true}
+        //receive={true}
         priolity={Priolity}
         DocType={1002}
         docType={"issue"}
@@ -161,6 +162,22 @@ const WorkQueueAAIR6 = props => {
         dataSortShow={true}
         apidetail={"/issue/detail?docID="}
         apiResConfirm={"/issue/managequeue"}
+        //Advance Conditions
+        // ShelfLifeDate={true}
+        // defaultShelfLifeDate={true}
+        // disibleShelfLifeDate={false}
+
+        FullPallet={true}
+        defaultFullPallete={true}
+        disibleFullPallet={true}
+        ExpireDate={true}
+        defaultExpireDate={false}
+        disibleExpireDate={false}
+        IncubateDate={true}
+        defaultIncubateDate={false}
+        disibleIncubateDate={false}
+        //Status from Doc  ʶҹз������Ҩҡ Options
+        OptionGIdoc={true}
       ></AmProcessQueue>
     </div>
   );
