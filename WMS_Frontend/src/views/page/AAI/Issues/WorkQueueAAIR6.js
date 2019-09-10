@@ -170,6 +170,7 @@ const WorkQueueAAIR6 = props => {
         FullPallet={true}
         defaultFullPallete={true}
         disibleFullPallet={true}
+        checkedFullPallet={true}
         ExpireDate={true}
         defaultExpireDate={false}
         disibleExpireDate={false}
@@ -178,6 +179,7 @@ const WorkQueueAAIR6 = props => {
         disibleIncubateDate={false}
         //Status from Doc  ʶҹз������Ҩҡ Options
         OptionGIdoc={true}
+        ConditionsQryDoc="{ 'f': 'Ref1', c: '=', 'v': 'R06' }"
       ></AmProcessQueue>
     </div>
   );
