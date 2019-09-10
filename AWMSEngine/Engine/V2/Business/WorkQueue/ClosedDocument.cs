@@ -5,6 +5,7 @@ using AWMSEngine.Engine.General;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
+using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Entity;
 using System;
 using System.Collections.Generic;
@@ -25,48 +26,62 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
                     if (docs != null)
                     {
-                        var distos = ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
+                        //update StorageObjects
+
+                        var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
                         if (distos == null)
                             throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item Not Found");
-                        distos.ForEach(disto => {
-                            var queue = ADO.WorkQueueADO.GetInstant().Get(disto.WorkQueue_ID.Value, this.BuVO);
-                            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, this.BuVO);
-   
-                            UpdateSTOEvenStatus(bsto, this.BuVO);
 
+                        var WorkQueues = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
+                        WorkQueues.ForEach(wq =>
+                        {
+                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, this.BuVO);
+
+                            if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                            {
+                                UpdateStorageObjectReceived(queue, this.BuVO);
+                            }
+                            else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                            {
+                                var updDistos = distos.Where(grp => grp.WorkQueue_ID == wq).ToList();
+                                UpdateStorageObjectIssued(updDistos, queue, this.BuVO);
+                            }
                         });
 
-                        //update document to closed
+                        //update Closed Document
                         var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
                         if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
                         }
-                    }
-                    else
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document Not Found");
-                    }
-                }); 
+                    } 
+                });
+                res = reqVO;
             }
 
-            return reqVO;
+            return res;
         }
-        private void UpdateSTOEvenStatus(amt_StorageObject bsto, VOCriteria buVO)
+
+        private void UpdateStorageObjectReceived(SPworkQueue queue, VOCriteria buVO)
         {
-            //uOPT_DONE_DES_EVENT_STATUS
+            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
+
+            //up OPT_DONE_DES_EVENT_STATUS
             var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
             if (done_des_event_status == null || done_des_event_status.Length == 0)
             {
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
             }
             else
             {
                 StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bsto.ID.Value, null, null, eventStatus, buVO);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, eventStatus, buVO);
+                RemoveOPTEventSTO(bsto, buVO);
             }
 
-
+        }
+        private void RemoveOPTEventSTO(amt_StorageObject bsto, VOCriteria buVO)
+        {
             //remove OPT_DONE_DES_EVENT_STATUS
             var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto.Options);
             var opt_done = "";
@@ -76,10 +91,51 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 listkeyRoot.RemoveAll(x => x.Key.Equals(OptionVOConst.OPT_DONE_DES_EVENT_STATUS));
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
+
             AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.ID.Value, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });
+        }
+
+        private void UpdateStorageObjectIssued(List<amt_DocumentItemStorageObject> distos, SPworkQueue queue, VOCriteria buVO)
+        {
+            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
+
+            var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+
+            distos.ForEach(disto =>
+            {
+                if (done_des_event_status == null || done_des_event_status.Length == 0)
+                {
+                    if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบไม่เต็ม
+                    {
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value,
+                            StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
+                    }
+                    else
+                    {
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value,
+                            StorageObjectEventStatus.PICKING, null, StorageObjectEventStatus.PICKED, buVO);
+                    }
+                }
+                else
+                {
+                    if (disto.Sou_StorageObject_ID != disto.Des_StorageObject_ID) //เบิกเเบบไม่เต็ม
+                    {
+                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(disto.Des_StorageObject_ID.Value, null, null, eventStatus, buVO);
+                    }
+                    else
+                    {
+                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, eventStatus, buVO);
+                    }
+                    RemoveOPTEventSTO(bsto, buVO);
+                }
+            });
+            
+
         }
     }
 }

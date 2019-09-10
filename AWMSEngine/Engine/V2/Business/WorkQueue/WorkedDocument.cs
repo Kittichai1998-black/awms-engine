@@ -40,15 +40,12 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             }
                         }
                     }
-                    else
-                    {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Document Not Found");
-                    }
+                     
                 });
-                
+                res = reqVO;
             }
 
-            return reqVO;
+            return res;
         }
 
     }

@@ -98,8 +98,10 @@ namespace ProjectSTA.Engine.V2.Business.Picking
                                 //เพิ่มเข้าไปใหม่
                                 //add new Pack ลงใน new pallet ก่อนหน้านี้ โดยยังไม่มี docItemID ให้อ้างอิง
                                 //ต้องเซ็คหา docItem ที่มี pack master id ตรงกัน 
+                                //orderno ส่งเปน null ละเช็ค ว่ามี doc ตัวไหน มีค่า orderno ตรงกัน  packs.orderNo
+
                                 var docItems = AWMSEngine.ADO.DocumentADO.GetInstant()
-                                         .ListItem(DocumentTypeID.GOODS_RECEIVED, packs.mstID, null, null, null, null, packs.unitID, packs.baseUnitID, packs.orderNo, packs.batch, packs.lot, null, this.BuVO)
+                                         .ListItem(DocumentTypeID.GOODS_RECEIVED, packs.mstID, null, null, null, null, packs.unitID, packs.baseUnitID, null, null, null, null, this.BuVO)
                                          .FindAll(x => x.EventStatus == DocumentEventStatus.WORKING || x.EventStatus == DocumentEventStatus.NEW);
                                 if (docItems == null || docItems.Count() == 0)
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
@@ -118,19 +120,39 @@ namespace ProjectSTA.Engine.V2.Business.Picking
                                     else
                                     {
                                         tempDoc = resDoc;
-                                        docItems.Where(x => x.Document_ID == docid).ToList().ForEach(x=>
-                                        {
-                                            tempDocItems.Add(AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID.Value, this.BuVO));
-                                        });
+                                         
+                                        if (docItems.Any(x => x.Document_ID == docid && x.OrderNo == packs.orderNo))
+                                        {//ถ้ามี docitem ที่ pack และ orderno ตรงกัน
+                                          //var docMacth = docItems.Find(x => x.Document_ID == docid && x.OrderNo == packs.orderNo);
+
+                                           // tempDocItems.Add(AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(docMacth.ID.Value, this.BuVO));
+
+                                             docItems.Where(x => x.Document_ID == docid && x.OrderNo == packs.orderNo).ToList().ForEach(x =>
+                                            {
+                                                tempDocItems.Add(AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(x.ID.Value, this.BuVO));
+                                            }); 
+                                        }
+                                        else
+                                        { //ถ้ามันมีdocitem ที่ packMasterID ตรงกัน เเต่ ค่า orderno ไม่ตรง = null
+                                            var docMacth = docItems.Find(x => x.Document_ID == docid && x.OrderNo == null);
+                                            var resdocMacth = AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItem>(docMacth.ID.Value, this.BuVO,
+                                                new KeyValuePair<string, object>[] {
+                                                    new KeyValuePair<string, object>("OrderNo", packs.orderNo)
+                                                });
+                                            tempDocItems.Add(AWMSEngine.ADO.DocumentADO.GetInstant().GetItemAndStoInDocItem(resdocMacth.Value, this.BuVO));
+
+                                        }
 
                                         break;
                                     }
                                 } 
                                 if(tempDoc == null)
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document of Scan Code '" + reqVO.scanCode + "' Not Found");
+                                if (tempDocItems == null)
+                                    throw new AMWException(this.Logger, AMWExceptionCode.V1001, "GR Document Item of Scan Code '" + reqVO.scanCode + "' Not Found");
 
-                                var sumqtyDocItems = tempDocItems.Sum(x => x.Quantity);
-                                if(sumqtyDocItems < packs.qty)
+                                var sumqtyDocItems = tempDocItems.Sum(x => x.Quantity); // ของที่คืน จากdocitem  = 50
+                                if (sumqtyDocItems < packs.qty) // ตอนสเเกนรับเข้า เข็ค ว่า ของเกินจากจำนวนเอกสารที่ระบุยัง  50 < 1 false เพิ่มของต่อได้
                                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Completed the specified amount.");
                                
                                 var di = tempDocItems.SelectMany(r => r.DocItemStos)

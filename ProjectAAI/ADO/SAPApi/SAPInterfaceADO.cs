@@ -50,20 +50,32 @@ namespace ProjectAAI.ADO.SAPApi
             };
 
             var res = this.SendJson<SapResponse<ZSWMRF001_OUT_SU>>("SAPCONNECT_LOCATION", req,  buVO);
-            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            if (res.datas != null)
+            {
+                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+                {
+                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                    {
+                        msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    };
+                    buVO.FinalLogDocMessage.Add(msg);
+                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+
+                }
+            }
+            else
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
                 {
-                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    msgError = res.message
                 };
                 buVO.FinalLogDocMessage.Add(msg);
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
             }
-
             return res;
         }
 
-        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, long docID, VOCriteria buVO)
+        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, long? docID, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -85,17 +97,28 @@ namespace ProjectAAI.ADO.SAPApi
             };
             
             var res = this.SendJson<SapResponse<ZSWMRF002_OUT_SU>>("SAPCONNECT_LOCATION", req, buVO);
-            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            if (res.datas != null)
+            {
+                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+                {
+                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                    {
+                        msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    };
+                    buVO.FinalLogDocMessage.Add(msg);
+                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+
+                }
+            }
+            else
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
                 {
-                    docID = docID,
-                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    msgError = res.message
                 };
                 buVO.FinalLogDocMessage.Add(msg);
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
             }
-
             return res;
         }
 
@@ -106,7 +129,7 @@ namespace ProjectAAI.ADO.SAPApi
             var req = new SAPReq()
             {
                 environmentName = getEnvironment,
-                functionName = "ZWMRFC004",
+                functionName = "ZWMRF004",
                 inStructureName = "ZSWMRF004_IN_AWS",
                 inTableName = "IN_AWS",
                 outTableName = "OUT_SAP",
@@ -114,17 +137,30 @@ namespace ProjectAAI.ADO.SAPApi
             };
 
             var res = this.SendJson<SapResponse<ZSWMRF004_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
-            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            if (res.datas != null)
+            {
+                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+                {
+                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                    {
+                        docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
+                        msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    };
+                    buVO.FinalLogDocMessage.Add(msg);
+                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+
+                }
+            }
+            else
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
                 {
                     docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
-                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    msgError = res.message
                 };
                 buVO.FinalLogDocMessage.Add(msg);
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
             }
-
             return res;
         }
 
@@ -135,7 +171,7 @@ namespace ProjectAAI.ADO.SAPApi
             var req = new SAPReq()
             {
                 environmentName = getEnvironment,
-                functionName = "ZWMRFC005",
+                functionName = "ZWMRF005", 
                 inStructureName = "ZSWMRF005_IN_AWS",
                 inTableName = "IN_AWS",
                 outTableName = "OUT_SAP",
@@ -143,16 +179,30 @@ namespace ProjectAAI.ADO.SAPApi
             };
 
             var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
-            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            if(res.datas != null)
+            {
+                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+                {
+                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                    {
+                        docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
+                        msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    };
+                    buVO.FinalLogDocMessage.Add(msg);
+                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+
+                }
+            }
+            else
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
                 {
                     docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
-                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    msgError = res.message
                 };
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                buVO.FinalLogDocMessage.Add(msg);
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
             }
-
             return res;
         }
         public SapResponse<ZSWMRF006_OUT_SAP> ZWMRF006(ZSWMRF006_IN_AWS reqVO, VOCriteria buVO)
@@ -162,7 +212,7 @@ namespace ProjectAAI.ADO.SAPApi
             var req = new SAPReq()
             {
                 environmentName = getEnvironment,
-                functionName = "ZWMRFC006",
+                functionName = "ZWMRF006", 
                 inStructureName = "ZSWMRF006_IN_AWS",
                 inTableName = "IN_AWS",
                 outTableName = "OUT_SAP",
@@ -170,16 +220,31 @@ namespace ProjectAAI.ADO.SAPApi
             };
             
             var res = this.SendJson<SapResponse<ZSWMRF006_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
-            if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+             
+            if (res.datas != null)
+            {
+                if(res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+                {
+                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                    {
+                        docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
+                        msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    };
+                    buVO.FinalLogDocMessage.Add(msg);
+                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+
+                }
+            }
+            else
             {
                 var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
                 {
                     docID = DataADO.GetInstant().SelectByCodeActive<amt_Document>(reqVO.GI_DOC, buVO).ID.Value,
-                    msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
+                    msgError = res.message
                 };
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                buVO.FinalLogDocMessage.Add(msg);
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
             }
-
             return res;
         }
 
@@ -190,7 +255,7 @@ namespace ProjectAAI.ADO.SAPApi
             var req = new SAPReq()
             {
                 environmentName = getEnvironment,
-                functionName = "ZWMRFC006",
+                functionName = "ZWMRF007",
                 inStructureName = "ZSWMRF007_IN_REQ",
                 inTableName = "IN_REQ",
                 outTableName = "OUT_SAP",
@@ -225,6 +290,6 @@ namespace ProjectAAI.ADO.SAPApi
             };
             var res = this.SendJson<SapResponse<ZSWMRF003_OUT_REQ>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
-        }
+        } 
     }
 }

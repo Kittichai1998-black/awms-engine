@@ -211,9 +211,10 @@ const AmProcessQueue = props => {
   const [btnAdd, setbtnAdd] = useState(false);
   const [dataConditions, setdataConditions] = useState([]);
 
-  //======== AAI============
-  const [ref1, setref1] = useState();
-  const [refID, setrefID] = useState();
+
+    //======== AAI============
+    const [ref1, setref1] = useState();
+    const [refID, setrefID] = useState();
 
   const docQuery = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
@@ -630,55 +631,83 @@ const AmProcessQueue = props => {
     }
   };
 
-  //Advance Condition
-  const onChangCheckboxCon = (e, indx) => {
-    if (e.checked === true) {
-      let dataCheckCon = datacheckboxCon;
-      datacheckboxCon[e.value] = e.checked;
-      setdatacheckboxCon(dataCheckCon);
-      dataSource[indx][0][e.value] = e.checked;
-    } else {
-    }
-  };
+    //Advance Condition
+    const onChangCheckboxCon = (e, indx) => {
+        console.log(e)
+        if (e.checked === true) {
+            let dataCheckCon = datacheckboxCon;
+            datacheckboxCon[e.value] = e.checked;
+            setdatacheckboxCon(dataCheckCon);
+            dataSource[indx][0][e.value] = e.checked;
+        } else {
+            dataSource[indx][0][e.value] = e.checked;
+        }
+    };
 
   const onChangCheckboxConsFull = (e, v, indx) => {
     datacheckboxCon["FullPallet"] = true;
     dataSource[indx][0]["FullPallet"] = true;
   };
 
-  const onChangCheckboxConsRecieve = (e, v, indx) => {
-    datacheckboxCon["Receive"] = true;
-    dataSource[indx][0]["Receive"] = true;
-  };
+    const onChangCheckboxExpire= (e, v, indx) => {
+        datacheckboxCon["ExpireDate"] = true;
+        dataSource[indx][0]["ExpireDate"] = true;
+    };
 
-  const onChangCheckboxStatus = (e, indx) => {
-    if (e.checked === true) {
-      let dataCheckStatus = datacheckboxStatus;
-      datacheckboxStatus[e.value] = e.checked;
-      dataSource[indx][0][e.value] = e.checked;
-      setdatacheckboxStatus(dataCheckStatus);
-    } else {
-    }
-  };
-  const onChangeRandom = (e, indx, random) => {
-    if (indx === null) indx = 0;
-    dataSource[indx][0]["Random"] = null;
-    if (random === null && e > 100) {
-      setMsgDialogErr("Randdom > 100%");
-      setStateDialogErr(true);
-    } else {
-      if (random === "0") {
-        //dataSource[indx][0]["Random"] = 100
-      } else {
-        dataSource[indx][0]["Random"] = e;
-      }
-      if (random !== undefined) {
-        dataSource[indx][0]["Random"] = random;
-      } else {
-        dataSource[indx][0]["Random"] = e;
-      }
-    }
-  };
+    const onChangCheckboxIncubase = (e, v, indx) => {
+        datacheckboxCon["IncubateDate"] = true;
+        dataSource[indx][0]["IncubateDate"] = true;
+    };
+
+    const onChangCheckboxConsSelfLife = (e, v, indx) => {
+        datacheckboxCon["ShelfLifeDate"] = true;
+        dataSource[indx][0]["ShelfLifeDate"] = true;
+    };
+
+    //Status
+
+    const onChangCheckboxConsRecieve = (e, v, indx) => {
+        datacheckboxCon["Receive"] = true;
+        dataSource[indx][0]["Receive"] = true;
+    };
+
+    const onChangCheckboxConsBlock = (e, v, indx) => {
+        datacheckboxCon["Block"] = true;
+        dataSource[indx][0]["Block"] = true;
+    };
+    const onChangCheckboxConsQC = (e, v, indx) => {
+        datacheckboxCon["QC"] = true;
+        dataSource[indx][0]["QC"] = true;
+    };
+
+    const onChangCheckboxStatus = (e, indx) => {
+        if (e.checked === true) {
+            let dataCheckStatus = datacheckboxStatus;
+            datacheckboxStatus[e.value] = e.checked;
+            dataSource[indx][0][e.value] = e.checked;
+            setdatacheckboxStatus(dataCheckStatus);
+        } else {
+        }
+    };
+    const onChangeRandom = (e, indx, random) => {
+        if (indx === null) indx = 0;
+        dataSource[indx][0]["Random"] = null;
+        if (random === null && e > 100) {
+            setMsgDialogErr("Randdom > 100%");
+            setStateDialogErr(true);
+        } else {
+            if (random === "0") {
+                //dataSource[indx][0]["Random"] = 100
+            } else {
+                dataSource[indx][0]["Random"] = e;
+            }
+            if (random !== undefined) {
+                dataSource[indx][0]["Random"] = random;
+            } else {
+                dataSource[indx][0]["Random"] = e;
+            }
+        }
+    };
 
   const onChangeRandoms = (e, indx) => {
     if (e > 100) {
@@ -1965,247 +1994,302 @@ const AmProcessQueue = props => {
                       onChangeRandom(es, idx, qtyrandoms);
                     }
 
-                    if (props.fullPallet === true)
-                      onChangCheckboxConsFull(null, null, idx);
+                                        if (props.fullPallets === true )
+                                            onChangCheckboxConsFull(null, null, idx);
 
-                    if (props.receive === true)
-                      onChangCheckboxConsRecieve(null, null, idx);
+                                        if (props.receives === true || props.defaultExpireDate === true)
+                                            onChangCheckboxConsRecieve(null, null, idx);
 
-                    if (btnBack === false) {
-                      if ((dataSource[idx][0]["Priority"] = null)) {
-                        let values = 2;
-                        let dataObject = { label: "Normal", value: "2" };
-                        Onchangepriolity(values, dataObject, idx);
-                      }
-                    }
-                    return (
-                      <div style={{ marginLeft: "10px", marginRight: "10px" }}>
-                        <BorderAdd>
-                          <Card>
-                            <AmButton
-                              styleType="add_clear"
-                              style={{ marginLeft: "10px" }}
-                              onClick={() => onclickToggel(idx)}
-                            >
-                              {x.Code}: {x.SKUMaster_Name}
-                              <ExpandLessIcon
-                                className={
-                                  toggle[idx]
-                                    ? classes.expand
-                                    : classes.collapse
-                                }
-                              />
-                            </AmButton>
-                            <div style={{ clear: "both" }}></div>
-                            <Collapse in={toggle[idx]}>
-                              {toggle[idx] === true ? (
-                                <Paper elevation={4} className={classes.paper}>
-                                  <FormInline style={{ marginLeft: "15px" }}>
-                                    <Grid container spacing={24}>
-                                      <Grid
-                                        item
-                                        xs
-                                        container
-                                        direction="column"
-                                        spacing={14}
-                                      >
-                                        <LabelH>
-                                          {x.Code} : {x.SKUMaster_Name}
-                                          {palletcode ? (
-                                            <LabelH> / {palletcode}</LabelH>
-                                          ) : null}
-                                          {locationcode ? (
-                                            <LabelH> / {locationcode}</LabelH>
-                                          ) : null}
-                                        </LabelH>
-                                      </Grid>
-                                      <LabelH>{t("Qty")} :</LabelH>{" "}
-                                      <label>
-                                        {x.Quantity} {x.UnitType_Name} (
+                                        if (props.disibleShelfLifeDate === true || props.defaultExpireDate === true)
+                                            onChangCheckboxConsSelfLife(null, null, idx);
+
+                                        if (props.disibleFullPallet === true || props.defaultFullPallet === true)
+                                            onChangCheckboxConsFull(null, null, idx);
+
+                                        if (props.disibleExpireDate === true || props.defaultExpireDate=== true)
+                                            onChangCheckboxExpire(null, null, idx);
+
+                                        if (props.disibleIncubateDate === true || props.defaultIncubateDate === true)
+                                            onChangCheckboxIncubase(null, null, idx);
+
+
+                                        if (btnBack === false) {
+                                            if ((dataSource[idx][0]["Priority"] = null)) {
+                                                let values = 2;
+                                                let dataObject = { label: "Normal", value: "2" };
+                                                Onchangepriolity(values, dataObject, idx);
+                                            }
+                                        }
+
+                                        //option เอกสาร จาก Sap
+
+                                        var RecieveFromDoc = false
+                                        var QcFromDoc = false
+                                        var BlockFromDoc = false
+                                         
+                                        if (props.OptionGIdoc === true) {
+                                            console.log(x.Options)
+                                            if (
+                                                x.Options.split("=")[6] !== undefined &&
+                                                x.Options.split("=")[7] !== undefined &&
+                                                x.Options.split("=")[8] !== undefined
+                                            )
+                                            var RecieveDoc = x.Options.split("=")[6].split("&")[0];
+                                            console.log(RecieveDoc)
+                                            if (RecieveDoc === "Y") {
+                                                RecieveFromDoc = true
+                                                onChangCheckboxConsRecieve(null, null, idx);
+                                            }
+
+                                            var QcDoc = x.Options.split("=")[7].split("&")[0];
+                                            if (QcDoc === "Y") {
+                                                QcFromDoc = true
+                                                onChangCheckboxConsQC(null, null, idx);
+                                            }
+
+                                            var BlockDoc = x.Options.split("=")[8].split("&")[0];
+                                            if (BlockDoc === "Y") {
+                                                BlockFromDoc = true
+                                                onChangCheckboxConsBlock(null, null, idx);
+                                            }
+                                        }
+
+                                   return (
+                                            <div style={{ marginLeft: "10px", marginRight: "10px" }}>
+                                                <BorderAdd>
+                                                    <Card>
+                                                        <AmButton
+                                                            styleType="add_clear"
+                                                            style={{ marginLeft: "10px" }}
+                                                            onClick={() => onclickToggel(idx)}
+                                                        >
+                                                            {x.Code}: {x.SKUMaster_Name}
+                                                            <ExpandLessIcon
+                                                                className={
+                                                                    toggle[idx]
+                                                                        ? classes.expand
+                                                                        : classes.collapse
+                                                                }
+                                                            />
+                                                        </AmButton>
+                                                        <div style={{ clear: "both" }}></div>
+                                                        <Collapse in={toggle[idx]}>
+                                                            {toggle[idx] === true ? (
+                                                                <Paper elevation={4} className={classes.paper}>
+                                                                    <FormInline style={{ marginLeft: "15px" }}>
+                                                                        <Grid container spacing={24}>
+                                                                            <Grid
+                                                                                item
+                                                                                xs
+                                                                                container
+                                                                                direction="column"
+                                                                                spacing={14}
+                                                                            >
+                                                                                <LabelH>
+                                                                                    {x.Code} : {x.SKUMaster_Name}
+                                                                                    {palletcode ? (
+                                                                                        <LabelH> / {palletcode}</LabelH>
+                                                                                    ) : null}
+                                                                                    {locationcode ? (
+                                                                                        <LabelH> / {locationcode}</LabelH>
+                                                                                    ) : null}
+                                                                                </LabelH>
+                                                                            </Grid>
+                                                                            <LabelH>{t("Qty")} :</LabelH>{" "}
+                                                                            <label>
+                                                                                {x.Quantity} {x.UnitType_Name} (
                                         {qtyDocItem[idx]} {x.BaseUnitType_Code})
                                       </label>
-                                    </Grid>
-                                  </FormInline>
-                                  <FormInline>
-                                    <div
-                                      style={{
-                                        marginLeft: "15px",
-                                        paddingTop: "10px"
-                                      }}
-                                    >
-                                      <LabelH>{t("Priority")} : </LabelH>
-                                    </div>
-                                    <div style={{ marginLeft: "130px" }}>
-                                      {" "}
-                                      <AmDropdown
-                                        id="priority"
-                                        placeholder="Select"
-                                        data={
-                                          props.priolity
-                                            ? props.priolity
-                                            : priolity()
-                                        }
-                                        fieldDataKey="value"
-                                        fieldLabel={["label"]}
-                                        width={200} //��˹��������ҧ�ͧ��ͧ input
-                                        ddlMinWidth={100} //��˹��������ҧ�ͧ���ͧ dropdown
-                                        valueData={valueText} //��� value ������͡
-                                        defaultValue={
-                                          x.PriorityDoc
-                                            ? x.PriorityDoc
-                                            : props.priolity
-                                            ? 2
-                                            : defaultpriority
-                                        }
-                                        // returnDefaultValue={true}
-                                        onChange={(value, dataObject) =>
-                                          Onchangepriolity(
-                                            value,
-                                            dataObject,
-                                            idx
-                                          )
-                                        }
-                                        ddlType={"search"}
-                                      ></AmDropdown>
-                                    </div>
-                                  </FormInline>
-                                  {props.advanceCondition === true ? (
-                                    <FormInline
-                                      style={{
-                                        marginLeft: "15px",
-                                        paddingTop: "10px"
-                                      }}
-                                    >
-                                      <LabelH>
-                                        {t("Advance Condition")} :{" "}
-                                      </LabelH>
-                                      <FormInline>
-                                        <div>
-                                          {" "}
-                                          {props.fullPallet === true ? (
-                                            <AmCheckBox
-                                              value="FullPallet"
-                                              label="FullPallet"
-                                              checked={true}
-                                              onChange={(e, v) =>
-                                                onChangCheckboxConsFull(
-                                                  e,
-                                                  v,
-                                                  idx
-                                                )
-                                              }
-                                            >
-                                              >
+                                                                        </Grid>
+                                                                    </FormInline>
+                                                                    <FormInline>
+                                                                        <div
+                                                                            style={{
+                                                                                marginLeft: "15px",
+                                                                                paddingTop: "10px"
+                                                                            }}
+                                                                        >
+                                                                            <LabelH>{t("Priority")} : </LabelH>
+                                                                        </div>
+                                                                        <div style={{ marginLeft: "130px" }}>
+                                                                            {" "}
+                                                                            <AmDropdown
+                                                                                id="priority"
+                                                                                placeholder="Select"
+                                                                                data={
+                                                                                    props.priolity
+                                                                                        ? props.priolity
+                                                                                        : priolity()
+                                                                                }
+                                                                                fieldDataKey="value"
+                                                                                fieldLabel={["label"]}
+                                                                                width={200} //��˹��������ҧ�ͧ��ͧ input
+                                                                                ddlMinWidth={100} //��˹��������ҧ�ͧ���ͧ dropdown
+                                                                                valueData={valueText} //��� value ������͡
+                                                                                defaultValue={
+                                                                                    x.PriorityDoc
+                                                                                        ? x.PriorityDoc
+                                                                                        : props.priolity
+                                                                                            ? 2
+                                                                                            : defaultpriority
+                                                                                }
+                                                                                // returnDefaultValue={true}
+                                                                                onChange={(value, dataObject) =>
+                                                                                    Onchangepriolity(
+                                                                                        value,
+                                                                                        dataObject,
+                                                                                        idx
+                                                                                    )
+                                                                                }
+                                                                                ddlType={"search"}
+                                                                            ></AmDropdown>
+                                                                        </div>
+                                                                    </FormInline>
+                                                                    {props.advanceCondition === true ? (
+                                                                        <FormInline
+                                                                            style={{
+                                                                                marginLeft: "15px",
+                                                                                paddingTop: "10px"
+                                                                            }}
+                                                                        >
+                                                                            <LabelH>
+                                                                                {t("Advance Condition")} :{" "}
+                                                                            </LabelH>
+                                                                            <FormInline>
+                                                                                <div>
+                                                                                    {" "}
+                                                                                    {props.fullPallets === true ? (
+                                                                                        <AmCheckBox
+                                                                                            value="FullPallet"
+                                                                                            label="FullPallet"
+                                                                                            checked={true}
+                                                                                            onChange={(e, v) =>
+                                                                                                onChangCheckboxConsFull(
+                                                                                                    e,
+                                                                                                    v,
+                                                                                                    idx
+                                                                                                )
+                                                                                            }
+                                                                                        >
+                                                                                            >
                                             </AmCheckBox>
-                                          ) : (
-                                            <div>
-                                              <FormInline>
-                                                <AmCheckBox
-                                                  value="ShelfLifeDate"
-                                                  label="ShelfLifeDate"
-                                                  checked={
-                                                    x.ShelfLife ? true : null
-                                                  }
-                                                  onChange={(e, v) =>
-                                                    onChangCheckboxCon(e, idx)
-                                                  }
-                                                >
-                                                  >
-                                                </AmCheckBox>
-                                                <AmCheckBox
-                                                  value="IncubateDate"
-                                                  label="IncubateDate"
-                                                  checked={
-                                                    x.Incubate ? true : null
-                                                  }
-                                                  onChange={(e, v) =>
-                                                    onChangCheckboxCon(e, idx)
-                                                  }
-                                                >
-                                                  >
-                                                </AmCheckBox>
-                                                <AmCheckBox
-                                                  value="ExpireDate"
-                                                  label="ExpireDate"
-                                                  checked={
-                                                    x.ExpiredDate ? true : null
-                                                  }
-                                                  onChange={(e, v) =>
-                                                    onChangCheckboxCon(e, idx)
-                                                  }
-                                                >
-                                                  >
-                                                </AmCheckBox>
-                                                <AmCheckBox
-                                                  value="FullPallet"
-                                                  label="FullPallet"
-                                                  checked={
-                                                    x.FullPallet ? true : null
-                                                  }
-                                                  onChange={(e, v) =>
-                                                    onChangCheckboxCon(e, idx)
-                                                  }
-                                                >
-                                                  >
-                                                </AmCheckBox>
-                                              </FormInline>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </FormInline>
-                                    </FormInline>
-                                  ) : null}
-                                  {props.status === true ? (
-                                    <FormInline style={{ marginLeft: "15px" }}>
-                                      <LabelH>{t("Status")} : </LabelH>
-                                      <FormInline>
-                                        {props.receive === true ? (
-                                          <AmCheckBox
-                                            value="Receive"
-                                            label="Receive"
-                                            checked={true}
-                                            onChange={(e, v) =>
-                                              onChangCheckboxConsRecieve(
-                                                e,
-                                                v,
-                                                idx
-                                              )
-                                            }
-                                          >
-                                            >
+                                                                                    ) :
+
+                                                                                        (
+                                                                                            <div>
+                                                                                                <FormInline>
+                                                                                                    {props.ShelfLifeDate === true  ? <AmCheckBox
+                                                                                                        value="ShelfLifeDate"
+                                                                                                        label="ShelfLifeDate"
+                                                                                                        checked={
+                                                                                                            x.ShelfLife ? true : props.disibleShelfLifeDate ? props.disibleShelfLifeDate :  null
+                                                                                                        }
+                                                                                                   defaultChecked={props.defaultShelfLifeDate ? props.defaultShelfLifeDate : null}
+                                                                                                   defaultValue={props.defaultShelfLifeDate ? props.defaultShelfLifeDate : null}
+                                                                                                        onChange={(e, v) =>
+                                                                                                            onChangCheckboxCon(e, idx)
+                                                                                                        }
+                                                                                                    >
+                                                                                                        >
+                                                                                       </AmCheckBox>:null}
+                                                                                                    {props.IncubateDate === true ? <AmCheckBox
+                                                                                                        value="IncubateDate"
+                                                                                                        label="IncubateDate"
+                                                                                                        checked={
+                                                                                                            x.Incubate ? true : props.disibleIncubateDate ? props.disibleIncubateDate : null
+                                                                                                        }
+                                                                                                   defaultChecked={props.defaultIncubateDate ? props.defaultIncubateDate : null}
+                                                                                                   defaultValue={props.defaultIncubateDate ? props.defaultIncubateDate : null}
+                                                                                                        onChange={(e, v) =>
+                                                                                                            onChangCheckboxCon(e, idx)
+                                                                                                        }
+                                                                                                    >
+                                                                                                        >
+                                                </AmCheckBox> : null}
+                                                                                                    {props.ExpireDate === true ? <AmCheckBox
+                                                                                                        value="ExpireDate"
+                                                                                                        label="ExpireDate"
+                                                                                                        checked={
+                                                                                                            x.ExpiredDate ? true : props.disibleExpireDate ? props.disibleExpireDate : null
+                                                                                                        }
+                                                                                                        defaultChecked={props.defaultExpireDate ? props.defaultExpireDate : null}
+                                                                                                        onChange={(e, v) =>
+                                                                                                            onChangCheckboxCon(e, idx)
+                                                                                                        }
+                                                                                                    >
+                                                                                                        >
+                                                </AmCheckBox>: null}
+                                                                                                    {props.FullPallet === true ?<AmCheckBox
+                                                                                                        value="FullPallet"
+                                                                                                        label="FullPallet"
+                                                                                                        checked={
+                                                                                                            x.FullPallet ? true : props.disibleFullPallet ? props.disibleFullPallet: null
+                                                                                                        }
+                                                                                                        defaultChecked={props.defaultFullPallet ? props.defaultFullPallet : null}
+                                                                                                        onChange={(e, v) =>
+                                                                                                            onChangCheckboxCon(e, idx)
+                                                                                                        }
+                                                                                                    >
+                                                                                                        >
+                                                </AmCheckBox>:null}
+                                                                                                </FormInline>
+                                                                                            </div>
+                                                                                        )}
+                                                                                </div>
+                                                                            </FormInline>
+                                                                        </FormInline>
+                                                                    ) : null}
+                                                                    {props.status === true ? (
+                                                                        <FormInline style={{ marginLeft: "15px" }}>
+                                                                            <LabelH>{t("Status")} : </LabelH>
+                                                                            <FormInline>
+                                                                                {props.receives === true ? (
+                                                                                    <AmCheckBox
+                                                                                        value="Receive"
+                                                                                        label="Receive"
+                                                                                        checked={true}
+                                                                                        onChange={(e, v) =>
+                                                                                            onChangCheckboxConsRecieve(
+                                                                                                e,
+                                                                                                v,
+                                                                                                idx
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        >
                                           </AmCheckBox>
-                                        ) : (
-                                          <div>
-                                            <FormInline>
-                                              <AmCheckBox
-                                                value="Receive"
-                                                label="Receive"
-                                                checked={x.Recive ? true : null}
-                                                onChange={(e, v) =>
-                                                  onChangCheckboxStatus(e, idx)
-                                                }
-                                              >
-                                                >
+                                                                                ) : (
+                                                                                        <div>
+                                                                                            <FormInline>
+                                                                                                <AmCheckBox
+                                                                                                    value="Receive"
+                                                                                               label="Receive"
+                                                                                               checked={x.Recive ? true : RecieveFromDoc  ? RecieveFromDoc  :  null}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
+                                                                                                >
+                                                                                                    >
                                               </AmCheckBox>
-                                              <AmCheckBox
-                                                value="Block"
-                                                label="Block"
-                                                checked={x.Block ? true : null}
-                                                onChange={(e, v) =>
-                                                  onChangCheckboxStatus(e, idx)
-                                                }
-                                              >
-                                                >
+                                                                                                <AmCheckBox
+                                                                                                    value="Block"
+                                                                                               label="Block"
+                                                                                               checked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
+                                                                                                >
+                                                                                                    >
                                               </AmCheckBox>
-                                              <AmCheckBox
-                                                value="QC"
-                                                label="QC"
-                                                checked={x.QC ? true : null}
-                                                onChange={(e, v) =>
-                                                  onChangCheckboxStatus(e, idx)
-                                                }
-                                              >
-                                                >
+                                                                                                <AmCheckBox
+                                                                                                    value="QC"
+                                                                                               label="QC"
+                                                                                               checked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
+                                                                                                >
+                                                                                                    >
                                               </AmCheckBox>
                                             </FormInline>
                                           </div>
@@ -2499,50 +2583,50 @@ const AmProcessQueue = props => {
                                     />
                                   </AmButton>
 
-                                  <div style={{ clear: "both" }}></div>
-                                  <Collapse
-                                    in={toggleQueue[idx + "T" + idxItem]}
-                                  >
-                                    <div>
-                                      {toggleQueue[idx + "T" + idxItem] ===
-                                      true ? (
-                                        <Paper
-                                          elevation={4}
-                                          className={classes.paper}
-                                        >
-                                          <FormInline
-                                            style={{
-                                              marginTop: "10px",
-                                              marginLeft: "15px"
-                                            }}
-                                          >
-                                            <div style={{ width: "800px" }}>
-                                              {" "}
-                                              <LabelH>
-                                                {y.Code} : {y.SKUMaster_Name}
-                                              </LabelH>
-                                              {y.palletcode ? (
-                                                <LabelH>
-                                                  {" "}
-                                                  / {y.palletcode}
-                                                </LabelH>
-                                              ) : null}
-                                              {y.locationcode ? (
-                                                <LabelH>
-                                                  {" "}
-                                                  / {y.locationcode}
-                                                </LabelH>
-                                              ) : null}
-                                            </div>
-                                            <div>
-                                              <LabelH>{t("Qty")} :</LabelH>{" "}
-                                              <label>
-                                                {y.Quantity} {y.UnitType_Name}(
-                                                {y.BaseqtyMax}{" "}
-                                                {y.BaseUnitType_Code} ){" "}
-                                              </label>
-                                            </div>
-                                          </FormInline>
+                                                                    <div style={{ clear: "both" }}></div>
+                                                                    <Collapse
+                                                                        in={toggleQueue[idx + "T" + idxItem]}
+                                                                    >
+                                                                        <div>
+                                                                            {toggleQueue[idx + "T" + idxItem] ===
+                                                                                true ? (
+                                                                                    <Paper
+                                                                                        elevation={4}
+                                                                                        className={classes.paper}
+                                                                                    >
+                                                                                        <FormInline
+                                                                                            style={{
+                                                                                                marginTop: "10px",
+                                                                                                marginLeft: "15px"
+                                                                                            }}
+                                                                                        >
+                                                                                            <div style={{ width: "800px" }}>
+                                                                                                {" "}
+                                                                                                <LabelH>
+                                                                                                    {y.Code} : {y.SKUMaster_Name}
+                                                                                                </LabelH>
+                                                                                                {y.palletcode ? (
+                                                                                                    <LabelH>
+                                                                                                        {" "}
+                                                                                                        / {y.palletcode}
+                                                                                                    </LabelH>
+                                                                                                ) : null}
+                                                                                                {y.locationcode ? (
+                                                                                                    <LabelH>
+                                                                                                        {" "}
+                                                                                                        / {y.locationcode}
+                                                                                                    </LabelH>
+                                                                                                ) : null}
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <LabelH>{t("Qty")} :</LabelH>{" "}
+                                                                                                <label>
+                                                                                                    {y.Quantity} {y.UnitType_Name}(
+                                                                                                      {y.BaseqtyMax}{" "}
+                                                                                                    {y.BaseUnitType_Code} ){" "}
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </FormInline>
 
                                           <FormInline
                                             style={{
