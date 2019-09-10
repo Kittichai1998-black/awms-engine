@@ -175,10 +175,9 @@ const WorkQueueAAIGroup = props => {
         defaultIncubateDate={true}
         disibleIncubateDate={false}
         //Status from Doc  สถานะที่เอามาจาก Options
-              OptionGIdoc={true}
-
-              //QryDoc
-              ConditionsQryDoc="{ 'f': 'Status', c: '=', 'v': 1 }"
+        OptionGIdoc={true}
+        //QryDoc
+        ConditionsQryDoc="{ 'f': 'Ref1', c: 'in', 'v': 'R01,R02,R04,R05' }"
       ></AmProcessQueue>
     </div>
   );
