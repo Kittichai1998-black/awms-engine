@@ -27,32 +27,34 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     if (docs != null)
                     {
                         //update StorageObjects
-
-                        var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
-                        if (distos == null)
-                            throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item Not Found");
-
-                        var WorkQueues = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
-                        WorkQueues.ForEach(wq =>
+                        if (docs.EventStatus == DocumentEventStatus.CLOSING)
                         {
-                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, this.BuVO);
+                            var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO);
+                            if (distos == null)
+                                throw new AMWException(this.Logger, AMWExceptionCode.B0001, "Document Item Not Found");
 
-                            if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                            var WorkQueues = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
+                            WorkQueues.ForEach(wq =>
                             {
-                                UpdateStorageObjectReceived(queue, this.BuVO);
-                            }
-                            else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
-                            {
-                                var updDistos = distos.Where(grp => grp.WorkQueue_ID == wq).ToList();
-                                UpdateStorageObjectIssued(updDistos, queue, this.BuVO);
-                            }
-                        });
+                                var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, this.BuVO);
 
-                        //update Closed Document
-                        var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
-                        if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
-                        {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                                if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                                {
+                                    UpdateStorageObjectReceived(queue, this.BuVO);
+                                }
+                                else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                                {
+                                    var updDistos = distos.Where(grp => grp.WorkQueue_ID == wq).ToList();
+                                    UpdateStorageObjectIssued(updDistos, queue, this.BuVO);
+                                }
+                            });
+
+                            //update Closed Document
+                            var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, this.BuVO);
+                            if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
+                            {
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, this.BuVO);
+                            }
                         }
                     } 
                 });
