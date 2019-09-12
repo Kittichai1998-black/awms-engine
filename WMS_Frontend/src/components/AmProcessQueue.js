@@ -34,7 +34,9 @@ import { getPriority } from "os";
 import { width } from "@material-ui/system";
 import { apicall } from "../components/function/CoreFunction2";
 import { useTranslation } from "react-i18next";
+import queryString from 'query-string'
 import Axios from "axios";
+
 const Axios1 = new apicall();
 const styles = theme => ({
   root: {
@@ -1314,7 +1316,8 @@ const AmProcessQueue = props => {
   const OnclickConfirmQueue = () => {
     dataConfirmQ["processQueues"] = [];
     datasDoc.forEach((a, idx) => {
-      a.DataDocumentItem.forEach(y => {
+        a.DataDocumentItem.forEach(y => {
+            console.log(y)
         var conditions = [];
         var orderBys = [];
         var eventStatuses = [];
@@ -1400,7 +1403,8 @@ const AmProcessQueue = props => {
 
     //dataConfirmQ["apiKey"] = "WCS_KEY"
     dataConfirmQ["desASRSLocationCode"] = null;
-    dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false;
+      dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false;
+      console.log(dataConfirmQ)
     if (dataConfirmQ !== undefined) {
       Axios1.post(window.apipath + "/v2/process_wq", dataConfirmQ).then(res => {
         if (res.data._result.status === 1) {
@@ -1597,8 +1601,7 @@ const AmProcessQueue = props => {
   const OnConfirmprocess = () => {
     //confirmProcess = {}
     //confirmProcess["apiKey"] = "WCS_KEY"
-    confirmProcess["desASRSWarehouseCode"] =
-      dataConfirmQ["desASRSWarehouseCode"];
+    confirmProcess["desASRSWarehouseCode"] =dataConfirmQ["desASRSWarehouseCode"];
     confirmProcess["desASRSLocationCode"] = null;
     confirmProcess["desASRSAreaCode"] = dataConfirmQ["desASRSAreaCode"];
     confirmProcess["processResults"] = processResultsCon;
@@ -1939,7 +1942,7 @@ const AmProcessQueue = props => {
                       DataDocumentItem[idx]["BaseqtyMax"] = qtyDocItem[idx];
                     }
 
-                    if (x.Options !== null && x.Options !== undefined) {
+                   if (x.Options !== null && x.Options !== undefined  && window.project !== "AAI") {
                       if (
                         x.Options.split("=")[1] !== undefined &&
                         x.Options.split("=")[2] !== undefined &&
@@ -2051,32 +2054,32 @@ const AmProcessQueue = props => {
                                         var RecieveFromDoc = false
                                         var QcFromDoc = false
                                         var BlockFromDoc = false
+                                
+
+
+                                      if (props.OptionGIdoc === true) {
+                                          if (x.Options !== undefined || x.Options !== null) {
+                                              var qryStr2 = queryString.parse(x.Options)
+                                             var  palletcode = qryStr2["basecode"] 
+                                              var RecieveDoc = qryStr2["bestq_ur"]
+                                                    if (RecieveDoc === "Y") {
+                                                        RecieveFromDoc = true
+                                                        onChangCheckboxConsRecieve(null, null, idx);
+                                                    }
+                                              var QcDoc = qryStr2["bestq_qi"]
+                                                    if (QcDoc === "Y") {
+                                                        QcFromDoc = true
+                                                        onChangCheckboxConsQC(null, null, idx);
+                                                    }
+
+                                              var BlockDoc = qryStr2["bestq_blk"] 
+                                                    if (BlockDoc === "Y") {
+                                                        BlockFromDoc = true
+                                                        onChangCheckboxConsBlock(null, null, idx);
+                                                    }
+                                          }
+                                          //locationcode = qryStr2["bestq_blk"] 
                                          
-                                        if (props.OptionGIdoc === true) {
-                                            console.log(x.Options)
-                                            if (
-                                                x.Options.split("=")[6] !== undefined &&
-                                                x.Options.split("=")[7] !== undefined &&
-                                                x.Options.split("=")[8] !== undefined
-                                            )
-                                            var RecieveDoc = x.Options.split("=")[6].split("&")[0];
-                                            console.log(RecieveDoc)
-                                            if (RecieveDoc === "Y") {
-                                                RecieveFromDoc = true
-                                                onChangCheckboxConsRecieve(null, null, idx);
-                                            }
-
-                                            var QcDoc = x.Options.split("=")[7].split("&")[0];
-                                            if (QcDoc === "Y") {
-                                                QcFromDoc = true
-                                                onChangCheckboxConsQC(null, null, idx);
-                                            }
-
-                                            var BlockDoc = x.Options.split("=")[8].split("&")[0];
-                                            if (BlockDoc === "Y") {
-                                                BlockFromDoc = true
-                                                onChangCheckboxConsBlock(null, null, idx);
-                                            }
                                         }
 
                                    return (

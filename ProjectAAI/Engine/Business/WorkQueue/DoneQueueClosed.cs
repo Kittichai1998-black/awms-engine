@@ -25,16 +25,19 @@ namespace ProjectAAI.Engine.Business.WorkQueue
     {
         public List<long> ExecuteEngine(AMWLogger logger, VOCriteria buVO, List<long> reqVO)
         {
+             
             reqVO.ForEach(x =>
                 {
                     var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(x, buVO);
                     if (docs != null)
                     {
                         //update StorageObjects
-                        
+                        if (docs.EventStatus == DocumentEventStatus.CLOSING)
+                        {
                             var distos = AWMSEngine.ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, buVO);
                             if (distos == null)
                                 throw new AMWException(logger, AMWExceptionCode.B0001, "Document Item Not Found");
+                        
 
                             var WorkQueues = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
                             WorkQueues.ForEach(wq =>
@@ -51,118 +54,119 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     UpdateStorageObjectIssued(updDistos, queue, buVO, logger);
                                 }
                             });
-                      
-                        //update Closed Document
-                        var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, buVO);
-                        if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
-                        {
-                            AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
-                        }
 
-                        //call to SAP
-                        WorkQueues.ForEach(wq =>
-                        {
-                            var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
-                            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
-
-                            if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
+                            //update Closed Document
+                            var listItem = AWMSEngine.ADO.DocumentADO.GetInstant().ListItem(x, buVO);
+                            if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.CLOSING))
                             {
-                                var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, docs.ID.Value, buVO);
-                                var TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
-                                if (TANUMs != null)
-                                {
-                                    UpdateBaseSTO(bsto, OptionVOConst.OPT_TANUM, TANUMs, buVO);
-                                }
-                                else
-                                {
-                                    throw new AMWException(logger, AMWExceptionCode.B0001, "Transfer Order Not Response");
-                                }
+                                AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
                             }
-                            else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+
+                            //call to SAP
+                            WorkQueues.ForEach(wq =>
                             {
-                                
-                                //call sap 
-                                string TANUMs = null;
-                                if (docs.Ref1 == "R01" || docs.Ref1 == "R02" || docs.Ref1 == "R06")
+                                var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
+                                var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
+
+                                if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                                 {
-                                    ZSWMRF004_IN_AWS reqData = new ZSWMRF004_IN_AWS()
+                                    var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, docs.ID.Value, buVO);
+                                    var TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
+                                    if (TANUMs != null)
                                     {
-                                        ZMODE = docs.Ref1,
-                                        LGNUM = "W01",
-                                        LENUM = queue.StorageObject_Code,
-                                        GI_DOC = docs.Code 
-                                    };
-
-                                    var resSAP = SendDataToSAP_ZWMRF004(reqData, buVO);
-                                    TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
-
-                                }
-
-                                else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
-                                {
-                                    ZSWMRF005_IN_AWS reqData = new ZSWMRF005_IN_AWS()
-                                    {
-                                        ZMODE = docs.Ref1,
-                                        LGNUM = "W01",
-                                        LENUM = queue.StorageObject_Code,
-                                        GI_DOC = docs.Code 
-                                    };
-                                    var resSAP = SendDataToSAP_ZWMRF005(reqData, buVO);
-                                    TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
-
-                                }
-                                else if (docs.Ref1 == "R05")
-                                {
-                                    ZSWMRF006_IN_AWS reqData = new ZSWMRF006_IN_AWS()
-                                    {
-                                        ZMODE = docs.Ref1,
-                                        LGNUM = "W01",
-                                        LENUM = queue.StorageObject_Code,
-                                        GI_DOC = docs.Code 
-                                    };
-                                    var resSAP = SendDataToSAP_ZWMRF006(reqData, buVO);
-                                    TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
-                                }
-                                if (TANUMs != null)
-                                {
-                                    UpdateBaseSTO(bsto, OptionVOConst.OPT_BTANR, TANUMs, buVO);
-                                }
-                                else
-                                {
-                                    throw new AMWException(logger, AMWExceptionCode.B0001, "Transfer Order Not Response");
-                                }
-
-                                //receive sou pallet
-                                var distoList = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                                    new SQLConditionCriteria[] { new SQLConditionCriteria("WorkQueue_ID", wq.Value, SQLOperatorType.EQUALS) }, buVO);
-                                bool checkSTOReceived = false;
-                                distoList.ForEach(di => {
-                                    var sou_psto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(di.Sou_StorageObject_ID, buVO);
-                                    if (sou_psto.EventStatus == StorageObjectEventStatus.RECEIVED)
-                                    {
-                                        checkSTOReceived = true;
-                                    }
-                                });
-                                if (checkSTOReceived == true)
-                                {
-                                    var bstos = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
-
-                                    var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, null, buVO);
-                                    var TANUM_Received = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
-                                    if (TANUM_Received != null)
-                                    {
-                                        //var opt_done = ObjectUtil.QryStrSetValue(bstos.Options, OptionVOConst.OPT_TANUM, TANUM_Received);
-                                        UpdateBaseSTO(bstos, OptionVOConst.OPT_TANUM, TANUM_Received, buVO);
+                                        UpdateBaseSTO(bsto, OptionVOConst.OPT_TANUM, TANUMs, buVO);
                                     }
                                     else
                                     {
                                         throw new AMWException(logger, AMWExceptionCode.B0001, "Transfer Order Not Response");
                                     }
                                 }
+                                else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                                {
 
-                            }
-                        });
+                                //call sap 
+                                string TANUMs = null;
+                                    if (docs.Ref1 == "R01" || docs.Ref1 == "R02" || docs.Ref1 == "R06")
+                                    {
+                                        ZSWMRF004_IN_AWS reqData = new ZSWMRF004_IN_AWS()
+                                        {
+                                            ZMODE = docs.Ref1,
+                                            LGNUM = "W01",
+                                            LENUM = queue.StorageObject_Code,
+                                            GI_DOC = docs.Code
+                                        };
 
+                                        var resSAP = SendDataToSAP_ZWMRF004(reqData, buVO);
+                                        TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
+
+                                    }
+
+                                    else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
+                                    {
+                                        ZSWMRF005_IN_AWS reqData = new ZSWMRF005_IN_AWS()
+                                        {
+                                            ZMODE = docs.Ref1,
+                                            LGNUM = "W01",
+                                            LENUM = queue.StorageObject_Code,
+                                            GI_DOC = docs.Code
+                                        };
+                                        var resSAP = SendDataToSAP_ZWMRF005(reqData, buVO);
+                                        TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
+
+                                    }
+                                    else if (docs.Ref1 == "R05")
+                                    {
+                                        ZSWMRF006_IN_AWS reqData = new ZSWMRF006_IN_AWS()
+                                        {
+                                            ZMODE = docs.Ref1,
+                                            LGNUM = "W01",
+                                            LENUM = queue.StorageObject_Code,
+                                            GI_DOC = docs.Code
+                                        };
+                                        var resSAP = SendDataToSAP_ZWMRF006(reqData, buVO);
+                                        TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
+                                    }
+                                    if (TANUMs != null)
+                                    {
+                                        UpdateBaseSTO(bsto, OptionVOConst.OPT_BTANR, TANUMs, buVO);
+                                    }
+                                    else
+                                    {
+                                        throw new AMWException(logger, AMWExceptionCode.B0001, "Transfer Order Not Response");
+                                    }
+
+                                //receive sou pallet
+                                var distoList = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                                        new SQLConditionCriteria[] { new SQLConditionCriteria("WorkQueue_ID", wq.Value, SQLOperatorType.EQUALS) }, buVO);
+                                    bool checkSTOReceived = false;
+                                    distoList.ForEach(di =>
+                                    {
+                                        var sou_psto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(di.Sou_StorageObject_ID, buVO);
+                                        if (sou_psto.EventStatus == StorageObjectEventStatus.RECEIVED)
+                                        {
+                                            checkSTOReceived = true;
+                                        }
+                                    });
+                                    if (checkSTOReceived == true)
+                                    {
+                                        var bstos = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
+
+                                        var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, null, buVO);
+                                        var TANUM_Received = resSAP.datas.Select(data => data.TANUM).Distinct().First().ToString();
+                                        if (TANUM_Received != null)
+                                        {
+                                        //var opt_done = ObjectUtil.QryStrSetValue(bstos.Options, OptionVOConst.OPT_TANUM, TANUM_Received);
+                                        UpdateBaseSTO(bstos, OptionVOConst.OPT_TANUM, TANUM_Received, buVO);
+                                        }
+                                        else
+                                        {
+                                            throw new AMWException(logger, AMWExceptionCode.B0001, "Transfer Order Not Response");
+                                        }
+                                    }
+
+                                }
+                            });
+                        }
                     }
                 });
 
