@@ -356,7 +356,7 @@ const AmCreateDocumentR2 = props => {
           : headerData.movementTypeID,
       ref1: 'R03',
       ref2: groupMVT,
-      refID: sapResponse[0].RSNUM,
+      refID: sapResponse.length>0?sapResponse[0].RSNUM:null,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems

@@ -152,6 +152,9 @@ const AmCreateDocumentR2 = props => {
       })
       .filter((value, index, self) => self.indexOf(value) === index)
       .join(',');
+      console.log(sapResponse);
+      
+      
     let document = {
       actionTime:
         headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -234,7 +237,7 @@ const AmCreateDocumentR2 = props => {
           : headerData.movementTypeID,
       ref1: 'R02',
       ref2: groupMVT,
-      refID: sapResponse[0].RSNUM,
+      refID: sapResponse.length>0?sapResponse[0].RSNUM:null,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -246,6 +249,10 @@ const AmCreateDocumentR2 = props => {
         item.BESTQ_UR +
         '&bestq_qi=' +
         item.BESTQ_QI +
+        '&rsnum=' +
+        item.RSNUM +
+        '&lgtyp=' +
+        item.LGTYP +
         '&bestq_blk=' +
         item.BESTQ_BLK +
         '&lgpla=' +

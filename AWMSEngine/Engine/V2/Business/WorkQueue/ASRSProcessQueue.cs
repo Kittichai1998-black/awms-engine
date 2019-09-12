@@ -73,149 +73,156 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            this.ValidateReqVO(reqVO);
-
-            TRes res = new TRes()
+            var res = this.ExectProject<TReq, TRes>(FeatureCode.EXEWM_ASRSProcessQueue_CheckSAP, reqVO);
+            if (res == null)
             {
-                processResults = new List<TRes.ProcessQueueResult>(),
-                desASRSWarehouseCode = reqVO.desASRSWarehouseCode,
-                desASRSAreaCode = reqVO.desASRSAreaCode,
-                desASRSLocationCode = reqVO.desASRSLocationCode
-            };
-            var desASRSWm = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
-            List<amt_Document> docs = ADO.DocumentADO.GetInstant().ListAndItem(
-                reqVO.processQueues.GroupBy(x => x.docID).Select(x=>x.Key).ToList()
-                , this.BuVO);
-            List<SPOutSTOProcessQueueCriteria> tmpStoProcs = new List<SPOutSTOProcessQueueCriteria>();
-            List<SPOutSTOProcessQueueCriteria> resStoProcs = new List<SPOutSTOProcessQueueCriteria>();
-            var processQueues = reqVO.processQueues.OrderByDescending(x => x.priority).ToList();
+                this.ValidateReqVO(reqVO);
 
-            foreach (var proc in processQueues)
-            {
-                TRes.ProcessQueueResult processRes = res.processResults.FirstOrDefault(x => x.docID == proc.docID);
-                var doc = docs.First(x => x.ID == proc.docID);
-                var souWM = this.StaticValue.Warehouses.First(x => x.ID == doc.Sou_Warehouse_ID);
-                if (processRes == null)
+                TRes response = new TRes()
                 {
-                    processRes = new TRes.ProcessQueueResult()
-                    {
-                        docID = proc.docID,
-                        docCode = doc.Code,
-                        processResultItems = new List<TRes.ProcessQueueResult.ProcessQueueResultItem>()
-                    };
-                    res.processResults.Add(processRes);
-                }
-
-                var processResItem = new TRes.ProcessQueueResult.ProcessQueueResultItem()
-                {
-                    docItemID = proc.docItemID,
-                    docItemCode = doc.DocumentItems.First(x => x.ID == proc.docItemID).Code,
-                    baseQty = proc.baseQty,
-                    priority = proc.priority,
-                    percentRandom = proc.percentRandom,
-                    pickStos = new List<SPOutSTOProcessQueueCriteria>(),
-                    lockStos = new List<SPOutSTOProcessQueueCriteria>()
+                    processResults = new List<TRes.ProcessQueueResult>(),
+                    desASRSWarehouseCode = reqVO.desASRSWarehouseCode,
+                    desASRSAreaCode = reqVO.desASRSAreaCode,
+                    desASRSLocationCode = reqVO.desASRSLocationCode
                 };
-                processRes.processResultItems.Add(processResItem);
+                var desASRSWm = this.StaticValue.Warehouses.First(x => x.Code == reqVO.desASRSWarehouseCode);
+                List<amt_Document> docs = ADO.DocumentADO.GetInstant().ListAndItem(
+                    reqVO.processQueues.GroupBy(x => x.docID).Select(x => x.Key).ToList()
+                    , this.BuVO);
+                List<SPOutSTOProcessQueueCriteria> tmpStoProcs = new List<SPOutSTOProcessQueueCriteria>();
+                List<SPOutSTOProcessQueueCriteria> resStoProcs = new List<SPOutSTOProcessQueueCriteria>();
+                var processQueues = reqVO.processQueues.OrderByDescending(x => x.priority).ToList();
 
-                //res.processResults.Add(processRes);
-                foreach (var condi in proc.conditions)
+                foreach (var proc in processQueues)
                 {
-
-                    List<SPOutSTOProcessQueueCriteria> pickStos = processResItem.pickStos;
-                    List<SPOutSTOProcessQueueCriteria> lockStos = processResItem.lockStos;
-                    var _condi = condi.Clone();
-                    if (_condi.baseQty.HasValue)//ตรวจพาเลทที่เคย query มาแล้วจากใน TEMP
+                    TRes.ProcessQueueResult processRes = response.processResults.FirstOrDefault(x => x.docID == proc.docID);
+                    var doc = docs.First(x => x.ID == proc.docID);
+                    var souWM = this.StaticValue.Warehouses.First(x => x.ID == doc.Sou_Warehouse_ID);
+                    if (processRes == null)
                     {
-                        var _pickStos = tmpStoProcs.Where(x =>
-                            x.isWCSReady &&
-                            x.pickBaseQty < x.pstoBaseQty &&
-                            (!doc.Sou_Warehouse_ID.HasValue || x.warehouseID == doc.Sou_Warehouse_ID) &&
-                            (string.IsNullOrWhiteSpace(proc.locationCode) || x.locationCode == proc.locationCode) &&
-                            (string.IsNullOrWhiteSpace(proc.baseCode) || x.bstoCode == proc.baseCode) &&
-                            (string.IsNullOrWhiteSpace(proc.skuCode) || x.pstoCode == proc.skuCode) &&
-                            (string.IsNullOrWhiteSpace(_condi.batch) || x.pstoCode == proc.skuCode) &&
-                            (string.IsNullOrWhiteSpace(_condi.lot) || x.pstoCode == proc.skuCode) &&
-                            (string.IsNullOrWhiteSpace(_condi.orderNo) || x.pstoCode == proc.skuCode) &&
-                            (string.IsNullOrWhiteSpace(_condi.options) || x.pstoOptions.QryStrContainsKeyValue(_condi.options)) &&
-                            (!proc.useExpireDate || (x.pstoExpiryDate.HasValue && x.pstoExpiryDate.Value > DateTime.Today)) &&
-                            (!proc.useShelfLifeDate || (x.pstoOptions.QryStrContainsKey("shelflifedate") && x.pstoOptions.QryStrGetValue("shelflifedate").GetDate().Value >= DateTime.Today)) &&
-                            (!proc.useExpireDate || (x.pstoOptions.QryStrContainsKey("incubatedate") && x.pstoOptions.QryStrGetValue("incubatedate").GetDate().Value < DateTime.Today))
-                        ).ToList().Clone();
-
-                        if (_pickStos.Count > 0)
+                        processRes = new TRes.ProcessQueueResult()
                         {
-                            _pickStos.ForEach(x =>
-                            {
-                                if (_condi.baseQty.Value > 0)
-                                {
-                                    var a = (x.pstoBaseQty - x.pickBaseQty);//เศษที่เหลือจากการหยิบ
-                                    var b = (x.pstoQty - x.pickQty);//เศษที่เหลือจากการหยิบ
-                                    x.pickBaseQty = (a <= _condi.baseQty.Value ? a : _condi.baseQty.Value);
-
-                                    var _condiQty = this.StaticValue.ConvertToNewUnitBySKU(x.SKUMasterID, x.pickBaseQty, x.pstoBaseUnitID, x.pstoUnitID);
-                                    x.pickQty = (b <= _condiQty.qty ? b : _condiQty.qty);
-                                    _condi.baseQty -= x.pickBaseQty;
-
-                                    var _tmp = tmpStoProcs.First(y => y.pstoID == x.pstoID);
-                                    _tmp.pickBaseQty += x.pickBaseQty;//เพิ่มรายการที่หยิบเข้า TEMP
-                                    _tmp.pickQty += x.pickQty;//เพิ่มรายการที่หยิบเข้า TEMP
-                                }
-                                else
-                                    x.pickBaseQty = 0;
-                            });
-                            _pickStos.RemoveAll(x => x.pickBaseQty == 0);//ลบสินค้าที่ไม่ได้หยิบ
-                            pickStos.AddRange(_pickStos);//เพิ่มลงรายการที่จะหยิบ
-                        }
-                    }
-
-
-                    if (!_condi.baseQty.HasValue || (_condi.baseQty.HasValue && _condi.baseQty.Value > 0))//query ใหม่จาก DB
-                    {
-                        SPInSTOProcessQueueCriteria stoProcCri = new SPInSTOProcessQueueCriteria()
-                        {
-                            locationCode = proc.locationCode,
-                            baseCode = proc.baseCode,
-                            skuCode = proc.skuCode,
-                            eventStatuses = proc.eventStatuses,
-                            condition = _condi,
-                            orderBys = proc.orderBys,
-                            useExpireDate = proc.useExpireDate,
-                            useFullPick = proc.useFullPick,
-                            useIncubateDate = proc.useIncubateDate,
-                            useShelfLifeDate = proc.useShelfLifeDate,
-                            warehouseCode = souWM.Code,
-                            not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList()
+                            docID = proc.docID,
+                            docCode = doc.Code,
+                            processResultItems = new List<TRes.ProcessQueueResult.ProcessQueueResultItem>()
                         };
-                        var _pickStos = ADO.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
-                        this.ValidateWCS(_pickStos, reqVO);
-
-                        if (proc.baseQty.HasValue)
-                            tmpStoProcs.AddRange(_pickStos.Clone());
-                        else if (proc.percentRandom.HasValue)
-                        {
-                            var _tmpPickStos = _pickStos.RandomList(proc.percentRandom.Value);
-                            if(reqVO.lockNotExistsRandom)
-                                lockStos.AddRange(_pickStos.Where(x => !_tmpPickStos.Any(y => y.rstoID == x.rstoID)));
-                            _pickStos = _tmpPickStos;
-                            tmpStoProcs.AddRange(_pickStos.Clone());
-                        }
-                        pickStos.AddRange(_pickStos);
+                        response.processResults.Add(processRes);
                     }
 
-                }
-            }
+                    var processResItem = new TRes.ProcessQueueResult.ProcessQueueResultItem()
+                    {
+                        docItemID = proc.docItemID,
+                        docItemCode = doc.DocumentItems.First(x => x.ID == proc.docItemID).Code,
+                        baseQty = proc.baseQty,
+                        priority = proc.priority,
+                        percentRandom = proc.percentRandom,
+                        pickStos = new List<SPOutSTOProcessQueueCriteria>(),
+                        lockStos = new List<SPOutSTOProcessQueueCriteria>()
+                    };
+                    processRes.processResultItems.Add(processResItem);
 
-            this.SetResponseForUseFullPick(res, tmpStoProcs);
+                    //res.processResults.Add(processRes);
+                    foreach (var condi in proc.conditions)
+                    {
+
+                        List<SPOutSTOProcessQueueCriteria> pickStos = processResItem.pickStos;
+                        List<SPOutSTOProcessQueueCriteria> lockStos = processResItem.lockStos;
+                        var _condi = condi.Clone();
+                        if (_condi.baseQty.HasValue)//ตรวจพาเลทที่เคย query มาแล้วจากใน TEMP
+                        {
+                            var _pickStos = tmpStoProcs.Where(x =>
+                                x.isWCSReady &&
+                                x.pickBaseQty < x.pstoBaseQty &&
+                                (!doc.Sou_Warehouse_ID.HasValue || x.warehouseID == doc.Sou_Warehouse_ID) &&
+                                (string.IsNullOrWhiteSpace(proc.locationCode) || x.locationCode == proc.locationCode) &&
+                                (string.IsNullOrWhiteSpace(proc.baseCode) || x.bstoCode == proc.baseCode) &&
+                                (string.IsNullOrWhiteSpace(proc.skuCode) || x.pstoCode == proc.skuCode) &&
+                                (string.IsNullOrWhiteSpace(_condi.batch) || x.pstoCode == proc.skuCode) &&
+                                (string.IsNullOrWhiteSpace(_condi.lot) || x.pstoCode == proc.skuCode) &&
+                                (string.IsNullOrWhiteSpace(_condi.orderNo) || x.pstoCode == proc.skuCode) &&
+                                (string.IsNullOrWhiteSpace(_condi.options) || x.pstoOptions.QryStrContainsKeyValue(_condi.options)) &&
+                                (!proc.useExpireDate || (x.pstoExpiryDate.HasValue && x.pstoExpiryDate.Value > DateTime.Today)) &&
+                                (!proc.useShelfLifeDate || (x.pstoOptions.QryStrContainsKey("shelflifedate") && x.pstoOptions.QryStrGetValue("shelflifedate").GetDate().Value >= DateTime.Today)) &&
+                                (!proc.useExpireDate || (x.pstoOptions.QryStrContainsKey("incubatedate") && x.pstoOptions.QryStrGetValue("incubatedate").GetDate().Value < DateTime.Today))
+                            ).ToList().Clone();
+
+                            if (_pickStos.Count > 0)
+                            {
+                                _pickStos.ForEach(x =>
+                                {
+                                    if (_condi.baseQty.Value > 0)
+                                    {
+                                        var a = (x.pstoBaseQty - x.pickBaseQty);//เศษที่เหลือจากการหยิบ
+                                        var b = (x.pstoQty - x.pickQty);//เศษที่เหลือจากการหยิบ
+                                        x.pickBaseQty = (a <= _condi.baseQty.Value ? a : _condi.baseQty.Value);
+
+                                        var _condiQty = this.StaticValue.ConvertToNewUnitBySKU(x.SKUMasterID, x.pickBaseQty, x.pstoBaseUnitID, x.pstoUnitID);
+                                        x.pickQty = (b <= _condiQty.qty ? b : _condiQty.qty);
+                                        _condi.baseQty -= x.pickBaseQty;
+
+                                        var _tmp = tmpStoProcs.First(y => y.pstoID == x.pstoID);
+                                        _tmp.pickBaseQty += x.pickBaseQty;//เพิ่มรายการที่หยิบเข้า TEMP
+                                        _tmp.pickQty += x.pickQty;//เพิ่มรายการที่หยิบเข้า TEMP
+                                    }
+                                    else
+                                        x.pickBaseQty = 0;
+                                });
+                                _pickStos.RemoveAll(x => x.pickBaseQty == 0);//ลบสินค้าที่ไม่ได้หยิบ
+                                pickStos.AddRange(_pickStos);//เพิ่มลงรายการที่จะหยิบ
+                            }
+                        }
+
+
+                        if (!_condi.baseQty.HasValue || (_condi.baseQty.HasValue && _condi.baseQty.Value > 0))//query ใหม่จาก DB
+                        {
+                            SPInSTOProcessQueueCriteria stoProcCri = new SPInSTOProcessQueueCriteria()
+                            {
+                                locationCode = proc.locationCode,
+                                baseCode = proc.baseCode,
+                                skuCode = proc.skuCode,
+                                eventStatuses = proc.eventStatuses,
+                                condition = _condi,
+                                orderBys = proc.orderBys,
+                                useExpireDate = proc.useExpireDate,
+                                useFullPick = proc.useFullPick,
+                                useIncubateDate = proc.useIncubateDate,
+                                useShelfLifeDate = proc.useShelfLifeDate,
+                                warehouseCode = souWM.Code,
+                                not_pstoIDs = tmpStoProcs.Select(x => x.pstoID).ToList()
+                            };
+                            var _pickStos = ADO.StorageObjectADO.GetInstant().ListByProcessQueue(stoProcCri, this.BuVO);
+                            this.ValidateWCS(_pickStos, reqVO);
+
+                            if (proc.baseQty.HasValue)
+                                tmpStoProcs.AddRange(_pickStos.Clone());
+                            else if (proc.percentRandom.HasValue)
+                            {
+                                var _tmpPickStos = _pickStos.RandomList(proc.percentRandom.Value);
+                                if (reqVO.lockNotExistsRandom)
+                                    lockStos.AddRange(_pickStos.Where(x => !_tmpPickStos.Any(y => y.rstoID == x.rstoID)));
+                                _pickStos = _tmpPickStos;
+                                tmpStoProcs.AddRange(_pickStos.Clone());
+                            }
+                            pickStos.AddRange(_pickStos);
+                        }
+
+                    }
+                }
+
+                this.SetResponseForUseFullPick(response, tmpStoProcs);
+                res = response;
+            }
             return res;
+
+
         }
         private void SetResponseForUseFullPick(TRes res, List<SPOutSTOProcessQueueCriteria> tmpStoProcs)
         {
-            foreach(var proc in res.processResults)
+            foreach (var proc in res.processResults)
             {
                 foreach (var procItem in proc.processResultItems)
                 {
-                    foreach(var pickSto in procItem.pickStos)
+                    foreach (var pickSto in procItem.pickStos)
                     {
                         if (pickSto.useFullPick)
                         {
@@ -256,7 +263,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     }
                 }).ToList()
             };
-            if(req.queueOut.Count > 0)
+            if (req.queueOut.Count > 0)
             {
                 var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendReady(req, this.BuVO);
                 if (wcsRes._result.resultcheck == 0)
@@ -267,7 +274,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         }
         private void ValidateReqVO(TReq reqVO)
         {
-            foreach(var proc in reqVO.processQueues)
+            foreach (var proc in reqVO.processQueues)
             {
                 if (!proc.baseQty.HasValue && !proc.percentRandom.HasValue)
                     proc.percentRandom = 100;

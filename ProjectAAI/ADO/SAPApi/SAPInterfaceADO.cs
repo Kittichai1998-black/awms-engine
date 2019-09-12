@@ -49,7 +49,7 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            var res = this.SendJson<SapResponse<ZSWMRF001_OUT_SU>>("SAPCONNECT_LOCATION", req,  buVO);
+            var res = this.SendJson<SapResponse<ZSWMRF001_OUT_SU>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
 
@@ -73,7 +73,7 @@ namespace ProjectAAI.ADO.SAPApi
                     NLBER = "001"
                 }
             };
-            
+
             var res = this.SendJson<SapResponse<ZSWMRF002_OUT_SU>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
@@ -96,6 +96,40 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
+        public SapResponse<ZSWMRF004_OUT_SAP> ZWMRF004_IN_REQ(ZSWMRF004_IN_REQ reqVO, VOCriteria buVO)
+        {
+            var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
+            var req = new SAPReq()
+            {
+                environmentName = getEnvironment,
+                functionName = "ZWMRF004",
+                inStructureName = "ZSWMRF004_IN_REQ",
+                inTableName = "IN_REQ",
+                outTableName = "OUT_SAP",
+                datas = reqVO
+            };
+
+            var res = this.SendJson<SapResponse<ZSWMRF004_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
+            return res;
+        }
+
+        public SapResponse<ZSWMRF005_OUT_SU_BAL> ZWMRF005_IN_REQ(ZSWMRF005_IN_REQ reqVO, VOCriteria buVO)
+        {
+            var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
+            var req = new SAPReq()
+            {
+                environmentName = getEnvironment,
+                functionName = "ZWMRF005",
+                inStructureName = "ZSWMRF005_IN_REQ",
+                inTableName = "IN_REQ",
+                outTableName = "OUT_SU_BAL",
+                datas = reqVO
+            };
+
+            var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SU_BAL>>("SAPCONNECT_LOCATION", req, buVO);
+            return res;
+        }
+
         public SapResponse<ZSWMRF005_OUT_SAP> ZWMRF005(ZSWMRF005_IN_AWS reqVO, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
@@ -103,7 +137,7 @@ namespace ProjectAAI.ADO.SAPApi
             var req = new SAPReq()
             {
                 environmentName = getEnvironment,
-                functionName = "ZWMRF005", 
+                functionName = "ZWMRF005",
                 inStructureName = "ZSWMRF005_IN_AWS",
                 inTableName = "IN_AWS",
                 outTableName = "OUT_SAP",
@@ -120,13 +154,13 @@ namespace ProjectAAI.ADO.SAPApi
             var req = new SAPReq()
             {
                 environmentName = getEnvironment,
-                functionName = "ZWMRF006", 
+                functionName = "ZWMRF006",
                 inStructureName = "ZSWMRF006_IN_AWS",
                 inTableName = "IN_AWS",
                 outTableName = "OUT_SAP",
                 datas = reqVO
             };
-            
+
             var res = this.SendJson<SapResponse<ZSWMRF006_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
@@ -164,6 +198,6 @@ namespace ProjectAAI.ADO.SAPApi
             };
             var res = this.SendJson<SapResponse<ZSWMRF003_OUT_REQ>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
-        } 
+        }
     }
 }
