@@ -216,6 +216,17 @@ namespace ProjectAAI.Engine.Business.WorkQueue
         private SapResponse<ZSWMRF001_OUT_SU> GetObjectFromSAP(string barcode, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF001(barcode, buVO);
+            if (res.datas != null)
+            {
+                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+                {
+                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                }
+            }
+            else
+            {
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
+            }
             return res;
         }
     }
