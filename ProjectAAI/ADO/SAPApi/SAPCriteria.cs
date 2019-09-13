@@ -143,7 +143,7 @@ namespace ProjectAAI.ADO.SAPApi
         public class ZSWMRF004_IN_REQ : ZSWMRF005_IN_REQ
         {
             /// <summary>Delivery Item</summary>
-            //public string POSNR = "";
+            public string POSNR = "";
         }
         public class ZSWMRF004_IN_AWS
         {
@@ -191,8 +191,6 @@ namespace ProjectAAI.ADO.SAPApi
             public string LGNUM = "";
             /// <summary>Storage Unit Number</summary>
             public string LENUM = "";
-            /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
-            public string GI_DOC = "";
             /// <summary>Reservation Number</summary>
             public long? RSNUM = null;
             /// <summary>Delivery Order Number</summary>
@@ -219,6 +217,10 @@ namespace ProjectAAI.ADO.SAPApi
             public string BESTQ_QI = "";
             /// <summary>Include Stock Category = S – Blocked Stock, ระบุ Y – Include, N – Exclude</summary>
             public string BESTQ_BLK = "";
+            /// <summary>Sales Instruction</summary>
+            //public string VBELN;
+            /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
+            public string GI_DOC = "";
         }
         public class ZSWMRF005_IN_AWS : ZSWMRF004_IN_AWS
         {

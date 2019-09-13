@@ -113,7 +113,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public SapResponse<ZSWMRF005_OUT_SU_BAL> ZWMRF005_IN_REQ(ZSWMRF005_IN_REQ reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF005_OUT_SAP> ZWMRF005_IN_REQ(ZSWMRF005_IN_REQ reqVO, VOCriteria buVO)
         {
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
             var req = new SAPReq()
@@ -122,11 +122,11 @@ namespace ProjectAAI.ADO.SAPApi
                 functionName = "ZWMRF005",
                 inStructureName = "ZSWMRF005_IN_REQ",
                 inTableName = "IN_REQ",
-                outTableName = "OUT_SU_BAL",
+                outTableName = "OUT_SAP",
                 datas = reqVO
             };
 
-            var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SU_BAL>>("SAPCONNECT_LOCATION", req, buVO);
+            var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
 

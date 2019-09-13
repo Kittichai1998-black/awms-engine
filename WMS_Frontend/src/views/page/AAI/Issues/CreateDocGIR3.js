@@ -368,6 +368,8 @@ const AmCreateDocumentR2 = props => {
         item.BESTQ_UR +
         '&bestq_qi=' +
         item.BESTQ_QI +
+        '&lgtyp=' +
+        item.LGTYP +
         '&bestq_blk=' +
         item.BESTQ_BLK +
         '&lgpla=' +

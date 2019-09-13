@@ -85,10 +85,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     {
                         ZMODE = doc.Ref1,
                         LGNUM = "W01",
-                        LENUM = doc.Ref1 == "R01" ? doc.DocumentItems[i].Code : "",
+                        LENUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lenum"),
                         GI_DOC = doc.Code,
 
-                        MATNR = doc.Ref1 == "R02" || doc.Ref1 == "R06" ? doc.DocumentItems[i].Code : "",
+                        MATNR = doc.Ref1 == "R03" ? doc.DocumentItems[i].Code : "",
                         CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
                         BDMNG = doc.DocumentItems[i].Quantity,
 
@@ -104,7 +104,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     {
                         req.RSNUM = long.Parse(RSNUM);
                     }
-                    SapResponse<ZSWMRF005_OUT_SU_BAL> resSAP = SendDataToSAP_IN_REQ_R_3_4(req, buVO);
+                    SapResponse<ZSWMRF005_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_3_4(req, buVO);
                     if (resSAP.status != 1)
                     {
                     }
@@ -318,7 +318,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var res = SAPInterfaceADO.GetInstant().ZWMRF004_IN_REQ(data, buVO);
             return res;
         }
-        private SapResponse<ZSWMRF005_OUT_SU_BAL> SendDataToSAP_IN_REQ_R_3_4(ZSWMRF005_IN_REQ data, VOCriteria buVO)
+        private SapResponse<ZSWMRF005_OUT_SAP> SendDataToSAP_IN_REQ_R_3_4(ZSWMRF005_IN_REQ data, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF005_IN_REQ(data, buVO);
             return res;
