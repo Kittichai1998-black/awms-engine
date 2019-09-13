@@ -417,7 +417,7 @@ const AmCreateDocumentR2 = props => {
     return (
       <AmEditorTable
         style={{ width: '600px', height: '500px' }}
-        titleText={'Add'}
+        titleText={'Load'}
         open={editPopup}
         onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
         data={editData}
@@ -449,7 +449,7 @@ const AmCreateDocumentR2 = props => {
             style={{ width: '150px' }}
             onClick={() => setEditPopup(true)}
           >
-            Add
+            Load
           </AmButton>
         }
         customAddComponentRender={customAdd()}
