@@ -33,9 +33,10 @@ namespace AWMSEngine.WorkerService
             int idx = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_INDEX).GetTry<int>() ?? 0;
             int delay = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_DELAY).GetTry<int>() ?? 0;
 
-            try
+
+            while (!stoppingToken.IsCancellationRequested)
             {
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
                     for (int i = 1; i <= idx; i++)
                     {
@@ -52,10 +53,11 @@ namespace AWMSEngine.WorkerService
                     }
                     await Task.Delay(delay);
                 }
+                catch (Exception e)
+                {
+                }
             }
-            catch (Exception e)
-            {
-            }
+
 
         }
     }
