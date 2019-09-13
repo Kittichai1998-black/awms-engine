@@ -86,7 +86,7 @@ namespace ProjectAAI.ADO.SAPApi
             {
                 environmentName = getEnvironment,
                 functionName = "ZWMRF004",
-                inStructureName = "ZSWMRF004_IN_AWSs",
+                inStructureName = "ZSWMRF004_IN_AWS",
                 inTableName = "IN_AWS",
                 outTableName = "OUT_SAP",
                 datas = reqVO
@@ -106,7 +106,7 @@ namespace ProjectAAI.ADO.SAPApi
                 functionName = "ZWMRF005", 
                 inStructureName = "ZSWMRF005_IN_AWS",
                 inTableName = "IN_AWS",
-                outTableName = "OUT_SAP",
+                outTableName = "OUT_SU_BAL",
                 datas = reqVO
             };
 
@@ -123,7 +123,7 @@ namespace ProjectAAI.ADO.SAPApi
                 functionName = "ZWMRF006", 
                 inStructureName = "ZSWMRF006_IN_AWS",
                 inTableName = "IN_AWS",
-                outTableName = "OUT_SAP",
+                outTableName = "OUT_SU_BAL",
                 datas = reqVO
             };
             

@@ -166,7 +166,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             name = _sku.Name,
                             batch = pack.CHARG,
                             qty = pack.VERME, //Available Stock
-                            skuID = _sku.ID,
+                            skuID = _sku.ID.Value,
                             unitCode = unit.Code,
                             unitID = unit.ID.Value,
                             baseUnitCode = unit.Code,
@@ -174,8 +174,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             baseQty = pack.VERME, //Available Stock
                             objectSizeID = _objSizePack.ID.Value,
                             type = StorageObjectType.PACK,
-                            productDate = productDate.Value, //Date of Manufacture
-                            expiryDate = expiryDate.Value,
+                            productDate = productDate, //Date of Manufacture
+                            expiryDate = expiryDate,
                             objectSizeName = _objSizePack.Name,
                             options = options,
                             mstID = _pack.ID.Value,
