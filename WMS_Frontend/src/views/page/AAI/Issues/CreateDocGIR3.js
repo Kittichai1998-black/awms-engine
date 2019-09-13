@@ -17,7 +17,7 @@ const AmCreateDocumentR2 = props => {
   const [sapResponse, setSAPResponse] = useState([]);
   const [editData, setEditData] = useState({});
   const [editPopup, setEditPopup] = useState(false);
-  const [sapReq, setSAPReq] = useState([]);
+  // const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
   const [flagStock, setFlagStock] = useState(false);
   const [stockStatus, setStockStatus] = useState([
@@ -66,6 +66,10 @@ const AmCreateDocumentR2 = props => {
 
   var columnsModify = [
     {
+      Header: 'SU No.',
+      accessor: 'LENUM'
+    },
+    {
       Header: 'Reservation',
       accessor: 'RSNUM'
     },
@@ -113,6 +117,8 @@ const AmCreateDocumentR2 = props => {
   const sapConnectorR3 = postData => {
     Axios.post(window.apipath + '/v2/SAPZWMRF003R3API', postData).then(res => {
       if (res.data._result.status === 1) {
+        if (postData.LENUM)
+          res.data.datas[0].LENUM = postData.LENUM
         setSAPResponse(res.data.datas);
       } else {
       }
@@ -121,23 +127,32 @@ const AmCreateDocumentR2 = props => {
 
   const onHandleEditConfirm = (status, rowdata) => {
     if (status) {
-      var postData = {};
-      sapReq.forEach(x => {
-        postData[x.field] = x.value;
-      });
-      postData['_token'] = localStorage.getItem('Token');
-      sapConnectorR3(postData);
+      // console.log(rowdata);
+
+
+      // var postData = {};
+      // sapReq.forEach(x => {
+      //   postData[x.field] = x.value;
+      // });
+      rowdata['_token'] = localStorage.getItem('Token');
+      sapConnectorR3(rowdata);
     }
+    setEditData({})
     setEditPopup(false);
   };
 
   const onChangeEditor = (field, value) => {
-    let setsap = [];
-    setSAPReq([{ field: field, value: value }]);
-    if (flagStock) {
-      //stockStatus
-      setsap.push();
-    }
+    // let setsap = [];
+    // setSAPReq([{ field: field, value: value }]);
+    // if (flagStock) {
+    //   //stockStatus
+    //   setsap.push();
+    // }
+    if (field === "BESTQ_BLK" || field === "BESTQ_QI" || field === "BESTQ_UR")
+      editData[field] = value === true ? "Y" : "N"
+    else
+      editData[field] = value
+    setEditData({ ...editData })
   };
 
   const editorList = [
@@ -356,7 +371,7 @@ const AmCreateDocumentR2 = props => {
           : headerData.movementTypeID,
       ref1: 'R03',
       ref2: groupMVT,
-      refID: sapResponse.length>0?sapResponse[0].RSNUM:null,
+      refID: sapResponse.length > 0 ? sapResponse[0].RSNUM : null,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -364,20 +379,18 @@ const AmCreateDocumentR2 = props => {
 
     let documentItem = sapResponse.map((item, idx) => {
       let options =
-        'bestq_ur=' +
-        item.BESTQ_UR +
-        '&bestq_qi=' +
-        item.BESTQ_QI +
-        '&lgtyp=' +
-        item.LGTYP +
-        '&bestq_blk=' +
-        item.BESTQ_BLK +
-        '&lgpla=' +
-        item.LGPLA;
+        'bestq_ur=' + item.BESTQ_UR +
+        '&bestq_qi=' + item.BESTQ_QI +
+        '&bestq_blk=' + item.BESTQ_BLK +
 
-      if (item.LENUM !== '' && item.LENUM !== null) {
-        options = options + '&lgpla=' + item.LENUM;
-      }
+        '&lgtyp=' + item.LGTYP +
+        '&lgpla=' + item.LGPLA +
+
+        '&lenum=' + item.LENUM +
+        '&rsnum=' + item.RSNUM;
+      // if (item.LENUM !== '' && item.LENUM !== null) {
+      //   options = options + '&lgpla=' + item.LENUM;
+      // }
       return {
         ID: null,
         skuCode: item.MATNR,
