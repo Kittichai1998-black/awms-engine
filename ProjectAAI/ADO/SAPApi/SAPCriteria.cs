@@ -269,6 +269,11 @@ namespace ProjectAAI.ADO.SAPApi
         /// <summary>
         /// RESPONSE TO SAP R05
         /// </summary>
+        public class ZSWMRF006_IN_REQ : ZSWMRF005_IN_REQ
+        {
+            /// <summary>Delivery Item</summary>
+            public string POSNR = "";
+        }
         public class ZSWMRF006_IN_AWS : ZSWMRF004_IN_AWS
         {
         }
