@@ -90,6 +90,9 @@ namespace AWMSModel.Constant.EnumConst
 
         [EnumValueAttribute(ValueString = "MP01")]
         EXEPJ_MappingDistoLD,
+        [EnumValueAttribute(ValueString = "PQU01")]
+        EXEWM_ASRSProcessQueue_CheckSAP,
+
 
     }
 }

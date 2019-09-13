@@ -143,133 +143,151 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     {
                         docItems.ForEach(docItem =>
                         {
-                            var qtyIssue = docItem.Quantity;//1500
-                            var baseqtyIssue = docItem.BaseQuantity;
-                            decimal? sumDiSTOQty = docItem.DocItemStos.Sum(x => x.Quantity);
-                            decimal? sumDiSTOBaseQty = docItem.DocItemStos.Sum(x => x.BaseQuantity);
-                            stoList.ForEach(sto =>
+                            if(docItem.Quantity == null)
+                            {
+                                stoList.ForEach(sto =>
                                 {
                                     var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
-                                    
                                     distos.ToList().ForEach(disto =>
                                     {
-                                        if(disto.Quantity == null)
-                                        {
-                                                                                       
-                                            var remainQty = qtyIssue - sumDiSTOQty;
-                                            var remainBaseQty = baseqtyIssue - sumDiSTOBaseQty;
-                                            //จำนวนที่ต้องการเบิก - ผลรวมของจำนวนที่ถูกเบิกเเล้วในdisto = จำนวนที่ยังต้องเบิกเพิ่ม  
-                                             
-                                            //1) 1500 - 0 = 1500  sto1 เบิกเต็ม สถานะเปลี่ยนเป็น picking  , disto_sou = disto_des
-                                            if (remainQty >= sto.qty) //1500 > 1000
-                                            { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, sto.qty, sto.baseQty, EntityStatus.ACTIVE, this.BuVO);
-                                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
-                                            }
-                                            //2) 1500 - 1000 = 500 sto2 ของเหลือ สถานะยังเป็น received ส่วนที่เบิกสร้างstoใหม่ สถานะเปนpicking
-                                            else
-                                            {  //500 < 1000
-                                               //จำนวนที่ยังต้องเบิกเพิ่ม น้อยกว่า จำนวนของที่ stoมีอยู่ 
-                                               //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
-                                                var updSto = new StorageObjectCriteria();
-                                                updSto = sto.Clone();
-                                                updSto.baseQty -= remainQty.Value;  //1000 - 500 = เหลือของ 500
-                                                updSto.qty -= remainBaseQty.Value;
-                                                var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
-                                                if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
-                                                {
-                                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                        ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
 
-                                                }
-                                                else
-                                                {
-                                                    StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
-                                                    updSto.eventStatus = eventStatus;
-                                                }
-                                                if (updSto.baseQty == 0)
-                                                {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
-                                                    updSto.eventStatus = StorageObjectEventStatus.PICKING;
-                                                }
-                                                else
-                                                {   //ส่วนที่ตัดเบิก สร้างissueSto เป็นpicking 
-                                                    var issuedSto = new StorageObjectCriteria();
-                                                    issuedSto = sto;
-                                                    issuedSto.id = null;
-                                                    issuedSto.baseQty = remainQty.Value; //500 จำนวนที่ต้องเบิกเพิ่ม
-                                                    issuedSto.qty = remainBaseQty.Value;
-                                                    issuedSto.parentID = null;
-                                                    issuedSto.mapstos = null;
-                                                    issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
-
-                                                    var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-                                                    //อัพเดท des_stoID ของ pack ที่สร้างใหม่
-                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
-
-                                                }
-
-                                                var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                                //ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
-
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            if (sto.qty == disto.Quantity)
-                                            {
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                                ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
-                                            }
-                                            else
-                                            {
-                                                var updSto = new StorageObjectCriteria();
-                                                updSto = sto.Clone(); 
-                                                updSto.baseQty -= disto.BaseQuantity.Value;
-                                                updSto.qty -= disto.Quantity.Value;
-
-                                                //พาเลทเดิม มีของเหลือ เปลี่ยนสถานะเป็น RECEIVED  ถ้ามี sou_done_evenstatus 
-                                                //updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
-                                                var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
-                                                if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
-                                                {
-                                                    updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
-
-                                                }
-                                                else
-                                                {
-                                                    StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
-                                                    updSto.eventStatus = eventStatus;
-                                                }
-
-
-                                                if (updSto.baseQty == 0)
-                                                {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
-                                                    updSto.eventStatus = StorageObjectEventStatus.PICKING;
-                                                }
-                                                else
-                                                {   //สร้างpack ใหม่ที่ไม่ได้ผูก parent base สถานะ PICKING , qty = จำนวนที่เบิก
-                                                    var issuedSto = new StorageObjectCriteria();
-                                                    issuedSto = sto;
-                                                    issuedSto.id = null;
-                                                    issuedSto.baseQty = disto.BaseQuantity.Value;
-                                                    issuedSto.qty = disto.Quantity.Value;
-                                                    issuedSto.parentID = null;
-                                                    issuedSto.mapstos = null;
-                                                    issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
-
-                                                    var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
-                                                    //อัพเดท des_stoID ของ pack ที่สร้างใหม่
-                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                                }
-                                                var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
-                                                ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
-
-                                            }
-                                        }
-                                        
                                     });
+                                        
                                 });
+                            }
+                            else
+                            {
+                                var qtyIssue = docItem.Quantity;//1500
+                                var baseqtyIssue = docItem.BaseQuantity;
+                                decimal? sumDiSTOQty = docItem.DocItemStos.Sum(x => x.Quantity);
+                                decimal? sumDiSTOBaseQty = docItem.DocItemStos.Sum(x => x.BaseQuantity);
+                                stoList.ForEach(sto =>
+                                    {
+                                        var distos = docItem.DocItemStos.FindAll(x => x.Sou_StorageObject_ID == sto.id);
+                                    
+                                        distos.ToList().ForEach(disto =>
+                                        {
+                                            if(disto.Quantity == null)
+                                            {
+                                                                                       
+                                                var remainQty = qtyIssue - sumDiSTOQty;
+                                                var remainBaseQty = baseqtyIssue - sumDiSTOBaseQty;
+                                                //จำนวนที่ต้องการเบิก - ผลรวมของจำนวนที่ถูกเบิกเเล้วในdisto = จำนวนที่ยังต้องเบิกเพิ่ม  
+                                             
+                                                //1) 1500 - 0 = 1500  sto1 เบิกเต็ม สถานะเปลี่ยนเป็น picking  , disto_sou = disto_des
+                                                if (remainQty >= sto.qty) //1500 > 1000
+                                                { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
+                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, sto.qty, sto.baseQty, EntityStatus.ACTIVE, this.BuVO);
+                                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                                }
+                                                //2) 1500 - 1000 = 500 sto2 ของเหลือ สถานะยังเป็น received ส่วนที่เบิกสร้างstoใหม่ สถานะเปนpicking
+                                                else
+                                                {  //500 < 1000
+                                                   //จำนวนที่ยังต้องเบิกเพิ่ม น้อยกว่า จำนวนของที่ stoมีอยู่ 
+                                                   //ให้หักqty ออกจากstoเดิม ส่วนที่เหลือเป็น Received 
+                                                    var updSto = new StorageObjectCriteria();
+                                                    updSto = sto.Clone();
+                                                    updSto.baseQty -= remainQty.Value;  //1000 - 500 = เหลือของ 500
+                                                    updSto.qty -= remainBaseQty.Value;
+                                                    var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+                                                    if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
+                                                    {
+                                                        updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+
+                                                    }
+                                                    else
+                                                    {
+                                                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
+                                                        updSto.eventStatus = eventStatus;
+                                                    }
+                                                    if (updSto.baseQty == 0)
+                                                    {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
+                                                        updSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                                    }
+                                                    else
+                                                    {   //ส่วนที่ตัดเบิก สร้างissueSto เป็นpicking 
+                                                        var issuedSto = new StorageObjectCriteria();
+                                                        issuedSto = sto;
+                                                        issuedSto.id = null;
+                                                        issuedSto.baseQty = remainQty.Value; //500 จำนวนที่ต้องเบิกเพิ่ม
+                                                        issuedSto.qty = remainBaseQty.Value;
+                                                        issuedSto.parentID = null;
+                                                        issuedSto.mapstos = null;
+                                                        issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+
+                                                        var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+                                                        //อัพเดท des_stoID ของ pack ที่สร้างใหม่
+                                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, issuedSto.qty, issuedSto.baseQty, EntityStatus.ACTIVE, this.BuVO);
+
+                                                    }
+
+                                                    var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                                    //ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                if (sto.qty == disto.Quantity)
+                                                {
+                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                                }
+                                                else
+                                                {
+                                                    var updSto = new StorageObjectCriteria();
+                                                    updSto = sto.Clone(); 
+                                                    updSto.baseQty -= disto.BaseQuantity.Value;
+                                                    updSto.qty -= disto.Quantity.Value;
+
+                                                    //พาเลทเดิม มีของเหลือ เปลี่ยนสถานะเป็น RECEIVED  ถ้ามี sou_done_evenstatus 
+                                                    //updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+                                                    var upd_done_sou_event_status = ObjectUtil.QryStrGetValue(updSto.options, OptionVOConst.OPT_DONE_SOU_EVENT_STATUS);
+                                                    if (upd_done_sou_event_status == null || upd_done_sou_event_status.Length == 0)
+                                                    {
+                                                        updSto.eventStatus = StorageObjectEventStatus.RECEIVED;
+
+                                                    }
+                                                    else
+                                                    {
+                                                        StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), upd_done_sou_event_status);
+                                                        updSto.eventStatus = eventStatus;
+                                                    }
+
+
+                                                    if (updSto.baseQty == 0)
+                                                    {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
+                                                        updSto.eventStatus = StorageObjectEventStatus.PICKING;
+                                                    }
+                                                    else
+                                                    {   //สร้างpack ใหม่ที่ไม่ได้ผูก parent base สถานะ PICKING , qty = จำนวนที่เบิก
+                                                        var issuedSto = new StorageObjectCriteria();
+                                                        issuedSto = sto;
+                                                        issuedSto.id = null;
+                                                        issuedSto.baseQty = disto.BaseQuantity.Value;
+                                                        issuedSto.qty = disto.Quantity.Value;
+                                                        issuedSto.parentID = null;
+                                                        issuedSto.mapstos = null;
+                                                        issuedSto.eventStatus = StorageObjectEventStatus.PICKING;
+
+                                                        var stoIDIssued = ADO.StorageObjectADO.GetInstant().PutV2(issuedSto, this.BuVO);
+                                                        //อัพเดท des_stoID ของ pack ที่สร้างใหม่
+                                                        ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDIssued, null, null, EntityStatus.ACTIVE, this.BuVO);
+                                                    }
+                                                    var stoIDUpdated = ADO.StorageObjectADO.GetInstant().PutV2(updSto, this.BuVO);
+                                                    ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, stoIDUpdated, null, null, EntityStatus.ACTIVE, this.BuVO);
+
+                                                }
+                                            }
+                                        
+                                        });
+                                    });
  
+                            }
+                            
                         });
                     }
                 }
