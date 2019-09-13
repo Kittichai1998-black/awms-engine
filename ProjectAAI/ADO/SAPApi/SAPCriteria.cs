@@ -234,14 +234,14 @@ namespace ProjectAAI.ADO.SAPApi
             public string MATNR;
             public string CHARG;
             public string BESTQ;
-            public string VERME;
+            public decimal VERME;
             public string MEINS;
             public string HSDAT;
-            public int WEBAZ;
+            public decimal WEBAZ;
             public string BRGEW;
             public string GEWEI;
             public string VBELN;
-            public string BALNC;
+            public decimal BALNC;
         }
         public class ZSWMRF005_OUT_SAP : ZSWMRF004_OUT_SAP
         {
@@ -273,6 +273,9 @@ namespace ProjectAAI.ADO.SAPApi
         {
         }
         public class ZSWMRF006_OUT_SAP : ZSWMRF005_OUT_SAP
+        {
+        }
+        public class ZSWMRF006_OUT_SU_BAL : ZSWMRF005_OUT_SU_BAL
         {
         }
 

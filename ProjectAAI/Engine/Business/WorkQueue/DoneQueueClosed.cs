@@ -237,27 +237,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             }
             return res;
         }
-        private SapResponse<ZSWMRF005_OUT_SAP> SendDataToSAP_ZWMRF005(ZSWMRF005_IN_AWS data, long? docID, VOCriteria buVO)
+        private SapResponse<ZSWMRF005_OUT_SU_BAL> SendDataToSAP_ZWMRF005(ZSWMRF005_IN_AWS data, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF005(data, buVO);
-            if (res.datas != null)
-            {
-                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
-                {
-                    if (docID.HasValue)
-                    {
-                        var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                        {
-                            docID = docID.Value,
-                            msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
-                        };
-                        buVO.FinalLogDocMessage.Add(msg);
-                    }
-                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
-
-                }
-            }
-            else
+            if (res.datas == null)           
             {
                 if (docID.HasValue)
                 {
@@ -272,27 +255,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             }
             return res;
         }
-        private SapResponse<ZSWMRF006_OUT_SAP> SendDataToSAP_ZWMRF006(ZSWMRF006_IN_AWS data, long? docID, VOCriteria buVO)
+        private SapResponse<ZSWMRF006_OUT_SU_BAL> SendDataToSAP_ZWMRF006(ZSWMRF006_IN_AWS data, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF006(data, buVO);
-            if (res.datas != null)
-            {
-                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
-                {
-                    if (docID.HasValue)
-                    {
-                        var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                        {
-                            docID = docID.Value,
-                            msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
-                        };
-                        buVO.FinalLogDocMessage.Add(msg);
-                    }
-                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
-
-                }
-            }
-            else
+            if (res.datas == null)            
             {
                 if (docID.HasValue)
                 {

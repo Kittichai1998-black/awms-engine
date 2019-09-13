@@ -130,7 +130,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public SapResponse<ZSWMRF005_OUT_SAP> ZWMRF005(ZSWMRF005_IN_AWS reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF005_OUT_SU_BAL> ZWMRF005(ZSWMRF005_IN_AWS reqVO, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -144,10 +144,10 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
+            var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SU_BAL>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
-        public SapResponse<ZSWMRF006_OUT_SAP> ZWMRF006(ZSWMRF006_IN_AWS reqVO, VOCriteria buVO)
+        public SapResponse<ZSWMRF006_OUT_SU_BAL> ZWMRF006(ZSWMRF006_IN_AWS reqVO, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -161,7 +161,7 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = reqVO
             };
 
-            var res = this.SendJson<SapResponse<ZSWMRF006_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
+            var res = this.SendJson<SapResponse<ZSWMRF006_OUT_SU_BAL>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
 
