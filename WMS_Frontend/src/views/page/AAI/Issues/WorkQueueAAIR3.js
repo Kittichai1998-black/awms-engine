@@ -132,10 +132,10 @@ const WorkQueueAAIR3 = props => {
   const ProcessQ = [
     {
       Label: "Destination Area",
-      key: "desASRSAreaName",
+      key: "desASRSAreaCode",
       type: "dropdownapi",
       fieldLabel: ["Code", "Name"],
-      idddls: "desASRSAreaName",
+      idddls: "desASRSAreaCode",
       queryApi: AreaMaster
     }
   ];

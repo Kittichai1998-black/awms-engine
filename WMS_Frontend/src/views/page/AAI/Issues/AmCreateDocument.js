@@ -1086,7 +1086,7 @@ const AmCreateDocument = (props) => {
                         {props.customAddBtnRender ? props.customAddBtnRender : <AmButton className="float-right" styleType="add" style={{ width: "150px" }} onClick={() => {
                             Addbtn()
                         }} >
-                            {'ADD'}
+                            {'Add'}
                         </AmButton>}
                     </div>
                 </Grid>
@@ -1106,7 +1106,7 @@ const AmCreateDocument = (props) => {
                 <Grid item>
                     <div style={{ marginTop: "10px" }}>
                         <AmButton className="float-right" styleType="confirm" style={{ width: "150px" }} onClick={() => { CreateDoc() }}>
-                            {'CREATE'}
+                            {'Create'}
                         </AmButton>
                     </div>
                 </Grid>
