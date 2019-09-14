@@ -1,15 +1,46 @@
 import React, { Component, useEffect, useState } from 'react';
+
 import { AmEditorTable } from '../../../../components/table';
+
 import {
   apicall,
   createQueryString
 } from '../../../../components/function/CoreFunction';
-
+import styled from 'styled-components'
 import AmCreateDocument from './AmCreateDocument';
 import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import AmCheckBox from '../../../../components/AmCheckBox';
 import Checkbox from '@material-ui/core/Checkbox';
+
+const FormInline = styled.div`
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 5px 5px 5px 0;
+}
+input {
+    vertical-align: middle;
+}
+@media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+  }
+`;
+
+const LabelH = styled.label`
+font-weight: bold;
+  width: 200px;
+`;
+
+const InputDiv = styled.div`
+    margin: 5px;
+    @media (max-width: 800px) {
+        margin: 0;
+    }
+`;
 
 const Axios = new apicall();
 
@@ -160,15 +191,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Storage Unit Number',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Storage Unit Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ''}
-              onChange={value => {
-                onChangeEditor('LENUM', value);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Storage Unit Number : </LabelH>
+            <InputDiv>
+              <AmInput
+                defaultValue={data ? data.Name2 : ''}
+                onChange={value => {
+                  onChangeEditor('LENUM', value);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -176,15 +209,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Reservation Number',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Reservation Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ''}
-              onChange={value => {
-                onChangeEditor('RSNUM', value);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Reservation Number : </LabelH>
+            <InputDiv>
+              <AmInput
+                defaultValue={data ? data.Name2 : ''}
+                onChange={value => {
+                  onChangeEditor('RSNUM', value);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -192,15 +227,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Material Number',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Material Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ''}
-              onChange={value => {
-                onChangeEditor('MATNR', value);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Material Number : </LabelH>
+            <InputDiv>
+              <AmInput
+                defaultValue={data ? data.Name2 : ''}
+                onChange={value => {
+                  onChangeEditor('MATNR', value);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -208,15 +245,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Select Include : ',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Include Stock :
-            <Checkbox
-              onChange={e => {
-                if (e.target.checked) setFlagStock(true);
-                else setFlagStock(false);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include Stock : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  if (e.target.checked) setFlagStock(true);
+                  else setFlagStock(false);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -224,19 +263,21 @@ const AmCreateDocumentR2 = props => {
       field: 'Include UR',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            <label>Include UR :</label>
-            <Checkbox
-              onChange={e => {
-                onChangeEditor('BESTQ_UR', e.checked ? true : false);
-                stockStatus.BESTQ_UR = {
-                  field: 'BESTQ_UR',
-                  value: e.checked ? true : false
-                };
-              }}
-              disabled={!flagStock}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include UR : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  onChangeEditor('BESTQ_UR', e.checked ? true : false);
+                  stockStatus.BESTQ_UR = {
+                    field: 'BESTQ_UR',
+                    value: e.checked ? true : false
+                  };
+                }}
+                disabled={!flagStock}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -244,19 +285,21 @@ const AmCreateDocumentR2 = props => {
       field: 'Include QI',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            <label>Include QI :</label>
-            <Checkbox
-              onChange={e => {
-                onChangeEditor('BESTQ_QI', e.checked ? true : false);
-                stockStatus.BESTQ_QI = {
-                  field: 'BESTQ_QI',
-                  value: e.checked ? true : false
-                };
-              }}
-              disabled={!flagStock}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include QI : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  onChangeEditor('BESTQ_QI', e.checked ? true : false);
+                  stockStatus.BESTQ_QI = {
+                    field: 'BESTQ_QI',
+                    value: e.checked ? true : false
+                  };
+                }}
+                disabled={!flagStock}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -264,19 +307,21 @@ const AmCreateDocumentR2 = props => {
       field: 'Include Blocked',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            <label>Include Blocked :</label>
-            <Checkbox
-              onChange={e => {
-                onChangeEditor('BESTQ_BLK', e.checked ? true : false);
-                stockStatus.BESTQ_BLK = {
-                  field: 'BESTQ_BLK',
-                  value: e.checked ? true : false
-                };
-              }}
-              disabled={!flagStock}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include Blocked : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  onChangeEditor('BESTQ_BLK', e.checked ? true : false);
+                  stockStatus.BESTQ_BLK = {
+                    field: 'BESTQ_BLK',
+                    value: e.checked ? true : false
+                  };
+                }}
+                disabled={!flagStock}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     }

@@ -1,14 +1,45 @@
 import React, { Component, useEffect, useState } from 'react';
+
 import { AmEditorTable } from '../../../../components/table';
+
 import {
   apicall,
   createQueryString
 } from '../../../../components/function/CoreFunction';
-
+import styled from 'styled-components'
 import AmCreateDocument from './AmCreateDocument';
 import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import Grid from '@material-ui/core/Grid';
+
+const FormInline = styled.div`
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 5px 5px 5px 0;
+}
+input {
+    vertical-align: middle;
+}
+@media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+  }
+`;
+
+const LabelH = styled.label`
+font-weight: bold;
+  width: 200px;
+`;
+
+const InputDiv = styled.div`
+    margin: 5px;
+    @media (max-width: 800px) {
+        margin: 0;
+    }
+`;
 
 const Axios = new apicall();
 
@@ -49,8 +80,8 @@ const AmCreateDocumentR2 = props => {
         label: 'Mode',
         type: 'labeltext',
         key: 'ref1',
-        texts: 'R03',
-        valueTexts: 'R03'
+        texts: 'R02',
+        valueTexts: 'R02'
       }
     ]
   ];
@@ -131,15 +162,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Reservation Number',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Reservation Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ''}
-              onChange={value => {
-                onChangeEditor('RSNUM', value);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Reservation Number : </LabelH>
+            <InputDiv>
+              <AmInput
+                defaultValue={data ? data.Name2 : ''}
+                onChange={value => {
+                  onChangeEditor('RSNUM', value);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     }
@@ -152,9 +185,9 @@ const AmCreateDocumentR2 = props => {
       })
       .filter((value, index, self) => self.indexOf(value) === index)
       .join(',');
-      console.log(sapResponse);
-      
-      
+    console.log(sapResponse);
+
+
     let document = {
       actionTime:
         headerData.actionTime === undefined ? null : headerData.actionTime,
@@ -237,7 +270,7 @@ const AmCreateDocumentR2 = props => {
           : headerData.movementTypeID,
       ref1: 'R02',
       ref2: groupMVT,
-      refID: sapResponse.length>0?sapResponse[0].RSNUM:null,
+      refID: sapResponse.length > 0 ? sapResponse[0].RSNUM : null,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
