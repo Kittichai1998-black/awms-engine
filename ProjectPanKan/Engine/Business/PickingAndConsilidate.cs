@@ -58,14 +58,15 @@ namespace ProjectPanKan.Engine.Business
             return null;
         }
 
-        private TRes Picking(List<amt_DocumentItem> docItems, TReq reqVO, VOCriteria buVO, AMWLogger logger)
+        private TRes Pick(List<amt_DocumentItem> docItems, TReq reqVO, VOCriteria buVO)
         {
             var stoScan = StorageObjectADO.GetInstant().Get(string.IsNullOrWhiteSpace(reqVO.basePick) ? reqVO.scanCode : reqVO.basePick, null, null, false, true, this.BuVO);
             var res = new TRes();
-            docItems.ForEach(docItem =>
+
+            foreach(var docItem in docItems)
             {
                 var basecode = AMWUtil.Common.ObjectUtil.QryStrGetValue(docItem.Options, "basecode");
-                if (stoScan.code == basecode && string.IsNullOrWhiteSpace(reqVO.basePick))
+                if (stoScan.code == basecode)
                 {
                     if (stoScan.type != StorageObjectType.BASE)
                         throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Barcode " + stoScan.code + " is not BaseCode");
@@ -92,13 +93,13 @@ namespace ProjectPanKan.Engine.Business
                     DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, buVO);
                     StorageObjectADO.GetInstant().UpdateStatusToChild(stoScan.id.Value, null, null, StorageObjectEventStatus.CONSOLIDATED, buVO);
 
-                    res = null;
+                    break;
                 }
                 else
                 {
                     if (stoScan.type == StorageObjectType.BASE)
                     {
-                        res = new TRes()
+                        return new TRes()
                         {
                             docID = docItem.Document_ID,
                             sto = new TRes.BaseSto()
@@ -114,6 +115,9 @@ namespace ProjectPanKan.Engine.Business
                     {
                         var packs = stoScan.mapstos.Find(pack => pack.code == reqVO.scanCode);
 
+                        if(packs.mstID != docItem.PackMaster_ID)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Cannot Pick " + stoScan.code);
+
                         var chkDisto = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
                             new SQLConditionCriteria("Sou_StorageObject_ID", packs.id, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS)
@@ -126,21 +130,28 @@ namespace ProjectPanKan.Engine.Business
 
                         if (chkDisto != null)
                         {
+                            if(chkDisto.BaseQuantity + reqVO.scanQty > docItem.BaseQuantity)
+                                throw new AMWException(buVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
+
                             DocumentADO.GetInstant().UpdateMappingSTO(chkDisto.ID.Value, chkDisto.Des_StorageObject_ID, chkDisto.Quantity + reqVO.scanQty, chkDisto.BaseQuantity + reqVO.scanQty, EntityStatus.ACTIVE, buVO);
                             
                             var pickedSto = StorageObjectADO.GetInstant().Get(chkDisto.Des_StorageObject_ID.Value, StorageObjectType.PACK, true, true, buVO);
                             pickedSto.qty += reqVO.scanQty;
                             pickedSto.baseQty += reqVO.scanQty;
+                            pickedSto.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
 
-                            var pickedStoID = StorageObjectADO.GetInstant().PutV2(pickedSto, buVO);
+                            StorageObjectADO.GetInstant().PutV2(pickedSto, buVO);
                         }
                         else
                         {
+                            if (reqVO.scanQty > docItem.BaseQuantity)
+                                throw new AMWException(buVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
 
                             var pickedSto = packs.Clone();
                             pickedSto.id = null;
                             pickedSto.qty = reqVO.scanQty;
                             pickedSto.baseQty = reqVO.scanQty;
+                            pickedSto.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
 
                             var pickedStoID = StorageObjectADO.GetInstant().PutV2(pickedSto, buVO);
 
@@ -161,10 +172,43 @@ namespace ProjectPanKan.Engine.Business
 
                         StorageObjectADO.GetInstant().PutV2(packs, buVO);
 
+                        res = new TRes()
+                        {
+                            docID = docItem.Document_ID,
+                            sto = new TRes.BaseSto()
+                            {
+                                baseCode = stoScan.code,
+                                baseUnitCode = stoScan.baseUnitCode,
+                                baseID = stoScan.id.Value,
+                                packSTOs = stoScan.mapstos.Select(sto => new TRes.BaseSto.PackSTO() { packID = sto.id.Value, packCode = sto.code, packBaseQty = sto.baseQty, packBaseUnitCode = sto.baseUnitCode }).ToList()
+                            }
+                        };
                     }
                 }
-            });
+            }
             return res;
+        }
+
+        private TRes Consolidate(List<amt_DocumentItem> docItems, TReq reqVO, VOCriteria buVO)
+        {
+            var getbaseConso = StorageObjectADO.GetInstant().Get(reqVO.baseConso, null, null, false, true, buVO);
+            var getBasePick = StorageObjectADO.GetInstant().Get(reqVO.basePick, null, null, false, true, buVO);
+
+            foreach (var docItem in docItems)
+            {
+                if (getbaseConso != null)
+                {
+                    var basecode = AMWUtil.Common.ObjectUtil.QryStrGetValue(docItem.Options, "basecode");
+                    if (getbaseConso.eventStatus == StorageObjectEventStatus.CONSOLIDATED || getbaseConso.eventStatus == StorageObjectEventStatus.NEW)
+                    {
+                        var pack = getbaseConso.mapstos.Find(packSto => packSto.code == reqVO.basePick);
+                    }
+                }
+
+            }
+
+
+            return null;
         }
     }
 }
