@@ -64,7 +64,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
                         LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
                         LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
-                        BWLVS = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bwlvs"),
+                        BWLVS = doc.Ref2,
                         BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
                         BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
                         BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
@@ -88,14 +88,14 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         LENUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lenum"),
                         GI_DOC = doc.Code,
 
-                        MATNR = doc.Ref1 == "R03" ? doc.DocumentItems[i].Code : "",
+                        MATNR = doc.DocumentItems[i].Code,
                         CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
                         BDMNG = doc.DocumentItems[i].Quantity,
 
                         LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
                         LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
                         LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
-                        BWLVS = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bwlvs"),
+                        BWLVS = doc.Ref2,
                         BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
                         BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
                         BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
@@ -111,6 +111,35 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 }
                 else if (doc.Ref1 == "R05")
                 {
+                    ZSWMRF006_IN_REQ req = new ZSWMRF006_IN_REQ()
+                    {
+                        ZMODE = doc.Ref1,
+                        LGNUM = "W01",
+                        LENUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lenum"),
+                        GI_DOC = doc.Code,
+
+                        MATNR = doc.DocumentItems[i].Code,
+                        CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
+                        BDMNG = doc.DocumentItems[i].Quantity,
+
+                        LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
+                        LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
+                        LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
+                        BWLVS = doc.Ref2,
+                        BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
+                        BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
+                        BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
+                        VBELN_VL = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln_vl"),
+                        POSNR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "posnr")
+                    };
+                    if (RSNUM != "")
+                    {
+                        req.RSNUM = long.Parse(RSNUM);
+                    }
+                    SapResponse<ZSWMRF006_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_5(req, buVO);
+                    if (resSAP.status != 1)
+                    {
+                    }
                 }
 
                 var souWM = staticValue.Warehouses.First(x => x.ID == doc.Sou_Warehouse_ID);
@@ -321,6 +350,11 @@ namespace ProjectAAI.Engine.Business.WorkQueue
         private SapResponse<ZSWMRF005_OUT_SAP> SendDataToSAP_IN_REQ_R_3_4(ZSWMRF005_IN_REQ data, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF005_IN_REQ(data, buVO);
+            return res;
+        }
+        private SapResponse<ZSWMRF006_OUT_SAP> SendDataToSAP_IN_REQ_R_5(ZSWMRF006_IN_REQ data, VOCriteria buVO)
+        {
+            var res = SAPInterfaceADO.GetInstant().ZWMRF006_IN_REQ(data, buVO);
             return res;
         }
     }

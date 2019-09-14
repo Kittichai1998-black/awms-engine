@@ -1,15 +1,46 @@
 import React, { Component, useEffect, useState } from 'react';
+
 import { AmEditorTable } from '../../../../components/table';
+
 import {
   apicall,
   createQueryString
 } from '../../../../components/function/CoreFunction';
-
+import styled from 'styled-components'
 import AmCreateDocument from './AmCreateDocument';
 import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import AmCheckBox from '../../../../components/AmCheckBox';
 import Checkbox from '@material-ui/core/Checkbox';
+
+const FormInline = styled.div`
+display: flex;
+flex-flow: row wrap;
+align-items: center;
+label {
+    margin: 5px 5px 5px 0;
+}
+input {
+    vertical-align: middle;
+}
+@media (max-width: 800px) {
+    flex-direction: column;
+    align-items: stretch;
+    
+  }
+`;
+
+const LabelH = styled.label`
+font-weight: bold;
+  width: 200px;
+`;
+
+const InputDiv = styled.div`
+    margin: 5px;
+    @media (max-width: 800px) {
+        margin: 0;
+    }
+`;
 
 const Axios = new apicall();
 
@@ -17,7 +48,7 @@ const AmCreateDocumentR2 = props => {
   const [sapResponse, setSAPResponse] = useState([]);
   const [editData, setEditData] = useState({});
   const [editPopup, setEditPopup] = useState(false);
-  const [sapReq, setSAPReq] = useState([]);
+  // const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
   const [flagStock, setFlagStock] = useState(false);
   const [stockStatus, setStockStatus] = useState([
@@ -66,6 +97,10 @@ const AmCreateDocumentR2 = props => {
 
   var columnsModify = [
     {
+      Header: 'SU No.',
+      accessor: 'LENUM'
+    },
+    {
       Header: 'Reservation',
       accessor: 'RSNUM'
     },
@@ -113,6 +148,8 @@ const AmCreateDocumentR2 = props => {
   const sapConnectorR3 = postData => {
     Axios.post(window.apipath + '/v2/SAPZWMRF003R3API', postData).then(res => {
       if (res.data._result.status === 1) {
+        if (postData.LENUM)
+          res.data.datas[0].LENUM = postData.LENUM
         setSAPResponse(res.data.datas);
       } else {
       }
@@ -121,23 +158,32 @@ const AmCreateDocumentR2 = props => {
 
   const onHandleEditConfirm = (status, rowdata) => {
     if (status) {
-      var postData = {};
-      sapReq.forEach(x => {
-        postData[x.field] = x.value;
-      });
-      postData['_token'] = localStorage.getItem('Token');
-      sapConnectorR3(postData);
+      // console.log(rowdata);
+
+
+      // var postData = {};
+      // sapReq.forEach(x => {
+      //   postData[x.field] = x.value;
+      // });
+      rowdata['_token'] = localStorage.getItem('Token');
+      sapConnectorR3(rowdata);
     }
+    setEditData({})
     setEditPopup(false);
   };
 
   const onChangeEditor = (field, value) => {
-    let setsap = [];
-    setSAPReq([{ field: field, value: value }]);
-    if (flagStock) {
-      //stockStatus
-      setsap.push();
-    }
+    // let setsap = [];
+    // setSAPReq([{ field: field, value: value }]);
+    // if (flagStock) {
+    //   //stockStatus
+    //   setsap.push();
+    // }
+    if (field === "BESTQ_BLK" || field === "BESTQ_QI" || field === "BESTQ_UR")
+      editData[field] = value === true ? "Y" : "N"
+    else
+      editData[field] = value
+    setEditData({ ...editData })
   };
 
   const editorList = [
@@ -145,15 +191,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Storage Unit Number',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Storage Unit Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ''}
-              onChange={value => {
-                onChangeEditor('LENUM', value);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Storage Unit Number : </LabelH>
+            <InputDiv>
+              <AmInput
+                defaultValue={data ? data.Name2 : ''}
+                onChange={value => {
+                  onChangeEditor('LENUM', value);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -161,15 +209,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Reservation Number',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Reservation Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ''}
-              onChange={value => {
-                onChangeEditor('RSNUM', value);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Reservation Number : </LabelH>
+            <InputDiv>
+              <AmInput
+                defaultValue={data ? data.Name2 : ''}
+                onChange={value => {
+                  onChangeEditor('RSNUM', value);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -177,15 +227,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Material Number',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Material Number :
-            <AmInput
-              defaultValue={data ? data.Name2 : ''}
-              onChange={value => {
-                onChangeEditor('MATNR', value);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Material Number : </LabelH>
+            <InputDiv>
+              <AmInput
+                defaultValue={data ? data.Name2 : ''}
+                onChange={value => {
+                  onChangeEditor('MATNR', value);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -193,15 +245,17 @@ const AmCreateDocumentR2 = props => {
       field: 'Select Include : ',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            Include Stock :
-            <Checkbox
-              onChange={e => {
-                if (e.target.checked) setFlagStock(true);
-                else setFlagStock(false);
-              }}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include Stock : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  if (e.target.checked) setFlagStock(true);
+                  else setFlagStock(false);
+                }}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -209,19 +263,21 @@ const AmCreateDocumentR2 = props => {
       field: 'Include UR',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            <label>Include UR :</label>
-            <Checkbox
-              onChange={e => {
-                onChangeEditor('BESTQ_UR', e.checked ? true : false);
-                stockStatus.BESTQ_UR = {
-                  field: 'BESTQ_UR',
-                  value: e.checked ? true : false
-                };
-              }}
-              disabled={!flagStock}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include UR : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  onChangeEditor('BESTQ_UR', e.checked ? true : false);
+                  stockStatus.BESTQ_UR = {
+                    field: 'BESTQ_UR',
+                    value: e.checked ? true : false
+                  };
+                }}
+                disabled={!flagStock}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -229,19 +285,21 @@ const AmCreateDocumentR2 = props => {
       field: 'Include QI',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            <label>Include QI :</label>
-            <Checkbox
-              onChange={e => {
-                onChangeEditor('BESTQ_QI', e.checked ? true : false);
-                stockStatus.BESTQ_QI = {
-                  field: 'BESTQ_QI',
-                  value: e.checked ? true : false
-                };
-              }}
-              disabled={!flagStock}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include QI : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  onChangeEditor('BESTQ_QI', e.checked ? true : false);
+                  stockStatus.BESTQ_QI = {
+                    field: 'BESTQ_QI',
+                    value: e.checked ? true : false
+                  };
+                }}
+                disabled={!flagStock}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     },
@@ -249,19 +307,21 @@ const AmCreateDocumentR2 = props => {
       field: 'Include Blocked',
       component: (data, cols, key) => {
         return (
-          <div key={key}>
-            <label>Include Blocked :</label>
-            <Checkbox
-              onChange={e => {
-                onChangeEditor('BESTQ_BLK', e.checked ? true : false);
-                stockStatus.BESTQ_BLK = {
-                  field: 'BESTQ_BLK',
-                  value: e.checked ? true : false
-                };
-              }}
-              disabled={!flagStock}
-            />
-          </div>
+          <FormInline>
+            <LabelH>Include Blocked : </LabelH>
+            <InputDiv>
+              <Checkbox
+                onChange={e => {
+                  onChangeEditor('BESTQ_BLK', e.checked ? true : false);
+                  stockStatus.BESTQ_BLK = {
+                    field: 'BESTQ_BLK',
+                    value: e.checked ? true : false
+                  };
+                }}
+                disabled={!flagStock}
+              />
+            </InputDiv>
+          </FormInline>
         );
       }
     }
@@ -356,7 +416,7 @@ const AmCreateDocumentR2 = props => {
           : headerData.movementTypeID,
       ref1: 'R03',
       ref2: groupMVT,
-      refID: sapResponse.length>0?sapResponse[0].RSNUM:null,
+      refID: sapResponse.length > 0 ? sapResponse[0].RSNUM : null,
       remark: headerData.remark === undefined ? null : headerData.remark,
       receiveItems:
         headerData.receiveItems === undefined ? null : headerData.receiveItems
@@ -364,20 +424,18 @@ const AmCreateDocumentR2 = props => {
 
     let documentItem = sapResponse.map((item, idx) => {
       let options =
-        'bestq_ur=' +
-        item.BESTQ_UR +
-        '&bestq_qi=' +
-        item.BESTQ_QI +
-        '&lgtyp=' +
-        item.LGTYP +
-        '&bestq_blk=' +
-        item.BESTQ_BLK +
-        '&lgpla=' +
-        item.LGPLA;
+        'bestq_ur=' + item.BESTQ_UR +
+        '&bestq_qi=' + item.BESTQ_QI +
+        '&bestq_blk=' + item.BESTQ_BLK +
 
-      if (item.LENUM !== '' && item.LENUM !== null) {
-        options = options + '&lgpla=' + item.LENUM;
-      }
+        '&lgtyp=' + item.LGTYP +
+        '&lgpla=' + item.LGPLA +
+
+        '&lenum=' + item.LENUM +
+        '&rsnum=' + item.RSNUM;
+      // if (item.LENUM !== '' && item.LENUM !== null) {
+      //   options = options + '&lgpla=' + item.LENUM;
+      // }
       return {
         ID: null,
         skuCode: item.MATNR,
@@ -404,7 +462,7 @@ const AmCreateDocumentR2 = props => {
     return (
       <AmEditorTable
         style={{ width: '600px', height: '500px' }}
-        titleText={'Add'}
+        titleText={'Load'}
         open={editPopup}
         onAccept={(status, rowdata) => onHandleEditConfirm(status, rowdata)}
         data={editData}
@@ -436,7 +494,7 @@ const AmCreateDocumentR2 = props => {
             style={{ width: '150px' }}
             onClick={() => setEditPopup(true)}
           >
-            Add
+            Load
           </AmButton>
         }
         customAddComponentRender={customAdd()}

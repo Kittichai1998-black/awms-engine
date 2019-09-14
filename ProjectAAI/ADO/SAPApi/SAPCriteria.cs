@@ -234,14 +234,14 @@ namespace ProjectAAI.ADO.SAPApi
             public string MATNR;
             public string CHARG;
             public string BESTQ;
-            public string VERME;
+            public decimal VERME;
             public string MEINS;
             public string HSDAT;
-            public int WEBAZ;
+            public decimal WEBAZ;
             public string BRGEW;
             public string GEWEI;
             public string VBELN;
-            public string BALNC;
+            public decimal BALNC;
         }
         public class ZSWMRF005_OUT_SAP : ZSWMRF004_OUT_SAP
         {
@@ -269,10 +269,18 @@ namespace ProjectAAI.ADO.SAPApi
         /// <summary>
         /// RESPONSE TO SAP R05
         /// </summary>
+        public class ZSWMRF006_IN_REQ : ZSWMRF005_IN_REQ
+        {
+            /// <summary>Delivery Item</summary>
+            public string POSNR = "";
+        }
         public class ZSWMRF006_IN_AWS : ZSWMRF004_IN_AWS
         {
         }
         public class ZSWMRF006_OUT_SAP : ZSWMRF005_OUT_SAP
+        {
+        }
+        public class ZSWMRF006_OUT_SU_BAL : ZSWMRF005_OUT_SU_BAL
         {
         }
 
