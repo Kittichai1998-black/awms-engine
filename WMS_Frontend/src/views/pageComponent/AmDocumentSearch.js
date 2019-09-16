@@ -653,7 +653,7 @@ const AmDocumentSearch = props => {
 
           <AmButton
             onClick={() => {
-              //onClickReject();
+              onClickReject();
               FuncRanderRemark();
               setDialog(true);
             }}
