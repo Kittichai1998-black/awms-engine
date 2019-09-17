@@ -217,6 +217,8 @@ const DocumentSearchGI = props => {
         expensionSearch={search}
         docTypeCode="1002"
         buttonClose={true}
+        buttonReject={true}
+        //buttonWorking={true}
       />
     </div>
   );

@@ -310,6 +310,61 @@ const AmDocumentSearch = props => {
   };
 
   // add by ple
+  async function onClickWorking() {
+    let docID = [];
+    if (selection.length > 0) {
+      selection.forEach(rowdata => {
+        docID.push(rowdata.ID);
+      });
+    }
+
+    if (props.docTypeCode === "1002") {
+      Axios.post(window.apipath + "/v2/WorkingGIDocAPI", {
+        docIDs: docID,
+        remark: remark
+      }).then(res => {
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            setOpenSuccess(true);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          } else {
+            setOpenError(true);
+            setTextError(res.data._result.message);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          }
+        }
+      });
+    } else if (props.docTypeCode === "1012") {
+      Axios.post(window.apipath + "/v2/WorkingLDDocAPI", {
+        docIDs: docID,
+        remark: remark
+      }).then(res => {
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            setOpenSuccess(true);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          } else {
+            setOpenError(true);
+            setTextError(res.data._result.message);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          }
+        }
+      });
+    }
+  }
+  //============================================
   async function onClickReject() {
     let docID = [];
     if (selection.length > 0) {
@@ -388,6 +443,28 @@ const AmDocumentSearch = props => {
       });
     } else if (props.docTypeCode === "2004") {
       Axios.post(window.apipath + "/v2/RejectedADDocAPI", {
+        docIDs: docID,
+        remark: remark
+      }).then(res => {
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            setOpenSuccess(true);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          } else {
+            setOpenError(true);
+            setTextError(res.data._result.message);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          }
+        }
+      });
+    } else if (props.docTypeCode === "1012") {
+      Axios.post(window.apipath + "/v2/RejectedLDDocAPI", {
         docIDs: docID,
         remark: remark
       }).then(res => {
@@ -514,57 +591,24 @@ const AmDocumentSearch = props => {
       });
     }
 
-    if (props.docTypeCode === "1001") {
-      // Axios.post(window.apipath + "/v2/RejectedGRDocAPI", {
-      //   docIDs: docID
-      // }).then(res => {
-      //   if (res.data._result !== undefined) {
-      //     if (res.data._result.status === 1) {
-      //       setOpenSuccess(true);
-      //       getData(query);
-      //       Clear();
-      //     } else {
-      //       setOpenError(true);
-      //       setTextError(res.data._result.message);
-      //       getData(query);
-      //       Clear();
-      //     }
-      //   }
-      // });
-    } else if (props.docTypeCode === "1002") {
-      // Axios.post(window.apipath + "/v2/RejectedGIDocAPI", {
-      //   docIDs: docID
-      // }).then(res => {
-      //   if (res.data._result !== undefined) {
-      //     if (res.data._result.status === 1) {
-      //       setOpenSuccess(true);
-      //       getData(query);
-      //       Clear();
-      //     } else {
-      //       setOpenError(true);
-      //       setTextError(res.data._result.message);
-      //       getData(query);
-      //       Clear();
-      //     }
-      //   }
-      // });
-    } else if (props.docTypeCode === "2004") {
-      // Axios.post(window.apipath + "/v2/RejectedADDocAPI", {
-      //   docIDs: docID
-      // }).then(res => {
-      //   if (res.data._result !== undefined) {
-      //     if (res.data._result.status === 1) {
-      //       setOpenSuccess(true);
-      //       getData(query);
-      //       Clear();
-      //     } else {
-      //       setOpenError(true);
-      //       setTextError(res.data._result.message);
-      //       getData(query);
-      //       Clear();
-      //     }
-      //   }
-      // });
+    if (props.docTypeCode === "1001" || props.docTypeCode === "1002") {
+      Axios.post(window.apipath + "/v2/ClosingDocumentAPI", {
+        docIDs: docID
+      }).then(res => {
+        console.log(res);
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            setOpenSuccess(true);
+            getData(query);
+            Clear();
+          } else {
+            setOpenError(true);
+            setTextError(res.data._result.message);
+            getData(query);
+            Clear();
+          }
+        }
+      });
     }
   };
   const Clear = () => {
@@ -650,17 +694,35 @@ const AmDocumentSearch = props => {
           ) : (
             ""
           )}
-
-          <AmButton
-            onClick={() => {
-              onClickReject();
-              FuncRanderRemark();
-              setDialog(true);
-            }}
-            styleType="delete"
-          >
-            {t("Reject")}
-          </AmButton>
+          {props.buttonReject === true ? (
+            <AmButton
+              onClick={() => {
+                onClickReject();
+                //FuncRanderRemark();
+                //setDialog(true);
+              }}
+              style={{ marginRight: "5px" }}
+              styleType="delete"
+            >
+              {t("Reject")}
+            </AmButton>
+          ) : (
+            ""
+          )}
+          {props.buttonWorking === true ? (
+            <AmButton
+              onClick={() => {
+                onClickWorking();
+                //FuncRanderRemark();
+                //setDialog(true);
+              }}
+              styleType="warning"
+            >
+              {t("Working")}
+            </AmButton>
+          ) : (
+            ""
+          )}
         </div>
         <AmPagination
           //จำนวนข้อมูลทั้งหมด
