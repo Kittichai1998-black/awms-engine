@@ -55,8 +55,8 @@ namespace AWMSEngine.WorkerService
             }
             catch (Exception e)
             {
+                //throw new System.Exception("Not Enum Type.");
             }
-
         }
     }
 }

@@ -21,7 +21,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     var docs = ADO.DocumentADO.GetInstant().Get(x, this.BuVO);
                     if (docs != null)
                     {
-                        if(docs.DocumentType_ID != DocumentTypeID.AUDIT)
+                        if(docs.EventStatus == DocumentEventStatus.WORKING)
                         {
                             var distos = ADO.DocumentADO.GetInstant().ListDISTOByDoc(x, this.BuVO).ToList();
                             var docItemID = distos.Select(y => y.DocumentItem_ID).Distinct().ToList();

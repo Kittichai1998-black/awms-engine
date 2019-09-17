@@ -166,7 +166,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             name = _sku.Name,
                             batch = pack.CHARG,
                             qty = pack.VERME, //Available Stock
-                            skuID = _sku.ID,
+                            skuID = _sku.ID.Value,
                             unitCode = unit.Code,
                             unitID = unit.ID.Value,
                             baseUnitCode = unit.Code,
@@ -174,8 +174,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             baseQty = pack.VERME, //Available Stock
                             objectSizeID = _objSizePack.ID.Value,
                             type = StorageObjectType.PACK,
-                            productDate = productDate.Value, //Date of Manufacture
-                            expiryDate = expiryDate.Value,
+                            productDate = productDate, //Date of Manufacture
+                            expiryDate = expiryDate,
                             objectSizeName = _objSizePack.Name,
                             options = options,
                             mstID = _pack.ID.Value,
@@ -216,6 +216,17 @@ namespace ProjectAAI.Engine.Business.WorkQueue
         private SapResponse<ZSWMRF001_OUT_SU> GetObjectFromSAP(string barcode, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF001(barcode, buVO);
+            if (res.datas != null)
+            {
+                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+                {
+                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
+                }
+            }
+            else
+            {
+                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
+            }
             return res;
         }
     }
