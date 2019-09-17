@@ -309,6 +309,7 @@ const AmProcessQueue = props => {
 
     useEffect(() => {
         if (window.project === "AAI") {
+            console.log("Project AAI")
             Axios.get(createQueryString(docQueryAAI)).then(res => {
                 let docSelection = res.data.datas;
                 setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
@@ -321,7 +322,20 @@ const AmProcessQueue = props => {
                 setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
             });
         }
-  }, [warehouseID, dataClears]);
+    }, [warehouseID, dataClears]);
+
+   //useEffect(() => {
+   //         if (window.project === "AAI") {
+   //             console.log("Project AAI")
+   //             Axios.get(createQueryString(docQueryAAI)).then(res => {
+   //                 let docSelection = res.data.datas;
+   //                 setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+   //             });
+
+   //         }
+   //})
+
+
 
   const priolity = () => {
     let arrPrio = [];
@@ -615,9 +629,6 @@ const AmProcessQueue = props => {
     });
 
     if (value !== null) {
-      console.log(field);
-      console.log(dataObject);
-
       onChangeEditorSort(field, data, dataObject.value, pair);
     }
   };
@@ -1281,27 +1292,64 @@ const AmProcessQueue = props => {
         setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
       });
     } else {
-    }
+      }
+
+      if (window.project === "AAI") {
+          Axios.get(createQueryString(docQueryAAI)).then(res => {
+              let docSelection = res.data.datas.filter(x => {
+                  return (
+                      [...dataQueue].filter(y => y.DataDocumentCode == x.Code).length ===
+                      0
+                  );
+              });
+              setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+          });
+      } 
+      
   };
 
-  const OnclickBackAddDocument = (doc, dataSc, dataSt) => {
-    Axios.get(createQueryString(docQuery)).then(res => {
-      let docSelection = res.data.datas.filter(x => {
-        let dataInQueue = [...dataQueue].filter(
-          y => y.DataDocumentCode === x.Code
-        );
-        if (dataInQueue.length > 0) {
-          let editQueue = dataInQueue.filter(z => {
-            return z.DataDocumentCode === doc.DataDocumentCode;
-          });
-          if (editQueue.length > 0) return true;
-          else return false;
+    const OnclickBackAddDocument = (doc, dataSc, dataSt) => {
+       
+        if (window.project === "AAI") {
+            Axios.get(createQueryString(docQueryAAI)).then(res => {
+                let docSelection = res.data.datas.filter(x => {
+                    let dataInQueue = [...dataQueue].filter(
+                        y => y.DataDocumentCode === x.Code
+                    );
+                    if (dataInQueue.length > 0) {
+                        let editQueue = dataInQueue.filter(z => {
+                            return z.DataDocumentCode === doc.DataDocumentCode;
+                        });
+                        if (editQueue.length > 0) return true;
+                        else return false;
+                    } else {
+                        return true;
+                    }
+                });
+                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+            });
+
+
         } else {
-          return true;
+        
+            Axios.get(createQueryString(docQuery)).then(res => {
+                let docSelection = res.data.datas.filter(x => {
+                    let dataInQueue = [...dataQueue].filter(
+                        y => y.DataDocumentCode === x.Code
+                    );
+                    if (dataInQueue.length > 0) {
+                        let editQueue = dataInQueue.filter(z => {
+                            return z.DataDocumentCode === doc.DataDocumentCode;
+                        });
+                        if (editQueue.length > 0) return true;
+                        else return false;
+                    } else {
+                        return true;
+                    }
+                });
+                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+            });
         }
-      });
-      setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
-    });
 
     setDocumentID(doc.DataDocumentID);
     setDataDocumentItem(doc.DataDocumentItem);
@@ -1447,7 +1495,8 @@ const AmProcessQueue = props => {
                   processResults.push(a);
                   var datasConfirms = [];
                   var datasConfirmsLock = [];
-                  var dataTBs = [];
+                        var dataTBs = [];
+                        let num = 0
                   if (a.pickStos.length === 0) {
                     setMsgDialogErr("SKU not in storage");
                     setStateDialogErr(true);
@@ -1467,7 +1516,7 @@ const AmProcessQueue = props => {
                           //setsumBase();
                           //setsumBaseMax();
                           var dataTBCon = [];
-                          var dataSorceTBs = {
+                                var dataSorceTBs = {
                             SKU: x.pstoCode,
                             Pallet: x.rstoCode,
                             Batch: x.pstoBatch,
@@ -1486,6 +1535,7 @@ const AmProcessQueue = props => {
                           ? a.lockStos.map(x => {
                               //setsumBase();
                               //setsumBaseMax();
+                                   
                               var dataTBConLock = [];
                               var dataSorceTBsLock = {
                                 SKU: x.pstoCode,
@@ -1511,7 +1561,9 @@ const AmProcessQueue = props => {
                           minRows={1}
                           sumFooter={SumTables(a.pickStos)}
                           reload={reload}
-                          sortable={false}
+                                sortable={false}
+                                pageSize={1}
+                                currentPage={0}
                           getTrProps={(state, rowInfo) => {
                             let result = false;
                             let rmv = false;

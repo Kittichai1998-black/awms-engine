@@ -273,6 +273,8 @@ namespace ProjectAAI.ADO.SAPApi
         {
             /// <summary>Delivery Item</summary>
             public string POSNR = "";
+            /// <summary>Sales Instruction</summary>
+            public string VBELN;
         }
         public class ZSWMRF006_IN_AWS : ZSWMRF004_IN_AWS
         {
