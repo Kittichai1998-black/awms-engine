@@ -16,6 +16,16 @@ import { withStyles } from "@material-ui/core/styles";
 import classnames from "classnames";
 import PropTypes from "prop-types";
 import Card from "@material-ui/core/Card";
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import StepContent from '@material-ui/core/StepContent';
+import Typography from '@material-ui/core/Typography';
+import AmListSTORenderer from '../../../pageComponent/AmListSTORenderer'
+import { indigo, deepPurple, lightBlue, red, grey, green } from '@material-ui/core/colors';
+import Collapse from '@material-ui/core/Collapse';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 import Axios from 'axios';
 const styles = theme => ({
     root: {
@@ -108,6 +118,13 @@ const ConsolePankan = (props) => {
     const [remark, setremark] = useState();
     const [reload, setreload] = useState({});
     const [value, setvalue] = useState(0);
+    const [newStorageObjPick, setNewStorageObjPick] = useState(null);
+    const [newStorageObjConsole, setNewStorageObjConsole] = useState(null);
+    const [barcodePick, setbarcodePick] = useState();
+    const [barcodePicks, setbarcodePicks] = useState();
+    const [barcodeConsole, setbarcodeConsole] = useState();
+    const [barcodeConsoles, setbarcodeConsoles] = useState();
+    const [expanded, setExpanded] = useState(true);
 
     const Customer = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -155,7 +172,7 @@ const ConsolePankan = (props) => {
     };
 
     const onChangeEditorBarcodepick = (e) => {
-
+        console.log(e)
     };
 
     const onChangeEditorQtypick = (e) => {
@@ -163,7 +180,9 @@ const ConsolePankan = (props) => {
     };
 
     const onChangeEditorBarcodeConsole = (e) => {
-
+        if (e !== null || e !== undefined) {
+            setbarcodePick(e)
+        }
     }
 
     const Column = [
@@ -183,7 +202,27 @@ const ConsolePankan = (props) => {
     };
 
     const onclickPick = () => {
+        let datas = {
+            //"desBase": valueInput.desbase,
+            //"souBase": valueInput.soubase,
+            //"souPack": valueInput.soupack,
+            //"quantity": valueInput.qty,
+            //"areaID": 1,
+            //"warehouseID": 1
+        }
+        Axios.post(window.apipath + '/v2/TransferPanKanAPI', datas).then((res) => {
+            if (res.data._result.status === 1) {
+                let datas = res.data
+                setNewStorageObjPick(<AmListSTORenderer
+                    dataSrc={datas}
 
+                />);
+               
+            } else {
+   
+
+            }
+        })
     };
 
     const onclickPickClear = () => {
@@ -330,10 +369,13 @@ const ConsolePankan = (props) => {
                           onClick={onclickPickClear}
                       >
                           {"Clear"}</AmButton>
-                  </FormInline>
-                  
-
-             </Card> : 
+                 </FormInline>
+                     <Collapse in={expanded} timeout="auto" unmountOnExit>
+                         <CardContent className={classes.cardContent}>
+                         {newStorageObjPick ? newStorageObjPick : null}
+                     </CardContent>
+                 </Collapse>
+              </Card> : 
                  value == 1 ? <Card>
                      <FormInline>
                          <div style={{ marginLeft: "10px" }}><LabelH>Console : </LabelH></div>

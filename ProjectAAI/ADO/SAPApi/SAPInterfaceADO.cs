@@ -147,6 +147,22 @@ namespace ProjectAAI.ADO.SAPApi
             var res = this.SendJson<SapResponse<ZSWMRF005_OUT_SU_BAL>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
+        public SapResponse<ZSWMRF006_OUT_SAP> ZWMRF006_IN_REQ(ZSWMRF006_IN_REQ reqVO, VOCriteria buVO)
+        {
+            var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
+            var req = new SAPReq()
+            {
+                environmentName = getEnvironment,
+                functionName = "ZWMRF006",
+                inStructureName = "ZSWMRF006_IN_REQ",
+                inTableName = "IN_REQ",
+                outTableName = "OUT_SAP",
+                datas = reqVO
+            };
+
+            var res = this.SendJson<SapResponse<ZSWMRF006_OUT_SAP>>("SAPCONNECT_LOCATION", req, buVO);
+            return res;
+        }
         public SapResponse<ZSWMRF006_OUT_SU_BAL> ZWMRF006(ZSWMRF006_IN_AWS reqVO, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;

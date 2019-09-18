@@ -385,7 +385,6 @@ export default props => {
 
         let documentItem = dataSource.map((item, idx) => {
             let options =
-                'bwlvs=' + item.BWLVS +
                 '&lenum=' + item.LENUM +
                 '&lgtyp=' + item.LGTYP +
                 '&lgber=' + item.LGBER +

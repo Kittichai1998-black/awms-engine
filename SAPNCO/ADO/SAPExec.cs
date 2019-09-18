@@ -53,7 +53,7 @@ namespace SAPNCO.ADO
 
             foreach (var data in req.datas)
             {
-                var dataType = IN_SU.Metadata[data.Key];
+                /*var dataType = IN_SU.Metadata[data.Key];
                 if(dataType.DataType == RfcDataType.CHAR)
                 {
                     if(data.Value.ToString() != "")
@@ -70,11 +70,12 @@ namespace SAPNCO.ADO
                         }
                         else
                             IN_SU.SetValue(data.Key, data.Value);
-                    }
+                    }*/
+                IN_SU.SetValue(data.Key, data.Value);
                     
-                }
-                else
-                    IN_SU.SetValue(data.Key, data.Value);
+                //}
+                //else
+                //    IN_SU.SetValue(data.Key, data.Value);
             }
 
             return IN_SU;
