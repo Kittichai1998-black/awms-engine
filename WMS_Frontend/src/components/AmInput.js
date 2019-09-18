@@ -43,6 +43,7 @@ function CustomTextField(props) {
     className,
     styleType,
     defaultValue,
+    disabled,
     required,
     onChange,
     onMouseOver,
@@ -125,6 +126,7 @@ function CustomTextField(props) {
           },
           ...InputProps
         }}
+        disabled={disabled}
         defaultValue={defaultValue}
         // onChange={handleChange}
         onMouseOver={handleMouseOver}
@@ -174,7 +176,8 @@ InputStyle.propTypes = {
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
   validate: PropTypes.bool,
-  defaultValue: PropTypes.any
+  defaultValue: PropTypes.any,
+  disabled: PropTypes.bool
 };
 const theme = createMuiTheme({
   status: {

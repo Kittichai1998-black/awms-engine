@@ -343,6 +343,11 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 }
             }
         }
+        private SapResponse<ZSWMRF001_OUT_SU> SendDataToSAP_IN_SU(string data, VOCriteria buVO)
+        {
+            var res = SAPInterfaceADO.GetInstant().ZWMRF001(data, buVO);
+            return res;
+        }
         private SapResponse<ZSWMRF004_OUT_SAP> SendDataToSAP_IN_REQ_R_1_2_6(ZSWMRF004_IN_REQ data, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF004_IN_REQ(data, buVO);

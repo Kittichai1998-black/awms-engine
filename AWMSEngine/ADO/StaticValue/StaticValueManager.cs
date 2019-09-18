@@ -16,7 +16,7 @@ namespace AWMSEngine.ADO.StaticValue
         public List<ams_Feature> Features { get => this._Features ?? this.LoadFeature(); }
 
         private List<ams_Config> _Configs;
-        public List<ams_Config> Configs { get => this._Configs ?? this._Configs; }
+        public List<ams_Config> Configs { get => this._Configs ?? this.LoadConfig(); }
 
         private List<ams_ObjectSize> _ObjectSizes;
         public List<ams_ObjectSize> ObjectSizes { get => this._ObjectSizes ?? this.LoadObjectSize(); }
@@ -30,8 +30,8 @@ namespace AWMSEngine.ADO.StaticValue
             ams_Warehouse w = GetWarehouse(warehouseID, areaID, warehouseCode, areaCode);
             if (branchID.HasValue || !string.IsNullOrEmpty(branchCode) || w != null)
             {
-                b = this.Branchs.FirstOrDefault(x => 
-                x.ID == branchID || 
+                b = this.Branchs.FirstOrDefault(x =>
+                x.ID == branchID ||
                 (!branchID.HasValue && x.Code == branchCode) ||
                 (!branchID.HasValue && string.IsNullOrWhiteSpace(branchCode) && w != null && x.ID == w.Branch_ID));
                 if (b == null)
@@ -66,7 +66,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public string GetWarehousesCode(long id)
         {
-            return this._Warehouses.First(x => x.ID == id).Code;
+            return this.Warehouses.First(x => x.ID == id).Code;
         }
 
         private List<ams_AreaMaster> _AreaMasters;
@@ -76,7 +76,7 @@ namespace AWMSEngine.ADO.StaticValue
             ams_AreaMaster a = null;
             if (areaID.HasValue || !string.IsNullOrEmpty(areaCode))
             {
-                a = this.AreaMasters.FirstOrDefault(x => 
+                a = this.AreaMasters.FirstOrDefault(x =>
                 x.ID == areaID ||
                 (!areaID.HasValue && x.Code == areaCode));
                 if (a == null)
@@ -87,14 +87,14 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public string GetAreaMasterCode(long id)
         {
-            return this._AreaMasters.First(x => x.ID == id).Code;
+            return this.AreaMasters.First(x => x.ID == id).Code;
         }
 
         private List<ams_AreaMasterType> _AreaMasterTypes;
         public List<ams_AreaMasterType> AreaMasterTypes { get => this._AreaMasterTypes ?? this.LoadAreaMasterType(); }
         public string GetAreaMasterTypesCode(long id)
         {
-            return this._AreaMasterTypes.First(x => x.ID == id).Code;
+            return this.AreaMasterTypes.First(x => x.ID == id).Code;
         }
 
         private List<ams_AreaRoute> _AreaRoutes;
@@ -168,7 +168,6 @@ namespace AWMSEngine.ADO.StaticValue
         {
             this._ObjectSizes = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSize>("status", 1, buVO ?? new VOCriteria()));
             var subVals = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_ObjectSizeMap>("status", 1, buVO ?? new VOCriteria()));
-            subVals = subVals.Where(x => this._ObjectSizes.Any(y => y.ID == x.InnerObjectSize_ID) && this._ObjectSizes.Any(y => y.ID == x.OuterObjectSize_ID)).ToList();
             this._ObjectSizes.ForEach(x => x.ObjectSizeInners = subVals.FindAll(y => y.OuterObjectSize_ID == x.ID));
             return this._ObjectSizes;
         }
@@ -281,13 +280,17 @@ namespace AWMSEngine.ADO.StaticValue
                 else if (tableName == typeof(ams_PackMasterType).Name) this._PackMasterTypes = null;
                 else if (tableName == typeof(ams_SKUMasterType).Name) this._SKUMasterTypes = null;
                 else if (tableName == typeof(ams_BaseMasterType).Name) this._BaseMasterTypes = null;
-                else if (tableName == typeof(ams_PackMaster).Name) {
+                else if (tableName == typeof(ams_PackMaster).Name)
+                {
                     this._PackUnitConverts = null;
-                    this._PackMasterEmptyPallets = null; }
-                else if (tableName == typeof(ams_SKUMaster).Name) {
+                    this._PackMasterEmptyPallets = null;
+                }
+                else if (tableName == typeof(ams_SKUMaster).Name)
+                {
                     this._SKUMasterEmptyPallets = null;
                     this._PackUnitConverts = null;
-                    this._PackMasterEmptyPallets = null; }
+                    this._PackMasterEmptyPallets = null;
+                }
             }
         }
 
@@ -295,7 +298,7 @@ namespace AWMSEngine.ADO.StaticValue
         public bool IsFeature(FeatureCode code)
         {
             string c = code.Attribute<EnumValueAttribute>().ValueString;
-            var feature = this._Features.FirstOrDefault(x => x.Code == c);
+            var feature = this.Features.FirstOrDefault(x => x.Code == c);
             return feature == null ? false : feature.DataValue == AWMSModel.Constant.StringConst.YesNoConst.YES;
         }
         public string GetFeatureValue(FeatureCode code)
@@ -305,12 +308,12 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public string GetFeatureValue(string code)
         {
-            var feature = this._Features.FirstOrDefault(x => x.Code == code);
+            var feature = this.Features.FirstOrDefault(x => x.Code == code);
             return feature == null ? null : feature.DataValue;
         }
         public ams_Feature GetFeature(string code)
         {
-            var feature = this._Features.FirstOrDefault(x => x.Code == code);
+            var feature = this.Features.FirstOrDefault(x => x.Code == code);
             return feature;
         }
 
@@ -321,7 +324,7 @@ namespace AWMSEngine.ADO.StaticValue
         public string GetConfigValue(string code)
         {
             string c = code;
-            var config = this._Configs.FirstOrDefault(x => x.Code == c);
+            var config = this.Configs.FirstOrDefault(x => x.Code == c);
             return config == null ? null : config.DataValue;
         }
 
@@ -352,29 +355,29 @@ namespace AWMSEngine.ADO.StaticValue
         //---------------PACK Convert UNIT
         public ConvertUnitCriteria ConvertToBaseUnitBySKU(long skuID, decimal qty, long oldUnitTypeID)
         {
-            var baseUnitID = this._PackUnitConverts.First(x => x.SKUMaster_ID == skuID).BaseUnitType_ID;
+            var baseUnitID = this.PackUnitConverts.First(x => x.SKUMaster_ID == skuID).BaseUnitType_ID;
             var convertUnit = this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, baseUnitID);
             return convertUnit;
         }
         public ConvertUnitCriteria ConvertToBaseUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID)
         {
-            int skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
             return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToBaseUnitByPack(string packCode, decimal qty, long oldUnitTypeID)
         {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
             return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToBaseUnitByPack(long packID, decimal qty, long oldUnitTypeID)
         {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
             return this.ConvertToBaseUnitBySKU(skuID, qty, oldUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToNewUnitBySKU(long skuID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
         {
-            var oldUnit = this._PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == oldUnitTypeID);
-            var newUnit = this._PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == newUnitTypeID);
+            var oldUnit = this.PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == oldUnitTypeID);
+            var newUnit = this.PackUnitConverts.Find(x => x.SKUMaster_ID == skuID && x.UnitType_ID == newUnitTypeID);
             if (newUnit == null || oldUnit == null)
                 throw new Exception("Covert Unit Fail : UnitType ไม่มีใน Config PackMaster");
 
@@ -394,17 +397,17 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public ConvertUnitCriteria ConvertToNewUnitBySKU(string skuCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
         {
-            var skuID = this._PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
+            var skuID = this.PackUnitConverts.First(x => x.SKUMaster_Code == skuCode).SKUMaster_ID;
             return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToNewUnitByPack(string packCode, decimal qty, long oldUnitTypeID, long newUnitTypeID)
         {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.PackMaster_Code == packCode).SKUMaster_ID;
             return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
         }
         public ConvertUnitCriteria ConvertToNewUnitByPack(long packID, decimal qty, long oldUnitTypeID, long newUnitTypeID)
         {
-            int skuID = this._PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
+            int skuID = this.PackUnitConverts.First(x => x.PackMaster_ID == packID).SKUMaster_ID;
             return this.ConvertToNewUnitBySKU(skuID, qty, oldUnitTypeID, newUnitTypeID);
         }
 
