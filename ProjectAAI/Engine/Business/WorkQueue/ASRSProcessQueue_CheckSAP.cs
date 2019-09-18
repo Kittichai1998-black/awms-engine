@@ -130,7 +130,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
                         BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
                         VBELN_VL = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln_vl"),
-                        POSNR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "posnr")
+                        POSNR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "posnr"),
+                        VBELN = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln")
                     };
                     if (RSNUM != "")
                     {
@@ -341,6 +342,11 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         + ") Codition");
                 }
             }
+        }
+        private SapResponse<ZSWMRF001_OUT_SU> SendDataToSAP_IN_SU(string data, VOCriteria buVO)
+        {
+            var res = SAPInterfaceADO.GetInstant().ZWMRF001(data, buVO);
+            return res;
         }
         private SapResponse<ZSWMRF004_OUT_SAP> SendDataToSAP_IN_REQ_R_1_2_6(ZSWMRF004_IN_REQ data, VOCriteria buVO)
         {

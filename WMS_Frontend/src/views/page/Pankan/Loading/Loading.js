@@ -27,6 +27,7 @@ import styled from "styled-components";
 import AmTable from "../../../../components/table/AmTable";
 import AmDropdown from "../../../../components/AmDropdown";
 import AmEntityStatus from "../../../../components/AmEntityStatus";
+
 const Axios = new apicall();
 
 const styles = theme => ({
@@ -83,7 +84,13 @@ const InputDiv = styled.div``;
 const Loading = props => {
   const { classes } = props;
   const [data, setData] = useState([]);
+  const [docID, setDocID] = useState();
+  const [doc, setDoc] = useState();
+  const [valueDoc, setValueDoc] = useState();
   const [transport, setTransport] = useState("");
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openError, setOpenError] = useState(false);
+  const [textError, setTextError] = useState("");
 
   const DocumentQuery = {
     queryString: window.apipath + "/v2/SelectDataTrxAPI/",
@@ -153,16 +160,20 @@ const Loading = props => {
     //     fieldDataKey: fieldDataKey
     //   }
     // });
+
     console.log(value);
+    setDoc(value);
     onGetData(value);
   };
 
   function onGetData(value) {
     Axios.get(createQueryString(transportQuery)).then(res => {
       console.log(res);
-      setTransport(res.data.datas[0].transport);
+      if (res.data.datas.length > 0) {
+        setTransport(res.data.datas[0].transport);
+      }
     });
-
+    setDocID(value);
     console.log(value);
     const data = {
       docID: value
@@ -195,8 +206,57 @@ const Loading = props => {
     });
   }
 
+  const getDocument = barcodeDetail => {
+    const data = {
+      docID: docID,
+      scanCode: barcodeDetail
+    };
+    Axios.post(window.apipath + "/v2/LoadedStoByScanConsoAPI", data).then(
+      res => {
+        if (res.data._result.status === 1) {
+          setOpenSuccess(true);
+          onGetData(doc);
+          Clear();
+        } else {
+          setOpenError(true);
+          setTextError(res.data._result.message);
+          onGetData(doc);
+          Clear();
+        }
+      }
+    );
+  };
+  const Clear = () => {
+    var element = document.getElementById("issuedDocID");
+    element.value = "";
+
+    var elementBarcode = document.getElementById("Barcode");
+    elementBarcode.value = "";
+  };
+
+  const onChangeEditor = value => {
+    setValueDoc(value);
+    console.log(value);
+  };
   return (
     <div className={classes.root}>
+      <AmDialogs
+        typePopup={"success"}
+        onAccept={e => {
+          setOpenSuccess(e);
+        }}
+        open={openSuccess}
+        content={"Success"}
+      ></AmDialogs>
+      <AmDialogs
+        typePopup={"error"}
+        onAccept={e => {
+          setOpenError(e);
+        }}
+        open={openError}
+        content={textError}
+      ></AmDialogs>
+
       <Paper className={classes.paperContainer}>
         <FormInline
           style={{
@@ -215,9 +275,7 @@ const Loading = props => {
             ddlMinWidth={150}
             zIndex={1000}
             queryApi={DocumentQuery}
-            onChange={(value, dataObject, field) =>
-              onHandleDDLChange(value, dataObject, field)
-            }
+            onChange={(value, dataObject, field) => onHandleDDLChange(value)}
             ddlType={"search"}
           />
         </FormInline>
@@ -243,13 +301,25 @@ const Loading = props => {
                 >
                   <LabelHCard>Barcode : </LabelHCard>
                   <AmInput
-                    id={"cols.field"}
+                    id={"Barcode"}
                     style={{ width: "115px" }}
                     type="input"
-
-                    //onChange={(val)=>{onChangeEditor(cols.field, data, val,"Pack Name")}}
+                    onKeyPress={(value, xx, target, event) => {
+                      if (event.key === "Enter") {
+                        //let barcodeDetail = getBarcodeDetail(value);
+                        //setBarcode(barcodeDetail);
+                        getDocument(value);
+                      }
+                    }}
+                    onChange={val => {
+                      onChangeEditor(val);
+                    }}
                   />
-                  <AmButton styleType="confirm" style={{ marginLeft: "15px" }}>
+                  <AmButton
+                    styleType="confirm"
+                    style={{ marginLeft: "15px" }}
+                    onClick={() => getDocument(valueDoc)}
+                  >
                     {"Scan"}
                   </AmButton>
                 </FormInline>

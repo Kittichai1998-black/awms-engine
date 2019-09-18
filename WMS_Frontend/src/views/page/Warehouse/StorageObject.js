@@ -251,14 +251,8 @@ const StorageObject = props => {
     {
       label: "Location",
       field: "Location",
-      searchType: "findPopup",
-      colsFindPopup: colsLocation,
-      name: "Location",
-      dataDropDow: AreaLocationMasterQuery,
-      placeholder: "Location",
-      labelTitle: "Search of Location",
-      fieldLabel: ["Code", "Name"],
-      fieldDataKey: "Code"
+      searchType: "input",
+      placeholder: "Location"
     },
     {
       label: "Batch",

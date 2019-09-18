@@ -78,6 +78,8 @@ export default props => {
             connection.start()
                 .then(() => {
                     connection.on(dashboard, res => {
+                        console.log(JSON.parse(res));
+                        
                         data[0][0].table[0].headercol = headercol1
                         data[0][0].table[0].data = JSON.parse(res)
                         setData([...data])
