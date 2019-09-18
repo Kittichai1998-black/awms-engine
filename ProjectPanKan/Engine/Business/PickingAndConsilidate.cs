@@ -22,6 +22,7 @@ namespace ProjectPanKan.Engine.Business
             public string baseConso;
             public string basePick;
             public decimal scanQty;
+            public string mode;
         }
 
         public class TRes
@@ -49,16 +50,23 @@ namespace ProjectPanKan.Engine.Business
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
+            var res = new TRes();
             var docItems = DocumentADO.GetInstant().ListItemAndDisto(reqVO.docID, this.BuVO);
             if (docItems.Count == 0)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document Not Found");
 
-
-
-            return null;
+            if(reqVO.mode == "pick")
+            {
+                res =this.Pick(docItems, reqVO);
+            }
+            else if(reqVO.mode == "conso")
+            {
+                res =this.Consolidate(docItems, reqVO);
+            }
+            return res;
         }
 
-        private TRes Pick(List<amt_DocumentItem> docItems, TReq reqVO, VOCriteria buVO)
+        private TRes Pick(List<amt_DocumentItem> docItems, TReq reqVO)
         {
             var stoScan = StorageObjectADO.GetInstant().Get(string.IsNullOrWhiteSpace(reqVO.basePick) ? reqVO.scanCode : reqVO.basePick, null, null, false, true, this.BuVO);
             var res = new TRes();
@@ -86,12 +94,12 @@ namespace ProjectPanKan.Engine.Business
                             Quantity = sto.qty,
                             UnitType_ID = sto.unitID,
                         };
-                        var distoRes = DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
-                        DocumentADO.GetInstant().UpdateMappingSTO(distoRes.ID.Value, EntityStatus.ACTIVE, buVO);
+                        var distoRes = DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
+                        DocumentADO.GetInstant().UpdateMappingSTO(distoRes.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                     });
 
-                    DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, buVO);
-                    StorageObjectADO.GetInstant().UpdateStatusToChild(stoScan.id.Value, null, null, StorageObjectEventStatus.CONSOLIDATED, buVO);
+                    DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                    StorageObjectADO.GetInstant().UpdateStatusToChild(stoScan.id.Value, null, null, StorageObjectEventStatus.CONSOLIDATED, this.BuVO);
 
                     break;
                 }
@@ -116,36 +124,39 @@ namespace ProjectPanKan.Engine.Business
                         var packs = stoScan.mapstos.Find(pack => pack.code == reqVO.scanCode);
 
                         if(packs.mstID != docItem.PackMaster_ID)
-                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Cannot Pick " + stoScan.code);
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + stoScan.code);
 
-                        var chkDisto = DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(new SQLConditionCriteria[]{
-                            new SQLConditionCriteria("Sou_StorageObject_ID", packs.id, SQLOperatorType.EQUALS),
-                            new SQLConditionCriteria("DocumentItem_ID", docItem.ID, SQLOperatorType.EQUALS)
-                            }, this.BuVO).FirstOrDefault();
+                        var chkDisto = docItem.DocItemStos.Find(disto => disto.Sou_StorageObject_ID == packs.id);
 
                         packs.qty -= reqVO.scanQty;
                         packs.baseQty -= reqVO.scanQty;
+
+                        if (packs.qty == 0)
+                        {
+                            packs.eventStatus = StorageObjectEventStatus.REMOVED;
+                        }
+
                         if (packs.qty < 0)
-                            throw new AMWException(buVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
+                            throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
 
                         if (chkDisto != null)
                         {
                             if(chkDisto.BaseQuantity + reqVO.scanQty > docItem.BaseQuantity)
-                                throw new AMWException(buVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
+                                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
 
-                            DocumentADO.GetInstant().UpdateMappingSTO(chkDisto.ID.Value, chkDisto.Des_StorageObject_ID, chkDisto.Quantity + reqVO.scanQty, chkDisto.BaseQuantity + reqVO.scanQty, EntityStatus.ACTIVE, buVO);
+                            DocumentADO.GetInstant().UpdateMappingSTO(chkDisto.ID.Value, chkDisto.Des_StorageObject_ID, chkDisto.Quantity + reqVO.scanQty, chkDisto.BaseQuantity + reqVO.scanQty, EntityStatus.ACTIVE, this.BuVO);
                             
-                            var pickedSto = StorageObjectADO.GetInstant().Get(chkDisto.Des_StorageObject_ID.Value, StorageObjectType.PACK, true, true, buVO);
+                            var pickedSto = StorageObjectADO.GetInstant().Get(chkDisto.Des_StorageObject_ID.Value, StorageObjectType.PACK, true, true, this.BuVO);
                             pickedSto.qty += reqVO.scanQty;
                             pickedSto.baseQty += reqVO.scanQty;
                             pickedSto.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
 
-                            StorageObjectADO.GetInstant().PutV2(pickedSto, buVO);
+                            StorageObjectADO.GetInstant().PutV2(pickedSto, this.BuVO);
                         }
                         else
                         {
                             if (reqVO.scanQty > docItem.BaseQuantity)
-                                throw new AMWException(buVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
+                                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
 
                             var pickedSto = packs.Clone();
                             pickedSto.id = null;
@@ -153,7 +164,7 @@ namespace ProjectPanKan.Engine.Business
                             pickedSto.baseQty = reqVO.scanQty;
                             pickedSto.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
 
-                            var pickedStoID = StorageObjectADO.GetInstant().PutV2(pickedSto, buVO);
+                            var pickedStoID = StorageObjectADO.GetInstant().PutV2(pickedSto, this.BuVO);
 
                             var disto = new amt_DocumentItemStorageObject()
                             {
@@ -167,10 +178,10 @@ namespace ProjectPanKan.Engine.Business
                                 Des_StorageObject_ID = pickedSto.id.Value
                             };
 
-                            DocumentADO.GetInstant().InsertMappingSTO(disto, buVO);
+                            DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
                         }
 
-                        StorageObjectADO.GetInstant().PutV2(packs, buVO);
+                        StorageObjectADO.GetInstant().PutV2(packs, this.BuVO);
 
                         res = new TRes()
                         {
@@ -189,26 +200,122 @@ namespace ProjectPanKan.Engine.Business
             return res;
         }
 
-        private TRes Consolidate(List<amt_DocumentItem> docItems, TReq reqVO, VOCriteria buVO)
+        private TRes Consolidate(List<amt_DocumentItem> docItems, TReq reqVO)
         {
-            var getbaseConso = StorageObjectADO.GetInstant().Get(reqVO.baseConso, null, null, false, true, buVO);
-            var getBasePick = StorageObjectADO.GetInstant().Get(reqVO.basePick, null, null, false, true, buVO);
+            var getBaseConso = StorageObjectADO.GetInstant().Get(reqVO.baseConso, null, null, false, true, this.BuVO);
+            var stoScan = StorageObjectADO.GetInstant().Get(string.IsNullOrWhiteSpace(reqVO.basePick) ? reqVO.scanCode : reqVO.basePick, null, null, false, true, this.BuVO);
+            var res = new TRes();
 
             foreach (var docItem in docItems)
             {
-                if (getbaseConso != null)
+                if (stoScan.type == StorageObjectType.BASE)
                 {
-                    var basecode = AMWUtil.Common.ObjectUtil.QryStrGetValue(docItem.Options, "basecode");
-                    if (getbaseConso.eventStatus == StorageObjectEventStatus.CONSOLIDATED || getbaseConso.eventStatus == StorageObjectEventStatus.NEW)
+                    return new TRes()
                     {
-                        var pack = getbaseConso.mapstos.Find(packSto => packSto.code == reqVO.basePick);
+                        docID = docItem.Document_ID,
+                        sto = new TRes.BaseSto()
+                        {
+                            baseCode = stoScan.code,
+                            baseUnitCode = stoScan.baseUnitCode,
+                            baseID = stoScan.id.Value,
+                            packSTOs = stoScan.mapstos.Select(sto => new TRes.BaseSto.PackSTO() { packID = sto.id.Value, packCode = sto.code, packBaseQty = sto.baseQty, packBaseUnitCode = sto.baseUnitCode }).ToList()
+                        }
+                    };
+                }
+                else
+                {
+                    if (getBaseConso != null)
+                    {
+                        var baseConso = DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.baseConso, this.BuVO);
+                        getBaseConso = StorageObjectCriteria.CreateCriteriaBase(baseConso, 2, null, this.StaticValue);
+                        getBaseConso.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
+                        var resBaseConso = StorageObjectADO.GetInstant().PutV2(getBaseConso, this.BuVO);
+                        getBaseConso.id = resBaseConso;
+                    }
+
+                    if (getBaseConso.eventStatus == StorageObjectEventStatus.CONSOLIDATED || getBaseConso.eventStatus == StorageObjectEventStatus.NEW)
+                    {
+                        var packs = stoScan.mapstos.Find(pack => pack.code == reqVO.scanCode);
+
+                        if (packs.mstID != docItem.PackMaster_ID)
+                            throw new AMWException(this.Logger, AMWExceptionCode.V1001, "ไม่มีสินค้า " + stoScan.code);
+
+                        var chkDisto = docItem.DocItemStos.Find(disto => disto.Sou_StorageObject_ID == packs.id);
+
+                        packs.qty -= reqVO.scanQty;
+                        packs.baseQty -= reqVO.scanQty;
+                        if(packs.qty == 0)
+                        {
+                            packs.eventStatus = StorageObjectEventStatus.REMOVED;
+                        }
+
+                        if (packs.qty < 0)
+                            throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
+
+                        if (chkDisto != null)
+                        {
+                            if (chkDisto.BaseQuantity + reqVO.scanQty > docItem.BaseQuantity)
+                                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
+
+                            DocumentADO.GetInstant().UpdateMappingSTO(chkDisto.ID.Value, chkDisto.Des_StorageObject_ID, chkDisto.Quantity + reqVO.scanQty, chkDisto.BaseQuantity + reqVO.scanQty, EntityStatus.ACTIVE, this.BuVO);
+
+                            var pickedSto = StorageObjectADO.GetInstant().Get(chkDisto.Des_StorageObject_ID.Value, StorageObjectType.PACK, true, true, this.BuVO);
+                            pickedSto.qty += reqVO.scanQty;
+                            pickedSto.baseQty += reqVO.scanQty;
+                            pickedSto.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
+
+                            StorageObjectADO.GetInstant().PutV2(pickedSto, this.BuVO);
+                        }
+                        else
+                        {
+                            if (reqVO.scanQty > docItem.BaseQuantity)
+                                throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
+
+                            var pickedSto = packs.Clone();
+                            pickedSto.id = null;
+                            pickedSto.qty = reqVO.scanQty;
+                            pickedSto.baseQty = reqVO.scanQty;
+                            pickedSto.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
+
+                            var pickedStoID = StorageObjectADO.GetInstant().PutV2(pickedSto, this.BuVO);
+
+                            var disto = new amt_DocumentItemStorageObject()
+                            {
+                                DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
+                                DocumentItem_ID = docItem.ID.Value,
+                                Quantity = reqVO.scanQty,
+                                BaseQuantity = reqVO.scanQty,
+                                UnitType_ID = stoScan.unitID,
+                                BaseUnitType_ID = stoScan.baseUnitID,
+                                Sou_StorageObject_ID = packs.id.Value,
+                                Des_StorageObject_ID = pickedSto.id.Value
+                            };
+
+                            DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
+                        }
+
+                        StorageObjectADO.GetInstant().PutV2(packs, this.BuVO);
+
+                        res = new TRes()
+                        {
+                            docID = docItem.Document_ID,
+                            sto = new TRes.BaseSto()
+                            {
+                                baseCode = stoScan.code,
+                                baseUnitCode = stoScan.baseUnitCode,
+                                baseID = stoScan.id.Value,
+                                packSTOs = stoScan.mapstos.Select(sto => new TRes.BaseSto.PackSTO() { packID = sto.id.Value, packCode = sto.code, packBaseQty = sto.baseQty, packBaseUnitCode = sto.baseUnitCode }).ToList()
+                            }
+                        };
+                    }
+                    else
+                    {
+                        throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถใช้กล่อง " + reqVO.baseConso + " นี้สำหรับ Consolidate ได้");
                     }
                 }
-
             }
 
-
-            return null;
+            return res;
         }
     }
 }
