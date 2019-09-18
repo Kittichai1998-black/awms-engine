@@ -13,7 +13,7 @@ namespace ProjectAAI.Engine.Business.Issued
         public class TReq
         {
             public string VBELN_VL = "";
-            public string POSNR = "";
+            public long? POSNR=null;
             public string MATNR = "";
             public string CHARG = "";
         }
