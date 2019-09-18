@@ -115,7 +115,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                             GI_DOC = docs.Code
                                         };
                                         var resSAP = SendDataToSAP_ZWMRF005(reqData, docs.ID.Value, buVO);
-                                        
+                                       
                                     }
                                     else if (docs.Ref1 == "R05")
                                     {
@@ -127,7 +127,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                             GI_DOC = docs.Code
                                         };
                                         var resSAP = SendDataToSAP_ZWMRF006(reqData, docs.ID.Value, buVO);
-                                         
+                                        //อัพเดท sto options
+                                        //UpdatePackSTO(resSAP, queue.StorageObject_ID.Value, buVO);
                                     }
                                     
 
@@ -285,7 +286,21 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                             new KeyValuePair<string, object>("Options", opt_done)
                     });
         }
+        private void UpdatePackSTO(SapResponse<ZSWMRF006_OUT_SU_BAL> resSap, long bstoID, VOCriteria buVO)
+        {
+            var chkStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoID, StorageObjectType.BASE, false, true, buVO);
+            var stoPackList = chkStos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
 
+            resSap.datas.ForEach(pack =>
+            {
+                var packTemp = stoPackList.Find(y => y.code == pack.MATNR && y.batch == pack.CHARG);
+                packTemp.qty = pack.BALNC;
+
+                var stoIDUpdated = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packTemp, buVO);
+
+            });
+
+        }
         private void UpdateStorageObjectIssued(List<amt_DocumentItemStorageObject> distos, SPworkQueue queue, VOCriteria buVO, AMWLogger logger)
         {
             var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
