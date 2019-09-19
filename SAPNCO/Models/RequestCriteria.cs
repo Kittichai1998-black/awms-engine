@@ -9,9 +9,13 @@ namespace SAPNCO.Models
     {
         public string environmentName;
         public string functionName;
-        public string inStructureName;
-        public string inTableName;
-        public string outTableName;
-        public Dictionary<string, object> datas;
+        public List<SAPList> sapList;
+
+        public class SAPList{
+            public string inStructureName;
+            public string inTableName;
+            public string outTableName;
+            public Dictionary<string, object> datas;
+        }
     }
 }

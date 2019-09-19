@@ -13,21 +13,31 @@ namespace SAPNCO.ADO
     {
         public ResponseCriteria exec(RequestCriteria req)
         {
+            List<dynamic> res = new List<dynamic>();
             try
             {
                 RfcDestination SapRfcDestination = RfcDestinationManager.GetDestination(req.environmentName);
                 RfcRepository SapRfcRepository = SapRfcDestination.Repository;
-                IRfcFunction SapFunction = SapRfcRepository.CreateFunction(req.functionName);// "BAPI_COMPANYCODE_GETDETAIL");
-                var Metadata_IN = SapRfcRepository.GetStructureMetadata(req.inStructureName);
-                var IN_SU = Metadata_IN.CreateStructure();
-                var T_IN_SU = SapFunction.GetTable(req.inTableName);
+                IRfcFunction SapFunction = SapRfcRepository.CreateFunction(req.functionName);
 
-                T_IN_SU.Append(SetValue(req, IN_SU));
+                req.sapList.ForEach(saplist =>
+                {
+                    RfcStructureMetadata Metadata_IN = SapRfcRepository.GetStructureMetadata(saplist.inStructureName);
+                    IRfcStructure IN_SU = Metadata_IN.CreateStructure();
+                    IRfcTable T_IN_SU = SapFunction.GetTable(saplist.inTableName);
+                    T_IN_SU.Append(SetValue(saplist.datas, IN_SU));
+
+                    SapFunction.SetValue(saplist.inTableName, T_IN_SU);
+                });
+
                 SapFunction.Invoke(SapRfcDestination);
-                var SAPdt = SapFunction.GetTable(req.outTableName);
-                //var res = SapFunction.GetStructure(0);
-                //string dd = COMPANY_GETDETAIL.GetStructure(0).ToString();
-                var res = CreateResponse(SAPdt);
+
+                req.sapList.ForEach(x =>
+                {
+                    var SAPdt = SapFunction.GetTable(x.outTableName);
+                    res.AddRange(CreateResponse(SAPdt));
+                });
+
                 return new ResponseCriteria()
                 {
                     datas = res,
@@ -48,9 +58,9 @@ namespace SAPNCO.ADO
             }
         }
 
-        private IRfcStructure SetValue(RequestCriteria req, IRfcStructure IN_SU)
+        private IRfcStructure SetValue(Dictionary<string,object> req, IRfcStructure IN_SU)
         {
-            foreach (var data in req.datas)
+            foreach (var data in req)
             {
                 var dataType = IN_SU.Metadata[data.Key];
                 if (dataType.DataType == RfcDataType.CHAR)
