@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
+using AWMSEngine.APIService;
 
-namespace AWMSEngine.APIService.V2.ASRS
+namespace ProjectAAI.APIService.Business
 {
 
     public class CloseDocAPI : BaseAPIService
@@ -27,7 +28,7 @@ namespace AWMSEngine.APIService.V2.ASRS
             TReq reqDoc = AMWUtil.Common.ObjectUtil.DynamicToModel<TReq>(this.RequestVO);
             reqDoc.docIDs.ForEach(doc =>
             {
-            var docs = ADO.DocumentADO.GetInstant().Get(doc, this.BuVO);
+            var docs = AWMSEngine.ADO.DocumentADO.GetInstant().Get(doc, this.BuVO);
             if (docs != null)
             {
                 if (docs.EventStatus == DocumentEventStatus.NEW)

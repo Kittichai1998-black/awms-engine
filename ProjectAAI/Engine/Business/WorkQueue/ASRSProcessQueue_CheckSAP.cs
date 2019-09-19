@@ -130,7 +130,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
                         BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
                         VBELN_VL = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln_vl"),
-                        POSNR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "posnr"),
+                        POSNR = long.Parse(ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "posnr")),
                         VBELN = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln")
                     };
                     if (RSNUM != "")

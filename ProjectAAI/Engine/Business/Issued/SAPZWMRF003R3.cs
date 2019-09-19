@@ -17,6 +17,7 @@ namespace ProjectAAI.Engine.Business.Issued
             public string BESTQ_UR = "";
             public string BESTQ_QI = "";
             public string BESTQ_BLK = "";
+            public string MATNR;
         }
 
         protected override List<SAPCriteria.ZSWMRF003_OUT_REQ> ExecuteEngine(TReq reqVO)
@@ -29,7 +30,8 @@ namespace ProjectAAI.Engine.Business.Issued
                 RSNUM = reqVO.RSNUM,
                 BESTQ_UR = reqVO.BESTQ_UR,
                 BESTQ_QI = reqVO.BESTQ_QI,
-                BESTQ_BLK = reqVO.BESTQ_BLK
+                BESTQ_BLK = reqVO.BESTQ_BLK,
+                MATNR = reqVO.MATNR
             };
 
             var res = SAPInterfaceADO.GetInstant().ZWMRF003(sapCriteria, this.BuVO);
