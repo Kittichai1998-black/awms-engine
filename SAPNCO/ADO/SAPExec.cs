@@ -21,7 +21,7 @@ namespace SAPNCO.ADO
                 var Metadata_IN = SapRfcRepository.GetStructureMetadata(req.inStructureName);
                 var IN_SU = Metadata_IN.CreateStructure();
                 var T_IN_SU = SapFunction.GetTable(req.inTableName);
-                
+
                 T_IN_SU.Append(SetValue(req, IN_SU));
                 SapFunction.Invoke(SapRfcDestination);
                 var SAPdt = SapFunction.GetTable(req.outTableName);
@@ -50,13 +50,12 @@ namespace SAPNCO.ADO
 
         private IRfcStructure SetValue(RequestCriteria req, IRfcStructure IN_SU)
         {
-
             foreach (var data in req.datas)
             {
-                /*var dataType = IN_SU.Metadata[data.Key];
-                if(dataType.DataType == RfcDataType.CHAR)
+                var dataType = IN_SU.Metadata[data.Key];
+                if (dataType.DataType == RfcDataType.CHAR)
                 {
-                    if(data.Value.ToString() != "")
+                    if (data.Value.ToString() != "")
                     {
                         if (data.Value.GetType() == typeof(string))
                         {
@@ -70,14 +69,11 @@ namespace SAPNCO.ADO
                         }
                         else
                             IN_SU.SetValue(data.Key, data.Value);
-                    }*/
-                IN_SU.SetValue(data.Key, data.Value);
-                    
-                //}
-                //else
-                //    IN_SU.SetValue(data.Key, data.Value);
+                    }
+                }
+                else
+                    IN_SU.SetValue(data.Key, data.Value);
             }
-
             return IN_SU;
         }
 

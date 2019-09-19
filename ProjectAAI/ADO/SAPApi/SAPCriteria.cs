@@ -105,7 +105,7 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Delivery Order Number</summary>
             public string VBELN_VL = "";
             /// <summary>Delivery Item</summary>
-            public string POSNR = "";
+            public long? POSNR = null;
             /// <summary>Material Number</summary>
             public string MATNR = "";
             /// <summary>Batch Number</summary>
@@ -143,7 +143,7 @@ namespace ProjectAAI.ADO.SAPApi
         public class ZSWMRF004_IN_REQ : ZSWMRF005_IN_REQ
         {
             /// <summary>Delivery Item</summary>
-            public string POSNR = "";
+            public long? POSNR = null;
         }
         public class ZSWMRF004_IN_AWS
         {
@@ -272,7 +272,7 @@ namespace ProjectAAI.ADO.SAPApi
         public class ZSWMRF006_IN_REQ : ZSWMRF005_IN_REQ
         {
             /// <summary>Delivery Item</summary>
-            public string POSNR = "";
+            public long? POSNR = null;
             /// <summary>Sales Instruction</summary>
             public string VBELN;
         }

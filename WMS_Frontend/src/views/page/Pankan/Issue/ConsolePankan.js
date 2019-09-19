@@ -101,6 +101,9 @@ font-weight: bold;
   width: 200px;
 `;
 
+
+
+
 const InputDiv = styled.div`
     margin: 5px;
     @media (max-width: 800px) {
@@ -125,6 +128,12 @@ const ConsolePankan = (props) => {
     const [barcodeConsole, setbarcodeConsole] = useState();
     const [barcodeConsoles, setbarcodeConsoles] = useState();
     const [expanded, setExpanded] = useState(true);
+    const [stateDialogSuc, setStateDialogSuc] = useState(false);
+    const [msgDialogSuc, setMsgDialogSuc] = useState("");
+    const [stateDialogErr, setStateDialogErr] = useState(false);
+    const [msgDialogErr, setMsgDialogErr] = useState("");
+    const [valuesGuide, setvaluesGuide] = useState(false);
+    const [dataGiude, setdataGiude] = useState();
 
     const Customer = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -158,21 +167,43 @@ const ConsolePankan = (props) => {
 
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
-        if (value !== null || value !== undefined) {
-            setcustomerIds(value)
+        console.log(value)
+        if (value === null) {
+            setMsgDialogErr("Customer invalid")
+            setStateDialogErr(true)
+
+        } else {
+
+            if (value !== null || value !== undefined) {
+                setcustomerIds(value)
+            } else if (value === null) {
+                setMsgDialogErr("Customer invalid")
+                setStateDialogErr(true)
+            }
         }
 
     }
 
     const onHandleDDLChangeDoc = (value, dataObject, inputID, fieldDataKey) => {
-        if (value !== null || value != undefined) {
-            setremark(dataObject.Remark)
+        if (value === null) {
+            setMsgDialogErr("Document invalid")
+            setStateDialogErr(true)
+
+        } else {
+
+            if (value !== null || value != undefined) {
+                setremark(dataObject.Remark)
+                setvaluesGuide(true)
+            } else if (value === null) {
+                setMsgDialogErr("Document invalid")
+                setStateDialogErr(true)
+            }
         }
 
     };
 
     const onChangeEditorBarcodepick = (e) => {
-        console.log(e)
+      
     };
 
     const onChangeEditorQtypick = (e) => {
@@ -240,7 +271,25 @@ const ConsolePankan = (props) => {
     };
 
  return (
-        <div>
+     <div>
+         <AmDialogs
+             typePopup={"success"}
+             content={msgDialogSuc}
+             onAccept={e => {
+                 setStateDialogSuc(e);
+             }}
+             open={stateDialogSuc}
+         ></AmDialogs>
+         <AmDialogs
+             typePopup={"error"}
+             content={msgDialogErr}
+             onAccept={e => {
+                 setStateDialogErr(e);
+             }}
+             open={stateDialogErr}
+         ></AmDialogs>
+
+
             <FormInline>
                 <LabelH>Customer : </LabelH>
                 <InputDiv>
@@ -298,113 +347,54 @@ const ConsolePankan = (props) => {
                     columns={Column}
                     sortable={false}
                 ></AmTable>
-            </div>
+         </div>
+         <div style={{ paddingTop: "10px" }}>
+             <labelH style={{ color: "red"}}>Guide for Picking</labelH>
+         </div>
+         <div style={{ paddingTop:"10px" }}>
+             <AppBar position="static" color="default">
+                 <Tabs
+                     classes={{
+                         indicator: classnames(
+                             classes.bigIndicator,
+                             classes["indicator_" + value]
+                         )
+                     }}
+                     value={value}
+                     onChange={handleChange}
+                     scrollButtons="on"
+                 >
+                     <Tab
+                         label={"Pick"}
+                         className={classes.fontIndi_0}
 
-            <AppBar position="static" color="default">
-                <Tabs
-                    classes={{
-                        indicator: classnames(
-                            classes.bigIndicator,
-                            classes["indicator_" + value]
-                        )
-                    }}
-                    value={value}
-                    onChange={handleChange}
-                    scrollButtons="on"
-                >
-                    <Tab
-                        label={"Pick"}
-                        className={classes.fontIndi_0}
-                        
-                    />
-                    <Tab
-                        label={"Console"}
-                        className={classes.fontIndi_1}
-                     
-                    />
-                    <Tab
-                        label={"View"}
-                        className={classes.fontIndi_2}
+                     />
+                     <Tab
+                         label={"Console"}
+                         className={classes.fontIndi_1}
 
-                    />
-                </Tabs>
-            </AppBar>
-          <div>
-        {value == 0 ? <Card>
-                  <FormInline>
-                      <div style={{ marginLeft:"10px" }}><LabelH>Picking : </LabelH></div>
-                      <InputDiv>
-                          <AmInput
-                              id={"picking"}
-                              style={{ width: "200px" }}
-                              placeholder={"Scan Barcode"}
-                              //validate={true}
-                              //msgError="Error"
-                              //regExp={validate ? validate : ""}
-                              //defaultValue={data ? data[cols.field] : ""}
-                              onChange={(e )=> onChangeEditorBarcodepick(e) }>
-                          </AmInput>
-                          <AmInput
-                              id={"quantitypick"}
-                              style={{ width: "100px", marginLeft: "10px" }}
-                              //validate={true}
-                              //msgError="Error"
-                              //regExp={validate ? validate : ""}
-                              defaultValue={1}
-                              type="number"
-                              onChange={(e) => onChangeEditorQtypick(e)}>                                
-                              </AmInput>                    
-                      </InputDiv>
-                      <AmButton
-                          style={{ width: 100, marginLeft: "10px" }}
-                          styleType="info"
-                          //disable={e.original.ID > 0 ? false : true}
-                          onClick={onclickPick}
-                      >
-                          {"Post"}</AmButton>
-                      <AmButton
-                          style={{ width: 100, marginLeft: "10px" }}
-                          styleType="info"
-                          //disable={e.original.ID > 0 ? false : true}
-                          onClick={onclickPickClear}
-                      >
-                          {"Clear"}</AmButton>
-                 </FormInline>
-                     <Collapse in={expanded} timeout="auto" unmountOnExit>
-                         <CardContent className={classes.cardContent}>
-                         {newStorageObjPick ? newStorageObjPick : null}
-                     </CardContent>
-                 </Collapse>
-              </Card> : 
-                 value == 1 ? <Card>
-                     <FormInline>
-                         <div style={{ marginLeft: "10px" }}><LabelH>Console : </LabelH></div>
-                         <InputDiv>
-                             <AmInput
-                                 id={"picking"}
-                                 style={{ width: "200px" }}
-                                 placeholder={"Input Base"}
-                                 //validate={true}
-                                 //msgError="Error"
-                                 //regExp={validate ? validate : ""}
-                                 //defaultValue={data ? data[cols.field] : ""}
-                                 onChange={(e) => onChangeEditorBarcodeConsole(e)}>
-                             </AmInput>
-                        
-                         </InputDiv>                      
-                     </FormInline>
+                     />
+                     <Tab
+                         label={"View"}
+                         className={classes.fontIndi_2}
+
+                     />
+                 </Tabs>
+             </AppBar>
+             <div>
+                 {value == 0 ? <Card>
                      <FormInline>
                          <div style={{ marginLeft: "10px" }}><LabelH>Picking : </LabelH></div>
                          <InputDiv>
                              <AmInput
                                  id={"picking"}
                                  style={{ width: "200px" }}
-                                 placeholder={"Barcode"}
+                                 placeholder={"Scan Barcode"}
                                  //validate={true}
                                  //msgError="Error"
                                  //regExp={validate ? validate : ""}
                                  //defaultValue={data ? data[cols.field] : ""}
-                                 onChange={(e) => onChangeEditorpickingConsole(e)}>
+                                 onChange={(e) => onChangeEditorBarcodepick(e)}>
                              </AmInput>
                              <AmInput
                                  id={"quantitypick"}
@@ -414,8 +404,8 @@ const ConsolePankan = (props) => {
                                  //regExp={validate ? validate : ""}
                                  defaultValue={1}
                                  type="number"
-                                 onChange={(e) => onChangeEditorQtyConsole(e)}>
-                             </AmInput>                    
+                                 onChange={(e) => onChangeEditorQtypick(e)}>
+                             </AmInput>
                          </InputDiv>
                          <AmButton
                              style={{ width: 100, marginLeft: "10px" }}
@@ -432,9 +422,77 @@ const ConsolePankan = (props) => {
                          >
                              {"Clear"}</AmButton>
                      </FormInline>
-                 </Card>:null }</div>
-            <div>
-            </div>
+                     <Collapse in={expanded} timeout="auto" unmountOnExit>
+                         <CardContent className={classes.cardContent}>
+                             {newStorageObjPick ? newStorageObjPick : null}
+                         </CardContent>
+                     </Collapse>
+                 </Card> :
+                     value == 1 ? <Card>
+                         <FormInline>
+                             <div style={{ marginLeft: "10px" }}><LabelH>Console : </LabelH></div>
+                             <InputDiv>
+                                 <AmInput
+                                     id={"picking"}
+                                     style={{ width: "200px" }}
+                                     placeholder={"Input Base"}
+                                     //validate={true}
+                                     //msgError="Error"
+                                     //regExp={validate ? validate : ""}
+                                     //defaultValue={data ? data[cols.field] : ""}
+                                     onChange={(e) => onChangeEditorBarcodeConsole(e)}>
+                                 </AmInput>
+
+                             </InputDiv>
+                         </FormInline>
+                         <FormInline>
+                             <div style={{ marginLeft: "10px" }}><LabelH>Picking : </LabelH></div>
+                             <InputDiv>
+                                 <AmInput
+                                     id={"picking"}
+                                     style={{ width: "200px" }}
+                                     placeholder={"Barcode"}
+                                     //validate={true}
+                                     //msgError="Error"
+                                     //regExp={validate ? validate : ""}
+                                     //defaultValue={data ? data[cols.field] : ""}
+                                     onChange={(e) => onChangeEditorpickingConsole(e)}>
+                                 </AmInput>
+                                 <AmInput
+                                     id={"quantitypick"}
+                                     style={{ width: "100px", marginLeft: "10px" }}
+                                     //validate={true}
+                                     //msgError="Error"
+                                     //regExp={validate ? validate : ""}
+                                     defaultValue={1}
+                                     type="number"
+                                     onChange={(e) => onChangeEditorQtyConsole(e)}>
+                                 </AmInput>
+                             </InputDiv>
+                             <AmButton
+                                 style={{ width: 100, marginLeft: "10px" }}
+                                 styleType="info"
+                                 //disable={e.original.ID > 0 ? false : true}
+                                 onClick={onclickPick}
+                             >
+                                 {"Post"}</AmButton>
+                             <AmButton
+                                 style={{ width: 100, marginLeft: "10px" }}
+                                 styleType="info"
+                                 //disable={e.original.ID > 0 ? false : true}
+                                 onClick={onclickPickClear}
+                             >
+                                 {"Clear"}</AmButton>
+                         </FormInline>
+                     </Card> : null}</div>
+             <div>
+             </div>
+
+
+
+
+         </div>
+            
         </div>
 
     )
