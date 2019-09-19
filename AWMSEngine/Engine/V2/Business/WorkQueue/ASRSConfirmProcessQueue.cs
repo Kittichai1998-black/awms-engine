@@ -1,5 +1,7 @@
 ﻿using AMWUtil.Exception;
 using AWMSEngine.ADO.QueueApi;
+using AWMSEngine.Common;
+using AWMSEngine.Engine.V2.Business.Issued;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
@@ -94,7 +96,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             List<amt_DocumentItemStorageObject> distos = new List<amt_DocumentItemStorageObject>();
             foreach (var rsto in rstos)
             {
-                if(!rsto.lockOnly)
+                if (!rsto.lockOnly)
                 {
                     var wq = new SPworkQueue()
                     {
@@ -133,7 +135,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     wq = ADO.WorkQueueADO.GetInstant().PUT(wq, this.BuVO);
                     rsto.workQueueID = wq.ID;
                 }
-                
+
 
                 var _distos = rsto.docItems.Select(x => new amt_DocumentItemStorageObject()
                 {
@@ -157,7 +159,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 {
                     doci.DocItemStos.AddRange(distos.FindAll(disto => disto.DocumentItem_ID == doci.ID));
                 });
-                if (rstos.Any(x=>x.docItems.Any(y => y.docID == doc.ID)))
+                if (rstos.Any(x => x.docItems.Any(y => y.docID == doc.ID)))
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.WORKING, this.BuVO);
                 else
                     ADO.DocumentADO.GetInstant().UpdateStatusToChild(doc.ID.Value, DocumentEventStatus.NEW, null, DocumentEventStatus.CLOSED, this.BuVO);
@@ -166,21 +168,65 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             rstos.ForEach(x =>
             {
                 //New GI For Multi SKU
-                //var pickFullBases = x.docItems.FindAll(docItem => docItem.useFullPick == true).Select(docItem => docItem.bstoID).Distinct().ToList();
-                //var packLists = x.docItems.Select(docItem => docItem.pstoID).Distinct().ToList();
-                //var listSTOLeft = ADO.StorageObjectADO.GetInstant().ListLeftSTO(pickFullBases, packLists, this.BuVO);
-                //if(listSTOLeft.Count > 0)
-                //{
-                //    listSTOLeft.ForEach(sto =>
-                //    {
-                        
+                var pickFullBases = x.docItems.FindAll(docItem => docItem.useFullPick == true).Select(docItem => docItem.bstoID).Distinct().ToList();
+                if(pickFullBases.Count > 0)
+                {
+                    var packLists = x.docItems.Select(docItem => docItem.pstoID).Distinct().ToList();
+                    var listSTOLeft = ADO.StorageObjectADO.GetInstant().ListLeftSTO(pickFullBases, packLists, this.BuVO);
 
+                    var groupSTOLeft = listSTOLeft.GroupBy(sto => new { sto.BaseCode, sto.BaseUnit })
+                    .Select(sto => new { sto.Key.BaseCode, sto.Key.BaseUnit, StorageObject = sto.ToList() }).ToList();
 
-                //        ADO.DocumentADO.GetInstant().Create()
-                //    });
-                //}
+                    groupSTOLeft.ForEach(gsto => {
+                        var createGI = new CreateGIDocument();
+                        var res = createGI.Execute(this.Logger, this.BuVO, new CreateGIDocument.TReq
+                        {
+                            refID = null,
+                            ref1 = null,
+                            ref2 = null,
+                            souBranchID = this.StaticValue.Warehouses.First(wh => wh.ID == x.souWarehouseID).Branch_ID,
+                            souWarehouseID = this.StaticValue.Warehouses.First(wh => wh.ID == x.souWarehouseID).ID,
+                            souAreaMasterID = this.StaticValue.Warehouses.First(wh => wh.ID == x.souAreaID).Branch_ID,
+                            desAreaMasterID = null,
+                            movementTypeID = MovementType.FG_TRANSFER_WM,
+                            lot = null,
+                            batch = null,
+                            documentDate = DateTime.Now,
+                            actionTime = DateTime.Now,
+                            eventStatus = DocumentEventStatus.NEW,
+                            issueItems = new List<CreateGIDocument.TReq.IssueItem>() {
+                                    new CreateGIDocument.TReq.IssueItem
+                                    {
+                                        packCode = gsto.BaseCode,
+                                        quantity = null,
+                                        unitType = gsto.BaseUnit,
+                                        batch = null,
+                                        lot = null,
+                                        orderNo = null,
+                                        ref2 = null,
+                                        options = null,
+                                        eventStatus = DocumentEventStatus.NEW
+                                    }
+                                }
+                        });
 
-
+                        gsto.StorageObject.ForEach(sto =>
+                        {
+                            var disto = ADO.DocumentADO.GetInstant().InsertMappingSTO(new amt_DocumentItemStorageObject()
+                            {
+                                DocumentItem_ID = res.DocumentItems.First().ID,
+                                DocumentType_ID = DocumentTypeID.GOODS_ISSUED,
+                                BaseQuantity = sto.BaseQuantity,
+                                BaseUnitType_ID = sto.BaseUnitType_ID,
+                                Quantity = sto.Quantity,
+                                UnitType_ID = sto.UnitType_ID,
+                                Sou_StorageObject_ID = sto.ID.Value,
+                                Des_StorageObject_ID = sto.ID,
+                                WorkQueue_ID = x.workQueueID.Value
+                            }, this.BuVO);
+                        });
+                    });
+                }                
 
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, null, EntityStatus.ACTIVE, stoNextEventStatus, this.BuVO);
             });
@@ -227,7 +273,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 });
             });
 
-            
+
             var wcsRes = ADO.QueueApi.WCSQueueADO.GetInstant().SendQueue(wcQueue, this.BuVO);
             if (wcsRes._result.resultcheck == 0)
             {
