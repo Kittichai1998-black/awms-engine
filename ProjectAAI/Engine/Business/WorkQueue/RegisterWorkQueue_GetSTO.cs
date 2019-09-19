@@ -26,32 +26,43 @@ namespace ProjectAAI.Engine.Business.WorkQueue
         public StorageObjectCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReq reqVO)
         {
             var chkStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
+           
             if (chkStos != null)
             {
                 return chkStos;
             }
             else
             {
+                bool checkEmpPallet = false;
+                if (reqVO.mappingPallets.Count > 0)
+                {
+                    checkEmpPallet = StaticValueManager.GetInstant().PackMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
+                }
+
+
                 var _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_BaseMaster>(reqVO.baseCode, buVO);
 
                 if (_base == null)
                 {
+
                     var BaseMasterType = StaticValueManager.GetInstant().BaseMasterTypes.FirstOrDefault();
+
                     ams_BaseMaster newBase = new ams_BaseMaster()
                     {
                         Code = reqVO.baseCode,
                         ObjectSize_ID = BaseMasterType.ObjectSize_ID,
                         UnitType_ID = BaseMasterType.UnitType_ID,
-                        Name = "Pallet",
+                        Name = checkEmpPallet ? "Empty Pallet" : "Pallet",
                         WeightKG = BaseMasterType.Weight,
                         BaseMasterType_ID = BaseMasterType.ID.Value,
                         Status = EntityStatus.ACTIVE
                     };
+                     
                     var idbase = AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(buVO, newBase);
                     _base = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_BaseMaster>(idbase, buVO);
                     if (_base == null)
                     {
-                        throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Pallet : " + reqVO.baseCode);
+                        throw new AMWException(logger, AMWExceptionCode.V1001, "Pallet : " + reqVO.baseCode + " Not Found.");
                     }
 
                 }
@@ -61,12 +72,12 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 var _warehouse = StaticValueManager.GetInstant().Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
                 var _area = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
 
-                 
+                
                 StorageObjectCriteria baseSto = new StorageObjectCriteria()
                 {
                     code = reqVO.baseCode,
                     eventStatus = StorageObjectEventStatus.NEW,
-                    name = "Pallet",
+                    name = checkEmpPallet ? "Empty Pallet" : "Pallet",
                     qty = 1,
                     unitCode = _unitType.Code,
                     unitID = _unitType.ID.Value,
@@ -79,13 +90,48 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     objectSizeName = _objSize.Name,
                     areaID = _area.ID,
                     warehouseID = _warehouse.ID.Value,
-                    weiKG = reqVO.weight
-
+                    weiKG = reqVO.weight,
+                    lengthM = reqVO.length,
+                    heightM = reqVO.height,
+                    widthM = reqVO.width
                 };
 
                 var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
-                
-                    var packList = GetObjectFromSAP(reqVO.baseCode, buVO);
+                if (checkEmpPallet)
+                {
+                    //check จาก code ที่อยู่ใน PalletDataCriteriaV2
+                    var PackMasterEmptyPallets = StaticValueManager.GetInstant().PackMasterEmptyPallets.FirstOrDefault();
+                    var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == PackMasterEmptyPallets.UnitType_ID);
+                    var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == PackMasterEmptyPallets.ObjectSize_ID);
+
+                    StorageObjectCriteria packSto = new StorageObjectCriteria()
+                    {
+                        parentID = baseStoID,
+                        parentType = StorageObjectType.BASE,
+                        code = PackMasterEmptyPallets.Code,
+                        eventStatus = StorageObjectEventStatus.NEW,
+                        name = PackMasterEmptyPallets.Name,
+                        qty = Convert.ToDecimal(reqVO.mappingPallets.First().qty),
+                        skuID = PackMasterEmptyPallets.SKUMaster_ID,
+                        unitCode = unit.Code,
+                        unitID = unit.ID.Value,
+                        baseUnitCode = unit.Code,
+                        baseUnitID = unit.ID.Value,
+                        baseQty = Convert.ToDecimal(reqVO.mappingPallets.First().qty),
+                        objectSizeID = PackMasterEmptyPallets.ObjectSize_ID,
+                        type = StorageObjectType.PACK,
+                        objectSizeName = _objSizePack.Name,
+                        mstID = PackMasterEmptyPallets.ID.Value,
+                        options = reqVO.mappingPallets.First().options,
+                        areaID = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID.Value,
+                    };
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, buVO);
+
+                }
+                else
+                {
+
+                var packList = GetObjectFromSAP(reqVO.baseCode, buVO);
                     packList.datas.ForEach(pack =>
                     {
                         var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.Code == pack.MEINS);
@@ -149,8 +195,20 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         var incb = incubatedate == null ? null : DateTimeUtil.ToISOUTCString(incubatedate.Value);
                         DateTime? fvdt1 = pack.FVDT1 == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.FVDT1, "yyyyMMdd", CultureInfo.InvariantCulture);
                         var approveddate = fvdt1 == null ? null : DateTimeUtil.ToISOUTCString(fvdt1.Value);
-                        var options = ObjectUtil.QryStrSetValue(null, 
+                        StorageObjectEventStatus doneEStatus = StorageObjectEventStatus.RECEIVED;
+                        if (pack.BESTQ == "S")
+                        {
+                            doneEStatus = StorageObjectEventStatus.HOLD;
+                        }
+                        else if(pack.BESTQ == "Q")
+                        {
+                            doneEStatus = StorageObjectEventStatus.QC;
+                        }
+                         
+                        var options = ObjectUtil.QryStrSetValue(null,
+                           // new KeyValuePair<string, object>(OptionVOConst.OPT_LGTYP, pack.LGTYP),
                             new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ, pack.BESTQ), //Stock Category 
+                            new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneEStatus.GetValueInt()),
                             new KeyValuePair<string, object>(OptionVOConst.OPT_WEBAZ, pack.WEBAZ), //Incubated Time
                             new KeyValuePair<string, object>(OptionVOConst.OPT_VBELN, pack.VBELN), //sales order 
                             new KeyValuePair<string, object>(OptionVOConst.OPT_INCBD, incb),
@@ -180,16 +238,30 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             options = options,
                             mstID = _pack.ID.Value,
                             weiKG = WeightUtil.ConvertToKG(pack.BRGEW, pack.GEWEI), //BRGEW : Gross Weight, GEWEI : Weight Unit
+                            
                             areaID = StaticValueManager.GetInstant().AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode).ID.Value,
                             refID = pack.LENUM, //SU : Storage Unit Number
-                            ref1 = fvdt1 == null ? null : "y"  //ถ้ามีค่า approved date ให้ใส่เป็น y ถ้าไม่มีใส่ null
+                            ref1 = fvdt1 == null ? null : "y",  //ถ้ามีค่า approved date ให้ใส่เป็น y ถ้าไม่มีใส่ null
+                            ref2 = pack.LGTYP
                         };
 
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(packSto, buVO);
                     });
-
-                var BESTQ = packList.datas.Select(x => x.BESTQ).Distinct().First();
                 var opt_done = "";
+
+                if (packList.datas.Any(x => x.BESTQ == "S"))
+                {
+                    opt_done = AMWUtil.Common.ObjectUtil.QryStrSetValue(opt_done, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.HOLD.GetValueInt());
+                }
+                else if(packList.datas.Any(x => x.BESTQ == "Q"))
+                {
+                    opt_done = AMWUtil.Common.ObjectUtil.QryStrSetValue(opt_done, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.QC.GetValueInt());
+                }
+                else
+                {
+                    opt_done = AMWUtil.Common.ObjectUtil.QryStrSetValue(opt_done, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.RECEIVED.GetValueInt());
+                }
+                /*var BESTQ = packList.datas.Select(x => x.BESTQ).Distinct().First();
                 
                 if(BESTQ == "Q")
                 {
@@ -203,11 +275,13 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     {
                         opt_done = AMWUtil.Common.ObjectUtil.QryStrSetValue(opt_done, OptionVOConst.OPT_DONE_DES_EVENT_STATUS, StorageObjectEventStatus.RECEIVED.GetValueInt());
                     }
-                
+                */
                 AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(baseStoID, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });
+                }
+
                 var mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(baseStoID, StorageObjectType.BASE, false, true, buVO);
                 return mapsto;
             }
