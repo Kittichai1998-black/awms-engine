@@ -741,7 +741,7 @@ const AmMappingPallet = (props) => {
                             {FuncCreateForm(key, x.field, x.type, x.name,
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
-                                x.defaultValue, x.visible == null || undefined ? true : x.visible)}
+                                x.defaultValue, x.visible == null || undefined ? true : x.visible, x.disabled)}
                         </div>
                     }
                 }
@@ -750,12 +750,13 @@ const AmMappingPallet = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
                     <AmInput
-                        id={field}
+                        id={field} 
+                        disabled={disabled}
                         autoFocus={field == 'scanCode' ? true : false}
                         placeholder={placeholder}
                         type="input"

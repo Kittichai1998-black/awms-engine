@@ -165,6 +165,23 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
             rstos.ForEach(x =>
             {
+                //New GI For Multi SKU
+                //var pickFullBases = x.docItems.FindAll(docItem => docItem.useFullPick == true).Select(docItem => docItem.bstoID).Distinct().ToList();
+                //var packLists = x.docItems.Select(docItem => docItem.pstoID).Distinct().ToList();
+                //var listSTOLeft = ADO.StorageObjectADO.GetInstant().ListLeftSTO(pickFullBases, packLists, this.BuVO);
+                //if(listSTOLeft.Count > 0)
+                //{
+                //    listSTOLeft.ForEach(sto =>
+                //    {
+                        
+
+
+                //        ADO.DocumentADO.GetInstant().Create()
+                //    });
+                //}
+
+
+
                 ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(x.rstoID, null, EntityStatus.ACTIVE, stoNextEventStatus, this.BuVO);
             });
 
