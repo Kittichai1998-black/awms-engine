@@ -34,7 +34,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             else
             {
                 bool checkEmpPallet = false;
-                if (reqVO.mappingPallets.Count > 0)
+                if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
                 {
                     checkEmpPallet = StaticValueManager.GetInstant().PackMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
                 }
