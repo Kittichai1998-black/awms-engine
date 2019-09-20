@@ -13,7 +13,7 @@ namespace SAPNCO.ADO
     {
         public ResponseCriteria exec(RequestCriteria req)
         {
-            List<dynamic> res = new List<dynamic>();
+            var res = new Dictionary<string, dynamic>();
             try
             {
                 RfcDestination SapRfcDestination = RfcDestinationManager.GetDestination(req.environmentName);
@@ -45,7 +45,7 @@ namespace SAPNCO.ADO
                 req.outTableNames.ForEach(x =>
                 {
                     var SAPdt = SapFunction.GetTable(x);
-                    res.AddRange(CreateResponse(SAPdt));
+                    res.Add(x, CreateResponse(SAPdt));
                 });
 
                 return new ResponseCriteria()
@@ -97,13 +97,11 @@ namespace SAPNCO.ADO
             return IN_SU;
         }
 
-        private List<dynamic> CreateResponse(IRfcTable sapTable)
+        private dynamic CreateResponse(IRfcTable sapTable)
         {
-            List<dynamic> response = new List<dynamic>();
+            IDictionary<string, object> resObj = new ExpandoObject();
             foreach (IRfcStructure row in sapTable)
             {
-                dynamic res = new ExpandoObject();
-                IDictionary<string, object> resObj = res;
                 for (int liElement = 0; liElement <= sapTable.ElementCount - 1; liElement++)
                 {
                     RfcElementMetadata metadata = sapTable.GetElementMetadata(liElement);
@@ -156,9 +154,8 @@ namespace SAPNCO.ADO
                             }
                     }
                 }
-                response.Add(res);
             }
-            return response;
+            return resObj;
         }
     }
 }
