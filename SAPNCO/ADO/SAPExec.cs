@@ -20,21 +20,31 @@ namespace SAPNCO.ADO
                 RfcRepository SapRfcRepository = SapRfcDestination.Repository;
                 IRfcFunction SapFunction = SapRfcRepository.CreateFunction(req.functionName);
 
-                req.sapList.ForEach(saplist =>
+                req.sapLists.ForEach(saplist =>
                 {
                     RfcStructureMetadata Metadata_IN = SapRfcRepository.GetStructureMetadata(saplist.inStructureName);
                     IRfcStructure IN_SU = Metadata_IN.CreateStructure();
-                    IRfcTable T_IN_SU = SapFunction.GetTable(saplist.inTableName);
-                    T_IN_SU.Append(SetValue(saplist.datas, IN_SU));
+                    if (!string.IsNullOrWhiteSpace(saplist.inTableName))
+                    {
+                        IRfcTable T_IN_SU = SapFunction.GetTable(saplist.inTableName);
+                        T_IN_SU.Append(SetValue(saplist.datas, IN_SU));
 
-                    SapFunction.SetValue(saplist.inTableName, T_IN_SU);
+                        SapFunction.SetValue(saplist.inTableName, T_IN_SU);
+                    }
+                    else
+                    {
+                        foreach (var data in saplist.datas)
+                        {
+                            SapFunction.SetValue(data.Key, data.Value);
+                        }
+                    }
                 });
 
                 SapFunction.Invoke(SapRfcDestination);
 
-                req.sapList.ForEach(x =>
+                req.outTableNames.ForEach(x =>
                 {
-                    var SAPdt = SapFunction.GetTable(x.outTableName);
+                    var SAPdt = SapFunction.GetTable(x);
                     res.AddRange(CreateResponse(SAPdt));
                 });
 
