@@ -97,11 +97,12 @@ namespace SAPNCO.ADO
             return IN_SU;
         }
 
-        private dynamic CreateResponse(IRfcTable sapTable)
+        private List<dynamic> CreateResponse(IRfcTable sapTable)
         {
-            IDictionary<string, object> resObj = new ExpandoObject();
+            var res = new List<dynamic>();
             foreach (IRfcStructure row in sapTable)
             {
+                IDictionary<string, object> resObj = new ExpandoObject();
                 for (int liElement = 0; liElement <= sapTable.ElementCount - 1; liElement++)
                 {
                     RfcElementMetadata metadata = sapTable.GetElementMetadata(liElement);
@@ -154,8 +155,9 @@ namespace SAPNCO.ADO
                             }
                     }
                 }
+                res.Add(resObj);
             }
-            return resObj;
+            return res;
         }
     }
 }
