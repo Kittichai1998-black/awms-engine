@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
 import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
 import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
-import AmPickingReturn2 from '../../../pageComponent/AmPickingReturn2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
@@ -22,23 +21,9 @@ const PickingReturnByBarcode = (props) => {
     //     // { "field": "MovementType_ID", "type": "dropdown", "typeDropdown": "search", "name": "Movement Type", "dataDropDown": MVTQuery, "placeholder": "Movement Type", "fieldLabel": ["Code"], "fieldDataKey": "ID" },
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
-    //const inputItem = [
-    //    // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-    //    { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-    //    { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
-    //    {
-    //        "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-    //            { value: '97', label: "PARTIAL" }
-    //        ],
-    //        "defaultValue": { value: '97', disabled: true }
-    //    }
-    //]
-
     const inputItem = [
-        { "field": "orderNo", "type": "input", "name": "Reoder No", "placeholder": "Reoder No." },
-        { "field": "scanCode", "type": "input", "name": "Pack Code", "placeholder": "Pack Code" },
-        { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
-        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -46,12 +31,6 @@ const PickingReturnByBarcode = (props) => {
             ],
             "defaultValue": { value: '97', disabled: true }
         }
-    ]
-
-    const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" }
-
     ]
 
     const [showDialog, setShowDialog] = useState(null);
@@ -76,7 +55,7 @@ const PickingReturnByBarcode = (props) => {
         return res;
     }
     async function onBeforePost(reqValue, storageObj) {
-        //split §Ë“
+        //split ‡∏Ñ‡πà‡∏≤
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
@@ -85,7 +64,7 @@ const PickingReturnByBarcode = (props) => {
                 if (reqValue['scanCode'].length === 26) {
                     let orderNo = reqValue['scanCode'].substr(0, 7);
                     let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                    let skuCode = skuCode1.trim(); //∑¥ Õ∫ „™Èskucode¢Õß∑“πµ–«—πÕ¬ŸË ‡≈¬µÈÕßµ—¥xxx∑È“¬∑‘Èß
+                    let skuCode = skuCode1.trim(); //‡∏ó‡∏î‡∏™‡∏≠‡∏ö ‡πÉ‡∏ä‡πâskucode‡∏Ç‡∏≠‡∏á‡∏ó‡∏≤‡∏ô‡∏ï‡∏∞‡∏ß‡∏±‡∏ô‡∏≠‡∏¢‡∏π‡πà ‡πÄ‡∏•‡∏¢‡∏ï‡πâ‡∏≠‡∏á‡∏ï‡∏±‡∏îxxx‡∏ó‡πâ‡∏≤‡∏¢‡∏ó‡∏¥‡πâ‡∏á
                     let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                     let rootID = reqValue.rootID;
                     let qryStr = {};
@@ -125,7 +104,7 @@ const PickingReturnByBarcode = (props) => {
                                     numCarton++;
 
                                     if (cartonNo === parseInt(splitCartonNo[no])) {
-                                        ///‡≈¢carton no ´È” √—∫‡¢È“‰¡Ë‰¥È «“ß ‘π§È“≈ß∫πæ“‡≈∑‰¡Ë‰¥È
+                                        ///‡πÄ‡∏•‡∏Çcarton no ‡∏ã‡πâ‡∏≥ ‡∏£‡∏±‡∏ö‡πÄ‡∏Ç‡πâ‡∏≤‡πÑ‡∏°‡πà‡πÑ‡∏î‡πâ ‡∏ß‡∏≤‡∏á‡∏™‡∏¥‡∏ô‡∏Ñ‡πâ‡∏≤‡∏•‡∏á‡∏ö‡∏ô‡∏û‡∏≤‡πÄ‡∏•‡∏ó‡πÑ‡∏°‡πà‡πÑ‡∏î‡πâ
 
                                         alertDialogRenderer("Pallet No. " + storageObj.code + (window.project === "TAP" ? " had Part NO.: " : " had SKU Code: ") + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
 
@@ -192,15 +171,14 @@ const PickingReturnByBarcode = (props) => {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-            <AmPickingReturn2
+            <AmPickingReturn
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
-                FirstScans={inputFirst}
-                // apiCreate={apiCreate} // api  √È“ß sto default => "/v2/ScanPickingReturnAPI"
-                onBeforePost={onBeforePost} //ø—ß°Ï™—Ëπ‡µ√’¬¡¢ÈÕ¡Ÿ≈‡Õß °ËÕπ Ëß‰ª api
-                // //ø—ß°Ï™—Ëπ‡µ√’¬¡¢ÈÕ¡Ÿ≈‡‡ ¥ßº≈ options ‡Õß
+                // apiCreate={apiCreate} // api ‡∏™‡∏£‡πâ‡∏≤‡∏á sto default => "/v2/ScanPickingReturnAPI"
+                onBeforePost={onBeforePost} //‡∏ü‡∏±‡∏á‡∏Å‡πå‡∏ä‡∏±‡πà‡∏ô‡πÄ‡∏ï‡∏£‡∏µ‡∏¢‡∏°‡∏Ç‡πâ‡∏≠‡∏°‡∏π‡∏•‡πÄ‡∏≠‡∏á ‡∏Å‡πà‡∏≠‡∏ô‡∏™‡πà‡∏á‡πÑ‡∏õ api
+                // //‡∏ü‡∏±‡∏á‡∏Å‡πå‡∏ä‡∏±‡πà‡∏ô‡πÄ‡∏ï‡∏£‡∏µ‡∏¢‡∏°‡∏Ç‡πâ‡∏≠‡∏°‡∏π‡∏•‡πÄ‡πÄ‡∏™‡∏î‡∏á‡∏ú‡∏• options ‡πÄ‡∏≠‡∏á
                 customOptions={customOptions}
                 showOptions={true}
                 autoPost={false}

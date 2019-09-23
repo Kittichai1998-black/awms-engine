@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
+import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
@@ -33,16 +34,36 @@ const CustomerReturnPallet = (props) => {
     const inputSource = [
         { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Source Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID" },
     ]
+    //const inputItem = [
+    //    // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+    //    { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+    //    { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+    //    {    //  "visible": false, 
+    //        "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
+    //            { value: '96', label: "RETURN" },
+    //        ],
+    //        "defaultValue": { value: '96', disabled: true }
+    //    }
+    //]
+
     const inputItem = [
-        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": "orderNo", "type": "input", "name": "Reoder No", "placeholder": "Reoder No." },
+        { "field": "scanCode", "type": "input", "name": "Pack Code", "placeholder": "Pack Code" },
+        { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
+        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
-        {    //  "visible": false, 
+        {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '96', label: "RETURN" },
+                { value: '96', label: "PARTIAL" }
             ],
             "defaultValue": { value: '96', disabled: true }
         }
+    ]
+
+    const inputFirst = [
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" }
+
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -67,7 +88,7 @@ const CustomerReturnPallet = (props) => {
     }
 
     async function onBeforePost(reqValue, storageObj) {
-        //split เธเนเธฒ
+        //split ค่า
         var resValuePost = null;
         var dataScan = {};
         
@@ -76,7 +97,7 @@ const CustomerReturnPallet = (props) => {
             if (reqValue['scanCode'].length === 26) {
                 let orderNo = reqValue['scanCode'].substr(0, 7);
                 let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                let skuCode = skuCode1.trim(); //เธ—เธ”เธชเธญเธ เนเธเนskucodeเธเธญเธเธ—เธฒเธเธ•เธฐเธงเธฑเธเธญเธขเธนเน เน€เธฅเธขเธ•เนเธญเธเธ•เธฑเธ”xxxเธ—เนเธฒเธขเธ—เธดเนเธ
+                let skuCode = skuCode1.trim(); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
                 let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                 let rootID = reqValue.rootID;
                 let qryStr = {};
@@ -116,7 +137,7 @@ const CustomerReturnPallet = (props) => {
                                 numCarton++;
 
                                 if (cartonNo === parseInt(splitCartonNo[no])) {
-                                    ///เน€เธฅเธcarton no เธเนเธณ เธฃเธฑเธเน€เธเนเธฒเนเธกเนเนเธ”เน เธงเธฒเธเธชเธดเธเธเนเธฒเธฅเธเธเธเธเธฒเน€เธฅเธ—เนเธกเนเนเธ”เน
+                                    ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
 
                                     alertDialogRenderer("Pallet No. " + storageObj.code + " had SKU Code: " + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
 
@@ -177,15 +198,16 @@ const CustomerReturnPallet = (props) => {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-            <AmMappingPallet
+            <AmMappingPallet2
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
                 sourceCreate={inputSource}
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
-                // apiCreate={apiCreate} // api เธชเธฃเนเธฒเธ sto default => "/v2/ScanMapStoAPI"
-                onBeforePost={onBeforePost} //เธเธฑเธเธเนเธเธฑเนเธเน€เธ•เธฃเธตเธขเธกเธเนเธญเธกเธนเธฅเน€เธญเธ เธเนเธญเธเธชเนเธเนเธ api
-                // //เธเธฑเธเธเนเธเธฑเนเธเน€เธ•เธฃเธตเธขเธกเธเนเธญเธกเธนเธฅเน€เน€เธชเธ”เธเธเธฅ options เน€เธญเธ
+                FirstScans={inputFirst}
+                // apiCreate={apiCreate} // api สร้าง sto default => "/v2/ScanMapStoAPI"
+                onBeforePost={onBeforePost} //ฟังก์ชั่นเตรียมข้อมูลเอง ก่อนส่งไป api
+                // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}

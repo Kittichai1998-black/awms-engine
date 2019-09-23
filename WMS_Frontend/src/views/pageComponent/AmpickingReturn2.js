@@ -225,7 +225,7 @@ const AreaMasterQuery = {
     l: 100,
     all: "",
 }
-const AmPickingReturn = (props) => {
+const AmPickingReturn2 = (props) => {
     const { t } = useTranslation()
     const { classes,
         headerCreate,
@@ -901,12 +901,12 @@ const AmPickingReturn = (props) => {
                         }) : null}
                     </CardContent>
                     <Divider style={{ marginTop: 5 }} />
-                    <div>{newStorageObj === null ? <CardContent className={classes.cardContent}>
+                    <div>{newDataShow === null ? <CardContent className={classes.cardContent}>
                         {InputItemFirst ? InputItemFirst.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
                     </CardContent> : null}</div>
-                    <div> {newStorageObj ? scanFirstbarcode === true ? <CardContent className={classes.cardContent}>
+                    <div> {newDataShow ? scanFirstbarcode === true ? <CardContent className={classes.cardContent}>
                         {inputItem ? inputItem.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
@@ -947,7 +947,7 @@ const AmPickingReturn = (props) => {
         </div>
     );
 }
-AmPickingReturn.propTypes = {
+AmPickingReturn2.propTypes = {
     classes: PropTypes.object.isRequired,
     headerCreate: PropTypes.array,
     itemCreate: PropTypes.array,
@@ -963,11 +963,11 @@ AmPickingReturn.propTypes = {
     showAreaDDL: PropTypes.object,
 };
 
-AmPickingReturn.defaultProps = {
+AmPickingReturn2.defaultProps = {
     apiCreate: "/v2/ScanPickingReturnAPI",
     useMultiSKU: false,
     setVisibleTabMenu: ['Select', 'Add', 'Remove']
 
 }
 
-export default withStyles(styles)(AmPickingReturn);
+export default withStyles(styles)(AmPickingReturn2);
