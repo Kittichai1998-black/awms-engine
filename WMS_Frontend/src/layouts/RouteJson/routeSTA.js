@@ -46,7 +46,7 @@ const Scanbarcode = Loadable({
   loading: Loading
 });
 const CustomerReturnPallet = Loadable({
-  loader: () => import("../../views/page/STA/Receive/CustomerReturnPallet"),
+    loader: () => import("../../views/page/STA/Receive/CustomerReturnPalletByBarcode"),
   loading: Loading
 });
 const ReceiveEmptyPallet = Loadable({
@@ -54,7 +54,7 @@ const ReceiveEmptyPallet = Loadable({
   loading: Loading
 });
 const PickingReturn = Loadable({
-  loader: () => import("../../views/page/STA/Issues/PickingReturn"),
+    loader: () => import("../../views/page/STA/Issues/ReturnLoadByBarcode"),
   loading: Loading
 });
 const CountingAdj = Loadable({
@@ -78,7 +78,7 @@ const dashboardCountingJob = Loadable({
   loading: Loading
 });
 const ReceivePallet = Loadable({
-  loader: () => import("../../views/page/STA/Receive/ReceivePallet"),
+    loader: () => import("../../views/page/STA/Receive/ReceivePalletByBarcode"),
   loading: Loading
 });
 const ReceiveWIPSup = Loadable({
@@ -86,7 +86,7 @@ const ReceiveWIPSup = Loadable({
   loading: Loading
 });
 const LoadingReturn = Loadable({
-  loader: () => import("../../views/page/STA/Issues/ReturnLoad"),
+    loader: () => import("../../views/page/STA/Issues/ReturnLoadByBarcode"),
   loading: Loading
 });
 const routes = [
