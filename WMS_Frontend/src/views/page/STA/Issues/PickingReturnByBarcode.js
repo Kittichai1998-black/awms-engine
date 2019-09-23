@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
 import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
 import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
-import AmPickingReturn2 from '../../../pageComponent/AmpickingReturn2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
@@ -10,7 +9,7 @@ import * as SC from '../../../../constant/StringConst'
 // const Axios = new apicall()
 
 
-const PickingReturn =  (props) => {
+const PickingReturnByBarcode = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
@@ -22,23 +21,9 @@ const PickingReturn =  (props) => {
     //     // { "field": "MovementType_ID", "type": "dropdown", "typeDropdown": "search", "name": "Movement Type", "dataDropDown": MVTQuery, "placeholder": "Movement Type", "fieldLabel": ["Code"], "fieldDataKey": "ID" },
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
-    //const inputItem = [
-    //    // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-    //    { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-    //    { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
-    //    {
-    //        "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-    //            { value: '97', label: "PARTIAL" }
-    //        ],
-    //        "defaultValue": { value: '97', disabled: true }
-    //    }
-    //]
-
     const inputItem = [
-        { "field": "orderNo", "type": "input", "name": "Reoder No", "placeholder": "Reoder No." },
-        { "field": "scanCode", "type": "input", "name": "Pack Code", "placeholder": "Pack Code" },
-        { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
-        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -46,12 +31,6 @@ const PickingReturn =  (props) => {
             ],
             "defaultValue": { value: '97', disabled: true }
         }
-    ]
-
-    const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" }
-
     ]
 
     const [showDialog, setShowDialog] = useState(null);
@@ -76,7 +55,7 @@ const PickingReturn =  (props) => {
         return res;
     }
     async function onBeforePost(reqValue, storageObj) {
-        //split ¤èÒ
+        //split à¸„à¹ˆà¸²
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
@@ -85,7 +64,7 @@ const PickingReturn =  (props) => {
                 if (reqValue['scanCode'].length === 26) {
                     let orderNo = reqValue['scanCode'].substr(0, 7);
                     let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                    let skuCode = skuCode1.trim(); //·´ÊÍº ãªéskucode¢Í§·Ò¹µÐÇÑ¹ÍÂÙè àÅÂµéÍ§µÑ´xxx·éÒÂ·Ôé§
+                    let skuCode = skuCode1.trim(); //à¸—à¸”à¸ªà¸­à¸š à¹ƒà¸Šà¹‰skucodeà¸‚à¸­à¸‡à¸—à¸²à¸™à¸•à¸°à¸§à¸±à¸™à¸­à¸¢à¸¹à¹ˆ à¹€à¸¥à¸¢à¸•à¹‰à¸­à¸‡à¸•à¸±à¸”xxxà¸—à¹‰à¸²à¸¢à¸—à¸´à¹‰à¸‡
                     let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                     let rootID = reqValue.rootID;
                     let qryStr = {};
@@ -125,7 +104,7 @@ const PickingReturn =  (props) => {
                                     numCarton++;
 
                                     if (cartonNo === parseInt(splitCartonNo[no])) {
-                                        ///àÅ¢carton no «éÓ ÃÑºà¢éÒäÁèä´é ÇÒ§ÊÔ¹¤éÒÅ§º¹¾ÒàÅ·äÁèä´é
+                                        ///à¹€à¸¥à¸‚carton no à¸‹à¹‰à¸³ à¸£à¸±à¸šà¹€à¸‚à¹‰à¸²à¹„à¸¡à¹ˆà¹„à¸”à¹‰ à¸§à¸²à¸‡à¸ªà¸´à¸™à¸„à¹‰à¸²à¸¥à¸‡à¸šà¸™à¸žà¸²à¹€à¸¥à¸—à¹„à¸¡à¹ˆà¹„à¸”à¹‰
 
                                         alertDialogRenderer("Pallet No. " + storageObj.code + (window.project === "TAP" ? " had Part NO.: " : " had SKU Code: ") + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
 
@@ -192,15 +171,14 @@ const PickingReturn =  (props) => {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-            <AmPickingReturn2
+            <AmPickingReturn
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
-                FirstScans={inputFirst}
-                // apiCreate={apiCreate} // api ÊÃéÒ§ sto default => "/v2/ScanPickingReturnAPI"
-                onBeforePost={onBeforePost} //¿Ñ§¡ìªÑè¹àµÃÕÂÁ¢éÍÁÙÅàÍ§ ¡èÍ¹Êè§ä» api
-                // //¿Ñ§¡ìªÑè¹àµÃÕÂÁ¢éÍÁÙÅààÊ´§¼Å options àÍ§
+                // apiCreate={apiCreate} // api à¸ªà¸£à¹‰à¸²à¸‡ sto default => "/v2/ScanPickingReturnAPI"
+                onBeforePost={onBeforePost} //à¸Ÿà¸±à¸‡à¸à¹Œà¸Šà¸±à¹ˆà¸™à¹€à¸•à¸£à¸µà¸¢à¸¡à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹€à¸­à¸‡ à¸à¹ˆà¸­à¸™à¸ªà¹ˆà¸‡à¹„à¸› api
+                // //à¸Ÿà¸±à¸‡à¸à¹Œà¸Šà¸±à¹ˆà¸™à¹€à¸•à¸£à¸µà¸¢à¸¡à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹€à¹€à¸ªà¸”à¸‡à¸œà¸¥ options à¹€à¸­à¸‡
                 customOptions={customOptions}
                 showOptions={true}
                 autoPost={false}
@@ -211,4 +189,4 @@ const PickingReturn =  (props) => {
     );
 
 }
-export default PickingReturn;
+export default PickingReturnByBarcode;

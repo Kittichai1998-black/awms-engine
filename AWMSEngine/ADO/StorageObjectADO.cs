@@ -481,13 +481,13 @@ namespace AWMSEngine.ADO
             return res;
         }
 
-        public List<amt_StorageObject> ListLeftSTO(List<long> palletIDs, List<long> packIDs, VOCriteria buVO)
+        public List<SPOutSTOLeftGI> ListLeftSTO(List<long> palletIDs, List<long> packIDs, VOCriteria buVO)
         {
             Dapper.DynamicParameters param = new Dapper.DynamicParameters();
             param.Add("palletIDs", string.Join(",", palletIDs.ToArray()));
             param.Add("packIDs", string.Join(",", packIDs.ToArray()));
 
-            var res = this.Query<amt_StorageObject>("SP_STO_GET_LEFT_GI",
+            var res = this.Query<SPOutSTOLeftGI>("SP_STO_GET_LEFT_GI",
                                 System.Data.CommandType.StoredProcedure,
                                 param,
                                 buVO.Logger, buVO.SqlTransaction).ToList();

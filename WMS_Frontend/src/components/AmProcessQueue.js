@@ -308,17 +308,16 @@ const AmProcessQueue = props => {
   }, [openDialogCon]);
 
     useEffect(() => {
-        if (window.project === "AAI") {
-            console.log("Project AAI")
+        if (window.project === "AAI") {        
             Axios.get(createQueryString(docQueryAAI)).then(res => {
                 let docSelection = res.data.datas;
+                if (docSelection !== undefined)
                 setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
             });
-
-
         } else {
             Axios.get(createQueryString(docQuery)).then(res => {
                 let docSelection = res.data.datas;
+                if (docSelection !== undefined)
                 setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
             });
         }
