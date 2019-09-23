@@ -33,11 +33,11 @@ namespace AWMSEngine.WorkerService
             int idx = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_INDEX).GetTry<int>() ?? 0;
             int delay = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_DELAY).GetTry<int>() ?? 0;
 
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                while (!stoppingToken.IsCancellationRequested)
+                for (int i = 1; i <= idx; i++)
                 {
-                    for (int i = 1; i <= idx; i++)
+                    try
                     {
                         var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_SPNAME, i));
                         var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, i));
@@ -50,13 +50,13 @@ namespace AWMSEngine.WorkerService
                         var res = ADO.DataADO.GetInstant().QuerySP(spname, parameter, null);
                         await commonMsgHub.Clients.All.SendAsync(hubname, res.Json());
                     }
-                    await Task.Delay(delay);
+                    catch (Exception e)
+                    {
+                    }
                 }
+                await Task.Delay(delay);
             }
-            catch (Exception e)
-            {
-                //throw new System.Exception("Not Enum Type.");
-            }
+            
         }
     }
 }
