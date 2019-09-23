@@ -592,7 +592,7 @@ const AmDocumentSearch = props => {
     }
 
     if (props.docTypeCode === "1001" || props.docTypeCode === "1002") {
-      Axios.post(window.apipath + "/v2/ClosingDocumentAPI", {
+      Axios.post(window.apipath + "/v2/CloseDocAPI", {
         docIDs: docID
       }).then(res => {
         console.log(res);

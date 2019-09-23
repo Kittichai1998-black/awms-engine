@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AWMSEngine.WorkerService
 {
-    public class CommonDashboardWorker : BackgroundService
+    public class RecieveDashboardWorker : BackgroundService
     {
         private const string CF_KEY_INDEX = "COMMON_DASHBOARD_INDEX";
         private const string CF_KEY_DELAY = "COMMON_DASHBOARD_DELAY";
@@ -19,10 +19,10 @@ namespace AWMSEngine.WorkerService
         private const string CF_KEY_PARAM = "COMMON_DASHBOARD_PARAM_{0}";
         private const string CF_KEY_HUBNAME = "COMMON_DASHBOARD_HUBNAME_{0}";
 
-        private readonly ILogger<CommonDashboardWorker> logger;
+        private readonly ILogger<RecieveDashboardWorker> logger;
         private readonly IHubContext<CommonMessageHub> commonMsgHub;
 
-        public CommonDashboardWorker(ILogger<CommonDashboardWorker> logger, IHubContext<CommonMessageHub> clockHub)
+        public RecieveDashboardWorker(ILogger<RecieveDashboardWorker> logger, IHubContext<CommonMessageHub> clockHub)
         {
             this.logger = logger;
             this.commonMsgHub = clockHub;
@@ -33,11 +33,11 @@ namespace AWMSEngine.WorkerService
             int idx = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_INDEX).GetTry<int>() ?? 0;
             int delay = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_DELAY).GetTry<int>() ?? 0;
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                for (int i = 1; i <= idx; i++)
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    try
+                    for (int i = 1; i <= idx; i++)
                     {
                         var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_SPNAME, i));
                         var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, i));
@@ -50,13 +50,13 @@ namespace AWMSEngine.WorkerService
                         var res = ADO.DataADO.GetInstant().QuerySP(spname, parameter, null);
                         await commonMsgHub.Clients.All.SendAsync(hubname, res.Json());
                     }
-                    catch (Exception e)
-                    {
-                    }
+                    await Task.Delay(delay);
                 }
-                await Task.Delay(delay);
             }
-            
+            catch (Exception e)
+            {
+                //throw new System.Exception("Not Enum Type.");
+            }
         }
     }
 }

@@ -66,21 +66,19 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             WorkQueues.ForEach(wq =>
                             {
                                 var queue = AWMSEngine.ADO.WorkQueueADO.GetInstant().Get(wq.Value, buVO);
-                                var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
+                                //var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
+                                var stoPackList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO).ToTreeList();
 
                                 if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
                                 {
                                     var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, docs.ID.Value, buVO);
-
-                                    long? TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First();
+                                    
+                                    long? TANUMs = resSAP.datas.Select(data => data.TANUM).First();
                                     if (TANUMs != null && TANUMs != 0)
                                     {
-                                        UpdateBaseSTO(bsto, OptionVOConst.OPT_TANUM, TANUMs, buVO);
+                                        UpdateBaseSTO(queue.StorageObject_ID.Value, OptionVOConst.OPT_TANUM, TANUMs, buVO);
                                     }
-                                  /* else
-                                    {
-                                        throw new AMWException(logger, AMWExceptionCode.B0001, "Transfer Order Not Response");
-                                    }*/
+                                   
                                 }
                                 else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
                                 {
@@ -98,10 +96,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                         };
 
                                         var resSAP = SendDataToSAP_ZWMRF004(reqData, docs.ID.Value, buVO);
-                                        TANUMs = resSAP.datas.Select(data => data.TANUM).Distinct().First();
+                                        TANUMs = resSAP.datas.Select(data => data.TANUM).First();
                                         if (TANUMs != null && TANUMs != 0)
                                         {
-                                            UpdateBaseSTO(bsto, OptionVOConst.OPT_BTANR, TANUMs, buVO);
+                                            UpdateBaseSTO(queue.StorageObject_ID.Value, OptionVOConst.OPT_BTANR, TANUMs, buVO);
                                         }
                                     }
 
@@ -115,7 +113,15 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                             GI_DOC = docs.Code
                                         };
                                         var resSAP = SendDataToSAP_ZWMRF005(reqData, docs.ID.Value, buVO);
-                                       
+                                        /*resSAP.datas.ForEach(xx => {
+                                            //var chkMat = stoPackList.Find(pk => pk.code == xx.MATNR.TrimStart(new char[] { '0' }) 
+                                            //   && pk.batch == xx.CHARG.TrimStart(new char[] { '0' }));
+                                            //var chkMat_opt = chkMat.options;
+                                            //var sunum = xx.LENUM.TrimStart(new char[] { '0' });
+                                            //var stoPack = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(sunum, null,null, false, true, buVO).ToTreeList();
+
+                                            UpdateBaseSTO(chkMat.id.Value, OptionVOConst.OPT_BTANR, TANUMs, buVO);
+                                        });*/
                                     }
                                     else if (docs.Ref1 == "R05")
                                     {
@@ -128,7 +134,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                         };
                                         var resSAP = SendDataToSAP_ZWMRF006(reqData, docs.ID.Value, buVO);
                                         //อัพเดท sto options
-                                        //UpdatePackSTO(resSAP, queue.StorageObject_ID.Value, buVO);
+                                       
                                     }
                                     
 
@@ -146,13 +152,13 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     });
                                     if (checkSTOReceived == true)
                                     {
-                                        var bstos = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
+                                        //var bstos = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID.Value, buVO);
 
                                         var resSAP = SendDataToSAP_ZWMRF002(queue.StorageObject_Code, null, buVO);
                                         long? TANUM_Received = resSAP.datas.Select(data => data.TANUM).Distinct().First();
                                         if (TANUM_Received != null && TANUM_Received != 0)
                                         {
-                                            UpdateBaseSTO(bstos, OptionVOConst.OPT_TANUM, TANUM_Received, buVO);
+                                            UpdateBaseSTO(queue.StorageObject_ID.Value, OptionVOConst.OPT_TANUM, TANUM_Received, buVO);
                                         }
                                          
                                     }
@@ -166,7 +172,25 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             return reqVO;
         }
  
+        private void LogException(long? docID, string message, VOCriteria buVO)
+        {
+            if (docID.HasValue)
+            {
+                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage() {
+                    docID = docID.Value,
+                    msgError = message
+                });
+            }
+            else
+            {
+                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                {
+                    msgError = message
+                });
+            }
+            throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, message);
 
+        }
         private SapResponse<ZSWMRF002_OUT_SU> SendDataToSAP_ZWMRF002(string suCode, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF002(suCode, buVO);
@@ -174,31 +198,12 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                 if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
                 {
-                    if (docID.HasValue)
-                    {
-                        var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                        {
-                            docID = docID.Value,
-                            msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
-                        };
-                        buVO.FinalLogDocMessage.Add(msg);
-                    }
-                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
-
+                    LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
                 }
             }
             else
             {
-                if (docID.HasValue)
-                {
-                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                    {
-                        docID = docID.Value,
-                        msgError = res.message
-                    };
-                    buVO.FinalLogDocMessage.Add(msg);
-                }
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
+                LogException(docID, res.message, buVO);
             }
 
             return res;
@@ -210,81 +215,66 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                 if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
                 {
-                    if (docID.HasValue)
-                    {
-                        var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                        {
-                            docID = docID.Value,
-                            msgError = res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG
-                        };
-                        buVO.FinalLogDocMessage.Add(msg);
-                    }
-                    throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG);
-
+                    LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
                 }
             }
             else
             {
-                if (docID.HasValue)
-                {
-                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                    {
-                        docID = docID.Value,
-                        msgError = res.message
-                    };
-                    buVO.FinalLogDocMessage.Add(msg);
-                }
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
+                LogException(docID, res.message, buVO);
             }
+
             return res;
         }
         private SapResponse<ZSWMRF005_OUT_SU_BAL> SendDataToSAP_ZWMRF005(ZSWMRF005_IN_AWS data, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF005(data, buVO);
-            if (res.datas == null)           
+            if (res.datas != null)
             {
-                if (docID.HasValue)
+                /*if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
                 {
-                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                    {
-                        docID = docID.Value,
-                        msgError = res.message
-                    };
-                    buVO.FinalLogDocMessage.Add(msg);
-                }
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
+                    LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
+                }*/
             }
+            else
+            {
+                LogException(docID, res.message, buVO);
+            }
+
             return res;
         }
         private SapResponse<ZSWMRF006_OUT_SU_BAL> SendDataToSAP_ZWMRF006(ZSWMRF006_IN_AWS data, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF006(data, buVO);
-            if (res.datas == null)            
+            if (res.datas != null)
             {
-                if (docID.HasValue)
+                /*if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
                 {
-                    var msg = new FinalDatabaseLogCriteria.DocumentOptionMessage()
-                    {
-                        docID = docID.Value,
-                        msgError = res.message
-                    };
-                    buVO.FinalLogDocMessage.Add(msg);
-                }
-                throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, res.message);
+                    LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
+                }*/
             }
+            else
+            {
+                LogException(docID, res.message, buVO);
+            }
+
             return res;
         }
         
-        private void UpdateBaseSTO(amt_StorageObject bsto, string key, dynamic value, VOCriteria buVO)
+        private void UpdateBaseSTO(long bstoID, string key, dynamic value, VOCriteria buVO)
         {
             //var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(stoID.Value, buVO);
+            var stoPackList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoID, StorageObjectType.BASE, false, true, buVO).ToTreeList();
+            //var stoPackList = chkStos.ToTreeList().Where(y => y.type == StorageObjectType.PACK).ToList();
 
-            var opt_done = ObjectUtil.QryStrSetValue(bsto.Options, key, value);
+            stoPackList.ForEach(pack => {
+                var opt_done = ObjectUtil.QryStrSetValue(pack.options, key, value);
 
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.ID.Value, buVO,
-                    new KeyValuePair<string, object>[] {
+                AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(pack.id.Value, buVO,
+                        new KeyValuePair<string, object>[] {
                                             new KeyValuePair<string, object>("Options", opt_done)
-                    });
+                        });
+            });
+            
         }
         private void UpdatePackSTO(SapResponse<ZSWMRF006_OUT_SU_BAL> resSap, long bstoID, VOCriteria buVO)
         {
@@ -334,33 +324,34 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
                         AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, eventStatus, buVO);
                     }
-                    RemoveOPTEventSTO(bsto, buVO);
+                    RemoveOPTEventSTO(bsto.ID.Value, bsto.Options, buVO);
                 }
             }); 
         }
 
         private void UpdateStorageObjectReceived(SPworkQueue queue, VOCriteria buVO)
         {
-            var bsto = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(queue.StorageObject_ID, buVO);
+            var stosList = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(queue.StorageObject_ID.Value, StorageObjectType.BASE, false, true, buVO).ToTreeList();
+            stosList.ForEach(sto => {
+                //up OPT_DONE_DES_EVENT_STATUS
+                var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
+                if (done_des_event_status == null || done_des_event_status.Length == 0)
+                {
 
-            //up OPT_DONE_DES_EVENT_STATUS
-            var done_des_event_status = ObjectUtil.QryStrGetValue(bsto.Options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
-            if (done_des_event_status == null || done_des_event_status.Length == 0)
-            {
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
-            }
-            else
-            {
-                StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
-                AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(queue.StorageObject_ID.Value, null, null, eventStatus, buVO);
-                RemoveOPTEventSTO(bsto, buVO);
-            }
-
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatus(sto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
+                }
+                else
+                {
+                    StorageObjectEventStatus eventStatus = (StorageObjectEventStatus)Enum.Parse(typeof(StorageObjectEventStatus), done_des_event_status);
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatus(sto.id.Value, null, null, eventStatus, buVO);
+                    RemoveOPTEventSTO(sto.id.Value, sto.options, buVO);
+                }
+            });
         }
-        private void RemoveOPTEventSTO(amt_StorageObject bsto, VOCriteria buVO)
+        private void RemoveOPTEventSTO(long bsto_id, string bsto_options, VOCriteria buVO)
         {
             //remove OPT_DONE_DES_EVENT_STATUS
-            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto.Options);
+            var listkeyRoot = ObjectUtil.QryStrToKeyValues(bsto_options);
             var opt_done = "";
 
             if (listkeyRoot != null && listkeyRoot.Count > 0)
@@ -369,7 +360,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 opt_done = ObjectUtil.ListKeyToQryStr(listkeyRoot);
             }
 
-            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto.ID.Value, buVO,
+            AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(bsto_id, buVO,
                     new KeyValuePair<string, object>[] {
                         new KeyValuePair<string, object>("Options", opt_done)
                     });
