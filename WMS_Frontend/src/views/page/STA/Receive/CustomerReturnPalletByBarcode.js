@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
-import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
@@ -19,7 +18,7 @@ const CustomerQuery = {
     l: 100,
     all: "",
 }
-const CustomerReturnPallet = (props) => {
+const CustomerReturnPalletByBarcode = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
@@ -34,36 +33,16 @@ const CustomerReturnPallet = (props) => {
     const inputSource = [
         { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Source Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID" },
     ]
-    //const inputItem = [
-    //    // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-    //    { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-    //    { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
-    //    {    //  "visible": false, 
-    //        "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-    //            { value: '96', label: "RETURN" },
-    //        ],
-    //        "defaultValue": { value: '96', disabled: true }
-    //    }
-    //]
-
     const inputItem = [
-        { "field": "orderNo", "type": "input", "name": "Reoder No", "placeholder": "Reoder No." },
-        { "field": "scanCode", "type": "input", "name": "Pack Code", "placeholder": "Pack Code" },
-        { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
-        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
-        {
+        {    //  "visible": false, 
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '96', label: "PARTIAL" }
+                { value: '96', label: "RETURN" },
             ],
             "defaultValue": { value: '96', disabled: true }
         }
-    ]
-
-    const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" }
-
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -88,7 +67,7 @@ const CustomerReturnPallet = (props) => {
     }
 
     async function onBeforePost(reqValue, storageObj) {
-        //split ¤èÒ
+        //split à¸„à¹ˆà¸²
         var resValuePost = null;
         var dataScan = {};
         
@@ -97,7 +76,7 @@ const CustomerReturnPallet = (props) => {
             if (reqValue['scanCode'].length === 26) {
                 let orderNo = reqValue['scanCode'].substr(0, 7);
                 let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                let skuCode = skuCode1.trim(); //·´ÊÍº ãªéskucode¢Í§·Ò¹µÐÇÑ¹ÍÂÙè àÅÂµéÍ§µÑ´xxx·éÒÂ·Ôé§
+                let skuCode = skuCode1.trim(); //à¸—à¸”à¸ªà¸­à¸š à¹ƒà¸Šà¹‰skucodeà¸‚à¸­à¸‡à¸—à¸²à¸™à¸•à¸°à¸§à¸±à¸™à¸­à¸¢à¸¹à¹ˆ à¹€à¸¥à¸¢à¸•à¹‰à¸­à¸‡à¸•à¸±à¸”xxxà¸—à¹‰à¸²à¸¢à¸—à¸´à¹‰à¸‡
                 let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                 let rootID = reqValue.rootID;
                 let qryStr = {};
@@ -137,7 +116,7 @@ const CustomerReturnPallet = (props) => {
                                 numCarton++;
 
                                 if (cartonNo === parseInt(splitCartonNo[no])) {
-                                    ///àÅ¢carton no «éÓ ÃÑºà¢éÒäÁèä´é ÇÒ§ÊÔ¹¤éÒÅ§º¹¾ÒàÅ·äÁèä´é
+                                    ///à¹€à¸¥à¸‚carton no à¸‹à¹‰à¸³ à¸£à¸±à¸šà¹€à¸‚à¹‰à¸²à¹„à¸¡à¹ˆà¹„à¸”à¹‰ à¸§à¸²à¸‡à¸ªà¸´à¸™à¸„à¹‰à¸²à¸¥à¸‡à¸šà¸™à¸žà¸²à¹€à¸¥à¸—à¹„à¸¡à¹ˆà¹„à¸”à¹‰
 
                                     alertDialogRenderer("Pallet No. " + storageObj.code + " had SKU Code: " + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
 
@@ -198,16 +177,15 @@ const CustomerReturnPallet = (props) => {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-            <AmMappingPallet2
+            <AmMappingPallet
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
                 sourceCreate={inputSource}
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
-                FirstScans={inputFirst}
-                // apiCreate={apiCreate} // api ÊÃéÒ§ sto default => "/v2/ScanMapStoAPI"
-                onBeforePost={onBeforePost} //¿Ñ§¡ìªÑè¹àµÃÕÂÁ¢éÍÁÙÅàÍ§ ¡èÍ¹Êè§ä» api
-                // //¿Ñ§¡ìªÑè¹àµÃÕÂÁ¢éÍÁÙÅààÊ´§¼Å options àÍ§
+                // apiCreate={apiCreate} // api à¸ªà¸£à¹‰à¸²à¸‡ sto default => "/v2/ScanMapStoAPI"
+                onBeforePost={onBeforePost} //à¸Ÿà¸±à¸‡à¸à¹Œà¸Šà¸±à¹ˆà¸™à¹€à¸•à¸£à¸µà¸¢à¸¡à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹€à¸­à¸‡ à¸à¹ˆà¸­à¸™à¸ªà¹ˆà¸‡à¹„à¸› api
+                // //à¸Ÿà¸±à¸‡à¸à¹Œà¸Šà¸±à¹ˆà¸™à¹€à¸•à¸£à¸µà¸¢à¸¡à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹€à¹€à¸ªà¸”à¸‡à¸œà¸¥ options à¹€à¸­à¸‡
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
@@ -218,4 +196,4 @@ const CustomerReturnPallet = (props) => {
     );
 
 }
-export default CustomerReturnPallet;
+export default CustomerReturnPalletByBarcode;

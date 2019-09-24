@@ -21,7 +21,7 @@ import {
 import Clone from "../../components/function/Clone";
 import Pagination from "../../components/table/AmPagination";
 import Table from "../../components/table/AmTable";
-
+import AmStorageObjectStatus from "../../components/AmStorageObjectStatus";
 const Axios = new apicall();
 
 const LabelH = styled.label`
@@ -248,13 +248,26 @@ const AmStorageObjectMulti = props => {
 
     if (window.project === "AAI") {
       res.data.datas.forEach(x => {
-        x.SKU_Code = x.SKU_Code.split("\\n").map(y => <div>{y}</div>);
-        x.SKU_Name = x.SKU_Name.split("\\n").map(y => <div>{y}</div>);
+        x.SKU_Code = x.SKU_Code.split("\\n").map(y => (
+          <div style={{ marginBottom: "3px" }}>{y}</div>
+        ));
+        x.SKU_Name = x.SKU_Name.split("\\n").map(y => (
+          <div style={{ marginBottom: "3px" }}>{y}</div>
+        ));
         x.Qty = x.Qty.toString()
           .split("\\n")
           .map(y => <div>{y.split(".000")}</div>);
-        x.Base_Unit = x.Base_Unit.split("\\n").map(y => <div>{y}</div>);
-        x.Batch = x.Batch.split("\\n").map(y => <div>{y}</div>);
+        x.Base_Unit = x.Base_Unit.split("\\n").map(y => (
+          <div style={{ marginBottom: "3px" }}>{y}</div>
+        ));
+        x.Batch = x.Batch.split("\\n").map(y => (
+          <div style={{ marginBottom: "3px" }}>{y}</div>
+        ));
+        x.Status = x.Status.split("\\n").map(y => (
+          <div style={{ marginBottom: "3px", textAlign: "center" }}>
+            {getStatus(y)}
+          </div>
+        ));
       });
     }
 
@@ -286,7 +299,33 @@ const AmStorageObjectMulti = props => {
     // setExcelDataSource(resExcel.data.datas)
   }
   //===========================================================
-
+  const getStatus = Status => {
+    if (Status === "NEW") {
+      return <AmStorageObjectStatus key={Status} statusCode={10} />;
+    } else if (Status === "RECEIVING") {
+      return <AmStorageObjectStatus key={Status} statusCode={11} />;
+    } else if (Status === "RECEIVED") {
+      return <AmStorageObjectStatus key={Status} statusCode={12} />;
+    } else if (Status === "AUDITING") {
+      return <AmStorageObjectStatus key={Status} statusCode={13} />;
+    } else if (Status === "AUDITED") {
+      return <AmStorageObjectStatus key={Status} statusCode={14} />;
+    } else if (Status === "PICKING") {
+      return <AmStorageObjectStatus key={Status} statusCode={17} />;
+    } else if (Status === "PICKED") {
+      return <AmStorageObjectStatus key={Status} statusCode={18} />;
+    } else if (Status === "HOLD") {
+      return <AmStorageObjectStatus key={Status} statusCode={99} />;
+    } else if (Status === "QUALITY_CONTROL") {
+      return <AmStorageObjectStatus key={Status} statusCode={98} />;
+    } else if (Status === "REMOVING") {
+      return <AmStorageObjectStatus key={Status} statusCode={21} />;
+    } else if (Status === "REMOVED") {
+      return <AmStorageObjectStatus key={Status} statusCode={22} />;
+    } else {
+      return null;
+    }
+  };
   useEffect(() => {
     setColumns(Clone(columns));
   }, [dataSource, editRow]);
@@ -824,36 +863,43 @@ const AmStorageObjectMulti = props => {
         renderCustomButtonBTMLeft={
           props.modifyRemark === true && props.selection === true ? (
             <div style={{ paddingTop: "10px" }}>
-              <AmButton
-                style={{ marginRight: "5px" }}
-                styleType="dark"
-                onClick={() => {
-                  onClickHold(99);
-                  setName("Remark HOLD");
-                }}
-              >
-                HOLD
-              </AmButton>
-              <AmButton
-                style={{ marginRight: "5px" }}
-                styleType="warning"
-                onClick={() => {
-                  onClickHold(12);
-                  setName("Remark RECEIVED");
-                }}
-              >
-                RECEIVED
-              </AmButton>
-              <AmButton
-                style={{ marginRight: "5px" }}
-                styleType="default"
-                onClick={() => {
-                  onClickHold(98);
-                  setName("Remark QC");
-                }}
-              >
-                QC
-              </AmButton>
+              {props.modifyhold === true ? (
+                <AmButton
+                  style={{ marginRight: "5px" }}
+                  styleType="dark"
+                  onClick={() => {
+                    onClickHold(99);
+                    setName("Remark HOLD");
+                  }}
+                >
+                  HOLD
+                </AmButton>
+              ) : null}
+              {props.modifyreceived === true ? (
+                <AmButton
+                  style={{ marginRight: "5px" }}
+                  styleType="warning"
+                  onClick={() => {
+                    onClickHold(12);
+                    setName("Remark RECEIVED");
+                  }}
+                >
+                  RECEIVED
+                </AmButton>
+              ) : null}
+              {props.modifyQC === true ? (
+                <AmButton
+                  style={{ marginRight: "5px" }}
+                  styleType="default"
+                  onClick={() => {
+                    onClickHold(98);
+                    setName("Remark QC");
+                  }}
+                >
+                  QC
+                </AmButton>
+              ) : null}
+
               <AmButton
                 style={{ marginRight: "5px" }}
                 styleType="add"
