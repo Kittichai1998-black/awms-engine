@@ -87,7 +87,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     long? TANUMs = null;
                                     if (docs.Ref1 == "R01" || docs.Ref1 == "R02" || docs.Ref1 == "R06")
                                     {
-                                        ZSWMRF004_IN_AWS reqData = new ZSWMRF004_IN_AWS()
+                                        IN_AWS reqData = new IN_AWS()
                                         {
                                             ZMODE = docs.Ref1,
                                             LGNUM = "W01", 
@@ -105,7 +105,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                                     else if (docs.Ref1 == "R03" || docs.Ref1 == "R04")
                                     {
-                                        ZSWMRF005_IN_AWS reqData = new ZSWMRF005_IN_AWS()
+                                        IN_AWS reqData = new IN_AWS()
                                         {
                                             ZMODE = docs.Ref1,
                                             LGNUM = "W01",
@@ -125,7 +125,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     }
                                     else if (docs.Ref1 == "R05")
                                     {
-                                        ZSWMRF006_IN_AWS reqData = new ZSWMRF006_IN_AWS()
+                                        IN_AWS reqData = new IN_AWS()
                                         {
                                             ZMODE = docs.Ref1,
                                             LGNUM = "W01",
@@ -208,56 +208,56 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
             return res;
         }
-        private SapResponse<ZSWMRF004_OUT_SAP> SendDataToSAP_ZWMRF004(ZSWMRF004_IN_AWS data, long? docID, VOCriteria buVO)
+        private SapResponse<OUT_SAP> SendDataToSAP_ZWMRF004(IN_AWS data, long? docID, VOCriteria buVO)
         {
-            var res = SAPInterfaceADO.GetInstant().ZWMRF004(data, buVO);
-            if (res.datas != null)
-            {
-                if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
-                {
-                    LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
-                }
-            }
-            else
-            {
-                LogException(docID, res.message, buVO);
-            }
+            //var res = SAPInterfaceADO.GetInstant().ZWMRF004(data, buVO);
+            //if (res.datas != null)
+            //{
+            //    if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            //    {
+            //        LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
+            //    }
+            //}
+            //else
+            //{
+            //    LogException(docID, res.message, buVO);
+            //}
 
-            return res;
+            return null;
         }
-        private SapResponse<ZSWMRF005_OUT_SU_BAL> SendDataToSAP_ZWMRF005(ZSWMRF005_IN_AWS data, long? docID, VOCriteria buVO)
+        private SapResponse<OUT_SU_BAL> SendDataToSAP_ZWMRF005(IN_AWS data, long? docID, VOCriteria buVO)
         {
-            var res = SAPInterfaceADO.GetInstant().ZWMRF005(data, buVO);
-            if (res.datas != null)
-            {
-                /*if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
-                {
-                    LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
-                }*/
-            }
-            else
-            {
-                LogException(docID, res.message, buVO);
-            }
+            //var res = SAPInterfaceADO.GetInstant().ZWMRF005(data, buVO);
+            //if (res.datas != null)
+            //{
+            //    /*if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            //    {
+            //        LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
+            //    }*/
+            //}
+            //else
+            //{
+            //    LogException(docID, res.message, buVO);
+            //}
 
-            return res;
+            return null;
         }
-        private SapResponse<ZSWMRF006_OUT_SU_BAL> SendDataToSAP_ZWMRF006(ZSWMRF006_IN_AWS data, long? docID, VOCriteria buVO)
+        private SapResponse<OUT_SU_BAL> SendDataToSAP_ZWMRF006(IN_AWS data, long? docID, VOCriteria buVO)
         {
-            var res = SAPInterfaceADO.GetInstant().ZWMRF006(data, buVO);
-            if (res.datas != null)
-            {
-                /*if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
-                {
-                    LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
-                }*/
-            }
-            else
-            {
-                LogException(docID, res.message, buVO);
-            }
+            //var res = SAPInterfaceADO.GetInstant().ZWMRF006(data, buVO);
+            //if (res.datas != null)
+            //{
+            //    /*if (res.datas.Any(x => !string.IsNullOrEmpty(x.ERR_MSG)))
+            //    {
+            //        LogException(docID, res.datas.Find(x => !string.IsNullOrEmpty(x.ERR_MSG)).ERR_MSG, buVO);
+            //    }*/
+            //}
+            //else
+            //{
+            //    LogException(docID, res.message, buVO);
+            //}
 
-            return res;
+            return null;
         }
         
         private void UpdateBaseSTO(long bstoID, string key, dynamic value, VOCriteria buVO)
@@ -276,7 +276,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             });
             
         }
-        private void UpdatePackSTO(SapResponse<ZSWMRF006_OUT_SU_BAL> resSap, long bstoID, VOCriteria buVO)
+        private void UpdatePackSTO(SapResponse<OUT_SU_BAL> resSap, long bstoID, VOCriteria buVO)
         {
             var chkStos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(bstoID, StorageObjectType.BASE, false, true, buVO);
             var stoPackList = chkStos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();

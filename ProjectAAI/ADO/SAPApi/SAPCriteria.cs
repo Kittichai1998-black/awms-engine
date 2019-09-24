@@ -17,6 +17,20 @@ namespace ProjectAAI.ADO.SAPApi
             public object datas;
         }
 
+        public class SAPReqMulti
+        {
+            public string environmentName;
+            public string functionName;
+            public List<SAPList> sapLists;
+            public string outTableNames;
+            public class SAPList
+            {
+                public string inStructureName;
+                public string inTableName;
+                public dynamic datas;
+            }
+        }
+
         public class ZSWMRF001_IN_SU
         {
             /// <summary>Warehouse Code</summary>
@@ -99,31 +113,31 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Warehouse Code</summary>
             public string LGNUM;
             /// <summary>Storage Unit Number</summary>
-            public string LENUM = "";
+            public string LENUM;
             /// <summary>Reservation Number</summary>
-            public long? RSNUM = null;
+            public long? RSNUM;
             /// <summary>Delivery Order Number</summary>
-            public string VBELN_VL = "";
+            public string VBELN_VL;
             /// <summary>Delivery Item</summary>
-            public long? POSNR = null;
+            public long? POSNR;
             /// <summary>Material Number</summary>
-            public string MATNR = "";
+            public string MATNR;
             /// <summary>Batch Number</summary>
-            public string CHARG = "";
+            public string CHARG;
             /// <summary>Quantity</summary>
-            public decimal? BDMNG = null;
+            public decimal? BDMNG;
             /// <summary>Destination Storage Type</summary>
-            public string LGTYP = "";
+            public string LGTYP;
             /// <summary>Destination Storage Section</summary>
-            public string LGBER = "";
+            public string LGBER;
             /// <summary>Destination Storage BIN</summary>
-            public string LGPLA = "";
+            public string LGPLA;
             /// <summary>Include Stock Category = “” – Available Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_UR = "";
+            public string BESTQ_UR;
             /// <summary>Include Stock Category = Q – Stock in Quality Control, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_QI = "";
+            public string BESTQ_QI;
             /// <summary>Include Stock Category = S – Blocked Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_BLK = "";
+            public string BESTQ_BLK;
         }
         public class ZSWMRF003_OUT_REQ : ZSWMRF003_IN_REQ
         {
@@ -138,14 +152,9 @@ namespace ProjectAAI.ADO.SAPApi
         }
 
         /// <summary>
-        /// RESPONSE TO SAP R01, R02, R06
+        /// RESPONSE TO SAP
         /// </summary>
-        public class ZSWMRF004_IN_REQ : ZSWMRF005_IN_REQ
-        {
-            /// <summary>Delivery Item</summary>
-            public long? POSNR = null;
-        }
-        public class ZSWMRF004_IN_AWS
+        public class IN_AWS
         {
             /// <summary>Stock Removal Mode</summary>
             public string ZMODE;
@@ -156,8 +165,25 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
             public string GI_DOC;
         }
-        public class ZSWMRF004_OUT_SAP
-        {
+        public class OUT_SAP
+        {/// <summary>Material Number</summary>
+            public string MATNR;
+            /// <summary>Batch Number</summary>
+            public string CHARG;
+            /// <summary>Stock Category</summary>
+            public string BESTQ;
+            /// <summary>Delivery Order</summary>
+            public string VBELN_VL;
+            /// <summary>Delivery Item</summary>
+            public string POSNR;
+            /// <summary>Requirement Type</summary>
+            public string BETYP;
+            /// <summary>Requirement Number</summary>
+            public string BENUM;
+            /// <summary>Quantity</summary>
+            public decimal ANFME;
+            /// <summary>Unit</summary>
+            public string ALTME;
             /// <summary>Stock Removal Mode</summary>
             public string ZMODE;
             /// <summary>Warehouse Code</summary>
@@ -179,53 +205,48 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>แสดงข้อความผิดพลาด</summary>
             public string ERR_MSG;
         }
-
-        /// <summary>
-        /// RESPONSE TO SAP R03, R04
-        /// </summary>
-        public class ZSWMRF005_IN_REQ
+        public class IN_REQ
         {
             /// <summary>Stock Removal Mode</summary>
-            public string ZMODE = "";
+            public string ZMODE;
             /// <summary>Warehouse Code</summary>
-            public string LGNUM = "";
+            public string LGNUM;
             /// <summary>Storage Unit Number</summary>
-            public string LENUM = "";
+            public string LENUM;
             /// <summary>Reservation Number</summary>
-            public long? RSNUM = null;
+            public long? RSNUM;
             /// <summary>Delivery Order Number</summary>
-            public string VBELN_VL = "";
+            public string VBELN_VL;
             /// <summary>Material Number</summary>
-            public string MATNR = "";
+            public string MATNR;
             /// <summary>Batch Number</summary>
-            public string CHARG = "";
+            public string CHARG;
             /// <summary>Quantity</summary>
-            public decimal? BDMNG = null;
+            public decimal? BDMNG;
             /// <summary>Base unit of Measure</summary>
-            public string MEINS = "";
+            public string MEINS;
             /// <summary>Destination Storage Type</summary>
-            public string LGTYP = "";
+            public string LGTYP;
             /// <summary>Destination Storage Section</summary>
-            public string LGBER = "";
+            public string LGBER;
             /// <summary>Destination Storage BIN</summary>
-            public string LGPLA = "";
+            public string LGPLA;
             /// <summary>WM Movement type</summary>
-            public string BWLVS = "";
+            public string BWLVS;
             /// <summary>Include Stock Category = “” – Available Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_UR = "";
+            public string BESTQ_UR;
             /// <summary>Include Stock Category = Q – Stock in Quality Control, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_QI = "";
+            public string BESTQ_QI;
             /// <summary>Include Stock Category = S – Blocked Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_BLK = "";
+            public string BESTQ_BLK;
             /// <summary>Sales Instruction</summary>
-            //public string VBELN;
+            public string VBELN;
+            /// <summary>Delivery Item</summary>
+            public long? POSNR;
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
-            public string GI_DOC = "";
+            public string GI_DOC;
         }
-        public class ZSWMRF005_IN_AWS : ZSWMRF004_IN_AWS
-        {
-        }
-        public class ZSWMRF005_OUT_SU_BAL
+        public class OUT_SU_BAL
         {
             public string ZMODE;
             public string LGNUM;
@@ -242,48 +263,6 @@ namespace ProjectAAI.ADO.SAPApi
             public string GEWEI;
             public string VBELN;
             public decimal BALNC;
-        }
-        public class ZSWMRF005_OUT_SAP : ZSWMRF004_OUT_SAP
-        {
-            /// <summary>Material Number</summary>
-            public string MATNR;
-            /// <summary>Batch Number</summary>
-            public string CHARG;
-            /// <summary>Stock Category</summary>
-            public string BESTQ;
-            /// <summary>Delivery Order</summary>
-            public string VBELN_VL;
-            /// <summary>Delivery Item</summary>
-            public string POSNR;
-            /// <summary>Requirement Type</summary>
-            public string BETYP;
-            /// <summary>Requirement Number</summary>
-            public string BENUM;
-            /// <summary>Quantity</summary>
-            public decimal ANFME;
-            /// <summary>Unit</summary>
-            public string ALTME;
-
-        }
-
-        /// <summary>
-        /// RESPONSE TO SAP R05
-        /// </summary>
-        public class ZSWMRF006_IN_REQ : ZSWMRF005_IN_REQ
-        {
-            /// <summary>Delivery Item</summary>
-            public long? POSNR = null;
-            /// <summary>Sales Instruction</summary>
-            public string VBELN;
-        }
-        public class ZSWMRF006_IN_AWS : ZSWMRF004_IN_AWS
-        {
-        }
-        public class ZSWMRF006_OUT_SAP : ZSWMRF005_OUT_SAP
-        {
-        }
-        public class ZSWMRF006_OUT_SU_BAL : ZSWMRF005_OUT_SU_BAL
-        {
         }
 
         public class ZSWMRF007_IN_REQ
