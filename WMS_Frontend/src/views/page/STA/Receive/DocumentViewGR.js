@@ -48,22 +48,22 @@ const DocumentViewGR = props => {
       Header: "Task",
       Cell: e => getStatusGR(e.original)
     },
-    { width: 100, accessor: "Code", Header: "Pallet" },
-    { width: 150, accessor: "PackCode", Header: "SKU Code" },
-    { accessor: "PackName", Header: "SKU Name" },
-    { width: 125, accessor: "OrderNo", Header: "Order No" },
+    { width: 100, accessor: "code", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "SKU Code" },
+    { accessor: "packName", Header: "SKU Name" },
+    { width: 125, accessor: "orderNo", Header: "Order No" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "UnitType_Name", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
   const columnsDetailDES = [
     //{"width": 40,"accessor":"status", "Header":"Task","Cell":(e)=>getStatusGI(e.original)},
-    { width: 100, accessor: "Code ", Header: "Pallet" },
-    { width: 150, accessor: "PackCode", Header: "SKU Code" },
-    { accessor: "PackName", Header: "SKU Name" },
-    { width: 125, accessor: "OrderNo", Header: "Order No" },
+    { width: 100, accessor: "code ", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "SKU Code" },
+    { accessor: "packName", Header: "SKU Name" },
+    { width: 125, accessor: "นrderNo", Header: "Order No" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "PackUnitCode", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
   const optionDocItems = [{ optionName: "DocItem" }, { optionName: "DocType" }];

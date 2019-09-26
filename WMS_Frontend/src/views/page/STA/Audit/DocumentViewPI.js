@@ -31,8 +31,8 @@ const DocumentViewPI = props => {
   const columns = [
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
     { width: 100, accessor: "locationcode", Header: "Location" },
-    { width: 200, accessor: "skuMaster_Code", Header: "SKU Code" },
-    { accessor: "skuMaster_Name", Header: "SKU Name" },
+    { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
+    { accessor: "SKUMaster_Name", Header: "SKU Name" },
     {
       width: 130,
       accessor: "qtyrandom",
@@ -40,7 +40,7 @@ const DocumentViewPI = props => {
       type: "number"
     },
     { width: 130, accessor: "orderNo", Header: "Order No" },
-    { width: 70, accessor: "unitType_Name", Header: "Unit" }
+    { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
 
   const columnsDetailSOU = [
