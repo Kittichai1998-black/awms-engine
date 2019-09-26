@@ -62,7 +62,13 @@ const CustomerReturnPallet = (props) => {
 
     const inputFirst = [
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" }
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        {
+            "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
+                { value: '96', label: "PARTIAL" }
+            ],
+            "defaultValue": { value: '96', disabled: true }
+        }
 
     ]
     const [showDialog, setShowDialog] = useState(null);

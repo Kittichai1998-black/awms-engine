@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match } from '../../../../components/function/Convert';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
+import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
@@ -24,6 +25,20 @@ const ReceivePallet = (props) => {
             ],
             "defaultValue": { value: '97', disabled: true }
         }
+    ]
+
+
+
+    const inputFirst = [
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        {
+            "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
+                { value: '97', label: "PARTIAL" }
+            ],
+            "defaultValue": { value: '97', disabled: true }
+        }
+
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -235,11 +250,12 @@ const ReceivePallet = (props) => {
     return (
         <div>
             {stateDialog ? showDialog ? showDialog : null : null}
-            <AmMappingPallet
+            <AmMappingPallet2
                 showWarehouseDDL={inputWarehouse}
                 showAreaDDL={inputArea}
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
+                FirstScans={inputFirst}
                 // apiCreate={apiCreate} // api สร้าง sto default => "/v2/ScanMapStoAPI"
                 onBeforePost={onBeforePost} //ฟังก์ชั่นเตรียมข้อมูลเอง ก่อนส่งไป api
                 // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
