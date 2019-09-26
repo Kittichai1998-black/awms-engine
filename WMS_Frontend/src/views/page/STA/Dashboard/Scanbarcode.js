@@ -2,7 +2,8 @@ import * as signalR from '@aspnet/signalr';
 
 import React, { useState, useEffect } from "react";
 import Fullscreen from "react-full-screen";
-import AmInput from '../../../../components/AmInput'
+import AmInput from '../../../../components/AmInput';
+import AmButton from '../../../../components/AmButton';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -107,8 +108,6 @@ const useDashboardArea = (areaID) => {
         connection.start()
             .then(() => {
                 connection.on("DASHBOARD_PRD_RECIEVE_" + areaID, res => {
-                    
-                    console.log(JSON.parse(res));
                     setData(JSON.parse(res))
                 })
             })
@@ -141,7 +140,6 @@ const useClock = (propsTime, t) => {
 
     useEffect(() => {
         Axios1.get(window.apipath + "/v2/time").then((res) => {
-            console.log(res)
             if (res) {
                 setDate({
                     dateClient: new Date(),
@@ -216,6 +214,9 @@ const Scanbarcode = (props) => {
         width: window.innerWidth,
         height: window.innerHeight
     })
+    const [lockStateLeft, setLockStateLeft] = useState(false)
+    const [lockStateRight, setLockStateRight] = useState(false)
+
     const clock = useClock({
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
         label: "Date/Time"
@@ -345,7 +346,7 @@ const Scanbarcode = (props) => {
                     setarea1(x.areaLocationCode)
                     if(x.baseID !== null){
                         setgateLeft(true)
-                        setpallet(x.code)
+                        setpallet(x.baseCode)
                         setareaGate(x.areaID)
                         
                         if(x.ID !== null){
@@ -364,15 +365,18 @@ const Scanbarcode = (props) => {
                             setproductName(x.Name)
                             setorderNo(x.OrderNo)
                             setunitCode(x.UnitCode)
-                            setcarton(x.options.split("=")[1].split("&")[0])
+                            setcarton(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
                         }
+                    }
+                    else{
+                        setgateLeft(false)
                     }
                 }
                 else{
                     setarea2(x.areaLocationCode)
                     if(x.baseID !== null){
                         setgateRight(true)
-                        setpallet2(x.code)
+                        setpallet2(x.baseCode)
                         setareaGate2(x.areaID)
                         
                         if(x.ID !== null){
@@ -386,13 +390,15 @@ const Scanbarcode = (props) => {
                             } else {
                                 setqtyMax2(x.maxQuantity)
                             }
-
                             setproductCode2(x.Code)
                             setproductName2(x.Name)
                             setorderNo2(x.OrderNo)
                             setunitCode2(x.UnitCode)
-                            setcarton2(x.options.split("=")[1].split("&")[0])
+                            setcarton2(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
                         }
+                    }
+                    else{
+                        setgateRight(false)
                     }
                 }
             })
@@ -622,7 +628,7 @@ const Scanbarcode = (props) => {
                                                     <Typography variant="h5" component="h3">{productCode}</Typography>
                                                 </FormInline>
                                                 <FormInline style={{ paddingTop: "10px" }}>
-                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
+                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
                                                     <Typography variant="h5" component="h3">{orderNo}</Typography>
                                                 </FormInline>
                                                 <FormInline style={{ paddingTop: "10px" }}>
@@ -638,6 +644,10 @@ const Scanbarcode = (props) => {
 
                                                 </FormInline>
                                             </Border>
+                                        <AmButton styleType="confirm" onClick={()=> {
+                                            databar.lockStateLeft = !lockStateLeft
+                                            setdatabar({...databar});
+                                            setLockStateLeft(!lockStateLeft)}}>Lock</AmButton>
                                         </Card></Flash></div> : null}
 
                                     </Card>
@@ -667,7 +677,7 @@ const Scanbarcode = (props) => {
                                                 <Typography variant="h5" component="h3">{productCode2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
-                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
+                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
                                                 <Typography variant="h5" component="h3">{orderNo2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
@@ -684,6 +694,11 @@ const Scanbarcode = (props) => {
 
                                             </FormInline>
                                         </Border>
+                                        <AmButton styleType="confirm" onClick={()=> {
+                                            databar.lockStateLeft = !lockStateRight
+                                            setdatabar({...databar})
+                                            setLockStateRight(!lockStateRight)
+                                        }}>Lock</AmButton>
                                     </Card></Flash></div> : null : null}
                                 </Card></div></Grid>
                     </Grid>
