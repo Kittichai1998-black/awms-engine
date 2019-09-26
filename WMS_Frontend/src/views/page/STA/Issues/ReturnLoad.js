@@ -34,8 +34,8 @@ const ReceivePallet = (props) => {
     //]
 
     const inputItem = [
-        { "field": "orderNo", "type": "input", "name": "Reoder No", "placeholder": "Reoder No." },
-        { "field": "scanCode", "type": "input", "name": "Pack Code", "placeholder": "Pack Code" },
+        { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)" },
+        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)" },
         { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
