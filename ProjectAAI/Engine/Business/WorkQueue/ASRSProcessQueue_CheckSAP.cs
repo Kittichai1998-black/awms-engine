@@ -50,7 +50,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 var RSNUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "rsnum");
                 if (doc.Ref1 == "R01" || doc.Ref1 == "R02" || doc.Ref1 == "R06")
                 {
-                    ZSWMRF004_IN_REQ req = new ZSWMRF004_IN_REQ()
+                    IN_REQ req = new IN_REQ()
                     {
                         ZMODE = doc.Ref1,
                         LGNUM = "W01",
@@ -73,15 +73,15 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     {
                         req.RSNUM = long.Parse(RSNUM);
                     }
-                    SapResponse<ZSWMRF004_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_1_2_6(req, buVO);
-                    if (resSAP.status != 1)
-                    {
-                    }
+                    //SapResponse<ZSWMRF004_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_1_2_6(req, buVO);
+                    //if (resSAP.status != 1)
+                    //{
+                    //}
                 }
                 else if (doc.Ref1 == "R03" || doc.Ref1 == "R04")
                 {
 
-                    ZSWMRF005_IN_REQ req = new ZSWMRF005_IN_REQ()
+                    IN_REQ req = new IN_REQ()
                     {
                         ZMODE = doc.Ref1,
                         LGNUM = "W01",
@@ -104,14 +104,14 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     {
                         req.RSNUM = long.Parse(RSNUM);
                     }
-                    SapResponse<ZSWMRF005_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_3_4(req, buVO);
-                    if (resSAP.status != 1)
-                    {
-                    }
+                    //SapResponse<ZSWMRF005_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_3_4(req, buVO);
+                    //if (resSAP.status != 1)
+                    //{
+                    //}
                 }
                 else if (doc.Ref1 == "R05")
                 {
-                    ZSWMRF006_IN_REQ req = new ZSWMRF006_IN_REQ()
+                    IN_REQ req = new IN_REQ()
                     {
                         ZMODE = doc.Ref1,
                         LGNUM = "W01",
@@ -137,10 +137,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     {
                         req.RSNUM = long.Parse(RSNUM);
                     }
-                    SapResponse<ZSWMRF006_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_5(req, buVO);
-                    if (resSAP.status != 1)
-                    {
-                    }
+                    //SapResponse<ZSWMRF006_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_5(req, buVO);
+                    //if (resSAP.status != 1)
+                    //{
+                    //}
                 }
 
                 var souWM = staticValue.Warehouses.First(x => x.ID == doc.Sou_Warehouse_ID);
@@ -348,20 +348,20 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var res = SAPInterfaceADO.GetInstant().ZWMRF001(data, buVO);
             return res;
         }
-        private SapResponse<ZSWMRF004_OUT_SAP> SendDataToSAP_IN_REQ_R_1_2_6(ZSWMRF004_IN_REQ data, VOCriteria buVO)
-        {
-            var res = SAPInterfaceADO.GetInstant().ZWMRF004_IN_REQ(data, buVO);
-            return res;
-        }
-        private SapResponse<ZSWMRF005_OUT_SAP> SendDataToSAP_IN_REQ_R_3_4(ZSWMRF005_IN_REQ data, VOCriteria buVO)
-        {
-            var res = SAPInterfaceADO.GetInstant().ZWMRF005_IN_REQ(data, buVO);
-            return res;
-        }
-        private SapResponse<ZSWMRF006_OUT_SAP> SendDataToSAP_IN_REQ_R_5(ZSWMRF006_IN_REQ data, VOCriteria buVO)
-        {
-            var res = SAPInterfaceADO.GetInstant().ZWMRF006_IN_REQ(data, buVO);
-            return res;
-        }
+        //private SapResponseMulti SendDataToSAP_IN_REQ_R_1_2_6(ZSWMRF004_IN_REQ data, VOCriteria buVO)
+        //{
+        //    //var res = SAPInterfaceADO.GetInstant().ZWMRF004_IN_REQ(data, buVO);
+        //    return null;
+        //}
+        //private SapResponse<ZSWMRF005_OUT_SAP> SendDataToSAP_IN_REQ_R_3_4(ZSWMRF005_IN_REQ data, VOCriteria buVO)
+        //{
+        //    //var res = SAPInterfaceADO.GetInstant().ZWMRF005_IN_REQ(data, buVO);
+        //    return null;
+        //}
+        //private SapResponse<ZSWMRF006_OUT_SAP> SendDataToSAP_IN_REQ_R_5(ZSWMRF006_IN_REQ data, VOCriteria buVO)
+        //{
+        //    //var res = SAPInterfaceADO.GetInstant().ZWMRF006_IN_REQ(data, buVO);
+        //    return null;
+        //}
     }
 }

@@ -11,7 +11,7 @@ namespace SAPNCO.ADO
 {
     public class SAPExec
     {
-        public ResponseCriteria exec(RequestCriteria req)
+        public ResponseCriteria execMulti(RequestCriteriaMulti req)
         {
             var res = new Dictionary<string, dynamic>();
             try
@@ -42,11 +42,11 @@ namespace SAPNCO.ADO
 
                 SapFunction.Invoke(SapRfcDestination);
 
-                req.outTableNames.ForEach(x =>
+                foreach(var x in req.outTableNames.Split(','))
                 {
                     var SAPdt = SapFunction.GetTable(x);
                     res.Add(x, CreateResponse(SAPdt));
-                });
+                }
 
                 return new ResponseCriteria()
                 {
@@ -158,6 +158,72 @@ namespace SAPNCO.ADO
                 res.Add(resObj);
             }
             return res;
+        }
+
+        public ResponseCriteria exec(RequestCriteria req)
+        {
+            try
+            {
+                RfcDestination SapRfcDestination = RfcDestinationManager.GetDestination(req.environmentName);
+                RfcRepository SapRfcRepository = SapRfcDestination.Repository;
+                IRfcFunction SapFunction = SapRfcRepository.CreateFunction(req.functionName);// "BAPI_COMPANYCODE_GETDETAIL");
+                var Metadata_IN = SapRfcRepository.GetStructureMetadata(req.inStructureName);
+                var IN_SU = Metadata_IN.CreateStructure();
+                var T_IN_SU = SapFunction.GetTable(req.inTableName);
+
+                T_IN_SU.Append(SetValue(req, IN_SU));
+                SapFunction.Invoke(SapRfcDestination);
+                var SAPdt = SapFunction.GetTable(req.outTableName);
+                //var res = SapFunction.GetStructure(0);
+                //string dd = COMPANY_GETDETAIL.GetStructure(0).ToString();
+                var res = CreateResponse(SAPdt);
+                return new ResponseCriteria()
+                {
+                    datas = res,
+                    status = 1,
+                    message = "SUCCESS",
+                    stacktrace = string.Empty
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseCriteria()
+                {
+                    datas = null,
+                    status = 0,
+                    message = ex.Message,
+                    stacktrace = ex.StackTrace
+                };
+            }
+        }
+
+        private IRfcStructure SetValue(RequestCriteria req, IRfcStructure IN_SU)
+        {
+            foreach (var data in req.datas)
+            {
+                var dataType = IN_SU.Metadata[data.Key];
+                if (dataType.DataType == RfcDataType.CHAR)
+                {
+                    if (data.Value.ToString() != "")
+                    {
+                        if (data.Value.GetType() == typeof(string))
+                        {
+                            string value = data.Value.ToString();
+                            if (value.Length < dataType.NucLength && (dataType.Name == "VBELN_VL" || dataType.Name == "LENUM"))
+                            {
+                                IN_SU.SetValue(data.Key, value.PadLeft(dataType.NucLength, '0'));
+                            }
+                            else
+                                IN_SU.SetValue(data.Key, data.Value);
+                        }
+                        else
+                            IN_SU.SetValue(data.Key, data.Value);
+                    }
+                }
+                else
+                    IN_SU.SetValue(data.Key, data.Value);
+            }
+            return IN_SU;
         }
     }
 }

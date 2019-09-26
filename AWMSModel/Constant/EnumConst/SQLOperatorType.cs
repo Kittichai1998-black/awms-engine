@@ -26,6 +26,8 @@ namespace AWMSModel.Constant.EnumConst
         [ValueAttribute("LIKE")]
         LIKE,
         [ValueAttribute("IN")]
-        IN
+        IN,
+        [ValueAttribute("NOT IN")]
+        NOTIN
     }
 }

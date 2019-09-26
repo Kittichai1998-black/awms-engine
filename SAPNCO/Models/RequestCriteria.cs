@@ -9,8 +9,18 @@ namespace SAPNCO.Models
     {
         public string environmentName;
         public string functionName;
+        public string inStructureName;
+        public string inTableName;
+        public string outTableName;
+        public Dictionary<string, object> datas;
+    }
+
+    public class RequestCriteriaMulti
+    {
+        public string environmentName;
+        public string functionName;
         public List<SAPList> sapLists;
-        public List<string> outTableNames;
+        public string outTableNames;
 
         public class SAPList{
             public string inStructureName;

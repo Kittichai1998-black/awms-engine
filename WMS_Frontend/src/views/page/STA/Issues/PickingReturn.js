@@ -35,8 +35,8 @@ const PickingReturn =  (props) => {
     //]
 
     const inputItem = [
-        { "field": "orderNo", "type": "input", "name": "Reoder No", "placeholder": "Reoder No." },
-        { "field": "scanCode", "type": "input", "name": "Pack Code", "placeholder": "Pack Code" },
+        { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)" },
+        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)" },
         { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
@@ -76,7 +76,7 @@ const PickingReturn =  (props) => {
         return res;
     }
     async function onBeforePost(reqValue, storageObj) {
-        //split ¤èÒ
+        //split ï¿½ï¿½ï¿½
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
@@ -85,7 +85,7 @@ const PickingReturn =  (props) => {
                 if (reqValue['scanCode'].length === 26) {
                     let orderNo = reqValue['scanCode'].substr(0, 7);
                     let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                    let skuCode = skuCode1.trim(); //·´ÊÍº ãªéskucode¢Í§·Ò¹µÐÇÑ¹ÍÂÙè àÅÂµéÍ§µÑ´xxx·éÒÂ·Ôé§
+                    let skuCode = skuCode1.trim(); //ï¿½ï¿½ï¿½Íº ï¿½ï¿½skucodeï¿½Í§ï¿½Ò¹ï¿½ï¿½ï¿½Ñ¹ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Âµï¿½Í§ï¿½Ñ´xxxï¿½ï¿½ï¿½Â·ï¿½ï¿½
                     let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                     let rootID = reqValue.rootID;
                     let qryStr = {};
@@ -125,7 +125,7 @@ const PickingReturn =  (props) => {
                                     numCarton++;
 
                                     if (cartonNo === parseInt(splitCartonNo[no])) {
-                                        ///àÅ¢carton no «éÓ ÃÑºà¢éÒäÁèä´é ÇÒ§ÊÔ¹¤éÒÅ§º¹¾ÒàÅ·äÁèä´é
+                                        ///ï¿½Å¢carton no ï¿½ï¿½ï¿½ ï¿½Ñºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò§ï¿½Ô¹ï¿½ï¿½ï¿½Å§ï¿½ï¿½ï¿½ï¿½ï¿½Å·ï¿½ï¿½ï¿½ï¿½ï¿½
 
                                         alertDialogRenderer("Pallet No. " + storageObj.code + (window.project === "TAP" ? " had Part NO.: " : " had SKU Code: ") + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
 
@@ -198,9 +198,9 @@ const PickingReturn =  (props) => {
                 // headerCreate={inputHeader} //input header
                 itemCreate={inputItem} //input scan pallet
                 FirstScans={inputFirst}
-                // apiCreate={apiCreate} // api ÊÃéÒ§ sto default => "/v2/ScanPickingReturnAPI"
-                onBeforePost={onBeforePost} //¿Ñ§¡ìªÑè¹àµÃÕÂÁ¢éÍÁÙÅàÍ§ ¡èÍ¹Êè§ä» api
-                // //¿Ñ§¡ìªÑè¹àµÃÕÂÁ¢éÍÁÙÅààÊ´§¼Å options àÍ§
+                // apiCreate={apiCreate} // api ï¿½ï¿½ï¿½Ò§ sto default => "/v2/ScanPickingReturnAPI"
+                onBeforePost={onBeforePost} //ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í§ ï¿½ï¿½Í¹ï¿½ï¿½ï¿½ api
+                // //ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ï¿½ï¿½ options ï¿½Í§
                 customOptions={customOptions}
                 showOptions={true}
                 autoPost={false}
