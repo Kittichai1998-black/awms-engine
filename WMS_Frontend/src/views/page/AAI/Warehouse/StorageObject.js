@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import AmIconStatus from "../../../components/AmIconStatus";
+import AmIconStatus from "../../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";
-import AmStorageObjectMulti from "../../pageComponent/AmStorageObjectMulti";
+import AmStorageObjectMulti from "../../../pageComponent/AmStorageObjectMulti";
 import {
   apicall,
   createQueryString
-} from "../../../components/function/CoreFunction";
-import AmEntityStatus from "../../../components/AmEntityStatus";
-import AmStorageObjectStatus from "../../../components/AmStorageObjectStatus";
+} from "../../../../components/function/CoreFunction";
+import AmEntityStatus from "../../../../components/AmEntityStatus";
+import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 const Axios = new apicall();
 
 //======================================================================
@@ -71,15 +71,14 @@ const StorageObject = props => {
   ];
 
   const iniCols = [
+    { Header: "Pallet", accessor: "Pallet", width: 120 },
     {
       Header: "Status",
       accessor: "Status",
-      fixed: "left",
+
       width: 50,
-      sortable: false,
-      Cell: e => getStatus(e.original)
+      sortable: false
     },
-    { Header: "Pallet", accessor: "Pallet", width: 150 },
     {
       Header: window.project === "TAP" ? "Part NO." : "SKU Code",
       accessor: "SKU_Code",
@@ -155,30 +154,21 @@ const StorageObject = props => {
   ];
 
   const getStatus = value => {
-    if (value.Status === "NEW") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={10} />;
-    } else if (value.Status === "RECEIVING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={11} />;
-    } else if (value.Status === "RECEIVED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={12} />;
-    } else if (value.Status === "AUDITING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={13} />;
-    } else if (value.Status === "AUDITED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={14} />;
-    } else if (value.Status === "PICKING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={17} />;
-    } else if (value.Status === "PICKED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={18} />;
-    } else if (value.Status === "HOLD") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={99} />;
-    } else if (value.Status === "QUALITY_CONTROL") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={98} />;
-    } else if (value.Status === "REMOVING") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={21} />;
-    } else if (value.Status === "REMOVED") {
-      return <AmStorageObjectStatus key={value.Status} statusCode={22} />;
+    //console.log(value);
+    var x = <div></div>;
+    if (value.ID === 21) {
+      //console.log(value.Status);
+      value.Status.forEach(st => {
+        console.log(st.props["children"]);
+        if (st.props["children"] === "HOLD") {
+          x = (
+            <AmStorageObjectStatus key={st.props["children"]} statusCode={99} />
+          );
+        }
+      });
+      return x;
     } else {
-      return null;
+      return "sss";
     }
   };
   const primarySearch = [
@@ -331,9 +321,9 @@ const StorageObject = props => {
         selection={true}
         modifyRemark={true}
         export={false}
-        modifyhold={true}
-        modifyreceived={true}
-        modifyQC={true}
+        // modifyhold={true}
+        // modifyreceived={true}
+        // modifyQC={true}
       />
     </div>
   );

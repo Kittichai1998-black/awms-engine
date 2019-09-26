@@ -93,7 +93,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     weiKG = reqVO.weight,
                     lengthM = reqVO.length,
                     heightM = reqVO.height,
-                    widthM = reqVO.width
+                    widthM = reqVO.width,
+                    ref2 = "I00"
                 };
 
                 var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
