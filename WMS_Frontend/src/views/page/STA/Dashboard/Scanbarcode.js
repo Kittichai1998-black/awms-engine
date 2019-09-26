@@ -1,33 +1,25 @@
+import * as signalR from '@aspnet/signalr';
 
-import React, { useState, useEffect, useContext, Component } from "react";
+import React, { useState, useEffect } from "react";
 import Fullscreen from "react-full-screen";
-import AmInput from '../../../../components/AmInput'
+import AmInput from '../../../../components/AmInput';
+import AmButton from '../../../../components/AmButton';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components'
-import Paper from "@material-ui/core/Paper";
 import AmDropdown from "../../../../components/AmDropdown"
-import AmCheckbox from '../../../../components/AmCheckBox'
-import AmTable from '../../../../components/table/AmTable';
-import AmButton from '../../../../components/AmButton'
 import { apicall, createQueryString } from '../../../../components/function/CoreFunction2'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Flash from 'react-reveal/Flash';
 import AmDialogs from '../../../../components/AmDialogs'
-import logo from '../../../../assets/logo/logo.png'
 import IconButton from '@material-ui/core/IconButton';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
-import Flip from 'react-reveal/Flip';
-import Divider from '@material-ui/core/Divider';
 import Moment from 'moment';
 import { useTranslation } from 'react-i18next'
-
-import { get } from "http";
-import color from "@material-ui/core/colors/green";
 import Axios1 from 'axios'
 const Axios = new apicall()
 
@@ -90,15 +82,56 @@ const Border = styled.div`
   display: block;
 `;
 
+
 const useAreaID = (areaID) => {
     const [areaIDs, setareaIDs] = useState();
 
     useEffect(() => {
-        console.log(areaID)
         setareaIDs(areaID)
     }, [areaID]);
 
     return areaIDs;
+}
+
+const useDashboardArea = (areaID) => {
+    const [data, setData] = useState(null);
+    let url = window.apipath + '/dashboard'
+    let connection = new signalR.HubConnectionBuilder()
+        .withUrl(url, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets //1
+        })
+        // .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    const signalrStart = () => {
+        connection.start()
+            .then(() => {
+                connection.on("DASHBOARD_PRD_RECIEVE_" + areaID, res => {
+                    setData(JSON.parse(res))
+                })
+            })
+            .catch((err) => {
+                console.log(err);
+                setTimeout(() => signalrStart(), 5000);
+            })
+    };
+
+    useEffect(() => {
+        signalrStart()
+
+        connection.onclose((err) => {
+            if (err) {
+                signalrStart()
+            }
+        });
+
+        return () => {
+            connection.stop()
+        }
+    }, [areaID])
+
+    return data;
 }
 
 const useClock = (propsTime, t) => {
@@ -107,7 +140,6 @@ const useClock = (propsTime, t) => {
 
     useEffect(() => {
         Axios1.get(window.apipath + "/v2/time").then((res) => {
-            console.log(res)
             if (res) {
                 setDate({
                     dateClient: new Date(),
@@ -171,6 +203,7 @@ const Scanbarcode = (props) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.25);
     const areaIDs = useAreaID(localStorage.getItem("areaIDs"));
+    const data = useDashboardArea(localStorage.getItem("areaIDs"))
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
     const [area2, setarea2] = useState();
@@ -181,6 +214,9 @@ const Scanbarcode = (props) => {
         width: window.innerWidth,
         height: window.innerHeight
     })
+    const [lockStateLeft, setLockStateLeft] = useState(false)
+    const [lockStateRight, setLockStateRight] = useState(false)
+
     const clock = useClock({
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
         label: "Date/Time"
@@ -196,7 +232,7 @@ const Scanbarcode = (props) => {
         }, 20);
     }, [isFullScreen])
 
- const goFull = () => {
+    const goFull = () => {
         setIsFullScreen(true);
         setCalHeight(0.6);
     }
@@ -238,14 +274,14 @@ const Scanbarcode = (props) => {
         setdatabar(databars)
     }
     
-    useEffect(() => {
+    /*useEffect(() => {
         setInterval(() => {
             if (areaIDs != null && areaIDs != NaN) {
                 getScanbar();
             }
         }, 3000);
         
-    }, [areaIDs])
+    }, [areaIDs])*/
 
     const Scanbar = () => {
         var databars = {...databar}
@@ -302,10 +338,77 @@ const Scanbarcode = (props) => {
 
     }
 
+    useEffect(()=>{
+        console.log(data)
+        if(data !== null){
+            data.forEach(x=>{
+                if(x.gate === 1){
+                    setarea1(x.areaLocationCode)
+                    if(x.baseID !== null){
+                        setgateLeft(true)
+                        setpallet(x.baseCode)
+                        setareaGate(x.areaID)
+                        
+                        if(x.ID !== null){
+                            if (x.qty === null || x.qty === undefined) {
+                                setqty(0)
+                            } else {
+                                setqty(x.qty)
+                            }
+                            if (x.maxQuantity == null) {
+                                setqtyMax(0)
+                            } else {
+                                setqtyMax(x.maxQuantity)
+                            }
+
+                            setproductCode(x.Code)
+                            setproductName(x.Name)
+                            setorderNo(x.OrderNo)
+                            setunitCode(x.UnitCode)
+                            setcarton(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
+                        }
+                    }
+                    else{
+                        setgateLeft(false)
+                    }
+                }
+                else{
+                    setarea2(x.areaLocationCode)
+                    if(x.baseID !== null){
+                        setgateRight(true)
+                        setpallet2(x.baseCode)
+                        setareaGate2(x.areaID)
+                        
+                        if(x.ID !== null){
+                            if (x.qty === null || x.qty === undefined) {
+                                setqty2(0)
+                            } else {
+                                setqty2(x.qty)
+                            }
+                            if (x.maxQuantity == null) {
+                                setqtyMax2(0)
+                            } else {
+                                setqtyMax2(x.maxQuantity)
+                            }
+                            setproductCode2(x.Code)
+                            setproductName2(x.Name)
+                            setorderNo2(x.OrderNo)
+                            setunitCode2(x.UnitCode)
+                            setcarton2(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
+                        }
+                    }
+                    else{
+                        setgateRight(false)
+                    }
+                }
+            })
+        }
+    }, [data])
+
     const getScanbar = () => {
         let areas = parseInt(areaIDs, 10);
         Axios.get(window.apipath + '/v2/CheckBaseReceivedAPI?areaID=' + areas).then((res) => {
-            console.log(res.data.datas)
+            //console.log(res.data.datas)
             if (res.data._result.status = 1) {
                 if (res.data.datas != null) {
                     setarea1(res.data.datas[0].areaLocationCode)
@@ -316,10 +419,10 @@ const Scanbarcode = (props) => {
                         
                         setpallet(datas.code)
                         setareaGate(datas.areaID)
-                        var datass = datas.mapstos[0]
+                        let datass = datas.mapstos[0]
 
                         if (datass !== undefined) {
-                            var dataQtyMax = datas.objectSizeMaps[0]
+                            let dataQtyMax = datas.objectSizeMaps[0]
                             console.log(dataQtyMax)
                             if (datass.qty == null || datass.qty == undefined) {
                                 setqty(0)
@@ -340,15 +443,16 @@ const Scanbarcode = (props) => {
                         }
                 
                     }
-                    if (res.data.datas[1].bsto !== null) 
+
+                    if (res.data.datas[1].bsto !== null){
                         setgateRight(true)
                         let datas = res.data.datas[1].bsto
                         setpallet2(datas.code)
                         setareaGate2(datas.areaID)
-                        var datass = datas.mapstos[0]
+                        let datass = datas.mapstos[0]
 
                         if (datass !== undefined) {
-                            var dataQtyMax = datas.objectSizeMaps[0]
+                            let dataQtyMax = datas.objectSizeMaps[0]
 
                             if (datass.qty == null || datass.qty == undefined) {
                                 setqty2(0)
@@ -366,9 +470,7 @@ const Scanbarcode = (props) => {
                             setunitCode2(datass.unitCode)
                             setcarton2(datass.options.split("=")[1].split("&")[0])
                         }
-     
-
-
+                    }
                     }
                 }
             
@@ -526,7 +628,7 @@ const Scanbarcode = (props) => {
                                                     <Typography variant="h5" component="h3">{productCode}</Typography>
                                                 </FormInline>
                                                 <FormInline style={{ paddingTop: "10px" }}>
-                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
+                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
                                                     <Typography variant="h5" component="h3">{orderNo}</Typography>
                                                 </FormInline>
                                                 <FormInline style={{ paddingTop: "10px" }}>
@@ -542,6 +644,10 @@ const Scanbarcode = (props) => {
 
                                                 </FormInline>
                                             </Border>
+                                        <AmButton styleType="confirm" onClick={()=> {
+                                            databar.lockStateLeft = !lockStateLeft
+                                            setdatabar({...databar});
+                                            setLockStateLeft(!lockStateLeft)}}>Lock</AmButton>
                                         </Card></Flash></div> : null}
 
                                     </Card>
@@ -571,7 +677,7 @@ const Scanbarcode = (props) => {
                                                 <Typography variant="h5" component="h3">{productCode2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
-                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Orderno :</Typography >
+                                                <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
                                                 <Typography variant="h5" component="h3">{orderNo2}</Typography>
                                             </FormInline>
                                             <FormInline style={{ paddingTop: "10px" }}>
@@ -588,6 +694,11 @@ const Scanbarcode = (props) => {
 
                                             </FormInline>
                                         </Border>
+                                        <AmButton styleType="confirm" onClick={()=> {
+                                            databar.lockStateLeft = !lockStateRight
+                                            setdatabar({...databar})
+                                            setLockStateRight(!lockStateRight)
+                                        }}>Lock</AmButton>
                                     </Card></Flash></div> : null : null}
                                 </Card></div></Grid>
                     </Grid>
