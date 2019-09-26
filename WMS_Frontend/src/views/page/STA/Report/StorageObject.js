@@ -169,8 +169,12 @@ const StorageObject = props => {
       return <AmStorageObjectStatus key={value.Status} statusCode={98} />;
     } else if (value.Status === "REMOVING") {
       return <AmStorageObjectStatus key={value.Status} statusCode={21} />;
+    } else if (value.Status === "RETURN") {
+      return <AmStorageObjectStatus key={value.Status} statusCode={96} />;
     } else if (value.Status === "REMOVED") {
       return <AmStorageObjectStatus key={value.Status} statusCode={22} />;
+    } else if (value.Status === "PARTIAL") {
+      return <AmStorageObjectStatus key={value.Status} statusCode={97} />;
     } else {
       return null;
     }
@@ -325,6 +329,9 @@ const StorageObject = props => {
         selection={true}
         modifyRemark={true}
         export={false}
+        modifyhold={true}
+        modifyreceived={true}
+        modifyQC={true}
       />
     </div>
   );
