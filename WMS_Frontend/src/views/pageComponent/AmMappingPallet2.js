@@ -890,7 +890,7 @@ const AmMappingPallet2 = (props) => {
    
         const FirstScansBarCode = (key, field, type, name,
             fieldLabel, placeholder,
-            dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled) => {
+            dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled) => {   
             if (type === "input") {
                 return (
                     <FormInline><LabelH>{t(name)} : </LabelH>
@@ -909,6 +909,79 @@ const AmMappingPallet2 = (props) => {
 
                     </FormInline>
                 )
+            } else if (type === "number") {
+                return (
+                    <FormInline><LabelH>{t(name)} : </LabelH>
+                        <AmInput
+                            id={field}
+                            placeholder={placeholder}
+                            type="number"
+                            style={{ width: "330px" }}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        />
+                    </FormInline>
+                )
+            }
+            else if (type === "dropdown") {
+                return <FormInline><LabelH>{t(name)} : </LabelH>
+                    <AmDropdown
+                        id={field}
+                        placeholder={placeholder}
+                        fieldDataKey={fieldDataKey}
+                        fieldLabel={fieldLabel}
+                        labelPattern=" : "
+                        width={330}
+                        ddlMinWidth={330}
+                        zIndex={1000}
+                        returnDefaultValue={true}
+                        defaultValue={defaultValue ? defaultValue : ""}
+                        queryApi={dataDropDown}
+                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
+                        ddlType={typeDropdown}
+                    /></FormInline>
+            } else if (type === "datepicker") {
+                return <FormInline> <LabelH>{t(name)} : </LabelH>
+                    <AmDate
+                        id={field}
+                        TypeDate={"date"}
+                        style={{ width: "330px" }}
+                        defaultValue={true}
+                        // value={valueInput[field] ? valueInput[field].value : ""}
+                        onChange={(value) => onHandleChangeInput(value['fieldDataKey'], value, field, null, null)}
+                        FieldID={"datenow"} >
+                    </AmDate>
+                </FormInline>
+            } else if (type === "datetimepicker") {
+                return <FormInline> <LabelH>{t(name)} : </LabelH>
+                    <AmDate
+                        id={field}
+                        TypeDate={"datetime-local"}
+                        style={{ width: "330px" }}
+                        defaultValue={true}
+                        // value={valueInput[field] ? valueInput[field].value : ""}
+                        onChange={(value) => onHandleChangeInput(value['fieldDataKey'], value, field, null, null)}
+                        FieldID={"datetimenow"} >
+                    </AmDate>
+                </FormInline>
+            } else if (type === "radiogroup") {
+                if (visible) {
+                    return <FormInline> <LabelH>{t(name)} : </LabelH>
+                        <AmRadioGroup
+                            row={true}
+                            name={field}
+                            dataValue={fieldLabel}
+                            returnDefaultValue={true}
+                            defaultValue={defaultValue || ''}
+                            onChange={(value, obj, element, event) =>
+                                onHandleChangeRadio(value, field)
+                            }
+                        />
+                    </FormInline>
+                } else {
+                    onHandleChangeRadio(defaultValue.value, field)
+                }
+
             }
         }
 

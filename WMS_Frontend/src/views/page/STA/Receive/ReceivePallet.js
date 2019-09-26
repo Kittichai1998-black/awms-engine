@@ -66,7 +66,15 @@ const ReceivePallet = (props) => {
 
     const inputFirst = [
         { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" }
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        {
+            "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
+                { value: '98', label: "QC" },
+                { value: '12', label: "RECEIVED" },
+
+            ],
+            "defaultValue": { value: '98' }
+        }
 
     ]
     const [showDialog, setShowDialog] = useState(null);
