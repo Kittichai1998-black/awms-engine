@@ -14,12 +14,12 @@ namespace AWMSEngine.Engine.V2.Business.Received
     {
         public class TReq
         {
-            public int areaID;
+            public long areaID;
         }
         public class TRes
         { 
-            public int areaID;
-            public int areaLocationID;
+            public long areaID;
+            public long areaLocationID;
             public string areaCode;
             public string areaLocationCode;
             public StorageObjectCriteria bsto;
@@ -45,12 +45,12 @@ namespace AWMSEngine.Engine.V2.Business.Received
                     var res = new TRes();
                     res.areaID = reqVO.areaID;
                     res.areaCode = areaCode;
-                    res.areaLocationID = (int)location.ID;
+                    res.areaLocationID = location.ID.Value;
                     res.areaLocationCode = location.Code;
 
                     var stoLocationItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                       new SQLConditionCriteria[] {
-                            new SQLConditionCriteria("AreaLocationMaster_ID",(int)location.ID, SQLOperatorType.EQUALS),
+                            new SQLConditionCriteria("AreaLocationMaster_ID",location.ID.Value, SQLOperatorType.EQUALS),
                             new SQLConditionCriteria("ObjectType", StorageObjectType.BASE, SQLOperatorType.EQUALS, SQLConditionType.AND),
                             new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.NEW, SQLOperatorType.EQUALS)
                             //new SQLConditionCriteria("Status",E, SQLOperatorType.EQUALS, SQLConditionType.AND)
@@ -58,7 +58,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
 
                     if(stoLocationItems != null)
                     {
-                        res.bsto = ADO.StorageObjectADO.GetInstant().Get((long)stoLocationItems.ID, StorageObjectType.BASE, false, true, this.BuVO);
+                        res.bsto = ADO.StorageObjectADO.GetInstant().Get(stoLocationItems.ID.Value, StorageObjectType.BASE, false, true, this.BuVO);
                     }
                     else
                     {

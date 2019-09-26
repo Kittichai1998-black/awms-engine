@@ -10,8 +10,6 @@ using AMWUtil.Exception;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.Common;
-using Microsoft.CodeAnalysis.Scripting;
-
 
 namespace AWMSEngine.Engine.V2.Business.Picking
 {
