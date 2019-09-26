@@ -46,12 +46,12 @@ const DocumentViewGI = props => {
       Cell: e => getStatusGI(e.original)
     },
 
-    { width: 100, accessor: "Code", Header: "Pallet" },
-    { width: 150, accessor: "PackCode", Header: "SKU Code" },
+    { width: 100, accessor: "code", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "SKU Code" },
     { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "OrderNo", Header: "Order No" },
+    { width: 125, accessor: "orderNo", Header: "Order No" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "PackUnitCode", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
   const columnsDetailDES = [
@@ -61,12 +61,12 @@ const DocumentViewGI = props => {
       Header: "Task",
       Cell: e => getStatusGI(e.original)
     },
-    { width: 100, accessor: "Code", Header: "Pallet" },
-    { width: 150, accessor: "PackCode", Header: "SKU Code" },
+    { width: 100, accessor: "code", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "SKU Code" },
     { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "OrderNo", Header: "Order No" },
+    { width: 125, accessor: "orderNo", Header: "Order No" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "PackUnitCode", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
   const optionDocItems = [{ optionName: "palletcode" }];

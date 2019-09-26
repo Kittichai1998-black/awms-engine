@@ -199,7 +199,7 @@ function Test5(props) {
 
     const wqStatusList = [10, 11, 12, 21, 22, 31, 32, 90];
     const docEventStatusList = [10, 11, 12, 812, 24, 31, 32];
-    const stoStatusList = [10, 11, 12, 13, 14, 17, 18, 99];
+    const stoStatusList = [10, 11, 12, 13, 14, 17, 18, 99, 98, 97, 96];
     const entityStatus = [0, 1, 2, 3];
     const [state, setState] = React.useState({
         checkedA: true,

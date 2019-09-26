@@ -73,7 +73,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
                 if (done_des_event_status == null || done_des_event_status.Length == 0)
                 {
-
                     AWMSEngine.ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(sto.id.Value, StorageObjectEventStatus.RECEIVING, null, StorageObjectEventStatus.RECEIVED, buVO);
                 }
                 else
@@ -84,7 +83,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
             });
 
-                var stosListPack = stosList.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+            var stosListPack = stosList.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
             stosListPack.ForEach(sto => {
                 var done_des_event_status = ObjectUtil.QryStrGetValue(sto.options, OptionVOConst.OPT_DONE_DES_EVENT_STATUS);
                 if (done_des_event_status == null || done_des_event_status.Length == 0)

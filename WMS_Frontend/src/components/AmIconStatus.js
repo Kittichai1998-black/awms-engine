@@ -128,7 +128,7 @@ const styles = theme => ({
     RETURN: {
         background: '#ffc107',
         border: '2px solid #ffc107',
-        color: '#2f353a',
+        color: '#fff',
     },
     WARNING: {
         background: '#ffc107',
@@ -166,9 +166,14 @@ const styles = theme => ({
         color: '#000',
     },
     QUALITY_CONTROL:{
-        background: '#212121',
+        background: '#fffbf1',
         border: '2px solid #212121',
-        color: '#fff',
+        color: '#212121',
+    },
+    PARTIAL:{
+        background: '#fffbf1',
+        border: '2px solid #ffc107',
+        color: '#ffc107',
     }
 });
 
