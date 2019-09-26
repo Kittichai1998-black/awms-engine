@@ -37,7 +37,9 @@ const StorageObjectEventStatus = [
     // {status: "TRANSFERING",code: 115, label: 'T'},
     // {status: "TRANSFERED",code: 116, label: 'T'}
     { status: "HOLD", code: 99, label: 'H' },
-    { status: "QUALITY_CONTROL", code: 98, label: 'Q' }
+    { status: "QUALITY_CONTROL", code: 98, label: 'Q' },
+    { status: "PARTIAL", code: 97, label: 'P' },
+    { status: "RETURN", code: 96, label: 'R' }
 ]
 
 const StorageObjectStatus = props => {
