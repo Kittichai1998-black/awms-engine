@@ -253,6 +253,7 @@ const Default = props => {
     }, []);
 
     const NavicateBarN = () => {
+        
         const jsonresult = JSON.parse(
             localStorage.getItem('MenuItems') === 'undefined'
                 ? null
@@ -265,7 +266,7 @@ const Default = props => {
         if (json === undefined || json.items === null) {
         } else {
             jsonresult.forEach(row => {
-               
+             
                 if (
                     Path[1] === row.Name
                         .replace(' ', '')
@@ -273,9 +274,10 @@ const Default = props => {
                         .toLowerCase()
                 ) {
                     row.WebPages.map(res => {
-                        if (res.pathLV2 === Path[2]) {
-                            name = t(res.pageName.trim());
-                            // name = res.pageName;
+                      
+                        if (res.PathLV2 === Path[2]) {
+                           name = t(res.pageName.trim());
+                             //name = res.pageName;
                             icon_s = iconMenuTree[res.Icon];
                         } else if (Path[2] === "inbound" && res.PathLV2.match("inbound")) {
                             name = t(res.pageName.trim());

@@ -85,8 +85,8 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Storage Unit Number</summary>
             public string LENUM;
         }
-        public class ZSWMRF002_OUT_SU
-        {
+        public class OUT_SU
+        {   ///ZSWMRF002_OUT_SU
             /// <summary>Warehouse Number</summary>
             public string LGNUM;
             /// <summary>Destination Storage Type</summary>
