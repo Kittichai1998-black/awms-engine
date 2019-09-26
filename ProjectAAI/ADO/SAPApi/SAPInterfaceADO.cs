@@ -37,7 +37,18 @@ namespace ProjectAAI.ADO.SAPApi
                 public List<OUT_SU_BAL> OUT_SU_BAL;
             }
         }
+        public class SapResponseMulti2
+        {
+            public SAPRes datas;
+            public int status;
+            public string message;
+            public string stacktrace;
 
+            public class SAPRes
+            {
+                public List<OUT_SU> OUT_SU;
+            }
+        }
         /*public T postSAP<T>(object datas, VOCriteria buVO, string apiUri)
             where T : class, new()
         {
@@ -67,7 +78,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
+        /*public SapResponse<ZSWMRF002_OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -81,16 +92,16 @@ namespace ProjectAAI.ADO.SAPApi
                 datas = new ZSWMRF002_IN_SU()
                 {
                     LGNUM = "W01",
-                    LENUM = reqVO,
                     LGPLA = "R00",
                     LGTYP = "R00",
-                    NLBER = "001"
+                    NLBER = "001",
+                    LENUM = reqVO
                 }
             };
 
             var res = this.SendJson<SapResponse<ZSWMRF002_OUT_SU>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
-        }
+        }*/
 
         public SapResponse<ZSWMRF007_OUT_SAP> ZWMRF007(ZSWMRF007_IN_REQ reqVO, VOCriteria buVO)
         {
@@ -126,7 +137,41 @@ namespace ProjectAAI.ADO.SAPApi
             var res = this.SendJson<SapResponse<ZSWMRF003_OUT_REQ>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
+        public SapResponseMulti2 ZWMRF002(string reqVO, VOCriteria buVO)
+        {
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
+            var req = new SAPReqMulti()
+            {
+                environmentName = getEnvironment,
+                functionName = "ZWMRF002",
+                outTableNames = "OUT_SU",
+                sapLists = new List<SAPReqMulti.SAPList>()
+                {
+                    new SAPReqMulti.SAPList()
+                    {
+                        inStructureName = "TEST_RUN",
+                        datas = new { P_TEST = "X" }
+                    },
+                    new SAPReqMulti.SAPList()
+                    {
+                        inStructureName = "ZSWMRF002_IN_SU",
+                        inTableName = "IN_SU",
+                        datas = new ZSWMRF002_IN_SU()
+                        {
+                            LGNUM = "W01",
+                            LGPLA = "R00",
+                            LGTYP = "R00",
+                            NLBER = "001",
+                            LENUM = reqVO
+                        }
+                    },
+                }
+            };
 
+            var res = this.SendJson<SapResponseMulti2>("SAPCONNECT_LOCATIONV2", req, buVO);
+            return res;
+        }
 
         public SapResponseMulti ZWMRF004(IN_AWS inAws, IN_REQ inReq, VOCriteria buVO)
         {
@@ -139,6 +184,11 @@ namespace ProjectAAI.ADO.SAPApi
                 outTableNames = "OUT_SAP,OUT_SU_BAL",
                 sapLists = new List<SAPReqMulti.SAPList>()
                 {
+                    new SAPReqMulti.SAPList()
+                    {
+                        inStructureName = "TEST_RUN",
+                        datas = new { P_TEST = "X" }
+                    },
                     new SAPReqMulti.SAPList()
                     {
                         inStructureName = "ZSWMRF004_IN_REQ",
@@ -171,6 +221,11 @@ namespace ProjectAAI.ADO.SAPApi
                 {
                     new SAPReqMulti.SAPList()
                     {
+                        inStructureName = "TEST_RUN",
+                        datas = new { P_TEST = "X" }
+                    },
+                    new SAPReqMulti.SAPList()
+                    {
                         inStructureName = "ZSWMRF005_IN_REQ",
                         inTableName = "IN_REQ",
                         datas = inReq
@@ -199,6 +254,11 @@ namespace ProjectAAI.ADO.SAPApi
                 outTableNames = "OUT_SAP,OUT_SU_BAL",
                 sapLists = new List<SAPReqMulti.SAPList>()
                 {
+                    new SAPReqMulti.SAPList()
+                    {
+                        inStructureName = "TEST_RUN",
+                        datas = new { P_TEST = "X" }
+                    },
                     new SAPReqMulti.SAPList()
                     {
                         inStructureName = "ZSWMRF006_IN_REQ",

@@ -19,7 +19,7 @@ namespace ProjectSTA.Engine.Business.Received
         {
             public long areaID;
             public string scanCode;
-            
+            public long[] locGateID;
         }
         public class TRes
         {
@@ -64,18 +64,21 @@ namespace ProjectSTA.Engine.Business.Received
             var areaLocationMastersItems = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                   new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaMaster_ID",reqVO.areaID, SQLOperatorType.EQUALS),
-                        new SQLConditionCriteria("Status", 1, SQLOperatorType.EQUALS, SQLConditionType.AND)
+                        new SQLConditionCriteria("Status", 1, SQLOperatorType.EQUALS, SQLConditionType.AND),
+                        new SQLConditionCriteria("ID",string.Join(',',reqVO.locGateID), SQLOperatorType.NOTIN)
                   },
                   new SQLOrderByCriteria[] { }, null, null, this.BuVO);
+
             if (areaLocationMastersItems == null)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Gate of Area: "+ areaItem.Code + " Not Found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V3001, "Gate of Area: "+ areaItem.Code + " Not Ready");
             }
             int lenghtAreaLocItems = areaLocationMastersItems.Count();
             int numLoc = 0;
             List<ams_AreaLocationMaster> tempAreaLoc = new List<ams_AreaLocationMaster>();
             List<amt_StorageObject> tempStoBaseItems = new List<amt_StorageObject>();
            
+
             foreach (var location in areaLocationMastersItems)
             {
                 numLoc++;
