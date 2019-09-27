@@ -379,10 +379,10 @@ const AmMappingPallet = (props) => {
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        if (field !== "scanCode") {
-            setCurInput(field);
-            setKeyEnter(true);
-        }
+        // if (field !== "scanCode") {
+        setCurInput(field);
+        setKeyEnter(true);
+        // }
     };
 
     async function onHandleBeforePost() {
@@ -448,7 +448,7 @@ const AmMappingPallet = (props) => {
 
             } else {
                 if (curInput === 'scanCode') {
-                    alertDialogRenderer("ScanCode must be value", "error", true);
+                    alertDialogRenderer("Scan Code must be value", "error", true);
                 }
             }
         }
@@ -549,6 +549,15 @@ const AmMappingPallet = (props) => {
             inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
+                    // let checkMVT = false;
+                    // if (setMovementType !== undefined || null) {
+                    //     var qryStrOpt = queryString.parse(res.data.options)
+                    //     if (qryStrOpt[SC.OPT_MVT] !== null && qryStrOpt[SC.OPT_MVT].length > 0 && qryStrOpt[SC.OPT_MVT] !== setMovementType) {
+                    //         checkMVT = true;
+                    //         alertDialogRenderer("This pallet has been used in other Movement Type [" + qryStrOpt[SC.OPT_MVT] + "].", "error", true);
+                    //         onHandleClear();
+                    //     }
+                    // }
                     if (showArea && res.data.areaID) {
                         GetArea(res.data.areaID);
                     }
@@ -593,8 +602,6 @@ const AmMappingPallet = (props) => {
                             }
                         }
                     }
-
-
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
                 }
@@ -741,7 +748,8 @@ const AmMappingPallet = (props) => {
                             {FuncCreateForm(key, x.field, x.type, x.name,
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
-                                x.defaultValue, x.visible == null || undefined ? true : x.visible, x.disabled)}
+                                x.defaultValue, x.visible == null || undefined ? true : x.visible,
+                                x.disabled, x.isFocus)}
                         </div>
                     }
                 }
@@ -750,14 +758,14 @@ const AmMappingPallet = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
                     <AmInput
-                        id={field} 
-                        disabled={disabled}
-                        autoFocus={field == 'scanCode' ? true : false}
+                        id={field}
+                        // disabled={disabled}
+                        autoFocus={isFocus}
                         placeholder={placeholder}
                         type="input"
                         style={{ width: "330px" }}

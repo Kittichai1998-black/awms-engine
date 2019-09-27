@@ -223,7 +223,7 @@ const AmMappingPallet2 = (props) => {
 
     const [inputHeader, setInputHeader] = useState([]);
     const [inputItem, setInputItem] = useState([]);
-    const [InputItemFirst,setInputItemFirst] = useState([]);
+    const [InputItemFirst, setInputItemFirst] = useState([]);
     const [inputSource, setInputSource] = useState([]);
 
     const [ddlWarehouse, setDDLWarehouse] = useState(null);
@@ -278,8 +278,8 @@ const AmMappingPallet2 = (props) => {
     }, [itemCreate]);
     useEffect(() => {
         if (FirstScans)
-            console.log(FirstScans)
-            setInputItemFirst(createComponentFirstScans(FirstScans));
+            // console.log(FirstScans)
+            setInputItemFirst(createComponent(FirstScans));
     }, [FirstScans]);
     useEffect(() => {
         if (inputItem === null) {
@@ -371,7 +371,7 @@ const AmMappingPallet2 = (props) => {
     }
     const getValueInput = () => {
         if (itemCreate !== undefined) {
-            console.log(itemCreate)
+            //console.log(itemCreate)
             itemCreate.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
@@ -379,7 +379,7 @@ const AmMappingPallet2 = (props) => {
                 }
             })
         } else if (FirstScans !== undefined) {
-            console.log(FirstScans)
+            // console.log(FirstScans)
             FirstScans.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
@@ -402,11 +402,10 @@ const AmMappingPallet2 = (props) => {
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        if (field !== "scanCode") {
+        // if (field !== "scanCode") {
             setCurInput(field);
             setKeyEnter(true);
-            console.log(value)
-        }
+        // }
     };
 
     async function onHandleBeforePost() {
@@ -472,7 +471,7 @@ const AmMappingPallet2 = (props) => {
 
             } else {
                 if (curInput === 'scanCode') {
-                    alertDialogRenderer("ScanCode must be value", "error", true);
+                    alertDialogRenderer("Scan Code must be value", "error", true);
                 }
             }
         }
@@ -644,7 +643,7 @@ const AmMappingPallet2 = (props) => {
     }
     const scanBarcodeEmptyPalletApi = (req) => {
         if (actionValue === 0) {
-            //select ¨ÐáÊ´§¤èÒ¡çµèÍàÁ×èÍà¤ÂÊÃéÒ§ sto ¢Í§·Ñé§ pallet áÅÐ sku empty pallet
+            //select ï¿½ï¿½ï¿½Ê´ï¿½ï¿½ï¿½Ò¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò§ sto ï¿½Í§ï¿½ï¿½ï¿½ pallet ï¿½ï¿½ï¿½ sku empty pallet
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClear();
                 if (res.data != null) {
@@ -725,8 +724,8 @@ const AmMappingPallet2 = (props) => {
         // console.log(storageObj)
         if (storageObj) {
             setExpanded(true);
-            //<AmListSTORenderer/> ËÒ¡µéÍ§¡ÒÃààÊ´§¤èÒoption => showOptions={true} 
-            // ¿Ñ§¡ìªÑè¹¹ÊÓËÃÑºº¨Ñ´¡ÒÃ¢éÍÁÙÅàÍ§ => customOptions={customOptions}  storageObj.areaID
+            //<AmListSTORenderer/> ï¿½Ò¡ï¿½ï¿½Í§ï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ï¿½ï¿½ï¿½option => showOptions={true} 
+            // ï¿½Ñ§ï¿½ï¿½ï¿½è¹¹ï¿½ï¿½ï¿½ï¿½Ñºï¿½ï¿½Ñ´ï¿½ï¿½Ã¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í§ => customOptions={customOptions}  storageObj.areaID
             if (showArea) {
                 if (areaDetail)
                     DetailRenderer();
@@ -766,7 +765,8 @@ const AmMappingPallet2 = (props) => {
                             {FuncCreateForm(key, x.field, x.type, x.name,
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
-                                x.defaultValue, x.visible == null || undefined ? true : x.visible, x.disabled)}
+                                x.defaultValue, x.visible == null || undefined ? true : x.visible,
+                                x.disabled, x.isFocus)}
                         </div>
                     }
                 }
@@ -775,14 +775,14 @@ const AmMappingPallet2 = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
                     <AmInput
                         id={field}
-                        disabled={disabled}
-                        autoFocus={field == 'scanCode' ? true : false}
+                        // disabled={disabled}
+                        autoFocus={isFocus}
                         placeholder={placeholder}
                         type="input"
                         style={{ width: "330px" }}
@@ -870,122 +870,6 @@ const AmMappingPallet2 = (props) => {
         }
     }
 
-    const createComponentFirstScans = (inputList) => {
-        if (inputList)
-            return inputList.map(x => {
-                return {
-                    "field": x.field,
-                    "component": (cols, key) => {
-                        return <div key={key} style={{ display: "inline-block" }}>
-                            {FirstScansBarCode(key, x.field, x.type, x.name,
-                                x.fieldLabel, x.placeholder,
-                                x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
-                                x.defaultValue, x.visible == null || undefined ? true : x.visible, x.disabled)}
-                        </div>
-                    }
-                }
-            })
-    };
- 
-   
-        const FirstScansBarCode = (key, field, type, name,
-            fieldLabel, placeholder,
-            dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled) => {   
-            if (type === "input") {
-                return (
-                    <FormInline><LabelH>{t(name)} : </LabelH>
-                        <AmInput
-                            id={field}
-                            disabled={disabled}
-                            autoFocus={field == 'scanCode' ? true : false}
-                            placeholder={placeholder}
-                            type="input"
-                            style={{ width: "330px" }}
-                            defaultValue={defaultValue ? defaultValue : ""}
-                            onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-
-                        />
-
-                    </FormInline>
-                )
-            } else if (type === "number") {
-                return (
-                    <FormInline><LabelH>{t(name)} : </LabelH>
-                        <AmInput
-                            id={field}
-                            placeholder={placeholder}
-                            type="number"
-                            style={{ width: "330px" }}
-                            defaultValue={defaultValue ? defaultValue : ""}
-                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                        />
-                    </FormInline>
-                )
-            }
-            else if (type === "dropdown") {
-                return <FormInline><LabelH>{t(name)} : </LabelH>
-                    <AmDropdown
-                        id={field}
-                        placeholder={placeholder}
-                        fieldDataKey={fieldDataKey}
-                        fieldLabel={fieldLabel}
-                        labelPattern=" : "
-                        width={330}
-                        ddlMinWidth={330}
-                        zIndex={1000}
-                        returnDefaultValue={true}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        queryApi={dataDropDown}
-                        onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
-                        ddlType={typeDropdown}
-                    /></FormInline>
-            } else if (type === "datepicker") {
-                return <FormInline> <LabelH>{t(name)} : </LabelH>
-                    <AmDate
-                        id={field}
-                        TypeDate={"date"}
-                        style={{ width: "330px" }}
-                        defaultValue={true}
-                        // value={valueInput[field] ? valueInput[field].value : ""}
-                        onChange={(value) => onHandleChangeInput(value['fieldDataKey'], value, field, null, null)}
-                        FieldID={"datenow"} >
-                    </AmDate>
-                </FormInline>
-            } else if (type === "datetimepicker") {
-                return <FormInline> <LabelH>{t(name)} : </LabelH>
-                    <AmDate
-                        id={field}
-                        TypeDate={"datetime-local"}
-                        style={{ width: "330px" }}
-                        defaultValue={true}
-                        // value={valueInput[field] ? valueInput[field].value : ""}
-                        onChange={(value) => onHandleChangeInput(value['fieldDataKey'], value, field, null, null)}
-                        FieldID={"datetimenow"} >
-                    </AmDate>
-                </FormInline>
-            } else if (type === "radiogroup") {
-                if (visible) {
-                    return <FormInline> <LabelH>{t(name)} : </LabelH>
-                        <AmRadioGroup
-                            row={true}
-                            name={field}
-                            dataValue={fieldLabel}
-                            returnDefaultValue={true}
-                            defaultValue={defaultValue || ''}
-                            onChange={(value, obj, element, event) =>
-                                onHandleChangeRadio(value, field)
-                            }
-                        />
-                    </FormInline>
-                } else {
-                    onHandleChangeRadio(defaultValue.value, field)
-                }
-
-            }
-        }
-
-
     const onHandleChangeRadio = (value, field) => {
         valueInput[field] = parseInt(value, 10);
     }
@@ -1004,7 +888,7 @@ const AmMappingPallet2 = (props) => {
                 }
                 onHandleClear();
             } else {
-                
+
                 alertDialogRenderer(res.data._result.message, "error", true);
             }
         });
@@ -1042,7 +926,7 @@ const AmMappingPallet2 = (props) => {
                 if (ele) {
                     valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                     ele.value = x.defaultValue ? x.defaultValue : "";
-                    if (x.field === "scanCode") {
+                    if (x.isFocus === true) {
                         ele.focus();
                     }
                 }
@@ -1050,7 +934,7 @@ const AmMappingPallet2 = (props) => {
             });
 
         }
-       
+
     }
 
     const TabsRenderer = () => {
@@ -1120,17 +1004,17 @@ const AmMappingPallet2 = (props) => {
                         }) : null}
                     </CardContent>
                     <Divider style={{ marginTop: 5 }} />
-              
-                    <div>{ newStorageObj === null ? <CardContent className={classes.cardContent}>
+
+                    <div>{newStorageObj === null ? <CardContent className={classes.cardContent}>
                         {InputItemFirst ? InputItemFirst.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
-                    </CardContent>:null}</div>
-                    <div> {newStorageObj ? scanFirstbarcode === true ?<CardContent className={classes.cardContent}>
+                    </CardContent> : null}</div>
+                    <div> {newStorageObj ? scanFirstbarcode === true ? <CardContent className={classes.cardContent}>
                         {inputItem ? inputItem.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
-                    </CardContent>:null:null}</div>
+                    </CardContent> : null : null}</div>
                     <CardActions>
                         <AmButton styleType="confirm" className={classnames(classes.button)} onClick={() => onPreSubmitToAPI()}>
                             {t('Scan')}

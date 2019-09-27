@@ -15,7 +15,7 @@ const ReceivePallet = (props) => {
 
 
     const inputItem = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No", "placeholder": "Carton No." },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
@@ -30,7 +30,7 @@ const ReceivePallet = (props) => {
 
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
