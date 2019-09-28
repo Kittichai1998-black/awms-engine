@@ -46,37 +46,40 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                 ASRSProcessQueue.TRes.ProcessQueueResult processRes = res.processResults.FirstOrDefault(x => x.docID == proc.docID);
                 var doc = docs.First(x => x.ID == proc.docID);
-                var options = ObjectUtil.QryStrToKeyValues(doc.DocumentItems[i].Options);
-                var RSNUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "rsnum");
+                //var options = ObjectUtil.QryStrToKeyValues(doc.DocumentItems[i].Options);
+                //var RSNUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "rsnum");
                 if (doc.Ref1 == "R01" || doc.Ref1 == "R02" || doc.Ref1 == "R06")
                 {
-                    IN_REQ req = new IN_REQ()
+                    ZSWMRF003_IN_REQ req = new ZSWMRF003_IN_REQ()
                     {
-                        ZMODE = doc.Ref1,
                         LGNUM = "W01",
-                        LENUM = doc.Ref1 == "R01" ? doc.DocumentItems[i].Code : "",
-                        GI_DOC = doc.Code,
-
-                        MATNR = doc.Ref1 == "R02" || doc.Ref1 == "R06" ? doc.DocumentItems[i].Code : "",
-                        CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
-                        BDMNG = doc.DocumentItems[i].Quantity,
-
+                        ZMODE = doc.Ref1,
+                        LENUM = doc.Ref1 == "R01" || doc.Ref1 == "R03" || doc.Ref1 == "R04" ? doc.DocumentItems[i].Code : "",
                         LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
                         LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
-                        LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
-                        BWLVS = doc.Ref2,
-                        BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
-                        BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
-                        BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
+                        LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla")
+                        //ZMODE = doc.Ref1,
+                        //LGNUM = "W01",
+                        //LENUM = doc.Ref1 == "R01" ? doc.DocumentItems[i].Code : "",
+                        //GI_DOC = doc.Code,
+
+                        //MATNR = doc.Ref1 == "R02" || doc.Ref1 == "R06" ? doc.DocumentItems[i].Code : "",
+                        //CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
+                        //BDMNG = doc.DocumentItems[i].Quantity,
+
+                        //LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
+                        //LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
+                        //LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
+                        //BWLVS = doc.Ref2,
+                        //BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
+                        //BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
+                        //BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
                     };
-                    if (RSNUM != "")
-                    {
-                        req.RSNUM = long.Parse(RSNUM);
-                    }
-                    //SapResponse<ZSWMRF004_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_1_2_6(req, buVO);
-                    //if (resSAP.status != 1)
+                    //if (RSNUM != "")
                     //{
+                    //    req.RSNUM = long.Parse(RSNUM);
                     //}
+                    var res_ZWMRF003 = SAPInterfaceADO.GetInstant().ZWMRF003(req, buVO);
                 }
                 else if (doc.Ref1 == "R03" || doc.Ref1 == "R04")
                 {
@@ -100,13 +103,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
                         BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
                     };
-                    if (RSNUM != "")
-                    {
-                        req.RSNUM = long.Parse(RSNUM);
-                    }
-                    //SapResponse<ZSWMRF005_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_3_4(req, buVO);
-                    //if (resSAP.status != 1)
+                    //if (RSNUM != "")
                     //{
+                    //    req.RSNUM = long.Parse(RSNUM);
                     //}
                 }
                 else if (doc.Ref1 == "R05")
@@ -133,13 +132,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         POSNR = long.Parse(ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "posnr")),
                         VBELN = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln")
                     };
-                    if (RSNUM != "")
-                    {
-                        req.RSNUM = long.Parse(RSNUM);
-                    }
-                    //SapResponse<ZSWMRF006_OUT_SAP> resSAP = SendDataToSAP_IN_REQ_R_5(req, buVO);
-                    //if (resSAP.status != 1)
+                    //if (RSNUM != "")
                     //{
+                    //    req.RSNUM = long.Parse(RSNUM);
                     //}
                 }
 
@@ -348,20 +343,5 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             var res = SAPInterfaceADO.GetInstant().ZWMRF001(data, buVO);
             return res;
         }
-        //private SapResponseMulti SendDataToSAP_IN_REQ_R_1_2_6(ZSWMRF004_IN_REQ data, VOCriteria buVO)
-        //{
-        //    //var res = SAPInterfaceADO.GetInstant().ZWMRF004_IN_REQ(data, buVO);
-        //    return null;
-        //}
-        //private SapResponse<ZSWMRF005_OUT_SAP> SendDataToSAP_IN_REQ_R_3_4(ZSWMRF005_IN_REQ data, VOCriteria buVO)
-        //{
-        //    //var res = SAPInterfaceADO.GetInstant().ZWMRF005_IN_REQ(data, buVO);
-        //    return null;
-        //}
-        //private SapResponse<ZSWMRF006_OUT_SAP> SendDataToSAP_IN_REQ_R_5(ZSWMRF006_IN_REQ data, VOCriteria buVO)
-        //{
-        //    //var res = SAPInterfaceADO.GetInstant().ZWMRF006_IN_REQ(data, buVO);
-        //    return null;
-        //}
     }
 }

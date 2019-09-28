@@ -19,7 +19,7 @@ namespace ProjectSTA.Engine.Business.Received
         {
             public long areaID;
             public string scanCode;
-            public long[] locGateID;
+            public List<long> lockGateID = new List<long>();
         }
         public class TRes
         {
@@ -65,7 +65,7 @@ namespace ProjectSTA.Engine.Business.Received
                   new SQLConditionCriteria[] {
                         new SQLConditionCriteria("AreaMaster_ID",reqVO.areaID, SQLOperatorType.EQUALS),
                         new SQLConditionCriteria("Status", 1, SQLOperatorType.EQUALS, SQLConditionType.AND),
-                        new SQLConditionCriteria("ID",string.Join(',',reqVO.locGateID), SQLOperatorType.NOTIN)
+                        new SQLConditionCriteria("ID",string.Join(',',reqVO.lockGateID), SQLOperatorType.NOTIN)
                   },
                   new SQLOrderByCriteria[] { }, null, null, this.BuVO);
 

@@ -113,31 +113,31 @@ namespace ProjectAAI.ADO.SAPApi
             /// <summary>Warehouse Code</summary>
             public string LGNUM;
             /// <summary>Storage Unit Number</summary>
-            public string LENUM;
+            public string LENUM = "";
             /// <summary>Reservation Number</summary>
             public long? RSNUM;
             /// <summary>Delivery Order Number</summary>
-            public string VBELN_VL;
+            public string VBELN_VL = "";
             /// <summary>Delivery Item</summary>
             public long? POSNR;
             /// <summary>Material Number</summary>
-            public string MATNR;
+            public string MATNR = "";
             /// <summary>Batch Number</summary>
-            public string CHARG;
+            public string CHARG = "";
             /// <summary>Quantity</summary>
             public decimal? BDMNG;
             /// <summary>Destination Storage Type</summary>
-            public string LGTYP;
+            public string LGTYP = "";
             /// <summary>Destination Storage Section</summary>
-            public string LGBER;
+            public string LGBER = "";
             /// <summary>Destination Storage BIN</summary>
-            public string LGPLA;
+            public string LGPLA = "";
             /// <summary>Include Stock Category = “” – Available Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_UR;
+            public string BESTQ_UR = "";
             /// <summary>Include Stock Category = Q – Stock in Quality Control, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_QI;
+            public string BESTQ_QI = "";
             /// <summary>Include Stock Category = S – Blocked Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_BLK;
+            public string BESTQ_BLK = "";
         }
         public class ZSWMRF003_OUT_REQ : ZSWMRF003_IN_REQ
         {
