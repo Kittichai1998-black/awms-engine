@@ -338,7 +338,7 @@ namespace AWMSEngine.ADO
                 var unitConvertSale = StaticValue.StaticValueManager.GetInstant()
                 .ConvertToNewUnitByPack(x.sou_packID, x.distoBaseQtyMax, x.sou_packBaseUnitID, x.distoUnitID);
 
-                x.distoQtyMax = unitConvertSale.qty;
+                x.distoQtyMax = unitConvertSale.newQty;
             });
 
             return res;

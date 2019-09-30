@@ -10,9 +10,11 @@ namespace AWMSModel.Criteria
         public string packMaster_Code;
         public long skuMaster_ID;
         public string skuMaster_Code;
-        public decimal weiKg;
-        public decimal qty;
-        public long unitType_ID;
+        public decimal stdWeiKg;
+        public decimal oldQty;
+        public long oldUnitType_ID;
+        public decimal newQty;
+        public long newUnitType_ID;
         public decimal baseQty;
         public long baseUnitType_ID;
     }

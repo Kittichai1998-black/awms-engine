@@ -65,13 +65,13 @@ namespace AWMSEngine.Engine.Business.Issued
                         code = reqVO.packCode,
                         baseQty = reqVO.baseQty,
                         baseUnitID = converUnit.baseUnitType_ID,
-                        qty = converUnit.qty,
-                        unitID = converUnit.unitType_ID,
+                        qty = converUnit.newQty,
+                        unitID = converUnit.newUnitType_ID,
                         areaID = baseInfo.areaID,
                         batch = reqVO.batch,
                         lot = reqVO.lot,
                         orderNo = reqVO.orderNo,
-                        weiKG = converUnit.weiKg,
+                        weiKG = converUnit.stdWeiKg,
                         eventStatus = StorageObjectEventStatus.RECEIVED,
                         parentID = baseInfo.id,
                         parentType = baseInfo.type,
@@ -108,7 +108,7 @@ namespace AWMSEngine.Engine.Business.Issued
                     var converUnit = StaticValue.ConvertToNewUnitBySKU(
                         packInfo.skuID.Value, reqVO.baseQty, packInfo.baseUnitID, packInfo.unitID);
                     packInfo.baseQty += reqVO.baseQty;
-                    packInfo.qty += converUnit.qty;
+                    packInfo.qty += converUnit.newQty;
                     packInfo.weiKG += (packInfo.weiKG / packInfo.baseQty) * reqVO.baseQty;
                     if (baseInfo.eventStatus == StorageObjectEventStatus.NEW)
                     {
@@ -122,8 +122,8 @@ namespace AWMSEngine.Engine.Business.Issued
                     {
                         DocumentItem_ID = docItem.ID.Value,
                         Sou_StorageObject_ID = packInfo.id.Value,
-                        Quantity = -converUnit.qty,
-                        UnitType_ID = converUnit.unitType_ID,
+                        Quantity = -converUnit.newQty,
+                        UnitType_ID = converUnit.newUnitType_ID,
                         BaseQuantity = -converUnit.baseQty,
                         BaseUnitType_ID = converUnit.baseUnitType_ID,
                         Status = EntityStatus.ACTIVE,

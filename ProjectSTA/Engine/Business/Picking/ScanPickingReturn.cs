@@ -216,7 +216,7 @@ namespace ProjectSTA.Engine.V2.Business.Picking
                                                     var qty = disto.Quantity += reqVO.amount;
                                                     var packConvert = StaticValue.ConvertToBaseUnitByPack(packs.mstID.Value, qty.Value, packs.unitID);
                                                     
-                                                    disto.Quantity = packConvert.qty;
+                                                    disto.Quantity = packConvert.newQty;
                                                     disto.BaseQuantity = packConvert.baseQty;
 
                                                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
@@ -315,7 +315,7 @@ namespace ProjectSTA.Engine.V2.Business.Picking
                                             var qty = disto.Quantity += reqVO.amount;
                                             var packConvert = StaticValue.ConvertToBaseUnitByPack(packs.mstID.Value, qty.Value, packs.unitID);
 
-                                            disto.Quantity = packConvert.qty;
+                                            disto.Quantity = packConvert.newQty;
                                             disto.BaseQuantity = packConvert.baseQty;
 
                                             var diStoID = AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Des_StorageObject_ID, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
@@ -406,7 +406,7 @@ namespace ProjectSTA.Engine.V2.Business.Picking
                                             {
                                                 var qty = disto.Quantity -= reqVO.amount;
                                                 var packConvert = StaticValue.ConvertToBaseUnitByPack(resStoPack.mstID.Value, qty.Value, resStoPack.unitID);
-                                                disto.Quantity = packConvert.qty;
+                                                disto.Quantity = packConvert.newQty;
                                                 disto.BaseQuantity = packConvert.baseQty;
                                                 AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, null, disto.Quantity, disto.BaseQuantity, disto.Status, this.BuVO);
                                             }
@@ -433,7 +433,7 @@ namespace ProjectSTA.Engine.V2.Business.Picking
                                     var qty = resDiSto1.Quantity -= reqVO.amount;
                                     var packConvert = StaticValue.ConvertToBaseUnitByPack(resStoPack.mstID.Value, qty.Value, resStoPack.unitID);
                                     ////
-                                    resDiSto1.Quantity = packConvert.qty;
+                                    resDiSto1.Quantity = packConvert.newQty;
                                     resDiSto1.BaseQuantity = packConvert.baseQty;
                                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateMappingSTO(resDiSto1.ID.Value, null, resDiSto1.Quantity, resDiSto1.BaseQuantity, resDiSto1.Status, this.BuVO);
 
