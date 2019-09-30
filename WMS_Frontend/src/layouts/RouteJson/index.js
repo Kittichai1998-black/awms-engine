@@ -3,8 +3,9 @@ import MRK from "./routeMRK";
 import TAP from "./routeTAP";
 import STA from "./routeSTA";
 import AAI from "./routeAAI";
+import STGT from "./routeSTGT";
 import ENGINE from "./routeEngine";
-import PANKAN from './routePANKAN'
+import PANKAN from "./routePANKAN";
 
 var PROJ = null;
 
@@ -15,9 +16,11 @@ if (window.project === "STA") {
 } else if (window.project === "MRK") {
   PROJ = MRK;
 } else if (window.project === "AAI") {
-    PROJ = AAI;
-} else if (window.project === 'PANKAN') {
-    PROJ = PANKAN;
+  PROJ = AAI;
+} else if (window.project === "PANKAN") {
+  PROJ = PANKAN;
+} else if (window.project === "STGT") {
+  PROJ = STGT;
 } else {
   PROJ = ENGINE;
 }
