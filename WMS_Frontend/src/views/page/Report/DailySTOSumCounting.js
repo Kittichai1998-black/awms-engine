@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import AmReport from '../../../../components/AmReport'
-import AmButton from '../../../../components/AmButton'
-import AmFindPopup from '../../../../components/AmFindPopup'
-import { apicall } from '../../../../components/function/CoreFunction'
+import AmReport from '../../../components/AmReport'
+import AmButton from '../../../components/AmButton'
+import AmFindPopup from '../../../components/AmFindPopup'
+import { apicall } from '../../../components/function/CoreFunction'
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components'
-import AmInput from "../../../../components/AmInput";
-import AmDate from '../../../../components/AmDate';
-import AmDropdown from '../../../../components/AmDropdown';
+import AmInput from "../../../components/AmInput";
+import AmDate from '../../../components/AmDate';
+import AmDropdown from '../../../components/AmDropdown';
 import { useTranslation } from 'react-i18next'
 const Axios = new apicall();
 
