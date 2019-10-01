@@ -67,8 +67,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.CLOSING, null, DocumentEventStatus.CLOSED, buVO);
 
                                     //call to SAP
-                                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
-                                    {
+                                    if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
+                                    {//ดัก empty pallet ไม่ต้องยิงไปZWMRF002
+
                                         var tanumlists = new List<string> ();
                                         var WorkQueueLists2 = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
                                         WorkQueueLists2.ForEach(wq =>
@@ -86,7 +87,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                         UpdateOptionDoc(docs.ID.Value, docs.Options, tanumlists, buVO);
 
                                     }
-                                    else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED)
+                                    else if (docs.DocumentType_ID == DocumentTypeID.GOODS_ISSUED && docs.MovementType_ID != MovementType.EPL_TRANSFER_WM)
                                     {
                                         var tanumlists = new List<string>();
                                         docs.DocumentItems.ForEach(docItem =>
@@ -138,7 +139,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                                         LENUM = queue.StorageObject_Code,
                                                         GI_DOC = docs.Code
                                                     };
-                                                    IN_REQ inReq = new IN_REQ()
+                                                    ZSWMRF005_IN_REQ inReq = new ZSWMRF005_IN_REQ()
                                                     {
                                                         ZMODE = docs.Ref1,
                                                         LGNUM = "W01",
@@ -155,6 +156,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                                         BESTQ_UR = optionsItem[OptionVOConst.OPT_BESTQ_UR],
                                                         BESTQ_QI = optionsItem[OptionVOConst.OPT_BESTQ_QI],
                                                         BESTQ_BLK = optionsItem[OptionVOConst.OPT_BESTQ_BLK],
+                                                        VBELN = optionsItem[OptionVOConst.OPT_VBELN],
                                                         GI_DOC = docs.Code
                                                     };
                                                     var resSAP = SendDataToSAP_ZWMRF005(inAws, inReq, docs.ID.Value, buVO);
@@ -171,7 +173,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                                         LENUM = queue.StorageObject_Code,
                                                         GI_DOC = docs.Code
                                                     };
-                                                    IN_REQ inReq = new IN_REQ() {
+                                                    ZSWMRF006_IN_REQ inReq = new ZSWMRF006_IN_REQ() {
                                                         ZMODE = docs.Ref1,
                                                         LGNUM = "W01",
                                                         LENUM = string.IsNullOrEmpty(optionsItem[OptionVOConst.OPT_LENUM]) ? null : optionsItem[OptionVOConst.OPT_LENUM],
@@ -391,7 +393,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
             return res;
         }
-        private SapResponseMulti SendDataToSAP_ZWMRF005(IN_AWS inAws, IN_REQ inReq, long? docID, VOCriteria buVO)
+        private SapResponseMulti SendDataToSAP_ZWMRF005(IN_AWS inAws, ZSWMRF005_IN_REQ inReq, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF005(inAws, inReq, buVO);
             if (res.datas.OUT_SAP != null)
@@ -410,7 +412,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
             return res;
         }
-        private SapResponseMulti SendDataToSAP_ZWMRF006(IN_AWS inAws, IN_REQ inReq, long? docID, VOCriteria buVO)
+        private SapResponseMulti SendDataToSAP_ZWMRF006(IN_AWS inAws, ZSWMRF006_IN_REQ inReq, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF006(inAws, inReq, buVO);
             if (res.datas.OUT_SAP != null)

@@ -191,7 +191,6 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 ams_PackMaster packMst = null;
                 ams_SKUMaster skuMst = null;
-                dynamic baseUnitTypeConvt = null;
                 decimal? baseQuantity = null;
 
                 if (Item.packID.HasValue)
@@ -221,11 +220,12 @@ namespace AWMSEngine.Engine.V2.Business
                 {
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "กรุณาส่ง packCode หรือ skuCode,packItemQty หรือ palletCode");
                 }
-                if (packMst != null)
-                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, Item.quantity ?? 1, packMst.UnitType_ID);
-
-                if (Item.quantity.HasValue && baseUnitTypeConvt != null)
+                ConvertUnitCriteria baseUnitTypeConvt = null;
+                if (Item.quantity.HasValue && packMst != null)
+                {
+                    baseUnitTypeConvt = this.StaticValue.ConvertToBaseUnitByPack(packMst.ID.Value, Item.quantity.Value, packMst.UnitType_ID);
                     baseQuantity = baseUnitTypeConvt.baseQty;
+                }
 
                 if (Item.baseStos.Count > 0)
                 {
@@ -238,9 +238,9 @@ namespace AWMSEngine.Engine.V2.Business
                         {
                             Sou_StorageObject_ID = x.id.Value,
                             Des_StorageObject_ID = null,
-                            Quantity = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).qty,
+                            Quantity = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).newQty,
                             BaseQuantity = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).baseQty,
-                            UnitType_ID = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).unitType_ID,
+                            UnitType_ID = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).newUnitType_ID,
                             BaseUnitType_ID = StaticValue.ConvertToBaseUnitBySKU(skuMst.ID.Value, x.qty, x.unitID).baseUnitType_ID,
                             Status = EntityStatus.INACTIVE
                         }).ToList();
@@ -256,9 +256,9 @@ namespace AWMSEngine.Engine.V2.Business
                     PackMaster_ID = packMst != null ? packMst.ID : null,
 
                     Quantity = Item.quantity,
-                    UnitType_ID = baseUnitTypeConvt != null ? baseUnitTypeConvt.unitType_ID : null,
+                    UnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.oldUnitType_ID : null,
                     BaseQuantity = baseQuantity,
-                    BaseUnitType_ID = baseUnitTypeConvt != null ? baseUnitTypeConvt.baseUnitType_ID : null,
+                    BaseUnitType_ID = baseUnitTypeConvt != null ? (long?)baseUnitTypeConvt.baseUnitType_ID : null,
 
                     OrderNo = Item.orderNo,
                     Batch = Item.batch,

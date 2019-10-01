@@ -9,5 +9,6 @@ namespace AWMSModel.Entity
         public string APIKey;
         public int Revision;
         public int User_ID;
+        public bool IsLogging;
     }
 }

@@ -94,6 +94,7 @@ namespace AWMSEngine.APIService
             string apiKey = null;
             try
             {
+                //------GET token || apikey
                 if (request != null)
                 {
                     string _getKeyJson = Newtonsoft.Json.JsonConvert.SerializeObject(request);
@@ -103,14 +104,33 @@ namespace AWMSEngine.APIService
                     apiKey = !string.IsNullOrWhiteSpace(getKey.apikey) ? getKey.apikey : getKey._apikey;
                 }
 
+                //-------CREATE FILE LOGGING
+                amt_Token tokenInfo = null; 
+                ams_APIKey apiKeyInfo = null;
                 if (!string.IsNullOrWhiteSpace(token))
-                    this.Logger = AMWLoggerManager.GetLogger(token, this.GetType().Name);
+                {
+                    tokenInfo = ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault();
+                    if (tokenInfo != null)
+                    {
+                        var user = ADO.DataADO.GetInstant().SelectByID<ams_User>(tokenInfo.User_ID, this.BuVO);
+                        this.Logger = AMWLoggerManager.GetLogger(user.Code, this.GetType().Name);
+                    }
+                }
                 else if (!string.IsNullOrWhiteSpace(apiKey))
-                    this.Logger = AMWLoggerManager.GetLogger(apiKey, this.GetType().Name);
-                else if (this.Logger == null)
-                    this.Logger = AMWLoggerManager.GetLogger("notkey", this.GetType().Name);
+                {
+                    apiKeyInfo = ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("APIKey", apiKey, this.BuVO).FirstOrDefault();
+                    if (apiKeyInfo != null)
+                        this.Logger = AMWLoggerManager.GetLogger(apiKeyInfo.APIKey, this.GetType().Name, apiKeyInfo.IsLogging);
+                }
+                if (this.Logger == null)
+                {
+                    this.Logger = AMWLoggerManager.GetLogger("(no_key)", this.GetType().Name);
+                }
+                this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
 
-                this.Logger.LogInfo("############## START TRANSACTION ##############");
+
+                //-------START FILE LOGGING
+                this.Logger.LogInfo("############## START_TRANSACTION ##############");
                 string _request_str = ObjectUtil.Json(request);
                 this.Logger.LogInfo("request=" + _request_str);
                 this.BuVO.Set(BusinessVOConst.KEY_RESULT_API, result);
@@ -122,6 +142,7 @@ namespace AWMSEngine.APIService
                         sendAPIEvents = new List<HttpResultModel>()
                     });
 
+                //-----------VALIDATE SERVICE
                 var apiService = ADO.StaticValue.StaticValueManager.GetInstant().APIServices.FirstOrDefault(x => x.ID == this.APIServiceID);
                 if (apiService == null)
                 {
@@ -129,11 +150,9 @@ namespace AWMSEngine.APIService
                     if (apiService == null)
                         throw new AMWException(this.Logger, AMWExceptionCode.V2001, "Service Class '" + this.GetType().FullName + "' is not Found");
                 }
+
+                //-----------START DB LOGGING
                 this.APIServiceID = apiService.ID.Value;
-
-                this.Permission(token, apiKey);
-
-                this.BuVO.Set(BusinessVOConst.KEY_LOGGER, this.Logger);
                 dbLogID = ADO.LogingADO.GetInstant().BeginAPIService(
                     this.APIServiceID,
                     this.GetType().Name,
@@ -145,6 +164,8 @@ namespace AWMSEngine.APIService
                     this.BuVO);
                 this.BuVO.Set(BusinessVOConst.KEY_DB_LOGID, dbLogID);
 
+                //-----------VALIDATE PERMISSION
+                this.Permission(token, tokenInfo, apiKey, apiKeyInfo);
                 
                 var res = this.ExecuteEngineManual();
 
@@ -162,7 +183,7 @@ namespace AWMSEngine.APIService
                 result.code = ex.GetAMWCode();
                 result.message = ex.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
-                result.logref = this.Logger.LogRefID;
+                result.logref = this.Logger == null ? string.Empty : this.Logger.LogRefID;
                 this.RollbackTransaction();
             }
             catch (Exception ex)
@@ -173,7 +194,7 @@ namespace AWMSEngine.APIService
                 result.code = e.GetAMWCode();
                 result.message = e.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
-                result.logref = this.Logger.LogRefID;
+                result.logref = this.Logger == null ? string.Empty : this.Logger.LogRefID;
                 this.RollbackTransaction();
             }
             finally
@@ -215,14 +236,13 @@ namespace AWMSEngine.APIService
         //}
 
 
-        private void Permission(string token, string apiKey)
+        private void Permission(string token,amt_Token tokenInfo,string apiKey, ams_APIKey apiKeyInfo)
         {
-            var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
+            //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
             this.Logger.LogInfo("token=" + token);
 
-            var apiKeyInfo = !string.IsNullOrEmpty(apiKey) ? ADO.DataADO.GetInstant().SelectBy<ams_APIKey>("APIKey", apiKey, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY, apiKey);
             this.Logger.LogInfo("apikey=" + apiKey);

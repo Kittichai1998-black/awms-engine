@@ -18,19 +18,21 @@ namespace AMWUtil.Logger
         private string _LogRefID;
         public string LogRefID { get { return this._LogRefID; } }
         private string _LogName;
-        public string ServiceRefID { get { return _LogName; } }
+        public string LogName { get { return _LogName; } }
         public string SubServiceName { get; set; }
         private string _ServiceName { get; set; }
         private string _FileName { get; set; }
-        private StackTrace _StackTrace;
+        private bool _IsLogging { get; set; }
 
-        
-        public AMWLogger(string fileName, string logName, string serviceName)
+
+
+        public AMWLogger(string fileName, string logName, string serviceName, bool isLogging = true)
         {
             this._LogRefID = AMWUtil.Common.ObjectUtil.GenUniqID();  //Guid.NewGuid().ToString("N");
             this._LogName = logName;
             this._ServiceName = serviceName;
             this._FileName = fileName;
+            this._IsLogging = isLogging;
             //this.FileLogger = File.Open(fileName, FileMode.Append, FileAccess.Write, FileShare.Read);
             //this.UpdateLastUse();
             //this.LogBeginTransaction();
@@ -41,12 +43,14 @@ namespace AMWUtil.Logger
 
         public void LogWrite(string logLV, string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this._StackTrace = new StackTrace();
-            message = string.Format("{0:HH:mm:ss.fff} [{1}] [{2}] {3}/{4}({5}) >> {6}",
+            if (!this._IsLogging)
+                return;
+
+            message = string.Format("{0:HH:mm:ss.fff} [{1}] {3}/{4}({5}) [{2}] > {6}",
                                         DateTime.Now,
                                         this.LogRefID,
                                         logLV,
-                                        string.IsNullOrWhiteSpace(this.SubServiceName) ? this._ServiceName : this.SubServiceName,
+                                        this._ServiceName,
                                         sourceFile.Split('\\').Last(),
                                         lineNumber,
                                         message.Replace("\r", string.Empty).Replace("\n", @"\n"));
@@ -54,8 +58,6 @@ namespace AMWUtil.Logger
             {
                 AMWLoggerManager.LogMessagesTMP.Add(new KeyValuePair<string, string>(this._FileName, message));
             }
-
-            
         }
 
         public void LogAll(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
@@ -64,27 +66,27 @@ namespace AMWUtil.Logger
         }
         public void LogInfo(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("INFO" ,message, sourceFile, lineNumber);
+            this.LogWrite("INF" ,message, sourceFile, lineNumber);
         }
         public void LogDebug(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("DEBUG", message, sourceFile, lineNumber);
+            this.LogWrite("DEB", message, sourceFile, lineNumber);
         }
         public void LogError(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("ERROR", message, sourceFile, lineNumber);
+            this.LogWrite("ERR", message, sourceFile, lineNumber);
         }
         public void LogWarning(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("WARNING", message, sourceFile, lineNumber);
+            this.LogWrite("WAR", message, sourceFile, lineNumber);
         }
         public void LogFatal(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("FATAL", message, sourceFile, lineNumber);
+            this.LogWrite("FAT", message, sourceFile, lineNumber);
         }
         public void LogTrace(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.LogWrite("TRACE", message, sourceFile, lineNumber);
+            this.LogWrite("TRA", message, sourceFile, lineNumber);
         }
         public void LogOff(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0)
         {

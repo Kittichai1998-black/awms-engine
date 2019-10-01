@@ -110,8 +110,7 @@ const createQueryString = (select) => {
         + (select.sk === "" ? "" : "&sk=" + select.sk)
         + (select.l === 0 ? "" : "&l=" + select.l)
         + (select.all === "" ? "" : "&all=" + select.all)
-        + "&isCounts=true"
-        + "&apiKey=free01"
+        + "&isCounts=true" 
     return queryS
 }
 

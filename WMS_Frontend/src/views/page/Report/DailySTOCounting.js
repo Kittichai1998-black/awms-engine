@@ -110,6 +110,13 @@ const DailySTOReceive = (props) => {
                 }
             })
     }
+    const getAPI = "/v2/GetSPReportAPI?apikey=FREE01"
+        + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
+        + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
+        + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
+        + "&docType=2004"
+        + "&movementTypeID=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
+        + "&spname=DAILY_STO";
 
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
@@ -207,6 +214,7 @@ const DailySTOReceive = (props) => {
                 pages={(x) => setPage(x)}
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
+                exportApi={getAPI}
                 page={true}
             ></AmReport>
         </div>

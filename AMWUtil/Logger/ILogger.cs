@@ -10,7 +10,7 @@ namespace AMWUtil.Logger
     public interface ILogger
     {
         string LogRefID { get; }
-        string ServiceRefID { get; }
+        string LogName { get; }
         void LogWrite(string logLV, string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0);
 
         void LogAll(string message, [CallerFilePath]string sourceFile = "", [CallerLineNumber]int lineNumber = 0);

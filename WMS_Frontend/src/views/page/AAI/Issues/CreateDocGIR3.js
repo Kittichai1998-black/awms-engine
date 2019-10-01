@@ -6,40 +6,40 @@ import {
   apicall,
   createQueryString
 } from '../../../../components/function/CoreFunction';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import AmCreateDocument from './AmCreateDocument';
 import AmButton from '../../../../components/AmButton';
 import AmInput from '../../../../components/AmInput';
 import AmCheckBox from '../../../../components/AmCheckBox';
+import AmDialogs from '../../../../components/AmDialogs';
 import Checkbox from '@material-ui/core/Checkbox';
 
 const FormInline = styled.div`
-display: flex;
-flex-flow: row wrap;
-align-items: center;
-label {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  label {
     margin: 5px 5px 5px 0;
-}
-input {
+  }
+  input {
     vertical-align: middle;
-}
-@media (max-width: 800px) {
+  }
+  @media (max-width: 800px) {
     flex-direction: column;
     align-items: stretch;
-    
   }
 `;
 
 const LabelH = styled.label`
-font-weight: bold;
+  font-weight: bold;
   width: 200px;
 `;
 
 const InputDiv = styled.div`
-    margin: 5px;
-    @media (max-width: 800px) {
-        margin: 0;
-    }
+  margin: 5px;
+  @media (max-width: 800px) {
+    margin: 0;
+  }
 `;
 
 const Axios = new apicall();
@@ -48,6 +48,9 @@ const AmCreateDocumentR2 = props => {
   const [sapResponse, setSAPResponse] = useState([]);
   const [editData, setEditData] = useState({});
   const [editPopup, setEditPopup] = useState(false);
+
+  const [openError, setOpenError] = useState(false);
+  const [textError, setTextError] = useState('');
   // const [sapReq, setSAPReq] = useState([]);
   const [headerData, setHeaderData] = useState([]);
   const [flagStock, setFlagStock] = useState(false);
@@ -143,15 +146,16 @@ const AmCreateDocumentR2 = props => {
   ];
 
   const apicreate = '/v2/CreateGIDocAPI/'; //API สร้าง Doc
-  const apiRes = '/';
+  const apiRes = "/issue/detail?docID=";
 
   const sapConnectorR3 = postData => {
     Axios.post(window.apipath + '/v2/SAPZWMRF003R3API', postData).then(res => {
       if (res.data._result.status === 1) {
-        if (postData.LENUM)
-          res.data.datas[0].LENUM = postData.LENUM
+        if (postData.LENUM) res.data.datas[0].LENUM = postData.LENUM;
         setSAPResponse(res.data.datas);
       } else {
+        setOpenError(true);
+        setTextError(res.data._result.message);
       }
     });
   };
@@ -160,7 +164,6 @@ const AmCreateDocumentR2 = props => {
     if (status) {
       // console.log(rowdata);
 
-
       // var postData = {};
       // sapReq.forEach(x => {
       //   postData[x.field] = x.value;
@@ -168,7 +171,7 @@ const AmCreateDocumentR2 = props => {
       rowdata['_token'] = localStorage.getItem('Token');
       sapConnectorR3(rowdata);
     }
-    setEditData({})
+    setEditData({});
     setEditPopup(false);
   };
 
@@ -179,11 +182,10 @@ const AmCreateDocumentR2 = props => {
     //   //stockStatus
     //   setsap.push();
     // }
-    if (field === "BESTQ_BLK" || field === "BESTQ_QI" || field === "BESTQ_UR")
-      editData[field] = value === true ? "Y" : "N"
-    else
-      editData[field] = value
-    setEditData({ ...editData })
+    if (field === 'BESTQ_BLK' || field === 'BESTQ_QI' || field === 'BESTQ_UR')
+      editData[field] = value === true ? 'Y' : 'N';
+    else editData[field] = value;
+    setEditData({ ...editData });
   };
 
   const editorList = [
@@ -424,15 +426,20 @@ const AmCreateDocumentR2 = props => {
 
     let documentItem = sapResponse.map((item, idx) => {
       let options =
-        'bestq_ur=' + item.BESTQ_UR +
-        '&bestq_qi=' + item.BESTQ_QI +
-        '&bestq_blk=' + item.BESTQ_BLK +
-
-        '&lgtyp=' + item.LGTYP +
-        '&lgpla=' + item.LGPLA +
-
-        '&lenum=' + item.LENUM +
-        '&rsnum=' + item.RSNUM;
+        'bestq_ur=' +
+        item.BESTQ_UR +
+        '&bestq_qi=' +
+        item.BESTQ_QI +
+        '&bestq_blk=' +
+        item.BESTQ_BLK +
+        '&lgtyp=' +
+        item.LGTYP +
+        '&lgpla=' +
+        item.LGPLA +
+        '&lenum=' +
+        item.LENUM +
+        '&rsnum=' +
+        item.RSNUM;
       // if (item.LENUM !== '' && item.LENUM !== null) {
       //   options = options + '&lgpla=' + item.LENUM;
       // }
@@ -473,6 +480,15 @@ const AmCreateDocumentR2 = props => {
 
   return (
     <div>
+      <AmDialogs
+        typePopup={'error'}
+        onAccept={e => {
+          setOpenError(e);
+        }}
+        open={openError}
+        content={textError}
+      ></AmDialogs>
+
       <AmCreateDocument
         headerCreate={headerCreates} //ข้อมูลตรงด้านบนตาราง
         //columnsModifi={columnsModifi} //ใช้เฉพาะหน้าที่ต้องทำปุ่มเพิ่มขึ้นมาใหม่

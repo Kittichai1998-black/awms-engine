@@ -157,7 +157,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                         x.pickBaseQty = (a <= _condi.baseQty.Value ? a : _condi.baseQty.Value);
 
                                         var _condiQty = this.StaticValue.ConvertToNewUnitBySKU(x.SKUMasterID, x.pickBaseQty, x.pstoBaseUnitID, x.pstoUnitID);
-                                        x.pickQty = (b <= _condiQty.qty ? b : _condiQty.qty);
+                                        x.pickQty = (b <= _condiQty.newQty ? b : _condiQty.newQty);
                                         _condi.baseQty -= x.pickBaseQty;
 
                                         var _tmp = tmpStoProcs.First(y => y.pstoID == x.pstoID);

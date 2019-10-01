@@ -1,102 +1,121 @@
 import React, { useState, useEffect } from "react";
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import Table from '../components/table/AmTable'
 import Pagination from '../components/table/AmPagination';
+import Clone from '../components/function/Clone'
 import _ from 'lodash';
 // import { useTranslation } from 'react-i18next'
+import { apicall } from '../components/function/CoreFunction2'
+const Axios = new apicall();
 
 const AmReport = (props) => {
-    // const { t } = useTranslation()
-    // const [sort, setSort] = useState(0);
+    const {
+        bodyHeadReport,
+        bodyFooterReport,
+        columnTable,
+        dataTable,
+        pageSize,
+        sort,
+        sortable,
+        page,
+        pages,
+        exportData,
+        excelFooter,
+        renderCustomButton,
+        totalSize,
+        exportApi
+    } = props;
 
-    //const [value, setvalue] = useState("Total");
-    const [data, setData] = useState(props.dataTable);
+    const [dataSrc, setDataSrc] = useState([]);
     const [pageTb, setPageTb] = useState(0);
-    const [footerSum, setfooterSum] = useState(props.columnTable);
-    const [sumwhere, setsumwhere] = useState(props.sumwhere);
-    // const [sumCol, setSumcol] = useState();
+    const [dataExport, setDataExport] = useState([]);
 
-    // const calWidth = (columsList) => {
-    //     let tableWidth = 0;
-    //     columsList.forEach((row) => tableWidth = tableWidth + row.width);
-    //     return tableWidth
-    // }
+    useEffect(() => {
+        if (dataTable) {
+            setDataSrc(dataTable)
+        } else {
+            setDataSrc([]);
+        }
+    }, [dataTable]);
+    useEffect(() => {
+        if (exportApi) {
+            GetDataExport(exportApi)
+        } else {
+            setDataExport(dataSrc)
+        }
+    }, [exportApi])
+    useEffect(() => {
+        if (page != false)
+            pages(pageTb)
+    }, [pageTb])
 
+    const SumTables = () => {
+        return columnTable.filter(row => row.Footer === true).map(row => {
+            return { accessor: row.accessor, sumData: sumFooterTotal(row.accessor) }
+        })
+    }
     const sumFooterTotal = (value) => {
-        var sumVal = _.sumBy(data,
-            x => _.every(data, [sumwhere, x[sumwhere]]) == true ?
-                parseFloat(x[value] === null ? 0 : x[value]) : null)
+        var sumVal = _.sumBy(dataSrc, value)
+        /*var sumVal = _.sumBy(dataSrc,
+            x => _.every(dataSrc, value) == true ?
+                parseFloat(x[value] === null ? 0 : x[value]) : 0)
+       */
         if (sumVal === 0 || sumVal === null || sumVal === undefined || isNaN(sumVal)) {
             return '-'
         } else {
-            console.log(sumVal.toFixed(3))
-            //setSum(sumVal.toFixed(3))
             return sumVal.toFixed(3)
         }
     }
-
-
-    const SumTables = () => {
-        return footerSum.filter(row => row.Footer === true).map(row => {
-            return { accessor: row.accessor, sumData: sumFooterTotal(row.accessor) }
-        })
-
+    const CreateDataWithFooter = () => {
+        if (dataExport && dataExport.length > 0) {
+            var tempdata = Clone(dataExport)
+            var objfoot = {};
+            columnTable.filter(row => row.Footer === true).forEach(row => {
+                objfoot[row.accessor] = sumFooterTotal(row.accessor);
+                objfoot["norownum"] = true;
+            });
+            return tempdata.concat(objfoot);
+        }
+        return null;
     }
-
-    // console.log(SumTables())
-
-    useEffect(() => { setData(props.dataTable) }, [props.dataTable])
-
-
-    useEffect(() => {
-        if (props.page != false)
-            props.pages(pageTb)
-    }, [pageTb])
-
-    useEffect(() => { sumFooterTotal() }, [sumFooterTotal])
-
+    async function GetDataExport() {
+        if (exportApi) {
+            await Axios.get(window.apipath + exportApi).then((rowselect1) => {
+                if (rowselect1) {
+                    if (rowselect1.data._result.status !== 0) {
+                        setDataExport(rowselect1.data.datas);
+                    }
+                }
+            })
+        }
+    }
     return (
         <div>
             <div style={{ marginBottom: '10px' }}>
-                {props.bodyHeadReport}
+                {bodyHeadReport}
             </div>
-
             <Table
                 onRowClick={() => null}
-                data={data}
-                columns={props.columnTable}
+                data={dataSrc}
+                columns={columnTable}
                 sumFooter={SumTables()}
-                pageSize={props.pageSize}
-                sort={(sort) => props.sort({ field: sort.id, order: sort.sortDirection })}
-                sortable={props.sortable}
-                currentPage={props.page ? pageTb : 0}
-                exportData={props.exportData !== undefined ? props.exportData : true}
-                excelData={data}
-                renderCustomButtonB4={props.renderCustomButton}
+                pageSize={pageSize}
+                sort={(sorts) => sort({ field: sorts.id, order: sorts.sortDirection })}
+                sortable={sortable}
+                currentPage={page ? pageTb : 0}
+                exportData={exportData !== undefined ? exportData : true}
+                excelData={excelFooter !== undefined && true ? CreateDataWithFooter() : dataExport}
+                renderCustomButtonB4={renderCustomButton}
             ></Table>
-
-            {props.page ? <Pagination
-                //�ӹǹ�����ŷ�����
-                totalSize={props.totalSize}
-                //�ӹǹ�����ŵ��˹��
-                pageSize={props.pageSize}
-                //return ˹�ҷ��١�� : function
-                onPageChange={(pageTb) => setPageTb(pageTb)} /> : null}
+            {page ? <Pagination
+                totalSize={totalSize}
+                pageSize={pageSize}
+                onPageChange={(pageTbs) => setPageTb(pageTbs)} /> : null}
 
             <div>
-                {props.bodyFooterReport}
+                {bodyFooterReport}
             </div>
 
-            {/*footerSum ? <div>SUM : <label>{
-                    footerSum.map(row => {
-                        if (row.Footer == true) 
-                        return <div style={{ display: "inline-block" }}><div style={{ display: "inline-block" }}>
-                            <pre class="tab">   </pre>
-                            {row.Header} </div> : 
-                            {sumFooterTotal(row.accessor)}
-                            </div>
-
-                    })}</label> <pre class="tab"> </pre> </div>  : null*/}
 
         </div>
 
@@ -104,4 +123,19 @@ const AmReport = (props) => {
 }
 
 
+AmReport.propTypes = {
+    dataTable: PropTypes.array.isRequired,
+    columnTable: PropTypes.array.isRequired,
+    pageSize: PropTypes.number,
+    pages: PropTypes.func,
+    totalSize: PropTypes.number,
+    renderCustomButton: PropTypes.object,
+    page: PropTypes.bool,
+    bodyHeadReport: PropTypes.object,
+    bodyFooterReport: PropTypes.object,
+    exportData: PropTypes.bool,
+    excelFooter: PropTypes.bool,
+    sortable: PropTypes.bool,
+    sort: PropTypes.func
+}
 export default AmReport;

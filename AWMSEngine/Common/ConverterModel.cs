@@ -40,8 +40,8 @@ namespace AWMSEngine.Common
                         {
                             BaseQuantity = unitConvert.baseQty,
                             BaseUnitType_ID = unitConvert.baseUnitType_ID,
-                            Quantity = unitConvert.qty,
-                            UnitType_ID = unitConvert.unitType_ID,
+                            Quantity = unitConvert.newQty,
+                            UnitType_ID = unitConvert.newUnitType_ID,
                             DocumentItem_ID = di.ID.Value,
                             WorkQueue_ID = workQueusID ?? 0
                         };
@@ -75,7 +75,7 @@ namespace AWMSEngine.Common
                     x.mstID.Value,
                     baseQty ?? x.baseQty,
                     x.baseUnitID,
-                    unitID ?? x.unitID).qty,
+                    unitID ?? x.unitID).newQty,
                 UnitType_ID = unitID ?? x.unitID,
                 DocumentItem_ID = docItemID ?? 0,
                 Sou_StorageObject_ID = x.id.Value,
