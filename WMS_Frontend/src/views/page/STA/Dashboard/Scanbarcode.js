@@ -492,7 +492,17 @@ const Scanbarcode = (props) => {
     }
 
     const HeadGateB = (getGate) => {
-        return <CardContent style={{ height: "60px", background: "#3f51b5" }} >
+        return <CardContent style={{ height: "60px",  }} >
+            <Grid container spacing={12}>
+                <Grid item xs={5}></Grid> <Grid item xs={4}>
+                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
+                </Grid>
+            </Grid>
+        </CardContent>
+    }
+
+    const HeadGateC = (getGate) => {
+        return <CardContent style={{ height: "60px", background: "#fcfcfc" }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
                     <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
@@ -709,7 +719,9 @@ const Scanbarcode = (props) => {
                                                     databar.lockGateID = lockGateID
                                                     setdatabar({...databar})
                                                     setLockStateRight(true)
-                                                }}>Lock</AmButton>
+                                                }}>Manual</AmButton>
+                                                <AmButton styleType="confirm" onClick={()=> {
+                                                }}>Remove</AmButton>
                                             </Card>
                                         </Flash> : 
                                         <Flash>
@@ -753,13 +765,9 @@ const Scanbarcode = (props) => {
                                                     databar.lockGateID = lockGateID
                                                     setdatabar({...databar})
                                                     setLockStateRight(false)
-                                                }}>Unlock</AmButton>
+                                                }}>Clear</AmButton>
                                                 <AmButton styleType="confirm" onClick={()=> {
-                                                    setLockGateID(lockGateID.filter(x => x !== areaGate))
-                                                    databar.lockGateID = lockGateID
-                                                    setdatabar({...databar})
-                                                    setLockStateRight(false)
-                                                }}>Unlock</AmButton>
+                                                }}>Save</AmButton>
                                             </Card>
                                         </Flash>}
                                     </div> : null}
