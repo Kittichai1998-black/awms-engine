@@ -208,7 +208,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public SapResponseMulti ZWMRF005(IN_AWS inAws, IN_REQ inReq, VOCriteria buVO)
+        public SapResponseMulti ZWMRF005(IN_AWS inAws, ZSWMRF005_IN_REQ inReq, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -243,7 +243,7 @@ namespace ProjectAAI.ADO.SAPApi
             return res;
         }
 
-        public SapResponseMulti ZWMRF006(IN_AWS inAws, IN_REQ inReq, VOCriteria buVO)
+        public SapResponseMulti ZWMRF006(IN_AWS inAws, ZSWMRF006_IN_REQ inReq, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;

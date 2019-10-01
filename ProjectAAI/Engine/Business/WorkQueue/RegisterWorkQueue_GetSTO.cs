@@ -36,7 +36,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 bool checkEmpPallet = false;
                 if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
                 {
-                    checkEmpPallet = StaticValueManager.GetInstant().PackMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
+                    checkEmpPallet = StaticValueManager.GetInstant().SKUMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
                 }
 
 
@@ -94,14 +94,16 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     lengthM = reqVO.length,
                     heightM = reqVO.height,
                     widthM = reqVO.width,
-                    ref2 = "I00"
+                    ref2 = checkEmpPallet ? null : "I00"
                 };
 
                 var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
                 if (checkEmpPallet)
                 {
                     //check จาก code ที่อยู่ใน PalletDataCriteriaV2
-                    var PackMasterEmptyPallets = StaticValueManager.GetInstant().PackMasterEmptyPallets.FirstOrDefault();
+                    var PackMasterEmptyPallets = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.mappingPallets[0].code, buVO);
+
+                   // var PackMasterEmptyPallets = StaticValueManager.GetInstant().SKUMasterEmptyPallets.FirstOrDefault();
                     var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == PackMasterEmptyPallets.UnitType_ID);
                     var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == PackMasterEmptyPallets.ObjectSize_ID);
 
