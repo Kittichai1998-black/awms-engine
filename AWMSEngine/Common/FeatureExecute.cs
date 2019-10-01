@@ -23,8 +23,10 @@ namespace AWMSEngine.Common
                 return null;
             var feature = staticVal.GetFeature(fcode.ValueString);
             if (string.IsNullOrWhiteSpace(feature.FullClassName))
-                throw new AMWException(logger, AMWExceptionCode.V2001, "Feature '"+ fcode.ValueString + "' FullClassName Not Found");
+                throw new AMWException(logger, AMWExceptionCode.V2001, "Feature '"+ fcode.ValueString + "' Field FullClassName Not Found");
             Type type = ClassType.GetClassType(feature.FullClassName);
+            if (type == null)
+                throw new AMWException(logger, AMWExceptionCode.S0001, "Feature " + fcode.ValueString + " Class Type Not Found.");
             var getInstanct = (IProjectEngine<TExecReq, TExecRes>)Activator.CreateInstance(type, new object[] { });
             return getInstanct.ExecuteEngine(logger, buVO, req);
         }
