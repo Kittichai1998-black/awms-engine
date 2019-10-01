@@ -31,12 +31,12 @@ const DocumentViewGRSTGT = Loadable({
 });
 
 const dashboardPickingJob = Loadable({
-    loader: () => import("../../views/page/STA/Dashboard/DashboardPickingJob"),
-    loading: Loading
+  loader: () => import("../../views/page/STA/Dashboard/DashboardPickingJob"),
+  loading: Loading
 });
 const dashboardCountingJob = Loadable({
-    loader: () => import("../../views/page/STA/Dashboard/DashboardCountingJob"),
-    loading: Loading
+  loader: () => import("../../views/page/STA/Dashboard/DashboardCountingJob"),
+  loading: Loading
 });
 
 const CreateDocPIPhysicalSTGT = Loadable({
@@ -115,19 +115,19 @@ const routes = [
     name: "base5",
     compoment: CreateDocPIReworkSTGT,
     exact: true
+  },
+  {
+    path: "/dashboard/pickingjobs",
+    name: "TestRedirect",
+    compoment: dashboardPickingJob,
+    exact: true
+  },
+  {
+    path: "/dashboard/countingjobs",
+    name: "TestRedirect",
+    compoment: dashboardCountingJob,
+    exact: true
   }
-    },
-    {
-        path: "/dashboard/pickingjobs",
-        name: "TestRedirect",
-        compoment: dashboardPickingJob, exact: true
-    },
-    {
-        path: "/dashboard/countingjobs",
-        name: "TestRedirect", compoment:
-        dashboardCountingJob, exact: true
-    },
-
 ];
 
 export default routes;
