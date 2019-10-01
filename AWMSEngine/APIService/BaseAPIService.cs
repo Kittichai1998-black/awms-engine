@@ -240,7 +240,7 @@ namespace AWMSEngine.APIService
         {
             //var tokenInfo = !string.IsNullOrEmpty(token) ? ADO.DataADO.GetInstant().SelectBy<amt_Token>("token", token, this.BuVO).FirstOrDefault() : null;
             this.BuVO.Set(BusinessVOConst.KEY_TOKEN_INFO, tokenInfo);
-            this.BuVO.Set(BusinessVOConst.KEY_TOKEN, tokenInfo.Token);
+            this.BuVO.Set(BusinessVOConst.KEY_TOKEN, token);
             this.Logger.LogInfo("token=" + token);
 
             this.BuVO.Set(BusinessVOConst.KEY_APIKEY_INFO, apiKeyInfo);
