@@ -63,7 +63,7 @@ namespace AWMSEngine.Engine.Business.Picking
                                                         disto.BaseQuantity.Value,
                                                         disto.BaseUnitType_ID,
                                                         pstoPick.unitID);
-                    pstoPick.qty -= unitConvert.qty;
+                    pstoPick.qty -= unitConvert.newQty;
                     pstoPick.baseQty -= disto.BaseQuantity.Value;
                     if (pstoPick.baseQty <= 0)
                         pstoPick.eventStatus = StorageObjectEventStatus.PICKED;

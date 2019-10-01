@@ -68,7 +68,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                                     //call to SAP
                                     if (docs.DocumentType_ID == DocumentTypeID.GOODS_RECEIVED)
-                                    {
+                                    {//ดัก empty pallet ไม่ต้องยิงไปZWMRF002
                                         var tanumlists = new List<string> ();
                                         var WorkQueueLists2 = distos.Select(grp => grp.WorkQueue_ID).Distinct().ToList();
                                         WorkQueueLists2.ForEach(wq =>

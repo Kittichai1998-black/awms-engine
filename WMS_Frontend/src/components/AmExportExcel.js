@@ -42,6 +42,8 @@ const LoadWorkbook = (props) => {
             if (isLoading === true) {
                 document.getElementById("btnLoad").click();
             }
+        }else{
+            onToggleLoad(false);
         }
     }, [dataSrc, isLoading]);
 
