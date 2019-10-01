@@ -181,7 +181,7 @@ namespace ProjectAAI.ADO.SAPApi
             {
                 environmentName = getEnvironment,
                 functionName = "ZWMRF004",
-                outTableNames = "OUT_SAP,OUT_SU_BAL",
+                outTableNames = "OUT_SAP",
                 sapLists = new List<SAPReqMulti.SAPList>()
                 {
                     new SAPReqMulti.SAPList()

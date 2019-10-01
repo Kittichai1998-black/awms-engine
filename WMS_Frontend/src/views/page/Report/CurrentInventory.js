@@ -88,6 +88,13 @@ const CurrentInventory = (props) => {
                 }
             })
     }
+    const getAPI = "/v2/GetSPReportAPI?apikey=FREE01"
+        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
+        + "&packName=" + (valueText.packName === undefined || valueText.packName.value === undefined || valueText.packName.value === null ? '' : encodeURIComponent(valueText.packName.value.trim()))
+        + "&batch=" + (valueText.batch === undefined || valueText.batch.value === undefined || valueText.batch.value === null ? '' : encodeURIComponent(valueText.batch.value.trim()))
+        + "&lot=" + (valueText.lot === undefined || valueText.lot.value === undefined || valueText.lot.value === null ? '' : encodeURIComponent(valueText.lot.value.trim()))
+        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+        + "&spname=CURRENTINV_STOSUM";
 
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
@@ -185,7 +192,7 @@ const CurrentInventory = (props) => {
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
                 page={true}
-            // sumwhere={"Unit"}
+                exportApi={getAPI}
             ></AmReport>
         </div>
     )

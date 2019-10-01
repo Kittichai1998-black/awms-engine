@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import AmReport from '../../../components/AmReport'
 import AmButton from '../../../components/AmButton'
-import AmFindPopup from '../../../components/AmFindPopup' 
+import AmFindPopup from '../../../components/AmFindPopup'
 import { apicall } from '../../../components/function/CoreFunction'
 import { withStyles } from '@material-ui/core/styles';
 import styled from 'styled-components'
@@ -57,7 +57,7 @@ const LabelH = styled.label`
 
 
 const StockCard = (props) => {
-    const {t}=useTranslation()
+    const { t } = useTranslation()
     const { classes } = props;
 
     const [datavalue, setdatavalue] = useState([]);
@@ -104,6 +104,15 @@ const StockCard = (props) => {
                 }
             })
     }
+    const getAPI = "/v2/GetSPReportAPI?apikey=FREE01"
+        + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate.value === undefined || valueText.fromDate.value === null ? '' : encodeURIComponent(valueText.fromDate.value))
+        + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
+        + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
+        + "&batch=" + (valueText.batch === undefined || valueText.batch.value === undefined || valueText.batch.value === null ? '' : encodeURIComponent(valueText.batch.value.trim()))
+        + "&lot=" + (valueText.lot === undefined || valueText.lot.value === undefined || valueText.lot.value === null ? '' : encodeURIComponent(valueText.lot.value.trim()))
+        + "&orderNo=" + (valueText.orderNo === undefined || valueText.orderNo.value === undefined || valueText.orderNo.value === null ? '' : encodeURIComponent(valueText.orderNo.value.trim()))
+        + "&movementType=" + (valueText.movementType === undefined || valueText.movementType.value === undefined || valueText.movementType.value === null ? '' : encodeURIComponent(valueText.movementType.value))
+        + "&spname=DAILY_STOCKCARD";
 
     const onHandleChangeInput = (value, dataObject, inputID, fieldDataKey, event) => {
         if (value && value.toString().includes("*")) {
@@ -125,7 +134,7 @@ const StockCard = (props) => {
                     style={{ width: "300px" }}
                     onChange={(value, obj, element, event) => onHandleChangeInput(value, null, "packCode", null, event)}
                 />
-            </FormInline><br/>
+            </FormInline><br />
             <FormInline><LabelH>{t("Batch")} : </LabelH>
                 <AmInput
                     id={"batch"}
@@ -222,6 +231,7 @@ const StockCard = (props) => {
                 totalSize={totalSize}
                 renderCustomButton={customBtnSelect()}
                 page={true}
+                exportApi={getAPI}
             ></AmReport>
         </div>
     )
