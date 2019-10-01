@@ -214,6 +214,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ, pack.BESTQ), //Stock Category 
                             new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneEStatus.GetValueInt()),
                             new KeyValuePair<string, object>(OptionVOConst.OPT_WEBAZ, pack.WEBAZ), //Incubated Time
+                            new KeyValuePair<string, object>(OptionVOConst.OPT_HSDAT, pack.HSDAT), //Date of Manufacture
                             new KeyValuePair<string, object>(OptionVOConst.OPT_SHLD, shld), //Shelf Life Date
                             new KeyValuePair<string, object>(OptionVOConst.OPT_VBELN, pack.VBELN), //sales order 
                             new KeyValuePair<string, object>(OptionVOConst.OPT_INCBD, incb), //Incubated Date

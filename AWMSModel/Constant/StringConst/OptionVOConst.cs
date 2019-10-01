@@ -25,6 +25,7 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_VFDAT = "vfdat";
         public const string OPT_VBELN = "vbeln";
         public const string OPT_VBELN_VL = "vbeln_vl";
+        public const string OPT_HSDAT = "hsdat"; 
         public const string OPT_WEBAZ = "webaz";
         public const string OPT_INCBD = "incubatedate";
         public const string OPT_SHLD = "shelflifedate";
