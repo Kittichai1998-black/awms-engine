@@ -199,7 +199,7 @@ namespace AWMSEngine.Engine.Business.Received
                     PackMaster_ID = packMst.ID.Value,
 
                     Quantity = recItem.quantity,
-                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    UnitType_ID = baseUnitTypeConvt.newUnitType_ID,
                     BaseQuantity = baseQuantity,
                     BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
 

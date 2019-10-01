@@ -220,7 +220,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     PackMaster_ID = packMaster.ID.Value,
 
                     Quantity = packH.qty, 
-                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    UnitType_ID = baseUnitTypeConvt.newUnitType_ID,
                     BaseQuantity = baseQuantity,
                     BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
 

@@ -398,7 +398,7 @@ namespace AWMSEngine.Engine.V2.Business
                 if (qty > 0)
                 {
                     var baseUnit = this.StaticValue.ConvertToBaseUnitByPack(reqVo.scanCode, qty, rmItem.unitID);
-                    rmItem.qty = baseUnit.qty;
+                    rmItem.qty = baseUnit.newQty;
                     rmItem.baseQty = baseUnit.baseQty;
                     rmItem.options = reqVo.options;
                     ADOSto.PutV2(rmItem, this.BuVO);

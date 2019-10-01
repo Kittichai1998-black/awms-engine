@@ -9,6 +9,62 @@ job.names = create_gr,line_notify
 #job.close_gr.cronex = * 0/5 * * * ?
 #job.close_gr.data = 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 job.create_gr.classname = ProjectMRK.Engine.JobService.XMLReaderJob
 job.create_gr.cronex = 0/5 * * * * ?
 job.create_gr.data = 
