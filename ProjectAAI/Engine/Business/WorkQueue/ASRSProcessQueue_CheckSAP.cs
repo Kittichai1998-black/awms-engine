@@ -16,6 +16,7 @@ using AWMSEngine.Engine.V2.Business.WorkQueue;
 using static ProjectAAI.ADO.SAPApi.SAPCriteria;
 using static ProjectAAI.ADO.SAPApi.SAPInterfaceADO;
 using ProjectAAI.ADO.SAPApi;
+using AWMSModel.Constant.StringConst;
 
 namespace ProjectAAI.Engine.Business.WorkQueue
 {
@@ -183,8 +184,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             (string.IsNullOrWhiteSpace(_condi.orderNo) || x.pstoCode == proc.skuCode) &&
                             (string.IsNullOrWhiteSpace(_condi.options) || x.pstoOptions.QryStrContainsKeyValue(_condi.options)) &&
                             (!proc.useExpireDate || (x.pstoExpiryDate.HasValue && x.pstoExpiryDate.Value > DateTime.Today)) &&
-                            (!proc.useShelfLifeDate || (x.pstoOptions.QryStrContainsKey("shelflifedate") && x.pstoOptions.QryStrGetValue("shelflifedate").GetDate().Value >= DateTime.Today)) &&
-                            (!proc.useExpireDate || (x.pstoOptions.QryStrContainsKey("incubatedate") && x.pstoOptions.QryStrGetValue("incubatedate").GetDate().Value < DateTime.Today))
+                            (!proc.useShelfLifeDate || (x.pstoOptions.QryStrContainsKey(OptionVOConst.OPT_SHLD) && x.pstoOptions.QryStrGetValue(OptionVOConst.OPT_SHLD).GetDate().Value >= DateTime.Today)) &&
+                            (!proc.useExpireDate || (x.pstoOptions.QryStrContainsKey(OptionVOConst.OPT_INCBD) && x.pstoOptions.QryStrGetValue(OptionVOConst.OPT_INCBD).GetDate().Value < DateTime.Today))
                         ).ToList().Clone();
 
                         if (_pickStos.Count > 0)
