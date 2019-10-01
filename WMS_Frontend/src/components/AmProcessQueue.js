@@ -323,20 +323,7 @@ const AmProcessQueue = props => {
         }
     }, [warehouseID, dataClears]);
 
-   //useEffect(() => {
-   //         if (window.project === "AAI") {
-   //             console.log("Project AAI")
-   //             Axios.get(createQueryString(docQueryAAI)).then(res => {
-   //                 let docSelection = res.data.datas;
-   //                 setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
-   //             });
-
-   //         }
-   //})
-
-
-
-  const priolity = () => {
+    const priolity = () => {
     let arrPrio = [];
     for (var i = 1; i < 101; i++) {
       arrPrio.push({ label: i, value: i });
@@ -429,7 +416,8 @@ const AmProcessQueue = props => {
     getData(createQueryString(DocumentItem));
   };
   async function getData(qryString) {
-    const res = await Axios.get(qryString).then(res => res);
+      const res = await Axios.get(qryString).then(res => res);
+      //console.log(res.data.datas)
     setDataDocumentItem(res.data.datas);
   }
 
@@ -670,7 +658,6 @@ const AmProcessQueue = props => {
 
     //Advance Condition
     const onChangCheckboxCon = (e, indx) => {
-        console.log(e)
         if (e.checked === true) {
             let dataCheckCon = datacheckboxCon;
             datacheckboxCon[e.value] = e.checked;
@@ -1246,7 +1233,8 @@ const AmProcessQueue = props => {
     }
   };
 
-  const addConditions = () => {
+    const addConditions = () => {
+        console.log(DataDocumentItem)
     var filterDocCode = dataQueue.filter(
       x =>
         x["DataDocumentCode"] ===
@@ -1364,7 +1352,6 @@ const AmProcessQueue = props => {
     dataConfirmQ["processQueues"] = [];
     datasDoc.forEach((a, idx) => {
         a.DataDocumentItem.forEach(y => {
-            console.log(y)
         var conditions = [];
         var orderBys = [];
         var eventStatuses = [];
@@ -1421,28 +1408,59 @@ const AmProcessQueue = props => {
           RamdonCts = y.Randoms;
         } else {
           RandomCt = null;
-        }
-        let processQueuesz = {
-          docID: a.DataDocumentID,
-          docItemID: y.ID,
-          locationCode: y.locationcode ? y.locationcode : null,
-          baseCode: y.palletcode ? y.palletcode : null,
-          skuCode: y.Code ? y.Code : null,
-          priority: y.PriorityDoc ? y.PriorityDoc : 2,
-          useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
-          useExpireDate: y.ExpireDate ? y.ExpireDate : false,
-          useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-          useFullPallet: y.FullPallet ? y.FullPallet : false,
-          baseQty: y.BaseqtyMax
-            ? y.BaseqtyMax
-            : y.BaseQuantity
-            ? y.BaseQuantity
-            : null,
-          percentRandom: RamdonCts ? RamdonCts : RandomCt,
-          eventStatuses: eventStatuses,
-          conditions: conditions,
-          orderBys: orderBys
-        };
+            }
+            let processQueuesz  = null
+
+
+
+            if (window.project === "AAI") {
+                let processQueues = {
+                    docID: a.DataDocumentID,
+                    docItemID: y.ID,
+                    locationCode: y.locationcode ? y.locationcode : null,
+                    baseCode: y.palletcode ? y.palletcode : null,
+                    skuCode: y.palletcode ? null : y.Code ? y.Code : null,
+                    priority: y.PriorityDoc ? y.PriorityDoc : 2,
+                    useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
+                    useExpireDate: y.ExpireDate ? y.ExpireDate : false,
+                    useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
+                    useFullPallet: y.FullPallet ? y.FullPallet : false,
+                    baseQty: y.BaseqtyMax
+                        ? y.BaseqtyMax
+                        : y.BaseQuantity
+                            ? y.BaseQuantity
+                            : null,
+                    percentRandom: RamdonCts ? RamdonCts : RandomCt,
+                    eventStatuses: eventStatuses,
+                    conditions: conditions,
+                    orderBys: orderBys
+                };
+                processQueuesz = processQueues
+
+            } else {
+                let processQueues = {
+                    docID: a.DataDocumentID,
+                    docItemID: y.ID,
+                    locationCode: y.locationcode ? y.locationcode : null,
+                    baseCode: y.palletcode ? y.palletcode : null,
+                    skuCode: y.Code ? y.Code : null,
+                    priority: y.PriorityDoc ? y.PriorityDoc : 2,
+                    useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
+                    useExpireDate: y.ExpireDate ? y.ExpireDate : false,
+                    useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
+                    useFullPallet: y.FullPallet ? y.FullPallet : false,
+                    baseQty: y.BaseqtyMax
+                        ? y.BaseqtyMax
+                        : y.BaseQuantity
+                            ? y.BaseQuantity
+                            : null,
+                    percentRandom: RamdonCts ? RamdonCts : RandomCt,
+                    eventStatuses: eventStatuses,
+                    conditions: conditions,
+                    orderBys: orderBys
+                };
+                processQueuesz = processQueues
+            }
 
         dataConfirmQ["processQueues"].push(processQueuesz);
       });
@@ -1451,7 +1469,6 @@ const AmProcessQueue = props => {
     //dataConfirmQ["apiKey"] = "WCS_KEY"
     dataConfirmQ["desASRSLocationCode"] = null;
       dataConfirmQ["lockNotExistsRandom"] = props.lockRandom ? true : false;
-      console.log(dataConfirmQ)
     if (dataConfirmQ !== undefined) {
       Axios1.post(window.apipath + "/v2/process_wq", dataConfirmQ).then(res => {
         if (res.data._result.status === 1) {
@@ -1554,33 +1571,19 @@ const AmProcessQueue = props => {
                             })
                           : null}
 
-                        <AmTable
-                          data={dataTBs === undefined ? [] : dataTBs}
-                          columns={props.columnConfirm}
-                          minRows={1}
-                          sumFooter={SumTables(a.pickStos)}
-                          reload={reload}
+                            < AmTable
+                                data={dataTBs === undefined ? [] : dataTBs}
+                                columns={props.columnConfirm}
+                                minRows={1}
+                                sumFooter={SumTables(a.pickStos)}
+                                reload={reload}
                                 sortable={false}
-                                pageSize={1}
+                                //pageSize={1}
                                 currentPage={0}
-                          getTrProps={(state, rowInfo) => {
-                            let result = false;
-                            let rmv = false;
-                            let classStatus = "";
-                            if (rowInfo && rowInfo.row) {
-                              result = true;
-                              if (rowInfo.original.StatusData === 2) {
-                                rmv = true;
-                                classStatus = "working";
-                              } else {
-                                rmv = false;
-                              }
-                            }
-                            if (result && rmv)
-                              return { className: classStatus };
-                            else return {};
-                          }}
-                        ></AmTable>
+                                pageSize={1000}
+
+                            ></AmTable>
+
 
                         {/*a.lockStos ? < div style={{ paddingTop: "10px" }}>
                                                     < AmTable
@@ -1656,7 +1659,7 @@ const AmProcessQueue = props => {
     confirmProcess["desASRSLocationCode"] = null;
     confirmProcess["desASRSAreaCode"] = dataConfirmQ["desASRSAreaCode"];
     confirmProcess["processResults"] = processResultsCon;
-    //console.log(confirmProcess)
+
     Axios1.post(window.apipath + "/v2/confirm_process_wq", confirmProcess).then(
       res => {
         if (res.data._result.status === 1) {
@@ -1885,7 +1888,9 @@ const AmProcessQueue = props => {
               {value === 0 ? (
                 <div>
                   {" "}
-                  {[...DataDocumentItem].map((x, idx) => {
+
+               {[...DataDocumentItem].map((x, idx) => {
+                 
                     if (!dataSource[idx]) dataSource[idx] = [x];
 
                     if (!dataSorting[idx]) {
@@ -2111,7 +2116,8 @@ const AmProcessQueue = props => {
                                       if (props.OptionGIdoc === true) {
                                           if (x.Options !== undefined || x.Options !== null) {
                                               var qryStr2 = queryString.parse(x.Options)
-                                             var  palletcode = qryStr2["basecode"] 
+                                              var palletcode = qryStr2["basecode"]
+                                              DataDocumentItem[idx]["palletcode"] = palletcode;
                                               var RecieveDoc = qryStr2["bestq_ur"]
                                                     if (RecieveDoc === "Y") {
                                                         RecieveFromDoc = true
