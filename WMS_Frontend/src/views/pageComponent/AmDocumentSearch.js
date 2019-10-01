@@ -75,7 +75,7 @@ const AmDocumentSearch = props => {
           component: (condition, rowC, idx) => {
             return (
               <div key={idx} style={{ display: "inline-flex" }}>
-                <label style={{ padding: "10px 0 0 20px", width: "150px" }}>
+                <label style={{ padding: "0px 0 0 20px", width: "150px" }}>
                   {t(row.label)} :{" "}
                 </label>
                 <AmInput
