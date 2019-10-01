@@ -74,7 +74,7 @@ namespace AMWUtil.Logger
         {
             return GetLogger(refID.ToString(), serviceName.ToString());
         }
-        public static AMWLogger GetLogger(string logName, string serviceName)
+        public static AMWLogger GetLogger(string logName, string serviceName, bool isLogging = true)
         {
             lock (InitLock)
             {
@@ -86,6 +86,7 @@ namespace AMWUtil.Logger
                 dicMapKey.Add("{MachineName}", System.Environment.MachineName);
                 dicMapKey.Add("{Date}", DateTime.Now.ToString("yyyyMMdd"));
                 dicMapKey.Add("{LogName}", logName);
+                dicMapKey.Add("{RefID}", logName);
                 dicMapKey.Add("{ServiceName}", serviceName);
 
                 logManager.LogUri = logManager.LogUriFormat.EndsWith("/") || logUriFormat.EndsWith("\\") ? logUriFormat : logUriFormat + "/";
@@ -106,7 +107,7 @@ namespace AMWUtil.Logger
 
                 //logManager.ClearLogUnWrite();
                 string keyFile = logManager.LogUri + logManager.LogFileName;
-                AMWLogger logger = new AMWLogger(keyFile, logName, serviceName);
+                AMWLogger logger = new AMWLogger(keyFile, logName, serviceName, isLogging);
                 return logger;
 
             }
@@ -120,29 +121,35 @@ namespace AMWUtil.Logger
                 {
                     while (true)
                     {
-                        for (KeyValuePair<string, string>? msg = LogMessages.FirstOrDefault();
-                                msg.HasValue && msg.Value.Key != null;)
+                        try
                         {
-                            if (!msg.Value.Key.Split('/').Last().ToUpper().StartsWith("FREE") &&
-                                !msg.Value.Key.Split('\\').Last().ToUpper().StartsWith("FREE"))
+                            for (KeyValuePair<string, string>? msg = LogMessages.FirstOrDefault();
+                                   msg.HasValue && msg.Value.Key != null;)
                             {
-                                using (var fw = new StreamWriter(msg.Value.Key, true))
+                                //if (!msg.Value.Key.Split('/').Last().ToUpper().StartsWith("FREE") &&
+                                //    !msg.Value.Key.Split('\\').Last().ToUpper().StartsWith("FREE"))
                                 {
-                                    fw.WriteLine(msg.Value.Value);
-                                    fw.Flush();
+                                    using (var fw = new StreamWriter(msg.Value.Key, true))
+                                    {
+                                        fw.WriteLine(msg.Value.Value);
+                                        fw.Flush();
+                                    }
                                 }
+                                LogMessages.RemoveAt(0);
+                                msg = LogMessages.FirstOrDefault();
                             }
-                            LogMessages.RemoveAt(0);
-                            msg = LogMessages.FirstOrDefault();
                         }
-                        Thread.Sleep(200);
-                        lock (LogMessagesTMPLock)
+                        finally
                         {
-                            if (LogMessagesTMP.Count() > 0)
+                            Thread.Sleep(200);
+                            lock (LogMessagesTMPLock)
                             {
-                                LogMessages = LogMessagesTMP;
-                                //LogMessages.AddRange(LogMessagesTMP);
-                                LogMessagesTMP = new List<KeyValuePair<string, string>>();
+                                if (LogMessagesTMP.Count() > 0)
+                                {
+                                    LogMessages = LogMessagesTMP;
+                                    //LogMessages.AddRange(LogMessagesTMP);
+                                    LogMessagesTMP = new List<KeyValuePair<string, string>>();
+                                }
                             }
                         }
                     }
