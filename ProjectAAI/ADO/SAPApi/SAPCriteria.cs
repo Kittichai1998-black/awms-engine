@@ -239,12 +239,21 @@ namespace ProjectAAI.ADO.SAPApi
             public string BESTQ_QI;
             /// <summary>Include Stock Category = S – Blocked Stock, ระบุ Y – Include, N – Exclude</summary>
             public string BESTQ_BLK;
+            /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
+            public string GI_DOC;
+        }
+         
+        public class ZSWMRF005_IN_REQ : IN_REQ
+        {
+            /// <summary>Sales Instruction</summary>
+            public string VBELN; 
+        }
+        public class ZSWMRF006_IN_REQ : IN_REQ
+        {
             /// <summary>Sales Instruction</summary>
             public string VBELN;
             /// <summary>Delivery Item</summary>
             public long? POSNR;
-            /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
-            public string GI_DOC;
         }
         public class OUT_SU_BAL
         {

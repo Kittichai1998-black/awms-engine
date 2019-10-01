@@ -1,5 +1,4 @@
 import * as signalR from '@aspnet/signalr';
-
 import React, { useState, useEffect } from "react";
 import Fullscreen from "react-full-screen";
 import AmInput from '../../../../components/AmInput';
@@ -18,6 +17,7 @@ import AmDialogs from '../../../../components/AmDialogs'
 import IconButton from '@material-ui/core/IconButton';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import IconLock from '@material-ui/icons/Lock';
 import Moment from 'moment';
 import { useTranslation } from 'react-i18next'
 import Axios1 from 'axios'
@@ -495,7 +495,7 @@ const Scanbarcode = (props) => {
         return <CardContent style={{ height: "60px",  }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
-                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
+                    <Typography  style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
                 </Grid>
             </Grid>
         </CardContent>
@@ -657,6 +657,8 @@ const Scanbarcode = (props) => {
 
                                                 </FormInline>
                                             </Border>
+                                            <div>
+                                                <IconLock></IconLock>
                                         <AmButton styleType="confirm" onClick={()=> {
                                             if(!lockStateRight){
                                                 lockGateID.push(areaGate)
@@ -665,7 +667,9 @@ const Scanbarcode = (props) => {
                                             }
                                             databar.lockGateID = lockGateID
                                             setdatabar({...databar})
-                                            setLockStateLeft(!lockStateLeft)}}>Lock</AmButton>
+                                                    setLockStateLeft(!lockStateLeft)
+                                                }}>Lock</AmButton>
+                                            </div>
                                         </Card></Flash></div> : null}
 
                                     </Card>

@@ -36,7 +36,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 bool checkEmpPallet = false;
                 if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
                 {
-                    checkEmpPallet = StaticValueManager.GetInstant().PackMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
+                    checkEmpPallet = StaticValueManager.GetInstant().SKUMasterEmptyPallets.Any(x => x.Code == reqVO.mappingPallets[0].code);
                 }
 
 
@@ -94,14 +94,16 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     lengthM = reqVO.length,
                     heightM = reqVO.height,
                     widthM = reqVO.width,
-                    ref2 = "I00"
+                    ref2 = checkEmpPallet ? null : "I00"
                 };
 
                 var baseStoID = AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(baseSto, buVO);
                 if (checkEmpPallet)
                 {
                     //check จาก code ที่อยู่ใน PalletDataCriteriaV2
-                    var PackMasterEmptyPallets = StaticValueManager.GetInstant().PackMasterEmptyPallets.FirstOrDefault();
+                    var PackMasterEmptyPallets = AWMSEngine.ADO.DataADO.GetInstant().SelectByCodeActive<ams_PackMaster>(reqVO.mappingPallets[0].code, buVO);
+
+                   // var PackMasterEmptyPallets = StaticValueManager.GetInstant().SKUMasterEmptyPallets.FirstOrDefault();
                     var unit = StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(x => x.ID == PackMasterEmptyPallets.UnitType_ID);
                     var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == PackMasterEmptyPallets.ObjectSize_ID);
 
@@ -190,8 +192,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == _pack.ObjectSize_ID);
                         //var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
 
-                        DateTime? productDate = pack.HSDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.HSDAT,"yyyyMMdd", CultureInfo.InvariantCulture); //"20190527"
-                        DateTime? expiryDate = pack.VFDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.VFDAT,"yyyyMMdd", CultureInfo.InvariantCulture); //"20190527"
+                        DateTime? productDate = pack.HSDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.HSDAT,"yyyyMMdd", CultureInfo.InvariantCulture); //"20190527" Date of Manufacture
+                        DateTime? expiryDate = pack.VFDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.VFDAT,"yyyyMMdd", CultureInfo.InvariantCulture); //"20190527" Shelf Life 
+                        var shld = expiryDate == null ? null : DateTimeUtil.ToISOUTCString(expiryDate.Value);
                         DateTime? incubatedate = productDate == null ? (DateTime?)null : productDate.Value.AddDays(Convert.ToDouble(pack.WEBAZ) - 1); 
                         var incb = incubatedate == null ? null : DateTimeUtil.ToISOUTCString(incubatedate.Value);
                         DateTime? fvdt1 = pack.FVDT1 == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.FVDT1, "yyyyMMdd", CultureInfo.InvariantCulture);
@@ -211,8 +214,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ, pack.BESTQ), //Stock Category 
                             new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneEStatus.GetValueInt()),
                             new KeyValuePair<string, object>(OptionVOConst.OPT_WEBAZ, pack.WEBAZ), //Incubated Time
+                            new KeyValuePair<string, object>(OptionVOConst.OPT_HSDAT, pack.HSDAT), //Date of Manufacture
+                            new KeyValuePair<string, object>(OptionVOConst.OPT_SHLD, shld), //Shelf Life Date
                             new KeyValuePair<string, object>(OptionVOConst.OPT_VBELN, pack.VBELN), //sales order 
-                            new KeyValuePair<string, object>(OptionVOConst.OPT_INCBD, incb),
+                            new KeyValuePair<string, object>(OptionVOConst.OPT_INCBD, incb), //Incubated Date
                             new KeyValuePair<string, object>(OptionVOConst.OPT_FVDT1, approveddate) //approved date 
                             );
 
