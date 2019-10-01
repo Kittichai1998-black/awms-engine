@@ -134,6 +134,8 @@ const ConsolePankan = (props) => {
     const [msgDialogErr, setMsgDialogErr] = useState("");
     const [valuesGuide, setvaluesGuide] = useState(false);
     const [dataGiude, setdataGiude] = useState();
+    const [qtypick, setqtypick] = useState();
+    const [qtyconsole, setqtyconsole] = useState();
 
     const Customer = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -167,7 +169,6 @@ const ConsolePankan = (props) => {
 
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
-        console.log(value)
         if (value === null) {
             setMsgDialogErr("Customer invalid")
             setStateDialogErr(true)
@@ -188,7 +189,6 @@ const ConsolePankan = (props) => {
         if (value === null) {
             setMsgDialogErr("Document invalid")
             setStateDialogErr(true)
-
         } else {
 
             if (value !== null || value != undefined) {
@@ -203,11 +203,11 @@ const ConsolePankan = (props) => {
     };
 
     const onChangeEditorBarcodepick = (e) => {
-      
+        setbarcodePicks(e)
     };
 
     const onChangeEditorQtypick = (e) => {
-
+        setqtypick(e)
     };
 
     const onChangeEditorBarcodeConsole = (e) => {
@@ -233,42 +233,84 @@ const ConsolePankan = (props) => {
     };
 
     const onclickPick = () => {
-        let datas = {
-            //"desBase": valueInput.desbase,
-            //"souBase": valueInput.soubase,
-            //"souPack": valueInput.soupack,
-            //"quantity": valueInput.qty,
-            //"areaID": 1,
-            //"warehouseID": 1
+        if (barcodePicks === undefined) {
+            setMsgDialogErr("Barcode invalid")
+            setStateDialogErr(true)
+
+        } else if (qtypick === undefined ) {
+            setMsgDialogErr("Qty invalid")
+            setStateDialogErr(true)
+
+        } else {
+
+            Axios.post(window.apipath + '/v2/TransferPanKanAPI').then((res) => {
+                if (res.data._result.status === 1) {
+                    let datas = res.data
+                    setNewStorageObjPick(<AmListSTORenderer
+                        dataSrc={datas}
+
+                    />);
+
+                } else {
+
+
+                }
+            })
+
+
         }
-        Axios.post(window.apipath + '/v2/TransferPanKanAPI', datas).then((res) => {
-            if (res.data._result.status === 1) {
-                let datas = res.data
-                setNewStorageObjPick(<AmListSTORenderer
-                    dataSrc={datas}
 
-                />);
-               
-            } else {
-   
 
-            }
-        })
+      
     };
 
     const onclickPickClear = () => {
 
     };
 
-    const onChangeEditorpickingConsole = () => {
+    const onChangeEditorpickingConsole = (e) => {
+        setbarcodeConsole(e)
+
+    };
+
+    const onChangeEditorQtyConsole = (e) => {
+        setqtyconsole(e)
+
+    };
+
+    const onclickConsole = () => {
+        if (barcodeConsole === undefined) {
+            setMsgDialogErr("Barcode invalid")
+            setStateDialogErr(true)
+
+        } else if (qtyconsole === undefined) {
+            setMsgDialogErr("Qty invalid")
+            setStateDialogErr(true)
+
+        } else {
+
+            Axios.post(window.apipath + '/v2/TransferPanKanAPI').then((res) => {
+                if (res.data._result.status === 1) {
+                    let datas = res.data
+                    setNewStorageObjConsole(<AmListSTORenderer
+                        dataSrc={datas}
+
+                    />)
+                } else {
+
+
+                }
+            })
+
+
+        }
 
 
     };
 
-    const onChangeEditorQtyConsole = () => {
+    const onclickConsoleClear = () => {
 
-
-    };
+    }
 
  return (
      <div>
@@ -473,14 +515,14 @@ const ConsolePankan = (props) => {
                                  style={{ width: 100, marginLeft: "10px" }}
                                  styleType="info"
                                  //disable={e.original.ID > 0 ? false : true}
-                                 onClick={onclickPick}
+                                 onClick={onclickConsole}
                              >
                                  {"Post"}</AmButton>
                              <AmButton
                                  style={{ width: 100, marginLeft: "10px" }}
                                  styleType="info"
                                  //disable={e.original.ID > 0 ? false : true}
-                                 onClick={onclickPickClear}
+                                 onClick={onclickConsoleClear}
                              >
                                  {"Clear"}</AmButton>
                          </FormInline>
