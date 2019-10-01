@@ -273,7 +273,7 @@ namespace AWMSEngine.APIService
             this.Logger.LogInfo("AuthenAuthorize!");
 
 
-            ADO.TokenADO.GetInstant().Authen(tokenInfo.Token, apiKey, this.APIServiceID, this.BuVO);
+            ADO.TokenADO.GetInstant().Authen(token, apiKey, this.APIServiceID, this.BuVO);
 
 
             if (!string.IsNullOrEmpty(apiKey) && apiKeyInfo == null)
