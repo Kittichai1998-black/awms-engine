@@ -85,7 +85,7 @@ namespace AWMSEngine.APIService
             public string _apikey;
         }
 
-        public dynamic Execute(dynamic request, int retryCount = 0)
+        public dynamic Execute(dynamic request, int retryCountdown = 1)
         {
             this.BuVO = new VOCriteria();
             dynamic response = new { };
@@ -191,7 +191,7 @@ namespace AWMSEngine.APIService
             {
                 var e = new AMWException(this.Logger, AMWExceptionCode.S0004, ex.Message);
                 this.Logger.LogError(ex.StackTrace);
-                result.status = retryCount == 0 ? -1 : 0;
+                result.status = retryCountdown > 0 ? -1 : 0;
                 result.code = e.GetAMWCode();
                 result.message = e.GetAMWMessage();
                 result.stacktrace = ex.StackTrace;
@@ -245,7 +245,7 @@ namespace AWMSEngine.APIService
                 this.Logger.LogFatal("############## RETRY_DEADLOCK_TRANSACTION ##############");
                 this.Logger.LogFatal("##############       SLEEP 1000 MS        ##############");
                 Thread.Sleep(1000);
-                return this.Execute(request, retryCount + 1);
+                return this.Execute(request, retryCountdown - 1);
             }
             else
                 return response;
