@@ -18,6 +18,7 @@ import IconButton from '@material-ui/core/IconButton';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import IconLock from '@material-ui/icons/Lock';
+import IconLockOpen from '@material-ui/icons/LockOpen';
 import Moment from 'moment';
 import { useTranslation } from 'react-i18next'
 import Axios1 from 'axios'
@@ -486,7 +487,7 @@ const Scanbarcode = (props) => {
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
                     <FormInline>
-                        <div style={{ marginLeft:"10px" }}> <IconLock></IconLock></div>
+                        <div style={{ marginLeft: "10px" }}> <IconLockOpen></IconLockOpen></div>
                         <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
                             {getGate}</Typography>
                     </FormInline>
@@ -506,11 +507,13 @@ const Scanbarcode = (props) => {
     }
 
     const HeadLock = (getGate) => {
-        return <CardContent style={{ height: "60px", background: "#fcfcfc" }} >
+        return <CardContent style={{ height: "60px", background: "#bdbdbd" }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
-                    {console.log(lockStateRight)}
-                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
+                    <FormInline>
+                        <div style={{ marginLeft: "10px" }}> <IconLock></IconLock></div>
+                        <Typography style={{ color: "#212121" }} variant="h4" component="h3">{getGate}</Typography>
+                    </FormInline>
                 </Grid>
             </Grid>
         </CardContent>
@@ -642,7 +645,9 @@ const Scanbarcode = (props) => {
                             <div style={{ paddingTop: "30px", marginRight: "5px" }}>
                                 <Card>
                                     <div>
-                                        {gateLeft === true ? gateLeft === true ? <Flash>{HeadGateA(area1 ? area1 : "")}</Flash>
+                                        {gateLeft === true ? gateLeft === true ?
+                                            lockStateRight === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
+                                            <Flash>{HeadGateA(area1 ? area1 : "")}</Flash>
                                             : <div>{HeadGateB(area1 ? area1 : "")}</div> :
                                             <div>{HeadGateB(area1 ? area1 : "")}</div>}
                                     </div>
@@ -699,7 +704,9 @@ const Scanbarcode = (props) => {
                             <div style={{ paddingTop: "30px", marginLeft: "5px" }}>
                                 <Card >
                                     <div>
-                                        {gateRight === true ? <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
+                                        {gateRight === true ?
+                                            lockStateRight === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
+                                            <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
                                             : <div>{HeadGateB(area2 ? area2 : "")}</div>}
                                     </div>
                                 </Card>
