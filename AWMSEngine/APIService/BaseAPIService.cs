@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AWMSEngine.APIService
@@ -84,7 +85,7 @@ namespace AWMSEngine.APIService
             public string _apikey;
         }
 
-        public dynamic Execute(dynamic request)
+        public dynamic Execute(dynamic request, int retryCountdown = 1)
         {
             this.BuVO = new VOCriteria();
             dynamic response = new { };
@@ -186,6 +187,17 @@ namespace AWMSEngine.APIService
                 result.logref = this.Logger == null ? string.Empty : this.Logger.LogRefID;
                 this.RollbackTransaction();
             }
+            catch (SqlException ex) when (ex.Number == 1205)
+            {
+                var e = new AMWException(this.Logger, AMWExceptionCode.S0004, ex.Message);
+                this.Logger.LogError(ex.StackTrace);
+                result.status = retryCountdown > 0 ? -1 : 0;
+                result.code = e.GetAMWCode();
+                result.message = e.GetAMWMessage();
+                result.stacktrace = ex.StackTrace;
+                result.logref = this.Logger == null ? string.Empty : this.Logger.LogRefID;
+                this.RollbackTransaction();
+            }
             catch (Exception ex)
             {
                 var e = new AMWException(this.Logger, AMWExceptionCode.U0000, ex.Message);
@@ -222,12 +234,21 @@ namespace AWMSEngine.APIService
                 });
                 string _response_str = ObjectUtil.Json(response);
                 this.Logger.LogInfo("response=" + _response_str);
-                this.Logger.LogInfo("############## END TRANSACTION ##############");
+                this.Logger.LogInfo("############## END_TRANSACTION ##############");
 
                 if (!string.IsNullOrEmpty(apiKey))
                     result.stacktrace = null;
             }
-            return response;
+
+            if ((int)response._result.status == -1)
+            {
+                this.Logger.LogFatal("############## RETRY_DEADLOCK_TRANSACTION ##############");
+                this.Logger.LogFatal("##############       SLEEP 1000 MS        ##############");
+                Thread.Sleep(1000);
+                return this.Execute(request, retryCountdown - 1);
+            }
+            else
+                return response;
         }
 
         //private void Permission(string token, string apiKey, int APIServiceID)

@@ -8,7 +8,7 @@ import axios from "axios";
 import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
 
-const CreateDocGISTGT = props => {
+const CreateDocPIReworkSTGT = props => {
   const [dataWarehouse, setDataWarehouse] = useState("");
   const [dataMovementType, setDataMovementType] = useState("");
   const [dataTest, setDataTest] = useState([]);
@@ -19,6 +19,7 @@ const CreateDocGISTGT = props => {
         setDataWarehouse(row.data.datas[0].Name);
       }
     });
+
     Axios.get(createQueryString(MovementTypeQuery)).then(res => {
       if (res.data.datas) {
         setDataMovementType(res.data.datas[0].Name);
@@ -27,7 +28,7 @@ const CreateDocGISTGT = props => {
   }, []);
 
   useEffect(() => {
-    if (dataWarehouse !== "" && dataMovementType !== "") {
+    if (dataWarehouse !== "") {
       const headerCreates = [
         [
           { label: "Document No.", type: "labeltext", key: "", texts: "-" },
@@ -38,8 +39,8 @@ const CreateDocGISTGT = props => {
             label: "Movement Type",
             type: "labeltext",
             key: "movementTypeID",
-            texts: dataMovementType,
-            valueTexts: "1012"
+            texts: "FG_REWORK_WM",
+            valueTexts: "1061"
           },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
@@ -52,13 +53,11 @@ const CreateDocGISTGT = props => {
             valueTexts: "1"
           },
           {
-            label: "Destination Customer",
-            key: "desCustomerID",
-            type: "dropdown",
-            pair: "ID",
-            idddl: "desCustomerID",
-            queryApi: CustomerQuery,
-            fieldLabel: ["Code", "Name"]
+            label: "Destination Warehouse",
+            type: "labeltext",
+            key: "desWarehouseID",
+            texts: dataWarehouse,
+            valueTexts: "1"
           }
         ],
         [
@@ -79,7 +78,7 @@ const CreateDocGISTGT = props => {
           columns={columns}
           columnEdit={columnEdit}
           apicreate={apicreate}
-          createDocType={"issue"}
+          createDocType={"audit"}
           history={props.history}
           apiRes={apiRes}
         />
@@ -110,11 +109,12 @@ const CreateDocGISTGT = props => {
     l: 100,
     all: ""
   };
-  const CustomerQuery = {
-    queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Customer",
-    q: '[{ "f": "Status", "c":"<", "v": 2},]',
-    f: "ID,Code,Name",
+
+  const AreaLocationMaster = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "AreaLocationMaster",
+    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    f: "ID,Code AS locationcode,Name,Code",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
     sk: 0,
@@ -124,7 +124,7 @@ const CreateDocGISTGT = props => {
   const MovementTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "MovementType",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1012}]',
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1041}]',
     f: "ID,Code,Name",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -152,7 +152,17 @@ const CreateDocGISTGT = props => {
   const columnEdit = [
     { Header: "Pallet Code", accessor: "palletcode", type: "input" },
     {
-      Header: "SKU Code",
+      Header: "Location",
+      accessor: "locationcode",
+      type: "findPopUp",
+      pair: "locationcode",
+      idddl: "locationcode",
+      queryApi: AreaLocationMaster,
+      fieldLabel: ["Code", "Name"],
+      columsddl: columsFindpopUp
+    },
+    {
+      Header: "SKU Item",
       accessor: "SKUItems",
       type: "findPopUp",
       pair: "skuCode",
@@ -161,22 +171,33 @@ const CreateDocGISTGT = props => {
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
     },
-    { Header: "Order NO", accessor: "orderNo", type: "input" },
-    { Header: "Quantity", accessor: "quantity", type: "inputNum" }
+    { Header: "OrderNO", accessor: "orderNo", type: "input" },
+    {
+      Header: "Counting (%)",
+      accessor: "qtyrandom",
+      type: "inputNum",
+      TextInputnum: "%"
+    }
   ];
 
   const columns = [
     { Header: "Pallet Code", accessor: "palletcode", width: 100 },
+    { Header: "Location", accessor: "locationcode", width: 100 },
     { Header: "SKU Item", accessor: "SKUItems" },
     { Header: "Order NO", accessor: "orderNo", width: 100 },
-    { Header: "Quantity", accessor: "quantity", width: 70 },
+    { Header: "Counting (%)", accessor: "qtyrandom", width: 100 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];
 
-  const apicreate = "/v2/CreateGIDocAPI/"; //API ���ҧ Doc
-  const apiRes = "/issue/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
+  const apicreate = "/v2/CreateADDocAPI/"; //API ���ҧ Doc
+  const apiRes = "/counting/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
 
-  return <div>{table}</div>;
+  return (
+    <div>
+      {table}
+      <div />
+    </div>
+  );
 };
 
-export default CreateDocGISTGT;
+export default CreateDocPIReworkSTGT;
