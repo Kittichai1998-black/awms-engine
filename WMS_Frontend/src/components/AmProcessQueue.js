@@ -241,7 +241,6 @@ const AmProcessQueue = props => {
         t: "Document",
         q: "[{ 'f': 'Sou_Warehouse_ID', c:'=', 'v': " +
             warehouseID +
-            warehouseID +
             "},{ 'f': 'Status', c:'=', 'v': 1},{ 'f': 'EventStatus', c:'=', 'v': 10},{ 'f': 'DocumentType_ID', c:'=', 'v': " +
             props.DocType +
             "}]",
