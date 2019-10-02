@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from "react";
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { apicall, createQueryString, Clone } from '../../components/function/CoreFunction2';
+import { apicall, createQueryString, Clone } from '../../components/function/CoreFunction';
 import ToListTree from '../../components/function/ToListTree';
 import AmInput from "../../components/AmInput";
 import AmButton from "../../components/AmButton";
