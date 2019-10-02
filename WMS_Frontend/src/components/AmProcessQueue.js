@@ -2079,8 +2079,8 @@ const AmProcessQueue = props => {
                       onChangeRandom(es, idx, qtyrandoms);
                     }
 
-                                        //if (props.fullPallets === true )
-                                        //    onChangCheckboxConsFull(null, null, idx);
+                                        if (props.fullPallets === true )
+                                            onChangCheckboxConsFull(null, null, idx);
 
                                         if (props.receives === true || props.defaultExpireDate === true)
                                             onChangCheckboxConsRecieve(null, null, idx);
