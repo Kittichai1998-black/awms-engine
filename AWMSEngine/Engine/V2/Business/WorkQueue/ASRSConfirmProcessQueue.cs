@@ -45,10 +45,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 public string pstoOrderNo;
                 public string pstoOptions;
 
-                public decimal pstoQty;
-                public long pstoUnitID;
-                public decimal pstoBaseQty;
-                public long pstoBaseUnitID;
+                public decimal pickQty;
+                public long pickUnitID;
+                public decimal pickBaseQty;
+                public long pickBaseUnitID;
 
                 public bool useFullPick;
             }
@@ -143,10 +143,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     Sou_StorageObject_ID = x.pstoID,
                     Des_StorageObject_ID = null,
                     DocumentItem_ID = x.docItemID,
-                    Quantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick ? null : (decimal?)x.pstoQty,// เซตค่าตอน DoneWQ
-                    BaseQuantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick ? null : (decimal?)x.pstoBaseQty,// เซตค่าตอน DoneWQ
-                    UnitType_ID = x.pstoUnitID,
-                    BaseUnitType_ID = x.pstoBaseUnitID,
+                    Quantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick ? null : (decimal?)x.pickQty,// เซตค่าตอน DoneWQ
+                    BaseQuantity = reqVO.isSetQtyAfterDoneWQ && !rsto.lockOnly && !x.useFullPick ? null : (decimal?)x.pickBaseQty,// เซตค่าตอน DoneWQ
+                    UnitType_ID = x.pickUnitID,
+                    BaseUnitType_ID = x.pickBaseUnitID,
                     Status = rsto.lockOnly ? EntityStatus.ACTIVE : EntityStatus.INACTIVE,
                     WorkQueue_ID = rsto.workQueueID,
                 }).ToList();
@@ -266,7 +266,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             batch = x.pstoBatch,
                             lot = x.pstoLot,
                             skuCode = x.pstoCode,
-                            skuQty = x.pstoBaseQty
+                            skuQty = x.pickBaseQty
                         }).ToList()
                     }
 
@@ -311,10 +311,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                     pstoID = z.pstoID,
                                     pstoCode = z.pstoCode,
 
-                                    pstoQty = z.pstoQty,
-                                    pstoBaseQty = z.pstoBaseQty,
-                                    pstoUnitID = z.pstoUnitID,
-                                    pstoBaseUnitID = z.pstoBaseUnitID,
+                                    pickQty = z.pickQty,
+                                    pickBaseQty = z.pickBaseQty,
+                                    pickUnitID = z.pstoUnitID,
+                                    pickBaseUnitID = z.pstoBaseUnitID,
 
                                     useFullPick = z.useFullPick
                                 });
@@ -340,10 +340,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                             pstoID = z.pstoID,
                                             pstoCode = z.pstoCode,
 
-                                            pstoQty = z.pstoQty,
-                                            pstoBaseQty = z.pstoBaseQty,
-                                            pstoUnitID = z.pstoUnitID,
-                                            pstoBaseUnitID = z.pstoBaseUnitID,
+                                            pickQty = z.pickQty,
+                                            pickBaseQty = z.pickBaseQty,
+                                            pickUnitID = z.pstoUnitID,
+                                            pickBaseUnitID = z.pstoBaseUnitID,
 
                                         }},
                                     priority = y.priority,

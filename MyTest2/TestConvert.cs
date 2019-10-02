@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AMWUtil.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
@@ -32,9 +33,10 @@ namespace TestConvert
         [Fact]
         public void Test3()
         {
-            var intlist = new List<int>() { 1, 2, 3, 6, 7, 8, 9, 10, 14 };
-            var res = AMWUtil.Common.ConvertUtil.ToRanges(intlist);
-            sysout.WriteLine(string.Join(",", res));
+            var res = ObjectUtil.GenUniqID();
+            sysout.WriteLine(res);
+            sysout.WriteLine(res);
+            sysout.WriteLine(res);
         }
     }
 

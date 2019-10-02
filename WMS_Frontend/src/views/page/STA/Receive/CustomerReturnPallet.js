@@ -48,7 +48,7 @@ const CustomerReturnPallet = (props) => {
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '96', label: "PARTIAL" }
+                { value: '96', label: "RETURN" }
             ],
             "defaultValue": { value: '96', disabled: true }
         }
