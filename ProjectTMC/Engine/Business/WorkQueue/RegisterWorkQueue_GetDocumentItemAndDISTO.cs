@@ -220,7 +220,7 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     PackMaster_ID = packMaster.ID.Value,
 
                     Quantity = packH.qty, 
-                    UnitType_ID = baseUnitTypeConvt.unitType_ID,
+                    UnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
                     BaseQuantity = baseQuantity,
                     BaseUnitType_ID = baseUnitTypeConvt.baseUnitType_ID,
 
