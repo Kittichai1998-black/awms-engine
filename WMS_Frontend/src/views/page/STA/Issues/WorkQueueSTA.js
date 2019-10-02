@@ -123,8 +123,8 @@ const WorkQueueSTA = (props) => {
             history={props.history}
             apiwarehouse={Warehouse}
             advanceCondition={true}
-            fullPallet={true}
-            receive={true}
+            fullPallets={true}
+            receives={true}
             priolity={Priolity}
             DocType={1002}
             docType={"issue"}

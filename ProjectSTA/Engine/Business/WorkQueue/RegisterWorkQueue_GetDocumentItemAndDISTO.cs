@@ -39,7 +39,14 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             //return picking
             else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
             {
-                
+                var stoEmp = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+                if(stoEmp.Any(x=> x.code == "EMPTYPALLET"))
+                {
+                    docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
+
+                    if (docItems.Count() == 0)
+                        throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+                }
             }
             else
             {

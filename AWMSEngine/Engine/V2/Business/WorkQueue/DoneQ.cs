@@ -137,7 +137,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else if (queueTrx.IOType == IOType.OUTPUT && docs.DocumentType_ID != DocumentTypeID.AUDIT)
                 {
-                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                    //ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
 
                     if (docItems.Count > 0)
                     {
@@ -209,7 +209,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                                     else
                                                     {   //ส่วนที่ตัดเบิก สร้างissueSto เป็นpicking 
                                                         var issuedSto = new StorageObjectCriteria();
-                                                        issuedSto = sto;
+                                                        issuedSto = sto.Clone();
                                                         issuedSto.id = null;
                                                         issuedSto.baseQty = remainQty.Value; //500 จำนวนที่ต้องเบิกเพิ่ม
                                                         issuedSto.qty = remainBaseQty.Value;
@@ -260,12 +260,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
                                                     if (updSto.baseQty == 0)
                                                     {   //เบิกของหมด เปลี่ยนสภานะเป็น PICKING
+                                                        ADO.StorageObjectADO.GetInstant().UpdateStatus(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+
                                                         updSto.eventStatus = StorageObjectEventStatus.PICKING;
+
                                                     }
                                                     else
                                                     {   //สร้างpack ใหม่ที่ไม่ได้ผูก parent base สถานะ PICKING , qty = จำนวนที่เบิก
                                                         var issuedSto = new StorageObjectCriteria();
-                                                        issuedSto = sto;
+                                                        issuedSto = sto.Clone();
                                                         issuedSto.id = null;
                                                         issuedSto.baseQty = disto.BaseQuantity.Value;
                                                         issuedSto.qty = disto.Quantity.Value;
