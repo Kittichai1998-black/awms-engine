@@ -485,7 +485,11 @@ const Scanbarcode = (props) => {
         return <CardContent style={{ height: "60px", background: "#e91e63" }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
-                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">  {getGate}</Typography>
+                    <FormInline>
+                        <div style={{ marginLeft:"10px" }}> <IconLock></IconLock></div>
+                        <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
+                            {getGate}</Typography>
+                    </FormInline>
                 </Grid>
             </Grid>
         </CardContent>
@@ -501,10 +505,23 @@ const Scanbarcode = (props) => {
         </CardContent>
     }
 
+    const HeadLock = (getGate) => {
+        return <CardContent style={{ height: "60px", background: "#fcfcfc" }} >
+            <Grid container spacing={12}>
+                <Grid item xs={5}></Grid> <Grid item xs={4}>
+                    {console.log(lockStateRight)}
+                    <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
+                </Grid>
+            </Grid>
+        </CardContent>
+    }
+
+
     const HeadGateC = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#fcfcfc" }} >
             <Grid container spacing={12}>
                 <Grid item xs={5}></Grid> <Grid item xs={4}>
+                    {console.log(lockStateRight)}
                     <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">{getGate}</Typography>
                 </Grid>
             </Grid>
@@ -658,7 +675,7 @@ const Scanbarcode = (props) => {
                                                 </FormInline>
                                             </Border>
                                             <div>
-                                                <IconLock></IconLock>
+                                               
                                         <AmButton styleType="confirm" onClick={()=> {
                                             if(!lockStateRight){
                                                 lockGateID.push(areaGate)

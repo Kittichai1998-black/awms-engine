@@ -53,8 +53,11 @@ namespace AMWUtil.Exception
         /// <summary>Time Out : {0}</summary>
         [AMWExceptionDescription(TH = "{0}", EN = "Time Out : {0}")]
         S0003,
+        /// <summary>SQLDatabase Deadlock : {0}</summary>
+        [AMWExceptionDescription(TH = "{0}", EN = "SQLDatabase Deadlock. {0}")]
+        S0004,
 
-        
+
         /// <summary>Authentication Error</summary>
         [AMWExceptionDescription(TH = "Authentication Error : {0}", EN = "Authentication Error : {0}")]
         A0001,
