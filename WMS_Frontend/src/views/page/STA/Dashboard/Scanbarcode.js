@@ -658,7 +658,7 @@ const Scanbarcode = (props) => {
                                                 </FormInline>
                                             </Border>
                                             <div>
-                                                <IconLock></IconLock>
+                                               
                                         <AmButton styleType="confirm" onClick={()=> {
                                             if(!lockStateRight){
                                                 lockGateID.push(areaGate)

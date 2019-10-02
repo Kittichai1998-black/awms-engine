@@ -658,6 +658,8 @@ const AmProcessQueue = props => {
 
     //Advance Condition
     const onChangCheckboxCon = (e, indx) => {
+        console.log(e.checked)
+        console.log(e.value)
         if (e.checked === true) {
             let dataCheckCon = datacheckboxCon;
             datacheckboxCon[e.value] = e.checked;
@@ -2078,8 +2080,8 @@ const AmProcessQueue = props => {
                       onChangeRandom(es, idx, qtyrandoms);
                     }
 
-                                        if (props.fullPallets === true )
-                                            onChangCheckboxConsFull(null, null, idx);
+                                        //if (props.fullPallets === true )
+                                        //    onChangCheckboxConsFull(null, null, idx);
 
                                         if (props.receives === true || props.defaultExpireDate === true)
                                             onChangCheckboxConsRecieve(null, null, idx);
@@ -2087,7 +2089,7 @@ const AmProcessQueue = props => {
                                       if (props.disibleShelfLifeDate === true || props.defaultShelfLifeDate === true)
                                             onChangCheckboxConsSelfLife(null, null, idx);
 
-                                        if (props.disibleFullPallet === true || props.defaultFullPallet === true)
+                                        if (props.disibleFullPallet === true && props.defaultFullPallet === true)
                                             onChangCheckboxConsFull(null, null, idx);
 
                                         if (props.disibleExpireDate === true || props.defaultExpireDate=== true)
@@ -2309,13 +2311,14 @@ const AmProcessQueue = props => {
                                                 </AmCheckBox>: null}
                                                                                                     {props.FullPallet === true ?<AmCheckBox
                                                                                                         value="FullPallet"
-                                                                                                        label="FullPallet"
+                                                                                                   label="FullPallet"
+                                                                                                   checked={props.checkedFullPallet ? props.checkedFullPallet : null}
                                                                                                         disabled={
                                                                                                           x.FullPallet ? true : props.disibleFullPallet ? props.disibleFullPallet: null
                                                                                                    }
-                                                                                                   checked={props.checkedFullPallet ? props.checkedFullPallet : null}
+                                                                                                 
                                                                                                 
-                                                                                                        defaultChecked={props.defaultFullPallet ? props.defaultFullPallet : null}
+                                                                                                   defaultChecked={props.defaultFullPallete ? props.defaultFullPallete : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxCon(e, idx)
                                                                                                         }
