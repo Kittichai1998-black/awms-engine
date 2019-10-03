@@ -5,13 +5,12 @@ import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
-
 // const Axios = new apicall()
 
-const CustomerQuery = {
+const WarehouseQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Customer",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    t: "Warehouse",
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -19,38 +18,42 @@ const CustomerQuery = {
     l: 100,
     all: "",
 }
-const CustomerReturnPallet = (props) => {
+const ReceivePallet = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 13}" };
 
     const inputSource = [
-        { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Source Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID" },
+        { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1 },
     ]
 
     const inputItem = [
-        { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true },
+        { "field": "lot", "type": "input", "name": "Lot", "placeholder": "Lot" },
         { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)" },
-        { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "Carton No." },
+       
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '96', label: "RETURN" },
+              
+                { value: '12', label: "RECEIVED" },
+
             ],
-            "defaultValue": { value: '96', disabled: true }
+            "defaultValue": { value: '12' }
         }
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '96', label: "RETURN" }
+             
+                { value: '12', label: "RECEIVED" },
+
             ],
-            "defaultValue": { value: '96', disabled: true }
+            "defaultValue": { value: '12' }
         }
 
     ]
@@ -80,16 +83,16 @@ const CustomerReturnPallet = (props) => {
         //split ���
         var resValuePost = null;
         var dataScan = {};
-
         if (reqValue) {
 
-            if (reqValue['scanCode'] && reqValue['orderNo'] && reqValue['cartonNo']) {
-                if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
-                    let orderNo = reqValue['orderNo'];
+            if (reqValue['scanCode'] && reqValue['lot'] && reqValue['cartonNo']) {
+                if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
+                    let lot = reqValue['Lot'];
                     let skuCode = reqValue['scanCode'].trim();
                     let cartonNo = reqValue['cartonNo'];
                     let rootID = reqValue.rootID;
                     let qryStr = {};
+
                     let cartonNoList = [];
                     let newQty = null;
                    
@@ -103,12 +106,12 @@ const CustomerReturnPallet = (props) => {
                     if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                         let dataMapstos = storageObj.mapstos[0];
                         qryStr = queryString.parse(dataMapstos.options);
-                        if (skuCode !== dataMapstos.code || orderNo !== dataMapstos.orderNo) {
+                        if (skuCode !== dataMapstos.code || lot !== dataMapstos.lot) {
                             alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
                             skuCode = null;
-                            orderNo = null;
+                            lot = null;
                         }
-                        if (rootID && skuCode && orderNo) {
+                        if (rootID && skuCode && lot) {
                             let oldOptions = qryStr[SC.OPT_CARTON_NO];
                             let resCartonNo = ConvertRangeNumToString(oldOptions);
                             let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
@@ -215,38 +218,40 @@ const CustomerReturnPallet = (props) => {
                         }
                         cartonNo = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
                     }
-                    if (cartonNo && rootID && skuCode && orderNo) {
-                        if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
-                            qryStr[SC.OPT_SOU_CUSTOMER_ID] = reqValue[SC.OPT_SOU_CUSTOMER_ID];
+                    if (cartonNo && rootID && skuCode && lot) {
+                        if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
+                            qryStr[SC.OPT_SOU_WAREHOUSE_ID] = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                         }
-                        // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                         qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
+                        console.log(qryStr)
                         let qryStr1 = queryString.stringify(qryStr)
                         let uri_opt = decodeURIComponent(qryStr1);
 
                         dataScan = {
                             // rootID: rootID,
-                            orderNo: orderNo,
+                            lot: lot,
                             scanCode: skuCode,
-                            options: cartonNo === "0" ? null : uri_opt
+                            options: cartonNo === "0" ? null : uri_opt,
+                            validateSKUTypeCodes: ["FG"]
                         };
                         resValuePost = { ...reqValue, ...dataScan }
                     } else {
                         if (rootID === null) {
                             alertDialogRenderer("Please scan the pallet before scanning the product or CartonNo Not Found.", "error", true);
+
                         }
                     }
                 } else {
-                    alertDialogRenderer("Please select source customer before.", "error", true);
+                    alertDialogRenderer("Please select source warehouse before.", "error", true);
                     resValuePost = { ...reqValue, ...dataScan }
                 }
             } else {
-                if(reqValue['orderNo'].length === 0 && reqValue['cartonNo'].length === 0){
+                if(reqValue['lot'].length === 0 && reqValue['cartonNo'].length === 0){
                     alertDialogRenderer("SI (Order No.) and Carton No. must be value", "error", true);
-                }else if(reqValue['orderNo'].length === 0){
+                }else if(reqValue['lot'].length === 0){
                     alertDialogRenderer("SI (Order No.) must be value", "error", true);
                 }else{
-                    alertDialogRenderer("Carton No. must be value", "error", true);
+                    //alertDialogRenderer("Carton No. must be value", "error", true);
                 }
                 resValuePost = { ...reqValue }
             }
@@ -282,11 +287,11 @@ const CustomerReturnPallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                setMovementType={"1012"}
                 autoPost={false}
+                setMovementType={"1011"}
             />
         </div>
     );
 
 }
-export default CustomerReturnPallet;
+export default ReceivePallet;

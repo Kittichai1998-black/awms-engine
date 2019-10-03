@@ -20,9 +20,14 @@ namespace AMWUtil.Common
         {
             lock (GenUniqID_Lock)
             {
-                long t = DateTime.UtcNow.Ticks;
-                GenUniqID_Run = GenUniqID_Run >= 10000 ? 0 : GenUniqID_Run + 1;
-                string id = NumZ(t) + NumZ(GenUniqID_Run, 1);
+                var d = DateTime.UtcNow;
+                long t = d.Second +
+                    (d.Minute * 60) +
+                    (d.Hour * 60 * 60) +
+                    (d.DayOfYear * 60 * 60 * 24) +
+                    (d.Year % 100 * 60 * 60 * 24 * 366);
+                GenUniqID_Run = GenUniqID_Run >= 1296 ? 0 : GenUniqID_Run + 1;
+                string id = NumZ(t, 0) + NumZ(GenUniqID_Run, 2);
                 return id;
             }
         }

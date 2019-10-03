@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer } from "react";
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { apicall, createQueryString, Clone } from '../../components/function/CoreFunction2';
+import { apicall, createQueryString, Clone } from '../../components/function/CoreFunction';
 import ToListTree from '../../components/function/ToListTree';
 import AmInput from "../../components/AmInput";
 import AmButton from "../../components/AmButton";
@@ -379,10 +379,10 @@ const AmMappingPallet = (props) => {
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        // if (field !== "scanCode") {
-        setCurInput(field);
-        setKeyEnter(true);
-        // }
+        if (field !== "scanCode") {
+            setCurInput(field);
+            setKeyEnter(true);
+        }
     };
 
     async function onHandleBeforePost() {
@@ -653,7 +653,7 @@ const AmMappingPallet = (props) => {
                             var dataEmptyPallet = {
                                 ...req,
                                 rootID: res.data.id,
-                                scanCode: 'EMPTYPALLET',
+                                scanCode: '000000000',
                                 amount: 1,
                                 mode: 0,
                                 action: 1
