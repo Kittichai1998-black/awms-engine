@@ -39,13 +39,19 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             //return picking
             else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
             {
-                var stoEmp = sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                if(stoEmp.Any(x=> x.code == "EMPTYPALLET"))
+                
+                var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
+                var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, buVO);
+                if (skuMaster == null)
+                    throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
+                var SKUMasterType = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
+                if (SKUMasterType.Code == "EMPTYPALLET")
                 {
                     docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
 
                     if (docItems.Count() == 0)
                         throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+
                 }
             }
             else

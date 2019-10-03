@@ -92,7 +92,7 @@ namespace AWMSEngine.Engine.V2.Business
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
             if (!String.IsNullOrEmpty(reqVO.locationCode) && alm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' not found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
 
             var res = new StorageObjectCriteria()
             {
@@ -161,7 +161,7 @@ namespace AWMSEngine.Engine.V2.Business
                 if (mapsto == null)
                 {
                     if (reqVO.action == VirtualMapSTOActionType.SELECT || reqVO.action == VirtualMapSTOActionType.REMOVE)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "'" + reqVO.scanCode + "' Not Found");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Scan Code '" + reqVO.scanCode + "' Not Found");
                     ams_PackMaster pm = ADO.MasterADO.GetInstant().GetPackMasterByPack(reqVO.scanCode, this.BuVO);
                     this.CheckSKUType(reqVO, pm);
 
@@ -198,7 +198,7 @@ namespace AWMSEngine.Engine.V2.Business
                     }
                     else
                     {
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
                     }
                 }
                 else
@@ -215,7 +215,7 @@ namespace AWMSEngine.Engine.V2.Business
             {
                 mapsto = this.ADOSto.Get(reqVO.rootID.Value, StorageObjectType.BASE, reqVO.isRoot, true, this.BuVO);
                 if (mapsto == null)
-                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
+                    throw new AMWUtil.Exception.AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
 
                 if (reqVO.rootOptions != null)
                 {
@@ -300,7 +300,7 @@ namespace AWMSEngine.Engine.V2.Business
             if (alm != null)
                 throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " can't add location on " + firstMapSto.type);
             if (pm == null && bm == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, reqVO.scanCode + " not found");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Scan Code '" + reqVO.scanCode + "' Not Found");
 
             if (reqVO.mode == VirtualMapSTOModeType.REGISTER)
             {
