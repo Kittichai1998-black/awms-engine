@@ -493,6 +493,22 @@ namespace AWMSEngine.ADO
                                 buVO.Logger, buVO.SqlTransaction).ToList();
             return res;
         }
+        public StorageObjectCriteria GetSTONoParent(List<long> stoIDs, VOCriteria buVO)
+        {
+            Dapper.DynamicParameters param = new Dapper.DynamicParameters();
+            param.Add("stoIDs", string.Join(",", stoIDs.ToArray()));
+
+            var values = this.Query<SPOutSTOMiniCriteria>("SP_STO_NO_PARENT", CommandType.StoredProcedure, param, buVO.Logger, buVO.SqlTransaction)
+                    .ToList();
+
+            if (values == null) return null;
+
+            StorageObjectCriteria res = StorageObjectCriteria.Generate(values,
+                StaticValueManager.GetInstant().ObjectSizes,
+                StaticValueManager.GetInstant().UnitTypes, null);
+
+            return res;
+        }
     }
 
 }
