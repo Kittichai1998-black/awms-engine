@@ -378,8 +378,8 @@ const AmCreateDocumentR5 = props => {
         item.BESTQ_QI +
         "&bestq_blk=" +
         item.BESTQ_BLK +
-        "&bwlvs=" +
-        item.BWLVS +
+        // "&bwlvs=" +
+        // item.BWLVS +
         "&lgtyp=" +
         item.LGTYP +
         "&vbeln_vl=" +

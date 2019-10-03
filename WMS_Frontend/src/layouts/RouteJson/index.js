@@ -2,6 +2,7 @@ import DefaultRoute from "./routeDefault";
 import MRK from "./routeMRK";
 import TAP from "./routeTAP";
 import STA from "./routeSTA";
+import TMC_TEST from "./routeTMC_TEST";
 import AAI from "./routeAAI";
 import STGT from "./routeSTGT";
 import ENGINE from "./routeEngine";
@@ -21,6 +22,8 @@ if (window.project === "STA") {
   PROJ = PANKAN;
 } else if (window.project === "STGT") {
   PROJ = STGT;
+} else if (window.project === "TMC_TEST") {
+  PROJ = TMC_TEST;
 } else {
   PROJ = ENGINE;
 }
