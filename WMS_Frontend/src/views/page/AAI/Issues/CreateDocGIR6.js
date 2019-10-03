@@ -425,9 +425,9 @@ export default props => {
         let documentItem = dataSource.map((item, idx) => {
             let options =
 
-                'bwlvs=' + item.BWLVS +
+                // 'bwlvs=' + item.BWLVS +
                 // '&rsnum=' + item.RSNUM +
-                '&lgpla=' + item.LGPLA +
+                'lgpla=' + item.LGPLA +
                 '&lgber=' + item.LGBER +
                 '&lgtyp=' + item.LGTYP +
                 '&bestq_ur=' + item.BESTQ_UR +
