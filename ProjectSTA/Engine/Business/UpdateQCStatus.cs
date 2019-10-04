@@ -39,9 +39,9 @@ namespace ProjectSTA.Engine.Business
         }
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            if(reqVO.eventStatus != StorageObjectEventStatus.QC)
+            if(reqVO.eventStatus != StorageObjectEventStatus.QC && reqVO.eventStatus != StorageObjectEventStatus.RECEIVED)
             {
-                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "Support Change to QC Status Only.");
+                throw new AMWException(this.Logger, AMWExceptionCode.V1002, "EventStatus not change to '"+reqVO.eventStatus+"'.");
             }
             var pstos = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                 new SQLConditionCriteria[]
@@ -49,24 +49,30 @@ namespace ProjectSTA.Engine.Business
                     new SQLConditionCriteria("Code",reqVO.skuCode, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("OrderNo",reqVO.orderNo, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("ObjectType",StorageObjectType.PACK, SQLOperatorType.EQUALS),
-                    new SQLConditionCriteria("EventStatus", StorageObjectEventStatus.RECEIVED, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("EventStatus", "12,98", SQLOperatorType.IN),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, this.BuVO);
             var bstos = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_StorageObject>(
                 new SQLConditionCriteria[]
                 {
-                    new SQLConditionCriteria("ParentStorageObject_ID",string.Join(',', pstos.Select(x=>x.ParentStorageObject_ID).ToArray()), SQLOperatorType.IN),
-                    new SQLConditionCriteria("ObjectType",StorageObjectType.BASE, SQLOperatorType.EQUALS),
+                    new SQLConditionCriteria("ID",string.Join(',', pstos.Select(x=>x.ParentStorageObject_ID).ToArray()), SQLOperatorType.IN),
+                    //new SQLConditionCriteria("ObjectType",StorageObjectType.BASE, SQLOperatorType.EQUALS),
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, this.BuVO);
 
             bstos.ForEach(x =>
             {
                 AWMSEngine.ADO.StorageObjectADO.GetInstant()
-                .UpdateStatusToChild(x.ID.Value, StorageObjectEventStatus.RECEIVED, EntityStatus.ACTIVE, reqVO.eventStatus, this.BuVO);
-                x.Options = ObjectUtil.QryStrSetValue(x.Options, OptionVOConst.OPT_REMARK, reqVO.remark);
-                AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("option", x.Options));
+                .UpdateStatusToChild(x.ID.Value, null, EntityStatus.ACTIVE, reqVO.eventStatus, this.BuVO);
+                //x.Options = ObjectUtil.QryStrSetValue(x.Options, OptionVOConst.OPT_REMARK, reqVO.remark);
+                //AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("options", x.Options));
             });
+            pstos.ForEach(x =>
+            {
+                x.Options = ObjectUtil.QryStrSetValue(x.Options, OptionVOConst.OPT_REMARK, reqVO.remark);
+                AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("options", x.Options));
+            });
+
             TRes res = new TRes();
             res.datas = new List<TRes.TData>();
             pstos.ForEach(x => {

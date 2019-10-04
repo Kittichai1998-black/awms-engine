@@ -233,6 +233,7 @@ const DocumentSearchPISTA = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="2004"
+        //buttonClose={true}
       />
     </div>
   );
