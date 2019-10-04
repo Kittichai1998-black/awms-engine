@@ -26,14 +26,14 @@ const CustomerReturnPallet = (props) => {
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 13}" };
 
     const inputSource = [
-        { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Source Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "required": true },
+        { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "required": true },
     ]
 
     const inputItem = [
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "maxLength": 7, "required": true },
         { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "Carton No.", "clearInput": true, "required": true },
-        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true },
+        { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -77,9 +77,6 @@ const CustomerReturnPallet = (props) => {
     }
 
     async function onBeforePost(reqValue, storageObj, curInput) {
-        console.log(reqValue);
-        console.log(storageObj);
-        console.log(curInput);
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
@@ -121,7 +118,7 @@ const CustomerReturnPallet = (props) => {
                 if (reqValue['cartonNo']) {
                     let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
                     cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
-                }else{
+                } else {
                     if (curInput === 'cartonNo') {
                         cartonNo = null;
                         alertDialogRenderer("Carton No. must be value.", "error", true);
@@ -145,69 +142,78 @@ const CustomerReturnPallet = (props) => {
                             orderNo = null;
                         }
                     }
-                    if (rootID && skuCode && orderNo) {
-                        let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                        let resCartonNo = ConvertRangeNumToString(oldOptions);
-                        let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
+                    let resCartonNo = ConvertRangeNumToString(oldOptions);
+                    let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
 
-                        if (reqValue.action === 2) {
-                            let lenNewCarton = null;
-                            let diffCarton = match(splitCartonNo, cartonNoList);
-                            if (diffCarton.length > 0) {
-                                let numCarton = 0;
-                                let lenDiffCarton = diffCarton.length;
-                                let delCartonList = [];
-                                let noHasCartonList = [];
-                                for (let no in diffCarton) {
-                                    numCarton++;
-                                    let indexCartonNo = splitCartonNo.indexOf(diffCarton[no]);
-                                    if (indexCartonNo < 0) {
-                                        noHasCartonList.push(diffCarton[no]);
+                    if (reqValue.action === 2) {
+                        let lenNewCarton = null;
+                        let diffCarton = match(splitCartonNo, cartonNoList);
+                        if (diffCarton.length > 0) {
+                            let numCarton = 0;
+                            let lenDiffCarton = diffCarton.length;
+                            let delCartonList = [];
+                            let noHasCartonList = [];
+                            for (let no in diffCarton) {
+                                numCarton++;
+                                let indexCartonNo = splitCartonNo.indexOf(diffCarton[no]);
+                                if (indexCartonNo < 0) {
+                                    noHasCartonList.push(diffCarton[no]);
 
-                                    } else {
-                                        delCartonList.push(diffCarton[no]);
-                                        splitCartonNo.splice(indexCartonNo, 1);
-                                    }
-                                    if (numCarton === lenDiffCarton) {
-                                        if (noHasCartonList.length > 0) {
-                                            let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
-                                            alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
-
-                                            cartonNo = null;
-                                        } else {
-                                            lenNewCarton = delCartonList.length;
-                                            if (splitCartonNo.length === 0) {
-                                                cartonNo = "0";
-                                            } else if (splitCartonNo.length == 1) {
-                                                cartonNo = splitCartonNo[0].toString();
-                                            } else {
-                                                var rangcartonNo = ToRanges(splitCartonNo);
-                                                cartonNo = rangcartonNo.join();
-                                            }
-                                        }
-                                        break;
-                                    } else {
-                                        continue;
-                                    }
+                                } else {
+                                    delCartonList.push(diffCarton[no]);
+                                    splitCartonNo.splice(indexCartonNo, 1);
                                 }
-                                newQty = lenNewCarton;
+                                if (numCarton === lenDiffCarton) {
+                                    if (noHasCartonList.length > 0) {
+                                        let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
+                                        alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
 
-                            } else {
-                                let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
-                                alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
-                                cartonNo = null;
+                                        cartonNo = null;
+                                    } else {
+                                        lenNewCarton = delCartonList.length;
+                                        if (splitCartonNo.length === 0) {
+                                            cartonNo = "0";
+                                        } else if (splitCartonNo.length == 1) {
+                                            cartonNo = splitCartonNo[0].toString();
+                                        } else {
+                                            var rangcartonNo = ToRanges(splitCartonNo);
+                                            cartonNo = rangcartonNo.join();
+                                        }
+                                    }
+                                    break;
+                                } else {
+                                    continue;
+                                }
                             }
+                            newQty = lenNewCarton;
+
                         } else {
-                            let diffCarton = match(splitCartonNo, cartonNoList);
-                            if (diffCarton.length > 0) {
-                                let carNoMatch = diffCarton.length === 1 ? diffCarton.join() : ConvertStringToRangeNum(diffCarton.join());
-                                alertDialogRenderer("Pallet No. " + storageObj.code + " had SKU Code: " + skuCode + " and Carton No." + carNoMatch + " already", "error", true);
-                                cartonNo = null;
-                            } else {
-                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNoList.join());
-                                newQty = cartonNoList.length;
+                            let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
+                            alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
+                            cartonNo = null;
+                            let eleCartonNo = document.getElementById('cartonNo');
+                            if (eleCartonNo) {
+                                eleCartonNo.value = "";
+                                reqValue['cartonNo'] = "";
                             }
                         }
+                    } else {
+                        let diffCarton = match(splitCartonNo, cartonNoList);
+                        if (diffCarton.length > 0) {
+                            let carNoMatch = diffCarton.length === 1 ? diffCarton.join() : ConvertStringToRangeNum(diffCarton.join());
+                            alertDialogRenderer("Pallet No. " + storageObj.code + " had Carton No. " + carNoMatch + " already", "error", true);
+                            cartonNo = null;
+                            let eleCartonNo = document.getElementById('cartonNo');
+                            if (eleCartonNo) {
+                                eleCartonNo.value = "";
+                                reqValue['cartonNo'] = "";
+                            }
+                        } else {
+                            cartonNo = cartonNoList.length > 0 ? ConvertStringToRangeNum(resCartonNo + "," + cartonNoList.join()) : null;
+                            newQty = cartonNoList.length;
+                        }
+
                     }
 
                 } else {
@@ -217,9 +223,13 @@ const CustomerReturnPallet = (props) => {
                 if (curInput === 'amount') {
                     if (parseInt(reqValue['amount'], 10) !== newQty) {
                         alertDialogRenderer("The quantity of carton doesn't match.", "error", true);
+                        let eleAmount = document.getElementById('amount');
+                        if (eleAmount) {
+                            eleAmount.value = newQty;
+                            reqValue['amount'] = newQty;
+                        }
                     }
                 } else {
-
                     let eleAmount = document.getElementById('amount');
                     if (eleAmount) {
                         eleAmount.value = newQty;
@@ -231,7 +241,6 @@ const CustomerReturnPallet = (props) => {
 
                     qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
                     qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
-
                     // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                     let qryStr1 = queryString.stringify(qryStrOpt)
                     let uri_opt = decodeURIComponent(qryStr1);
@@ -258,7 +267,6 @@ const CustomerReturnPallet = (props) => {
             }
             resValuePost = { ...reqValue, ...dataScan }
         }
-
         return resValuePost;
     }
     const alertDialogRenderer = (message, type, state) => {

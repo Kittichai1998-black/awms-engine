@@ -156,8 +156,12 @@ const WorkQueueSTACounting = (props) => {
             history={props.history}
             apiwarehouse={Warehouse}
             advanceCondition={true}
-            fullPallet={true}
-            receive={true}
+            //fullPallet={true}
+            //receive={true}
+            FullPallet={true}
+            defaultFullPallete={true}
+            disibleFullPallet={true}
+            AllStatus={true}
             priolity={Priolity}
             DocType={2004}
             status={true}
@@ -166,6 +170,7 @@ const WorkQueueSTACounting = (props) => {
             dataSort={false}
             apiResConfirm={"/counting/managequeue"}
             apidetail={"/counting/detail?docID="}
+
         ></AmProcessQueue>
 
     </div>)

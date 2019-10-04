@@ -23,7 +23,7 @@ const PickingReturnByBarcode = (props) => {
     // ]
     const inputItem = [
         // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
