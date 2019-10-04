@@ -90,7 +90,8 @@ const CreateDocGR = props => {
   const SKUMaster = {
     queryString: window.apipath + "/v2/SelectDataViwAPI/",
     t: "SKUMaster",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    q:
+      '[{ "f": "Status", "c":"<", "v": 2},{ "f": "SKUMasterType_ID", "c":"=", "v": 58}]',
     f:
       "ID,Code,Name,UnitTypeCode,concat(Code, ':' ,Name) as SKUItem, ID as SKUID,concat(Code, ':' ,Name) as SKUItems, ID as SKUIDs,Code as skuCode",
     g: "",
