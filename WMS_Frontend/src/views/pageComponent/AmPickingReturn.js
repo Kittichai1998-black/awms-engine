@@ -405,10 +405,10 @@ const AmPickingReturn = (props) => {
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        // if (field !== "scanCode") {
+        if (field !== "scanCode") {
             setCurInput(field);
             setKeyEnter(true);
-        // }
+        }
     };
     async function onHandleBeforePost() {
         setKeyEnter(false);
@@ -420,9 +420,7 @@ const AmPickingReturn = (props) => {
         if (useMultiSKU) {
 
         } else {
-            console.log(valueInput)
             if (valueInput) {
-
                 if (valueInput['scanCode']) {
                     let rootFocusID = null;
                     if (resData) {

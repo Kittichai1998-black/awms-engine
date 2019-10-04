@@ -485,12 +485,13 @@ const Scanbarcode = (props) => {
  const HeadGateA = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#e91e63" }} >
             <Grid container spacing={12}>
-                <Grid item xs={5}></Grid> <Grid item xs={4}>
-                    <FormInline>
-                        <div style={{ marginLeft: "10px" }}> <IconLockOpen></IconLockOpen></div>
+                <Grid item xs={6}>
+                    <div style={{ marginLeft:"60px" }}>
+                        <IconLockOpen ></IconLockOpen>
+                    </div>
+                </Grid> <Grid item xs={6}>
                         <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
                             {getGate}</Typography>
-                    </FormInline>
                 </Grid>
             </Grid>
         </CardContent>
