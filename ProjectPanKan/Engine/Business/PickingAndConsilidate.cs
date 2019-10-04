@@ -70,7 +70,7 @@ namespace ProjectPanKan.Engine.Business
                 getBaseConso = StorageObjectCriteria.CreateCriteriaBase(baseConso, 2, null, this.StaticValue);
                 getBaseConso.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
             }
-            else if(getBaseConso != null)
+            else if (getBaseConso != null)
             {
                 if (getBaseConso.eventStatus != StorageObjectEventStatus.CONSOLIDATED && getBaseConso.eventStatus != StorageObjectEventStatus.NEW)
                     throw new AMWException(this.Logger, AMWExceptionCode.B0001, "ไม่สามารถใช้กล่อง " + reqVO.baseConso + " นี้สำหรับ Consolidate ได้");
@@ -79,7 +79,7 @@ namespace ProjectPanKan.Engine.Business
 
             var checkDocItemFull = docItems.Find(x => ObjectUtil.QryStrGetValue(x.Options, "palletcode") == stoScan.code);
 
-            if(checkDocItemFull != null)
+            if (checkDocItemFull != null)
             {
                 if (stoScan.type != StorageObjectType.BASE)
                     throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Barcode " + stoScan.code + " is not BaseCode");
@@ -116,7 +116,8 @@ namespace ProjectPanKan.Engine.Business
                     DocumentADO.GetInstant().UpdateMappingSTO(distoRes.ID.Value, EntityStatus.ACTIVE, this.BuVO);
                 });
 
-                DocumentADO.GetInstant().UpdateItemEventStatus(checkDocItemFull.ID.Value, DocumentEventStatus.WORKING, this.BuVO);
+                DocumentADO.GetInstant().UpdateItemEventStatus(checkDocItemFull.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                checkDocItemFull.EventStatus = DocumentEventStatus.WORKED;
                 StorageObjectADO.GetInstant().UpdateStatusToChild(stoScan.id.Value, null, null, StorageObjectEventStatus.REMOVED, this.BuVO);
             }
             else
@@ -168,22 +169,23 @@ namespace ProjectPanKan.Engine.Business
                         if (chkDisto.Count > 0)
                         {
                             var sto = getBaseConso == null ? null : getBaseConso.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK).Find(x => chkDisto.Any(d => d.Des_StorageObject_ID == x.id));
-                            if(sto == null)
+                            if (sto == null)
                             {
                                 if (string.IsNullOrWhiteSpace(reqVO.baseConso))
                                 {
                                     var noParent = StorageObjectADO.GetInstant().GetSTONoParent(chkDisto.Select(x => x.Des_StorageObject_ID.Value).ToList(), BuVO);
-                                    if(noParent != null)
+                                    if (noParent != null)
                                     {
-                                        if(noParent.eventStatus != StorageObjectEventStatus.CONSOLIDATED)
+                                        if (noParent.eventStatus != StorageObjectEventStatus.CONSOLIDATED)
                                             throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "ไม่สามารถหยิบสินค้าได้ สถานะสินค้าเป็น " + noParent.eventStatus.GetValueString());
 
                                         var noParentDisto = chkDisto.Find(x => x.Des_StorageObject_ID == noParent.id);
+
                                         if (noParentDisto.BaseQuantity + reqVO.scanQty > docItem.BaseQuantity)
                                             throw new AMWException(this.BuVO.Logger, AMWExceptionCode.B0002, "หยิบสินค้าเกินจำนวน");
 
                                         DocumentADO.GetInstant().UpdateMappingSTO(noParentDisto.ID.Value,
-                                            noParentDisto.Des_StorageObject_ID, noParentDisto.Quantity + reqVO.scanQty, 
+                                            noParentDisto.Des_StorageObject_ID, noParentDisto.Quantity + reqVO.scanQty,
                                             noParentDisto.BaseQuantity + reqVO.scanQty, EntityStatus.ACTIVE, this.BuVO);
 
                                         noParent.qty += reqVO.scanQty;
@@ -191,6 +193,12 @@ namespace ProjectPanKan.Engine.Business
                                         noParent.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
 
                                         StorageObjectADO.GetInstant().PutV2(noParent, this.BuVO);
+
+                                        if (noParentDisto.BaseQuantity + reqVO.scanQty == docItem.BaseQuantity)
+                                        {
+                                            DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                            docItem.EventStatus = DocumentEventStatus.WORKED;
+                                        }
                                     }
                                     else
                                     {
@@ -218,6 +226,12 @@ namespace ProjectPanKan.Engine.Business
                                         };
 
                                         DocumentADO.GetInstant().InsertMappingSTO(newDisto, this.BuVO);
+
+                                        if (reqVO.scanQty == docItem.BaseQuantity)
+                                        {
+                                            DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                            docItem.EventStatus = DocumentEventStatus.WORKED;
+                                        }
                                     }
                                 }
                                 else
@@ -247,9 +261,13 @@ namespace ProjectPanKan.Engine.Business
                                     };
 
                                     DocumentADO.GetInstant().InsertMappingSTO(newDisto, this.BuVO);
-                                }
 
-                                
+                                    if (reqVO.scanQty == docItem.BaseQuantity)
+                                    {
+                                        DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                        docItem.EventStatus = DocumentEventStatus.WORKED;
+                                    }
+                                }
                             }
                             else
                             {
@@ -265,7 +283,13 @@ namespace ProjectPanKan.Engine.Business
                                 sto.eventStatus = StorageObjectEventStatus.CONSOLIDATED;
 
                                 StorageObjectADO.GetInstant().PutV2(sto, this.BuVO);
-                            }                        
+
+                                if (disto.BaseQuantity + reqVO.scanQty == docItem.BaseQuantity)
+                                {
+                                    DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                    docItem.EventStatus = DocumentEventStatus.WORKED;
+                                }
+                            }
                         }
                         else
                         {
@@ -294,9 +318,22 @@ namespace ProjectPanKan.Engine.Business
                             };
 
                             DocumentADO.GetInstant().InsertMappingSTO(disto, this.BuVO);
+
+                            if (reqVO.scanQty == docItem.BaseQuantity)
+                            {
+                                DocumentADO.GetInstant().UpdateItemEventStatus(docItem.ID.Value, DocumentEventStatus.WORKED, this.BuVO);
+                                docItem.EventStatus = DocumentEventStatus.WORKED;
+                            }
                         }
 
                         StorageObjectADO.GetInstant().PutV2(packs, this.BuVO);
+
+                        if (DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO).TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
+                        {
+                            DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, null, DocumentEventStatus.WORKED, BuVO);
+                        }
+
+                        var createLD = this.ExectProject<object, List<amt_DocumentItemStorageObject>>(FeatureCode.EXEPJ_MappingDistoLD, new { reqVO.docID });
 
                         return new TRes()
                         {
