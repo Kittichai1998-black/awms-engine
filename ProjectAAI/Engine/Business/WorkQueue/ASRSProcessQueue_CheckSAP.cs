@@ -65,7 +65,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         req_ZWMRF003.LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, "lgpla");
                         var res_ZWMRF003_r1 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
 
-                        if (res_ZWMRF003_r1.status == 1)
+                        if (res_ZWMRF003_r1.status == 1 && res_ZWMRF003_r1.datas.Count != 0)
                         {
                             statusSapRes = true;
                             docItem.Code = int.Parse(res_ZWMRF003_r1.datas[0].LENUM).ToString();
@@ -84,7 +84,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                     case "R02":
                         req_ZWMRF003.RSNUM = long.Parse(docItem.RefID);
                         var res_ZWMRF003_r2 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
-                        if (res_ZWMRF003_r2.status == 1)
+                        if (res_ZWMRF003_r2.status == 1 && res_ZWMRF003_r2.datas.Count != 0)
                         {
                             statusSapRes = true;
                             docItem.Code = res_ZWMRF003_r2.datas[i].MATNR;
@@ -108,7 +108,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         req_ZWMRF003.BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_qi");
                         req_ZWMRF003.BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_blk");
                         var res_ZWMRF003_r3 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
-                        if (res_ZWMRF003_r3.status == 1)
+                        if (res_ZWMRF003_r3.status == 1 && res_ZWMRF003_r3.datas.Count != 0)
                         {
                             statusSapRes = true;
                             docItem.Code = res_ZWMRF003_r3.datas[0].MATNR;
@@ -132,7 +132,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         req_ZWMRF003.BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_qi");
                         req_ZWMRF003.BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_blk");
                         var res_ZWMRF003_r4 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
-                        if (res_ZWMRF003_r4.status == 1)
+                        if (res_ZWMRF003_r4.status == 1 && res_ZWMRF003_r4.datas.Count != 0)
                         {
                             statusSapRes = true;
                             docItem.Code = res_ZWMRF003_r4.datas[i].MATNR;
@@ -156,7 +156,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         req_ZWMRF003.MATNR = docItem.Code.PadLeft(18, '0');
                         req_ZWMRF003.CHARG = docItem.Batch;
                         var res_ZWMRF003_r5 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
-                        if (res_ZWMRF003_r5.status == 1)
+                        if (res_ZWMRF003_r5.status == 1 && res_ZWMRF003_r5.datas.Count != 0)
                         {
                             statusSapRes = true;
                             docItem.Code = int.Parse(res_ZWMRF003_r5.datas[0].MATNR).ToString();
@@ -184,7 +184,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         req_ZWMRF003.BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_qi");
                         req_ZWMRF003.BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_blk");
                         var res_ZWMRF003_r6 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
-                        if (res_ZWMRF003_r6.status == 1)
+                        if (res_ZWMRF003_r6.status == 1 && res_ZWMRF003_r6.datas.Count != 0)
                         {
                             statusSapRes = true;
                             docItem.RefID = res_ZWMRF003_r6.datas[0].MATNR;
@@ -316,6 +316,23 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 i++;
             }
             this.SetResponseForUseFullPick(res, tmpStoProcs);
+            foreach (var item in res.processResults[0].processResultItems)
+            {
+                foreach (var pickSto in item.pickStos)
+                {
+                    var res_req_ZWMRF001 = SAPInterfaceADO.GetInstant().ZWMRF001(pickSto.bstoCode, buVO);
+                    if (res_req_ZWMRF001.status == 1 && res_req_ZWMRF001.datas.Count != 0)
+                    {
+                        var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(pickSto.bstoID, StorageObjectType.BASE, false, false, buVO);
+                        bsto.ref2 = res_req_ZWMRF001.datas[0].LGTYP;
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, buVO);
+
+                        var psto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(pickSto.pstoID, StorageObjectType.PACK, false, false, buVO);
+                        psto.ref2 = res_req_ZWMRF001.datas[0].LGTYP;
+                        AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(psto, buVO);
+                    }
+                }
+            };
             return res;
         }
         private void SetResponseForUseFullPick(ASRSProcessQueue.TRes res, List<SPOutSTOProcessQueueCriteria> tmpStoProcs)
