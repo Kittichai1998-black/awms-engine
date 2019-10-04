@@ -51,7 +51,6 @@ const DocumentViewGR = props => {
     { width: 100, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "SKU Code" },
     { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
@@ -61,7 +60,6 @@ const DocumentViewGR = props => {
     { width: 100, accessor: "code ", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "SKU Code" },
     { accessor: "packName", Header: "SKU Name" },
-    { width: 125, accessor: "lot", Header: "Lot" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];

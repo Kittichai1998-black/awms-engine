@@ -21,6 +21,10 @@ const DocumentSearchSTA = Loadable({
   loader: () => import("../../views/page/TMC_TEST/Receive/DocumentSearchSTA"),
   loading: Loading
 });
+const CreateDocGR = Loadable({
+  loader: () => import("../../views/page/TMC_TEST/Receive/CreateDocGR"),
+  loading: Loading
+});
 const DocumentSearchGISTA = Loadable({
   loader: () => import("../../views/page/TMC_TEST/Issues/DocumentSearchGISTA"),
   loading: Loading
@@ -51,6 +55,12 @@ const routes = [
     path: "/receive/search",
     name: "Search GR",
     compoment: DocumentSearchSTA,
+    exact: true
+  },
+  {
+    path: "/receive/create",
+    name: "Create GR",
+    compoment: CreateDocGR,
     exact: true
   },
   {
