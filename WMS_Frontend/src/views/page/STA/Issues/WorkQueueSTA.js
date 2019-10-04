@@ -123,14 +123,19 @@ const WorkQueueSTA = (props) => {
             history={props.history}
             apiwarehouse={Warehouse}
             advanceCondition={true}
-            fullPallets={true}
-            receives={true}
+            //fullPallets={true}
+            //receives={true}
             priolity={Priolity}
             DocType={1002}
             docType={"issue"}
             status={true}
             random={false}
             dataSortShow={true}
+            FullPallet={true}
+            defaultFullPallete={true}
+            disibleFullPallet={true}
+            StatusfromDeswarehouse={true}
+            StatusfromDescustomer={true}
             apidetail={"/issue/detail?docID="}
             apiResConfirm={"/issue/managequeue"}
         ></AmProcessQueue>

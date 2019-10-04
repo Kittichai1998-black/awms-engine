@@ -8,7 +8,7 @@ import axios from "axios";
 import Clone from "../../../../components/function/Clone";
 const Axios = new apicall();
 
-const CreateDocGI = props => {
+const CreateDocGR = props => {
   const [dataWarehouse, setDataWarehouse] = useState("");
   const [dataMovementType, setDataMovementType] = useState("");
   const [dataTest, setDataTest] = useState([]);
@@ -52,12 +52,12 @@ const CreateDocGI = props => {
             valueTexts: "1"
           },
           {
-            label: "Destination Customer",
-            key: "desCustomerID",
+            label: "Destination Warehouse",
+            key: "desWarehouseID",
             type: "dropdown",
             pair: "ID",
-            idddl: "desCustomerID",
-            queryApi: CustomerQuery,
+            idddl: "desWarehouseID",
+            queryApi: WarehouseQuery,
             fieldLabel: ["Code", "Name"]
           }
         ],
@@ -79,7 +79,7 @@ const CreateDocGI = props => {
           columns={columns}
           columnEdit={columnEdit}
           apicreate={apicreate}
-          createDocType={"issue"}
+          createDocType={"receive"}
           history={props.history}
           apiRes={apiRes}
         />
@@ -150,7 +150,6 @@ const CreateDocGI = props => {
   ];
 
   const columnEdit = [
-    { Header: "Pallet Code", accessor: "palletcode", type: "input" },
     {
       Header: "SKU Code",
       accessor: "SKUItems",
@@ -161,22 +160,19 @@ const CreateDocGI = props => {
       fieldLabel: ["Code", "Name"],
       columsddl: columsFindpopUp
     },
-    { Header: "Order NO", accessor: "orderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" }
   ];
 
   const columns = [
-    { Header: "Pallet Code", accessor: "palletcode", width: 100 },
     { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Order NO", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 70 },
     { Header: "Unit", accessor: "unitType", type: "unitType", width: 70 }
   ];
 
-  const apicreate = "/v2/CreateGIDocAPI/"; //API ���ҧ Doc
-  const apiRes = "/issue/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
+  const apicreate = "/v2/CreateGRDocAPI/"; //API ���ҧ Doc
+  const apiRes = "/receive/detail?docID="; //path ˹����������´ �͹����ѧ����Դ
 
   return <div>{table}</div>;
 };
 
-export default CreateDocGI;
+export default CreateDocGR;

@@ -247,6 +247,7 @@ const DocumentSearchSTA = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="1001"
+        buttonClose={true}
       />
     </div>
   );
