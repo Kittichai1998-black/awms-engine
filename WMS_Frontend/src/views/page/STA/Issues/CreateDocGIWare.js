@@ -170,7 +170,7 @@ const CreateDocGIWare = props => {
 
     const columnEdit = [{ Header: 'Pallet Code', accessor: 'palletcode', type: "input" },
     { Header: "Part NO.", accessor: 'SKUItems', type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
-    { Header: 'Lot', accessor: 'lot', type: "input" },
+        { Header: 'Orderno', accessor: 'orderNo', type: "input" },
     { Header: "Quantity", accessor: 'quantity', type: "inputNum" },
     ];
 
@@ -178,7 +178,7 @@ const CreateDocGIWare = props => {
 
     const columns = [{ Header: 'Pallet Code', accessor: 'palletcode', width: 100 },
     { Header: "SKU Item", accessor: 'SKUItems' },
-    { Header: 'Lot', accessor: 'lot', width: 100 },
+        { Header: 'Orderno', accessor: 'orderNo', width: 100 },
     { Header: "Quantity", accessor: 'quantity', width: 70 },
     { Header: "Unit", accessor: 'unitType', type: "unitType", width: 70 },
     ];
