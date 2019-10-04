@@ -9,9 +9,13 @@ const DocumentViewSTA = Loadable({
   loader: () => import("../../views/page/STA/Receive/DocumentViewGR"),
   loading: Loading
 });
-const CreateDocGISTA = Loadable({
-  loader: () => import("../../views/page/STA/Issues/CreateDocGI"),
+const CreateDocGISTACus = Loadable({
+  loader: () => import("../../views/page/STA/Issues/CreateDocGICus"),
   loading: Loading
+});
+const CreateDocGISTAWare = Loadable({
+    loader: () => import("../../views/page/STA/Issues/CreateDocGIWare"),
+    loading: Loading
 });
 const StorageObjectSTA = Loadable({
   loader: () => import("../../views/page/STA/Report/StorageObject"),
@@ -126,7 +130,8 @@ const routes = [
     { path: "/issue/pickingreturn", name: "Picking Return", compoment: PickingReturn, exact: true },
     { path: "/issue/pickingreturnByQR", name: "Picking Return", compoment: PickingReturnByBarcode, exact: true },
   { path: "/issue/search", name: "base5", compoment: DocumentSearchGISTA, exact: true },
-  { path: "/issue/create", name: "base5", compoment: CreateDocGISTA, exact: true },
+    { path: "/issue/createCus", name: "base5", compoment: CreateDocGISTACus, exact: true },
+    { path: "/issue/createWm", name: "base5", compoment: CreateDocGISTAWare, exact: true },
   { path: "/issue/detail", name: "base5", compoment: DocumentViewGISTA, exact: true },
   { path: "/dashboard/pickingjobs", name: "TestRedirect", compoment: dashboardPickingJob, exact: true },
   { path: "/dashboard/countingjobs", name: "TestRedirect", compoment: dashboardCountingJob, exact: true },
