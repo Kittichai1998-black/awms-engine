@@ -325,10 +325,7 @@ const AmCounting = props => {
   const GetPalletSto = reqPalletCode => {
     if (reqPalletCode) {
       Axios.get(
-        window.apipath +
-          "/v2/SelectAuditAPI/?palletCode=" +
-          reqPalletCode +
-          "&apiKey=free01"
+        window.apipath + "/v2/SelectAuditAPI/?palletCode=" + reqPalletCode
       ).then(res => {
         if (res.data._result.status === 0) {
           alertDialogRenderer(res.data._result.message, "error", true);
