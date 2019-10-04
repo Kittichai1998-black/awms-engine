@@ -1,6 +1,8 @@
-﻿using AMWUtil.Exception;
+﻿using AMWUtil.Common;
+using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.Engine;
+using AWMSEngine.Engine.Business.Received;
 using AWMSEngine.Engine.V2.Business.WorkQueue;
 using AWMSModel.Constant.EnumConst;
 using AWMSModel.Criteria;
@@ -17,58 +19,151 @@ namespace ProjectTMC.Engine.Business.WorkQueue
         StorageObjectCriteria
         >
     {
-        private ams_AreaLocationMaster _locationASRS;
-        private ams_Warehouse _warehouseASRS;
-        private ams_AreaMaster _areaASRS;
-
         public StorageObjectCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReq reqVO)
         {
-            if (reqVO.mappingPallets != null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Must not have mapping pallet's data");
-
-            //Init Data from ASRS
-            this.InitDataASRS(reqVO, logger, buVO);
-            var sto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
-              null, null, false, true, buVO);
-            if (sto == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
-            if (sto.code != reqVO.baseCode)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
-            /*
-            if (_areaASRS.ID != sto.areaID)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Area don't macth");
-            if (_locationASRS.ID != sto.parentID)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Location don't macth");
-            */
-
-            sto.lengthM = reqVO.length;
-            sto.heightM = reqVO.height;
-            sto.widthM = reqVO.width;
-            sto.warehouseID = _warehouseASRS.ID.Value;
-            sto.areaID = _areaASRS.ID.Value;
-            sto.parentID = _locationASRS.ID.Value;
-            sto.parentType = StorageObjectType.LOCATION;
-
-            return sto;
-        }
-        private void InitDataASRS(RegisterWorkQueue.TReq reqVO, AMWLogger logger, VOCriteria buVO)
-        {
+            StorageObjectCriteria stos = new StorageObjectCriteria();
             var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+            if (reqVO.baseCode == null || reqVO.baseCode == "" || reqVO.baseCode == String.Empty)
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Base Code is null");
 
-            this._warehouseASRS = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
-            if (_warehouseASRS == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Warehouse Code '" + reqVO.warehouseCode + "' Not Found");
-            this._areaASRS = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == _warehouseASRS.ID);
-            if (_areaASRS == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Area Code '" + reqVO.areaCode + "' Not Found");
-            this._locationASRS = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+            var baseMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_BaseMaster>(
                 new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Code",reqVO.locationCode),
-                    new KeyValuePair<string,object>("AreaMaster_ID",_areaASRS.ID.Value),
-                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
-                }, buVO).FirstOrDefault();
-            if (_locationASRS == null)
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
+                    new KeyValuePair<string,object>("Code",reqVO.baseCode),
+                    new KeyValuePair<string,object>("Status",1),
+                }, buVO);
+
+
+            if (baseMasterData.Count <= 0)
+            {
+                //ไม่มีในระบบ insert เข้า baseMaster
+                AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(buVO, new ams_BaseMaster()
+                {
+                    Code = reqVO.baseCode,
+                    Name = "BOX",
+                    BaseMasterType_ID = 6,
+                    Description = "",
+                    ObjectSize_ID = 16,
+                    Status = EntityStatus.ACTIVE,
+                    UnitType_ID = 98,
+                    WeightKG = Convert.ToDecimal(0.5)
+                });
+            }
+
+            stos = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, null, null, false, true, buVO);
+
+
+            if (stos != null)
+            {
+
+                var stoPack = stos.ToTreeList().Find(x => x.type == StorageObjectType.PACK && (x.eventStatus == StorageObjectEventStatus.AUDITING || x.eventStatus == StorageObjectEventStatus.AUDITED));
+                if (stoPack == null)
+                    throw new AMWException(logger, AMWExceptionCode.V1001, "Pallet have in system");
+
+                stoPack.qty = Convert.ToDecimal(reqVO.mappingPallets.First().qty);
+                AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(stoPack, buVO);
+
+                var Warehouses = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
+                if (Warehouses == null)
+                    throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Warehouse Code '" + reqVO.warehouseCode + "'");
+                var area = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == Warehouses.ID);
+                if (area == null)
+                    throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Area Code '" + reqVO.areaCode + "'");
+
+                stos.ToTreeList().ForEach(x =>
+                {
+                    x.areaID = area.ID.Value;
+                    x.warehouseID = Warehouses.ID.Value;
+                });
+
+                return stos;
+            }
+            else
+            {
+
+                var mapsto = new StorageObjectCriteria();
+
+                {   // Map data to Table StorageObject
+                    var Warehouses = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
+                    if (Warehouses == null)
+                        throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Warehouse Code '" + reqVO.warehouseCode + "'");
+
+                    var area = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == Warehouses.ID);
+                    if (area == null)
+                        throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Area Code '" + reqVO.areaCode + "'");
+
+                    mapsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
+                        null, null, false, true, buVO);
+
+                    var location = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                        new KeyValuePair<string, object>[] {
+                        new KeyValuePair<string,object>("Code",reqVO.locationCode),
+                        new KeyValuePair<string,object>("AreaMaster_ID",area.ID.Value),
+                        new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                        }, buVO).FirstOrDefault();
+
+                    if (location == null)
+                        throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Location Code '" + reqVO.locationCode + "'");
+
+                    if (mapsto == null)
+                    {
+
+                        var palletList = new List<PalletDataCriteriaV2>();
+                        palletList.Add(new PalletDataCriteriaV2()
+                        {
+                            options = reqVO.mappingPallets[0].options,
+                            code = reqVO.baseCode,
+                            qty = "1",
+                            unit = null,
+                            orderNo = null,
+                            batch = null,
+                            lot = null,
+                            prodDate = reqVO.mappingPallets[0].prodDate,
+                            forCustomerCode = reqVO.mappingPallets[0].forCustomerCode
+
+
+                        });
+
+                        foreach (var row in reqVO.mappingPallets)
+                        {
+                            palletList.Add(new PalletDataCriteriaV2()
+                            {
+                                options = row.options,
+                                code = row.code,
+                                qty = row.qty,
+                                unit = row.unit,
+                                orderNo = row.orderNo,
+                                batch = row.batch,
+                                lot = row.lot,
+                                prodDate = row.prodDate,
+                                //movingType = row.movingType
+                            });
+                        }
+
+                        var reqMapping = new WCSMappingPalletV2.TReq()
+                        {
+                            actualWeiKG = reqVO.weight,
+                            warehouseCode = reqVO.warehouseCode,
+                            areaCode = reqVO.areaCode,
+                            palletData = palletList
+                        };
+
+                        mapsto = new WCSMappingPalletV2().Execute(logger, buVO, reqMapping);
+                    }
+
+                    mapsto.weiKG = reqVO.weight;
+                    mapsto.lengthM = reqVO.length;
+                    mapsto.heightM = reqVO.height;
+                    mapsto.widthM = reqVO.width;
+                    mapsto.warehouseID = Warehouses.ID.Value;
+                    mapsto.areaID = area.ID.Value;
+                    mapsto.parentID = location.ID.Value;
+                    mapsto.parentType = StorageObjectType.LOCATION;
+
+
+                }
+
+                return mapsto;
+            }
         }
     }
 }

@@ -10,6 +10,11 @@ const Axios = new apicall();
 
 //======================================================================
 const CountingAdj = props => {
+  var dataRadio = [
+    { value: "12", label: "RECEIVED" },
+    { value: "99", label: "HOLD" }
+  ];
+  var defaultDataRadio = { value: "12" };
   const columns = [
     { field: "packCode", Name: "SKU Code" },
     { field: "orderNo", Name: "Order No" }
@@ -17,7 +22,12 @@ const CountingAdj = props => {
 
   return (
     <div>
-      <AmCounting displayDetail={columns} />
+      <AmCounting
+        displayDetail={columns}
+        dataRadio={dataRadio}
+        defaultDataRadio={defaultDataRadio}
+        stateDone={true}
+      />
     </div>
   );
 };

@@ -35,7 +35,7 @@ namespace ProjectPanKan.Engine.Business
             return new TRes()
             {
                 docID = docID,
-                baseList = stos.Distinct().ToList()
+                baseList = stos.GroupBy(x => x.id).Select(x => x.First()).ToList()
             };
         }
     }
