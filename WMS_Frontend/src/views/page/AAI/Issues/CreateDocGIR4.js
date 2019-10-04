@@ -362,7 +362,6 @@ export default props => {
                 'bestq_ur=' + item.BESTQ_UR +
                 '&bestq_qi=' + item.BESTQ_QI +
                 '&bestq_blk=' + item.BESTQ_BLK +
-                '&bwlvs=' + item.BWLVS +
                 '&lgpla=' + item.LGPLA +
                 '&rsnum=' + item.RSNUM +
                 '&lenum=' + item.LENUM +

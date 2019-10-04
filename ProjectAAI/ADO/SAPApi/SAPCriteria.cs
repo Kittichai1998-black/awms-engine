@@ -208,50 +208,50 @@ namespace ProjectAAI.ADO.SAPApi
         public class IN_REQ
         {
             /// <summary>Stock Removal Mode</summary>
-            public string ZMODE;
+            public string ZMODE = "";
             /// <summary>Warehouse Code</summary>
-            public string LGNUM;
+            public string LGNUM = "";
             /// <summary>Storage Unit Number</summary>
-            public string LENUM;
+            public string LENUM = "";
             /// <summary>Reservation Number</summary>
             public long? RSNUM;
             /// <summary>Delivery Order Number</summary>
-            public string VBELN_VL;
+            public string VBELN_VL = "";
             /// <summary>Material Number</summary>
-            public string MATNR;
+            public string MATNR = "";
             /// <summary>Batch Number</summary>
-            public string CHARG;
+            public string CHARG = "";
             /// <summary>Quantity</summary>
             public decimal? BDMNG;
             /// <summary>Base unit of Measure</summary>
-            public string MEINS;
+            public string MEINS = "";
             /// <summary>Destination Storage Type</summary>
-            public string LGTYP;
+            public string LGTYP = "";
             /// <summary>Destination Storage Section</summary>
-            public string LGBER;
+            public string LGBER = "";
             /// <summary>Destination Storage BIN</summary>
-            public string LGPLA;
+            public string LGPLA = "";
             /// <summary>WM Movement type</summary>
-            public string BWLVS;
+            public string BWLVS = "";
             /// <summary>Include Stock Category = “” – Available Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_UR;
+            public string BESTQ_UR = "";
             /// <summary>Include Stock Category = Q – Stock in Quality Control, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_QI;
+            public string BESTQ_QI = "";
             /// <summary>Include Stock Category = S – Blocked Stock, ระบุ Y – Include, N – Exclude</summary>
-            public string BESTQ_BLK;
+            public string BESTQ_BLK = "";
             /// <summary>เลขที่เอกสาร GI Document จากระบบ AWS</summary>
-            public string GI_DOC;
+            public string GI_DOC = "";
         }
          
         public class ZSWMRF005_IN_REQ : IN_REQ
         {
             /// <summary>Sales Instruction</summary>
-            public string VBELN; 
+            public string VBELN = "";
         }
         public class ZSWMRF006_IN_REQ : IN_REQ
         {
             /// <summary>Sales Instruction</summary>
-            public string VBELN;
+            public string VBELN = "";
             /// <summary>Delivery Item</summary>
             public long? POSNR;
         }

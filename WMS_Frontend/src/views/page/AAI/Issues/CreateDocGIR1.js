@@ -385,7 +385,7 @@ export default props => {
 
         let documentItem = dataSource.map((item, idx) => {
             let options =
-                '&lenum=' + item.LENUM +
+                'lenum=' + item.LENUM +
                 '&lgtyp=' + item.LGTYP +
                 '&lgber=' + item.LGBER +
                 '&lgpla=' + item.LGPLA +

@@ -47,97 +47,161 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                 ASRSProcessQueue.TRes.ProcessQueueResult processRes = res.processResults.FirstOrDefault(x => x.docID == proc.docID);
                 var doc = docs.First(x => x.ID == proc.docID);
-                //var options = ObjectUtil.QryStrToKeyValues(doc.DocumentItems[i].Options);
-                //var RSNUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "rsnum");
-                //if (doc.Ref1 == "R01" || doc.Ref1 == "R02" || doc.Ref1 == "R06")
-                //{
-                //    ZSWMRF003_IN_REQ req = new ZSWMRF003_IN_REQ()
-                //    {
-                //        LGNUM = "W01",
-                //        ZMODE = doc.Ref1,
-                //        LENUM = doc.Ref1 == "R01" || doc.Ref1 == "R03" || doc.Ref1 == "R04" ? doc.DocumentItems[i].Code : "",
-                //        LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
-                //        LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
-                //        LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla")
-                //        //ZMODE = doc.Ref1,
-                //        //LGNUM = "W01",
-                //        //LENUM = doc.Ref1 == "R01" ? doc.DocumentItems[i].Code : "",
-                //        //GI_DOC = doc.Code,
 
-                //        //MATNR = doc.Ref1 == "R02" || doc.Ref1 == "R06" ? doc.DocumentItems[i].Code : "",
-                //        //CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
-                //        //BDMNG = doc.DocumentItems[i].Quantity,
+                //check sap and update docItem
+                ZSWMRF003_IN_REQ req_ZWMRF003 = new ZSWMRF003_IN_REQ()
+                {
+                    LGNUM = "W01",
+                    ZMODE = doc.Ref1
+                };
+                var docItem = doc.DocumentItems[i];
+                var statusSapRes = false;
+                switch (doc.Ref1)
+                {
+                    case "R01":
+                        req_ZWMRF003.LENUM = docItem.Code ?? docItem.RefID;
+                        req_ZWMRF003.LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, "lgtyp");
+                        req_ZWMRF003.LGBER = ObjectUtil.QryStrGetValue(docItem.Options, "lgber");
+                        req_ZWMRF003.LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, "lgpla");
+                        var res_ZWMRF003_r1 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
 
-                //        //LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
-                //        //LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
-                //        //LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
-                //        //BWLVS = doc.Ref2,
-                //        //BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
-                //        //BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
-                //        //BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
-                //    };
-                //    //if (RSNUM != "")
-                //    //{
-                //    //    req.RSNUM = long.Parse(RSNUM);
-                //    //}
-                //    var res_ZWMRF003 = SAPInterfaceADO.GetInstant().ZWMRF003(req, buVO);
-                //}
-                //else if (doc.Ref1 == "R03" || doc.Ref1 == "R04")
-                //{
-
-                //    IN_REQ req = new IN_REQ()
-                //    {
-                //        ZMODE = doc.Ref1,
-                //        LGNUM = "W01",
-                //        LENUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lenum"),
-                //        GI_DOC = doc.Code,
-
-                //        MATNR = doc.DocumentItems[i].Code,
-                //        CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
-                //        BDMNG = doc.DocumentItems[i].Quantity,
-
-                //        LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
-                //        LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
-                //        LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
-                //        BWLVS = doc.Ref2,
-                //        BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
-                //        BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
-                //        BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
-                //    };
-                //    //if (RSNUM != "")
-                //    //{
-                //    //    req.RSNUM = long.Parse(RSNUM);
-                //    //}
-                //}
-                //else if (doc.Ref1 == "R05")
-                //{
-                //    IN_REQ req = new IN_REQ()
-                //    {
-                //        ZMODE = doc.Ref1,
-                //        LGNUM = "W01",
-                //        LENUM = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lenum"),
-                //        GI_DOC = doc.Code,
-
-                //        MATNR = doc.DocumentItems[i].Code,
-                //        CHARG = string.IsNullOrEmpty(doc.DocumentItems[i].Batch) ? "" : doc.DocumentItems[i].Batch,
-                //        BDMNG = doc.DocumentItems[i].Quantity,
-
-                //        LGTYP = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgtyp"),
-                //        LGBER = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgber"),
-                //        LGPLA = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "lgpla"),
-                //        BWLVS = doc.Ref2,
-                //        BESTQ_UR = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_ur"),
-                //        BESTQ_QI = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_qi"),
-                //        BESTQ_BLK = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "bestq_blk"),
-                //        VBELN_VL = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln_vl"),
-                //      //  POSNR = long.Parse(ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "posnr")),
-                //       // VBELN = ObjectUtil.QryStrGetValue(doc.DocumentItems[i].Options, "vbeln")
-                //    };
-                //    //if (RSNUM != "")
-                //    //{
-                //    //    req.RSNUM = long.Parse(RSNUM);
-                //    //}
-                //}
+                        if (res_ZWMRF003_r1.status == 1)
+                        {
+                            statusSapRes = true;
+                            docItem.Code = int.Parse(res_ZWMRF003_r1.datas[0].LENUM).ToString();
+                            docItem.RefID = int.Parse(res_ZWMRF003_r1.datas[0].LENUM).ToString();
+                            docItem.Ref2 = res_ZWMRF003_r1.datas[0].BWLVS;
+                            docItem.Options = "lenum=" + int.Parse(res_ZWMRF003_r1.datas[0].LENUM).ToString() +
+                                "&lgtyp=" + res_ZWMRF003_r1.datas[0].LGTYP +
+                                "&lgber=" + res_ZWMRF003_r1.datas[0].LGBER +
+                                "&lgpla=" + res_ZWMRF003_r1.datas[0].LGPLA +
+                                "&bestq_ur=" + res_ZWMRF003_r1.datas[0].BESTQ_UR +
+                                "&bestq_qi=" + res_ZWMRF003_r1.datas[0].BESTQ_QI +
+                                "&bestq_blk=" + res_ZWMRF003_r1.datas[0].BESTQ_BLK +
+                                "&basecode=" + int.Parse(res_ZWMRF003_r1.datas[0].LENUM).ToString();
+                        }
+                        break;
+                    case "R02":
+                        req_ZWMRF003.RSNUM = long.Parse(docItem.RefID);
+                        var res_ZWMRF003_r2 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
+                        if (res_ZWMRF003_r2.status == 1)
+                        {
+                            statusSapRes = true;
+                            docItem.Code = res_ZWMRF003_r2.datas[i].MATNR;
+                            docItem.Quantity = res_ZWMRF003_r2.datas[i].BDMNG;
+                            docItem.BaseQuantity = res_ZWMRF003_r2.datas[i].BDMNG;
+                            docItem.RefID = res_ZWMRF003_r2.datas[i].RSNUM.ToString();
+                            docItem.Ref2 = res_ZWMRF003_r2.datas[i].BWLVS;
+                            docItem.Options = "bestq_ur=" + res_ZWMRF003_r2.datas[i].BESTQ_UR +
+                                "&bestq_qi=" + res_ZWMRF003_r2.datas[i].BESTQ_QI +
+                                "&bestq_blk=" + res_ZWMRF003_r2.datas[i].BESTQ_BLK +
+                                "&rsnum=" + res_ZWMRF003_r2.datas[i].RSNUM +
+                                "&lgtyp=" + res_ZWMRF003_r2.datas[i].LGTYP +
+                                "&lgpla=" + res_ZWMRF003_r2.datas[i].LGPLA;
+                        }
+                        break;
+                    case "R03":
+                        req_ZWMRF003.RSNUM = long.Parse(docItem.RefID);
+                        req_ZWMRF003.MATNR = docItem.Code;
+                        req_ZWMRF003.LENUM = ObjectUtil.QryStrGetValue(docItem.Options, "lenum");
+                        req_ZWMRF003.BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_ur");
+                        req_ZWMRF003.BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_qi");
+                        req_ZWMRF003.BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_blk");
+                        var res_ZWMRF003_r3 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
+                        if (res_ZWMRF003_r3.status == 1)
+                        {
+                            statusSapRes = true;
+                            docItem.Code = res_ZWMRF003_r3.datas[0].MATNR;
+                            docItem.Quantity = res_ZWMRF003_r3.datas[0].BDMNG;
+                            docItem.BaseQuantity = res_ZWMRF003_r3.datas[0].BDMNG;
+                            docItem.RefID = res_ZWMRF003_r3.datas[0].RSNUM.ToString();
+                            docItem.Ref2 = res_ZWMRF003_r3.datas[0].BWLVS;
+                            docItem.Options = "bestq_ur=" + res_ZWMRF003_r3.datas[0].BESTQ_UR +
+                                "&bestq_qi=" + res_ZWMRF003_r3.datas[0].BESTQ_QI +
+                                "&bestq_blk=" + res_ZWMRF003_r3.datas[0].BESTQ_BLK +
+                                "&lgtyp=" + res_ZWMRF003_r3.datas[0].LGTYP +
+                                "&lgpla=" + res_ZWMRF003_r3.datas[0].LGPLA +
+                                "&lenum=" + (!String.IsNullOrEmpty(res_ZWMRF003_r3.datas[0].LENUM) ? int.Parse(res_ZWMRF003_r3.datas[0].LENUM).ToString() : "") +
+                                "&rsnum=" + res_ZWMRF003_r3.datas[0].RSNUM;
+                        }
+                        break;
+                    case "R04":
+                        req_ZWMRF003.RSNUM = long.Parse(docItem.RefID);
+                        req_ZWMRF003.LENUM = ObjectUtil.QryStrGetValue(docItem.Options, "lenum");
+                        req_ZWMRF003.BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_ur");
+                        req_ZWMRF003.BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_qi");
+                        req_ZWMRF003.BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_blk");
+                        var res_ZWMRF003_r4 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
+                        if (res_ZWMRF003_r4.status == 1)
+                        {
+                            statusSapRes = true;
+                            docItem.Code = res_ZWMRF003_r4.datas[i].MATNR;
+                            docItem.Quantity = res_ZWMRF003_r4.datas[i].BDMNG;
+                            docItem.BaseQuantity = res_ZWMRF003_r4.datas[i].BDMNG;
+                            docItem.RefID = res_ZWMRF003_r4.datas[i].RSNUM.ToString();
+                            docItem.Ref2 = res_ZWMRF003_r4.datas[i].BWLVS;
+                            docItem.Options = "bestq_ur=" + res_ZWMRF003_r4.datas[i].BESTQ_UR +
+                                "&bestq_qi=" + res_ZWMRF003_r4.datas[i].BESTQ_QI +
+                                "&bestq_blk=" + res_ZWMRF003_r4.datas[i].BESTQ_BLK +
+                                "&lgtyp=" + res_ZWMRF003_r4.datas[i].LGTYP +
+                                "&lgpla=" + res_ZWMRF003_r4.datas[i].LGPLA +
+                                "&lenum=" + (!String.IsNullOrEmpty(res_ZWMRF003_r4.datas[i].LENUM) ? int.Parse(res_ZWMRF003_r4.datas[i].LENUM).ToString() : "") +
+                                "&basecode=" + (!String.IsNullOrEmpty(res_ZWMRF003_r4.datas[i].LENUM) ? int.Parse(res_ZWMRF003_r4.datas[i].LENUM).ToString() : "") +
+                                "&rsnum=" + res_ZWMRF003_r4.datas[i].RSNUM;
+                        }
+                        break;
+                    case "R05":
+                        req_ZWMRF003.VBELN_VL = docItem.RefID;
+                        req_ZWMRF003.POSNR = long.Parse(ObjectUtil.QryStrGetValue(docItem.Options, "posnr"));
+                        req_ZWMRF003.MATNR = docItem.Code.PadLeft(18, '0');
+                        req_ZWMRF003.CHARG = docItem.Batch;
+                        var res_ZWMRF003_r5 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
+                        if (res_ZWMRF003_r5.status == 1)
+                        {
+                            statusSapRes = true;
+                            docItem.Code = int.Parse(res_ZWMRF003_r5.datas[0].MATNR).ToString();
+                            docItem.Quantity = res_ZWMRF003_r5.datas[0].BDMNG;
+                            docItem.BaseQuantity = res_ZWMRF003_r5.datas[0].BDMNG;
+                            docItem.Batch = res_ZWMRF003_r5.datas[0].CHARG;
+                            docItem.RefID = res_ZWMRF003_r5.datas[0].VBELN_VL;
+                            docItem.Ref2 = res_ZWMRF003_r5.datas[0].BWLVS;
+                            docItem.Options = "bestq_ur=" + res_ZWMRF003_r5.datas[0].BESTQ_UR +
+                                "&bestq_qi=" + res_ZWMRF003_r5.datas[0].BESTQ_QI +
+                                "&bestq_blk=" + res_ZWMRF003_r5.datas[0].BESTQ_BLK +
+                                "&lgtyp=" + res_ZWMRF003_r5.datas[0].LGTYP +
+                                "&vbeln_vl=" + res_ZWMRF003_r5.datas[0].VBELN_VL +
+                                "&posnr=" + res_ZWMRF003_r5.datas[0].POSNR +
+                                "&vbeln=" + res_ZWMRF003_r5.datas[0].VBELN;
+                        }
+                        break;
+                    case "R06":
+                        req_ZWMRF003.MATNR = docItem.Code;
+                        req_ZWMRF003.CHARG = docItem.Batch;
+                        req_ZWMRF003.LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, "lgtyp");
+                        req_ZWMRF003.LGBER = ObjectUtil.QryStrGetValue(docItem.Options, "lgber");
+                        req_ZWMRF003.LGPLA = ObjectUtil.QryStrGetValue(docItem.Options, "lgpla");
+                        req_ZWMRF003.BESTQ_UR = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_ur");
+                        req_ZWMRF003.BESTQ_QI = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_qi");
+                        req_ZWMRF003.BESTQ_BLK = ObjectUtil.QryStrGetValue(docItem.Options, "bestq_blk");
+                        var res_ZWMRF003_r6 = SAPInterfaceADO.GetInstant().ZWMRF003(req_ZWMRF003, buVO);
+                        if (res_ZWMRF003_r6.status == 1)
+                        {
+                            statusSapRes = true;
+                            docItem.RefID = res_ZWMRF003_r6.datas[0].MATNR;
+                            docItem.Code = res_ZWMRF003_r6.datas[0].MATNR;
+                            docItem.Batch = res_ZWMRF003_r6.datas[0].CHARG;
+                            docItem.Ref2 = res_ZWMRF003_r6.datas[0].BWLVS;
+                            docItem.Options = "bestq_ur=" + res_ZWMRF003_r6.datas[0].BESTQ_UR +
+                                "&bestq_qi=" + res_ZWMRF003_r6.datas[0].BESTQ_QI +
+                                "&bestq_blk=" + res_ZWMRF003_r6.datas[0].BESTQ_BLK +
+                                "&lgtyp=" + res_ZWMRF003_r6.datas[0].LGTYP +
+                                "&lgber=" + res_ZWMRF003_r6.datas[0].LGBER +
+                                "&lgpla=" + res_ZWMRF003_r6.datas[0].LGPLA;
+                        }
+                        break;
+                }
+                if (statusSapRes)
+                    AWMSEngine.ADO.DocumentADO.GetInstant().PutItem(docItem, buVO);
 
                 var souWM = staticValue.Warehouses.First(x => x.ID == doc.Sou_Warehouse_ID);
                 if (processRes == null)
@@ -153,8 +217,9 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                 var processResItem = new ASRSProcessQueue.TRes.ProcessQueueResult.ProcessQueueResultItem()
                 {
+                    //doc.DocumentItems.First(x=>x.ID==proc.docItemID).Code
                     docItemID = proc.docItemID,
-                    docItemCode = doc.DocumentItems.First(x => x.ID == proc.docItemID).Code,
+                    docItemCode = docItem.Code,
                     baseQty = proc.baseQty,
                     priority = proc.priority,
                     percentRandom = proc.percentRandom,

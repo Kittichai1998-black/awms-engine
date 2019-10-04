@@ -54,6 +54,7 @@ function CustomTextField(props) {
     onFocus,
     onBlur,
     InputProps = {},
+    inputProps,
     validate,
     msgError,
     msgSuccess,
@@ -126,6 +127,7 @@ function CustomTextField(props) {
           },
           ...InputProps
         }}
+        inputProps={{...inputProps}}
         disabled={disabled}
         defaultValue={defaultValue}
         // onChange={handleChange}
@@ -168,6 +170,7 @@ InputStyle.propTypes = {
   color: PropTypes.string,
   styleType: PropTypes.string,
   InputProps: PropTypes.object,
+  inputProps: PropTypes.object,
   onChange: PropTypes.func,
   onMouseOver: PropTypes.func,
   onMouseOut: PropTypes.func,
@@ -177,7 +180,8 @@ InputStyle.propTypes = {
   onBlur: PropTypes.func,
   validate: PropTypes.bool,
   defaultValue: PropTypes.any,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  required: PropTypes.bool,
 };
 const theme = createMuiTheme({
   status: {
