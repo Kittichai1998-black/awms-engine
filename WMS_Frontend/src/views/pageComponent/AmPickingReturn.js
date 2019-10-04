@@ -415,7 +415,7 @@ const AmPickingReturn = (props) => {
         setKeyEnter(false);
         getValueInput();
 
-        var resValuePost = null;
+        var resValuePosts = null;
         var dataScan = {};
         let rootBaseCode = null;
         if (useMultiSKU) {
@@ -450,7 +450,7 @@ const AmPickingReturn = (props) => {
                             };
                             dataScan = await onBeforePost(resInput, bstoData);
                             if (dataScan) {
-                                resValuePost = { ...dataScan }
+                                resValuePosts = { ...dataScan }
                             } else {
                                 inputClear();
                             }
@@ -462,7 +462,7 @@ const AmPickingReturn = (props) => {
                                 mode: 0,
                                 action: actionValue,
                             };
-                            resValuePost = { ...valueInput, ...dataScan }
+                            resValuePosts = { ...valueInput, ...dataScan }
                         }
                     } else {
                         //select / add pallet 
@@ -471,7 +471,7 @@ const AmPickingReturn = (props) => {
                             mode: 0,
                             action: actionValue,
                         }
-                        resValuePost = { ...valueInput, ...dataScan }
+                        resValuePosts = { ...valueInput, ...dataScan }
                     }
                 } else {
                     if (curInput === 'scanCode') {
@@ -479,34 +479,27 @@ const AmPickingReturn = (props) => {
                     }
                 }
             }
-            if (resValuePost) {
-                let qryStrOpt = resValuePost["rootOptions"] && resValuePost["rootOptions"].length > 0 ? queryString.parse(resValuePost["rootOptions"]) : {};
-                if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
-                    qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
-                }
-                if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
-                    qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
-                }
-                if (setMovementType !== undefined || null) {
-                    qryStrOpt[SC.OPT_MVT] = setMovementType;
-                }
-                let qryStr = queryString.stringify(qryStrOpt)
-                let uri_opt = decodeURIComponent(qryStr) || null;
-                resValuePost["rootOptions"] = uri_opt;
-                console.log(resValuePost);
+            if (resValuePosts) {
 
-                setResValuePost(resValuePost);
-                console.log(rootBaseCode);
-                if (rootBaseCode !== null && rootBaseCode === valueInput['scanCode'] && actionValue === 2) {
-                    handleClickOpenDialog();
-                } else {
-                    if (autoPost) {
-                        onSubmitToAPI(resValuePost);
+                setResValuePost(resValuePosts);
+                if (autoPost) {
+                    if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
+                        handleClickOpenDialog();
                     } else {
-                        if (preAutoPost) {
-                            onSubmitToAPI(resValuePost);
+                        onSubmitToAPI(resValuePosts);
+                    }
+                } else {
+                    if (preAutoPost) {
+                        if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
+                            handleClickOpenDialog();
+                        } else {
+                            onSubmitToAPI(resValuePosts);
                         }
                     }
+                }
+            } else {
+                if (preAutoPost) {
+                    alertDialogRenderer("Please fill your information completely.", "error", true);
                 }
             }
         }
@@ -517,6 +510,20 @@ const AmPickingReturn = (props) => {
     }
     const onSubmitToAPI = (resValuePosts) => {
         if (resValuePosts) {
+            let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
+            if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
+                qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
+            }
+            if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
+                qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
+            }
+            if (setMovementType !== undefined || null) {
+                qryStrOpt[SC.OPT_MVT] = setMovementType;
+            }
+            let qryStr = queryString.stringify(qryStrOpt)
+            let uri_opt = decodeURIComponent(qryStr) || null;
+            resValuePosts["rootOptions"] = uri_opt;
+            // console.log(resValuePosts);
             if (actionValue !== 0 && actionValue !== 2 && resData ? resData.bsto : null) {
                 var dataLastPack = findPack(resData.bsto);
                 if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
@@ -588,6 +595,21 @@ const AmPickingReturn = (props) => {
                             if (actionValue === 2) {
                                 alertDialogRenderer("Remove Pack Success", "success", true);
                             }
+                        }
+                        if (itemCreate !== undefined) {
+                            let qryStr2 = queryString.parse(res.data.bsto.options);
+                            itemCreate.map((x, i) => {
+                                let ele = document.getElementById(x.field);
+                                if (ele) {
+                                    if (x.clearInput) {
+                                    } else {
+                                        if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                            valueInput[x.field] = qryStr2[x.field];
+                                            ele.value = qryStr2[x.field];
+                                        }
+                                    }
+                                }
+                            });
                         }
                     } else {
                         alertDialogRenderer("Remove Pallet Success", "success", true);
@@ -792,7 +814,7 @@ const AmPickingReturn = (props) => {
             if (ele) {
                 valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                 ele.value = x.defaultValue ? x.defaultValue : "";
-                if (x.field === "scanCode") {
+                if (x.field === true) {
                     ele.focus();
                 }
             }

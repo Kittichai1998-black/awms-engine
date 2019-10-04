@@ -390,7 +390,7 @@ const AmMappingPallet = (props) => {
         setKeyEnter(false);
         getValueInput();
         //default
-        var resValuePost = null;
+        var resValuePosts = null;
         var dataScan = {};
         let rootBaseCode = null;
         if (valueInput) {
@@ -401,14 +401,14 @@ const AmMappingPallet = (props) => {
                     rootFocusID = dataRootFocus.id;
                     rootBaseCode = dataRootFocus.code;
                     //
-                    if (curInput !== SC.OPT_REMARK) {
-                        var qryStr2 = queryString.parse(storageObj.options)
-                        let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                        if (eleREMARK) {
-                            eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                            valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                        }
-                    }
+                    // if (curInput !== SC.OPT_REMARK) {
+                    //     var qryStr2 = queryString.parse(storageObj.options)
+                    //     let eleREMARK = document.getElementById(SC.OPT_REMARK);
+                    //     if (eleREMARK) {
+                    //         eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
+                    //         valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
+                    //     }
+                    // }
 
                     //onBeforePost custom function
                     if (onBeforePost) {
@@ -421,7 +421,7 @@ const AmMappingPallet = (props) => {
                         };
                         dataScan = await onBeforePost(resInput, storageObj, curInput);
                         if (dataScan) {
-                            resValuePost = { ...dataScan }
+                            resValuePosts = { ...dataScan }
                         } else {
                             inputClear();
                         }
@@ -432,7 +432,7 @@ const AmMappingPallet = (props) => {
                             mode: 0,
                             action: actionValue,
                         };
-                        resValuePost = { ...valueInput, ...dataScan }
+                        resValuePosts = { ...valueInput, ...dataScan }
                     }
 
                 } else {
@@ -444,7 +444,7 @@ const AmMappingPallet = (props) => {
                         amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                         action: actionValue,
                     }
-                    resValuePost = { ...valueInput, ...dataScan }
+                    resValuePosts = { ...valueInput, ...dataScan }
                 }
 
             } else {
@@ -453,8 +453,39 @@ const AmMappingPallet = (props) => {
                 }
             }
         }
-        if (resValuePost) {
-            let qryStrOpt = resValuePost["rootOptions"] && resValuePost["rootOptions"].length > 0 ? queryString.parse(resValuePost["rootOptions"]) : {};
+        if (resValuePosts) {
+
+            setResValuePost(resValuePosts);
+
+            if (autoPost) {
+                if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
+                    handleClickOpenDialog();
+                } else {
+                    onSubmitToAPI(resValuePosts);
+                }
+            } else {
+                if (preAutoPost) {
+                    if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
+                        handleClickOpenDialog();
+                    } else {
+                        onSubmitToAPI(resValuePosts);
+                    }
+                }
+            }
+        } else {
+            if (preAutoPost) {
+                alertDialogRenderer("Please fill your information completely.", "error", true);
+            }
+        }
+    }
+    const onPreSubmitToAPI = () => {
+        setKeyEnter(true);
+        setPreAutoPost(true);
+    }
+
+    const onSubmitToAPI = (resValuePosts) => {
+        if (resValuePosts) {
+            let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
             if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
                 qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
             }
@@ -466,36 +497,9 @@ const AmMappingPallet = (props) => {
             }
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
-            resValuePost["rootOptions"] = uri_opt;
-            console.log(resValuePost);
+            resValuePosts["rootOptions"] = uri_opt;
+            // console.log(resValuePosts);
 
-            setResValuePost(resValuePost);
-
-            // console.log(rootBaseCode);
-            if (rootBaseCode !== null && rootBaseCode === valueInput['scanCode'] && actionValue === 2) {
-                handleClickOpenDialog();
-            } else {
-                if (autoPost) {
-                    onSubmitToAPI(resValuePost);
-                } else {
-                    if (preAutoPost) {
-                        onSubmitToAPI(resValuePost);
-                    }
-                }
-            }
-
-
-
-        }
-    }
-    const onPreSubmitToAPI = () => {
-        setKeyEnter(true);
-        // onSubmitToAPI(resValuePost)
-        setPreAutoPost(true);
-    }
-
-    const onSubmitToAPI = (resValuePosts) => {
-        if (resValuePosts) {
             if (modeEmptyPallet === false) {
                 if (actionValue !== 0 && actionValue !== 2 && storageObj) {
                     var dataLastPack = findPack(storageObj);
@@ -514,6 +518,7 @@ const AmMappingPallet = (props) => {
             } else {
                 scanBarcodeEmptyPalletApi(resValuePosts);
             }
+
         }
         setPreAutoPost(false);
     }
@@ -595,6 +600,22 @@ const AmMappingPallet = (props) => {
                             }
                         }
                     }
+                    if (itemCreate !== undefined) {
+                        let qryStr2 = queryString.parse(res.data.options);
+                        itemCreate.map((x, i) => {
+                            let ele = document.getElementById(x.field);
+                            if (ele) {
+                                if (x.clearInput) {
+                                } else {
+                                    if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                        valueInput[x.field] = qryStr2[x.field];
+                                        ele.value = qryStr2[x.field];
+                                    }
+                                }
+                            }
+                        });
+                    }
+                        console.log(valueInput);
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
                 }
@@ -908,7 +929,7 @@ const AmMappingPallet = (props) => {
             if (ele) {
                 valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                 ele.value = x.defaultValue ? x.defaultValue : "";
-                if (x.field === "scanCode") {
+                if (x.field === true) {
                     ele.focus();
                 }
             }

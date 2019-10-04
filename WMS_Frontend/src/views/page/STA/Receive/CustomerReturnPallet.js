@@ -30,7 +30,7 @@ const CustomerReturnPallet = (props) => {
     ]
 
     const inputItem = [
-        { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "maxLength": 7, "required": true },
+        { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
         { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "Carton No.", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
@@ -44,7 +44,7 @@ const CustomerReturnPallet = (props) => {
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "required": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
