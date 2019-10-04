@@ -23,7 +23,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
         public StorageObjectCriteria ExecuteEngine(AMWLogger logger, VOCriteria buVO, RegisterWorkQueue.TReq reqVO)
         {
-            if (reqVO.mappingPallets != null)
+            if (reqVO.mappingPallets != null && reqVO.mappingPallets.Count > 0)
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Must not have mapping pallet's data");
 
             //Init Data from ASRS

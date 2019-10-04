@@ -380,8 +380,8 @@ const AmMappingPallet = (props) => {
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
         if (field !== "scanCode") {
-        setCurInput(field);
-        setKeyEnter(true);
+            setCurInput(field);
+            setKeyEnter(true);
         }
     };
 
@@ -653,7 +653,7 @@ const AmMappingPallet = (props) => {
                             var dataEmptyPallet = {
                                 ...req,
                                 rootID: res.data.id,
-                                scanCode: 'EMPTYPALLET',
+                                scanCode: '000000000',
                                 amount: 1,
                                 mode: 0,
                                 action: 1
