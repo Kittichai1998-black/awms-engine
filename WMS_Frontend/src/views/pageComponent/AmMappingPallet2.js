@@ -349,12 +349,13 @@ const AmMappingPallet2 = (props) => {
             return <FormInline><LabelH>{t(showComponent.name)} : </LabelH>
                 <AmDropdown
                     id={showComponent.field}
+                    required={true}
                     placeholder={showComponent.placeholder}
                     fieldDataKey={showComponent.fieldDataKey}
                     fieldLabel={showComponent.fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={336}
+                    ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
@@ -837,8 +838,8 @@ const AmMappingPallet2 = (props) => {
                     fieldDataKey={fieldDataKey}
                     fieldLabel={fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={335}
+                    ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={defaultValue ? defaultValue : ""}

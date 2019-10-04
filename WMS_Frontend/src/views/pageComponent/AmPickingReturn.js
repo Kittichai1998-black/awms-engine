@@ -364,12 +364,13 @@ const AmPickingReturn = (props) => {
             return <FormInline><LabelH>{showComponent.name} : </LabelH>
                 <AmDropdown
                     id={showComponent.field}
+                    required={true}
                     placeholder={showComponent.placeholder}
                     fieldDataKey={showComponent.fieldDataKey}
                     fieldLabel={showComponent.fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={336}
+                    ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
@@ -565,7 +566,7 @@ const AmPickingReturn = (props) => {
                 if (res.data._result.message === "Success") {
                     if (res.data.bsto) {
                         setResData(res.data);
-                        
+
                         if (res.data.bsto.code === req.scanCode) {
                             if (actionValue === 0) {
                                 alertDialogRenderer("Select Pallet Success", "success", true);
@@ -661,7 +662,7 @@ const AmPickingReturn = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus)}
+                                x.disabled, x.isFocus, x.maxLength, x.required)}
                         </div>
                     }
                 }
@@ -669,34 +670,44 @@ const AmPickingReturn = (props) => {
     };
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{name} : </LabelH>
-                    <AmInput
-                        id={field}
-                        autoFocus={isFocus}
-                        placeholder={placeholder}
-                        type="input"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    />
-
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            autoFocus={isFocus}
+                            required={required}
+                            disabled={disabled}
+                            placeholder={placeholder}
+                            type="input"
+                            style={{ width: "330px" }}
+                            inputProps={maxLength ? {
+                                maxLength: maxLength,
+                            } : {}}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        />
+                    </div>
                 </FormInline>
             )
         } else if (type === "number") {
             return (
                 <FormInline><LabelH>{name} : </LabelH>
-                    <AmInput
-                        id={field}
-                        placeholder={placeholder}
-                        type="number"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    />
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            required={required}
+                            disabled={disabled}
+                            placeholder={placeholder}
+                            type="number"
+                            style={{ width: "330px" }}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        />
+                    </div>
                 </FormInline>
             )
         }
@@ -704,12 +715,13 @@ const AmPickingReturn = (props) => {
             return <FormInline><LabelH>{name} : </LabelH>
                 <AmDropdown
                     id={field}
+                    required={required}
                     placeholder={placeholder}
                     fieldDataKey={fieldDataKey}
                     fieldLabel={fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={335}
+                    ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={defaultValue ? defaultValue : ""}
