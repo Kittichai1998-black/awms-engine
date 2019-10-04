@@ -782,7 +782,8 @@ const Scanbarcode = (props) => {
                                                     databar.lockGateID = lockGateID
                                                     setdatabar({...databar})
                                                     setLockStateRight(true)
-                                                }}>Manual</AmButton>
+                                                    }}>Manual</AmButton>
+
                                                 <AmButton styleType="confirm" onClick={()=> {
                                                 }}>Remove</AmButton>
                                             </Card>
@@ -831,12 +832,14 @@ const Scanbarcode = (props) => {
 
                                                             </FormInline>
                                                         </Border>}
-                                                <AmButton styleType="confirm" onClick={()=> {
+                                                        <AmButton styleType="confirm" onClick={() => {
+
                                                     setLockGateID(lockGateID.filter(x => x !== areaGate))
                                                     databar.lockGateID = lockGateID
                                                     setdatabar({...databar})
                                                     setLockStateRight(false)
-                                                }}>Clear</AmButton>
+                                                        }}>Clear</AmButton>
+
                                                 <AmButton styleType="confirm" onClick={()=> {
                                                 }}>Save</AmButton>
                                             </Card>
