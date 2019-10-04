@@ -25,7 +25,6 @@ const CreateDocGICus = props => {
         })
         Axios.get(createQueryString(MovementTypeQuery2)).then((res) => {
             if (res.data.datas) {
-                console.log(res.data.datas[0].Name)
                 setDataMovementTypeCUS(res.data.datas[0].Name)
             }
         })
@@ -55,7 +54,7 @@ const CreateDocGICus = props => {
                     createDocType={"issue"}
                     history={props.history}
                     apiRes={apiRes}
-                    createByCus={true}
+                    //createByCus={false}
                 >
                 </AmCreateDocument>)
             }
@@ -167,8 +166,8 @@ const CreateDocGICus = props => {
 
 
     const columnEdit = [{ Header: 'Pallet Code', accessor: 'palletcode', type: "input" },
-    { Header: "Part NO.", accessor: 'SKUItems', type: "skubyCus", queryApi: SKUMaster, pair: "skuCode", idddl: "skuitems", fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
-    { Header: 'Lot', accessor: 'lot', type: "input" },
+        { Header: "Part NO.", accessor: 'SKUItems', type: "findPopUp", pair: "skuCode", idddl: "skuitems", queryApi: SKUMaster, fieldLabel: ["Code", "Name"], columsddl: columsFindpopUp },
+        { Header: 'Orderno', accessor: 'orderNo', type: "input" },
     { Header: "Quantity", accessor: 'quantity', type: "inputNum" },
     { Header: "Unit", accessor: 'unitType', type: "unitType", width: 70 },
     { Header: "Example", type: "text", texts: "Qty = 20" },
@@ -178,7 +177,7 @@ const CreateDocGICus = props => {
 
     const columns = [{ Header: 'Pallet Code', accessor: 'palletcode', width: 100 },
     { Header: "Part NO.", accessor: 'SKUItems' },
-    { Header: 'Lot', accessor: 'lot', width: 100 },
+        { Header: 'Orderno', accessor: 'orderNo', width: 100 },
     { Header: "Quantity", accessor: 'quantity', width: 70 },
     { Header: "Unit", accessor: 'unitType', width: 70 },
     ];

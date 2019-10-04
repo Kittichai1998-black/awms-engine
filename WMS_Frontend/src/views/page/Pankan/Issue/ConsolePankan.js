@@ -155,7 +155,7 @@ const ConsolePankan = (props) => {
             setissueDoc({
                 queryString: window.apipath + "/v2/SelectDataViwAPI/",
                 t: "Document",
-                q: "[{ 'f': 'Des_Customer_ID', c: '=', 'v': " + customerIds + " }]",
+                q: "[{ 'f': 'Des_Customer_ID', c: '=', 'v': " + customerIds + " },{ 'f': 'DocumentType_ID', c: '=', 'v': '1002' }]",
                 f: "ID,Code,Name,Remark",
                 g: "",
                 s: "[{'f':'ID','od':'asc'}]",
@@ -194,6 +194,7 @@ const ConsolePankan = (props) => {
             if (value !== null || value != undefined) {
                 setremark(dataObject.Remark)
                 setvaluesGuide(true)
+                GetDocument(value)
             } else if (value === null) {
                 setMsgDialogErr("Document invalid")
                 setStateDialogErr(true)
@@ -201,6 +202,19 @@ const ConsolePankan = (props) => {
         }
 
     };
+
+
+    const GetDocument = (docID) => {
+        //Axios.get(
+        //    window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docID +  "&getMapSto=true&_token=" +
+        //    localStorage.getItem("Token")
+        //).then(res => {
+        //      console.log(res)
+        //    )
+
+
+
+    }
 
     const onChangeEditorBarcodepick = (e) => {
         setbarcodePicks(e)

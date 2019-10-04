@@ -1478,7 +1478,7 @@ const AmProcessQueue = props => {
                         useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
                         useExpireDate: y.ExpireDate ? y.ExpireDate : false,
                         useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                        useFullPallet: y.FullPallet ? y.FullPallet : false,
+                        useFullPick: y.FullPallet ? y.FullPallet : false,
                         baseQty: y.BaseqtyMax
                             ? y.BaseqtyMax
                             : y.BaseQuantity
@@ -1502,7 +1502,7 @@ const AmProcessQueue = props => {
                         useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
                         useExpireDate: y.ExpireDate ? y.ExpireDate : false,
                         useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                        useFullPallet: y.FullPallet ? y.FullPallet : false,
+                        useFullPick: y.FullPallet ? y.FullPallet : false,
                         baseQty: y.BaseqtyMax
                             ? y.BaseqtyMax
                             : y.BaseQuantity
@@ -1880,7 +1880,7 @@ const AmProcessQueue = props => {
                                                             ? warehouseID
                                                             : ""
                                                 }
-                                                disabled={props.Defaulwarehouse ? true : false}
+                                                disabled={props.Defaulwarehouse ? true : btnBack? true: false}
                                                 onChange={onHandleChangeDDLWarehouse}
                                                 ddlType={"search"} //รูปแบบ Dropdown
                                             />
@@ -1911,6 +1911,7 @@ const AmProcessQueue = props => {
                                                 //queryApi={apiDoc}
                                                 returnDefaultValue={true}
                                                 defaultValue={documentID ? documentID : ""}
+                                                disabled={btnBack ? true : false}
                                                 onChange={(value, dataObject) =>
                                                     onHandleChangeDDLDocument(value, dataObject)
                                                 }
@@ -2393,7 +2394,83 @@ const AmProcessQueue = props => {
                                                                             <LabelH>{t("Status")} : </LabelH>
                                                                             <FormInline>
 
-                                                                                {docDesCustomer && props.StatusfromDescustomer === true ?
+                                                                                {props.AllStatus === true ? 
+                                                                                    <div>
+                                                                                        <FormInline>
+                                                                                            <AmCheckBox
+                                                                                                value="Receive"
+                                                                                                label="Receive"
+                                                                                                defaultChecked={true}
+                                                                                                //checked={true}
+                                                                                                onChange={(e, v) =>
+                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                }
+                                                                                            >
+                                                                                                >
+                                              </AmCheckBox>
+                                                                                            <AmCheckBox
+                                                                                                value="QC"
+                                                                                                label="QC"
+                                                                                                defaultChecked={true}
+                                                                                                //checked={true}
+                                                                                                onChange={(e, v) =>
+                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                }
+                                                                                            >
+
+                                                                                            </AmCheckBox>
+
+                                                                                            <AmCheckBox
+                                                                                                value="Reject"
+                                                                                                label="Reject"
+                                                                                                //checked={true}
+                                                                                                defaultChecked={true}
+                                                                                                onChange={(e, v) =>
+                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                }
+                                                                                            >
+
+                                                                                            </AmCheckBox>
+
+                                                                                            <AmCheckBox
+                                                                                                value="Hold"
+                                                                                                label="Hold"
+                                                                                                defaultChecked={true}
+                                                                                                //checked={true}
+                                                                                                onChange={(e, v) =>
+                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                }
+                                                                                            >
+
+                                                                                            </AmCheckBox>
+
+
+                                                                                            <AmCheckBox
+                                                                                                value="Return"
+                                                                                                label="Return"
+                                                                                                defaultChecked={true}
+                                                                                                //checked={true}
+                                                                                                onChange={(e, v) =>
+                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                }
+                                                                                            >
+
+                                                                                            </AmCheckBox>
+                                                                                            <AmCheckBox
+                                                                                                value="Partial"
+                                                                                                label="Partial"
+                                                                                                defaultChecked={true}
+                                                                                                //checked={true}
+                                                                                                onChange={(e, v) =>
+                                                                                                    onChangCheckboxStatus(e, idx)
+                                                                                                }
+                                                                                            >
+
+                                                                                            </AmCheckBox>
+                                                                                       
+                                                                                        </FormInline>
+                                                                                    </div>     
+                                                                                    :docDesCustomer && props.StatusfromDescustomer === true ?
                                                                                     <div>
                                                                                         <FormInline>
                                                                                             <AmCheckBox
@@ -2425,8 +2502,9 @@ const AmProcessQueue = props => {
                                                                                                     onChangCheckboxStatus(e, idx)
                                                                                                 }
                                                                                             >
-                                                                                                >
-                                              </AmCheckBox>
+                                                                                                
+                                                                                                    </AmCheckBox>
+                                                                                               
                                                                          
                                                                                             <AmCheckBox
                                                                                                 value="Reject"
