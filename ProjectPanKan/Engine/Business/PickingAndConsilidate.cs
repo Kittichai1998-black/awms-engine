@@ -331,9 +331,8 @@ namespace ProjectPanKan.Engine.Business
                         if (DocumentADO.GetInstant().ListItem(reqVO.docID, this.BuVO).TrueForAll(x => x.EventStatus == DocumentEventStatus.WORKED))
                         {
                             DocumentADO.GetInstant().UpdateStatusToChild(reqVO.docID, null, null, DocumentEventStatus.WORKED, BuVO);
+                            var createLD = this.ExectProject<object, List<amt_DocumentItemStorageObject>>(FeatureCode.EXEPJ_MappingDistoLD, new { reqVO.docID });
                         }
-
-                        var createLD = this.ExectProject<object, List<amt_DocumentItemStorageObject>>(FeatureCode.EXEPJ_MappingDistoLD, new { reqVO.docID });
 
                         return new TRes()
                         {
