@@ -369,7 +369,6 @@ const AmMappingPallet2 = (props) => {
     }
     const getValueInput = () => {
         if (itemCreate !== undefined) {
-            //console.log(itemCreate)
             itemCreate.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
@@ -377,7 +376,6 @@ const AmMappingPallet2 = (props) => {
                 }
             })
         } else if (FirstScans !== undefined) {
-            // console.log(FirstScans)
             FirstScans.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
@@ -392,17 +390,14 @@ const AmMappingPallet2 = (props) => {
         if (field === "warehouseID") {
             setSelWarehouse(value);
         }
-
         if (event && event.key == 'Enter') {
             setKeyEnter(true);
         }
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        // if (field !== "scanCode") {
         setCurInput(field);
         setKeyEnter(true);
-        // }
     };
 
     async function onHandleBeforePost() {
@@ -413,22 +408,12 @@ const AmMappingPallet2 = (props) => {
         var dataScan = {};
         let rootBaseCode = null;
         if (valueInput) {
-            // if (valueInput['scanCode']) {
             let rootFocusID = null;
             if (storageObj) {
                 var dataRootFocus = findRootMapping(storageObj);
                 rootFocusID = dataRootFocus.id;
                 rootBaseCode = dataRootFocus.code;
-                //
-                if (curInput !== SC.OPT_REMARK) {
-                    var qryStr2 = queryString.parse(storageObj.options)
-                    let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                    if (eleREMARK) {
-                        eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                        valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                    }
-                }
-
+                
                 //onBeforePost custom function
                 if (onBeforePost) {
                     var resInput = {
@@ -440,7 +425,7 @@ const AmMappingPallet2 = (props) => {
                     };
                     dataScan = await onBeforePost(resInput, storageObj, curInput);
                     if (dataScan) {
-                        console.log(dataScan.allowSubmit)
+                        // console.log(dataScan.allowSubmit)
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
                         }
@@ -459,9 +444,7 @@ const AmMappingPallet2 = (props) => {
 
             } else {
                 //select / add pallet 
-
                 dataScan = {
-                    // rootID: null,
                     mode: 0,
                     amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
                     action: actionValue,
@@ -469,11 +452,6 @@ const AmMappingPallet2 = (props) => {
                 resValuePosts = { ...valueInput, ...dataScan }
             }
 
-            // } else {
-            //     if (curInput === 'scanCode') {
-            //         alertDialogRenderer("Scan Code must be value", "error", true);
-            //     }
-            // }
         }
         if (resValuePosts) {
 
@@ -496,7 +474,7 @@ const AmMappingPallet2 = (props) => {
             }
         } else {
             if (preAutoPost) {
-                alertDialogRenderer("Please check information before.", "error", true);
+                alertDialogRenderer("Please fill your information completely.", "error", true);
             }
         }
     }
@@ -521,7 +499,7 @@ const AmMappingPallet2 = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            console.log(resValuePosts);
+            // console.log(resValuePosts);
             if (resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
@@ -580,42 +558,34 @@ const AmMappingPallet2 = (props) => {
             inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
+
                     if (showArea && res.data.areaID) {
                         GetArea(res.data.areaID);
                     }
                     if (res.data.code === req.scanCode) {
                         if (actionValue === 0) {
-
                             alertDialogRenderer("Select Pallet Success", "success", true);
                         }
                         if (actionValue === 1) {
-
                             alertDialogRenderer("Success", "success", true);
                         }
                         if (actionValue === 2) {
-
                             alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
-
                         }
                         setStorageObj(res.data);
 
-                        // inputClear();
                     } else {
                         if (actionValue === 0) {
                             setStorageObj(res.data);
-                            // inputClear();
                             alertDialogRenderer("Select Success", "success", true);
                         }
                         if (actionValue === 1) {
                             setStorageObj(res.data);
-                            // inputClear();
                             alertDialogRenderer("Success", "success", true);
                         }
                         if (actionValue === 2) {
                             if (res.data.mapstos) {
                                 setStorageObj(res.data);
-                                // inputClear();
-
                                 alertDialogRenderer("Remove Pack Success", "success", true);
 
                             } else {
@@ -624,8 +594,44 @@ const AmMappingPallet2 = (props) => {
                             }
                         }
                     }
-
-
+                    if (itemCreate !== undefined) {
+                        let qryStr2 = queryString.parse(res.data.options);
+                        itemCreate.map((x, i) => {
+                            let ele = document.getElementById(x.field);
+                            if (ele) {
+                                if (x.clearInput) {
+                                } else {
+                                    if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                        valueInput[x.field] = qryStr2[x.field];
+                                        ele.value = qryStr2[x.field];
+                                    }
+                                }
+                            }
+                        });
+                        if (res.data.mapstos.length > 0) {
+                           let mapsto =  res.data.mapstos[0];
+                            itemCreate.map((x, i) => {
+                                let ele = document.getElementById(x.field);
+                                if (ele) {
+                                    if (x.clearInput) {
+                                    } else {
+                                        if(x.field === 'scanCode'){
+                                            if (mapsto.code !== null && mapsto.code !== undefined) {
+                                                valueInput[x.field] = mapsto.code;
+                                                ele.value = mapsto.code;
+                                            }
+                                        }else{
+                                            if (mapsto[x.field] !== null && mapsto[x.field] !== undefined) {
+                                                valueInput[x.field] = mapsto[x.field];
+                                                ele.value = mapsto[x.field];
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        // console.log(valueInput);
+                    }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
                 }
@@ -641,7 +647,6 @@ const AmMappingPallet2 = (props) => {
         Axios.post(window.apipath + apiCreate, dataEmptyPallet).then((res) => {
             if (res.data._result.message === "Success") {
                 setStorageObj(res.data);
-                //inputClear();
                 alertDialogRenderer("Add & Mapping Pallet Success", "success", true);
             } else {
                 alertDialogRenderer(res.data._result.message, "error", true);
@@ -650,7 +655,7 @@ const AmMappingPallet2 = (props) => {
     }
     const scanBarcodeEmptyPalletApi = (req) => {
         if (actionValue === 0) {
-            //select ���ʴ���ҡ�������������ҧ sto �ͧ��� pallet ��� sku empty pallet
+            //select sto  pallet  sku empty pallet
             Axios.post(window.apipath + apiCreate, req).then((res) => {
                 inputClear();
                 if (res.data != null) {
@@ -786,39 +791,40 @@ const AmMappingPallet2 = (props) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
-                <div style={{ display: 'inline-flex', alignItems: 'center' }} > 
-                    <AmInput
-                        id={field}
-                        required={required}
-                        // disabled={disabled}
-                        autoFocus={isFocus}
-                        placeholder={placeholder}
-                        type="input"
-                        style={{ width: "330px" }}
-                        inputProps={maxLength ? {
-                            maxLength: maxLength,
-                        } : {}}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            required={required}
+                            disabled={disabled}
+                            autoFocus={isFocus}
+                            placeholder={placeholder}
+                            type="input"
+                            style={{ width: "330px" }}
+                            inputProps={maxLength ? {
+                                maxLength: maxLength,
+                            } : {}}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
 
-                    />
-                </div>
+                        />
+                    </div>
                 </FormInline>
             )
         } else if (type === "number") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
-                <div style={{ display: 'inline-flex', alignItems: 'center' }} >
-                    <AmInput
-                        id={field}
-                        required={required}
-                        placeholder={placeholder}
-                        type="number"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    /></div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            required={required}
+                            disabled={disabled}
+                            placeholder={placeholder}
+                            type="number"
+                            style={{ width: "330px" }}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        /></div>
                 </FormInline>
             )
         }
@@ -934,22 +940,16 @@ const AmMappingPallet2 = (props) => {
     const onClearInput = (inputCreate) => {
         if (inputCreate !== undefined) {
             inputCreate.map((x, i) => {
-                // setValueInput({
-                //     [x.field]: x.defaultValue ? x.defaultValue : ""
-                // });
                 let ele = document.getElementById(x.field);
                 if (ele) {
-                    valueInput[x.field] = x.defaultValue ? x.defaultValue : x.clearInput ? "" : valueInput[x.field];
-                    ele.value = x.defaultValue ? x.defaultValue : x.clearInput ? "" : valueInput[x.field];
+                    valueInput[x.field] = x.defaultValue ? x.defaultValue : "";
+                    ele.value = x.defaultValue ? x.defaultValue : "";
                     if (x.isFocus === true) {
                         ele.focus();
                     }
                 }
-
             });
-
         }
-
     }
 
     const TabsRenderer = () => {
