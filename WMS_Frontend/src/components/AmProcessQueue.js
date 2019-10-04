@@ -1478,7 +1478,7 @@ const AmProcessQueue = props => {
                         useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
                         useExpireDate: y.ExpireDate ? y.ExpireDate : false,
                         useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                        useFullPallet: y.FullPallet ? y.FullPallet : false,
+                        useFullPick: y.FullPallet ? y.FullPallet : false,
                         baseQty: y.BaseqtyMax
                             ? y.BaseqtyMax
                             : y.BaseQuantity
@@ -1502,7 +1502,7 @@ const AmProcessQueue = props => {
                         useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
                         useExpireDate: y.ExpireDate ? y.ExpireDate : false,
                         useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                        useFullPallet: y.FullPallet ? y.FullPallet : false,
+                        useFullPick: y.FullPallet ? y.FullPallet : false,
                         baseQty: y.BaseqtyMax
                             ? y.BaseqtyMax
                             : y.BaseQuantity
