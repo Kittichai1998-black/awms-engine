@@ -2052,76 +2052,22 @@ const AmProcessQueue = props => {
                                             setqtyDocItem(qtyDocItem);
                                             DataDocumentItem[idx]["BaseqtyMax"] = qtyDocItem[idx];
                                         }
-
                                         if (x.Options !== null && x.Options !== undefined && window.project !== "AAI") {
-                                            if (
-                                                x.Options.split("=")[1] !== undefined &&
-                                                x.Options.split("=")[2] !== undefined &&
-                                                x.Options.split("=")[3] !== undefined
-                                            ) {
-                                                var palletcode = x.Options.split("=")[1].split("&")[0];
-                                                DataDocumentItem[idx]["palletcode"] = palletcode;
-                                                var locationcode = x.Options.split("=")[2].split(
-                                                    "&"
-                                                )[0];
-                                                DataDocumentItem[idx]["locationcode"] = locationcode;
-                                                var qtyrandom = x.Options.split("=")[3].split("&")[0];
-                                                if (qtyrandom !== undefined) var ele = qtyrandom;
-                                                onChangeRandom(ele, idx, qtyrandom);
-                                            } else if (
-                                                x.Options.split("=")[1] !== undefined &&
-                                                x.Options.split("locationcode=")[2] !== undefined &&
-                                                x.Options.split("qtyrandom=")[3] === undefined
-                                            ) {
-                                                var palletcode = x.Options.split("=")[1].split("&")[0];
-                                                DataDocumentItem[idx]["palletcode"] = palletcode;
-                                                var locationcode = x.Options.split("=")[2].split(
-                                                    "&"
-                                                )[0];
-                                                DataDocumentItem[idx]["locationcode"] = locationcode;
-                                            } else if (
-                                                x.Options.split("=")[1] !== undefined &&
-                                                x.Options.split("locationcode=")[2] === undefined &&
-                                                x.Options.split("=")[2] !== undefined
-                                            ) {
-                                                var palletcode = x.Options.split("=")[1].split("&")[0];
-                                                DataDocumentItem[idx]["palletcode"] = palletcode;
-                                                var qtyrandom = x.Options.split("=")[2].split("&")[0];
-                                                if (qtyrandom !== undefined) var ele = qtyrandom;
-                                                onChangeRandom(ele, idx, qtyrandom);
-                                            } else if (
-                                                x.Options.split("palletcode=")[1] === undefined &&
-                                                x.Options.split("=")[1] !== undefined &&
-                                                x.Options.split("=")[2] !== undefined
-                                            ) {
-                                                var locationcode = x.Options.split("=")[2].split(
-                                                    "&"
-                                                )[0];
-                                                DataDocumentItem[idx]["locationcode"] = locationcode;
-                                                var qtyrandom = x.Options.split("=")[3].split("&")[0];
-                                                if (qtyrandom !== undefined) var ele = qtyrandom;
-                                                onChangeRandom(ele, idx, qtyrandom);
-                                            } else if (
-                                                x.Options.split("palletcode=")[1] !== undefined
-                                            ) {
-                                                var palletcode = x.Options.split("=")[1].split("&")[0];
-                                                DataDocumentItem[idx]["palletcode"] = palletcode;
-                                            } else if (
-                                                x.Options.split("locationcode=")[1] !== undefined
-                                            ) {
-                                                var locationcode = x.Options.split("=")[1].split(
-                                                    "&"
-                                                )[0];
-                                                DataDocumentItem[idx]["locationcode"] = locationcode;
-                                                //onChangeRandom(ele, idx, qtyrandom)
-                                            } else if (
-                                                x.Options.split("qtyrandom=")[1] !== undefined
-                                            ) {
-                                                var qtyrandom = x.Options.split("=")[1].split("&")[0];
-                                                if (qtyrandom !== undefined) var ele = qtyrandom;
-                                                onChangeRandom(ele, idx, qtyrandom);
+                                            if (x.Options !== undefined || x.Options !== null) {
+                                                var qryStr1 = queryString.parse(x.Options)
+                                                var palletcode = qryStr1["palletcode"]
+                                                if (palletcode !== null || palletcode !== undefined)
+                                                    DataDocumentItem[idx]["palletcode"] = palletcode;
+                                                var locationcode = qryStr1["locationcode"]
+                                                if (locationcode !== null || locationcode !== undefined)
+                                                    DataDocumentItem[idx]["locationcode"] = locationcode;
+                                                var qtyrandom = qryStr1["qtyrandom"]
+                                                onChangeRandom(null, idx, qtyrandom);
+
+
                                             }
                                         }
+                                     
                                         if (props.docType === "audit") {
                                             var qtyrandoms = "100";
                                             var es = null;
@@ -2562,7 +2508,8 @@ const AmProcessQueue = props => {
                                                                                                     <AmCheckBox
                                                                                                         value="Receive"
                                                                                                         label="Receive"
-                                                                                                        checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                                                                           checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                                                                          defaultChecked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }
@@ -2572,7 +2519,8 @@ const AmProcessQueue = props => {
                                                                                                     <AmCheckBox
                                                                                                         value="Block"
                                                                                                         label="Block"
-                                                                                                        checked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
+                                                                                                                checked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
+                                                                                                                defaultChecked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null }
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }
@@ -2582,7 +2530,8 @@ const AmProcessQueue = props => {
                                                                                                     <AmCheckBox
                                                                                                         value="QC"
                                                                                                         label="QC"
-                                                                                                        checked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
+                                                                                                                checked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
+                                                                                                                defaultChecked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }

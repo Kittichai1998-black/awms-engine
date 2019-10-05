@@ -707,16 +707,15 @@ const Scanbarcode = (props) => {
                                             </Border>}
                                             <div>
                                                
-                                        <AmButton styleType="confirm" onClick={()=> {
-                                            if(!lockStateRight){
-                                                lockGateID.push(areaGate)
-                                            }else{
-                                                setLockGateID(lockGateID.filter(x => x !== areaGate))
-                                            }
-                                            databar.lockGateID = lockGateID
-                                            setdatabar({...databar})
-                                                    setLockStateLeft(!lockStateLeft)
-                                                }}>Lock</AmButton>
+                                            <AmButton styleType="confirm" onClick={()=> {
+                                                    lockGateID.push(areaGate)
+                                                    databar.lockGateID = lockGateID
+                                                    setdatabar({...databar})
+                                                    setLockStateLeft(true)
+                                                    }}>Manual</AmButton>
+
+                                                <AmButton styleType="confirm" onClick={()=> {
+                                                }}>Remove</AmButton>
                                             </div>
                                         </Card></Flash></div> : null}
 
@@ -778,7 +777,7 @@ const Scanbarcode = (props) => {
                                                         </FormInline>
                                                     </Border>}
                                                 <AmButton styleType="confirm" onClick={()=> {
-                                                    lockGateID.push(areaGate)
+                                                    lockGateID.push(area2)
                                                     databar.lockGateID = lockGateID
                                                     setdatabar({...databar})
                                                     setLockStateRight(true)
