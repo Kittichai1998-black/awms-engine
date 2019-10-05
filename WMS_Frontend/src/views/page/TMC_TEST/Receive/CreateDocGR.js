@@ -39,7 +39,7 @@ const CreateDocGR = props => {
             type: "labeltext",
             key: "movementTypeID",
             texts: dataMovementType,
-            valueTexts: "1012"
+            valueTexts: "4011"
           },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
@@ -125,7 +125,7 @@ const CreateDocGR = props => {
   const MovementTypeQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
     t: "MovementType",
-    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 1012}]',
+    q: '[{ "f": "Status", "c":"<", "v": 2},{ "f": "ID", "c":"=", "v": 4011}]',
     f: "ID,Code,Name",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",

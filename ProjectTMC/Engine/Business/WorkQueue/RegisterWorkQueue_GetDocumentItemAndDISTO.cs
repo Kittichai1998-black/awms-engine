@@ -46,10 +46,6 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                 {
                     docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
                 }
-                
-
-
-               
 
                 //if (sto.eventStatus != StorageObjectEventStatus.AUDITED && sto.eventStatus != StorageObjectEventStatus.AUDITING)
                 //{
@@ -76,31 +72,33 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code),
                     new KeyValuePair<string,object>("EventStatus", DocumentEventStatus.WORKING)
             }, buVO).FirstOrDefault();
-
-            var listDocStoGR = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(docGR.Document_ID, buVO);
-
-            foreach (var docStos in listDocStoGR)
+            
+            if(docGR == null)
             {
-                docStos.DocItemStos.ForEach(disto =>
-                {
-                    //DocItemsMap.Add(new amt_DocumentItemStorageObject()
-                    //{
-                    //    DocumentItem_ID = docStos.ID,
-                    //    DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
-                    //    WorkQueue_ID = null,
-                    //    Sou_StorageObject_ID = mapsto.id.Value,
-                    //    Des_StorageObject_ID = mapsto.id.Value,
-                    //    Quantity = docStos.Quantity,
-                    //    UnitType_ID = docStos.UnitType_ID,
-                    //    BaseUnitType_ID = disto.BaseUnitType_ID,
-                    //    Status = EntityStatus.INACTIVE
-
-                    //});
-                });
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Good Received Document Not Found");
+            }
+            if (docGR.EventStatus != DocumentEventStatus.WORKING)
+            {
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Good Received Document Not WORKING");
             }
 
-            DocItemsMap = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(DocItemsMap, buVO);
-            return docItems;
+            var distoRes = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(new amt_DocumentItemStorageObject()
+                {
+                    DocumentItem_ID = docGR.ID,
+                    DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
+                    WorkQueue_ID = null,
+                    Sou_StorageObject_ID = mapsto.id.Value,
+                    Des_StorageObject_ID = mapsto.id.Value,
+                    Quantity = docGR.Quantity,
+                    UnitType_ID = docGR.UnitType_ID.Value,
+                    BaseUnitType_ID = docGR.BaseUnitType_ID.Value,
+                    Status = EntityStatus.INACTIVE
+
+                }, buVO);
+            docGR.DocItemStos = new List<amt_DocumentItemStorageObject> { distoRes };
+            
+            
+            return new List<amt_DocumentItem> { docGR };
         }
         //==========================================================================================================
         private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, RegisterWorkQueue.TReq reqVO, AMWLogger logger, VOCriteria buVO)
@@ -164,10 +162,10 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                                            desBranchID = StaticValue.Warehouses.First(x => x.ID == mapsto.warehouseID).Branch_ID,
                                            desWarehouseID = mapsto.warehouseID,
                                            desAreaMasterID = StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID,
-                                           movementTypeID = MovementType.FG_TRANSFER_WM,
+                                           movementTypeID = MovementType.WIP_TRANSFER_WM,
                                            lot = null,
                                            batch = null,
-                                           forCustomerID = StaticValue.Customers.First(x => x.Code == mappingPallet.forCustomerCode).ID,
+                                           forCustomerID = null,
                                            documentDate = DateTime.Now,
                                            actionTime = DateTime.Now,
                                            eventStatus = DocumentEventStatus.NEW,
