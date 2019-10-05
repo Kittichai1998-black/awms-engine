@@ -615,7 +615,7 @@ const AmMappingPallet = (props) => {
                             }
                         });
                     }
-                        console.log(valueInput);
+                        // console.log(valueInput);
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
                 }

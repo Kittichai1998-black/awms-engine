@@ -77,7 +77,11 @@ const CustomerReturnPalletByBarcode = (props) => {
                 if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                     let orderNo = reqValue['scanCode'].substr(0, 7);
                     let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                    let skuCode = skuCode1.trim(); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
+                    let skuCode = null;
+                    if(skuCode1.includes('@')){
+                        skuCode = skuCode1.replace(/\@/g, " ");
+                    }
+                    skuCode = skuCode.trim(); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
                     let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                     let rootID = reqValue.rootID;
                     let qryStr = {};
