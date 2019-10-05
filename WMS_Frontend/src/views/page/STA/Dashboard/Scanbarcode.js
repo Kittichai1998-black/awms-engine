@@ -548,10 +548,6 @@ const Scanbarcode = (props) => {
         </CardContent>
     }
 
-    const FullScreens = () => {
-        setisFull(true)
-    }
-
     return (
         <Fullscreen
             enabled={isFullScreen}
@@ -662,11 +658,10 @@ const Scanbarcode = (props) => {
                             <div style={{ paddingTop: "30px", marginRight: "5px" }}>
                                 <Card>
                                     <div>
-                                        {gateLeft === true ? gateLeft === true ?
-                                            lockStateRight === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
+                                        {gateLeft === true ?
+                                            lockStateLeft === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
                                             <Flash>{HeadGateA(area1 ? area1 : "")}</Flash>
-                                            : <div>{HeadGateB(area1 ? area1 : "")}</div> :
-                                            <div>{HeadGateB(area1 ? area1 : "")}</div>}
+                                            : <div>{HeadGateB(area1 ? area1 : "")}</div>}
                                     </div>
                                     <Card style={{ height: "500px" }}>
                                         {gateLeft === true ? <div> <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
@@ -730,7 +725,7 @@ const Scanbarcode = (props) => {
                                 <Card >
                                     <div>
                                         {gateRight === true ?
-                                            lockStateRight === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
+                                            lockStateRight === true ? <div>{HeadLock(area2 ? area2 : "")}</div> :
                                             <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
                                             : <div>{HeadGateB(area2 ? area2 : "")}</div>}
                                     </div>
@@ -777,7 +772,7 @@ const Scanbarcode = (props) => {
                                                         </FormInline>
                                                     </Border>}
                                                 <AmButton styleType="confirm" onClick={()=> {
-                                                    lockGateID.push(area2)
+                                                    lockGateID.push(areaGate)
                                                     databar.lockGateID = lockGateID
                                                     setdatabar({...databar})
                                                     setLockStateRight(true)
