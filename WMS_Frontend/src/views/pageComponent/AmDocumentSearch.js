@@ -362,6 +362,28 @@ const AmDocumentSearch = props => {
           }
         }
       });
+    } else if (props.docTypeCode === "1001") {
+      Axios.post(window.apipath + "/v2/WorkingGRDocAPI", {
+        docIDs: docID,
+        remark: remark
+      }).then(res => {
+        if (res.data._result !== undefined) {
+          if (res.data._result.status === 1) {
+            setOpenSuccess(true);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          } else {
+            setOpenError(true);
+            setTextError(res.data._result.message);
+            getData(query);
+            setPage(0);
+            setResetPage(true);
+            Clear();
+          }
+        }
+      });
     }
   }
   //============================================

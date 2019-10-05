@@ -52,12 +52,12 @@ const CreateDocGI = props => {
             valueTexts: "1"
           },
           {
-            label: "Destination Customer",
-            key: "desCustomerID",
+            label: "Destination Warehouse",
+            key: "desWarehouseID",
             type: "dropdown",
             pair: "ID",
-            idddl: "desCustomerID",
-            queryApi: CustomerQuery,
+            idddl: "desWarehouseID",
+            queryApi: WarehouseQuery,
             fieldLabel: ["Code", "Name"]
           }
         ],
