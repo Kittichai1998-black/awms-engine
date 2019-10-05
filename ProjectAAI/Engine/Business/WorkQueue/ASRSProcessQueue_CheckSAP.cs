@@ -352,6 +352,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                     var addPickBaseQty = x.pstoBaseQty - x.pickBaseQty;
                                     pickSto.pickBaseQty += addPickBaseQty;
                                     x.pickBaseQty = x.pstoBaseQty;
+
+                                    var addPickQty = x.pstoQty - x.pickQty;
+                                    pickSto.pickQty += addPickQty;
+                                    x.pickQty = x.pstoQty;
                                 });
                         }
                     }
