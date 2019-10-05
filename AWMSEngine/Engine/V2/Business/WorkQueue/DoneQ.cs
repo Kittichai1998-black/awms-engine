@@ -180,7 +180,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                                 if (remainQty >= sto.qty) //1500 > 1000
                                                 { //ถ้า จำนวนที่ยังต้องเบิกเพิ่ม >= จำนวนของ sto  ให้ตัดเต็ม 
                                                     ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, sto.qty, sto.baseQty, EntityStatus.ACTIVE, this.BuVO);
-                                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.parentID.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
                                                 }
                                                 //2) 1500 - 1000 = 500 sto2 ของเหลือ สถานะยังเป็น received ส่วนที่เบิกสร้างstoใหม่ สถานะเปนpicking
                                                 else
@@ -234,7 +234,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                                 if (sto.qty == disto.Quantity)
                                                 {
                                                     ADO.DocumentADO.GetInstant().UpdateMappingSTO(disto.ID.Value, disto.Sou_StorageObject_ID, null, null, EntityStatus.ACTIVE, this.BuVO);
-                                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.id.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
+                                                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(stos.parentID.Value, null, null, StorageObjectEventStatus.PICKING, this.BuVO);
                                                 }
                                                 else
                                                 {
