@@ -31,21 +31,21 @@ namespace ProjectTMC.Engine.Business.WorkQueue
             if (sto.eventStatus == StorageObjectEventStatus.NEW || sto.eventStatus == StorageObjectEventStatus.AUDITED || sto.eventStatus == StorageObjectEventStatus.AUDITING)
             {
                 //เช็ค sku type
-                var skuMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
-                new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code),
-                    new KeyValuePair<string,object>("Status",1),
-                }, buVO).FirstOrDefault();
+                //var skuMasterData = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(
+                //new KeyValuePair<string, object>[] {
+                //    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code),
+                //    new KeyValuePair<string,object>("Status",1),
+                //}, buVO).FirstOrDefault();
                 
-                if(skuMasterData.SKUMasterType_ID == 58)
-                {
+                //if(skuMasterData.SKUMasterType_ID == 58)
+                //{
                     docItems = this.GetDocumentProcessReceiving(sto, reqVO, logger, buVO);
                    
-                }
-                else
-                {
-                    docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
-                }
+                //}
+                //else
+                //{
+                //    docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
+                //}
 
                 //if (sto.eventStatus != StorageObjectEventStatus.AUDITED && sto.eventStatus != StorageObjectEventStatus.AUDITING)
                 //{
@@ -69,17 +69,18 @@ namespace ProjectTMC.Engine.Business.WorkQueue
 
             var docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
             new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code),
-                    new KeyValuePair<string,object>("EventStatus", DocumentEventStatus.WORKING)
+                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code)
             }, buVO).FirstOrDefault();
+            var qtyPack = System.Convert.ToDecimal(reqVO.mappingPallets[0].qty);
+
             
-            if(docGR == null)
+            if (docGR == null)
             {
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Good Received Document Not Found");
             }
-            if (docGR.EventStatus != DocumentEventStatus.WORKING)
+            if (docGR.Quantity < qtyPack)
             {
-                throw new AMWException(logger, AMWExceptionCode.V1001, "Good Received Document Not WORKING");
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Qty more then Good Received Document");
             }
 
             var distoRes = AWMSEngine.ADO.DocumentADO.GetInstant().InsertMappingSTO(new amt_DocumentItemStorageObject()
@@ -87,9 +88,10 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     DocumentItem_ID = docGR.ID,
                     DocumentType_ID = DocumentTypeID.GOODS_RECEIVED,
                     WorkQueue_ID = null,
-                    Sou_StorageObject_ID = mapsto.id.Value,
-                    Des_StorageObject_ID = mapsto.id.Value,
-                    Quantity = docGR.Quantity,
+                    Sou_StorageObject_ID = mapsto.mapstos[0].id.Value,
+                    Des_StorageObject_ID = mapsto.mapstos[0].id.Value,
+                    Quantity = qtyPack,
+                    BaseQuantity = qtyPack,
                     UnitType_ID = docGR.UnitType_ID.Value,
                     BaseUnitType_ID = docGR.BaseUnitType_ID.Value,
                     Status = EntityStatus.INACTIVE
