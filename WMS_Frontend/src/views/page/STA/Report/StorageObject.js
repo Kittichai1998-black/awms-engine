@@ -305,14 +305,14 @@ const StorageObject = props => {
       placeholder: "Remark"
     },
     {
-      label: "Date From: ",
+      label: "Date From",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
       dateSearchType: "dateFrom"
     },
     {
-      label: "Date To: ",
+      label: "Date To",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
