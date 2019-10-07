@@ -31,7 +31,10 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     new KeyValuePair<string,object>("Code",reqVO.baseCode),
                     new KeyValuePair<string,object>("Status",1),
                 }, buVO);
-
+            var docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
+            new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code)
+            }, buVO).FirstOrDefault();
 
             if (baseMasterData.Count <= 0)
             {
@@ -133,7 +136,7 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                                 unit = row.unit,
                                 orderNo = row.orderNo,
                                 batch = row.batch,
-                                lot = row.lot,
+                                lot = docGR.Lot,
                                 prodDate = row.prodDate,
                                 //movingType = row.movingType
                             });
