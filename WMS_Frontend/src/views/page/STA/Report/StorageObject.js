@@ -70,7 +70,8 @@ const StorageObject = props => {
     { label: "HOLD", value: "HOLD" },
     { label: "PARTIAL", value: "PARTIAL" },
     { label: "RETURN", value: "RETURN" },
-    { label: "REMOVED", value: "REMOVED" }
+    { label: "REMOVED", value: "REMOVED" },
+    { label: "QUALITY_CONTROL", value: "QUALITY_CONTROL" }
   ];
 
   const iniCols = [
@@ -305,14 +306,14 @@ const StorageObject = props => {
       placeholder: "Remark"
     },
     {
-      label: "Date From: ",
+      label: "Date From",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
       dateSearchType: "dateFrom"
     },
     {
-      label: "Date To: ",
+      label: "Date To",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
