@@ -89,8 +89,6 @@ const StorageObject = props => {
     { Header: "Warehouse", accessor: "Warehouse", width: 120 },
     { Header: "Area", accessor: "Area", width: 130 },
     { Header: "Location", accessor: "Location", width: 120 },
-    { Header: "Batch", accessor: "Batch", width: 120 },
-    { Header: "Lot", accessor: "Lot", width: 120 },
     { Header: "OrderNo", accessor: "OrderNo", width: 120 },
     {
       Header: "Qty",
