@@ -67,7 +67,10 @@ const StorageObject = props => {
     { label: "RECEIVING", value: "RECEIVING" },
     { label: "PICKING", value: "PICdKING" },
     { label: "PICKED", value: "PICKED" },
-    { label: "HOLD", value: "HOLD" }
+    { label: "HOLD", value: "HOLD" },
+    { label: "PARTIAL", value: "PARTIAL" },
+    { label: "RETURN", value: "RETURN" },
+    { label: "REMOVED", value: "REMOVED" }
   ];
 
   const iniCols = [

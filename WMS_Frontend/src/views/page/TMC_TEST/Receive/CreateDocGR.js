@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
-import AmCreateDocument from "../../../../components/AmCreateDocument";
+import AmCreateDocument from "../Receive/AmCreateDocument";
 import {
   apicall,
   createQueryString

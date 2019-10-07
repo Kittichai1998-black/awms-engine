@@ -48,13 +48,13 @@ const DocumentViewGI = props => {
       Header: "Task",
       Cell: e => getStatusGI(e.original)
     },
-    { width: 120, accessor: "Code", Header: "Pallet" },
-    { width: 150, accessor: "PackCode", Header: "Part NO." },
-    { accessor: "PackName", Header: "Part Name" },
-    { width: 100, accessor: "ItemNo", Header: "Item No." },
-    { width: 125, accessor: "OrderNo", Header: "OrderNo" },
+    { width: 120, accessor: "code", Header: "Pallet" },
+    { width: 150, accessor: "packCode", Header: "Part NO." },
+    { accessor: "packName", Header: "Part Name" },
+    //{ width: 100, accessor: "itemNo", Header: "Item No." },
+    { width: 125, accessor: "orderNo", Header: "OrderNo" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
-    { width: 60, accessor: "PackUnitCode", Header: "Unit" }
+    { width: 60, accessor: "packUnitCode", Header: "Unit" }
   ];
 
   const columnsDetailDES = [
@@ -67,7 +67,7 @@ const DocumentViewGI = props => {
     { width: 120, accessor: "code", Header: "Pallet" },
     { width: 150, accessor: "packCode", Header: "Part NO." },
     { accessor: "packName", Header: "Part Name" },
-    { width: 100, accessor: "itemNo", Header: "Item No." },
+    // { width: 100, accessor: "itemNo", Header: "Item No." },
     { width: 125, accessor: "orderNo", Header: "OrderNo" },
     { width: 110, accessor: "_packQty", Header: "Qty" },
     { width: 60, accessor: "packUnitCode", Header: "Unit" }
