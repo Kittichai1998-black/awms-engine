@@ -65,12 +65,13 @@ const StorageObject = props => {
     { label: "AUDITED", value: "AUDITED" },
     { label: "RECEIVED", value: "RECEIVED" },
     { label: "RECEIVING", value: "RECEIVING" },
-    { label: "PICKING", value: "PICdKING" },
+    { label: "PICKING", value: "PICKING" },
     { label: "PICKED", value: "PICKED" },
     { label: "HOLD", value: "HOLD" },
     { label: "PARTIAL", value: "PARTIAL" },
     { label: "RETURN", value: "RETURN" },
-    { label: "REMOVED", value: "REMOVED" }
+    { label: "REMOVED", value: "REMOVED" },
+    { label: "QUALITY_CONTROL", value: "QUALITY_CONTROL" }
   ];
 
   const iniCols = [

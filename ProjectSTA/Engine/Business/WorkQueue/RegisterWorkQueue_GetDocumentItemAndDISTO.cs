@@ -39,7 +39,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             //return picking
             else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
             {
-                
+
                 var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
                 var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, buVO);
                 if (skuMaster == null)
@@ -53,6 +53,9 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
 
                 }
+            }
+            else if (sto.eventStatus == StorageObjectEventStatus.AUDITED)
+            {
             }
             else
             {
