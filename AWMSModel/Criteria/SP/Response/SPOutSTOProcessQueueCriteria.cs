@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AWMSModel.Constant.EnumConst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,9 +16,11 @@ namespace AWMSModel.Criteria.SP.Response
 
         public long rstoID;
         public string rstoCode;
+        public StorageObjectEventStatus rstoEventStatus;
 
         public long bstoID;
         public string bstoCode;
+        public StorageObjectEventStatus bstoEventStatus;
 
         public long pstoID;
         public string pstoCode;
@@ -29,6 +32,7 @@ namespace AWMSModel.Criteria.SP.Response
         public string pstoLot;
         public string pstoOrderNo;
         public string pstoOptions;
+        public StorageObjectEventStatus pstoEventStatus;
 
         //public decimal totalBaseQty;
         //public decimal conditionBaseQty;
@@ -46,6 +50,7 @@ namespace AWMSModel.Criteria.SP.Response
         public DateTime? pstoExpiryDate;
         public DateTime? pstoProductDate;
         public DateTime pstoCreateTime;
+
 
         public bool isWCSReady = true;
     }
