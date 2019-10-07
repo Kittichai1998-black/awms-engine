@@ -350,6 +350,11 @@ namespace AMWUtil.Common
 
             return jsond;
         }
+        public static string DynamicObjectToString(dynamic values, string field)
+        {
+            string newVal = values[field];
+            return newVal;
+        }
         public static T ObjectToModel<T>(object obj)
             where T : class
         {
