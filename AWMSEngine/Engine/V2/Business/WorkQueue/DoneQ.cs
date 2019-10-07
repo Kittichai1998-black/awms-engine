@@ -299,7 +299,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         //check sto
                         var stos2 = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode, warehouse.ID.Value, null, false, true, this.BuVO);
                         var stoList2 = stos.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-                        if(!stoList2.TrueForAll(x=> x.qty == 0 && x.eventStatus == StorageObjectEventStatus.PICKING))
+                        if(!stoList2.TrueForAll(x=> x.eventStatus == StorageObjectEventStatus.PICKING))
                         {
                             ADO.StorageObjectADO.GetInstant().UpdateStatus(stos2.id.Value, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                         }

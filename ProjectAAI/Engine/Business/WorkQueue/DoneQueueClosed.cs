@@ -36,7 +36,11 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                             var documentItems = AWMSEngine.ADO.DocumentADO.GetInstant().ListItemAndDisto(x, buVO);
                             if (documentItems == null || documentItems.Count == 0)
                             {
-                                throw new AMWException(logger, AMWExceptionCode.B0001, "Document Item Not Found");
+                                buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                {
+                                    docID = x,
+                                    msgError = "Document Items Not Found."
+                                });
                             }
                             else
                             {
@@ -218,8 +222,32 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                         UpdateOptionDoc(docs.ID.Value, docs.Options, tanumlists, buVO);
                                     }
                                 }
+                                else
+                                {
+                                    buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                    {
+                                        docID = x,
+                                        msgError = "Status of all document items didn't 'CLOSING'."
+                                    });
+                                }
                             }
                         }
+                        else
+                        {
+                            buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                            {
+                                docID = x,
+                                msgError = "Status of document didn't 'CLOSING'."
+                            });
+                        }
+                    }
+                    else
+                    {
+                        buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                        {
+                            docID = x,
+                            msgError = "Document Not Found"
+                        });
                     }
                 });
 
