@@ -118,8 +118,8 @@ const DocumentSearchGISTA = props => {
       width: 150
     },
     {
-      Header: "Des.Customer",
-      accessor: "DesCusName",
+      Header: "Des.Warehouse",
+      accessor: "DesWarehouseName",
       width: 150
     },
     {
@@ -163,10 +163,10 @@ const DocumentSearchGISTA = props => {
       fieldLabel: "Name"
     },
     {
-      label: "Des.Cusutomer",
-      field: "DesCustomerName",
+      label: "Des.Warehouse",
+      field: "DesWarehouseName",
       searchType: "dropdown",
-      dropdownData: dataCustomer,
+      dropdownData: dataWarehouse,
       fieldDataKey: "Name",
       fieldLabel: "Name"
     },

@@ -34,7 +34,7 @@ namespace AWMSEngine.Engine.V2.Business.Received
                         new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO);
 
-            if(checkWorking != null)
+            if(checkWorking.Count != 0)
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Document event status more then 1");
             }
