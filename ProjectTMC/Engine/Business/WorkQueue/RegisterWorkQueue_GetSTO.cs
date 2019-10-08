@@ -33,7 +33,8 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                 }, buVO);
             var docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
             new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code)
+                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code),
+                    new KeyValuePair<string,object>("EventStatus",DocumentEventStatus.WORKING)
             }, buVO).FirstOrDefault();
 
             if (baseMasterData.Count <= 0)
