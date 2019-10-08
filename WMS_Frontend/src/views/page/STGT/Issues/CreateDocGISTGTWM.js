@@ -37,8 +37,8 @@ export default props => {
             label: "Movement Type",
             type: "labeltext",
             key: "movementTypeID",
-            texts: "FG_DELIVERY_ORDER_WM ",
-            valueTexts: "1081"
+            texts: "FG_TRANSFER_WM",
+            valueTexts: "1011"
           },
           { label: "Action Time", type: "dateTime", key: "actionTime" }
         ],
@@ -89,7 +89,7 @@ export default props => {
     t: "PalletSto",
     q: '[{ "f": "EventStatus", "c":"=", "v": "12"}]', //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine",
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -158,7 +158,7 @@ export default props => {
     },
     {
       Header: "Order No",
-      accessor: "orderNo",
+      accessor: "OrderNo",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
@@ -199,7 +199,7 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "Order No", accessor: "orderNo", type: "input" },
+    { Header: "Order No", accessor: "OrderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
@@ -214,7 +214,7 @@ export default props => {
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
     { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Order No", accessor: "orderNo", width: 100 },
+    { Header: "Order No", accessor: "OrderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];

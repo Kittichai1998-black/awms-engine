@@ -152,6 +152,7 @@ const AmCreateDocument = (props) => {
 
         let indexPalletCode = props.columnEdit.findIndex(x => x.accessor === "palletcode")
         let indexBatch = props.columnEdit.findIndex(x => x.accessor === "batch")
+        let indexOrderNo= props.columnEdit.findIndex(x => x.accessor === "OrderNo")
         let indexQuantity = props.columnEdit.findIndex(x => x.accessor === "quantity")
         // let indexUnitType = props.columnEdit.findIndex(x => x.accessor === "unitType")
 
@@ -160,6 +161,7 @@ const AmCreateDocument = (props) => {
             editData.ID = data.ID
             editData.SKUItems = data.SKUItems
             editData.batch = data.Batch
+            editData.OrderNo = data.OrderNo
             editData.quantity = data.Quantity
             editData.unitType = data.UnitCode
             editData.skuCode = data.Code
@@ -170,6 +172,8 @@ const AmCreateDocument = (props) => {
 
             if (indexBatch !== -1)
                 ref.current[indexBatch].current.value = data.Batch
+            if (indexOrderNo !== -1)
+                ref.current[indexOrderNo].current.value = data.OrderNo
             if (indexQuantity !== -1)
                 ref.current[indexQuantity].current.value = data.Quantity
 
@@ -834,6 +838,7 @@ const AmCreateDocument = (props) => {
                 palletcode: x.palletcode,
                 SKUItems: x.SKUItems,
                 batch: x.Batch || x.batch,
+                OrderNo: x.orderNo || x.OrderNo,
                 quantity: x.Quantity || x.quantity,
                 unitType: x.UnitCode,
                 skuCode: x.Code || x.skuCode,

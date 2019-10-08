@@ -154,7 +154,7 @@ const BtnAddSkuByItem = props => {
     t: "PalletSto",
     q: conditionDefault, //เงื่อนไข '[{ "f": "Status", "c":"<", "v": 2}]'
     f:
-      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine",
+      "ID,palletcode,Code,Batch,Name,Quantity,UnitCode,BaseUnitCode,LocationCode,LocationName,SKUItems,srmLine,OrderNo",
     g: "",
     s: "[{'f':'ID','od':'ASC'}]",
     sk: 0,
@@ -193,8 +193,8 @@ const BtnAddSkuByItem = props => {
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
     {
-      Header: "Batch",
-      accessor: "Batch",
+      Header: "Order No",
+      accessor: "OrderNo",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
@@ -312,7 +312,7 @@ const BtnAddSkuByItem = props => {
             onClickSearch={() => setSearchAction(true)}
           />
         </StyledSearch>
-
+        {console.log(data)}
         <DialogContent>
           <AmTable
             primaryKey="ID"
