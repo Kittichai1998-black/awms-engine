@@ -158,6 +158,10 @@ const styles = theme => ({
     }
 });
 
+const useMenuBar = (status) => {
+    
+}
+
 const checkstatus = () => {
     const d1 = new Date(localStorage.ExpireTime);
     const d2 = new Date();
