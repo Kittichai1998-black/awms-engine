@@ -814,7 +814,7 @@ const AmPickingReturn = (props) => {
             if (ele) {
                 valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                 ele.value = x.defaultValue ? x.defaultValue : "";
-                if (x.field === true) {
+                if (x.isFocus === true) {
                     ele.focus();
                 }
             }

@@ -43,9 +43,25 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                         if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                         {
                             AWMSEngine.ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKING, null, DocumentEventStatus.WORKED, buVO);
-                        } 
+                        }
+                        else
+                        {
+                            buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                            {
+                                docID = x,
+                                msgError = "Status of all document items didn't 'WORKED'."
+                            });
+                        }
 
                     }
+                }
+                else
+                {
+                    buVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                    {
+                        docID = x,
+                        msgError = "Document Not Found"
+                    });
                 }
 
             });

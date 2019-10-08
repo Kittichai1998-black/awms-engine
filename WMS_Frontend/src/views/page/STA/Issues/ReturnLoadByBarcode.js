@@ -74,8 +74,10 @@ const ReceivePallet = (props) => {
                 let skuCode = null;
                 if(skuCode1.includes('@')){
                     skuCode = skuCode1.replace(/\@/g, " ");
+                }else{
+                    skuCode = skuCode1;
                 }
-                skuCode = skuCode1.trim();//ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
+                skuCode = skuCode.trim();  
                 let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                 let rootID = reqValue.rootID;
                 let qryStr = {};
