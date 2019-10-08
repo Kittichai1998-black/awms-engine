@@ -306,7 +306,7 @@ const Default = props => {
         if (Path[1] === "") {
         } else {
             return (
-                <div style={{ float: "left", lineHeight: "29px", marginLeft: "5px" }}>
+                <div style={{ float: "left", lineHeight: "29px",fontSize:"1rem" }}>
                     {/* <Link key="0" color="inherit" href="/">Home</Link> */}
                     <Link key="0" color="inherit" href="/">{t("Home")}</Link>
                 </div>
@@ -327,7 +327,7 @@ const Default = props => {
                             marginLeft: "5px"
                         }}
                     >
-                        <Typography color="textPrimary">
+                        <Typography color="textPrimary" style={{ fontSize:"1rem" }}>
                             {t(x.text)}
                             {/* {x.text} */}
                         </Typography>
@@ -610,10 +610,11 @@ const Default = props => {
                         <Breadcrumbs
                             separator={<NavigateNextIcon fontSize="small" />}
                             aria-label="Breadcrumb"
+                           
                         >
                             {Home_Link()}
                             {Route_1()}
-                            <Typography color="textPrimary">{NavicateBarN()}</Typography>
+                            <Typography color="textPrimary" style={{ fontSize:"1rem" }}>{NavicateBarN()}</Typography>
                         </Breadcrumbs>
                     </Paper>
 

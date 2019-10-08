@@ -2509,7 +2509,8 @@ const AmProcessQueue = props => {
                                                                                                         value="Receive"
                                                                                                         label="Receive"
                                                                                                            checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
-                                                                                                          defaultChecked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                                                                                defaultChecked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                                                                                disabled={RecieveFromDoc === true ? true : false}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }
@@ -2520,7 +2521,8 @@ const AmProcessQueue = props => {
                                                                                                         value="Block"
                                                                                                         label="Block"
                                                                                                                 checked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
-                                                                                                                defaultChecked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null }
+                                                                                                                defaultChecked={x.Block ? true : BlockFromDoc ? BlockFromDoc : null}
+                                                                                                                disabled={BlockFromDoc === true ? true : false}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }
@@ -2532,6 +2534,7 @@ const AmProcessQueue = props => {
                                                                                                         label="QC"
                                                                                                                 checked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
                                                                                                                 defaultChecked={x.QC ? true : QcFromDoc ? BlockFromDoc : null}
+                                                                                                                disabled={QcFromDoc === true ? true : false}
                                                                                                         onChange={(e, v) =>
                                                                                                             onChangCheckboxStatus(e, idx)
                                                                                                         }
