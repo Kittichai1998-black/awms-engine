@@ -74,8 +74,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override TRes ExecuteEngine(TReq reqVO)
         {
-            var res = this.ExectProject<TReq, TRes>(FeatureCode.EXEWM_ASRSProcessQueue_CheckSAP, reqVO);
-            res = null;
+            var res = this.ExectProject<TReq, TRes>(FeatureCode.EXEWM_CheckSAP_BeforeProcessQueue, reqVO);
             if (res == null)
             {
                 this.ValidateReqVO(reqVO);
