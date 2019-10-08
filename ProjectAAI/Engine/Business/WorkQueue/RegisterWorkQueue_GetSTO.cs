@@ -191,11 +191,10 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                         var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.Find(x => x.ID == _pack.ObjectSize_ID);
                         //var _objSizePack = StaticValueManager.GetInstant().ObjectSizes.FirstOrDefault(x => x.ObjectType == StorageObjectType.PACK);
-
                         DateTime? productDate = pack.HSDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.HSDAT,"yyyyMMdd", CultureInfo.InvariantCulture); //"20190527" Date of Manufacture
                         DateTime? expiryDate = pack.VFDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.VFDAT,"yyyyMMdd", CultureInfo.InvariantCulture); //"20190527" Shelf Life 
                         var shld = expiryDate == null ? null : DateTimeUtil.ToISOUTCString(expiryDate.Value);
-                        DateTime? incubatedate = productDate == null ? (DateTime?)null : productDate.Value.AddDays(Convert.ToDouble(pack.WEBAZ) - 1); 
+                        DateTime? incubatedate = productDate == null ? (DateTime?)null : pack.WEBAZ != 0 ? productDate.Value.AddDays(Convert.ToDouble(pack.WEBAZ) - 1) : (DateTime?)null; 
                         var incb = incubatedate == null ? null : DateTimeUtil.ToISOUTCString(incubatedate.Value);
                         DateTime? fvdt1 = pack.FVDT1 == "00000000" ? (DateTime?)null : DateTime.ParseExact(pack.FVDT1, "yyyyMMdd", CultureInfo.InvariantCulture);
                         var approveddate = fvdt1 == null ? null : DateTimeUtil.ToISOUTCString(fvdt1.Value);
