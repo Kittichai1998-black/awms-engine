@@ -203,7 +203,7 @@ const ReceivePallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                autoPost={false}
+                autoPost={true}
                 setMovementType={"1011"}
             />
         </div>

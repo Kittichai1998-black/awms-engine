@@ -453,6 +453,7 @@ const AmMappingPallet = (props) => {
                 }
             }
         }
+        console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
