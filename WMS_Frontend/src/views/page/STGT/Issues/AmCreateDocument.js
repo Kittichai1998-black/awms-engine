@@ -13,7 +13,7 @@ import AmFindPopup from '../../../../components/AmFindPopup'
 import AmInput from '../../../../components/AmInput'
 import AmTable from '../../../../components/table/AmTable'
 import { apicall } from '../../../../components/function/CoreFunction2'
-import BtnAddSKU from '../../../../components/AmCreateDocument_ModalTableAddBySto'
+import BtnAddSKU from '../../../../components/AmCreateDocument_BtnAdd_BySKU'
 
 const Axios = new apicall()
 

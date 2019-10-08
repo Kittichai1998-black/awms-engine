@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import AmCreateDocument from "../../STGT/Issues/AmCreateDocument";
+import AmCreateDocument from "../Issues/AmCreateDocument";
 import {
   apicall,
   createQueryString
@@ -157,8 +157,8 @@ export default props => {
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
     {
-      Header: "Batch",
-      accessor: "Batch",
+      Header: "Order No",
+      accessor: "orderNo",
       width: 100,
       Cell: e => <div style={{ textAlign: "center" }}>{e.value}</div>
     },
@@ -199,7 +199,7 @@ export default props => {
       fieldLabel: ["SKUItems"],
       columsddl: columsFindpopUpSKU
     },
-    { Header: "Batch", accessor: "batch", type: "input" },
+    { Header: "Order No", accessor: "orderNo", type: "input" },
     { Header: "Quantity", accessor: "quantity", type: "inputNum" },
     {
       Header: "Unit",
@@ -214,7 +214,7 @@ export default props => {
     { id: "row", Cell: row => row.index + 1, width: 35 },
     { Header: "Pallet Code", accessor: "palletcode", width: 110 },
     { Header: "SKU Item", accessor: "SKUItems" },
-    { Header: "Batch", accessor: "batch", width: 100 },
+    { Header: "Order No", accessor: "orderNo", width: 100 },
     { Header: "Quantity", accessor: "quantity", width: 90 },
     { Header: "Unit", accessor: "unitType", width: 70 }
   ];
