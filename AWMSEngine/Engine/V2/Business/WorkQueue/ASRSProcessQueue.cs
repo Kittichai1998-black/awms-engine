@@ -2,6 +2,7 @@
 using AMWUtil.Exception;
 using AWMSEngine.ADO.QueueApi;
 using AWMSModel.Constant.EnumConst;
+using AWMSModel.Constant.StringConst;
 using AWMSModel.Criteria;
 using AWMSModel.Criteria.SP.Request;
 using AWMSModel.Criteria.SP.Response;
@@ -74,6 +75,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         protected override TRes ExecuteEngine(TReq reqVO)
         {
             var res = this.ExectProject<TReq, TRes>(FeatureCode.EXEWM_ASRSProcessQueue_CheckSAP, reqVO);
+            res = null;
             if (res == null)
             {
                 this.ValidateReqVO(reqVO);
@@ -137,13 +139,13 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                                 (string.IsNullOrWhiteSpace(proc.locationCode) || x.locationCode == proc.locationCode) &&
                                 (string.IsNullOrWhiteSpace(proc.baseCode) || x.bstoCode == proc.baseCode) &&
                                 (string.IsNullOrWhiteSpace(proc.skuCode) || x.pstoCode == proc.skuCode) &&
-                                (string.IsNullOrWhiteSpace(_condi.batch) || x.pstoCode == proc.skuCode) &&
-                                (string.IsNullOrWhiteSpace(_condi.lot) || x.pstoCode == proc.skuCode) &&
-                                (string.IsNullOrWhiteSpace(_condi.orderNo) || x.pstoCode == proc.skuCode) &&
+                                (string.IsNullOrWhiteSpace(_condi.batch) || x.pstoBatch == _condi.batch) &&
+                                (string.IsNullOrWhiteSpace(_condi.lot) || x.pstoLot == _condi.lot) &&
+                                (string.IsNullOrWhiteSpace(_condi.orderNo) || x.pstoOrderNo == _condi.orderNo) &&
                                 (string.IsNullOrWhiteSpace(_condi.options) || x.pstoOptions.QryStrContainsKeyValue(_condi.options)) &&
                                 (!proc.useExpireDate || (x.pstoExpiryDate.HasValue && x.pstoExpiryDate.Value > DateTime.Today)) &&
-                                (!proc.useShelfLifeDate || (x.pstoOptions.QryStrContainsKey("shelflifedate") && x.pstoOptions.QryStrGetValue("shelflifedate").GetDate().Value >= DateTime.Today)) &&
-                                (!proc.useExpireDate || (x.pstoOptions.QryStrContainsKey("incubatedate") && x.pstoOptions.QryStrGetValue("incubatedate").GetDate().Value < DateTime.Today))
+                                (!proc.useShelfLifeDate || (x.pstoOptions.QryStrContainsKey(OptionVOConst.OPT_SHLD) && x.pstoOptions.QryStrGetValue(OptionVOConst.OPT_SHLD).GetDate().Value >= DateTime.Today)) &&
+                                (!proc.useIncubateDate || (x.pstoOptions.QryStrContainsKey(OptionVOConst.OPT_INCBD) && x.pstoOptions.QryStrGetValue(OptionVOConst.OPT_INCBD).GetDate().Value < DateTime.Today))
                             ).ToList().Clone();
 
                             if (_pickStos.Count > 0)
