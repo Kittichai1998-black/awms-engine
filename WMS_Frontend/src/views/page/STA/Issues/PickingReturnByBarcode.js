@@ -187,7 +187,7 @@ const PickingReturnByBarcode = (props) => {
                 // //ฟังก์ชั่นเตรียมข้อมูลเเสดงผล options เอง
                 customOptions={customOptions}
                 showOptions={true}
-                autoPost={false}
+                autoPost={true}
                 setMovementType={"1091"}
             // useMultiSKU={false}
             />
