@@ -205,6 +205,8 @@ const Default = props => {
     })
     const { t, i18n } = useTranslation()
 
+    const [menuVisible, setMenuVisible] = useState({visibility:"visible"});
+
 
 
     // const openMenuHeader = Boolean(anchorEl);
@@ -351,9 +353,11 @@ const Default = props => {
 
     useEffect(() => {
         if(props.width === "xs"){
+            setMenuVisible({visibility:"hidden"})
             handleDrawerClose()
         }
         else{
+            setMenuVisible({visibility:"visible"})
             handleDrawerOpen()
         }
     }, [props.width])
@@ -378,7 +382,8 @@ const Default = props => {
                         <IconButton
                             color='inherit'
                             aria-label='Open drawer'
-                            onClick={handleDrawerOpen}
+                            onClick={() => {handleDrawerOpen(); 
+                                setMenuVisible({visibility:"visible"})}}
                             className={classNames(classes.menuButton, open && classes.hide)}
                         >
                             <MenuIcon />
@@ -581,6 +586,7 @@ const Default = props => {
                     </Toolbar>
                 </AppBar>
                 <Drawer
+                    style={menuVisible}
                     className={classes.drawer}
                     variant='persistent'
                     anchor='left'
