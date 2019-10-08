@@ -1,34 +1,34 @@
-import React, { useState } from 'react';
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
+import classNames from "classnames";
+import PropTypes from "prop-types";
 import {
   createMuiTheme,
   MuiThemeProvider,
   withStyles
-} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import AmValidate from '../components/AmValidate';
-import { indigo, grey, red } from '@material-ui/core/colors';
+} from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import AmValidate from "../components/AmValidate";
+import { indigo, grey, red } from "@material-ui/core/colors";
 const styles = theme => ({
   root: {
-    width: 'auto',
-    backgroundColor: 'white',
-    '&:after': {
+    width: "auto",
+    backgroundColor: "white",
+    "&:after": {
       borderBottomColor: theme.status.primary.dark
     }
   },
   primary: {
-    '&:after': {
+    "&:after": {
       borderBottomColor: theme.status.primary.dark
     }
   },
   error: {
-    '&:after': {
+    "&:after": {
       borderBottomColor: theme.status.error.main
     }
   },
   default: {
-    '&:after': {
+    "&:after": {
       borderBottomColor: theme.status.default.main
     }
   },
@@ -43,19 +43,17 @@ function CustomTextField(props) {
     className,
     styleType,
     defaultValue,
-    disabled,
     required,
     onChange,
-    onChangeV2,
     onMouseOver,
     onMouseOut,
     onKeyPress,
+    onKeyUp,
     onKeyDown,
     onClick,
     onFocus,
     onBlur,
     InputProps = {},
-    inputProps,
     validate,
     msgError,
     msgSuccess,
@@ -65,10 +63,10 @@ function CustomTextField(props) {
     ...other
   } = props;
 
-  const [value, setValue] = useState(defaultValue ? defaultValue : '');
+  const [value, setValue] = useState(defaultValue ? defaultValue : "");
 
   const handleChange = event => {
-    if (onChangeV2) {
+    if (onChange) {
       setValue(event.target.value);
       onChange(event.target.value, null, event.target, event);
     }
@@ -95,6 +93,12 @@ function CustomTextField(props) {
     if (onKeyDown) {
       setValue(event.target.value);
       onKeyDown(event.target.value, null, event.target, event);
+    }
+  };
+  const handleKeyUp = event => {
+    if (onKeyUp) {
+      setValue(event.target.value);
+      onKeyUp(event.target.value, null, event.target, event);
     }
   };
   const handleClick = event => {
@@ -128,10 +132,9 @@ function CustomTextField(props) {
           },
           ...InputProps
         }}
-        inputProps={{...inputProps}}
-        disabled={disabled}
         defaultValue={defaultValue}
-        onChangeV2={handleChange}
+        // onChange={handleChange}
+        onKeyUp={handleKeyUp}
         onMouseOver={handleMouseOver}
         onKeyPress={handleKeyPress}
         onKeyDown={handleKeyDown}
@@ -144,8 +147,8 @@ function CustomTextField(props) {
 
       <div
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
+          display: "inline-flex",
+          alignItems: "center",
           ...styleValidate
         }}
       >
@@ -171,9 +174,7 @@ InputStyle.propTypes = {
   color: PropTypes.string,
   styleType: PropTypes.string,
   InputProps: PropTypes.object,
-  inputProps: PropTypes.object,
   onChange: PropTypes.func,
-  onChangeV2: PropTypes.func,
   onMouseOver: PropTypes.func,
   onMouseOut: PropTypes.func,
   onKeyPress: PropTypes.func,
@@ -181,9 +182,7 @@ InputStyle.propTypes = {
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
   validate: PropTypes.bool,
-  defaultValue: PropTypes.any,
-  disabled: PropTypes.bool,
-  required: PropTypes.bool,
+  defaultValue: PropTypes.any
 };
 const theme = createMuiTheme({
   status: {
@@ -191,19 +190,19 @@ const theme = createMuiTheme({
       light: indigo[100],
       main: indigo[400],
       dark: indigo[800],
-      contrastText: '#fff'
+      contrastText: "#fff"
     },
     error: {
       light: red[100],
       main: red[400],
       dark: red[800],
-      contrastText: '#000'
+      contrastText: "#000"
     },
     default: {
       light: grey[100],
       main: grey[600],
       dark: grey[800],
-      contrastText: '#000'
+      contrastText: "#000"
     },
     disabled: grey[500]
   },
