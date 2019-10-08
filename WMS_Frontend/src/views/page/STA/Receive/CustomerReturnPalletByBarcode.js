@@ -170,6 +170,8 @@ const CustomerReturnPalletByBarcode = (props) => {
                             if(storageObj.code === reqValue.scanCode){
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }
+                        }else{
+                            alertDialogRenderer("Please scan code of product.", "error", true);
                         }
                     }
                 } else {
