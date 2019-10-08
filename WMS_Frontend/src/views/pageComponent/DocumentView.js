@@ -145,7 +145,7 @@ const DocumentView = props => {
         res.data.document.documentItems.forEach(row => {
           var sumQty = 0;
           res.data.sou_bstos
-            .filter(y => y.docItemID == row.id)
+            .filter(y => y.docItemID == row.ID)
             .forEach(y => {
               sumQty += y.distoQty;
             });
@@ -201,7 +201,7 @@ const DocumentView = props => {
         });
 
         //============================================================================
-        console.log(res);
+
         res.data.sou_bstos.forEach(rowDetail => {
           rowDetail.eventStatusDoc = res.data.document["eventStatus"];
           // var options = ""

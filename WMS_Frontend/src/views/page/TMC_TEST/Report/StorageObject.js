@@ -65,7 +65,7 @@ const StorageObject = props => {
     { label: "AUDITED", value: "AUDITED" },
     { label: "RECEIVED", value: "RECEIVED" },
     { label: "RECEIVING", value: "RECEIVING" },
-    { label: "PICKING", value: "PICdKING" },
+    { label: "PICKING", value: "PICKING" },
     { label: "PICKED", value: "PICKED" },
     { label: "HOLD", value: "HOLD" }
   ];
@@ -302,14 +302,14 @@ const StorageObject = props => {
       placeholder: "Remark"
     },
     {
-      label: "Date From: ",
+      label: "Date From",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
       dateSearchType: "dateFrom"
     },
     {
-      label: "Date To: ",
+      label: "Date To",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",

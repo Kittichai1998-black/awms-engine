@@ -39,7 +39,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
             //return picking
             else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
             {
-                
+
                 var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
                 var skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, buVO);
                 if (skuMaster == null)
@@ -52,6 +52,19 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     if (docItems.Count() == 0)
                         throw new AMWException(logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
 
+                }
+            }
+            else if (sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.AUDITED)
+            {
+                var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                var disto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                    new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Sou_StorageObject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
+                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS )
+                    }, buVO);
+                if(!disto.TrueForAll(x=> x.Status == EntityStatus.ACTIVE))
+                {
+                    throw new AMWException(logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it isn't to Audit, yet.");
                 }
             }
             else

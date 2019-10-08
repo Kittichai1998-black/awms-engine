@@ -124,11 +124,6 @@ const DocumentSearchSTA = props => {
       accessor: "DesWarehouseName",
       width: 150
     },
-    {
-      Header: "Sou.Customer",
-      accessor: "SouCustomerName",
-      width: 150
-    },
 
     {
       Header: "Remark",
@@ -175,14 +170,6 @@ const DocumentSearchSTA = props => {
       field: "DesWarehouseName",
       searchType: "dropdown",
       dropdownData: dataWarehouse,
-      fieldDataKey: "Name",
-      fieldLabel: "Name"
-    },
-    {
-      label: "Sou.Customer",
-      field: "SouCustomerName",
-      searchType: "dropdown",
-      dropdownData: dataCustomer,
       fieldDataKey: "Name",
       fieldLabel: "Name"
     },
@@ -247,6 +234,7 @@ const DocumentSearchSTA = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="1001"
+        buttonWorking={true}
       />
     </div>
   );

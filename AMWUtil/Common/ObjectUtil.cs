@@ -287,9 +287,9 @@ namespace AMWUtil.Common
         }
         public static bool QryStrContainsKey(this string param, string key)
         {
-            var match = Regex.IsMatch("?" + param + "&", "[&?]" + param + "=([^&]*)");
+            var val = QryStrGetValue(param, key);
             //string res = Regex.Replace(match.Value, "^[?&]*|[&]*$", "");
-            return match;
+            return !string.IsNullOrWhiteSpace(val);
         }
         public static bool QryStrContainsKeyValue(this string param, string param_contains)
         {
@@ -349,6 +349,11 @@ namespace AMWUtil.Common
             var jsond = JsonConvert.DeserializeObject(jsons);
 
             return jsond;
+        }
+        public static string DynamicObjectToString(dynamic values, string field)
+        {
+            string newVal = values[field];
+            return newVal;
         }
         public static T ObjectToModel<T>(object obj)
             where T : class

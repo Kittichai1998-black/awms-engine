@@ -136,6 +136,8 @@ const ConsolePankan = (props) => {
     const [dataGiude, setdataGiude] = useState();
     const [qtypick, setqtypick] = useState();
     const [qtyconsole, setqtyconsole] = useState();
+    const [datasSourse, setdatasSourse] = useState([]);
+
 
     const Customer = {
         queryString: window.apipath + "/v2/SelectDataMstAPI/",
@@ -166,6 +168,12 @@ const ConsolePankan = (props) => {
             })
         }
     }, [customerIds])
+
+    useEffect(() => {
+        setdatasSourse([])
+        setreload({})
+
+    }, [issueDoc])
 
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
@@ -205,15 +213,36 @@ const ConsolePankan = (props) => {
 
 
     const GetDocument = (docID) => {
-        //Axios.get(
-        //    window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docID +  "&getMapSto=true&_token=" +
-        //    localStorage.getItem("Token")
-        //).then(res => {
-        //      console.log(res)
-        //    )
+        Axios.get(
+            window.apipath + "/v2/DocumentItemListAndLocationListAPI?docID=" + docID +  "&getMapSto=true&_token=" +
+            localStorage.getItem("Token")
+        ).then(res => {
+            let resDatas = res.data.docItemLists
+            let datas = null
+            let pacItem = null
+            let quantity = null
+            let unittype = null
+            console.log(resDatas)
+            resDatas.map((x) => {
+                datas = {
+                'pacItem': x.code + ":" + x.name,
+                    "quantity": x.pickQty + "/" + x.allQty,
+                    'unittype': x.unit
 
+                }
+                datasSourse.push(datas)
+                setreload({})
+            })
 
+        //    let pacItem = x.code  x.name
+        //    data = {
+        //        'pacItem': x.code : x.name,
+        //        "quantity": "1/12",
+        //        'unittype': "PC"
 
+        //    }
+        //    setdatasSourse.push(datas)
+        })
     }
 
     const onChangeEditorBarcodepick = (e) => {
@@ -236,11 +265,7 @@ const ConsolePankan = (props) => {
         { Header: 'UnitType', accessor: 'unittype' },
     ];
 
-    const datasSourse = [{
-        'pacItem': "Test",
-        "quantity": "1/12",
-        'unittype': "PC"
-    }];
+  
 
     const handleChange = (event, newValue) => {
         setvalue(newValue);
