@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AMWUtil.Exception;
@@ -114,7 +115,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                                         LGNUM = "W01",
                                                         LENUM = docs.Ref1 == "R01" ? docItem.Code : "",
                                                         RSNUM = docs.Ref1 == "R02" ? long.Parse(docItem.RefID) : null as long?,
-                                                        MATNR = docs.Ref1 == "R02" || docs.Ref1 == "R06" ? docItem.Code : "",
+                                                        MATNR = docs.Ref1 == "R02" || docs.Ref1 == "R06" ? int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code : "",
                                                         CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
                                                         BDMNG = docs.Ref1 == "R02" ? docItem.Quantity : null,
                                                         MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
@@ -148,8 +149,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                                         LGNUM = "W01", 
                                                         LENUM = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LENUM),
                                                         RSNUM = docs.Ref1 == "R03" ? long.Parse(docItem.RefID) : null as long?,
-                                                        MATNR = docItem.Code,
-                                                        CHARG = docItem.Batch,
+                                                        MATNR = int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code,
+                                                        CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
                                                         BDMNG = docItem.Quantity,
                                                         MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
                                                         LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
@@ -182,8 +183,8 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                                                         LGNUM = "W01",
                                                         LENUM = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LENUM),
                                                         RSNUM = docs.Ref1 == "R03" ? long.Parse(docItem.RefID) : null as long?,
-                                                        MATNR = docItem.Code,
-                                                        CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? null : docItem.Batch,
+                                                        MATNR = int.TryParse(docItem.Code, out int n) ? docItem.Code.PadLeft(18, '0') : docItem.Code,
+                                                        CHARG = string.IsNullOrWhiteSpace(docItem.Batch) ? "" : docItem.Batch,
                                                         BDMNG = docItem.Quantity,
                                                         MEINS = docItem.UnitType_ID.HasValue ? StaticValueManager.GetInstant().UnitTypes.FirstOrDefault(unit => unit.ID == docItem.UnitType_ID.Value).Code : "",
                                                         LGTYP = ObjectUtil.QryStrGetValue(docItem.Options, OptionVOConst.OPT_LGTYP),
@@ -298,7 +299,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                if (res.datas.OUT_SAP.Any(x => !string.IsNullOrWhiteSpace(x.ERR_MSG)))
                 {
-                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel=> new { ERR_MSG = sel.LENUM +"-"+sel.ERR_MSG });
+                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel=> sel.ERR_MSG);
                     var message = string.Join(',', messageLists);
                     LogException(docID, message, buVO);
                 }
@@ -317,7 +318,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                 if (res.datas.OUT_SAP.Any(x => !string.IsNullOrWhiteSpace(x.ERR_MSG)))
                 {
-                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel => new { ERR_MSG = sel.LENUM + "-" + sel.ERR_MSG });
+                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel => sel.ERR_MSG);
                     var message = string.Join(',', messageLists);
                     LogException(docID, message, buVO);
                 }
@@ -336,7 +337,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             {
                 if (res.datas.OUT_SAP.Any(x => !string.IsNullOrWhiteSpace(x.ERR_MSG)))
                 {
-                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel => new { ERR_MSG = sel.LENUM + "-" + sel.ERR_MSG });
+                    var messageLists = res.datas.OUT_SAP.Where(sap => !string.IsNullOrWhiteSpace(sap.ERR_MSG)).Select(sel => sel.ERR_MSG);
                     var message = string.Join(',', messageLists);
                     LogException(docID, message, buVO);
                 }
@@ -351,7 +352,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
         private void UpdateOptionDoc(long docID, string old_opt, List<string> tanumlists, VOCriteria buVO)
         {
             var tanum_opt = string.Join(',', tanumlists);
-            var opt_done = ObjectUtil.QryStrSetValue(old_opt, OptionVOConst.OPT_TANUM, tanum_opt);
+            var opt_done = ObjectUtil.QryStrSetValue(null, OptionVOConst.OPT_TANUM, tanum_opt);
             AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_Document>(docID, buVO,
                         new KeyValuePair<string, object>[] {
                             new KeyValuePair<string, object>("Options", opt_done)
