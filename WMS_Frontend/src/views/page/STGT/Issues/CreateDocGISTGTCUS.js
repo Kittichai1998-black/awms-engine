@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import AmCreateDocument from "../../STGT//Issues/AmCreateDocument";
+import AmCreateDocument from "../Issues/AmCreateDocument";
 import {
   apicall,
   createQueryString
