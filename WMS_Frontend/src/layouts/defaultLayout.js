@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useState, useContext, useRef, useEffect } from 'react';
-
+import withWidth from '@material-ui/core/withWidth';
 import {
     withStyles,
     MuiThemeProvider,
@@ -64,6 +64,9 @@ const drawerWidth = 240;
 
 const styles = theme => ({
     root: {
+        [theme.breakpoints.down('sm')]: {
+            aa:theme.palette.secondary.main
+        },
         display: 'flex'
     },
     appBar: {
@@ -155,12 +158,8 @@ const styles = theme => ({
         "&:hover": {
             cursor: "pointer"
         }
-    }
+    },
 });
-
-const useMenuBar = (status) => {
-    
-}
 
 const checkstatus = () => {
     const d1 = new Date(localStorage.ExpireTime);
@@ -350,6 +349,15 @@ const Default = props => {
         setOpenLangHeader(false)
     }
 
+    useEffect(() => {
+        if(props.width === "xs"){
+            handleDrawerClose()
+        }
+        else{
+            handleDrawerOpen()
+        }
+    }, [props.width])
+
     return (
         <MuiThemeProvider theme={theme}>
             <div className={classes.root}>
@@ -456,6 +464,7 @@ const Default = props => {
                                 </Typography>
                             </div>
 
+                            
                             <Popper
                                 open={openLangHeader}
                                 // anchorEl={anchorEl}
@@ -649,4 +658,4 @@ Default.propTypes = {
     theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(Default);
+export default withWidth()(withStyles(styles, { withTheme: true })(Default));
