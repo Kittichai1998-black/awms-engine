@@ -201,7 +201,7 @@ const CustomerReturnPalletByBarcode = (props) => {
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 setMovementType={"1012"}
-                autoPost={false}
+                autoPost={true}
             />
         </div>
     );
