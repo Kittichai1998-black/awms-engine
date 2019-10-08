@@ -59,7 +59,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
                 var disto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
                     new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Sou_StorageOpject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
+                        new SQLConditionCriteria("Sou_StorageObject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
                         new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS )
                     }, buVO);
                 if(!disto.TrueForAll(x=> x.Status == EntityStatus.ACTIVE))
