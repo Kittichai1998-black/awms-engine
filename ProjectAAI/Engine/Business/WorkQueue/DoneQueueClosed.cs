@@ -274,7 +274,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
             throw new AMWException(buVO.Logger, AMWExceptionCode.S0001, message);
 
         }
-        private SapResponseMulti2 SendDataToSAP_ZWMRF002(string suCode, long? docID, VOCriteria buVO)
+        private SapResponseMulti2<OUT_SU> SendDataToSAP_ZWMRF002(string suCode, long? docID, VOCriteria buVO)
         {
             var res = SAPInterfaceADO.GetInstant().ZWMRF002(suCode, buVO);
 
