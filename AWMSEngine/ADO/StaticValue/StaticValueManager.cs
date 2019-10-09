@@ -225,7 +225,7 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public List<ams_PackMaster> LoadPackMasterEmptyPallets(VOCriteria buVO = null)
         {
-            var packtype = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
+            var packtype = ADO.DataADO.GetInstant().SelectBy<ams_PackMasterType>("Code", "EMP", buVO ?? new VOCriteria()).FirstOrDefault();
             if (packtype != null)
             {
                 this._PackMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_PackMaster>(new SQLConditionCriteria[] {
@@ -241,12 +241,12 @@ namespace AWMSEngine.ADO.StaticValue
         }
         public List<ams_SKUMaster> LoadSKUMasterEmptyPallets(VOCriteria buVO = null)
         {
-            var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault();
+            var skutype = ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.EMP, buVO ?? new VOCriteria()).FirstOrDefault();
             if (skutype != null)
             {
                 this._SKUMasterEmptyPallets = Enumerable.ToList(ADO.DataADO.GetInstant().SelectBy<ams_SKUMaster>(new SQLConditionCriteria[] {
                             new SQLConditionCriteria("SKUMasterType_ID",
-                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("Code", "EMPTYPALLET", buVO ?? new VOCriteria()).FirstOrDefault().ID.Value,
+                            ADO.DataADO.GetInstant().SelectBy<ams_SKUMasterType>("GroupType", SKUGroupType.EMP, buVO ?? new VOCriteria()).FirstOrDefault().ID.Value,
                             SQLOperatorType.EQUALS, SQLConditionType.AND)
                       }, buVO ?? new VOCriteria()));
             }

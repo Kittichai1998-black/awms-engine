@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.Common;
 using AMWUtil.Logger;
+using AWMSModel.Constant.StringConst;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -41,9 +42,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             public TReq reqVO;
         }
 
+        private ams_AreaMaster _areaASRS;
         private ams_AreaLocationMaster _locationASRS;
         private ams_Warehouse _warehouseASRS;
-        private ams_AreaMaster _areaASRS;
+        private ams_Branch _branchASRS;
 
         protected StorageObjectCriteria GetSto(TReq reqVO)
         {
@@ -51,7 +53,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if(res == null)
             {
                 ////DF Code
-                this.InitDataASRS(reqVO);
                 var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                     null, null, false, true, BuVO);
                 if (sto == null)
@@ -139,9 +140,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 }
                 else
                 {
-                    var area = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
+                    var area = _areaASRS; //this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode);
                     var desArea = this.StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
-                    var location = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
+                    var location = _locationASRS; // ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO);
                     var desLocation = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.desLocationCode, this.BuVO);
                     res = new SPOutAreaLineCriteria()
                     {
@@ -149,9 +150,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         Sou_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).Code,
                         Sou_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == area.AreaMasterType_ID).groupType,
                         Sou_AreaMaster_ID = area.ID.Value,
-                        Sou_AreaMaster_Code = reqVO.areaCode,
+                        Sou_AreaMaster_Code = area.Code,
                         Sou_AreaLocationMaster_ID = location.ID,
-                        Sou_AreaLocationMaster_Code = reqVO.locationCode,
+                        Sou_AreaLocationMaster_Code = location.Code,
                         Des_AreaMasterType_ID = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).ID,
                         Des_AreaMasterType_Code = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).Code,
                         Des_AreaMasterType_GroupType = this.StaticValue.AreaMasterTypes.FirstOrDefault(x => x.ID == desArea.AreaMasterType_ID).groupType,
@@ -172,6 +173,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected override WorkQueueCriteria ExecuteEngine(TReq reqVO)
         {
+            this.InitDataASRS(reqVO);
+
             var sto = GetSto(reqVO);
             if (sto != null)
             {
@@ -276,14 +279,14 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 StorageObject_ID = sto.id,
                 StorageObject_Code = sto.code,
 
-                Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).Warehouse_ID.Value,
-                AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
-                AreaLocationMaster_ID = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO).ID,
+                Warehouse_ID = _warehouseASRS.ID.Value,
+                AreaMaster_ID = _areaASRS.ID.Value,
+                AreaLocationMaster_ID = _locationASRS.ID.Value,
      
 
-                Sou_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).Warehouse_ID.Value,
-                Sou_AreaMaster_ID = this.StaticValue.AreaMasters.First(x => x.Code == reqVO.areaCode).ID.Value,
-                Sou_AreaLocationMaster_ID = ADO.DataADO.GetInstant().SelectByCodeActive<ams_AreaLocationMaster>(reqVO.locationCode, this.BuVO).ID,
+                Sou_Warehouse_ID = _warehouseASRS.ID.Value,
+                Sou_AreaMaster_ID = _areaASRS.ID.Value,
+                Sou_AreaLocationMaster_ID = _locationASRS.ID.Value,
 
                 Des_Warehouse_ID = this.StaticValue.AreaMasters.First(x => x.ID == location.Des_AreaMaster_ID).Warehouse_ID.Value,
                 Des_AreaMaster_ID = location.Des_AreaMaster_ID.Value,
@@ -301,28 +304,67 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         private void InitDataASRS(TReq reqVO)
         {
-            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
-
+             
             this._warehouseASRS = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
             if (_warehouseASRS == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Warehouse Code '" + reqVO.warehouseCode + "' Not Found");
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "Warehouse Code '" + reqVO.warehouseCode + "' Not Found");
+            this._branchASRS = StaticValue.Branchs.FirstOrDefault(x => x.ID == _warehouseASRS.Branch_ID);
+            if (_branchASRS == null)
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "Branch Not Found");
             this._areaASRS = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == _warehouseASRS.ID);
             if (_areaASRS == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Area Code '" + reqVO.areaCode + "' Not Found");
-            this._locationASRS = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "Area Code '" + reqVO.areaCode + "' Not Found");
+            this._locationASRS = ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
                 new KeyValuePair<string, object>[] {
                     new KeyValuePair<string,object>("Code",reqVO.locationCode),
                     new KeyValuePair<string,object>("AreaMaster_ID",_areaASRS.ID.Value),
                     new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
                 }, this.BuVO).FirstOrDefault();
             if (_locationASRS == null)
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
+                throw new AMWException(Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
         }
         //BEGIN*******************ProcessReceiving***********************
 
         private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, RegisterWorkQueue.TReq reqVO)
         {
-            return null;
+            List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
+            var desWarehouse = new ams_Warehouse();
+            var desBranch = new ams_Branch();
+            var desArea = new ams_AreaMaster();
+            if (reqVO.ioType == IOType.OUTPUT)
+            {
+                desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
+                if (desWarehouse == null)
+                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.desWarehouseCode + " Not Found");
+                desBranch = StaticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
+                if (desBranch == null)
+                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Branch Not Found");
+                desArea = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
+                if (desArea == null)
+                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
+            }
+
+            var _autodoc = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_AUTO_DOC);
+            var pstos = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+            if (pstos == null || pstos.Count() == 0)
+                throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
+            var sto_skuType = StaticValue.SKUMasterTypes.Find(x=>x.ID == pstos.First().skuID.Value);
+
+
+            if (_autodoc == "true")
+            {
+                //auto create new Document 
+
+            }
+            else
+            {
+                //get Document
+                docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(pstos.Select(x=>x.id.Value).ToList(), BuVO);
+            }
+
+            
+
+            return docItems;
         }
     }
 
