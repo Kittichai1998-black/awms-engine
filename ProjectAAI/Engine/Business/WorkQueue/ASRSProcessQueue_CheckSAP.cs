@@ -125,18 +125,18 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                         if (res_ZWMRF003_r3.status == 1 && res_ZWMRF003_r3.datas.Count != 0)
                         {
                             statusSapRes = true;
-                            docItem.Code = res_ZWMRF003_r3.datas[0].MATNR;
-                            docItem.Quantity = res_ZWMRF003_r3.datas[0].BDMNG;
-                            docItem.BaseQuantity = res_ZWMRF003_r3.datas[0].BDMNG;
-                            docItem.RefID = res_ZWMRF003_r3.datas[0].RSNUM.ToString();
-                            docItem.Ref2 = res_ZWMRF003_r3.datas[0].BWLVS;
-                            docItem.Options = "bestq_ur=" + res_ZWMRF003_r3.datas[0].BESTQ_UR +
-                                "&bestq_qi=" + res_ZWMRF003_r3.datas[0].BESTQ_QI +
-                                "&bestq_blk=" + res_ZWMRF003_r3.datas[0].BESTQ_BLK +
-                                "&lgtyp=" + res_ZWMRF003_r3.datas[0].LGTYP +
-                                "&lgpla=" + res_ZWMRF003_r3.datas[0].LGPLA +
-                                "&lenum=" + (!String.IsNullOrEmpty(res_ZWMRF003_r3.datas[0].LENUM) ? int.Parse(res_ZWMRF003_r3.datas[0].LENUM).ToString() : "") +
-                                "&rsnum=" + res_ZWMRF003_r3.datas[0].RSNUM;
+                            docItem.Code = res_ZWMRF003_r3.datas[i].MATNR;
+                            docItem.Quantity = res_ZWMRF003_r3.datas[i].BDMNG;
+                            docItem.BaseQuantity = res_ZWMRF003_r3.datas[i].BDMNG;
+                            docItem.RefID = res_ZWMRF003_r3.datas[i].RSNUM.ToString();
+                            docItem.Ref2 = res_ZWMRF003_r3.datas[i].BWLVS;
+                            docItem.Options = "bestq_ur=" + res_ZWMRF003_r3.datas[i].BESTQ_UR +
+                                "&bestq_qi=" + res_ZWMRF003_r3.datas[i].BESTQ_QI +
+                                "&bestq_blk=" + res_ZWMRF003_r3.datas[i].BESTQ_BLK +
+                                "&lgtyp=" + res_ZWMRF003_r3.datas[i].LGTYP +
+                                "&lgpla=" + res_ZWMRF003_r3.datas[i].LGPLA +
+                                "&lenum=" + (!String.IsNullOrEmpty(res_ZWMRF003_r3.datas[i].LENUM) ? int.Parse(res_ZWMRF003_r3.datas[i].LENUM).ToString() : "") +
+                                "&rsnum=" + res_ZWMRF003_r3.datas[i].RSNUM;
                         }
                         break;
                     case "R04":
