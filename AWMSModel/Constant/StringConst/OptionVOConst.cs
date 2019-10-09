@@ -36,6 +36,8 @@ namespace AWMSModel.Constant.StringConst
         public const string OPT_BESTQ_QI = "bestq_qi";
         public const string OPT_BESTQ_BLK = "bestq_blk";
         public const string OPT_POSNR = "posnr";
-        
+        public const string OPT_BASECODE = "basecode";
+
+
     }
 }

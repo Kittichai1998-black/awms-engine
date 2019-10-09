@@ -18,6 +18,8 @@ using static ProjectAAI.ADO.SAPApi.SAPInterfaceADO;
 using ProjectAAI.ADO.SAPApi;
 using AWMSModel.Constant.StringConst;
 using AWMSEngine.ADO.StaticValue;
+using AWMSEngine.ADO;
+using System.Globalization;
 
 namespace ProjectAAI.Engine.Business.WorkQueue
 {
@@ -61,7 +63,25 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
                         if (res_ZWMRF003_r1.status == 1 && res_ZWMRF003_r1.datas.Count != 0)
                         {
-                            statusSapRes = true;
+                            //res_ZWMRF003_r1.datas.ForEach(x =>
+                            //{
+                            //    statusSapRes = true;
+                            //    var options = ObjectUtil.QryStrSetValue(null,
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_LENUM, int.Parse(x.LENUM)),
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_LGTYP, x.LGTYP),
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_LGBER, x.LGBER),
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_LGPLA, x.LGPLA),
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ_UR, x.BESTQ_UR),
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ_QI, x.BESTQ_QI),
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ_BLK, x.BESTQ_BLK),
+                            //        new KeyValuePair<string, object>(OptionVOConst.OPT_BASECODE, int.Parse(x.LENUM))
+                            //    );
+                            //    docItem.Code = int.Parse(x.LENUM).ToString();
+                            //    docItem.RefID = int.Parse(x.LENUM).ToString();
+                            //    docItem.Ref2 = x.BWLVS;
+                            //    docItem.Options = options;
+                            //});
+
                             docItem.Code = int.Parse(res_ZWMRF003_r1.datas[0].LENUM).ToString();
                             docItem.RefID = int.Parse(res_ZWMRF003_r1.datas[0].LENUM).ToString();
                             docItem.Ref2 = res_ZWMRF003_r1.datas[0].BWLVS;
@@ -234,29 +254,55 @@ namespace ProjectAAI.Engine.Business.WorkQueue
 
             //1 Z01
             //var pList = suList.GroupBy(x => new { x.rstoID, x.pstoID, x.rstoCode, x.pstoCode, x.pstoBatch, x.pstoEventStatus }).Select(x => x.Key);
-            var suCodeList = suList.GroupBy(x => new { x.rstoCode }).Select(x => x.Key);
-            var _units = StaticValueManager.GetInstant().UnitTypes;
-            foreach (var suCode in suCodeList)
+            var suCodeList = suList.GroupBy(x => new { x.rstoCode }).Select(x => x.Key).Select(x => x.rstoCode).ToArray();
+            var sapRes = SAPInterfaceADO.GetInstant().ZWMRF001V2(suCodeList, buVO);//send su
+            StorageObjectEventStatus doneEStatus = StorageObjectEventStatus.RECEIVED;
+            if (sapRes.status == 1)
             {
-                var sapRes = ADO.SAPApi.SAPInterfaceADO.GetInstant().ZWMRF001(suCode.rstoCode, buVO);//send su
-                if (sapRes.status == 1)
+                var i = 0;
+                sapRes.datas.OUT_SU.ForEach(x =>
                 {
-                    var i = 0;
-                    sapRes.datas.ForEach(x =>
-                    {
-                        var su = suList.FindAll(y => int.Parse(x.LENUM).ToString() == y.bstoCode)[i];
-                        var unit = _units.FirstOrDefault(y => y.Code == x.MEINS);
-                        //var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(su.bstoID, StorageObjectType.BASE, false, false, buVO);
-                        var psto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(su.pstoID, StorageObjectType.PACK, false, false, buVO);
+                    //var bsto = AWMSEngine.ADO.StorageObjectADO.GetInstant().Get(su.bstoID, StorageObjectType.BASE, false, false, buVO);
+                    var psto = StorageObjectADO.GetInstant().Get(suList[i].pstoID, StorageObjectType.PACK, false, false, buVO);
 
-                        psto.ref2 = x.LGTYP;
-                        psto.qty = x.VERME;
-                        psto.baseQty = x.VERME;
-                        //AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, buVO);
-                        AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(psto, buVO);
-                        i++;
-                    });
-                }
+                    DateTime? productDate = x.HSDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(x.HSDAT, "yyyyMMdd", CultureInfo.InvariantCulture); //"20190527" Date of Manufacture
+                    DateTime? expiryDate = x.VFDAT == "00000000" ? (DateTime?)null : DateTime.ParseExact(x.VFDAT, "yyyyMMdd", CultureInfo.InvariantCulture); //"20190527" Shelf Life 
+                    DateTime? incubatedate = productDate == null ? (DateTime?)null : x.WEBAZ != 0 ? productDate.Value.AddDays(Convert.ToDouble(x.WEBAZ) - 1) : (DateTime?)null;
+                    DateTime? fvdt1 = x.FVDT1 == "00000000" ? (DateTime?)null : DateTime.ParseExact(x.FVDT1, "yyyyMMdd", CultureInfo.InvariantCulture);
+
+                    var shld = expiryDate == null ? null : DateTimeUtil.ToISOUTCString(expiryDate.Value);
+                    var incb = incubatedate == null ? null : DateTimeUtil.ToISOUTCString(incubatedate.Value);
+                    var approveddate = fvdt1 == null ? null : DateTimeUtil.ToISOUTCString(fvdt1.Value);
+
+                    if (x.BESTQ == "S")
+                    {
+                        doneEStatus = StorageObjectEventStatus.HOLD;
+                    }
+                    else if (x.BESTQ == "Q")
+                    {
+                        doneEStatus = StorageObjectEventStatus.QC;
+                    }
+                    var options = ObjectUtil.QryStrSetValue(null,
+                           // new KeyValuePair<string, object>(OptionVOConst.OPT_LGTYP, pack.LGTYP),
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_BESTQ, x.BESTQ), //Stock Category 
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_DONE_DES_EVENT_STATUS, doneEStatus.GetValueInt()),
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_WEBAZ, x.WEBAZ), //Incubated Time
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_HSDAT, x.HSDAT), //Date of Manufacture
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_SHLD, shld), //Shelf Life Date
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_VBELN, x.VBELN), //sales order 
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_INCBD, incb), //Incubated Date
+                           new KeyValuePair<string, object>(OptionVOConst.OPT_FVDT1, approveddate) //approved date 
+                           );
+                    psto.ref1 = fvdt1 == null ? null : "y"; //ถ้ามีค่า approved date ให้ใส่เป็น y ถ้าไม่มีใส่ null
+                    psto.options = options;
+                    //psto.ref2 = x.LGTYP;
+                    //psto.qty = x.VERME;
+                    //psto.baseQty = x.VERME;
+
+                    //AWMSEngine.ADO.StorageObjectADO.GetInstant().PutV2(bsto, buVO);
+                    StorageObjectADO.GetInstant().PutV2(psto, buVO);
+                    i++;
+                });
             }
 
             //1 Z07

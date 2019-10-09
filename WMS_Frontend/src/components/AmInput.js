@@ -45,6 +45,7 @@ function CustomTextField(props) {
     defaultValue,
     required,
     onChange,
+    onChangeV2,
     onMouseOver,
     onMouseOut,
     onKeyPress,
@@ -66,9 +67,9 @@ function CustomTextField(props) {
   const [value, setValue] = useState(defaultValue ? defaultValue : "");
 
   const handleChange = event => {
-    if (onChange) {
+    if (onChangeV2) {
       setValue(event.target.value);
-      onChange(event.target.value, null, event.target, event);
+      onChangeV2(event.target.value, null, event.target, event);
     }
   };
   const handleMouseOver = event => {
@@ -133,7 +134,7 @@ function CustomTextField(props) {
           ...InputProps
         }}
         defaultValue={defaultValue}
-        // onChange={handleChange}
+        onChange={handleChange}
         onKeyUp={handleKeyUp}
         onMouseOver={handleMouseOver}
         onKeyPress={handleKeyPress}
@@ -175,6 +176,7 @@ InputStyle.propTypes = {
   styleType: PropTypes.string,
   InputProps: PropTypes.object,
   onChange: PropTypes.func,
+  onChangeV2: PropTypes.func,
   onMouseOver: PropTypes.func,
   onMouseOut: PropTypes.func,
   onKeyPress: PropTypes.func,

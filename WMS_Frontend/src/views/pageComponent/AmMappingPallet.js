@@ -385,7 +385,18 @@ const AmMappingPallet = (props) => {
             setKeyEnter(true);
         }
     };
-
+    const onHandleOnChange = (value, dataObject, field, fieldDataKey, event) => {
+        // console.log(value)
+        valueInput[field] = value;
+        onHandleBeforePost2(field);
+    };
+    async function onHandleBeforePost2(curInput) {
+        getValueInput();
+        if (valueInput) {
+            console.log(curInput)
+            console.log(valueInput)
+        }
+    }
     async function onHandleBeforePost() {
         setKeyEnter(false);
         getValueInput();
@@ -394,66 +405,53 @@ const AmMappingPallet = (props) => {
         var dataScan = {};
         let rootBaseCode = null;
         if (valueInput) {
-            if (valueInput['scanCode']) {
-                let rootFocusID = null;
-                if (storageObj) {
-                    var dataRootFocus = findRootMapping(storageObj);
-                    rootFocusID = dataRootFocus.id;
-                    rootBaseCode = dataRootFocus.code;
-                    //
-                    // if (curInput !== SC.OPT_REMARK) {
-                    //     var qryStr2 = queryString.parse(storageObj.options)
-                    //     let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                    //     if (eleREMARK) {
-                    //         eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                    //         valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                    //     }
-                    // }
+            let rootFocusID = null;
+            if (storageObj) {
+                var dataRootFocus = findRootMapping(storageObj);
+                rootFocusID = dataRootFocus.id;
+                rootBaseCode = dataRootFocus.code;
 
-                    //onBeforePost custom function
-                    if (onBeforePost) {
-                        var resInput = {
-                            ...valueInput,
-                            rootID: rootFocusID,
-                            amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
-                            mode: 0,
-                            action: actionValue,
-                        };
-                        dataScan = await onBeforePost(resInput, storageObj, curInput);
-                        if (dataScan) {
+                //onBeforePost custom function
+                if (onBeforePost) {
+                    var resInput = {
+                        ...valueInput,
+                        rootID: rootFocusID,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        mode: 0,
+                        action: actionValue,
+                    };
+                    dataScan = await onBeforePost(resInput, storageObj, curInput);
+                    if (dataScan) {
+                        // console.log(dataScan)
+                        if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
-                        } else {
-                            inputClear();
                         }
                     } else {
-                        dataScan = {
-                            rootID: rootFocusID,
-                            amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
-                            mode: 0,
-                            action: actionValue,
-                        };
-                        resValuePosts = { ...valueInput, ...dataScan }
+                        inputClear();
                     }
-
                 } else {
-                    //select / add pallet 
-
                     dataScan = {
-                        // rootID: null,
-                        mode: 0,
+                        rootID: rootFocusID,
                         amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        mode: 0,
                         action: actionValue,
-                    }
+                    };
                     resValuePosts = { ...valueInput, ...dataScan }
                 }
 
             } else {
-                if (curInput === 'scanCode') {
-                    alertDialogRenderer("Scan Code must be value", "error", true);
+                //select / add pallet 
+                dataScan = {
+                    // rootID: null,
+                    mode: 0,
+                    amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                    action: actionValue,
                 }
+                resValuePosts = { ...valueInput, ...dataScan }
             }
+
         }
-        console.log(resValuePosts)
+        // console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -500,13 +498,18 @@ const AmMappingPallet = (props) => {
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
             // console.log(resValuePosts);
-
-            if (modeEmptyPallet === false) {
-                if (actionValue !== 0 && actionValue !== 2 && storageObj) {
-                    var dataLastPack = findPack(storageObj);
-                    if (!modeMultiSKU) {
-                        if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
-                            alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+            if (resValuePosts.scanCode.length === 0) {
+                alertDialogRenderer("Scan Code must be value", "error", true);
+            } else {
+                if (modeEmptyPallet === false) {
+                    if (actionValue !== 0 && actionValue !== 2 && storageObj) {
+                        var dataLastPack = findPack(storageObj);
+                        if (!modeMultiSKU) {
+                            if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
+                                alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                            } else {
+                                scanBarcodeApi(resValuePosts);
+                            }
                         } else {
                             scanBarcodeApi(resValuePosts);
                         }
@@ -514,12 +517,9 @@ const AmMappingPallet = (props) => {
                         scanBarcodeApi(resValuePosts);
                     }
                 } else {
-                    scanBarcodeApi(resValuePosts);
+                    scanBarcodeEmptyPalletApi(resValuePosts);
                 }
-            } else {
-                scanBarcodeEmptyPalletApi(resValuePosts);
             }
-
         }
         setPreAutoPost(false);
     }
@@ -616,7 +616,6 @@ const AmMappingPallet = (props) => {
                             }
                         });
                     }
-                        // console.log(valueInput);
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
                 }
@@ -792,6 +791,7 @@ const AmMappingPallet = (props) => {
                             defaultValue={defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        //onChangeV2={(value, obj, element, event) => onHandleOnChange(value, null, field, null, event)}
                         />
                     </div>
                 </FormInline>
@@ -922,14 +922,14 @@ const AmMappingPallet = (props) => {
     }
     const onClearInput = (inputCreate) => {
         inputCreate.map((x, i) => {
-
-            // setValueInput({
-            //     [x.field]: x.defaultValue ? x.defaultValue : ""
-            // });
             let ele = document.getElementById(x.field);
             if (ele) {
-                valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
-                ele.value = x.defaultValue ? x.defaultValue : "";
+                if (x.clearInput) {
+                    valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
+                    ele.value = x.defaultValue ? x.defaultValue : "";
+                } else {
+
+                }
                 if (x.isFocus === true) {
                     ele.focus();
                 }

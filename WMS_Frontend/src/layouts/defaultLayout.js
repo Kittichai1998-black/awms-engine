@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useState, useContext, useRef, useEffect } from 'react';
-
+import withWidth from '@material-ui/core/withWidth';
 import {
     withStyles,
     MuiThemeProvider,
@@ -64,6 +64,9 @@ const drawerWidth = 240;
 
 const styles = theme => ({
     root: {
+        [theme.breakpoints.down('sm')]: {
+            aa:theme.palette.secondary.main
+        },
         display: 'flex'
     },
     appBar: {
@@ -155,7 +158,7 @@ const styles = theme => ({
         "&:hover": {
             cursor: "pointer"
         }
-    }
+    },
 });
 
 const checkstatus = () => {
@@ -201,6 +204,8 @@ const Default = props => {
         return localStorage.getItem("Lang") ? convertLang(localStorage.getItem("Lang")) : localStorage.setItem("Lang", "EN"), convertLang(localStorage.getItem("Lang"))
     })
     const { t, i18n } = useTranslation()
+
+    const [menuVisible, setMenuVisible] = useState({visibility:"visible"});
 
 
 
@@ -346,6 +351,17 @@ const Default = props => {
         setOpenLangHeader(false)
     }
 
+    useEffect(() => {
+        if(props.width === "xs"){
+            setMenuVisible({visibility:"hidden"})
+            handleDrawerClose()
+        }
+        else{
+            setMenuVisible({visibility:"visible"})
+            handleDrawerOpen()
+        }
+    }, [props.width])
+
     return (
         <MuiThemeProvider theme={theme}>
             <div className={classes.root}>
@@ -366,7 +382,8 @@ const Default = props => {
                         <IconButton
                             color='inherit'
                             aria-label='Open drawer'
-                            onClick={handleDrawerOpen}
+                            onClick={() => {handleDrawerOpen(); 
+                                setMenuVisible({visibility:"visible"})}}
                             className={classNames(classes.menuButton, open && classes.hide)}
                         >
                             <MenuIcon />
@@ -452,6 +469,7 @@ const Default = props => {
                                 </Typography>
                             </div>
 
+                            
                             <Popper
                                 open={openLangHeader}
                                 // anchorEl={anchorEl}
@@ -568,6 +586,7 @@ const Default = props => {
                     </Toolbar>
                 </AppBar>
                 <Drawer
+                    style={menuVisible}
                     className={classes.drawer}
                     variant='persistent'
                     anchor='left'
@@ -645,4 +664,4 @@ Default.propTypes = {
     theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(Default);
+export default withWidth()(withStyles(styles, { withTheme: true })(Default));

@@ -10,6 +10,7 @@ using AMWUtil.Exception;
 using System.Threading.Tasks;
 using AMWUtil.Common;
 using AWMSEngine.Common;
+using AMWUtil.Logger;
 
 namespace AWMSEngine.Engine.V2.Business.WorkQueue
 {
@@ -38,7 +39,11 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
         {
             public StorageObjectCriteria sto;
             public TReq reqVO;
-        } 
+        }
+
+        private ams_AreaLocationMaster _locationASRS;
+        private ams_Warehouse _warehouseASRS;
+        private ams_AreaMaster _areaASRS;
 
         protected StorageObjectCriteria GetSto(TReq reqVO)
         {
@@ -46,6 +51,22 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if(res == null)
             {
                 ////DF Code
+                this.InitDataASRS(reqVO);
+                var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
+                    null, null, false, true, BuVO);
+                if (sto == null)
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "Storage Object of Base Code: '" + reqVO.baseCode + "' Not Found");
+                if (sto.code != reqVO.baseCode)
+                    throw new AMWException(Logger, AMWExceptionCode.V1001, "Base Code: '" + reqVO.baseCode + "' INCORRECT");
+                sto.lengthM = reqVO.length;
+                sto.heightM = reqVO.height;
+                sto.widthM = reqVO.width;
+                sto.warehouseID = _warehouseASRS.ID.Value;
+                sto.areaID = _areaASRS.ID.Value;
+                sto.parentID = _locationASRS.ID.Value;
+                sto.parentType = StorageObjectType.LOCATION;
+
+                res = sto;
             }
             return res;
         }
@@ -55,6 +76,52 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             if (res == null)
             {
                 ////DF Code
+                List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
+                //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, สร้างเอกสารเบิกpallet เปล่า, 
+                if (sto.eventStatus == StorageObjectEventStatus.NEW)
+                {
+                    docItems = this.ProcessReceiving(sto, reqVO);
+
+                    if (docItems.Count() == 0)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+                }
+                //return picking
+                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
+                {
+
+                    var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
+                    var skuMaster = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, BuVO);
+                    if (skuMaster == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
+                    var SKUMasterType = ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
+                    if (SKUMasterType.GroupType == SKUGroupType.EMP)
+                    {
+                        docItems = this.ProcessReceiving(sto, reqVO);
+
+                        if (docItems.Count() == 0)
+                            throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
+
+                    }
+                }
+                else if (sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.AUDITED)
+                {
+                    var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                    var disto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                        new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Sou_StorageObject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
+                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS )
+                        }, BuVO);
+                    if (!disto.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
+                    {
+                        throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it isn't to Audit, yet.");
+                    }
+                }
+                else
+                {
+                    throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it has Event Status '" + sto.eventStatus + "'");
+                }
+
+                res = docItems;
             }
 
             return res;
@@ -231,7 +298,32 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             workQ = ADO.WorkQueueADO.GetInstant().PUT(workQ, this.BuVO);
             return workQ;
         }
-        
+
+        private void InitDataASRS(TReq reqVO)
+        {
+            var StaticValue = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant();
+
+            this._warehouseASRS = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.warehouseCode);
+            if (_warehouseASRS == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Warehouse Code '" + reqVO.warehouseCode + "' Not Found");
+            this._areaASRS = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.areaCode && x.Warehouse_ID == _warehouseASRS.ID);
+            if (_areaASRS == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Area Code '" + reqVO.areaCode + "' Not Found");
+            this._locationASRS = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<ams_AreaLocationMaster>(
+                new KeyValuePair<string, object>[] {
+                    new KeyValuePair<string,object>("Code",reqVO.locationCode),
+                    new KeyValuePair<string,object>("AreaMaster_ID",_areaASRS.ID.Value),
+                    new KeyValuePair<string,object>("Status", EntityStatus.ACTIVE)
+                }, this.BuVO).FirstOrDefault();
+            if (_locationASRS == null)
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Location Code '" + reqVO.locationCode + "' Not Found");
+        }
+        //BEGIN*******************ProcessReceiving***********************
+
+        private List<amt_DocumentItem> ProcessReceiving(StorageObjectCriteria mapsto, RegisterWorkQueue.TReq reqVO)
+        {
+            return null;
+        }
     }
 
    
