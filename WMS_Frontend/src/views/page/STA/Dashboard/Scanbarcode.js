@@ -231,11 +231,17 @@ const Scanbarcode = (props) => {
     const [manualAddRight, setManualAddRight] = useState({})
     
     const updateNoQRData = (side, field, value) => {
+        let iniData = {};
         if(side === "left"){
-            setManualAddLeft({...manualAddLeft, field:value})
+            iniData = manualAddLeft;
+            iniData[field] = value
+            console.log(iniData)
+            setManualAddLeft({...iniData,"palletCode":pallet})
         }
         else{
-            setManualAddRight({...manualAddRight, field:value})
+            iniData = manualAddRight;
+            iniData[field] = value
+            setManualAddRight({...iniData,"palletCode":pallet2})
         }
     };
 
@@ -729,7 +735,7 @@ const Scanbarcode = (props) => {
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
                                                         <Typography variant="h5" component="h3">
                                                             <AmInput onChangeV2={(value, a, b, event)=>{
-                                                                updateNoQRData("code", value);
+                                                                updateNoQRData("left" ,"code", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
@@ -737,7 +743,7 @@ const Scanbarcode = (props) => {
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
                                                         <Typography variant="h5" component="h3">
                                                             <AmInput onChangeV2={(value, a, b, event)=>{
-                                                                updateNoQRData("orderNo", value);
+                                                                updateNoQRData("left" ,"orderNo", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
@@ -745,7 +751,7 @@ const Scanbarcode = (props) => {
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
                                                         <Typography variant="h5" component="h3">
                                                             <AmInput onChangeV2={(value, a, b, event)=>{
-                                                                updateNoQRData("carton", value);
+                                                                updateNoQRData("left" ,"carton", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
@@ -785,14 +791,13 @@ const Scanbarcode = (props) => {
 
                         <Grid item xs={6}>
                             <div style={{ paddingTop: "30px", marginLeft: "5px" }}>
-                                <Card >
+                                <Card>
                                     <div>
                                         {gateRight === true ?
                                             lockStateRight === true ? <div>{HeadLock(area2 ? area2 : "")}</div> :
                                             <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
                                             : <div>{HeadGateB(area2 ? area2 : "")}</div>}
                                     </div>
-                                </Card>
                                 <Card style={{ height: "500px" }} >
                                     {gateRight === true ? 
                                     <div>
@@ -853,7 +858,7 @@ const Scanbarcode = (props) => {
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
                                                         <Typography variant="h5" component="h3">
                                                             <AmInput onChangeV2={(value, a, b, event)=>{
-                                                                updateNoQRData("code", value);
+                                                                updateNoQRData("right" ,"code", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
@@ -861,7 +866,7 @@ const Scanbarcode = (props) => {
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
                                                         <Typography variant="h5" component="h3">
                                                             <AmInput onChangeV2={(value, a, b, event)=>{
-                                                                updateNoQRData("orderNo", value);
+                                                                updateNoQRData("right" ,"orderNo", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
@@ -869,7 +874,7 @@ const Scanbarcode = (props) => {
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
                                                         <Typography variant="h5" component="h3">
                                                             <AmInput onChangeV2={(value, a, b, event)=>{
-                                                                updateNoQRData("carton", value);
+                                                                updateNoQRData("right" ,"carton", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
@@ -901,6 +906,7 @@ const Scanbarcode = (props) => {
                                             </Card>
                                         </Flash>}
                                     </div> : null}
+                                </Card>
                                 </Card></div></Grid>
                     </Grid>
                 </div>
