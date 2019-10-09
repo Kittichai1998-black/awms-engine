@@ -422,7 +422,7 @@ const AmMappingPallet = (props) => {
                     };
                     dataScan = await onBeforePost(resInput, storageObj, curInput);
                     if (dataScan) {
-                        console.log(dataScan)
+                        // console.log(dataScan)
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
                         }
@@ -616,7 +616,6 @@ const AmMappingPallet = (props) => {
                             }
                         });
                     }
-                    // console.log(valueInput);
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
                 }
@@ -923,14 +922,13 @@ const AmMappingPallet = (props) => {
     }
     const onClearInput = (inputCreate) => {
         inputCreate.map((x, i) => {
- 
             let ele = document.getElementById(x.field);
             if (ele) {
                 if (x.clearInput) {
-                    valueInput[x.field] = ""
-                    ele.value = "";
+                    valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
+                    ele.value = x.defaultValue ? x.defaultValue : "";
                 } else {
-                     
+
                 }
                 if (x.isFocus === true) {
                     ele.focus();

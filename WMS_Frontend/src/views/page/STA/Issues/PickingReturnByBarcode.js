@@ -23,7 +23,7 @@ const PickingReturnByBarcode = (props) => {
     // ]
     const inputItem = [
         // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true, "clearInput": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -54,114 +54,122 @@ const PickingReturnByBarcode = (props) => {
 
         return res;
     }
-    async function onBeforePost(reqValue, storageObj) {
-        //split ค่า
+    async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
         if (reqValue) {
-            // var storageObj = resData.bsto;
+            let orderNo = null;
+            let skuCode = null;
+            let cartonNo = null;
+            let rootID = reqValue.rootID;
+            let qryStrOpt = {};
+
             if (storageObj) {
-                if (reqValue['scanCode'].length === 26) {
-                    let orderNo = reqValue['scanCode'].substr(0, 7);
-                    let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                    let skuCode = null;
-                    if(skuCode1.includes('@')){
-                        skuCode = skuCode1.replace(/\@/g, " ");
-                    }else{
-                        skuCode = skuCode1;
-                    }
-                    skuCode = skuCode.trim();  
-                    let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
-                    let rootID = reqValue.rootID;
-                    let qryStr = {};
-                    //check Storage Object
-                    if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
-                        let dataMapstos = storageObj.mapstos[0];
-                        qryStr = queryString.parse(dataMapstos.options);
-                        if (skuCode !== dataMapstos.code || orderNo !== dataMapstos.orderNo) {
-                            alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
-                            skuCode = null;
-                            orderNo = null;
+                if (reqValue['scanCode']) {
+                    if (reqValue['scanCode'].length === 26) {
+                        orderNo = reqValue['scanCode'].substr(0, 7);
+                        let skuCode1 = reqValue['scanCode'].substr(7, 15);
+                        if(skuCode1.includes('@')){
+                            skuCode = skuCode1.replace(/\@/g, " ");
+                        }else{
+                            skuCode = skuCode1;
                         }
-                        if (rootID && skuCode && orderNo) {
-                            let oldOptions = qryStr[SC.OPT_CARTON_NO];
-                            let resCartonNo = ConvertRangeNumToString(oldOptions);
-                            let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
-                            let lenSplitCartonNo = splitCartonNo.length;
-                            let numCarton = 0;
-                            if (reqValue.action === 2) {
-                                var indexCartonNo = splitCartonNo.indexOf(cartonNo);
-                                if (indexCartonNo < 0) {
-                                    alertDialogRenderer("This Carton No. " + cartonNo + " doesn't exist in pallet.", "error", true);
-                                    cartonNo = null;
-                                } else {
-                                    splitCartonNo.splice(indexCartonNo, 1);
-                                    if (splitCartonNo.length === 0) {
-                                        cartonNo = "0";
-                                    } else if (splitCartonNo.length == 1) {
-                                        cartonNo = splitCartonNo[0].toString();
-                                    } else {
-                                        var rangcartonNo = ToRanges(splitCartonNo);
-                                        cartonNo = rangcartonNo.join();
-                                    }
-                                }
-                            } else {
-                                for (let no in splitCartonNo) {
-                                    numCarton++;
-
-                                    if (cartonNo === parseInt(splitCartonNo[no])) {
-                                        ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
-
-                                        alertDialogRenderer("Pallet No. " + storageObj.code + (window.project === "TAP" ? " had Part NO.: " : " had SKU Code: ") + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
-
+                        skuCode = skuCode.trim();
+                        cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
+                        
+                        if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                            let dataMapstos = storageObj.mapstos[0];
+                            qryStrOpt = queryString.parse(dataMapstos.options);
+                            if (skuCode !== dataMapstos.code || orderNo !== dataMapstos.orderNo) {
+                                alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                                skuCode = null;
+                                orderNo = null;
+                            }
+                            if (rootID && skuCode && orderNo) {
+                                let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
+                                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                                let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                                let lenSplitCartonNo = splitCartonNo.length;
+                                let numCarton = 0;
+                                if (reqValue.action === 2) {
+                                    var indexCartonNo = splitCartonNo.indexOf(cartonNo);
+                                    if (indexCartonNo < 0) {
+                                        alertDialogRenderer("This Carton No. " + cartonNo + " doesn't exist in pallet.", "error", true);
                                         cartonNo = null;
-                                        break;
-                                    }
-                                    else {
-                                        if (numCarton === lenSplitCartonNo) {
-                                            cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                    } else {
+                                        splitCartonNo.splice(indexCartonNo, 1);
+                                        if (splitCartonNo.length === 0) {
+                                            cartonNo = "0";
+                                        } else if (splitCartonNo.length == 1) {
+                                            cartonNo = splitCartonNo[0].toString();
                                         } else {
-                                            continue;
+                                            var rangcartonNo = ToRanges(splitCartonNo);
+                                            cartonNo = rangcartonNo.join();
+                                        }
+                                    }
+                                } else {
+                                    for (let no in splitCartonNo) {
+                                        numCarton++;
+    
+                                        if (cartonNo === parseInt(splitCartonNo[no])) {
+                                            ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
+    
+                                            alertDialogRenderer("Pallet No. " + storageObj.code + " had SKU Code: " + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
+    
+                                            cartonNo = null;
+                                            break;
+                                        }
+                                        else {
+                                            if (numCarton === lenSplitCartonNo) {
+                                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                            } else {
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    if (cartonNo && rootID && skuCode && orderNo) {
-                        // qryStr[SC.OPT_MVT] = "1091";
-                        // qryStr[SC.OPT_DONE_EVENT_STATUS] = "97";
-                        qryStr[SC.OPT_CARTON_NO] = cartonNo.toString();
-                        let qryStr1 = queryString.stringify(qryStr)
-                        let uri_opt = decodeURIComponent(qryStr1);
 
-                        dataScan = {
-                            // rootID: rootID,
-                            orderNo: orderNo,
-                            scanCode: skuCode,
-                            options: cartonNo === "0" ? null : uri_opt
-                            // amount: 1,
-                            // mode: 0,
-                            // action: 1,
-                            // isRoot: false
-                        };
-                        resValuePost = { ...reqValue, ...dataScan }
+                        if (cartonNo && rootID && skuCode && orderNo) {
+
+                            qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
+                            let qryStr1 = queryString.stringify(qryStrOpt)
+                            let uri_opt = decodeURIComponent(qryStr1);
+
+                            dataScan = {
+                                allowSubmit: true,
+                                orderNo: orderNo,
+                                scanCode: skuCode,
+                                options: cartonNo === "0" ? null : uri_opt
+                            };
+                            resValuePost = { ...reqValue, ...dataScan}
+                        } else {
+                            if (rootID === null) {
+                                alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
+                            }                          
+                        }
                     } else {
-                        if (rootID === null) {
-                            alertDialogRenderer("Please scan the pallet before scanning the product or CartonNo Not Found.", "error", true);
-
+                        if (reqValue.action === 2) {
+                            if(storageObj.code === reqValue.scanCode){
+                                resValuePost = { ...reqValue, allowSubmit: true }
+                            }
+                        }else{
+                            alertDialogRenderer("Please scan code of product.", "error", true);
                         }
                     }
                 } else {
-                    resValuePost = { ...reqValue }
+                    resValuePost = { ...reqValue, allowSubmit: false }
                 }
-            } else {
-                resValuePost = { ...reqValue }
-            }
-        }
 
+            } else {
+                resValuePost = { ...reqValue, allowSubmit: false }
+            }
+            
+        }
         return resValuePost;
     }
+    
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
         setTypeDialog(type);
