@@ -35,7 +35,7 @@ const DocumentViewGI = props => {
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
     { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
     { accessor: "SKUMaster_Name", Header: "SKU Name" },
-    { width: 130, accessor: "Lot", Header: "Lot" },
+    { width: 150, accessor: "Lot", Header: "Lot" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];

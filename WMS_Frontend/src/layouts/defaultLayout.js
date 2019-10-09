@@ -43,7 +43,7 @@ import iconMenuTree from '../components/AmIconMenu';
 import { NONAME } from 'dns';
 import { useTranslation } from 'react-i18next';
 import '../i18n';
-
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 const theme = createMuiTheme({
     overrides: {
         MuiDrawer: {
@@ -240,16 +240,30 @@ const Default = props => {
         localStorage.clear();
         i18n.changeLanguage("EN")
     };
-
+    const matches = useMediaQuery('(max-width:400px)');
     const divLingLogo = {
-        width: '4vw',
+
+       width: '4vw',
         display: 'inline-block',
         height: '2.5vw',
         lineHeight: '2.5vw',
         Float: 'Left',
         marginLeft: '1vw',
         fontSize: '2.2vw'
+
     };
+    const divLingLogo_phone = {
+
+        width: '4vw',
+         display: 'inline-block',
+         height: '2.5vw',
+         lineHeight: '2.5vw',
+         Float: 'Left',
+         marginLeft: '1vw',
+         fontSize: '0.7rem'
+ 
+     };
+    
     let Path = window.location.pathname.split('/');
     useEffect(() => {
         var data = route(localStorage.getItem('MenuItems'));
@@ -302,7 +316,14 @@ const Default = props => {
             });
             return (
                 <span key="0">
-                    <span style={{ float: "left", lineHeight: "29px" }}>{name}</span>
+                    <span 
+                    style={
+                        matches ? (
+                             { lineHeight: "29px",fontSize:'0.8rem'}
+                         ) : (
+                             {lineHeight: "29px",fontSize:'1rem'}
+                         )  
+                    }>{name}</span>
                 </span>
             );
         }
@@ -311,8 +332,15 @@ const Default = props => {
         if (Path[1] === "") {
         } else {
             return (
-                <div style={{ float: "left", lineHeight: "29px",fontSize:"1rem" }}>
-                    {/* <Link key="0" color="inherit" href="/">Home</Link> */}
+                <div 
+                style={
+                    matches ? (
+                         {float: "left", lineHeight: "29px",fontSize:'0.8rem'}
+                     ) : (
+                         {float: "left", lineHeight: "29px",fontSize:'1rem'}
+                     )  
+                }
+                >
                     <Link key="0" color="inherit" href="/">{t("Home")}</Link>
                 </div>
             );
@@ -332,9 +360,14 @@ const Default = props => {
                             marginLeft: "5px"
                         }}
                     >
-                        <Typography color="textPrimary" style={{ fontSize:"1rem" }}>
+                        <Typography color="textPrimary"  style={
+                            matches ? (
+                                 {fontSize:'0.8rem'}
+                             ) : (
+                                 {fontSize:'1rem'}
+                             )  
+                        }>
                             {t(x.text)}
-                            {/* {x.text} */}
                         </Typography>
                     </div>
                 }
@@ -362,6 +395,45 @@ const Default = props => {
         }
     }, [props.width])
 
+const LogoIn= () => {
+    return (<a
+        href='/'
+         style={{
+             display: 'inline-block',
+               width: 'auto',
+              textDecoration: 'none',
+                color: '#FFF'
+        }}>
+           {matches ? (
+            <img
+            src={require('../assets/logo/logo.png')}
+            style={{
+           
+            width: '35px',
+              display: 'inline-block'
+            }}
+           alt=''
+           />
+           ):(
+        <img
+            src={require('../assets/logo/logo.png')}
+            style={{
+           float: 'left',
+            width: '4vw',
+              display: 'inline-block'
+            }}
+           alt=''
+           />
+           )}
+            {matches ? (
+               ''
+            ) : (
+                <div style={divLingLogo}>AMS</div>
+            )}
+           
+    </a>
+    )
+}
     return (
         <MuiThemeProvider theme={theme}>
             <div className={classes.root}>
@@ -394,26 +466,7 @@ const Default = props => {
                             noWrap
                             className={classes.grow}
                         >
-                            <a
-                                href='/'
-                                style={{
-                                    display: 'inline-block',
-                                    width: 'auto',
-                                    textDecoration: 'none',
-                                    color: '#FFF'
-                                }}
-                            >
-                                <img
-                                    src={require('../assets/logo/logo.png')}
-                                    style={{
-                                        float: 'left',
-                                        width: '4vw',
-                                        display: 'inline-block'
-                                    }}
-                                    alt=''
-                                />
-                                <div style={divLingLogo}>AMS</div>
-                            </a>
+                            {LogoIn()}
                         </Typography>
                         {/* แสดงชื่อ Username และ Menu=> Profile, Logout */}
                         <div>
