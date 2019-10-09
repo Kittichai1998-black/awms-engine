@@ -422,7 +422,6 @@ const AmPickingReturn = (props) => {
 
         } else {
             if (valueInput) {
-                if (valueInput['scanCode']) {
                     let rootFocusID = null;
                     if (resData) {
                         var docItemrow = resData.docs && resData.docs[0] ? resData.docs[0].DocumentItems !== null && resData.docs[0].DocumentItems.length > 0 ? resData.docs[0].DocumentItems : null : null;
@@ -431,14 +430,14 @@ const AmPickingReturn = (props) => {
                         rootFocusID = dataRootFocus.id;
                         rootBaseCode = dataRootFocus.code;
                         //
-                        if (curInput !== SC.OPT_REMARK) {
-                            var qryStr2 = queryString.parse(bstoData.options)
-                            let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                            if (eleREMARK) {
-                                eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                                valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                            }
-                        }
+                        // if (curInput !== SC.OPT_REMARK) {
+                        //     var qryStr2 = queryString.parse(bstoData.options)
+                        //     let eleREMARK = document.getElementById(SC.OPT_REMARK);
+                        //     if (eleREMARK) {
+                        //         eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
+                        //         valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
+                        //     }
+                        // }
                         if (onBeforePost) {
                             var resInput = {
                                 ...valueInput,
@@ -450,7 +449,9 @@ const AmPickingReturn = (props) => {
                             };
                             dataScan = await onBeforePost(resInput, bstoData);
                             if (dataScan) {
-                                resValuePosts = { ...dataScan }
+                                if (dataScan.allowSubmit === true) {
+                                    resValuePosts = { ...dataScan }
+                                }
                             } else {
                                 inputClear();
                             }
@@ -473,11 +474,7 @@ const AmPickingReturn = (props) => {
                         }
                         resValuePosts = { ...valueInput, ...dataScan }
                     }
-                } else {
-                    if (curInput === 'scanCode') {
-                        alertDialogRenderer("Scan Code must be value", "error", true);
-                    }
-                }
+                
             }
             if (resValuePosts) {
 
@@ -524,15 +521,19 @@ const AmPickingReturn = (props) => {
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
             // console.log(resValuePosts);
-            if (actionValue !== 0 && actionValue !== 2 && resData ? resData.bsto : null) {
-                var dataLastPack = findPack(resData.bsto);
-                if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
-                    alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+            if (resValuePosts.scanCode.length === 0) {
+                alertDialogRenderer("Scan Code must be value", "error", true);
+            } else {
+                if (actionValue !== 0 && actionValue !== 2 && resData ? resData.bsto : null) {
+                    var dataLastPack = findPack(resData.bsto);
+                    if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
+                        alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                    } else {
+                        scanBarcodeApi(resValuePosts);
+                    }
                 } else {
                     scanBarcodeApi(resValuePosts);
                 }
-            } else {
-                scanBarcodeApi(resValuePosts);
             }
         }
         setPreAutoPost(false);
@@ -808,12 +809,14 @@ const AmPickingReturn = (props) => {
     }
     const onClearInput = (inputCreate) => {
         inputCreate.map((x, i) => {
-            // setValueInput({
-            // });
             let ele = document.getElementById(x.field);
             if (ele) {
-                valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
-                ele.value = x.defaultValue ? x.defaultValue : "";
+                if (x.clearInput) {
+                    valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
+                    ele.value = x.defaultValue ? x.defaultValue : "";
+                } else {
+
+                }
                 if (x.isFocus === true) {
                     ele.focus();
                 }
