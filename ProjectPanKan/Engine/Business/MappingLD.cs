@@ -6,6 +6,7 @@ using AMWUtil.Common;
 using AMWUtil.Exception;
 using AMWUtil.Logger;
 using AWMSEngine.Engine;
+using AWMSEngine.Engine.V2.Business.Loading;
 using AWMSEngine.Engine.V2.Business;
 using AWMSEngine.Engine.V2.Business.Picking;
 using AWMSModel.Constant.EnumConst;
@@ -15,10 +16,10 @@ using AWMSModel.Entity;
 namespace ProjectPanKan.Engine.Business
 {
 
-    public class MappingLD : IProjectEngine<TestPick.TReq, List<amt_DocumentItemStorageObject>>
+    public class MappingLD : IProjectEngine<CreateLDDocument.TReq, List<amt_DocumentItemStorageObject>>
     {
       
-        public List<amt_DocumentItemStorageObject> ExecuteEngine(AMWLogger logger, VOCriteria buVO, TestPick.TReq reqVO)
+        public List<amt_DocumentItemStorageObject> ExecuteEngine(AMWLogger logger, VOCriteria buVO, CreateLDDocument.TReq reqVO)
         {
             var DocItemsMapLD = new List<amt_DocumentItemStorageObject>();
 

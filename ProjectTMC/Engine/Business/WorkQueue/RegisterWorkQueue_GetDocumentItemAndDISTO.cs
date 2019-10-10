@@ -69,7 +69,6 @@ namespace ProjectTMC.Engine.Business.WorkQueue
 
             var docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
             new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code),
                     new KeyValuePair<string,object>("EventStatus",DocumentEventStatus.WORKING)
             }, buVO).FirstOrDefault();
             var qtyPack = System.Convert.ToDecimal(reqVO.mappingPallets[0].qty);

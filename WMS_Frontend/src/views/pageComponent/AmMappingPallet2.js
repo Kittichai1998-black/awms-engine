@@ -998,7 +998,7 @@ const AmMappingPallet2 = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
-                    {inputSource && inputSource.length > 0 ?
+                    {inputSource && inputSource.length > 0 && actionValue !=2 ?
                         <>
                             <CardContent className={classes.cardContent}>
 

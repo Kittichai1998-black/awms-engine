@@ -81,21 +81,23 @@ const ReceiveWIPSup = (props) => {
                 if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                     SOU_WAREHOUSE_ID = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                 } else {
-                    alertDialogRenderer("Please select source customer before.", "error", true);
+                    if (reqValue.action != 2) {
+                        alertDialogRenderer("Please select source customer before.", "error", true);
+                    }
                 }
 
                 if (reqValue['scanCode']) {
                     if (reqValue['scanCode'].length === 26) {
                         orderNo = reqValue['scanCode'].substr(0, 7);
                         let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                        if(skuCode1.includes('@')){
+                        if (skuCode1.includes('@')) {
                             skuCode = skuCode1.replace(/\@/g, " ");
-                        }else{
+                        } else {
                             skuCode = skuCode1;
                         }
                         skuCode = skuCode.trim();
                         cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
-                        
+
                         if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                             let dataMapstos = storageObj.mapstos[0];
                             qryStrOpt = queryString.parse(dataMapstos.options);
@@ -129,12 +131,12 @@ const ReceiveWIPSup = (props) => {
                                 } else {
                                     for (let no in splitCartonNo) {
                                         numCarton++;
-    
+
                                         if (cartonNo === parseInt(splitCartonNo[no])) {
                                             ///เลขcarton no ซ้ำ รับเข้าไม่ได้ วางสินค้าลงบนพาเลทไม่ได้
-    
+
                                             alertDialogRenderer("Pallet No. " + storageObj.code + " had SKU Code: " + skuCode + " and Carton No." + cartonNo.toString() + " already", "error", true);
-    
+
                                             cartonNo = null;
                                             break;
                                         }
@@ -162,20 +164,20 @@ const ReceiveWIPSup = (props) => {
                                 orderNo: orderNo,
                                 scanCode: skuCode,
                                 options: cartonNo === "0" ? null : uri_opt,
-                                validateSKUTypeCodes: ["WIP"] 
+                                validateSKUTypeCodes: ["WIP"]
                             };
-                            resValuePost = { ...reqValue, ...dataScan}
+                            resValuePost = { ...reqValue, ...dataScan }
                         } else {
                             if (rootID === null) {
                                 alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
-                            }                          
+                            }
                         }
                     } else {
                         if (reqValue.action === 2) {
-                            if(storageObj.code === reqValue.scanCode){
+                            if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }
-                        }else{
+                        } else {
                             alertDialogRenderer("Please scan code of product.", "error", true);
                         }
                     }
@@ -186,7 +188,7 @@ const ReceiveWIPSup = (props) => {
             } else {
                 resValuePost = { ...reqValue, allowSubmit: false }
             }
-            
+
         }
         return resValuePost;
     }

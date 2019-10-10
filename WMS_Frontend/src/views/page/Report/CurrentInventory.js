@@ -71,7 +71,7 @@ const CurrentInventory = (props) => {
     }, [page])
     const onGetDocument = () => {
 
-        Axios.get(window.apipath + "/v2/GetSPReportAPI?apikey=FREE01"
+        Axios.get(window.apipath + "/v2/GetSPReportAPI?"
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
             + "&packName=" + (valueText.packName === undefined || valueText.packName.value === undefined || valueText.packName.value === null ? '' : encodeURIComponent(valueText.packName.value.trim()))
             + "&batch=" + (valueText.batch === undefined || valueText.batch.value === undefined || valueText.batch.value === null ? '' : encodeURIComponent(valueText.batch.value.trim()))
@@ -88,7 +88,7 @@ const CurrentInventory = (props) => {
                 }
             })
     }
-    const getAPI = "/v2/GetSPReportAPI?apikey=FREE01"
+    const getAPI = "/v2/GetSPReportAPI?"
         + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
         + "&packName=" + (valueText.packName === undefined || valueText.packName.value === undefined || valueText.packName.value === null ? '' : encodeURIComponent(valueText.packName.value.trim()))
         + "&batch=" + (valueText.batch === undefined || valueText.batch.value === undefined || valueText.batch.value === null ? '' : encodeURIComponent(valueText.batch.value.trim()))

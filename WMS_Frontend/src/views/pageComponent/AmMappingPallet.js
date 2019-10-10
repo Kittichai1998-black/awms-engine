@@ -367,6 +367,7 @@ const AmMappingPallet = (props) => {
         })
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
+        console.log(field+": "+value)
         valueInput[field] = value;
         setCurInput(field);
 
@@ -983,7 +984,7 @@ const AmMappingPallet = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
-                    {inputSource && inputSource.length > 0 ?
+                    {inputSource && inputSource.length > 0 && actionValue != 2 ?
                         <>
                             <CardContent className={classes.cardContent}>
 
