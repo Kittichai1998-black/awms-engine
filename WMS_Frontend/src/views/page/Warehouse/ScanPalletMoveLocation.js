@@ -304,7 +304,7 @@ const ScanPalletMoveLocation = (props) => {
         });
     }
     const GetDataFromPallet = (reqPalletCode) => {
-        Axios.get(window.apipath + '/v2/GetMapStoAPI?apikey=FREE01'
+        Axios.get(window.apipath + '/v2/GetMapStoAPI?'
             + "&code=" + (reqPalletCode === undefined || reqPalletCode === undefined || reqPalletCode === null ? '' : encodeURIComponent(reqPalletCode.trim()))
             + "&type=1&isToRoot=false&isToChild=true").then((rowselect) => {
 

@@ -95,7 +95,7 @@ const DailySTOReceive = (props) => {
     }, [page])
     const onGetDocument = () => {
 
-        Axios.get(window.apipath + "/v2/GetSPReportAPI?apikey=FREE01"
+        Axios.get(window.apipath + "/v2/GetSPReportAPI?"
             + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
             + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
             + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))
@@ -113,7 +113,7 @@ const DailySTOReceive = (props) => {
             })
     }
 
-    const getAPI = "/v2/GetSPReportAPI?apikey=FREE01"
+    const getAPI = "/v2/GetSPReportAPI?"
         + "&dateFrom=" + (valueText.dateFrom === undefined || valueText.dateFrom.value === undefined || valueText.dateFrom.value === null ? '' : encodeURIComponent(valueText.dateFrom.value))
         + "&dateTo=" + (valueText.dateTo === undefined || valueText.dateTo.value === undefined || valueText.dateTo.value === null ? '' : encodeURIComponent(valueText.dateTo.value))
         + "&docCode=" + (valueText.docCode === undefined || valueText.docCode.value === undefined || valueText.docCode.value === null ? '' : encodeURIComponent(valueText.docCode.value.trim()))

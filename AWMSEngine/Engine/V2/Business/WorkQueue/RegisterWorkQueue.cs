@@ -87,35 +87,10 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
                 }
                 //return picking
-                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED)
+                else if (sto.eventStatus == StorageObjectEventStatus.RECEIVED 
+                    || sto.eventStatus == StorageObjectEventStatus.AUDITED
+                    || sto.eventStatus == StorageObjectEventStatus.CONSOLIDATED)
                 {
-
-                    var stoEmp = sto.ToTreeList().Find(x => x.type == StorageObjectType.PACK);
-                    var skuMaster = ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>(stoEmp.skuID.Value, BuVO);
-                    if (skuMaster == null)
-                        throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
-                    var SKUMasterType = ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
-                    if (SKUMasterType.GroupType == SKUGroupType.EMP)
-                    {
-                        docItems = this.ProcessReceiving(sto, reqVO);
-
-                        if (docItems.Count() == 0)
-                            throw new AMWException(Logger, AMWExceptionCode.V2001, "Good Received Document Not Found");
-
-                    }
-                }
-                else if (sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.AUDITED)
-                {
-                    var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
-                    var disto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                        new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Sou_StorageObject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
-                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS )
-                        }, BuVO);
-                    if (!disto.TrueForAll(x => x.Status == EntityStatus.ACTIVE))
-                    {
-                        throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it isn't to Audit, yet.");
-                    }
                 }
                 else
                 {
@@ -331,36 +306,44 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var desWarehouse = new ams_Warehouse();
             var desBranch = new ams_Branch();
             var desArea = new ams_AreaMaster();
-            if (reqVO.ioType == IOType.OUTPUT)
-            {
-                desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
-                if (desWarehouse == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.desWarehouseCode + " Not Found");
-                desBranch = StaticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
-                if (desBranch == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Branch Not Found");
-                desArea = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
-                if (desArea == null)
-                    throw new AMWException(Logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
-            }
 
             var _autodoc = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_AUTO_DOC);
-            var pstos = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
-            if (pstos == null || pstos.Count() == 0)
+            var pstoLists = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
+            if (pstoLists == null || pstoLists.Count() == 0)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
-            var sto_skuType = StaticValue.SKUMasterTypes.Find(x=>x.ID == pstos.First().skuID.Value);
-
 
             if (_autodoc == "true")
             {
                 //auto create new Document 
+                if (reqVO.ioType == IOType.INPUT)
+                {
+                    var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == pstoLists.First().skuID.Value);
 
+
+
+                }
+                else
+                {
+                    //new create GI
+                    desWarehouse = StaticValue.Warehouses.FirstOrDefault(x => x.Code == reqVO.desWarehouseCode);
+                    if (desWarehouse == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Warehouse " + reqVO.desWarehouseCode + " Not Found");
+                    desBranch = StaticValue.Branchs.FirstOrDefault(x => x.ID == desWarehouse.Branch_ID);
+                    if (desBranch == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Branch Not Found");
+                    desArea = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
+                    if (desArea == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
+                }
             }
             else
             {
                 //get Document
-                docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(pstos.Select(x=>x.id.Value).ToList(), BuVO);
+                docItems = ADO.DocumentADO.GetInstant().ListItemBySTO(pstoLists.Select(x => x.id.Value).ToList(), BuVO);
             }
+            
+
+            
 
             
 

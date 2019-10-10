@@ -301,6 +301,12 @@ namespace AWMSEngine.ADO.StaticValue
             var feature = this.Features.FirstOrDefault(x => x.Code == c);
             return feature == null ? false : feature.DataValue == AWMSModel.Constant.StringConst.YesNoConst.YES;
         }
+        public bool IsFeature(string code)
+        {
+            string c = code;
+            var feature = this.Features.FirstOrDefault(x => x.Code == c);
+            return feature == null ? false : feature.DataValue == AWMSModel.Constant.StringConst.YesNoConst.YES;
+        }
         public string GetFeatureValue(FeatureCode code)
         {
             string c = code.Attribute<EnumValueAttribute>().ValueString;
