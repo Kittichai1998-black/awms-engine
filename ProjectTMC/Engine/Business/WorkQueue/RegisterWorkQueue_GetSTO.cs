@@ -43,12 +43,12 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                 AWMSEngine.ADO.DataADO.GetInstant().Insert<ams_BaseMaster>(buVO, new ams_BaseMaster()
                 {
                     Code = reqVO.baseCode,
-                    Name = "BOX",
-                    BaseMasterType_ID = 6,
+                    Name = "Pallet",
+                    BaseMasterType_ID = 1,
                     Description = "",
-                    ObjectSize_ID = 16,
+                    ObjectSize_ID = 3,
                     Status = EntityStatus.ACTIVE,
-                    UnitType_ID = 98,
+                    UnitType_ID = 2,
                     WeightKG = Convert.ToDecimal(0.5)
                 });
             }
