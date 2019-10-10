@@ -43,7 +43,7 @@ namespace ProjectTMC.Engine.Business.WorkQueue
             var distoDoc = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
             new KeyValuePair<string, object>[] {
                 new KeyValuePair<string,object>("DocumentItem_ID",docGR.ID),
-                new KeyValuePair<string,object>("Status",EntityStatus.INACTIVE)
+                
             }, buVO);
 
             var sum = distoDoc.Sum(x => x.Quantity);
