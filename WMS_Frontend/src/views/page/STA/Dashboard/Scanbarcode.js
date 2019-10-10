@@ -307,12 +307,10 @@ const Scanbarcode = (props) => {
         
     }, [areaIDs])*/
 
-    const MapStoNoDoc = (side) => {
+    const MapStoNoDoc = (areaGateLoc, side) => {
         let mapSto = {};
         if(side === "left"){
-            console.log(manualAddLeft)
             if(data !== null){
-                console.log(manualAddLeft)
                 let leftGate = data.find(x => x.gate === 1);
                 if(leftGate !== null && leftGate !== undefined && leftGate.baseID !== null)
                 {
@@ -376,8 +374,6 @@ const Scanbarcode = (props) => {
                     let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
                     let resCarton = ConvertStringToRangeNum(disCarton.join(','));
 
-                    console.log(disCarton.join(','))
-                    console.log(resCarton)
                     mapSto.rootID = rightGate.baseID;
                     mapSto.scanCode = manualAddRight.code;
                     mapSto.orderNo = manualAddRight.orderNo;
@@ -389,16 +385,37 @@ const Scanbarcode = (props) => {
                     mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
                     mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
                     mapSto.isRoot = false;
-                    
-                console.log(mapSto)
                 }
             }
         }
-
-        //Axios.post(window.apipath + '/v2/ScanMapStoAPI', mapSto).then(res => console.log(res))
+        Axios.post(window.apipath + '/v2/ScanMapStoAPI', mapSto).then(res => {
+            UnlockGate(areaGateLoc, side)
+        })
     }
 
+    const RemovePackSto = (baseID, areaID) => {
+        Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID}).then(res => console.log(res))
+    }
 
+    const UnlockGate = (areaGateLoc, side) => {
+        setLockGateID(lockGateID.filter(x => x !== areaGateLoc))
+        databar.lockGateID = lockGateID
+        setdatabar({...databar})
+        if(side === "left")
+            setLockStateLeft(false)
+        else
+            setLockStateRight(false)
+    }
+    
+    const LockGate = (areaGateLoc, side) => {
+        lockGateID.push(areaGateLoc)
+        databar.lockGateID = lockGateID
+        setdatabar({...databar})
+        if(side === "left")
+            setLockStateLeft(true)
+        else
+            setLockStateRight(true)
+    }
 
     const Scanbar = () => {
         var databars = {...databar}
@@ -456,6 +473,7 @@ const Scanbarcode = (props) => {
     }
 
     useEffect(()=>{
+        console.log(data)
         if(data !== null){
             data.forEach(x=>{
                 if(x.gate === 1){
@@ -465,23 +483,21 @@ const Scanbarcode = (props) => {
                         setpallet(x.baseCode)
                         setareaGate(x.areaID)
                         
-                        if(x.ID !== null){
-                            if (x.Quantity === null || x.Quantity === undefined) {
-                                setqty(0)
-                            } else {
-                                setqty(x.Quantity)
-                            }
-                            if (x.MaxQuantity === null) {
-                                setqtyMax(0)
-                            } else {
-                                setqtyMax(x.MaxQuantity)
-                            }
-
-                            setproductCode(x.Code)
-                            setorderNo(x.OrderNo)
-                            setunitCode(x.UnitCode)
-                            setcarton(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
+                        if (x.Quantity === null || x.Quantity === undefined) {
+                            setqty(0)
+                        } else {
+                            setqty(x.Quantity)
                         }
+                        if (x.MaxQuantity === null) {
+                            setqtyMax(0)
+                        } else {
+                            setqtyMax(x.MaxQuantity)
+                        }
+
+                        setproductCode(x.Code)
+                        setorderNo(x.OrderNo)
+                        setunitCode(x.UnitCode)
+                        setcarton(x.Options !== "" && x.Options !== null ? x.Options.split("=")[1].split("&")[0] : null)
                     }
                     else{
                         setgateLeft(false)
@@ -494,22 +510,20 @@ const Scanbarcode = (props) => {
                         setpallet2(x.baseCode)
                         setareaGate2(x.areaID)
                         
-                        if(x.ID !== null){
-                            if (x.Quantity === null || x.Quantity === undefined) {
-                                setqty2(0)
-                            } else {
-                                setqty2(x.Quantity)
-                            }
-                            if (x.MaxQuantity === null) {
-                                setqtyMax2(0)
-                            } else {
-                                setqtyMax2(x.MaxQuantity)
-                            }
-                            setproductCode2(x.Code)
-                            setorderNo2(x.OrderNo)
-                            setunitCode2(x.UnitCode)
-                            setcarton2(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
+                        if (x.Quantity === null || x.Quantity === undefined) {
+                            setqty2(0)
+                        } else {
+                            setqty2(x.Quantity)
                         }
+                        if (x.MaxQuantity === null) {
+                            setqtyMax2(0)
+                        } else {
+                            setqtyMax2(x.MaxQuantity)
+                        }
+                        setproductCode2(x.Code)
+                        setorderNo2(x.OrderNo)
+                        setunitCode2(x.UnitCode)
+                        setcarton2(x.Options !== "" && x.Options !== null ? x.Options.split("=")[1].split("&")[0] : null)
                     }
                     else{
                         setgateRight(false)
@@ -797,14 +811,13 @@ const Scanbarcode = (props) => {
                                                                 </FormInline>
                                                         </Border>}
                                                         <div style={{textAlign:"center"}}>
+                                                        {productCode !== "" && productCode !== null && productCode !== undefined ? null :
                                                 <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
-                                                    lockGateID.push(areaGate)
-                                                    databar.lockGateID = lockGateID
-                                                    setdatabar({...databar})
-                                                    setLockStateLeft(true)
-                                                    }}>Manual</AmButton>
+                                                    LockGate(areaGate, "left")
+                                                    }}>Manual</AmButton>}
 
-                                                <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={()=> {
+                                                    RemovePackSto(pallet2, areaIDs)
                                                 }}>Remove</AmButton></div>
                                             </Card>
                                         </Flash> : 
@@ -854,17 +867,15 @@ const Scanbarcode = (props) => {
                                                         </Border>}
                                                         
                                                         <div style={{textAlign:"center"}}>
-                                                        <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={() => {
+                                                            
+                                                    <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                        MapStoNoDoc(areaGate, "left")
+                                                    }}>Save</AmButton>
+                                                    <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
 
-                                                    setLockGateID(lockGateID.filter(x => x !== areaGate))
-                                                    databar.lockGateID = lockGateID
-                                                    setdatabar({...databar})
-                                                    setLockStateLeft(false)
+                                                        UnlockGate(areaGate, "left")
                                                         }}>Clear</AmButton>
-
-                                                <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
-                                                    MapStoNoDoc("left")
-                                                }}>Save</AmButton></div>
+</div>
                                             </Card>
                                         </Flash>}
                                     </div> : null}
@@ -920,14 +931,13 @@ const Scanbarcode = (props) => {
                                                         </Border>
                                                     }
                                                     <div style={{textAlign:"center"}}>
+                                                        {productCode2 !== "" && productCode2 !== null && productCode2 !== undefined ? null :
                                                         <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
-                                                            lockGateID.push(areaGate2)
-                                                            databar.lockGateID = lockGateID
-                                                            setdatabar({...databar})
-                                                            setLockStateRight(true)
+                                                            LockGate(areaGate2, "right")
                                                             }}>Manual</AmButton>
-                                                        <br/>
-                                                        <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                        }
+                                                        <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={()=> {
+                                                            RemovePackSto(pallet2, areaIDs)
                                                         }}>Remove</AmButton>
                                                     </div>
                                             </Card>
@@ -977,16 +987,13 @@ const Scanbarcode = (props) => {
                                                             </Border>
                                                         }
                                                         <div style={{textAlign:"center"}}>
-                                                            <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={() => {
-                                                                setLockGateID(lockGateID.filter(x => x !== areaGate2))
-                                                                databar.lockGateID = lockGateID
-                                                                setdatabar({...databar})
-                                                                setLockStateRight(false)
+                                                            <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                                MapStoNoDoc(areaGate2, "right")
+                                                                }}>Save</AmButton>
+                                                            <AmButton style={{marginTop:"10px", width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
+                                                                UnlockGate(areaGate2, "right")
                                                                     }}>Clear</AmButton>
                                                         <br/>
-                                                        <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
-                                                            MapStoNoDoc("right")
-                                                                }}>Save</AmButton>
                                                         </div>
                                                         
                                             </Card>
