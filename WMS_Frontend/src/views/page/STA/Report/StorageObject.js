@@ -65,9 +65,13 @@ const StorageObject = props => {
     { label: "AUDITED", value: "AUDITED" },
     { label: "RECEIVED", value: "RECEIVED" },
     { label: "RECEIVING", value: "RECEIVING" },
-    { label: "PICKING", value: "PICdKING" },
+    { label: "PICKING", value: "PICKING" },
     { label: "PICKED", value: "PICKED" },
-    { label: "HOLD", value: "HOLD" }
+    { label: "HOLD", value: "HOLD" },
+    { label: "PARTIAL", value: "PARTIAL" },
+    { label: "RETURN", value: "RETURN" },
+    { label: "REMOVED", value: "REMOVED" },
+    { label: "QUALITY_CONTROL", value: "QUALITY_CONTROL" }
   ];
 
   const iniCols = [
@@ -86,8 +90,6 @@ const StorageObject = props => {
     { Header: "Warehouse", accessor: "Warehouse", width: 120 },
     { Header: "Area", accessor: "Area", width: 130 },
     { Header: "Location", accessor: "Location", width: 120 },
-    { Header: "Batch", accessor: "Batch", width: 120 },
-    { Header: "Lot", accessor: "Lot", width: 120 },
     { Header: "OrderNo", accessor: "OrderNo", width: 120 },
     {
       Header: "Qty",
@@ -302,14 +304,14 @@ const StorageObject = props => {
       placeholder: "Remark"
     },
     {
-      label: "Date From: ",
+      label: "Date From",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",
       dateSearchType: "dateFrom"
     },
     {
-      label: "Date To: ",
+      label: "Date To",
       field: "Receive_Time",
       searchType: "datepicker",
       typedate: "date",

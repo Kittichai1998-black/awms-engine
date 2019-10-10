@@ -2,6 +2,8 @@ import DocView from "../../../pageComponent/DocumentView";
 import React, { useState, useEffect, useContext } from "react";
 import AmIconStatus from "../../../../components/AmIconStatus";
 import { Button } from "@material-ui/core";
+import CheckCircle from "@material-ui/icons/CheckCircle";
+import HighlightOff from "@material-ui/icons/HighlightOff";
 import AmStorageObjectStatus from "../../../../components/AmStorageObjectStatus";
 import queryString from "query-string";
 
@@ -33,7 +35,7 @@ const DocumentViewGI = props => {
     { width: 120, accessor: "palletcode", Header: "Pallet Code" },
     { width: 200, accessor: "SKUMaster_Code", Header: "SKU Code" },
     { accessor: "SKUMaster_Name", Header: "SKU Name" },
-    { width: 130, accessor: "Lot", Header: "Lot" },
+    { width: 150, accessor: "Lot", Header: "Lot" },
     { width: 120, accessor: "_qty", Header: "Qty" },
     { width: 70, accessor: "UnitType_Name", Header: "Unit" }
   ];
@@ -73,10 +75,9 @@ const DocumentViewGI = props => {
 
   const getStatusGI = value => {
     //console.log(value)
-    if (value.Status === 0)
-      return <AmStorageObjectStatus key={17} statusCode={17} />;
-    else if (value.Status === 1)
-      return <AmStorageObjectStatus key={18} statusCode={18} />;
+    if (value.status === 1) return <CheckCircle style={{ color: "green" }} />;
+    else if (value.status === 0)
+      return <HighlightOff style={{ color: "red" }} />;
     else return null;
   };
 

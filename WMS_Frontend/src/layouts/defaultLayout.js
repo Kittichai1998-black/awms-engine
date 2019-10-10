@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useState, useContext, useRef, useEffect } from 'react';
-
+import withWidth from '@material-ui/core/withWidth';
 import {
     withStyles,
     MuiThemeProvider,
@@ -43,7 +43,7 @@ import iconMenuTree from '../components/AmIconMenu';
 import { NONAME } from 'dns';
 import { useTranslation } from 'react-i18next';
 import '../i18n';
-
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 const theme = createMuiTheme({
     overrides: {
         MuiDrawer: {
@@ -64,6 +64,9 @@ const drawerWidth = 240;
 
 const styles = theme => ({
     root: {
+        [theme.breakpoints.down('sm')]: {
+            aa:theme.palette.secondary.main
+        },
         display: 'flex'
     },
     appBar: {
@@ -155,7 +158,7 @@ const styles = theme => ({
         "&:hover": {
             cursor: "pointer"
         }
-    }
+    },
 });
 
 const checkstatus = () => {
@@ -202,6 +205,8 @@ const Default = props => {
     })
     const { t, i18n } = useTranslation()
 
+    const [menuVisible, setMenuVisible] = useState({visibility:"visible"});
+
 
 
     // const openMenuHeader = Boolean(anchorEl);
@@ -235,16 +240,30 @@ const Default = props => {
         localStorage.clear();
         i18n.changeLanguage("EN")
     };
-
+    const matches = useMediaQuery('(max-width:400px)');
     const divLingLogo = {
-        width: '4vw',
+
+       width: '4vw',
         display: 'inline-block',
         height: '2.5vw',
         lineHeight: '2.5vw',
         Float: 'Left',
         marginLeft: '1vw',
         fontSize: '2.2vw'
+
     };
+    const divLingLogo_phone = {
+
+        width: '4vw',
+         display: 'inline-block',
+         height: '2.5vw',
+         lineHeight: '2.5vw',
+         Float: 'Left',
+         marginLeft: '1vw',
+         fontSize: '0.7rem'
+ 
+     };
+    
     let Path = window.location.pathname.split('/');
     useEffect(() => {
         var data = route(localStorage.getItem('MenuItems'));
@@ -297,7 +316,14 @@ const Default = props => {
             });
             return (
                 <span key="0">
-                    <span style={{ float: "left", lineHeight: "29px" }}>{name}</span>
+                    <span 
+                    style={
+                        matches ? (
+                             { lineHeight: "29px",fontSize:'0.8rem'}
+                         ) : (
+                             {lineHeight: "29px",fontSize:'1rem'}
+                         )  
+                    }>{name}</span>
                 </span>
             );
         }
@@ -306,8 +332,15 @@ const Default = props => {
         if (Path[1] === "") {
         } else {
             return (
-                <div style={{ float: "left", lineHeight: "29px", marginLeft: "5px" }}>
-                    {/* <Link key="0" color="inherit" href="/">Home</Link> */}
+                <div 
+                style={
+                    matches ? (
+                         {float: "left", lineHeight: "29px",fontSize:'0.8rem'}
+                     ) : (
+                         {float: "left", lineHeight: "29px",fontSize:'1rem'}
+                     )  
+                }
+                >
                     <Link key="0" color="inherit" href="/">{t("Home")}</Link>
                 </div>
             );
@@ -327,9 +360,14 @@ const Default = props => {
                             marginLeft: "5px"
                         }}
                     >
-                        <Typography color="textPrimary">
+                        <Typography color="textPrimary"  style={
+                            matches ? (
+                                 {fontSize:'0.8rem'}
+                             ) : (
+                                 {fontSize:'1rem'}
+                             )  
+                        }>
                             {t(x.text)}
-                            {/* {x.text} */}
                         </Typography>
                     </div>
                 }
@@ -346,6 +384,56 @@ const Default = props => {
         setOpenLangHeader(false)
     }
 
+    useEffect(() => {
+        if(props.width === "xs"){
+            setMenuVisible({visibility:"hidden"})
+            handleDrawerClose()
+        }
+        else{
+            setMenuVisible({visibility:"visible"})
+            handleDrawerOpen()
+        }
+    }, [props.width])
+
+const LogoIn= () => {
+    return (<a
+        href='/'
+         style={{
+             display: 'inline-block',
+               width: 'auto',
+              textDecoration: 'none',
+                color: '#FFF'
+        }}>
+           {matches ? (
+            <img
+            src={require('../assets/logo/logo.png')}
+            style={{
+           
+            width: '35px',
+              display: 'inline-block'
+            }}
+           alt=''
+           />
+           ):(
+        <img
+            src={require('../assets/logo/logo.png')}
+            style={{
+           float: 'left',
+            width: '4vw',
+              display: 'inline-block'
+            }}
+           alt=''
+           />
+           )}
+            {matches ? (
+               ''
+            ) : (
+                <div style={divLingLogo}>AMS</div>
+            )}
+           
+    </a>
+    )
+}
     return (
         <MuiThemeProvider theme={theme}>
             <div className={classes.root}>
@@ -366,7 +454,8 @@ const Default = props => {
                         <IconButton
                             color='inherit'
                             aria-label='Open drawer'
-                            onClick={handleDrawerOpen}
+                            onClick={() => {handleDrawerOpen(); 
+                                setMenuVisible({visibility:"visible"})}}
                             className={classNames(classes.menuButton, open && classes.hide)}
                         >
                             <MenuIcon />
@@ -377,26 +466,7 @@ const Default = props => {
                             noWrap
                             className={classes.grow}
                         >
-                            <a
-                                href='/'
-                                style={{
-                                    display: 'inline-block',
-                                    width: 'auto',
-                                    textDecoration: 'none',
-                                    color: '#FFF'
-                                }}
-                            >
-                                <img
-                                    src={require('../assets/logo/logo.png')}
-                                    style={{
-                                        float: 'left',
-                                        width: '4vw',
-                                        display: 'inline-block'
-                                    }}
-                                    alt=''
-                                />
-                                <div style={divLingLogo}>AMS</div>
-                            </a>
+                            {LogoIn()}
                         </Typography>
                         {/* แสดงชื่อ Username และ Menu=> Profile, Logout */}
                         <div>
@@ -452,6 +522,7 @@ const Default = props => {
                                 </Typography>
                             </div>
 
+                            
                             <Popper
                                 open={openLangHeader}
                                 // anchorEl={anchorEl}
@@ -568,6 +639,7 @@ const Default = props => {
                     </Toolbar>
                 </AppBar>
                 <Drawer
+                    style={menuVisible}
                     className={classes.drawer}
                     variant='persistent'
                     anchor='left'
@@ -610,10 +682,11 @@ const Default = props => {
                         <Breadcrumbs
                             separator={<NavigateNextIcon fontSize="small" />}
                             aria-label="Breadcrumb"
+                           
                         >
                             {Home_Link()}
                             {Route_1()}
-                            <Typography color="textPrimary">{NavicateBarN()}</Typography>
+                            <Typography color="textPrimary" style={{ fontSize:"1rem" }}>{NavicateBarN()}</Typography>
                         </Breadcrumbs>
                     </Paper>
 
@@ -644,4 +717,4 @@ Default.propTypes = {
     theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(Default);
+export default withWidth()(withStyles(styles, { withTheme: true })(Default));

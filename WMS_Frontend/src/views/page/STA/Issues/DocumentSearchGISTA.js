@@ -231,6 +231,8 @@ const DocumentSearchGISTA = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="1002"
+        buttonClose={true}
+        buttonReject={true}
       />
     </div>
   );

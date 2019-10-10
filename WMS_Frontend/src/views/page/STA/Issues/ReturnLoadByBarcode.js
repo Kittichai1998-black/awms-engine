@@ -71,7 +71,13 @@ const ReceivePallet = (props) => {
             if (reqValue['scanCode'].length === 26) {
                 let orderNo = reqValue['scanCode'].substr(0, 7);
                 let skuCode1 = reqValue['scanCode'].substr(7, 15);
-                let skuCode = skuCode1.trim(); //ทดสอบ ใช้skucodeของทานตะวันอยู่ เลยต้องตัดxxxท้ายทิ้ง
+                let skuCode = null;
+                if(skuCode1.includes('@')){
+                    skuCode = skuCode1.replace(/\@/g, " ");
+                }else{
+                    skuCode = skuCode1;
+                }
+                skuCode = skuCode.trim();  
                 let cartonNo = parseInt(reqValue['scanCode'].substr(22, 4));
                 let rootID = reqValue.rootID;
                 let qryStr = {};
@@ -195,7 +201,7 @@ const ReceivePallet = (props) => {
                 } else {
                     if (curInput === 'amount') {
                         if (parseInt(reqValue['amount'], 10) !== cartonNoList.length) {
-                         alertDialogRenderer("The quantity of carton doesn't match.", "error", true);
+                            alertDialogRenderer("The quantity of carton doesn't match.", "error", true);
 
                         }
                     } else {
@@ -262,7 +268,7 @@ const ReceivePallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                autoPost={false}
+                autoPost={true}
                 setMovementType={"1111"}
             />
         </div>

@@ -22,12 +22,32 @@ const AmCheckBox = props => {
 
   useEffect(() => {
     props.onChange(data);
-  });
+    },[data]);
 
-  const handleChange = event => {
-    setdata({ checked: event.target.checked, value: event.target.value });
-    console.log(data);
-  };
+    useEffect(() => {
+        if (props.defaultValue)
+            console.log(props.defaultValue)
+            onChangedefaultValue();       
+    }, [props.defaultChecked])
+
+  const handleChange = (event) => {
+      setdata({
+          checked: event.target.checked,
+          value: event.target.value,
+          defaultValue: event.target.defaultValue,
+
+      });
+    };
+
+    const onChangedefaultValue = () => {
+        setdata({
+            //checked: props.defaultValue,
+            value: props.value,
+            defaultChecked: props.defaultChecked,
+
+        });
+
+    }
 
   const { classes } = props;
 

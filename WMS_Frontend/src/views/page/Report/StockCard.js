@@ -85,7 +85,7 @@ const StockCard = (props) => {
     const onGetDocument = () => {
         console.log(valueText);
 
-        Axios.get(window.apipath + "/v2/GetSPReportAPI?apikey=FREE01"
+        Axios.get(window.apipath + "/v2/GetSPReportAPI?"
             + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate.value === undefined || valueText.fromDate.value === null ? '' : encodeURIComponent(valueText.fromDate.value))
             + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
             + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))
@@ -104,7 +104,7 @@ const StockCard = (props) => {
                 }
             })
     }
-    const getAPI = "/v2/GetSPReportAPI?apikey=FREE01"
+    const getAPI = "/v2/GetSPReportAPI?"
         + "&fromDate=" + (valueText.fromDate === undefined || valueText.fromDate.value === undefined || valueText.fromDate.value === null ? '' : encodeURIComponent(valueText.fromDate.value))
         + "&toDate=" + (valueText.toDate === undefined || valueText.toDate.value === undefined || valueText.toDate.value === null ? '' : encodeURIComponent(valueText.toDate.value))
         + "&packCode=" + (valueText.packCode === undefined || valueText.packCode.value === undefined || valueText.packCode.value === null ? '' : encodeURIComponent(valueText.packCode.value.trim()))

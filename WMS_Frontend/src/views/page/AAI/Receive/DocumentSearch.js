@@ -294,6 +294,7 @@ const DocumentSearch = props => {
         primarySearch={primarySearch}
         expensionSearch={search}
         docTypeCode="1001"
+        buttonClose={true}
       />
     </div>
   );

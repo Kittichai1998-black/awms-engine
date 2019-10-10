@@ -9,8 +9,12 @@ const DocumentViewSTA = Loadable({
   loader: () => import("../../views/page/STA/Receive/DocumentViewGR"),
   loading: Loading
 });
-const CreateDocGISTA = Loadable({
-  loader: () => import("../../views/page/STA/Issues/CreateDocGI"),
+const CreateDocGISTACus = Loadable({
+  loader: () => import("../../views/page/STA/Issues/CreateDocGICus"),
+  loading: Loading
+});
+const CreateDocGISTAWare = Loadable({
+  loader: () => import("../../views/page/STA/Issues/CreateDocGIWare"),
   loading: Loading
 });
 const StorageObjectSTA = Loadable({
@@ -46,27 +50,25 @@ const Scanbarcode = Loadable({
   loading: Loading
 });
 const CustomerReturnPallet = Loadable({
-    loader: () => import("../../views/page/STA/Receive/CustomerReturnPallet"),
+  loader: () => import("../../views/page/STA/Receive/CustomerReturnPallet"),
   loading: Loading
 });
-
 const CustomerReturnPalletByBarcode = Loadable({
-    loader: () => import("../../views/page/STA/Receive/CustomerReturnPalletByBarcode"),
-    loading: Loading
+  loader: () => import("../../views/page/STA/Receive/CustomerReturnPalletByBarcode"),
+  loading: Loading
 });
 const ReceiveEmptyPallet = Loadable({
   loader: () => import("../../views/page/STA/Receive/ReceiveEmptyPallet"),
   loading: Loading
 });
 const PickingReturn = Loadable({
-    loader: () => import("../../views/page/STA/Issues/PickingReturn"),
+  loader: () => import("../../views/page/STA/Issues/PickingReturn"),
   loading: Loading
 });
 const PickingReturnByBarcode = Loadable({
-    loader: () => import("../../views/page/STA/Issues/PickingReturnByBarcode"),
-    loading: Loading
+  loader: () => import("../../views/page/STA/Issues/PickingReturnByBarcode"),
+  loading: Loading
 });
-
 const CountingAdj = Loadable({
   loader: () => import("../../views/page/STA/Audit/CountingAdj"),
   loading: Loading
@@ -88,45 +90,43 @@ const dashboardCountingJob = Loadable({
   loading: Loading
 });
 const ReceivePallet = Loadable({
-    loader: () => import("../../views/page/STA/Receive/ReceivePallet"),
+  loader: () => import("../../views/page/STA/Receive/ReceivePallet"),
   loading: Loading
 });
-
 const ReceivePalletByBarcode = Loadable({
-    loader: () => import("../../views/page/STA/Receive/ReceivePalletByBarcode"),
-    loading: Loading
+  loader: () => import("../../views/page/STA/Receive/ReceivePalletByBarcode"),
+  loading: Loading
 });
-
 const ReceiveWIPSup = Loadable({
   loader: () => import("../../views/page/STA/Receive/ReceiveWIPSup"),
   loading: Loading
 });
 const LoadingReturn = Loadable({
-    loader: () => import("../../views/page/STA/Issues/ReturnLoad"),
+  loader: () => import("../../views/page/STA/Issues/ReturnLoad"),
   loading: Loading
 });
-
 const LoadingReturnByBarcode = Loadable({
-    loader: () => import("../../views/page/STA/Issues/ReturnLoadByBarcode"),
-    loading: Loading
+  loader: () => import("../../views/page/STA/Issues/ReturnLoadByBarcode"),
+  loading: Loading
 });
 
 const routes = [
   { path: "/dashboard/scanreceiveproduct", name: "Scan Receive Product Line", compoment: Scanbarcode, exact: true },
   { path: "/receive/detail", name: "base5", compoment: DocumentViewSTA, exact: true },
-    { path: "/receive/search", name: "Search GR", compoment: DocumentSearchSTA, exact: true },
-    { path: "/receive/receiveforcustomerByQR", name: "Customers Return", compoment: CustomerReturnPalletByBarcode, exact: true },
-    { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: CustomerReturnPallet, exact: true },
+  { path: "/receive/search", name: "Search GR", compoment: DocumentSearchSTA, exact: true },
+  { path: "/receive/receiveforcustomerByQR", name: "Customers Return", compoment: CustomerReturnPalletByBarcode, exact: true },
+  { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: CustomerReturnPallet, exact: true },
   { path: "/receive/receivemptypallet", name: "Empty Pallet", compoment: ReceiveEmptyPallet, exact: true },
-    { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
-    { path: "/receive/receivefgByQR", name: "Receive FG", compoment: ReceivePalletByBarcode, exact: true },
+  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
+  { path: "/receive/receivefgByQR", name: "Receive FG", compoment: ReceivePalletByBarcode, exact: true },
   { path: "/receive/receivewipsup", name: "Receive WIP Supplier", compoment: ReceiveWIPSup, exact: true },
-    { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
-    { path: "/issue/loadingreturnByQR", name: "Loading Return", compoment: LoadingReturnByBarcode, exact: true },
-    { path: "/issue/pickingreturn", name: "Picking Return", compoment: PickingReturn, exact: true },
-    { path: "/issue/pickingreturnByQR", name: "Picking Return", compoment: PickingReturnByBarcode, exact: true },
+  { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
+  { path: "/issue/loadingreturnByQR", name: "Loading Return", compoment: LoadingReturnByBarcode, exact: true },
+  { path: "/issue/pickingreturn", name: "Picking Return", compoment: PickingReturn, exact: true },
+  { path: "/issue/pickingreturnByQR", name: "Picking Return", compoment: PickingReturnByBarcode, exact: true },
   { path: "/issue/search", name: "base5", compoment: DocumentSearchGISTA, exact: true },
-  { path: "/issue/create", name: "base5", compoment: CreateDocGISTA, exact: true },
+  { path: "/issue/createCus", name: "base5", compoment: CreateDocGISTACus, exact: true },
+  { path: "/issue/createWm", name: "base5", compoment: CreateDocGISTAWare, exact: true },
   { path: "/issue/detail", name: "base5", compoment: DocumentViewGISTA, exact: true },
   { path: "/dashboard/pickingjobs", name: "TestRedirect", compoment: dashboardPickingJob, exact: true },
   { path: "/dashboard/countingjobs", name: "TestRedirect", compoment: dashboardCountingJob, exact: true },

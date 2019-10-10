@@ -78,11 +78,18 @@ const Border = styled.div`
   font-size: 1.5em;
   margin: 1em;
   padding: 1em 1em;
-  border: 3px solid #e91e63;
-  border-radius: 4px;
   display: block;
 `;
 
+
+const BorderGrey = styled.div`
+  display: inline-block;
+  color: #616161;
+  font-size: 1.5em;
+  margin: 1em;
+  padding: 1em 1em;
+  display: block;
+`;
 
 const useAreaID = (areaID) => {
     const [areaIDs, setareaIDs] = useState();
@@ -219,8 +226,25 @@ const Scanbarcode = (props) => {
     const [lockStateRight, setLockStateRight] = useState(false)
 
     const [lockGateID, setLockGateID] = useState([])
+
     const [manualAddLeft, setManualAddLeft] = useState({})
+    const [manualAddRight, setManualAddRight] = useState({})
     
+    const updateNoQRData = (side, field, value) => {
+        let iniData = {};
+        if(side === "left"){
+            iniData = manualAddLeft;
+            iniData[field] = value
+            console.log(iniData)
+            setManualAddLeft({...iniData,"palletCode":pallet})
+        }
+        else{
+            iniData = manualAddRight;
+            iniData[field] = value
+            setManualAddRight({...iniData,"palletCode":pallet2})
+        }
+    };
+
     const clock = useClock({
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
         label: "Date/Time"
@@ -485,9 +509,12 @@ const Scanbarcode = (props) => {
  const HeadGateA = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#e91e63" }} >
             <Grid container spacing={12}>
-                <Grid item xs={5}></Grid> <Grid item xs={4}>
+                <Grid item xs={4}>                 
+                </Grid> <Grid item xs={6}>
                     <FormInline>
-                        <div style={{ marginLeft: "10px" }}> <IconLockOpen></IconLockOpen></div>
+                        <div style={{ marginRight:"20px" }}>
+                        <IconLockOpen style={{ color: "#ffffff", fontSize: '40px' }}></IconLockOpen>
+                    </div>
                         <Typography style={{ color: "#ffffff" }} variant="h4" component="h3">
                             {getGate}</Typography>
                     </FormInline>
@@ -509,9 +536,12 @@ const Scanbarcode = (props) => {
     const HeadLock = (getGate) => {
         return <CardContent style={{ height: "60px", background: "#bdbdbd" }} >
             <Grid container spacing={12}>
-                <Grid item xs={5}></Grid> <Grid item xs={4}>
+                <Grid item xs={4}>
+                </Grid> <Grid item xs={6}>
                     <FormInline>
-                        <div style={{ marginLeft: "10px" }}> <IconLock></IconLock></div>
+                        <div style={{ marginRight: "20px" }}>
+                            <IconLock style={{ fontSize: '40px' }}></IconLock>
+                        </div>
                         <Typography style={{ color: "#212121" }} variant="h4" component="h3">{getGate}</Typography>
                     </FormInline>
                 </Grid>
@@ -529,10 +559,6 @@ const Scanbarcode = (props) => {
                 </Grid>
             </Grid>
         </CardContent>
-    }
-
-    const FullScreens = () => {
-        setisFull(true)
     }
 
     return (
@@ -645,55 +671,118 @@ const Scanbarcode = (props) => {
                             <div style={{ paddingTop: "30px", marginRight: "5px" }}>
                                 <Card>
                                     <div>
-                                        {gateLeft === true ? gateLeft === true ?
-                                            lockStateRight === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
+                                        {gateLeft === true ?
+                                            lockStateLeft === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
                                             <Flash>{HeadGateA(area1 ? area1 : "")}</Flash>
-                                            : <div>{HeadGateB(area1 ? area1 : "")}</div> :
-                                            <div>{HeadGateB(area1 ? area1 : "")}</div>}
+                                            : <div>{HeadGateB(area1 ? area1 : "")}</div>}
                                     </div>
                                     <Card style={{ height: "500px" }}>
-                                        {gateLeft === true ? <div> <Flash> <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
-                                            <Grid item xs={1}></Grid><Grid item xs={11}>
-                                                <FormInline style={{ paddingTop: "10px" }} >
-                                                    <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
-                                                    <Typography variant="h5" component="h3">{pallet}</Typography>
-                                                </FormInline>
-                                                <FormInline style={{ paddingTop: "10px" }}>
-                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
-                                                    <Typography variant="h5" component="h3">{productCode}</Typography>
-                                                </FormInline>
-                                                <FormInline style={{ paddingTop: "10px" }}>
-                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
-                                                    <Typography variant="h5" component="h3">{orderNo}</Typography>
-                                                </FormInline>
-                                                <FormInline style={{ paddingTop: "10px" }}>
-                                                    <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
-                                                    <Typography variant="h5" component="h3">{carton}</Typography>
-                                                </FormInline>
-                                            </Grid></Grid>
-                                            <Border style={{ paddingRight: "80px" }} >
-                                                <FormInline style={{ paddingTop: "10px" }}>
-                                                    <Typography variant="h5" component="h3">Qty :</Typography >
-                                                    <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax}</Typography>
-                                                    <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode}</Typography>
+                                    {gateLeft === true ? 
+                                    <div>
+                                        {!lockStateLeft ? <Flash>
+                                            <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
+                                                <Grid item xs={1}></Grid><Grid item xs={11}>
+                                                    <FormInline style={{ paddingTop: "10px" }} >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
+                                                        <Typography variant="h5" component="h3">{pallet}</Typography>
+                                                    </FormInline>
+                                                    <FormInline style={{ paddingTop: "10px" }}>
+                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Product :</Typography >
+                                                        <Typography variant="h5" component="h3">{productCode}</Typography>
+                                                    </FormInline>
+                                                    <FormInline style={{ paddingTop: "10px" }}>
+                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">OrderNo :</Typography >
+                                                        <Typography variant="h5" component="h3">{orderNo}</Typography>
+                                                    </FormInline>
+                                                    <FormInline style={{ paddingTop: "10px" }}>
+                                                        <Typography style={{ paddingRight: "10px" }} variant="h5" component="h3">Carton :</Typography >
+                                                        <Typography variant="h5" component="h3">{carton}</Typography>
+                                                    </FormInline>
 
-                                                </FormInline>
-                                            </Border>
-                                            <div>
-                                               
-                                        <AmButton styleType="confirm" onClick={()=> {
-                                            if(!lockStateRight){
-                                                lockGateID.push(areaGate)
-                                            }else{
-                                                setLockGateID(lockGateID.filter(x => x !== areaGate))
-                                            }
-                                            databar.lockGateID = lockGateID
-                                            setdatabar({...databar})
-                                                    setLockStateLeft(!lockStateLeft)
-                                                }}>Lock</AmButton>
-                                            </div>
-                                        </Card></Flash></div> : null}
+                                                </Grid></Grid>
+                                                    {lockStateLeft === true ?
+                                                            <BorderGrey>
+                                                            
+                                                                <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                    <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{marginLeft:"20px"}}>{unitCode}</label></Typography>
+                                                                </FormInline>
+                                                            </BorderGrey> : <Border>
+                                                            
+                                                                <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                    <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{marginLeft:"20px"}}>{unitCode}</label></Typography>
+                                                                </FormInline>
+                                                        </Border>}
+                                                        <div style={{textAlign:"center"}}>
+                                                <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                    lockGateID.push(areaGate)
+                                                    databar.lockGateID = lockGateID
+                                                    setdatabar({...databar})
+                                                    setLockStateLeft(true)
+                                                    }}>Manual</AmButton>
 
+                                                <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                }}>Remove</AmButton></div>
+                                            </Card>
+                                        </Flash> : 
+                                        <Flash>
+                                            <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
+                                                <Grid item xs={1}></Grid><Grid item xs={11}>
+                                                    <FormInline style={{ paddingTop: "10px" }} >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
+                                                        <Typography variant="h5" component="h3">{pallet}</Typography>
+                                                    </FormInline>
+                                                    <FormInline style={{ paddingTop: "10px" }} >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
+                                                        <Typography variant="h5" component="h3">
+                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                                updateNoQRData("left" ,"code", value);
+                                                            }} />
+                                                        </Typography>
+                                                    </FormInline>
+                                                    <FormInline style={{ paddingTop: "10px" }} >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
+                                                        <Typography variant="h5" component="h3">
+                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                                updateNoQRData("left" ,"orderNo", value);
+                                                            }} />
+                                                        </Typography>
+                                                    </FormInline>
+                                                    <FormInline style={{ paddingTop: "10px" }} >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
+                                                        <Typography variant="h5" component="h3">
+                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                                updateNoQRData("left" ,"carton", value);
+                                                            }} />
+                                                        </Typography>
+                                                    </FormInline>
+                                                </Grid></Grid>
+                                                        {lockStateLeft === true ?
+                                                            <BorderGrey>
+                                                            
+                                                                <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                    <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{marginLeft:"20px"}}>{unitCode}</label></Typography>
+                                                                </FormInline>
+                                                            </BorderGrey> : <Border>
+                                                            
+                                                                <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                    <Typography variant="h5" component="h3"> {qty === 0 ? "-" : qty} / {qtyMax === 0 ? "-" : qtyMax} <label style={{marginLeft:"20px"}}>{unitCode}</label></Typography>
+                                                                </FormInline>
+                                                        </Border>}
+                                                        
+                                                        <div style={{textAlign:"center"}}>
+                                                        <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={() => {
+
+                                                    setLockGateID(lockGateID.filter(x => x !== areaGate))
+                                                    databar.lockGateID = lockGateID
+                                                    setdatabar({...databar})
+                                                    setLockStateLeft(false)
+                                                        }}>Clear</AmButton>
+
+                                                <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                }}>Save</AmButton></div>
+                                            </Card>
+                                        </Flash>}
+                                    </div> : null}
                                     </Card>
                                 </Card>
                             </div>
@@ -702,14 +791,13 @@ const Scanbarcode = (props) => {
 
                         <Grid item xs={6}>
                             <div style={{ paddingTop: "30px", marginLeft: "5px" }}>
-                                <Card >
+                                <Card>
                                     <div>
                                         {gateRight === true ?
-                                            lockStateRight === true ? <div>{HeadLock(area1 ? area1 : "")}</div> :
+                                            lockStateRight === true ? <div>{HeadLock(area2 ? area2 : "")}</div> :
                                             <Flash>{HeadGateA(area2 ? area2 : "")}</Flash>
                                             : <div>{HeadGateB(area2 ? area2 : "")}</div>}
                                     </div>
-                                </Card>
                                 <Card style={{ height: "500px" }} >
                                     {gateRight === true ? 
                                     <div>
@@ -734,71 +822,91 @@ const Scanbarcode = (props) => {
                                                     </FormInline>
 
                                                 </Grid></Grid>
-                                                <Border style={{ paddingRight: "80px" }} >
-                                                    <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography variant="h5" component="h3">Qty :</Typography >
-                                                        <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2}</Typography>
-                                                        <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode2}</Typography>
-
-                                                    </FormInline>
-                                                </Border>
-                                                <AmButton styleType="confirm" onClick={()=> {
-                                                    lockGateID.push(areaGate)
-                                                    databar.lockGateID = lockGateID
-                                                    setdatabar({...databar})
-                                                    setLockStateRight(true)
-                                                }}>Manual</AmButton>
-                                                <AmButton styleType="confirm" onClick={()=> {
-                                                }}>Remove</AmButton>
+                                                    {lockStateRight === true ?
+                                                        <BorderGrey>
+                                                            <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{marginLeft:"20px"}}>{unitCode2}</label></Typography>
+                                                            </FormInline>
+                                                        </BorderGrey> : 
+                                                        <Border>
+                                                            <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{marginLeft:"20px"}}>{unitCode2}</label></Typography>
+                                                            </FormInline>
+                                                        </Border>
+                                                    }
+                                                    <div style={{textAlign:"center"}}>
+                                                        <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                            lockGateID.push(areaGate2)
+                                                            databar.lockGateID = lockGateID
+                                                            setdatabar({...databar})
+                                                            setLockStateRight(true)
+                                                            }}>Manual</AmButton>
+                                                        <br/>
+                                                        <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                        }}>Remove</AmButton>
+                                                    </div>
                                             </Card>
                                         </Flash> : 
                                         <Flash>
                                             <Card style={{ height: "500px" }}><Grid container spacing={12} style={{ paddingTop: "10px" }} >
                                                 <Grid item xs={1}></Grid><Grid item xs={11}>
                                                     <FormInline style={{ paddingTop: "10px" }} >
+                                                        <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Pallet :</Typography >
+                                                        <Typography variant="h5" component="h3">{pallet2}</Typography>
+                                                    </FormInline>
+                                                    <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChange={(value, a, b, event)=>{
-                                                                
+                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                                updateNoQRData("right" ,"code", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChange={(value, a, b, event)=>{
-                                                                
+                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                                updateNoQRData("right" ,"orderNo", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChange={(value, a, b, event)=>{
-                                                                
+                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                                updateNoQRData("right" ,"carton", value);
                                                             }} />
                                                         </Typography>
                                                     </FormInline>
                                                 </Grid></Grid>
-                                                <Border style={{ paddingRight: "80px" }} >
-                                                    <FormInline style={{ paddingTop: "10px" }}>
-                                                        <Typography variant="h5" component="h3">Qty :</Typography >
-                                                        <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2}</Typography>
-                                                        <Typography style={{ paddingLeft: "50px" }} variant="h5" component="h3">{unitCode2}</Typography>
-
-                                                    </FormInline>
-                                                </Border>
-                                                <AmButton styleType="confirm" onClick={()=> {
-                                                    setLockGateID(lockGateID.filter(x => x !== areaGate))
-                                                    databar.lockGateID = lockGateID
-                                                    setdatabar({...databar})
-                                                    setLockStateRight(false)
-                                                }}>Clear</AmButton>
-                                                <AmButton styleType="confirm" onClick={()=> {
-                                                }}>Save</AmButton>
+                                                    {lockStateRight === true ?
+                                                            <BorderGrey>
+                                                                <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                    <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{marginLeft:"20px"}}>{unitCode2}</label></Typography>
+                                                                </FormInline>
+                                                            </BorderGrey> : 
+                                                            <Border>
+                                                                <FormInline style={{textAlign:"center", display:"inline-block", width:"100%", paddingTop: "10px" }}>
+                                                                    <Typography variant="h5" component="h3"> {qty2 === 0 ? "-" : qty2} / {qtyMax2 === 0 ? "-" : qtyMax2} <label style={{marginLeft:"20px"}}>{unitCode2}</label></Typography>
+                                                                </FormInline>
+                                                            </Border>
+                                                        }
+                                                        <div style={{textAlign:"center"}}>
+                                                            <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={() => {
+                                                                setLockGateID(lockGateID.filter(x => x !== areaGate2))
+                                                                databar.lockGateID = lockGateID
+                                                                setdatabar({...databar})
+                                                                setLockStateRight(false)
+                                                                    }}>Clear</AmButton>
+                                                        <br/>
+                                                        <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                                }}>Save</AmButton>
+                                                        </div>
+                                                        
                                             </Card>
                                         </Flash>}
                                     </div> : null}
+                                </Card>
                                 </Card></div></Grid>
                     </Grid>
                 </div>

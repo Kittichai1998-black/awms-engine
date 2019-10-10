@@ -21,8 +21,8 @@ const ReceiveEmptyPallet = (props) => {
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
     const inputItem = [
-        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity", "isFocus": true  },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        // { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1 },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {    //  "visible": false, 
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [

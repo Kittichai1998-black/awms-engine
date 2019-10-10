@@ -339,12 +339,13 @@ const AmMappingPallet = (props) => {
             return <FormInline><LabelH>{t(showComponent.name)} : </LabelH>
                 <AmDropdown
                     id={showComponent.field}
+                    required={true}
                     placeholder={showComponent.placeholder}
                     fieldDataKey={showComponent.fieldDataKey}
                     fieldLabel={showComponent.fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={336}
+                    ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
@@ -366,6 +367,7 @@ const AmMappingPallet = (props) => {
         })
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
+        console.log(field+": "+value)
         valueInput[field] = value;
         setCurInput(field);
 
@@ -384,76 +386,106 @@ const AmMappingPallet = (props) => {
             setKeyEnter(true);
         }
     };
-
+    const onHandleOnChange = (value, dataObject, field, fieldDataKey, event) => {
+        // console.log(value)
+        valueInput[field] = value;
+        onHandleBeforePost2(field);
+    };
+    async function onHandleBeforePost2(curInput) {
+        getValueInput();
+        if (valueInput) {
+            console.log(curInput)
+            console.log(valueInput)
+        }
+    }
     async function onHandleBeforePost() {
         setKeyEnter(false);
         getValueInput();
         //default
-        var resValuePost = null;
+        var resValuePosts = null;
         var dataScan = {};
         let rootBaseCode = null;
         if (valueInput) {
-            if (valueInput['scanCode']) {
-                let rootFocusID = null;
-                if (storageObj) {
-                    var dataRootFocus = findRootMapping(storageObj);
-                    rootFocusID = dataRootFocus.id;
-                    rootBaseCode = dataRootFocus.code;
-                    //
-                    if (curInput !== SC.OPT_REMARK) {
-                        var qryStr2 = queryString.parse(storageObj.options)
-                        let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                        if (eleREMARK) {
-                            eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                            valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                        }
-                    }
+            let rootFocusID = null;
+            if (storageObj) {
+                var dataRootFocus = findRootMapping(storageObj);
+                rootFocusID = dataRootFocus.id;
+                rootBaseCode = dataRootFocus.code;
 
-                    //onBeforePost custom function
-                    if (onBeforePost) {
-                        var resInput = {
-                            ...valueInput,
-                            rootID: rootFocusID,
-                            amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
-                            mode: 0,
-                            action: actionValue,
-                        };
-                        dataScan = await onBeforePost(resInput, storageObj, curInput);
-                        if (dataScan) {
-                            resValuePost = { ...dataScan }
-                        } else {
-                            inputClear();
+                //onBeforePost custom function
+                if (onBeforePost) {
+                    var resInput = {
+                        ...valueInput,
+                        rootID: rootFocusID,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        mode: 0,
+                        action: actionValue,
+                    };
+                    dataScan = await onBeforePost(resInput, storageObj, curInput);
+                    if (dataScan) {
+                        // console.log(dataScan)
+                        if (dataScan.allowSubmit === true) {
+                            resValuePosts = { ...dataScan }
                         }
                     } else {
-                        dataScan = {
-                            rootID: rootFocusID,
-                            amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
-                            mode: 0,
-                            action: actionValue,
-                        };
-                        resValuePost = { ...valueInput, ...dataScan }
+                        inputClear();
                     }
-
                 } else {
-                    //select / add pallet 
-
                     dataScan = {
-                        // rootID: null,
-                        mode: 0,
+                        rootID: rootFocusID,
                         amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        mode: 0,
                         action: actionValue,
-                    }
-                    resValuePost = { ...valueInput, ...dataScan }
+                    };
+                    resValuePosts = { ...valueInput, ...dataScan }
                 }
 
             } else {
-                if (curInput === 'scanCode') {
-                    alertDialogRenderer("Scan Code must be value", "error", true);
+                //select / add pallet 
+                dataScan = {
+                    // rootID: null,
+                    mode: 0,
+                    amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                    action: actionValue,
+                }
+                resValuePosts = { ...valueInput, ...dataScan }
+            }
+
+        }
+        // console.log(resValuePosts)
+        if (resValuePosts) {
+
+            setResValuePost(resValuePosts);
+
+            if (autoPost) {
+                if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
+                    handleClickOpenDialog();
+                } else {
+                    onSubmitToAPI(resValuePosts);
+                }
+            } else {
+                if (preAutoPost) {
+                    if (rootBaseCode !== null && rootBaseCode === resValuePosts['scanCode'] && actionValue === 2) {
+                        handleClickOpenDialog();
+                    } else {
+                        onSubmitToAPI(resValuePosts);
+                    }
                 }
             }
+        } else {
+            if (preAutoPost) {
+                alertDialogRenderer("Please fill your information completely.", "error", true);
+            }
         }
-        if (resValuePost) {
-            let qryStrOpt = resValuePost["rootOptions"] && resValuePost["rootOptions"].length > 0 ? queryString.parse(resValuePost["rootOptions"]) : {};
+    }
+    const onPreSubmitToAPI = () => {
+        setKeyEnter(true);
+        setPreAutoPost(true);
+    }
+
+    const onSubmitToAPI = (resValuePosts) => {
+        if (resValuePosts) {
+            let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
             if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
                 qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
             }
@@ -465,42 +497,20 @@ const AmMappingPallet = (props) => {
             }
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
-            resValuePost["rootOptions"] = uri_opt;
-            console.log(resValuePost);
-
-            setResValuePost(resValuePost);
-
-            // console.log(rootBaseCode);
-            if (rootBaseCode !== null && rootBaseCode === valueInput['scanCode'] && actionValue === 2) {
-                handleClickOpenDialog();
+            resValuePosts["rootOptions"] = uri_opt;
+            // console.log(resValuePosts);
+            if (resValuePosts.scanCode.length === 0) {
+                alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
-                if (autoPost) {
-                    onSubmitToAPI(resValuePost);
-                } else {
-                    if (preAutoPost) {
-                        onSubmitToAPI(resValuePost);
-                    }
-                }
-            }
-
-
-
-        }
-    }
-    const onPreSubmitToAPI = () => {
-        setKeyEnter(true);
-        // onSubmitToAPI(resValuePost)
-        setPreAutoPost(true);
-    }
-
-    const onSubmitToAPI = (resValuePosts) => {
-        if (resValuePosts) {
-            if (modeEmptyPallet === false) {
-                if (actionValue !== 0 && actionValue !== 2 && storageObj) {
-                    var dataLastPack = findPack(storageObj);
-                    if (!modeMultiSKU) {
-                        if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
-                            alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                if (modeEmptyPallet === false) {
+                    if (actionValue !== 0 && actionValue !== 2 && storageObj) {
+                        var dataLastPack = findPack(storageObj);
+                        if (!modeMultiSKU) {
+                            if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
+                                alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                            } else {
+                                scanBarcodeApi(resValuePosts);
+                            }
                         } else {
                             scanBarcodeApi(resValuePosts);
                         }
@@ -508,10 +518,8 @@ const AmMappingPallet = (props) => {
                         scanBarcodeApi(resValuePosts);
                     }
                 } else {
-                    scanBarcodeApi(resValuePosts);
+                    scanBarcodeEmptyPalletApi(resValuePosts);
                 }
-            } else {
-                scanBarcodeEmptyPalletApi(resValuePosts);
             }
         }
         setPreAutoPost(false);
@@ -549,15 +557,7 @@ const AmMappingPallet = (props) => {
             inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
-                    // let checkMVT = false;
-                    // if (setMovementType !== undefined || null) {
-                    //     var qryStrOpt = queryString.parse(res.data.options)
-                    //     if (qryStrOpt[SC.OPT_MVT] !== null && qryStrOpt[SC.OPT_MVT].length > 0 && qryStrOpt[SC.OPT_MVT] !== setMovementType) {
-                    //         checkMVT = true;
-                    //         alertDialogRenderer("This pallet has been used in other Movement Type [" + qryStrOpt[SC.OPT_MVT] + "].", "error", true);
-                    //         onHandleClear();
-                    //     }
-                    // }
+
                     if (showArea && res.data.areaID) {
                         GetArea(res.data.areaID);
                     }
@@ -601,6 +601,21 @@ const AmMappingPallet = (props) => {
                                 onHandleClear();
                             }
                         }
+                    }
+                    if (itemCreate !== undefined) {
+                        let qryStr2 = queryString.parse(res.data.options);
+                        itemCreate.map((x, i) => {
+                            let ele = document.getElementById(x.field);
+                            if (ele) {
+                                if (x.clearInput) {
+                                } else {
+                                    if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                        valueInput[x.field] = qryStr2[x.field];
+                                        ele.value = qryStr2[x.field];
+                                    }
+                                }
+                            }
+                        });
                     }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
@@ -749,7 +764,7 @@ const AmMappingPallet = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus)}
+                                x.disabled, x.isFocus, x.maxLength, x.required)}
                         </div>
                     }
                 }
@@ -758,36 +773,45 @@ const AmMappingPallet = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
-                    <AmInput
-                        id={field}
-                        // disabled={disabled}
-                        autoFocus={isFocus}
-                        placeholder={placeholder}
-                        type="input"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-
-                    />
-
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            required={required}
+                            disabled={disabled}
+                            autoFocus={isFocus}
+                            placeholder={placeholder}
+                            type="input"
+                            style={{ width: "330px" }}
+                            inputProps={maxLength ? {
+                                maxLength: maxLength,
+                            } : {}}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        //onChangeV2={(value, obj, element, event) => onHandleOnChange(value, null, field, null, event)}
+                        />
+                    </div>
                 </FormInline>
             )
         } else if (type === "number") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
-                    <AmInput
-                        id={field}
-                        placeholder={placeholder}
-                        type="number"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    />
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            required={required}
+                            disabled={disabled}
+                            placeholder={placeholder}
+                            type="number"
+                            style={{ width: "330px" }}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        />
+                    </div>
                 </FormInline>
             )
         }
@@ -795,12 +819,13 @@ const AmMappingPallet = (props) => {
             return <FormInline><LabelH>{t(name)} : </LabelH>
                 <AmDropdown
                     id={field}
+                    required={required}
                     placeholder={placeholder}
                     fieldDataKey={fieldDataKey}
                     fieldLabel={fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={335}
+                    ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={defaultValue ? defaultValue : ""}
@@ -898,15 +923,15 @@ const AmMappingPallet = (props) => {
     }
     const onClearInput = (inputCreate) => {
         inputCreate.map((x, i) => {
-
-            // setValueInput({
-            //     [x.field]: x.defaultValue ? x.defaultValue : ""
-            // });
             let ele = document.getElementById(x.field);
             if (ele) {
-                valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
-                ele.value = x.defaultValue ? x.defaultValue : "";
-                if (x.field === "scanCode") {
+                if (x.clearInput) {
+                    valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
+                    ele.value = x.defaultValue ? x.defaultValue : "";
+                } else {
+
+                }
+                if (x.isFocus === true) {
                     ele.focus();
                 }
             }
@@ -959,7 +984,7 @@ const AmMappingPallet = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
-                    {inputSource && inputSource.length > 0 ?
+                    {inputSource && inputSource.length > 0 && actionValue != 2 ?
                         <>
                             <CardContent className={classes.cardContent}>
 

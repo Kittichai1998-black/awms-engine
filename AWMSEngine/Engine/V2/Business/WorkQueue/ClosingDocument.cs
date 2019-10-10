@@ -28,10 +28,33 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                             if (listItem.TrueForAll(y => y.EventStatus == DocumentEventStatus.WORKED))
                             {
                                 ADO.DocumentADO.GetInstant().UpdateStatusToChild(x, DocumentEventStatus.WORKED, null, DocumentEventStatus.CLOSING, this.BuVO);
-                               
+                            }
+                            else
+                            {
+                                this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                                {
+                                    docID = x,
+                                    msgError = "Status of all document items didn't 'WORKED'."
+                                });
                             }
                         }
-                    } 
+                        else
+                        {
+                            this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                            {
+                                docID = x,
+                                msgError = "Status of document didn't 'WORKED'."
+                            });
+                        }
+                    }
+                    else
+                    {
+                        this.BuVO.FinalLogDocMessage.Add(new FinalDatabaseLogCriteria.DocumentOptionMessage()
+                        {
+                            docID = x,
+                            msgError = "Document Not Found"
+                        });
+                    }
                 });
 
                 res = reqVO;

@@ -46,7 +46,7 @@ function TransferToArray(element) {
         let eleArray = element.split("-").map((a) => {
             return a = a ? parseInt(a) : 0;
         });
-        console.log(eleArray)
+        // console.log(eleArray)
         let i = eleArray[0];
         let end = eleArray[1];
         
@@ -68,7 +68,7 @@ function ConvertStringToRangeNum(value) {
     let res = ToRanges(value.split(',').map((a) => {
         return a = a ? parseInt(a) : 0;
     }));
-    console.log(res)
+    // console.log(res)
     return res.join();
 }
 

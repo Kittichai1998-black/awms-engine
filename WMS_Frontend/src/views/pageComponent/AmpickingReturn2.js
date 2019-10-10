@@ -300,8 +300,7 @@ const AmPickingReturn2 = (props) => {
     }, [inputItem]);
     useEffect(() => {
         if (FirstScans)
-            console.log(FirstScans)
-        setInputItemFirst(createComponentFirstScans(FirstScans));
+            setInputItemFirst(createComponent(FirstScans));
     }, [FirstScans]);
     useEffect(() => {
         if (setInputItemFirst === null) {
@@ -377,12 +376,13 @@ const AmPickingReturn2 = (props) => {
             return <FormInline><LabelH>{showComponent.name} : </LabelH>
                 <AmDropdown
                     id={showComponent.field}
+                    required={true}
                     placeholder={showComponent.placeholder}
                     fieldDataKey={showComponent.fieldDataKey}
                     fieldLabel={showComponent.fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={336}
+                    ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
@@ -396,12 +396,21 @@ const AmPickingReturn2 = (props) => {
         }
     }
     const getValueInput = () => {
-        itemCreate.map((x, i) => {
-            let ele = document.getElementById(x.field);
-            if (ele) {
-                valueInput[x.field] = ele.value;
-            }
-        })
+        if (itemCreate !== undefined) {
+            itemCreate.map((x, i) => {
+                let ele = document.getElementById(x.field);
+                if (ele) {
+                    valueInput[x.field] = ele.value;
+                }
+            })
+        } else if (FirstScans !== undefined) {
+            FirstScans.map((x, i) => {
+                let ele = document.getElementById(x.field);
+                if (ele) {
+                    valueInput[x.field] = ele.value;
+                }
+            })
+        }
     }
 
 
@@ -418,109 +427,88 @@ const AmPickingReturn2 = (props) => {
     };
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
-        // if (field !== "scanCode") {
-            setCurInput(field);
-            setKeyEnter(true);
-        // }
+        setCurInput(field);
+        setKeyEnter(true);
     };
     async function onHandleBeforePost() {
         setKeyEnter(false);
         getValueInput();
 
-        var resValuePost = null;
+        var resValuePosts = null;
         var dataScan = {};
         let rootBaseCode = null;
         if (useMultiSKU) {
 
         } else {
-            console.log(valueInput)
             if (valueInput) {
+                let rootFocusID = null;
+                if (resData) {
+                    var docItemrow = resData.docs && resData.docs[0] ? resData.docs[0].DocumentItems !== null && resData.docs[0].DocumentItems.length > 0 ? resData.docs[0].DocumentItems : null : null;
+                    var bstoData = resData.bsto;
+                    var dataRootFocus = findRootMapping(bstoData);
+                    rootFocusID = dataRootFocus.id;
+                    rootBaseCode = dataRootFocus.code;
 
-                if (valueInput['scanCode']) {
-                    let rootFocusID = null;
-                    if (resData) {
-                        var docItemrow = resData.docs && resData.docs[0] ? resData.docs[0].DocumentItems !== null && resData.docs[0].DocumentItems.length > 0 ? resData.docs[0].DocumentItems : null : null;
-                        var bstoData = resData.bsto;
-                        var dataRootFocus = findRootMapping(bstoData);
-                        rootFocusID = dataRootFocus.id;
-                        rootBaseCode = dataRootFocus.code;
-                        //
-                        if (curInput !== SC.OPT_REMARK) {
-                            var qryStr2 = queryString.parse(bstoData.options)
-                            let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                            if (eleREMARK) {
-                                eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                                valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                            }
-                        }
-                        if (onBeforePost) {
-                            var resInput = {
-                                ...valueInput,
-                                rootID: rootFocusID,
-                                docItemID: docItemrow ? docItemrow[0].ID : null,
-                                amount: valueInput['amount'] ? valueInput['amount'] : 1,
-                                mode: 0,
-                                action: actionValue,
-                            };
-                            dataScan = await onBeforePost(resInput, bstoData);
-                            if (dataScan) {
-                                resValuePost = { ...dataScan }
-                            } else {
-                                inputClear();
-                            }
-                        } else {
-                            dataScan = {
-                                rootID: rootFocusID,
-                                docItemID: docItemrow ? docItemrow[0].ID : null,
-                                amount: valueInput['amount'] ? valueInput['amount'] : 1,
-                                mode: 0,
-                                action: actionValue,
-                            };
-                            resValuePost = { ...valueInput, ...dataScan }
-                        }
-                    } else {
-                        //select / add pallet 
-                        dataScan = {
+                    if (onBeforePost) {
+                        var resInput = {
+                            ...valueInput,
+                            rootBaseCode: rootBaseCode,
+                            rootID: rootFocusID,
+                            docItemID: docItemrow ? docItemrow[0].ID : null,
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,
                             action: actionValue,
+                        };
+                        dataScan = await onBeforePost(resInput, bstoData, curInput);
+                        if (dataScan) {
+                            if (dataScan.allowSubmit === true) {
+                                resValuePosts = { ...dataScan }
+                            }
+                        } else {
+                            inputClear();
                         }
-                        resValuePost = { ...valueInput, ...dataScan }
-                    }
-                } else {
-                    if (curInput === 'scanCode') {
-                        alertDialogRenderer("Scan Code must be value", "error", true);
-                    }
-                }
-            }
-            if (resValuePost) {
-                let qryStrOpt = resValuePost["rootOptions"] && resValuePost["rootOptions"].length > 0 ? queryString.parse(resValuePost["rootOptions"]) : {};
-                if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
-                    qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
-                }
-                if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
-                    qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
-                }
-                if (setMovementType !== undefined || null) {
-                    qryStrOpt[SC.OPT_MVT] = setMovementType;
-                }
-                let qryStr = queryString.stringify(qryStrOpt)
-                let uri_opt = decodeURIComponent(qryStr) || null;
-                resValuePost["rootOptions"] = uri_opt;
-                console.log(resValuePost);
-
-                setResValuePost(resValuePost);
-                console.log(rootBaseCode);
-                if (rootBaseCode !== null && rootBaseCode === valueInput['scanCode'] && actionValue === 2) {
-                    handleClickOpenDialog();
-                } else {
-                    if (autoPost) {
-                        onSubmitToAPI(resValuePost);
                     } else {
-                        if (preAutoPost) {
-                            onSubmitToAPI(resValuePost);
+                        dataScan = {
+                            rootID: rootFocusID,
+                            docItemID: docItemrow ? docItemrow[0].ID : null,
+                            amount: valueInput['amount'] ? valueInput['amount'] : 1,
+                            mode: 0,
+                            action: actionValue,
+                        };
+                        resValuePosts = { ...valueInput, ...dataScan }
+                    }
+                } else {
+                    //select / add pallet 
+                    dataScan = {
+                        amount: valueInput['amount'] ? valueInput['amount'] : 1,
+                        mode: 0,
+                        action: actionValue,
+                    }
+                    resValuePosts = { ...valueInput, ...dataScan }
+                }
+
+            }
+            if (resValuePosts) {
+
+                setResValuePost(resValuePosts);
+                if (autoPost) {
+                    if (rootBaseCode !== null && rootBaseCode === valueInput['scanCode'] && actionValue === 2) {
+                        handleClickOpenDialog();
+                    } else {
+                        onSubmitToAPI(resValuePosts);
+                    }
+                } else {
+                    if (preAutoPost) {
+                        if (rootBaseCode !== null && rootBaseCode === valueInput['scanCode'] && actionValue === 2) {
+                            handleClickOpenDialog();
+                        } else {
+                            onSubmitToAPI(resValuePosts);
                         }
                     }
+                }
+            } else {
+                if (preAutoPost) {
+                    alertDialogRenderer("Please fill your information completely.", "error", true);
                 }
             }
         }
@@ -532,15 +520,33 @@ const AmPickingReturn2 = (props) => {
     }
     const onSubmitToAPI = (resValuePosts) => {
         if (resValuePosts) {
-            if (actionValue !== 0 && actionValue !== 2 && resData ? resData.bsto : null) {
-                var dataLastPack = findPack(resData.bsto);
-                if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
-                    alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+            let qryStrOpt = resValuePosts["rootOptions"] && resValuePosts["rootOptions"].length > 0 ? queryString.parse(resValuePosts["rootOptions"]) : {};
+            if (valueInput[SC.OPT_REMARK] !== undefined && valueInput[SC.OPT_REMARK].length > 0) {
+                qryStrOpt[SC.OPT_REMARK] = valueInput[SC.OPT_REMARK];
+            }
+            if (valueInput[SC.OPT_DONE_DES_EVENT_STATUS] !== undefined) {
+                qryStrOpt[SC.OPT_DONE_DES_EVENT_STATUS] = valueInput[SC.OPT_DONE_DES_EVENT_STATUS].toString();
+            }
+            if (setMovementType !== undefined || null) {
+                qryStrOpt[SC.OPT_MVT] = setMovementType;
+            }
+            let qryStr = queryString.stringify(qryStrOpt)
+            let uri_opt = decodeURIComponent(qryStr) || null;
+            resValuePosts["rootOptions"] = uri_opt;
+            console.log(resValuePosts);
+            if (resValuePosts.scanCode.length === 0) {
+                alertDialogRenderer("Scan Code must be value", "error", true);
+            } else {
+                if (actionValue !== 0 && actionValue !== 2 && resData ? resData.bsto : null) {
+                    var dataLastPack = findPack(resData.bsto);
+                    if (dataLastPack && dataLastPack.code !== resValuePosts.scanCode) {
+                        alertDialogRenderer("The new product doesn't match the previous product on the pallet.", "error", true);
+                    } else {
+                        scanBarcodeApi(resValuePosts);
+                    }
                 } else {
                     scanBarcodeApi(resValuePosts);
                 }
-            } else {
-                scanBarcodeApi(resValuePosts);
             }
         }
         setPreAutoPost(false);
@@ -581,7 +587,6 @@ const AmPickingReturn2 = (props) => {
                 if (res.data._result.message === "Success") {
                     if (res.data.bsto) {
                         setResData(res.data);
-                        // inputClear();
                         if (res.data.bsto.code === req.scanCode) {
                             if (actionValue === 0) {
                                 alertDialogRenderer("Select Pallet Success", "success", true);
@@ -603,6 +608,44 @@ const AmPickingReturn2 = (props) => {
                             if (actionValue === 2) {
                                 alertDialogRenderer("Remove Pack Success", "success", true);
                             }
+                        }
+                        if (itemCreate !== undefined) {
+                            let qryStr2 = queryString.parse(res.data.bsto.options);
+                            itemCreate.map((x, i) => {
+                                let ele = document.getElementById(x.field);
+                                if (ele) {
+                                    if (x.clearInput) {
+                                    } else {
+                                        if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                            valueInput[x.field] = qryStr2[x.field];
+                                            ele.value = qryStr2[x.field];
+                                        }
+                                    }
+                                }
+                            });
+                            if (res.data.bsto.mapstos.length > 0) {
+                                let mapsto = res.data.bsto.mapstos[0];
+                                itemCreate.map((x, i) => {
+                                    let ele = document.getElementById(x.field);
+                                    if (ele) {
+                                        if (x.clearInput) {
+                                        } else {
+                                            if (x.field === 'scanCode') {
+                                                if (mapsto.code !== null && mapsto.code !== undefined) {
+                                                    valueInput[x.field] = mapsto.code;
+                                                    ele.value = mapsto.code;
+                                                }
+                                            } else {
+                                                if (mapsto[x.field] !== null && mapsto[x.field] !== undefined) {
+                                                    valueInput[x.field] = mapsto[x.field];
+                                                    ele.value = mapsto[x.field];
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            // console.log(valueInput);
                         }
                     } else {
                         alertDialogRenderer("Remove Pallet Success", "success", true);
@@ -677,7 +720,7 @@ const AmPickingReturn2 = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus)}
+                                x.disabled, x.isFocus, x.maxLength, x.required)}
                         </div>
                     }
                 }
@@ -685,34 +728,44 @@ const AmPickingReturn2 = (props) => {
     };
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{name} : </LabelH>
-                    <AmInput
-                        id={field}
-                        autoFocus={isFocus}
-                        placeholder={placeholder}
-                        type="input"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    />
-
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            autoFocus={isFocus}
+                            required={required}
+                            disabled={disabled}
+                            placeholder={placeholder}
+                            type="input"
+                            style={{ width: "330px" }}
+                            inputProps={maxLength ? {
+                                maxLength: maxLength,
+                            } : {}}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        />
+                    </div>
                 </FormInline>
             )
         } else if (type === "number") {
             return (
                 <FormInline><LabelH>{name} : </LabelH>
-                    <AmInput
-                        id={field}
-                        placeholder={placeholder}
-                        type="number"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    />
+                    <div style={{ display: 'inline-flex', alignItems: 'center' }} >
+                        <AmInput
+                            id={field}
+                            required={required}
+                            disabled={disabled}
+                            placeholder={placeholder}
+                            type="number"
+                            style={{ width: "330px" }}
+                            defaultValue={defaultValue ? defaultValue : ""}
+                            onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
+                        />
+                    </div>
                 </FormInline>
             )
         }
@@ -720,12 +773,13 @@ const AmPickingReturn2 = (props) => {
             return <FormInline><LabelH>{name} : </LabelH>
                 <AmDropdown
                     id={field}
+                    required={required}
                     placeholder={placeholder}
                     fieldDataKey={fieldDataKey}
                     fieldLabel={fieldLabel}
                     labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
+                    width={335}
+                    ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
                     defaultValue={defaultValue ? defaultValue : ""}
@@ -765,107 +819,6 @@ const AmPickingReturn2 = (props) => {
 
         }
     }
-
-    const createComponentFirstScans = (inputList) => {
-        if (inputList)
-            return inputList.map(x => {
-                return {
-                    "field": x.field,
-                    "component": (cols, key) => {
-                        return <div key={key} style={{ display: "inline-block" }}>
-                            {FirstScansBarCode(key, x.field, x.type, x.name,
-                                x.fieldLabel, x.placeholder,
-                                x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
-                                x.defaultValue, x.visible == null || undefined ? true : x.visible, x.disabled)}
-                        </div>
-                    }
-                }
-            })
-    };
-
-
-    const FirstScansBarCode = (key, field, type, name,
-        fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled) => {
-        if (type === "input") {
-            return (
-                <FormInline><LabelH>{name} : </LabelH>
-                    <AmInput
-                        id={field}
-                        autoFocus={field == 'scanCode' ? true : false}
-                        placeholder={placeholder}
-                        type="input"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    />
-
-                </FormInline>
-            )
-        } else if (type === "number") {
-            return (
-                <FormInline><LabelH>{name} : </LabelH>
-                    <AmInput
-                        id={field}
-                        placeholder={placeholder}
-                        type="number"
-                        style={{ width: "330px" }}
-                        defaultValue={defaultValue ? defaultValue : ""}
-                        onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
-                    />
-                </FormInline>
-            )
-        }
-        else if (type === "dropdown") {
-            return <FormInline><LabelH>{name} : </LabelH>
-                <AmDropdown
-                    id={field}
-                    placeholder={placeholder}
-                    fieldDataKey={fieldDataKey}
-                    fieldLabel={fieldLabel}
-                    labelPattern=" : "
-                    width={330}
-                    ddlMinWidth={330}
-                    zIndex={1000}
-                    returnDefaultValue={true}
-                    defaultValue={defaultValue ? defaultValue : ""}
-                    queryApi={dataDropDown}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
-                    ddlType={typeDropdown}
-                /></FormInline>
-        } else if (type === "datepicker") {
-            return <FormInline> <LabelH>{name} : </LabelH>
-                <AmDate
-                    id={field}
-                    TypeDate={"date"}
-                    style={{ width: "330px" }}
-                    defaultValue={true}
-                    // value={valueInput[field] ? valueInput[field].value : ""}
-                    onChange={(value) => onHandleChangeInput(value ? value.fieldDataKey : null, value, field, null, null)}
-                    FieldID={"datenow"} >
-                </AmDate>
-            </FormInline>
-        } else if (type === "radiogroup") {
-            if (visible) {
-                return <FormInline> <LabelH>{t(name)} : </LabelH>
-                    <AmRadioGroup
-                        row={true}
-                        name={field}
-                        dataValue={fieldLabel}
-                        returnDefaultValue={true}
-                        defaultValue={defaultValue || ''}
-                        onChange={(value, obj, element, event) =>
-                            onHandleChangeRadio(value, field)
-                        }
-                    />
-                </FormInline>
-            } else {
-                onHandleChangeRadio(defaultValue.value, field)
-            }
-        }
-    }
-
 
     const onHandleChangeRadio = (value, field) => {
         valueInput[field] = parseInt(value, 10);
@@ -899,7 +852,7 @@ const AmPickingReturn2 = (props) => {
             if (ele) {
                 valueInput[x.field] = x.defaultValue ? x.defaultValue : ""
                 ele.value = x.defaultValue ? x.defaultValue : "";
-                if (x.field === true) {
+                if (x.isFocus === true) {
                     ele.focus();
                 }
             }
@@ -1011,6 +964,7 @@ AmPickingReturn2.propTypes = {
     classes: PropTypes.object.isRequired,
     headerCreate: PropTypes.array,
     itemCreate: PropTypes.array,
+    FirstScans: PropTypes.array,
     onBeforePost: PropTypes.func,
     apiCreate: PropTypes.string,
     customOptions: PropTypes.func,
