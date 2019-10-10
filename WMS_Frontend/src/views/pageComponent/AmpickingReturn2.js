@@ -783,7 +783,7 @@ const AmPickingReturn2 = (props) => {
                     ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={defaultValue ? defaultValue : ""}
+                    defaultValue={valueInput && valueInput[field] ? valueInput[field] : defaultValue ? defaultValue : ""}
                     queryApi={dataDropDown}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
                     ddlType={typeDropdown}
