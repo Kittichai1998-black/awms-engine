@@ -11,9 +11,8 @@ logger.filename = {RefID}.{Date}.log
 
 
 #------------------------------------
-worker.names = dashboard,dashboard_rec
+worker.names = dashboard
 worker.dashboard.classname  = AWMSEngine.WorkerService.CommonDashboardWorker
-worker.dashboard_rec.classname  = AWMSEngine.WorkerService.CommonDashboardWorker
 
 #------------------------------------
 hub.names = dashboard
