@@ -82,7 +82,7 @@ const ReceiveWIPSup = (props) => {
                     SOU_WAREHOUSE_ID = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                 } else {
                     if (reqValue.action != 2) {
-                        alertDialogRenderer("Please select source customer before.", "error", true);
+                        alertDialogRenderer("Please select source warehouse before.", "error", true);
                     }
                 }
 

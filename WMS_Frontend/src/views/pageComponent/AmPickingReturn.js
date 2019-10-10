@@ -422,59 +422,59 @@ const AmPickingReturn = (props) => {
 
         } else {
             if (valueInput) {
-                    let rootFocusID = null;
-                    if (resData) {
-                        var docItemrow = resData.docs && resData.docs[0] ? resData.docs[0].DocumentItems !== null && resData.docs[0].DocumentItems.length > 0 ? resData.docs[0].DocumentItems : null : null;
-                        var bstoData = resData.bsto;
-                        var dataRootFocus = findRootMapping(bstoData);
-                        rootFocusID = dataRootFocus.id;
-                        rootBaseCode = dataRootFocus.code;
-                        //
-                        // if (curInput !== SC.OPT_REMARK) {
-                        //     var qryStr2 = queryString.parse(bstoData.options)
-                        //     let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                        //     if (eleREMARK) {
-                        //         eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                        //         valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                        //     }
-                        // }
-                        if (onBeforePost) {
-                            var resInput = {
-                                ...valueInput,
-                                rootID: rootFocusID,
-                                docItemID: docItemrow ? docItemrow[0].ID : null,
-                                amount: valueInput['amount'] ? valueInput['amount'] : 1,
-                                mode: 0,
-                                action: actionValue,
-                            };
-                            dataScan = await onBeforePost(resInput, bstoData);
-                            if (dataScan) {
-                                if (dataScan.allowSubmit === true) {
-                                    resValuePosts = { ...dataScan }
-                                }
-                            } else {
-                                inputClear();
-                            }
-                        } else {
-                            dataScan = {
-                                rootID: rootFocusID,
-                                docItemID: docItemrow ? docItemrow[0].ID : null,
-                                amount: valueInput['amount'] ? valueInput['amount'] : 1,
-                                mode: 0,
-                                action: actionValue,
-                            };
-                            resValuePosts = { ...valueInput, ...dataScan }
-                        }
-                    } else {
-                        //select / add pallet 
-                        dataScan = {
+                let rootFocusID = null;
+                if (resData) {
+                    var docItemrow = resData.docs && resData.docs[0] ? resData.docs[0].DocumentItems !== null && resData.docs[0].DocumentItems.length > 0 ? resData.docs[0].DocumentItems : null : null;
+                    var bstoData = resData.bsto;
+                    var dataRootFocus = findRootMapping(bstoData);
+                    rootFocusID = dataRootFocus.id;
+                    rootBaseCode = dataRootFocus.code;
+                    //
+                    // if (curInput !== SC.OPT_REMARK) {
+                    //     var qryStr2 = queryString.parse(bstoData.options)
+                    //     let eleREMARK = document.getElementById(SC.OPT_REMARK);
+                    //     if (eleREMARK) {
+                    //         eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
+                    //         valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
+                    //     }
+                    // }
+                    if (onBeforePost) {
+                        var resInput = {
+                            ...valueInput,
+                            rootID: rootFocusID,
+                            docItemID: docItemrow ? docItemrow[0].ID : null,
                             amount: valueInput['amount'] ? valueInput['amount'] : 1,
                             mode: 0,
                             action: actionValue,
+                        };
+                        dataScan = await onBeforePost(resInput, bstoData);
+                        if (dataScan) {
+                            if (dataScan.allowSubmit === true) {
+                                resValuePosts = { ...dataScan }
+                            }
+                        } else {
+                            inputClear();
                         }
+                    } else {
+                        dataScan = {
+                            rootID: rootFocusID,
+                            docItemID: docItemrow ? docItemrow[0].ID : null,
+                            amount: valueInput['amount'] ? valueInput['amount'] : 1,
+                            mode: 0,
+                            action: actionValue,
+                        };
                         resValuePosts = { ...valueInput, ...dataScan }
                     }
-                
+                } else {
+                    //select / add pallet 
+                    dataScan = {
+                        amount: valueInput['amount'] ? valueInput['amount'] : 1,
+                        mode: 0,
+                        action: actionValue,
+                    }
+                    resValuePosts = { ...valueInput, ...dataScan }
+                }
+
             }
             if (resValuePosts) {
 
@@ -497,6 +497,7 @@ const AmPickingReturn = (props) => {
             } else {
                 if (preAutoPost) {
                     alertDialogRenderer("Please fill your information completely.", "error", true);
+                    setPreAutoPost(false);
                 }
             }
         }

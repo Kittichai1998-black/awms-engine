@@ -91,13 +91,13 @@ const ReceivePallet = (props) => {
             let qryStrOpt = {};
 
             let cartonNoList = [];
-            let newQty = null;
+            let newQty = 0;
             if (storageObj) {
                 if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
                     SOU_WAREHOUSE_ID = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                 } else {
                     if (reqValue.action != 2) {
-                        alertDialogRenderer("Please select source customer before.", "error", true);
+                        alertDialogRenderer("Please select source warehouse before.", "error", true);
                     }
                 }
 
@@ -147,7 +147,7 @@ const ReceivePallet = (props) => {
                             if (curInput === 'orderNo') {
                                 orderNo = null;
                                 alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
-                               
+
                             }
                         }
                     }
@@ -206,8 +206,9 @@ const ReceivePallet = (props) => {
                                 if (numCarton === lenDiffCarton) {
                                     if (noHasCartonList.length > 0) {
                                         let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
-                                        alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
-
+                                        if (noHascarNoMatch.length > 0) {
+                                            alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
+                                        }
                                         cartonNo = null;
                                     } else {
                                         lenNewCarton = delCartonList.length;
@@ -229,7 +230,9 @@ const ReceivePallet = (props) => {
 
                         } else {
                             let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
-                            alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
+                            if (carNoMatch.length > 0) {
+                                alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
+                            }
                             cartonNo = null;
                             let eleCartonNo = document.getElementById('cartonNo');
                             if (eleCartonNo) {
@@ -317,10 +320,8 @@ const ReceivePallet = (props) => {
                 } else {
                     resValuePost = { ...reqValue, allowSubmit: false }
                 }
-
             }
         }
-        console.log(resValuePost)
         return resValuePost;
     }
 

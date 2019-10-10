@@ -74,19 +74,9 @@ const PickingReturn = (props) => {
             let qryStrOpt = {};
 
             let cartonNoList = [];
-            let newQty = null;
+            let newQty = 0;
             if (storageObj) {
 
-                if (reqValue['orderNo']) {
-                    if (reqValue['orderNo'].trim().length === 7) {
-                        orderNo = reqValue['orderNo'].trim();
-                    } else {
-                        if (curInput === 'orderNo') {
-                            orderNo = null;
-                            alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
-                        }
-                    }
-                }
                 if (reqValue['scanCode']) {
                     if (reqValue['scanCode'].trim().length !== 0) {
                         skuCode = reqValue['scanCode'].trim();
@@ -96,14 +86,56 @@ const PickingReturn = (props) => {
                             alertDialogRenderer("Reorder No. must be value.", "error", true);
                         }
                     }
-                }
-                if (reqValue['cartonNo']) {
-                    let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
-                    cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    if (reqValue['orderNo']) {
+                        if (reqValue['orderNo'].trim().length === 7) {
+                            orderNo = reqValue['orderNo'].trim();
+                        } else {
+                            if (curInput === 'orderNo') {
+                                orderNo = null;
+                                if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
+                                    console.log("scan pallet")
+                                } else {
+                                    alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
+
+                                }
+                            }
+                        }
+                    }
+
+                    if (reqValue['cartonNo']) {
+                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    } else {
+                        if (curInput === 'cartonNo') {
+                            cartonNo = null;
+                            if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
+                                console.log("scan pallet")
+                            } else {
+                                alertDialogRenderer("Carton No. must be value.", "error", true);
+                            }
+                        }
+                    }
                 } else {
-                    if (curInput === 'cartonNo') {
-                        cartonNo = null;
-                        alertDialogRenderer("Carton No. must be value.", "error", true);
+                    if (reqValue['orderNo']) {
+                        if (reqValue['orderNo'].trim().length === 7) {
+                            orderNo = reqValue['orderNo'].trim();
+                        } else {
+                            if (curInput === 'orderNo') {
+                                orderNo = null;
+                                alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
+
+                            }
+                        }
+                    }
+
+                    if (reqValue['cartonNo']) {
+                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    } else {
+                        if (curInput === 'cartonNo') {
+                            cartonNo = null;
+                            alertDialogRenderer("Carton No. must be value.", "error", true);
+                        }
                     }
                 }
 
@@ -149,8 +181,9 @@ const PickingReturn = (props) => {
                                 if (numCarton === lenDiffCarton) {
                                     if (noHasCartonList.length > 0) {
                                         let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
-                                        alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
-
+                                        if (noHascarNoMatch.length > 0) {
+                                            alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
+                                        }
                                         cartonNo = null;
                                     } else {
                                         lenNewCarton = delCartonList.length;
@@ -172,7 +205,9 @@ const PickingReturn = (props) => {
 
                         } else {
                             let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
-                            alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
+                            if (carNoMatch.length > 0) {
+                                alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
+                            }
                             cartonNo = null;
                             let eleCartonNo = document.getElementById('cartonNo');
                             if (eleCartonNo) {
@@ -236,17 +271,28 @@ const PickingReturn = (props) => {
                     if (rootID === null) {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
-                        dataScan = {
-                            allowSubmit: false
-                        };
+                        if (reqValue.action === 2) {
+                            if (storageObj.code === reqValue.scanCode) {
+                                resValuePost = { ...reqValue, allowSubmit: true }
+                            } else {
+                                resValuePost = { ...reqValue, allowSubmit: false }
+                            }
+                        } else {
+                            resValuePost = { ...reqValue, allowSubmit: false }
+                        }
                     }
                 }
             } else {
-                dataScan = {
-                    allowSubmit: false
-                };
+                if (reqValue.action === 2) {
+                    if (storageObj.code === reqValue.scanCode) {
+                        resValuePost = { ...reqValue, allowSubmit: true }
+                    } else {
+                        resValuePost = { ...reqValue, allowSubmit: false }
+                    }
+                } else {
+                    resValuePost = { ...reqValue, allowSubmit: false }
+                }
             }
-            resValuePost = { ...reqValue, ...dataScan }
         }
         return resValuePost;
     }
