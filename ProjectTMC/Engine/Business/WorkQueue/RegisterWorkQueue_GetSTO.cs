@@ -31,12 +31,29 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     new KeyValuePair<string,object>("Code",reqVO.baseCode),
                     new KeyValuePair<string,object>("Status",1),
                 }, buVO);
+
             var docGR = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItem>(
             new KeyValuePair<string, object>[] {
-                    new KeyValuePair<string,object>("Code",reqVO.mappingPallets[0].code),
-                    new KeyValuePair<string,object>("EventStatus",DocumentEventStatus.WORKING)
+                new KeyValuePair<string,object>("EventStatus",DocumentEventStatus.WORKING)
             }, buVO).FirstOrDefault();
+            if (docGR == null)
+            {
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Good Received Document Not Found");
+            }
+            var distoDoc = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+            new KeyValuePair<string, object>[] {
+                new KeyValuePair<string,object>("DocumentItem_ID",docGR.ID),
+                new KeyValuePair<string,object>("Status",EntityStatus.INACTIVE)
+            }, buVO);
 
+            var sum = distoDoc.Sum(x => x.Quantity);
+            var sumQty = sum + Int32.Parse(reqVO.mappingPallets[0].qty) ;
+            if (sumQty > docGR.Quantity)
+            {
+                throw new AMWException(logger, AMWExceptionCode.V1001, "Qty more then Good Received Document");
+            }
+            
+     
             if (baseMasterData.Count <= 0)
             {
                 //ไม่มีในระบบ insert เข้า baseMaster
@@ -49,7 +66,8 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     ObjectSize_ID = 3,
                     Status = EntityStatus.ACTIVE,
                     UnitType_ID = 2,
-                    WeightKG = Convert.ToDecimal(0.5)
+                    //WeightKG = Convert.ToDecimal(0.5)
+                    WeightKG = 30
                 });
             }
 
@@ -108,21 +126,21 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     if (location == null)
                         throw new AMWException(logger, AMWExceptionCode.V1001, "Not Found Location Code '" + reqVO.locationCode + "'");
 
+                
                     if (mapsto == null)
                     {
 
                         var palletList = new List<PalletDataCriteriaV2>();
                         palletList.Add(new PalletDataCriteriaV2()
                         {
-                            options = reqVO.mappingPallets[0].options,
+                           
                             code = reqVO.baseCode,
                             qty = "1",
                             unit = null,
                             orderNo = null,
                             batch = null,
                             lot = null,
-                            prodDate = reqVO.mappingPallets[0].prodDate,
-                            forCustomerCode = reqVO.mappingPallets[0].forCustomerCode
+                         
 
 
                         });
@@ -131,14 +149,14 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                         {
                             palletList.Add(new PalletDataCriteriaV2()
                             {
-                                options = row.options,
-                                code = row.code,
+                               
+                                code = docGR.Code,
                                 qty = row.qty,
-                                unit = row.unit,
-                                orderNo = row.orderNo,
-                                batch = row.batch,
+                                unit = StaticValue.UnitTypes.FirstOrDefault(x => x.ID == docGR.UnitType_ID).Code, 
+                                orderNo = null,
+                                batch = null,
                                 lot = docGR.Lot,
-                                prodDate = row.prodDate,
+                                //prodDate = row.prodDate,
                                 //movingType = row.movingType
                             });
                         }
