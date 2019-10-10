@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components'
 import AmDropdown from "../../../../components/AmDropdown"
 import { apicall, createQueryString } from '../../../../components/function/CoreFunction2'
+import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match } from '../../../../components/function/Convert';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
@@ -21,6 +22,7 @@ import IconLock from '@material-ui/icons/Lock';
 import IconLockOpen from '@material-ui/icons/LockOpen';
 import Moment from 'moment';
 import { useTranslation } from 'react-i18next'
+import * as SC from '../../../../constant/StringConst'
 import Axios1 from 'axios'
 const Axios = new apicall()
 
@@ -77,7 +79,6 @@ const Border = styled.div`
   color: #e91e63;
   font-size: 1.5em;
   margin: 1em;
-  padding: 1em 1em;
   display: block;
 `;
 
@@ -87,7 +88,6 @@ const BorderGrey = styled.div`
   color: #616161;
   font-size: 1.5em;
   margin: 1em;
-  padding: 1em 1em;
   display: block;
 `;
 
@@ -173,7 +173,7 @@ const useClock = (propsTime, t) => {
 
     const runningCurrentDate = () => {
         let currentDateTime = new Date(date.dateServer.getTime() + (new Date().getTime() - date.dateClient.getTime()));
-        setTime(t(propsTime.label) + " : " + Moment(currentDateTime).format(propsTime.format))
+        setTime(t(propsTime.label) + Moment(currentDateTime).format(propsTime.format))
     }
     return time
 }
@@ -186,7 +186,6 @@ const Scanbarcode = (props) => {
     const [databar, setdatabar] = useState({});
     const [valueBarcode, setvalueBarcode] = useState();  
     const [productCode, setproductCode] = useState();
-    const [productName, setproductName] = useState();
     const [qty, setqty] = useState(0);
     const [qtyMax, setqtyMax] = useState(0);
     const [areaGate, setareaGate] = useState();
@@ -196,7 +195,6 @@ const Scanbarcode = (props) => {
     const [unitCode, setunitCode] = useState('PC');
 
     const [productCode2, setproductCode2] = useState();
-    const [productName2, setproductName2] = useState();
     const [qty2, setqty2] = useState(0);
     const [qtyMax2, setqtyMax2] = useState(0);
     const [areaGate2, setareaGate2] = useState();
@@ -217,7 +215,6 @@ const Scanbarcode = (props) => {
     const [area2, setarea2] = useState();
     const [gateLeft, setgateLeft] = useState(false);
     const [gateRight, setgateRight] = useState(false);
-    const [isFull, setisFull] = useState();
     const [width_height, set_width_height] = useState({
         width: window.innerWidth,
         height: window.innerHeight
@@ -234,20 +231,19 @@ const Scanbarcode = (props) => {
         let iniData = {};
         if(side === "left"){
             iniData = manualAddLeft;
-            iniData[field] = value
-            console.log(iniData)
+            iniData[field] = value;
             setManualAddLeft({...iniData,"palletCode":pallet})
         }
         else{
             iniData = manualAddRight;
-            iniData[field] = value
+            iniData[field] = value;
             setManualAddRight({...iniData,"palletCode":pallet2})
         }
     };
 
     const clock = useClock({
         format: "DD/MM/YYYY HH:mm:ss", //formet in moment
-        label: "Date/Time"
+        label: ""
     }, t)
    const time = clock 
 
@@ -311,18 +307,111 @@ const Scanbarcode = (props) => {
         
     }, [areaIDs])*/
 
+    const MapStoNoDoc = (side) => {
+        let mapSto = {};
+        if(side === "left"){
+            console.log(manualAddLeft)
+            if(data !== null){
+                console.log(manualAddLeft)
+                let leftGate = data.find(x => x.gate === 1);
+                if(leftGate !== null && leftGate !== undefined && leftGate.baseID !== null)
+                {
+                    let splitItem = [];
+                    let carton = manualAddLeft.carton.split(',');
+                    carton.forEach(e => {
+                        if(e.includes('-')){
+                            let splitCar = [];
+                            let carArr = e.split('-');
+                            for(let i = carArr[0]; i<= carArr[1]; i++)
+                            {
+                                splitCar.push(parseInt(i))
+                            }
+                            splitItem = splitItem.concat(splitCar)
+                        }
+                        else{
+                            splitItem.push(parseInt(e))
+                        }
+                    });
+
+                    let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
+                    let resCarton = ConvertStringToRangeNum(disCarton.join(','));
+
+                    mapSto.rootID = leftGate.baseID;
+                    mapSto.scanCode = manualAddLeft.code;
+                    mapSto.orderNo = manualAddLeft.orderNo;
+                    mapSto.amount = disCarton.length;
+                    mapSto.warehouseID = 1;
+                    mapSto.areaID = leftGate.areaID;
+                    mapSto.locationCode = leftGate.areaLocationCode;
+                    mapSto.action = 1;
+                    mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
+                    mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
+                    mapSto.isRoot = false;
+                }
+            }
+        }
+        else{
+            if(data !== null){
+                
+                let rightGate = data.find(x => x.gate === 2);
+                if(rightGate !== null && rightGate !== undefined && rightGate.baseID !== null)
+                {
+                    let splitItem = [];
+                    let carton = manualAddRight.carton.split(',');
+                    carton.forEach(e => {
+                        if(e.includes('-')){
+                            let splitCar = [];
+                            let carArr = e.split('-');
+                            for(let i = carArr[0]; i<= carArr[1]; i++)
+                            {
+                                splitCar.push(parseInt(i))
+                            }
+                            splitItem = splitItem.concat(splitCar)
+                        }
+                        else{
+                            splitItem.push(parseInt(e))
+                        }
+                    });
+
+                    let disCarton = splitItem.filter((v, i, a) => a.indexOf(v) === i).sort();
+                    let resCarton = ConvertStringToRangeNum(disCarton.join(','));
+
+                    console.log(disCarton.join(','))
+                    console.log(resCarton)
+                    mapSto.rootID = rightGate.baseID;
+                    mapSto.scanCode = manualAddRight.code;
+                    mapSto.orderNo = manualAddRight.orderNo;
+                    mapSto.amount = disCarton.length;
+                    mapSto.warehouseID = 1;
+                    mapSto.areaID = rightGate.areaID;
+                    mapSto.locationCode = rightGate.areaLocationCode;
+                    mapSto.action = 1;
+                    mapSto.options = SC.OPT_CARTON_NO + '=' + resCarton;
+                    mapSto.rootOptions = SC.OPT_DONE_DES_EVENT_STATUS + '=98';
+                    mapSto.isRoot = false;
+                    
+                console.log(mapSto)
+                }
+            }
+        }
+
+        //Axios.post(window.apipath + '/v2/ScanMapStoAPI', mapSto).then(res => console.log(res))
+    }
+
+
+
     const Scanbar = () => {
         var databars = {...databar}
         Axios.post(window.apipath + '/v2/ScanMapBaseReceiveAPI', databars).then((res) => {
-            if (res.data._result.status = 1) {
+            if (res.data._result.status === 1) {
 
                 if (res.data.bsto != null) {
                     var datass = res.data.bsto.mapstos[0]
                     var dataQtyMax = res.data.bsto.objectSizeMaps[0]
-                    if (datass.qty == null) {
+                    if (datass.qty === null) {
                         setqty(0)
                     } else { setqty(datass.qty) }
-                    if (dataQtyMax.maxQuantity == null) {
+                    if (dataQtyMax.maxQuantity === null) {
                         setqtyMax(0)
                     } else {
                         setqtyMax(dataQtyMax.maxQuantity)
@@ -340,7 +429,7 @@ const Scanbarcode = (props) => {
                             setMsgDialogSuc(MsgError);
                             setStateDialogSuc(true);
                         }
-                        else if (calQty == qtyMaxIn) {
+                        else if (calQty === qtyMaxIn) {
                             var MsgErrors = "Empty"
                             setMsgDialog(MsgErrors);                          
                             setStateDialog(true);
@@ -367,7 +456,6 @@ const Scanbarcode = (props) => {
     }
 
     useEffect(()=>{
-        console.log(data)
         if(data !== null){
             data.forEach(x=>{
                 if(x.gate === 1){
@@ -378,19 +466,18 @@ const Scanbarcode = (props) => {
                         setareaGate(x.areaID)
                         
                         if(x.ID !== null){
-                            if (x.qty === null || x.qty === undefined) {
+                            if (x.Quantity === null || x.Quantity === undefined) {
                                 setqty(0)
                             } else {
-                                setqty(x.qty)
+                                setqty(x.Quantity)
                             }
-                            if (x.maxQuantity == null) {
+                            if (x.MaxQuantity === null) {
                                 setqtyMax(0)
                             } else {
-                                setqtyMax(x.maxQuantity)
+                                setqtyMax(x.MaxQuantity)
                             }
 
                             setproductCode(x.Code)
-                            setproductName(x.Name)
                             setorderNo(x.OrderNo)
                             setunitCode(x.UnitCode)
                             setcarton(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
@@ -408,18 +495,17 @@ const Scanbarcode = (props) => {
                         setareaGate2(x.areaID)
                         
                         if(x.ID !== null){
-                            if (x.qty === null || x.qty === undefined) {
+                            if (x.Quantity === null || x.Quantity === undefined) {
                                 setqty2(0)
                             } else {
-                                setqty2(x.qty)
+                                setqty2(x.Quantity)
                             }
-                            if (x.maxQuantity == null) {
+                            if (x.MaxQuantity === null) {
                                 setqtyMax2(0)
                             } else {
-                                setqtyMax2(x.maxQuantity)
+                                setqtyMax2(x.MaxQuantity)
                             }
                             setproductCode2(x.Code)
-                            setproductName2(x.Name)
                             setorderNo2(x.OrderNo)
                             setunitCode2(x.UnitCode)
                             setcarton2(x.Options !== "" ? x.Options.split("=")[1].split("&")[0] : null)
@@ -452,19 +538,18 @@ const Scanbarcode = (props) => {
                         if (datass !== undefined) {
                             let dataQtyMax = datas.objectSizeMaps[0]
                             console.log(dataQtyMax)
-                            if (datass.qty == null || datass.qty == undefined) {
+                            if (datass.qty === null || datass.qty === undefined) {
                                 setqty(0)
                             } else {
                                 setqty(datass.qty)
                             }
-                            if (dataQtyMax.maxQuantity == null) {
+                            if (dataQtyMax.maxQuantity === null) {
                                 setqtyMax(0)
                             } else {
                                 setqtyMax(dataQtyMax.maxQuantity)
 
                             }
                             setproductCode(datass.code)
-                            setproductName(datass.name)
                             setorderNo(datass.orderNo)
                             setunitCode(datass.unitCode)
                             setcarton(datass.options.split("=")[1].split("&")[0])
@@ -482,18 +567,17 @@ const Scanbarcode = (props) => {
                         if (datass !== undefined) {
                             let dataQtyMax = datas.objectSizeMaps[0]
 
-                            if (datass.qty == null || datass.qty == undefined) {
+                            if (datass.qty === null || datass.qty === undefined) {
                                 setqty2(0)
                             } else {
                                 setqty2(datass.qty)
                             }
-                            if (dataQtyMax.maxQuantity == null) {
+                            if (dataQtyMax.maxQuantity === null) {
                                 setqtyMax2(0)
                             } else {
                                 setqtyMax2(dataQtyMax.maxQuantity)
                             }
                             setproductCode2(datass.code)
-                            setproductName2(datass.name)
                             setorderNo2(datass.orderNo)
                             setunitCode2(datass.unitCode)
                             setcarton2(datass.options.split("=")[1].split("&")[0])
@@ -713,14 +797,14 @@ const Scanbarcode = (props) => {
                                                                 </FormInline>
                                                         </Border>}
                                                         <div style={{textAlign:"center"}}>
-                                                <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                     lockGateID.push(areaGate)
                                                     databar.lockGateID = lockGateID
                                                     setdatabar({...databar})
                                                     setLockStateLeft(true)
                                                     }}>Manual</AmButton>
 
-                                                <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                 }}>Remove</AmButton></div>
                                             </Card>
                                         </Flash> : 
@@ -734,7 +818,7 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput value={manualAddLeft["code"]}  onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("left" ,"code", value);
                                                             }} />
                                                         </Typography>
@@ -742,7 +826,7 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput value={manualAddLeft["orderNo"]}  onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("left" ,"orderNo", value);
                                                             }} />
                                                         </Typography>
@@ -750,7 +834,7 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput value={manualAddLeft["carton"]}  onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("left" ,"carton", value);
                                                             }} />
                                                         </Typography>
@@ -770,7 +854,7 @@ const Scanbarcode = (props) => {
                                                         </Border>}
                                                         
                                                         <div style={{textAlign:"center"}}>
-                                                        <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={() => {
+                                                        <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={() => {
 
                                                     setLockGateID(lockGateID.filter(x => x !== areaGate))
                                                     databar.lockGateID = lockGateID
@@ -778,7 +862,8 @@ const Scanbarcode = (props) => {
                                                     setLockStateLeft(false)
                                                         }}>Clear</AmButton>
 
-                                                <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                    MapStoNoDoc("left")
                                                 }}>Save</AmButton></div>
                                             </Card>
                                         </Flash>}
@@ -835,14 +920,14 @@ const Scanbarcode = (props) => {
                                                         </Border>
                                                     }
                                                     <div style={{textAlign:"center"}}>
-                                                        <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                        <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                             lockGateID.push(areaGate2)
                                                             databar.lockGateID = lockGateID
                                                             setdatabar({...databar})
                                                             setLockStateRight(true)
                                                             }}>Manual</AmButton>
                                                         <br/>
-                                                        <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                        <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                         }}>Remove</AmButton>
                                                     </div>
                                             </Card>
@@ -857,7 +942,7 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput value={manualAddRight["code"]} onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("right" ,"code", value);
                                                             }} />
                                                         </Typography>
@@ -865,7 +950,7 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("right" ,"orderNo", value);
                                                             }} />
                                                         </Typography>
@@ -873,7 +958,7 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput value={manualAddRight["carton"]} onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("right" ,"carton", value);
                                                             }} />
                                                         </Typography>
@@ -892,14 +977,15 @@ const Scanbarcode = (props) => {
                                                             </Border>
                                                         }
                                                         <div style={{textAlign:"center"}}>
-                                                            <AmButton style={{width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={() => {
+                                                            <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={() => {
                                                                 setLockGateID(lockGateID.filter(x => x !== areaGate2))
                                                                 databar.lockGateID = lockGateID
                                                                 setdatabar({...databar})
                                                                 setLockStateRight(false)
                                                                     }}>Clear</AmButton>
                                                         <br/>
-                                                        <AmButton style={{marginTop:"10px",width:"80%",padding:"10px", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                        <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
+                                                            MapStoNoDoc("right")
                                                                 }}>Save</AmButton>
                                                         </div>
                                                         
