@@ -8,6 +8,7 @@ namespace AWMSModel.Constant.StringConst
     {
         public const string OPT_CARTON_NO = "carton_no";
         public const string OPT_MVT = "mvt";
+        public const string OPT_AUTO_DOC = "_autodoc";
         public const string OPT_SOU_CUSTOMER_ID = "sou_customer_id";
         public const string OPT_SOU_WAREHOUSE_ID = "sou_warehouse_id";
         public const string OPT_REMARK = "remark";

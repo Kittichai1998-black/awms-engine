@@ -45,7 +45,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 if (skuMaster == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
                 var SKUMasterType = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
-                if (SKUMasterType.Code == "EMPTYPALLET")
+                if (SKUMasterType.GroupType == SKUGroupType.EMP)
                 {
                     docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
 
@@ -164,7 +164,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
                 
                 var empPallet = StaticValue.SKUMasterTypes.Find(x => x.ID == (long)skuMaster.SKUMasterType_ID);
-                if (empPallet.Code != "EMPTYPALLET")
+                if (empPallet.GroupType != SKUGroupType.EMP)
                 {
                     //ไม่ใช่พาเลทเปล่า
                     if (packH.options != null && packH.options.Length > 0)
