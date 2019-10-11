@@ -868,7 +868,30 @@ const AmStorageObjectMulti = props => {
                   QC
                 </AmButton>
               ) : null}
-
+              {props.modifyQC === true ? (
+                <AmButton
+                  style={{ marginRight: "5px" }}
+                  styleType="default"
+                  onClick={() => {
+                    onClickHold(97);
+                    setName("Remark Partial");
+                  }}
+                >
+                  PARTIAL
+                </AmButton>
+              ) : null}
+              {props.modifyQC === true ? (
+                <AmButton
+                  style={{ marginRight: "5px" }}
+                  styleType="default"
+                  onClick={() => {
+                    onClickHold(96);
+                    setName("Remark Return");
+                  }}
+                >
+                  RETURN
+                </AmButton>
+              ) : null}
               <AmButton
                 style={{ marginRight: "5px" }}
                 styleType="add"
