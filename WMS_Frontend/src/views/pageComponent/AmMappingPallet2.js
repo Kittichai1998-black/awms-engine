@@ -611,7 +611,7 @@ const AmMappingPallet2 = (props) => {
                                 }
                             }
                         });
-                        if (res.data.mapstos.length > 0) {
+                        if (res.data !== null && res.data.mapstos != null && res.data.mapstos.length > 0) {
                            let mapsto =  res.data.mapstos[0];
                             itemCreate.map((x, i) => {
                                 let ele = document.getElementById(x.field);

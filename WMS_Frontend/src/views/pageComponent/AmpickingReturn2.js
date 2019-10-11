@@ -624,7 +624,7 @@ const AmPickingReturn2 = (props) => {
                                     }
                                 }
                             });
-                            if (res.data.bsto.mapstos.length > 0) {
+                            if (res.data !== null && res.data.bsto.mapstos != null && res.data.bsto.mapstos.length > 0) {
                                 let mapsto = res.data.bsto.mapstos[0];
                                 itemCreate.map((x, i) => {
                                     let ele = document.getElementById(x.field);
