@@ -169,22 +169,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                     //ไม่ใช่พาเลทเปล่า
                     if (packH.options != null && packH.options.Length > 0)
                     {
-                        //เช็คค่า Sou_Warehouse_ID จาก options
-                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_WAREHOUSE_ID);
-                        if (Sou_Warehouse_ID != null && Sou_Warehouse_ID.Length > 0)
-                        { 
-                            var checkWhID = StaticValue.Warehouses.First(x => x.ID == Convert.ToInt32(Sou_Warehouse_ID));
-                            if (checkWhID == null)
-                                throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse ID '" + Sou_Warehouse_ID + "' Not Found");
-                            doc.Sou_Warehouse_ID = checkWhID.ID.Value;
-
-                            doc.Sou_Branch_ID = StaticValue.Branchs.First(x => x.ID == checkWhID.Branch_ID).ID;
-                            
-                        }
-                        //var mvt = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_MVT);
-
-                        //if (mvtDoc != null)
-                        //{
+                        
                             if (mvtDoc == MovementType.FG_TRANSFER_CUS)
                             {   //customer return
                                 //doc.MovementType_ID = MovementType.FG_TRANSFER_CUS;
@@ -220,7 +205,19 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             {   //FG_TRANSFER_WM , MovementType.FG_LOAD_RETURN_WMรับเข้าเเบบปกติ
                                 doc.Sou_Warehouse_ID = warehouse.ID.Value;
                                 doc.Sou_Branch_ID = branch.ID.Value;
-                            } 
+                            }
+                        //เช็คค่า Sou_Warehouse_ID จาก options
+                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_WAREHOUSE_ID);
+                        if (Sou_Warehouse_ID != null && Sou_Warehouse_ID.Length > 0)
+                        {
+                            var checkWhID = StaticValue.Warehouses.First(x => x.ID == Convert.ToInt32(Sou_Warehouse_ID));
+                            if (checkWhID == null)
+                                throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse ID '" + Sou_Warehouse_ID + "' Not Found");
+                            doc.Sou_Warehouse_ID = checkWhID.ID.Value;
+
+                            doc.Sou_Branch_ID = StaticValue.Branchs.First(x => x.ID == checkWhID.Branch_ID).ID;
+
+                        }
                     }
 
                 }

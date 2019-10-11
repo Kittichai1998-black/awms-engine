@@ -367,7 +367,6 @@ const AmMappingPallet = (props) => {
         })
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
-        console.log(field+": "+value)
         valueInput[field] = value;
         setCurInput(field);
 
@@ -406,6 +405,7 @@ const AmMappingPallet = (props) => {
         var dataScan = {};
         let rootBaseCode = null;
         if (valueInput) {
+            console.log(valueInput)
             let rootFocusID = null;
             if (storageObj) {
                 var dataRootFocus = findRootMapping(storageObj);
@@ -475,6 +475,7 @@ const AmMappingPallet = (props) => {
         } else {
             if (preAutoPost) {
                 alertDialogRenderer("Please fill your information completely.", "error", true);
+                setPreAutoPost(false);
             }
         }
     }
@@ -828,7 +829,7 @@ const AmMappingPallet = (props) => {
                     ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={defaultValue ? defaultValue : ""}
+                    defaultValue={valueInput && valueInput[field] ? valueInput[field] : defaultValue ? defaultValue : ""}
                     queryApi={dataDropDown}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
                     ddlType={typeDropdown}

@@ -509,6 +509,7 @@ const AmPickingReturn2 = (props) => {
             } else {
                 if (preAutoPost) {
                     alertDialogRenderer("Please fill your information completely.", "error", true);
+                    setPreAutoPost(false);
                 }
             }
         }
@@ -782,7 +783,7 @@ const AmPickingReturn2 = (props) => {
                     ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={defaultValue ? defaultValue : ""}
+                    defaultValue={valueInput && valueInput[field] ? valueInput[field] : defaultValue ? defaultValue : ""}
                     queryApi={dataDropDown}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
                     ddlType={typeDropdown}
