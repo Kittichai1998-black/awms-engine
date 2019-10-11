@@ -52,41 +52,41 @@
           window.loading.showLoading();
         },
         showLoading: function() {
-          const x = document.getElementById('divloading');
+          const x = document.getElementById("divloading");
           if (this.countLoad === 0) {
-            x.style.display = 'none';
+            x.style.display = "none";
           } else {
-            x.style.display = 'block';
+            x.style.display = "block";
           }
         }
       };
     </script>
     <script>
-      window.apipath = 'https://localhost:44386';
+      window.apipath = "https://localhost:44386";
       // window.apipath = "http://awms.automotionworks.com:8090";
-      window.project = 'STA';
+      window.project = "STA";
 
       window.alert = function(msg, backgroundColor, color, border) {
-        var div = document.createElement('div');
-        div.style.textAlign = 'center';
-        div.style.width = '350px';
-        div.style.height = '70px';
-        div.style.paddingTop = '5px';
-        div.style.background = backgroundColor ? backgroundColor : 'white';
-        (div.style.color = color ? color : 'black'), (div.style.opacity = 0.8);
+        var div = document.createElement("div");
+        div.style.textAlign = "center";
+        div.style.width = "350px";
+        div.style.height = "70px";
+        div.style.paddingTop = "5px";
+        div.style.background = backgroundColor ? backgroundColor : "white";
+        (div.style.color = color ? color : "black"), (div.style.opacity = 0.8);
         div.innerHTML = msg;
         div.onclick = () => {
           div.remove();
         };
         //div.style.border = border ? border : "2px solid black";
-        div.style.margin = '3px auto';
-        div.style.padding = '2px';
-        div.style.cursor = 'pointer';
-        const ele = document.getElementById('msg');
+        div.style.margin = "3px auto";
+        div.style.padding = "2px";
+        div.style.cursor = "pointer";
+        const ele = document.getElementById("msg");
         ele.prepend(div);
         setTimeout(() => {
-          div.style.opacity = '0';
-          div.style.opacity = 'pointer-events:none';
+          div.style.opacity = "0";
+          div.style.opacity = "pointer-events:none";
           setTimeout(() => {
             ele.removeChild(div);
           }, 1000);
@@ -94,30 +94,30 @@
       };
 
       window.success = function(msg, backgroundColor, color) {
-        msg = 'xxxx <br/> xxxx';
+        msg = "xxxx <br/> xxxx";
         window.alert(
           msg,
-          backgroundColor ? backgroundColor : '#689F38',
-          color ? color : 'white',
-          '2px solid white'
+          backgroundColor ? backgroundColor : "#689F38",
+          color ? color : "white",
+          "2px solid white"
         );
       };
 
       window.error = function(msg, backgroundColor, color) {
         window.alert(
           msg,
-          backgroundColor ? backgroundColor : '#E53935',
-          color ? color : 'white',
-          '2px solid white'
+          backgroundColor ? backgroundColor : "#E53935",
+          color ? color : "white",
+          "2px solid white"
         );
       };
 
       window.warning = function(msg, backgroundColor, color) {
         window.alert(
           msg,
-          backgroundColor ? backgroundColor : '#FF8F00',
-          color ? color : 'white',
-          '2px solid white'
+          backgroundColor ? backgroundColor : "#FF8F00",
+          color ? color : "white",
+          "2px solid white"
         );
       };
     </script>

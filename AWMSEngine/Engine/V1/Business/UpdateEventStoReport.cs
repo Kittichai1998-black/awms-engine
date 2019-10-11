@@ -35,29 +35,43 @@ namespace AWMSEngine.Engine.Business
 
                 if (reqVO.eventStatus == 99)
                 {
-                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.QC)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED or QC");
+                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.QC && stoData != StorageObjectEventStatus.PARTIAL && stoData != StorageObjectEventStatus.RETURN)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED / QC / PARTIAL / RETURN");
 
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.HOLD, this.BuVO);
                 }
                 else if(reqVO.eventStatus == 12)
                 {
-                    if (stoData != StorageObjectEventStatus.HOLD && stoData != StorageObjectEventStatus.QC)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data is not Hold or QC");
+                    if (stoData != StorageObjectEventStatus.HOLD && stoData != StorageObjectEventStatus.QC && stoData != StorageObjectEventStatus.PARTIAL && stoData != StorageObjectEventStatus.RETURN)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "Data is not QC / HOLD / PARTIAL / RETURN");
 
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.RECEIVED, this.BuVO);
                 }
                 else if (reqVO.eventStatus == 98)
                 {
-                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.HOLD)
-                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED or HOLD ");
+                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.HOLD && stoData != StorageObjectEventStatus.RETURN && stoData != StorageObjectEventStatus.PARTIAL)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not  RECEIVED / HOLD / PARTIAL / RETURN");
 
                     ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.QC, this.BuVO);
                 }
-              
+                else if (reqVO.eventStatus == 96)
+                {
+                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.HOLD && stoData != StorageObjectEventStatus.QC && stoData != StorageObjectEventStatus.PARTIAL)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED / HOLD / QC / PARTIAL ");
+
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.RETURN, this.BuVO);
+                }
+                else if (reqVO.eventStatus == 97)
+                {
+                    if (stoData != StorageObjectEventStatus.RECEIVED && stoData != StorageObjectEventStatus.HOLD && stoData != StorageObjectEventStatus.QC && stoData != StorageObjectEventStatus.RETURN)
+                        throw new AMWException(this.Logger, AMWExceptionCode.V1001, "EventStatus is not RECEIVED / HOLD / QC / RETURN ");
+
+                    ADO.StorageObjectADO.GetInstant().UpdateStatusToChild(bstoid, null, null, StorageObjectEventStatus.PARTIAL, this.BuVO);
+                }
 
 
-                    res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
+
+                res.Add(ADO.DataADO.GetInstant().SelectByID<amt_StorageObject>(bstoid, this.BuVO));
 
             }
             allRes.data = res;
