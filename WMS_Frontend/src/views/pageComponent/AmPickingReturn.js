@@ -574,17 +574,16 @@ const AmPickingReturn = (props) => {
                 inputClear();
                 if (res.data._result.message === "Success") {
                     if (res.data.bsto) {
-                        let qryStr = queryString.parse(res.data.options);
-                        let OPT_MVT = qryStr[SC.OPT_MVT];
                         let checkMVT = false;
-                        if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                        if (res.data.bsto.mapstos == null || res.data.bsto.mapstos.length === 0) {
                             checkMVT = true;
                         } else {
-                            if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                            let qryStr = queryString.parse(res.data.bsto.options);
+                            let OPT_MVT = qryStr[SC.OPT_MVT];
+                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
                                 checkMVT = true;
                             }
                         }
-                        console.log(checkMVT);
                         if (checkMVT) {
                             setResData(res.data);
 

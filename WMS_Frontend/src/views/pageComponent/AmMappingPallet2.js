@@ -561,17 +561,17 @@ const AmMappingPallet2 = (props) => {
             inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
-                    let qryStr = queryString.parse(res.data.options);
-                    let OPT_MVT = qryStr[SC.OPT_MVT];
                     let checkMVT = false;
-                    if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                    
+                    if (res.data.mapstos == null || res.data.mapstos.length === 0) {
                         checkMVT = true;
-                    } else {
-                        if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                    }else{
+                        let qryStr = queryString.parse(res.data.options);
+                        let OPT_MVT = qryStr[SC.OPT_MVT];
+                        if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
                             checkMVT = true;
-                        }
+                        } 
                     }
-                    console.log(checkMVT);
                     if (checkMVT) {
                         if (showArea && res.data.areaID) {
                             GetArea(res.data.areaID);

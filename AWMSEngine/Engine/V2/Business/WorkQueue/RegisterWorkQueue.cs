@@ -326,7 +326,6 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 //auto create new Document 
                 if (reqVO.ioType == IOType.INPUT)
                 {
-                    //var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == pstoLists.First().skuID.Value);
                 }
                 else
                 {
@@ -350,6 +349,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     ams_PackMaster packMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
                     if (packMaster == null)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
+
+                    var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
 
                 }
             }
