@@ -305,5 +305,34 @@ namespace ProjectAAI.ADO.SAPApi
             var res = this.SendJson<SapResponseMulti>("SAPCONNECT_LOCATIONV2", req, buVO);
             return res;
         }
+        public SapResponseMulti2<ZSWMRF007_OUT_SAP> ZWMRF007(List<ZSWMRF007_IN_REQ> reqVO, VOCriteria buVO)
+        {
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
+            var req = new SAPReqMulti()
+            {
+                environmentName = getEnvironment,
+                functionName = "ZWMRF007",
+                outTableNames = "OUT_SAP",
+                sapLists = new List<SAPReqMulti.SAPList>()
+            };
+            req.sapLists.AddRange(reqVO.Select(x =>
+            {
+                return new SAPReqMulti.SAPList()
+                {
+                    inStructureName = "ZSWMRF001_IN_SU",
+                    inTableName = "IN_SU",
+                    datas = new ZSWMRF007_IN_REQ()
+                    {
+                        LGNUM = "W01",
+                        CHARG = x.CHARG,
+                        MATNR = x.MATNR
+                    }
+                };
+            }).ToList());
+
+            var res = this.SendJson<SapResponseMulti2<ZSWMRF007_OUT_SAP>>("SAPCONNECT_LOCATIONV2", req, buVO);
+            return res;
+        }
     }
 }

@@ -116,6 +116,7 @@ const useDashboardArea = (areaID) => {
         connection.start()
             .then(() => {
                 connection.on("DASHBOARD_PRD_RECIEVE_" + areaID, res => {
+                    console.log(JSON.parse(res))
                     setData(JSON.parse(res))
                 })
             })
