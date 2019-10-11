@@ -256,6 +256,7 @@ const AmMappingPallet2 = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
+
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -409,13 +410,12 @@ const AmMappingPallet2 = (props) => {
         var dataScan = {};
         let rootBaseCode = null;
         if (valueInput) {
-            console.log(valueInput)
             let rootFocusID = null;
             if (storageObj) {
                 var dataRootFocus = findRootMapping(storageObj);
                 rootFocusID = dataRootFocus.id;
                 rootBaseCode = dataRootFocus.code;
-                
+
                 //onBeforePost custom function
                 if (onBeforePost) {
                     var resInput = {
@@ -477,14 +477,14 @@ const AmMappingPallet2 = (props) => {
         } else {
             if (preAutoPost) {
                 alertDialogRenderer("Please fill your information completely.", "error", true);
-                setPreAutoPost(false);
             }
         }
+        setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
         setKeyEnter(true);
         setPreAutoPost(true);
-        setscanFirstbarcode(true)
+        // setscanFirstbarcode(true)
     }
 
     const onSubmitToAPI = (resValuePosts) => {
@@ -561,79 +561,93 @@ const AmMappingPallet2 = (props) => {
             inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
-
-                    if (showArea && res.data.areaID) {
-                        GetArea(res.data.areaID);
-                    }
-                    if (res.data.code === req.scanCode) {
-                        if (actionValue === 0) {
-                            alertDialogRenderer("Select Pallet Success", "success", true);
-                        }
-                        if (actionValue === 1) {
-                            alertDialogRenderer("Success", "success", true);
-                        }
-                        if (actionValue === 2) {
-                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
-                        }
-                        setStorageObj(res.data);
-
+                    let qryStr = queryString.parse(res.data.options);
+                    let OPT_MVT = qryStr[SC.OPT_MVT];
+                    let checkMVT = false;
+                    if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                        checkMVT = true;
                     } else {
-                        if (actionValue === 0) {
-                            setStorageObj(res.data);
-                            alertDialogRenderer("Select Success", "success", true);
-                        }
-                        if (actionValue === 1) {
-                            setStorageObj(res.data);
-                            alertDialogRenderer("Success", "success", true);
-                        }
-                        if (actionValue === 2) {
-                            if (res.data.mapstos) {
-                                setStorageObj(res.data);
-                                alertDialogRenderer("Remove Pack Success", "success", true);
-
-                            } else {
-                                alertDialogRenderer("Remove Pallet Success", "success", true);
-                                onHandleClear();
-                            }
+                        if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                            checkMVT = true;
                         }
                     }
-                    if (itemCreate !== undefined) {
-                        let qryStr2 = queryString.parse(res.data.options);
-                        itemCreate.map((x, i) => {
-                            let ele = document.getElementById(x.field);
-                            if (ele) {
-                                if (x.clearInput) {
+                    console.log(checkMVT);
+                    if (checkMVT) {
+                        if (showArea && res.data.areaID) {
+                            GetArea(res.data.areaID);
+                        }
+                        if (res.data.code === req.scanCode) {
+                            if (actionValue === 0) {
+                                alertDialogRenderer("Select Pallet Success", "success", true);
+                            }
+                            if (actionValue === 1) {
+                                alertDialogRenderer("Success", "success", true);
+                            }
+                            if (actionValue === 2) {
+                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
+                            }
+                            setStorageObj(res.data);
+
+                        } else {
+                            if (actionValue === 0) {
+                                setStorageObj(res.data);
+                                alertDialogRenderer("Select Success", "success", true);
+                            }
+                            if (actionValue === 1) {
+                                setStorageObj(res.data);
+                                alertDialogRenderer("Success", "success", true);
+                            }
+                            if (actionValue === 2) {
+                                if (res.data.mapstos) {
+                                    setStorageObj(res.data);
+                                    alertDialogRenderer("Remove Pack Success", "success", true);
+
                                 } else {
-                                    if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                                        valueInput[x.field] = qryStr2[x.field];
-                                        ele.value = qryStr2[x.field];
-                                    }
+                                    alertDialogRenderer("Remove Pallet Success", "success", true);
+                                    onHandleClear();
                                 }
                             }
-                        });
-                        if (res.data.mapstos.length > 0) {
-                           let mapsto =  res.data.mapstos[0];
+                        }
+                        if (itemCreate !== undefined) {
+                            let qryStr2 = queryString.parse(res.data.options);
                             itemCreate.map((x, i) => {
                                 let ele = document.getElementById(x.field);
                                 if (ele) {
                                     if (x.clearInput) {
                                     } else {
-                                        if(x.field === 'scanCode'){
-                                            if (mapsto.code !== null && mapsto.code !== undefined) {
-                                                valueInput[x.field] = mapsto.code;
-                                                ele.value = mapsto.code;
-                                            }
-                                        }else{
-                                            if (mapsto[x.field] !== null && mapsto[x.field] !== undefined) {
-                                                valueInput[x.field] = mapsto[x.field];
-                                                ele.value = mapsto[x.field];
-                                            }
+                                        if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                            valueInput[x.field] = qryStr2[x.field];
+                                            ele.value = qryStr2[x.field];
                                         }
                                     }
                                 }
                             });
+                            if (res.data.mapstos != null && res.data.mapstos.length > 0) {
+                                let mapsto = res.data.mapstos[0];
+                                itemCreate.map((x, i) => {
+                                    let ele = document.getElementById(x.field);
+                                    if (ele) {
+                                        if (x.clearInput) {
+                                        } else {
+                                            if (x.field === 'scanCode') {
+                                                if (mapsto.code !== null && mapsto.code !== undefined) {
+                                                    valueInput[x.field] = mapsto.code;
+                                                    ele.value = mapsto.code;
+                                                }
+                                            } else {
+                                                if (mapsto[x.field] !== null && mapsto[x.field] !== undefined) {
+                                                    valueInput[x.field] = mapsto[x.field];
+                                                    ele.value = mapsto[x.field];
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
                         }
-                        // console.log(valueInput);
+                    } else {
+                        alertDialogRenderer("Moment Type isn't match.", "error", true);
+                        onHandleClear();
                     }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
@@ -739,6 +753,7 @@ const AmMappingPallet2 = (props) => {
         // console.log(storageObj)
         if (storageObj) {
             setExpanded(true);
+            setscanFirstbarcode(true);
             //<AmListSTORenderer/> �ҡ��ͧ�����ʴ����option => showOptions={true} 
             // �ѧ���蹹����Ѻ��Ѵ��â������ͧ => customOptions={customOptions}  storageObj.areaID
             if (showArea) {
@@ -1000,7 +1015,7 @@ const AmMappingPallet2 = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
-                    {inputSource && inputSource.length > 0 && actionValue !=2 ?
+                    {inputSource && inputSource.length > 0 && actionValue != 2 ?
                         <>
                             <CardContent className={classes.cardContent}>
 
