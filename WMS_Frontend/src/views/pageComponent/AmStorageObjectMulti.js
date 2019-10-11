@@ -573,6 +573,10 @@ const AmStorageObjectMulti = props => {
         holdData(98);
       } else if (type === 12) {
         holdData(12);
+      } else if (type === 97) {
+        holdData(97);
+      } else if (type === 96) {
+        holdData(96);
       }
     }
 
@@ -705,58 +709,23 @@ const AmStorageObjectMulti = props => {
         bstosID.push(rowdata.ID);
       });
       let postdata = { bstosID: bstosID, eventStatus: status };
-      if (status === 99) {
-        Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
-          res => {
-            if (res.data._result !== undefined) {
-              if (res.data._result.status === 1) {
-                setOpenSuccess(true);
-                getData(createQueryString(query));
-                Clear();
-              } else {
-                setOpenError(true);
-                setTextError(res.data._result.message);
-                getData(createQueryString(query));
-                Clear();
-              }
+
+      Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
+        res => {
+          if (res.data._result !== undefined) {
+            if (res.data._result.status === 1) {
+              setOpenSuccess(true);
+              getData(createQueryString(query));
+              Clear();
+            } else {
+              setOpenError(true);
+              setTextError(res.data._result.message);
+              getData(createQueryString(query));
+              Clear();
             }
           }
-        );
-      } else if (status === 12) {
-        Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
-          res => {
-            if (res.data._result !== undefined) {
-              if (res.data._result.status === 1) {
-                setOpenSuccess(true);
-                getData(createQueryString(query));
-                Clear();
-              } else {
-                setOpenError(true);
-                setTextError(res.data._result.message);
-                getData(createQueryString(query));
-                Clear();
-              }
-            }
-          }
-        );
-      } else if (status === 98) {
-        Axios.post(window.apipath + "/v2/HoldStorageObjectAPI", postdata).then(
-          res => {
-            if (res.data._result !== undefined) {
-              if (res.data._result.status === 1) {
-                setOpenSuccess(true);
-                getData(createQueryString(query));
-                Clear();
-              } else {
-                setOpenError(true);
-                setTextError(res.data._result.message);
-                getData(createQueryString(query));
-                Clear();
-              }
-            }
-          }
-        );
-      }
+        }
+      );
     }
   };
   //===========================================================
@@ -866,7 +835,7 @@ const AmStorageObjectMulti = props => {
               {props.modifyhold === true ? (
                 <AmButton
                   style={{ marginRight: "5px" }}
-                  styleType="dark"
+                  styleType="default"
                   onClick={() => {
                     onClickHold(99);
                     setName("Remark HOLD");
@@ -878,7 +847,7 @@ const AmStorageObjectMulti = props => {
               {props.modifyreceived === true ? (
                 <AmButton
                   style={{ marginRight: "5px" }}
-                  styleType="warning"
+                  styleType="default"
                   onClick={() => {
                     onClickHold(12);
                     setName("Remark RECEIVED");

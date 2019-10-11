@@ -35,7 +35,7 @@ namespace AWMSEngine.Engine.Business.Received
                     batch = row.batch,
                     lot = row.lot,
                     unitCode = row.unit,
-                    amount = row.qty.Get<decimal>(),
+                    amount = row.qty.Value,
                     mode = VirtualMapSTOModeType.REGISTER,
                     action = VirtualMapSTOActionType.ADD,
                     options = row.options,
