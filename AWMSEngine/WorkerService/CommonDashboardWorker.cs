@@ -43,7 +43,7 @@ namespace AWMSEngine.WorkerService
                     var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, key));
                     var hubname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_HUBNAME, key));
                     int? deley2 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_DELAY2, key)).GetTry<int>();
-                    await Task.Run(() =>
+                    var task = Task.Run(() =>
                     {
                         while (true)
                         {
@@ -62,7 +62,7 @@ namespace AWMSEngine.WorkerService
                             }
                             finally
                             {
-                                Task.Delay(deley2 ?? delay);
+                                Thread.Sleep(deley2 ?? delay);
                             }
                         }
                     });
