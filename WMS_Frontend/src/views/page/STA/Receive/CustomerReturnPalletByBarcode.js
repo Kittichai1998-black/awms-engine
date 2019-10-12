@@ -148,9 +148,11 @@ const CustomerReturnPalletByBarcode = (props) => {
                             }
                         }
 
-                        if (cartonNo && rootID && skuCode && orderNo && SOU_CUSTOMER_ID) {
+                        if (cartonNo && rootID && skuCode && orderNo) {
 
-                            qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
+                            if (reqValue.action != 2 && SOU_CUSTOMER_ID) {
+                                qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
+                            }
                             qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
                             let qryStr1 = queryString.stringify(qryStrOpt)
                             let uri_opt = decodeURIComponent(qryStr1);
@@ -159,7 +161,8 @@ const CustomerReturnPalletByBarcode = (props) => {
                                 allowSubmit: true,
                                 orderNo: orderNo,
                                 scanCode: skuCode,
-                                options: cartonNo === "0" ? null : uri_opt
+                                options: cartonNo === "0" ? null : uri_opt,
+                                validateSKUTypeCodes: ["FG"]
                             };
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {

@@ -47,7 +47,7 @@ namespace ProjectTMC.Engine.Business.WorkQueue
             }, buVO);
 
             var sum = distoDoc.Sum(x => x.Quantity);
-            var sumQty = sum + Int32.Parse(reqVO.mappingPallets[0].qty) ;
+            var sumQty = sum + reqVO.mappingPallets[0].qty;
             if (sumQty > docGR.Quantity)
             {
                 throw new AMWException(logger, AMWExceptionCode.V1001, "Qty more then Good Received Document");
@@ -135,7 +135,7 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                         {
                            
                             code = reqVO.baseCode,
-                            qty = "1",
+                            qty = 1,
                             unit = null,
                             orderNo = null,
                             batch = null,

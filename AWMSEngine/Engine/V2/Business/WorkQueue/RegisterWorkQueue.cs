@@ -307,20 +307,25 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
             var desBranch = new ams_Branch();
             var desArea = new ams_AreaMaster();
 
+            var Sou_Warehouse = new ams_Warehouse(); 
             var _autodoc = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_AUTO_DOC);
             var pstoLists = mapsto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).ToList();
             if (pstoLists == null || pstoLists.Count() == 0)
                 throw new AMWException(Logger, AMWExceptionCode.V2001, "Data of Packs Not Found");
 
+            var mvt = ObjectUtil.QryStrGetValue(mapsto.options, OptionVOConst.OPT_MVT);
+            MovementType mvtDoc = new MovementType();
+            if (mvt != null && mvt.Length > 0)
+            {
+                mvtDoc = (MovementType)Enum.Parse(typeof(MovementType), mvt);
+            }
+            
+            List<amt_DocumentItem> documentItems = new List<amt_DocumentItem>();
             if (_autodoc == "true")
             {
                 //auto create new Document 
                 if (reqVO.ioType == IOType.INPUT)
                 {
-                    var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == pstoLists.First().skuID.Value);
-
-
-
                 }
                 else
                 {
@@ -334,6 +339,19 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     desArea = StaticValue.AreaMasters.FirstOrDefault(x => x.Code == reqVO.desAreaCode);
                     if (desArea == null)
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "Area " + reqVO.desAreaCode + " Not Found");
+                }
+
+                foreach (var psto in pstoLists)
+                {
+                    ams_SKUMaster skuMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_SKUMaster>((long)psto.skuID, BuVO);
+                    if (skuMaster == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "SKU ID '" + (long)psto.skuID + "' Not Found");
+                    ams_PackMaster packMaster = AWMSEngine.ADO.DataADO.GetInstant().SelectByID<ams_PackMaster>((long)psto.mstID, BuVO);
+                    if (packMaster == null)
+                        throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
+
+                    var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
+
                 }
             }
             else

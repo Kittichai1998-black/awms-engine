@@ -405,7 +405,6 @@ const AmMappingPallet = (props) => {
         var dataScan = {};
         let rootBaseCode = null;
         if (valueInput) {
-            console.log(valueInput)
             let rootFocusID = null;
             if (storageObj) {
                 var dataRootFocus = findRootMapping(storageObj);
@@ -475,9 +474,9 @@ const AmMappingPallet = (props) => {
         } else {
             if (preAutoPost) {
                 alertDialogRenderer("Please fill your information completely.", "error", true);
-                setPreAutoPost(false);
             }
         }
+        setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
         setKeyEnter(true);
@@ -558,65 +557,80 @@ const AmMappingPallet = (props) => {
             inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
-
-                    if (showArea && res.data.areaID) {
-                        GetArea(res.data.areaID);
+                    let checkMVT = false;
+                    
+                    if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                        checkMVT = true;
+                    }else{
+                        let qryStr = queryString.parse(res.data.options);
+                        let OPT_MVT = qryStr[SC.OPT_MVT];
+                        if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                            checkMVT = true;
+                        } 
                     }
-                    if (res.data.code === req.scanCode) {
-                        if (actionValue === 0) {
-
-                            alertDialogRenderer("Select Pallet Success", "success", true);
+                    if (checkMVT) {
+                        if (showArea && res.data.areaID) {
+                            GetArea(res.data.areaID);
                         }
-                        if (actionValue === 1) {
+                        if (res.data.code === req.scanCode) {
+                            if (actionValue === 0) {
 
-                            alertDialogRenderer("Success", "success", true);
-                        }
-                        if (actionValue === 2) {
+                                alertDialogRenderer("Select Pallet Success", "success", true);
+                            }
+                            if (actionValue === 1) {
 
-                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
+                                alertDialogRenderer("Success", "success", true);
+                            }
+                            if (actionValue === 2) {
 
-                        }
-                        setStorageObj(res.data);
+                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
 
-                        // inputClear();
-                    } else {
-                        if (actionValue === 0) {
+                            }
                             setStorageObj(res.data);
+
                             // inputClear();
-                            alertDialogRenderer("Select Success", "success", true);
-                        }
-                        if (actionValue === 1) {
-                            setStorageObj(res.data);
-                            // inputClear();
-                            alertDialogRenderer("Success", "success", true);
-                        }
-                        if (actionValue === 2) {
-                            if (res.data.mapstos) {
+                        } else {
+                            if (actionValue === 0) {
                                 setStorageObj(res.data);
                                 // inputClear();
-
-                                alertDialogRenderer("Remove Pack Success", "success", true);
-
-                            } else {
-                                alertDialogRenderer("Remove Pallet Success", "success", true);
-                                onHandleClear();
+                                alertDialogRenderer("Select Success", "success", true);
                             }
-                        }
-                    }
-                    if (itemCreate !== undefined) {
-                        let qryStr2 = queryString.parse(res.data.options);
-                        itemCreate.map((x, i) => {
-                            let ele = document.getElementById(x.field);
-                            if (ele) {
-                                if (x.clearInput) {
+                            if (actionValue === 1) {
+                                setStorageObj(res.data);
+                                // inputClear();
+                                alertDialogRenderer("Success", "success", true);
+                            }
+                            if (actionValue === 2) {
+                                if (res.data.mapstos) {
+                                    setStorageObj(res.data);
+                                    // inputClear();
+
+                                    alertDialogRenderer("Remove Pack Success", "success", true);
+
                                 } else {
-                                    if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                                        valueInput[x.field] = qryStr2[x.field];
-                                        ele.value = qryStr2[x.field];
-                                    }
+                                    alertDialogRenderer("Remove Pallet Success", "success", true);
+                                    onHandleClear();
                                 }
                             }
-                        });
+                        }
+                        if (itemCreate !== undefined) {
+                            let qryStr2 = queryString.parse(res.data.options);
+                            itemCreate.map((x, i) => {
+                                let ele = document.getElementById(x.field);
+                                if (ele) {
+                                    if (x.clearInput) {
+                                    } else {
+                                        if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                            valueInput[x.field] = qryStr2[x.field];
+                                            ele.value = qryStr2[x.field];
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        alertDialogRenderer("Moment Type isn't match.", "error", true);
+                        onHandleClear();
                     }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);

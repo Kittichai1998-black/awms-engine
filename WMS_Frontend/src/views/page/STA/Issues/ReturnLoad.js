@@ -264,7 +264,8 @@ const ReceivePallet = (props) => {
                         allowSubmit: true,
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : uri_opt
+                        options: cartonNo === "0" ? null : uri_opt,
+                        validateSKUTypeCodes: ["FG"]
                     };
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {

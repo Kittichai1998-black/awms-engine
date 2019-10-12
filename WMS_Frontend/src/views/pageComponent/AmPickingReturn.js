@@ -497,10 +497,10 @@ const AmPickingReturn = (props) => {
             } else {
                 if (preAutoPost) {
                     alertDialogRenderer("Please fill your information completely.", "error", true);
-                    setPreAutoPost(false);
                 }
             }
         }
+        setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
         setKeyEnter(true);
@@ -574,44 +574,59 @@ const AmPickingReturn = (props) => {
                 inputClear();
                 if (res.data._result.message === "Success") {
                     if (res.data.bsto) {
-                        setResData(res.data);
-
-                        if (res.data.bsto.code === req.scanCode) {
-                            if (actionValue === 0) {
-                                alertDialogRenderer("Select Pallet Success", "success", true);
-                            }
-                            if (actionValue === 1) {
-                                alertDialogRenderer("Success", "success", true);
-                            }
-                            if (actionValue === 2) {
-                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
-                            }
-
+                        let checkMVT = false;
+                        if (res.data.bsto.mapstos == null || res.data.bsto.mapstos.length === 0) {
+                            checkMVT = true;
                         } else {
-                            if (actionValue === 0) {
-                                alertDialogRenderer("Select Success", "success", true);
-                            }
-                            if (actionValue === 1) {
-                                alertDialogRenderer("Success", "success", true);
-                            }
-                            if (actionValue === 2) {
-                                alertDialogRenderer("Remove Pack Success", "success", true);
+                            let qryStr = queryString.parse(res.data.bsto.options);
+                            let OPT_MVT = qryStr[SC.OPT_MVT];
+                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                                checkMVT = true;
                             }
                         }
-                        if (itemCreate !== undefined) {
-                            let qryStr2 = queryString.parse(res.data.bsto.options);
-                            itemCreate.map((x, i) => {
-                                let ele = document.getElementById(x.field);
-                                if (ele) {
-                                    if (x.clearInput) {
-                                    } else {
-                                        if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                                            valueInput[x.field] = qryStr2[x.field];
-                                            ele.value = qryStr2[x.field];
+                        if (checkMVT) {
+                            setResData(res.data);
+
+                            if (res.data.bsto.code === req.scanCode) {
+                                if (actionValue === 0) {
+                                    alertDialogRenderer("Select Pallet Success", "success", true);
+                                }
+                                if (actionValue === 1) {
+                                    alertDialogRenderer("Success", "success", true);
+                                }
+                                if (actionValue === 2) {
+                                    alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
+                                }
+
+                            } else {
+                                if (actionValue === 0) {
+                                    alertDialogRenderer("Select Success", "success", true);
+                                }
+                                if (actionValue === 1) {
+                                    alertDialogRenderer("Success", "success", true);
+                                }
+                                if (actionValue === 2) {
+                                    alertDialogRenderer("Remove Pack Success", "success", true);
+                                }
+                            }
+                            if (itemCreate !== undefined) {
+                                let qryStr2 = queryString.parse(res.data.bsto.options);
+                                itemCreate.map((x, i) => {
+                                    let ele = document.getElementById(x.field);
+                                    if (ele) {
+                                        if (x.clearInput) {
+                                        } else {
+                                            if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                                                valueInput[x.field] = qryStr2[x.field];
+                                                ele.value = qryStr2[x.field];
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                            }
+                        } else {
+                            alertDialogRenderer("Moment Type isn't match.", "error", true);
+                            onHandleClear();
                         }
                     } else {
                         alertDialogRenderer("Remove Pallet Success", "success", true);

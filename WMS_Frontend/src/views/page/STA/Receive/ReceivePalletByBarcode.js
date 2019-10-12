@@ -153,9 +153,11 @@ const ReceivePallet = (props) => {
                             }
                         }
 
-                        if (cartonNo && rootID && skuCode && orderNo && SOU_WAREHOUSE_ID) {
+                        if (cartonNo && rootID && skuCode && orderNo) {
 
-                            qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID] = SOU_WAREHOUSE_ID;
+                            if (reqValue.action != 2 && SOU_WAREHOUSE_ID) {
+                                qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID] = SOU_WAREHOUSE_ID;
+                            }
                             qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
                             let qryStr1 = queryString.stringify(qryStrOpt)
                             let uri_opt = decodeURIComponent(qryStr1);
