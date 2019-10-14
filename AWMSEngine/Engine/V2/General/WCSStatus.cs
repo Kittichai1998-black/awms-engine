@@ -2,14 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace AWMSEngine.Engine.V2.General
 {
-    public class WCSStatus : BaseEngine<string, string>
+    public class WCSStatus : BaseEngine<WCSStatus.TReq, string>
     {
-        protected override string ExecuteEngine(string reqVO)
+        public class TReq
         {
-            return null;
+            public List<MachineDetail> MachineStatus;
+            public class MachineDetail
+            {
+                public string MachineType;
+                public string AreaCode;
+                public string Status;
+                public string Description;
+                public DateTime DateTime;
+                public bool ErrorFlag;
+            }
+        }
+
+        protected override string ExecuteEngine(TReq reqVO)
+        {
+            var res = JsonConvert.SerializeObject(reqVO);
+            return res;
         }
     }
 }

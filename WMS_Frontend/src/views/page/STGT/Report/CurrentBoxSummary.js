@@ -90,7 +90,9 @@ const CurrentBoxSummary = (props) => {
         onGetDocument()
     }, [page])
     const onGetDocument = () => {
-        Axios.get(window.apipath + "/v2/GetSPReportAPI?apikey=FREE01"
+        Axios.get(window.apipath + "/v2/GetSPReportAPI?" +
+            "&getMapSto=true&_token=" +
+            localStorage.getItem("Token")
             + "&forCustomerID=" + (valueText.forCustomerID === undefined || valueText.forCustomerID.value === undefined || valueText.forCustomerID.value === null ? '' : encodeURIComponent(valueText.forCustomerID.value))
             + "&objectSizeID=" + (valueText.objectSizeID === undefined || valueText.objectSizeID.value === undefined || valueText.objectSizeID.value === null ? '' : encodeURIComponent(valueText.objectSizeID.value))
             + "&page=" + (page === undefined || null ? 0 : page)

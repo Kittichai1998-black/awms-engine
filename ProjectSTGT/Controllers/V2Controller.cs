@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ProjectAAI.Controllers
+namespace ProjectSTGT.Controllers
 {
     public class V2Controller : AWMSEngine.Controllers.V2.BaseV2Controller
     {
