@@ -20,7 +20,7 @@ const ScanPalletInfo = (props) => {
     // ]
     const inputItem = [
         // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code" },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true,"clearInput": true  },
     ]
 
     return (
@@ -33,6 +33,8 @@ const ScanPalletInfo = (props) => {
                 setVisibleTabMenu={['Select', null, null]}
                 defaultActionValue={0}
                 showArea={true}
+                autoPost={true}
+                modeSelectOnly={true}
             />
         </div>
     );

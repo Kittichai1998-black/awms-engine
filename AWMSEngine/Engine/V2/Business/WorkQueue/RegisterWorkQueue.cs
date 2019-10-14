@@ -351,7 +351,7 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                         throw new AMWException(Logger, AMWExceptionCode.V2001, "PackMaster ID '" + (long)psto.mstID + "' Not Found");
 
                     var sto_skuType = StaticValue.SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
-
+                    var momenttype = sto_skuType.GroupType + "";
                 }
             }
             else

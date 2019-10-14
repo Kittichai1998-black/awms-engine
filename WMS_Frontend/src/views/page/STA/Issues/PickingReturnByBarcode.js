@@ -54,6 +54,29 @@ const PickingReturnByBarcode = (props) => {
 
         return res;
     }
+    function onOldValue(storageObj) {
+        let oldValue = [];
+        if (storageObj) {
+            let qryStrOpt_root = queryString.parse(storageObj.options);
+            oldValue = [{
+                field: "warehouseID",
+                value: storageObj.warehouseID
+            },
+            {
+                field: "areaID",
+                value: storageObj.areaID
+            },
+            {
+                field: SC.OPT_DONE_DES_EVENT_STATUS,
+                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
+            },{
+                field: SC.OPT_REMARK,
+                value: qryStrOpt_root[SC.OPT_REMARK]
+            }]
+ 
+        }
+        return oldValue;
+    }
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -197,6 +220,7 @@ const PickingReturnByBarcode = (props) => {
                 showOptions={true}
                 autoPost={true}
                 setMovementType={"1091"}
+                showOldValue={onOldValue}
             // useMultiSKU={false}
             />
         </div>

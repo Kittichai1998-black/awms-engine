@@ -217,7 +217,9 @@ const AmMappingPallet = (props) => {
         modeMultiSKU = false,
         confirmReceiveMapSTO = false,
         autoPost = true,
-        setMovementType
+        setMovementType,
+        showOldValue,
+        modeSelectOnly
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -252,7 +254,6 @@ const AmMappingPallet = (props) => {
     const [actionValue, setActionValue] = useState(defaultActionValue);
     const [areaDetail, setAreaDetail] = useState(null);
 
-
     function handleExpandClick() {
         setExpanded(!expanded);
     }
@@ -283,11 +284,12 @@ const AmMappingPallet = (props) => {
         if (sourceCreate)
             setInputSource(createComponent(sourceCreate));
     }, [sourceCreate]);
+
     useEffect(() => {
         if (inputSource === null) {
             setInputSource(createComponent(sourceCreate));
         }
-    }, [inputSource]);
+    }, [inputSource, valueInput]);
     useEffect(() => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
             GetWarehouseDDL();
@@ -348,7 +350,7 @@ const AmMappingPallet = (props) => {
                     ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
+                    defaultValue={valueInput && valueInput[showComponent.field] ? valueInput[showComponent.field] : showComponent.defaultValue ? showComponent.defaultValue : ""}
                     data={Query}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}
@@ -427,7 +429,7 @@ const AmMappingPallet = (props) => {
                             resValuePosts = { ...dataScan }
                         }
                     } else {
-                        inputClear();
+                        inputClearAll();
                     }
                 } else {
                     dataScan = {
@@ -554,20 +556,36 @@ const AmMappingPallet = (props) => {
     }
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
-            inputClear();
+            //inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
                     let checkMVT = false;
-                    
-                    if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                    let qryStr = queryString.parse(res.data.options);
+                    let OPT_MVT = qryStr[SC.OPT_MVT];
+                    if (modeSelectOnly) {
                         checkMVT = true;
-                    }else{
-                        let qryStr = queryString.parse(res.data.options);
-                        let OPT_MVT = qryStr[SC.OPT_MVT];
-                        if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                    } else {
+                        if (res.data.mapstos == null || res.data.mapstos.length === 0) {
                             checkMVT = true;
-                        } 
+                        } else {
+                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                                checkMVT = true;
+                            }
+                        }
                     }
+                    if (showOldValue && checkMVT) {
+                        let getOldValue = showOldValue(res.data);
+                        let val = { ...valueInput };
+                        getOldValue.map((x, i) => {
+                            val[x.field] = x.value;
+                        });
+                        setValueInput(val);
+                    } else {
+                        let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
+                        console.log(val);
+                        setValueInput(val);
+                    }
+                    inputClearAll();
                     if (checkMVT) {
                         if (showArea && res.data.areaID) {
                             GetArea(res.data.areaID);
@@ -613,30 +631,32 @@ const AmMappingPallet = (props) => {
                                 }
                             }
                         }
-                        if (itemCreate !== undefined) {
-                            let qryStr2 = queryString.parse(res.data.options);
-                            itemCreate.map((x, i) => {
-                                let ele = document.getElementById(x.field);
-                                if (ele) {
-                                    if (x.clearInput) {
-                                    } else {
-                                        if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                                            valueInput[x.field] = qryStr2[x.field];
-                                            ele.value = qryStr2[x.field];
-                                        }
-                                    }
-                                }
-                            });
-                        }
+                        // if (itemCreate !== undefined) {
+                        //     let qryStr2 = queryString.parse(res.data.options);
+                        //     itemCreate.map((x, i) => {
+                        //         let ele = document.getElementById(x.field);
+                        //         if (ele) {
+                        //             if (x.clearInput) {
+                        //             } else {
+                        //                 if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                        //                     valueInput[x.field] = qryStr2[x.field];
+                        //                     ele.value = qryStr2[x.field];
+                        //                 }
+                        //             }
+                        //         }
+                        //     });
+                        // }
                     } else {
                         alertDialogRenderer("Moment Type isn't match.", "error", true);
                         onHandleClear();
                     }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
+                    inputClear();
                 }
             } else {
                 alertDialogRenderer(res.data._result.message, "error", true);
+                inputClear();
             }
 
         });
@@ -734,7 +754,6 @@ const AmMappingPallet = (props) => {
         }
     }, [stateDialog, msgDialog, typeDialog]);
     useEffect(() => {
-        // console.log(storageObj)
         if (storageObj) {
             setExpanded(true);
             //<AmListSTORenderer/> หากต้องการเเสดงค่าoption => showOptions={true} 
@@ -779,7 +798,7 @@ const AmMappingPallet = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus, x.maxLength, x.required)}
+                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput)}
                         </div>
                     }
                 }
@@ -788,7 +807,7 @@ const AmMappingPallet = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
@@ -804,7 +823,7 @@ const AmMappingPallet = (props) => {
                             inputProps={maxLength ? {
                                 maxLength: maxLength,
                             } : {}}
-                            defaultValue={defaultValue ? defaultValue : ""}
+                            defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         //onChangeV2={(value, obj, element, event) => onHandleOnChange(value, null, field, null, event)}
@@ -823,7 +842,7 @@ const AmMappingPallet = (props) => {
                             placeholder={placeholder}
                             type="number"
                             style={{ width: "330px" }}
-                            defaultValue={defaultValue ? defaultValue : ""}
+                            defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
@@ -874,13 +893,17 @@ const AmMappingPallet = (props) => {
             </FormInline>
         } else if (type === "radiogroup") {
             if (visible) {
+                let valRad = defaultValue ? Clone(defaultValue) : {};
+                if (valueInput && valueInput[field]) {
+                    valRad.value = valueInput[field].toString()
+                }
                 return <FormInline> <LabelH>{t(name)} : </LabelH>
                     <AmRadioGroup
                         row={true}
                         name={field}
                         dataValue={fieldLabel}
                         returnDefaultValue={true}
-                        defaultValue={defaultValue || ''}
+                        defaultValue={valRad ? valRad : {}}
                         onChange={(value, obj, element, event) =>
                             onHandleChangeRadio(value, field)
                         }
@@ -903,7 +926,7 @@ const AmMappingPallet = (props) => {
             type: storageObj.type
         }
         Axios.post(window.apipath + apiConfirm, reqConfirm).then((res) => {
-            inputClear();
+            inputClearAll();
             if (res.data._result.status !== 0) {
                 if (confirm) {
                     alertDialogRenderer("Receive Pallet Success", "success", true);
@@ -928,9 +951,11 @@ const AmMappingPallet = (props) => {
         setResValuePost(null);
     }
     const inputClearAll = () => {
-        // setReqPost({});
-        onClearInput(headerCreate);
-        onClearInput(itemCreate);
+        setInputHeader(null);
+        setInputItem(null);
+        setInputSource(null);
+        setDDLWarehouse(null);
+        setDDLArea(null);
     }
     const inputClear = () => {
         // setReqPost({});
@@ -1092,6 +1117,8 @@ AmMappingPallet.propTypes = {
     confirmReceiveMapSTO: PropTypes.bool,
     showWarehouseDDL: PropTypes.object,
     showAreaDDL: PropTypes.object,
+    showOldValue: PropTypes.func,
+    modeSelectOnly: PropTypes.bool
 };
 
 AmMappingPallet.defaultProps = {

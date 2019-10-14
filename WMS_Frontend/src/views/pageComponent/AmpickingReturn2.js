@@ -242,7 +242,8 @@ const AmPickingReturn2 = (props) => {
         setVisibleTabMenu,
         useMultiSKU,
         autoPost = true,
-        setMovementType
+        setMovementType,
+        showOldValue
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -303,7 +304,7 @@ const AmPickingReturn2 = (props) => {
             setInputItemFirst(createComponent(FirstScans));
     }, [FirstScans]);
     useEffect(() => {
-        if (setInputItemFirst === null) {
+        if (InputItemFirst === null) {
             setInputItemFirst(createComponent(FirstScans));
         }
     }, [InputItemFirst]);
@@ -385,7 +386,7 @@ const AmPickingReturn2 = (props) => {
                     ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
+                    defaultValue={valueInput && valueInput[showComponent.field] ? valueInput[showComponent.field] : showComponent.defaultValue ? showComponent.defaultValue : ""}
                     data={Query}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}
@@ -465,7 +466,7 @@ const AmPickingReturn2 = (props) => {
                                 resValuePosts = { ...dataScan }
                             }
                         } else {
-                            inputClear();
+                            inputClearAll();
                         }
                     } else {
                         dataScan = {
@@ -584,7 +585,6 @@ const AmPickingReturn2 = (props) => {
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             if (res.data != null) {
-                inputClear();
                 if (res.data._result.message === "Success") {
                     if (res.data.bsto) {
                         let checkMVT = false;
@@ -598,6 +598,17 @@ const AmPickingReturn2 = (props) => {
                                 checkMVT = true;
                             }
                         }
+                        if (showOldValue && checkMVT) {
+                            let getOldValue = showOldValue(res.data.bsto);
+                            let val = { ...valueInput };
+                            getOldValue.map((x, i) => {
+                                val[x.field] = x.value;
+                            });
+                            console.log(val);
+                            setValueInput(val);
+                        }
+                        inputClearAll();
+
                         if (checkMVT) {
 
                             setResData(res.data);
@@ -671,9 +682,11 @@ const AmPickingReturn2 = (props) => {
                     }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
+                    inputClear();
                 }
             } else {
                 alertDialogRenderer(res.data._result.message, "error", true);
+                inputClear();
             }
         });
     }
@@ -820,13 +833,17 @@ const AmPickingReturn2 = (props) => {
             </FormInline>
         } else if (type === "radiogroup") {
             if (visible) {
+                let valRad = defaultValue ? Clone(defaultValue) : {};
+                if (valueInput && valueInput[field]) {
+                    valRad.value = valueInput[field].toString()
+                }
                 return <FormInline> <LabelH>{t(name)} : </LabelH>
                     <AmRadioGroup
                         row={true}
                         name={field}
                         dataValue={fieldLabel}
                         returnDefaultValue={true}
-                        defaultValue={defaultValue || ''}
+                        defaultValue={valRad ? valRad : {}}
                         onChange={(value, obj, element, event) =>
                             onHandleChangeRadio(value, field)
                         }
@@ -852,12 +869,15 @@ const AmPickingReturn2 = (props) => {
         setDDLWarehouse(null);
         setDDLArea(null);
         setResValuePost(null);
+        setInputItemFirst(null);
         setscanFirstbarcode(false)
     }
     const inputClearAll = () => {
-        // setReqPost({});
-        onClearInput(headerCreate);
-        onClearInput(itemCreate);
+        setInputHeader(null);
+        setInputItem(null);
+        setInputItemFirst(null);
+        setDDLWarehouse(null);
+        setDDLArea(null);
     }
     const inputClear = () => {
         // setReqPost({});
@@ -994,6 +1014,7 @@ AmPickingReturn2.propTypes = {
     setVisibleTabMenu: PropTypes.array,
     showWarehouseDDL: PropTypes.object,
     showAreaDDL: PropTypes.object,
+    showOldValue: PropTypes.func
 };
 
 AmPickingReturn2.defaultProps = {

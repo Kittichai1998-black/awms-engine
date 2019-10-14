@@ -22,7 +22,7 @@ const ReceiveEmptyPallet = (props) => {
     // ]
     const inputItem = [
         // { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "defaultValue": 1 },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true, "clearInput": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {    //  "visible": false, 
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -42,7 +42,7 @@ const ReceiveEmptyPallet = (props) => {
                 itemCreate={inputItem} //input scan pallet
                 modeEmptyPallet={true} //mode รับเข้าพาเลทเปล่า
                 setVisibleTabMenu={['Select', 'Add', 'Remove']}
-                autoPost={false}
+                autoPost={true}
             />
         </div>
     );
