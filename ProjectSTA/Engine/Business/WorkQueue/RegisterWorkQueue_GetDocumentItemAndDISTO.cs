@@ -45,7 +45,7 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                 if (skuMaster == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
                 var SKUMasterType = AWMSEngine.ADO.StaticValue.StaticValueManager.GetInstant().SKUMasterTypes.Find(x => x.ID == skuMaster.SKUMasterType_ID);
-                if (SKUMasterType.Code == "EMPTYPALLET")
+                if (SKUMasterType.GroupType == SKUGroupType.EMP)
                 {
                     docItems = this.ProcessReceiving(sto, reqVO, logger, buVO);
 
@@ -54,8 +54,18 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
                 }
             }
-            else if (sto.eventStatus == StorageObjectEventStatus.AUDITED)
+            else if (sto.eventStatus == StorageObjectEventStatus.AUDITING || sto.eventStatus == StorageObjectEventStatus.AUDITED)
             {
+                var packList = sto.ToTreeList().FindAll(x => x.type == StorageObjectType.PACK);
+                var disto = AWMSEngine.ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
+                    new SQLConditionCriteria[] {
+                        new SQLConditionCriteria("Sou_StorageObject_ID", string.Join(",", packList.Select(y=>y.id).ToArray()), SQLOperatorType.IN ),
+                        new SQLConditionCriteria("DocumentType_ID", DocumentTypeID.AUDIT, SQLOperatorType.EQUALS )
+                    }, buVO);
+                if(!disto.TrueForAll(x=> x.Status == EntityStatus.ACTIVE))
+                {
+                    throw new AMWException(logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it isn't to Audit, yet.");
+                }
             }
             else
             {
@@ -154,27 +164,12 @@ namespace ProjectSTA.Engine.Business.WorkQueue
 
                 
                 var empPallet = StaticValue.SKUMasterTypes.Find(x => x.ID == (long)skuMaster.SKUMasterType_ID);
-                if (empPallet.Code != "EMPTYPALLET")
+                if (empPallet.GroupType != SKUGroupType.EMP)
                 {
                     //ไม่ใช่พาเลทเปล่า
                     if (packH.options != null && packH.options.Length > 0)
                     {
-                        //เช็คค่า Sou_Warehouse_ID จาก options
-                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_WAREHOUSE_ID);
-                        if (Sou_Warehouse_ID != null && Sou_Warehouse_ID.Length > 0)
-                        { 
-                            var checkWhID = StaticValue.Warehouses.First(x => x.ID == Convert.ToInt32(Sou_Warehouse_ID));
-                            if (checkWhID == null)
-                                throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse ID '" + Sou_Warehouse_ID + "' Not Found");
-                            doc.Sou_Warehouse_ID = checkWhID.ID.Value;
-
-                            doc.Sou_Branch_ID = StaticValue.Branchs.First(x => x.ID == checkWhID.Branch_ID).ID;
-                            
-                        }
-                        //var mvt = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_MVT);
-
-                        //if (mvtDoc != null)
-                        //{
+                        
                             if (mvtDoc == MovementType.FG_TRANSFER_CUS)
                             {   //customer return
                                 //doc.MovementType_ID = MovementType.FG_TRANSFER_CUS;
@@ -210,7 +205,19 @@ namespace ProjectSTA.Engine.Business.WorkQueue
                             {   //FG_TRANSFER_WM , MovementType.FG_LOAD_RETURN_WMรับเข้าเเบบปกติ
                                 doc.Sou_Warehouse_ID = warehouse.ID.Value;
                                 doc.Sou_Branch_ID = branch.ID.Value;
-                            } 
+                            }
+                        //เช็คค่า Sou_Warehouse_ID จาก options
+                        var Sou_Warehouse_ID = ObjectUtil.QryStrGetValue(packH.options, OptionVOConst.OPT_SOU_WAREHOUSE_ID);
+                        if (Sou_Warehouse_ID != null && Sou_Warehouse_ID.Length > 0)
+                        {
+                            var checkWhID = StaticValue.Warehouses.First(x => x.ID == Convert.ToInt32(Sou_Warehouse_ID));
+                            if (checkWhID == null)
+                                throw new AMWException(logger, AMWExceptionCode.V2001, "Warehouse ID '" + Sou_Warehouse_ID + "' Not Found");
+                            doc.Sou_Warehouse_ID = checkWhID.ID.Value;
+
+                            doc.Sou_Branch_ID = StaticValue.Branchs.First(x => x.ID == checkWhID.Branch_ID).ID;
+
+                        }
                     }
 
                 }

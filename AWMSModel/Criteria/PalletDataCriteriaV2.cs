@@ -9,7 +9,7 @@ namespace AWMSModel.Criteria
         public string souWarehouseCode;
         public string forCustomerCode;
         public string code;
-        public string qty;
+        public decimal? qty;
         public string unit;
         //public string movingType;
         public string prodDate;

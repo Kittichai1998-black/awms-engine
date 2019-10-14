@@ -64,7 +64,7 @@ namespace ProjectSTA.Engine.Business.Received
                     receiveItems = new List<CreateGRDocument.TReq.ReceiveItem>() {
                         new CreateGRDocument.TReq.ReceiveItem
                         {
-                            skuCode = "000000",
+                            skuCode = StaticValue.SKUMasterEmptyPallets.First().Code,
                             quantity = null,
                             unitType = "PL",
                             batch = null,
@@ -160,11 +160,12 @@ namespace ProjectSTA.Engine.Business.Received
                 mode = VirtualMapSTOModeType.REGISTER,
                 action = VirtualMapSTOActionType.ADD
             };
+
             var mapBaseSto = new ScanMapStoNoDoc().Execute(this.Logger, this.BuVO, baseSto); 
             var mapPackSto = new ScanMapStoNoDoc.TReq()
             {
                 rootID = mapBaseSto.id,
-                scanCode = "000000",
+                scanCode = StaticValue.SKUMasterEmptyPallets.First().Code,
                 orderNo = null,
                 batch = null,
                 lot = null,

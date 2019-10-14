@@ -37,7 +37,7 @@ namespace ProjectAAI.ADO.SAPApi
                 public List<OUT_SU_BAL> OUT_SU_BAL;
             }
         }
-        public class SapResponseMulti2
+        public class SapResponseMulti2<T>
         {
             public SAPRes datas;
             public int status;
@@ -46,7 +46,7 @@ namespace ProjectAAI.ADO.SAPApi
 
             public class SAPRes
             {
-                public List<OUT_SU> OUT_SU;
+                public List<T> OUT_SU;
             }
         }
         /*public T postSAP<T>(object datas, VOCriteria buVO, string apiUri)
@@ -55,6 +55,34 @@ namespace ProjectAAI.ADO.SAPApi
             var res = RESTFulAccess.SendJson<T>(buVO.Logger, "SAPCONNECT_LOCATION", RESTFulAccess.HttpMethod.POST, datas);
             return res;
         }*/
+        public SapResponseMulti2<ZSWMRF001_OUT_SU> ZWMRF001V2(string[] reqVO, VOCriteria buVO)
+        {
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
+            var req = new SAPReqMulti()
+            {
+                environmentName = getEnvironment,
+                functionName = "ZWMRF001",
+                outTableNames = "OUT_SU",
+                sapLists = new List<SAPReqMulti.SAPList>()
+            };
+            req.sapLists.AddRange(reqVO.Select(x =>
+            {
+                return new SAPReqMulti.SAPList()
+                {
+                    inStructureName = "ZSWMRF001_IN_SU",
+                    inTableName = "IN_SU",
+                    datas = new ZSWMRF001_IN_SU()
+                    {
+                        LGNUM = "W01",
+                        LENUM = x,
+                    }
+                };
+            }).ToList());
+
+            var res = this.SendJson<SapResponseMulti2<ZSWMRF001_OUT_SU>>("SAPCONNECT_LOCATIONV2", req, buVO);
+            return res;
+        }
 
         public SapResponse<ZSWMRF001_OUT_SU> ZWMRF001(string reqVO, VOCriteria buVO)
         {
@@ -137,7 +165,7 @@ namespace ProjectAAI.ADO.SAPApi
             var res = this.SendJson<SapResponse<ZSWMRF003_OUT_REQ>>("SAPCONNECT_LOCATION", req, buVO);
             return res;
         }
-        public SapResponseMulti2 ZWMRF002(string reqVO, VOCriteria buVO)
+        public SapResponseMulti2<OUT_SU> ZWMRF002(string reqVO, VOCriteria buVO)
         {
             //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
             var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
@@ -169,7 +197,7 @@ namespace ProjectAAI.ADO.SAPApi
                 }
             };
 
-            var res = this.SendJson<SapResponseMulti2>("SAPCONNECT_LOCATIONV2", req, buVO);
+            var res = this.SendJson<SapResponseMulti2<OUT_SU>>("SAPCONNECT_LOCATIONV2", req, buVO);
             return res;
         }
 
@@ -275,6 +303,35 @@ namespace ProjectAAI.ADO.SAPApi
             };
 
             var res = this.SendJson<SapResponseMulti>("SAPCONNECT_LOCATIONV2", req, buVO);
+            return res;
+        }
+        public SapResponseMulti2<ZSWMRF007_OUT_SAP> ZWMRF007(List<ZSWMRF007_IN_REQ> reqVO, VOCriteria buVO)
+        {
+            //var getURL = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAPCONNECT_LOCATION").DataValue;
+            var getEnvironment = StaticValueManager.GetInstant().Configs.FirstOrDefault(x => x.Code == "SAP_ENVIRONMENT").DataValue;
+            var req = new SAPReqMulti()
+            {
+                environmentName = getEnvironment,
+                functionName = "ZWMRF007",
+                outTableNames = "OUT_SAP",
+                sapLists = new List<SAPReqMulti.SAPList>()
+            };
+            req.sapLists.AddRange(reqVO.Select(x =>
+            {
+                return new SAPReqMulti.SAPList()
+                {
+                    inStructureName = "ZSWMRF001_IN_SU",
+                    inTableName = "IN_SU",
+                    datas = new ZSWMRF007_IN_REQ()
+                    {
+                        LGNUM = "W01",
+                        CHARG = x.CHARG,
+                        MATNR = x.MATNR
+                    }
+                };
+            }).ToList());
+
+            var res = this.SendJson<SapResponseMulti2<ZSWMRF007_OUT_SAP>>("SAPCONNECT_LOCATIONV2", req, buVO);
             return res;
         }
     }

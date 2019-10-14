@@ -44,7 +44,7 @@ const CustomerReturnPallet = (props) => {
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true, "clearInput": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -75,7 +75,49 @@ const CustomerReturnPallet = (props) => {
 
         return res;
     }
+    function onOldValue(storageObj) {
+        let oldValue = [];
+        if (storageObj) {
+            let qryStrOpt_root = queryString.parse(storageObj.options);
+            oldValue = [{
+                field: "warehouseID",
+                value: storageObj.warehouseID
+            },
+            {
+                field: "areaID",
+                value: storageObj.areaID
+            },
+            {
+                field: SC.OPT_DONE_DES_EVENT_STATUS,
+                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
+            }, {
+                field: SC.OPT_REMARK,
+                value: qryStrOpt_root[SC.OPT_REMARK]
+            }]
 
+            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                let dataMapstos = storageObj.mapstos[0];
+                let qryStrOpt = queryString.parse(dataMapstos.options);
+
+                oldValue.push({
+                    field: SC.OPT_SOU_CUSTOMER_ID,
+                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                }, {
+                    field: "orderNo",
+                    value: dataMapstos.orderNo
+                }, {
+                    field: "scanCode",
+                    value: dataMapstos.code
+                });
+            } else {
+                oldValue.push({
+                    field: "scanCode",
+                    value: ""
+                });
+            }
+        }
+        return oldValue;
+    }
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -88,23 +130,16 @@ const CustomerReturnPallet = (props) => {
             let qryStrOpt = {};
 
             let cartonNoList = [];
-            let newQty = null;
+            let newQty = 0;
             if (storageObj) {
                 if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                     SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
                 } else {
-                    alertDialogRenderer("Please select source customer before.", "error", true);
-                }
-                if (reqValue['orderNo']) {
-                    if (reqValue['orderNo'].trim().length === 7) {
-                        orderNo = reqValue['orderNo'].trim();
-                    } else {
-                        if (curInput === 'orderNo') {
-                            orderNo = null;
-                            alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
-                        }
+                    if (reqValue.action != 2) {
+                        alertDialogRenderer("Please select source customer before.", "error", true);
                     }
                 }
+
                 if (reqValue['scanCode']) {
                     if (reqValue['scanCode'].trim().length !== 0) {
                         skuCode = reqValue['scanCode'].trim();
@@ -114,16 +149,59 @@ const CustomerReturnPallet = (props) => {
                             alertDialogRenderer("Reorder No. must be value.", "error", true);
                         }
                     }
-                }
-                if (reqValue['cartonNo']) {
-                    let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
-                    cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    if (reqValue['orderNo']) {
+                        if (reqValue['orderNo'].trim().length === 7) {
+                            orderNo = reqValue['orderNo'].trim();
+                        } else {
+                            if (curInput === 'orderNo') {
+                                orderNo = null;
+                                if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
+                                    console.log("scan pallet")
+                                } else {
+                                    alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
+
+                                }
+                            }
+                        }
+                    }
+
+                    if (reqValue['cartonNo']) {
+                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    } else {
+                        if (curInput === 'cartonNo') {
+                            cartonNo = null;
+                            if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
+                                console.log("scan pallet")
+                            } else {
+                                alertDialogRenderer("Carton No. must be value.", "error", true);
+                            }
+                        }
+                    }
                 } else {
-                    if (curInput === 'cartonNo') {
-                        cartonNo = null;
-                        alertDialogRenderer("Carton No. must be value.", "error", true);
+                    if (reqValue['orderNo']) {
+                        if (reqValue['orderNo'].trim().length === 7) {
+                            orderNo = reqValue['orderNo'].trim();
+                        } else {
+                            if (curInput === 'orderNo') {
+                                orderNo = null;
+                                alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
+
+                            }
+                        }
+                    }
+
+                    if (reqValue['cartonNo']) {
+                        let resCartonNo = ConvertRangeNumToString(reqValue['cartonNo']);
+                        cartonNoList = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
+                    } else {
+                        if (curInput === 'cartonNo') {
+                            cartonNo = null;
+                            alertDialogRenderer("Carton No. must be value.", "error", true);
+                        }
                     }
                 }
+
 
                 if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                     let dataMapstos = storageObj.mapstos[0];
@@ -167,8 +245,9 @@ const CustomerReturnPallet = (props) => {
                                 if (numCarton === lenDiffCarton) {
                                     if (noHasCartonList.length > 0) {
                                         let noHascarNoMatch = noHasCartonList.length === 1 ? noHasCartonList.join() : ConvertStringToRangeNum(noHasCartonList.join());
-                                        alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
-
+                                        if (noHascarNoMatch.length > 0) {
+                                            alertDialogRenderer("This Carton No. " + noHascarNoMatch + " doesn't exist in pallet.", "error", true);
+                                        }
                                         cartonNo = null;
                                     } else {
                                         lenNewCarton = delCartonList.length;
@@ -190,7 +269,9 @@ const CustomerReturnPallet = (props) => {
 
                         } else {
                             let carNoMatch = cartonNoList.length === 1 ? cartonNoList.join() : ConvertStringToRangeNum(cartonNoList.join());
-                            alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
+                            if (carNoMatch.length > 0) {
+                                alertDialogRenderer("This Carton No. " + carNoMatch + " doesn't exist in pallet.", "error", true);
+                            }
                             cartonNo = null;
                             let eleCartonNo = document.getElementById('cartonNo');
                             if (eleCartonNo) {
@@ -237,9 +318,11 @@ const CustomerReturnPallet = (props) => {
                     }
                 }
 
-                if (cartonNo && rootID && skuCode && orderNo && SOU_CUSTOMER_ID) {
+                if (cartonNo && rootID && skuCode && orderNo) {
+                    if (reqValue.action != 2 && SOU_CUSTOMER_ID) {
+                        qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
+                    }
 
-                    qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
                     qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
                     // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                     let qryStr1 = queryString.stringify(qryStrOpt)
@@ -249,23 +332,36 @@ const CustomerReturnPallet = (props) => {
                         allowSubmit: true,
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : uri_opt
+                        options: cartonNo === "0" ? null : uri_opt,
+                        validateSKUTypeCodes: ["FG"]
                     };
+                    resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
-                        dataScan = {
-                            allowSubmit: false
-                        };
+                        if (reqValue.action === 2) {
+                            if (storageObj.code === reqValue.scanCode) {
+                                resValuePost = { ...reqValue, allowSubmit: true }
+                            } else {
+                                resValuePost = { ...reqValue, allowSubmit: false }
+                            }
+                        } else {
+                            resValuePost = { ...reqValue, allowSubmit: false }
+                        }
                     }
                 }
             } else {
-                dataScan = {
-                    allowSubmit: false
-                };
+                if (reqValue.action === 2) {
+                    if (storageObj.code === reqValue.scanCode) {
+                        resValuePost = { ...reqValue, allowSubmit: true }
+                    } else {
+                        resValuePost = { ...reqValue, allowSubmit: false }
+                    }
+                } else {
+                    resValuePost = { ...reqValue, allowSubmit: false }
+                }
             }
-            resValuePost = { ...reqValue, ...dataScan }
         }
         return resValuePost;
     }
@@ -299,6 +395,7 @@ const CustomerReturnPallet = (props) => {
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 setMovementType={"1012"}
                 autoPost={false}
+                showOldValue={onOldValue}
             />
         </div>
     );

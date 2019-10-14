@@ -103,7 +103,7 @@ namespace ProjectAAI.Engine.Business.WorkQueue
                 if (skuMaster == null)
                     throw new AMWException(logger, AMWExceptionCode.V2001, "SKU ID '" + (long)sto.skuID + "' Not Found");
                 var SKUMasterType = staticValue.SKUMasterTypes.Find(x => x.ID == (long)skuMaster.SKUMasterType_ID);
-                if (SKUMasterType.Code == "EMPTYPALLET")
+                if (SKUMasterType.GroupType == SKUGroupType.EMP)
                 {
                     doc.MovementType_ID = MovementType.EPL_TRANSFER_WM;
                 }

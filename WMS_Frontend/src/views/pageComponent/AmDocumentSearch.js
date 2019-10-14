@@ -206,6 +206,7 @@ const AmDocumentSearch = props => {
 
   useEffect(() => {
     if (typeof page === "number") {
+      onHandleFilterConfirm();
       const queryEdit = JSON.parse(JSON.stringify(query));
       queryEdit.sk = page === 0 ? 0 : page * parseInt(queryEdit.l, 10);
       getData(queryEdit);
@@ -220,7 +221,7 @@ const AmDocumentSearch = props => {
     }
   }, [sort]);
 
-  const onHandleFilterConfirm = (status, obj) => {
+  const onHandleFilterConfirm = () => {
     let filterDatas = [...filterData];
     if (datetime) {
       if (datetime["dateFrom"]) {
@@ -239,8 +240,6 @@ const AmDocumentSearch = props => {
       }
     }
     query.q = JSON.stringify(filterDatas);
-    getData(query);
-
     //setFilterData([{ "f": "DocumentType_ID", "c":"=", "v": props.docTypeCode}])
   };
 
@@ -682,7 +681,7 @@ const AmDocumentSearch = props => {
         }}
         primarySearch={createComponent(props.primarySearch)}
         extensionSearch={createComponent(props.expensionSearch)}
-        onAccept={(status, obj) => onHandleFilterConfirm(true)}
+        onAccept={(status, obj) => {onHandleFilterConfirm(true); getData(query);}}
       />
       <br />
       <br />

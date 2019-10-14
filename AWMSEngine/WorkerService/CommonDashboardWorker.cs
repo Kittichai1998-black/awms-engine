@@ -13,11 +13,12 @@ namespace AWMSEngine.WorkerService
 {
     public class CommonDashboardWorker : BackgroundService
     {
-        private const string CF_KEY_INDEX = "COMMON_DASHBOARD_INDEX";
+        private const string CF_KEY_KEYS = "COMMON_DASHBOARD_KEYS";
         private const string CF_KEY_DELAY = "COMMON_DASHBOARD_DELAY";
         private const string CF_KEY_SPNAME = "COMMON_DASHBOARD_SPNAME_{0}";
         private const string CF_KEY_PARAM = "COMMON_DASHBOARD_PARAM_{0}";
         private const string CF_KEY_HUBNAME = "COMMON_DASHBOARD_HUBNAME_{0}";
+        private const string CF_KEY_DELAY2 = "COMMON_DASHBOARD_DELAY_{0}";
 
         private readonly ILogger<CommonDashboardWorker> logger;
         private readonly IHubContext<CommonMessageHub> commonMsgHub;
@@ -30,31 +31,42 @@ namespace AWMSEngine.WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            int idx = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_INDEX).GetTry<int>() ?? 0;
+            string[] keys = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_KEYS).Split(',');
             int delay = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(CF_KEY_DELAY).GetTry<int>() ?? 0;
 
-            while (!stoppingToken.IsCancellationRequested)
+            if (!stoppingToken.IsCancellationRequested)
             {
-                for (int i = 1; i <= idx; i++)
+                foreach(string key in keys)
                 {
-                    try
+                    if (string.IsNullOrWhiteSpace(key)) continue;
+                    var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_SPNAME, key));
+                    var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, key));
+                    var hubname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_HUBNAME, key));
+                    int? deley2 = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_DELAY2, key)).GetTry<int>();
+                    var task = Task.Run(() =>
                     {
-                        var spname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_SPNAME, i));
-                        var param = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_PARAM, i));
-                        var hubname = ADO.StaticValue.StaticValueManager.GetInstant().GetConfigValue(string.Format(CF_KEY_HUBNAME, i));
-                        Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
-                        AMWUtil.Common.ObjectUtil.QryStrToDictionary(param).ToList().ForEach(x =>
+                        while (true)
                         {
-                            parameter.Add(x.Key, x.Value);
-                        });
-                        var res = ADO.DataADO.GetInstant().QuerySP(spname, parameter, null);
-                        await commonMsgHub.Clients.All.SendAsync(hubname, res.Json());
-                    }
-                    catch (Exception e)
-                    {
-                    }
-                }
-                await Task.Delay(delay);
+                            try
+                            {
+                                Dapper.DynamicParameters parameter = new Dapper.DynamicParameters();
+                                AMWUtil.Common.ObjectUtil.QryStrToDictionary(param).ToList().ForEach(x =>
+                                {
+                                    parameter.Add(x.Key, x.Value);
+                                });
+                                var res = ADO.DataADO.GetInstant().QuerySP(spname, parameter, null);
+                                commonMsgHub.Clients.All.SendAsync(hubname, res.Json());
+                            }
+                            catch
+                            {
+                            }
+                            finally
+                            {
+                                Thread.Sleep(deley2 ?? delay);
+                            }
+                        }
+                    });
+                };
             }
             
         }

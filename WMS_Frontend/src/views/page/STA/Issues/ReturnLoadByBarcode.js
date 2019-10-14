@@ -226,7 +226,8 @@ const ReceivePallet = (props) => {
                     dataScan = {
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : uri_opt
+                        options: cartonNo === "0" ? null : uri_opt,
+                        validateSKUTypeCodes: ["FG"]
                     };
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
@@ -268,7 +269,7 @@ const ReceivePallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                autoPost={false}
+                autoPost={true}
                 setMovementType={"1111"}
             />
         </div>

@@ -217,7 +217,8 @@ const AmMappingPallet2 = (props) => {
         modeMultiSKU = false,
         confirmReceiveMapSTO = false,
         autoPost = true,
-        setMovementType
+        setMovementType,
+        showOldValue
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -256,7 +257,9 @@ const AmMappingPallet2 = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
+
     useEffect(() => {
+        console.log(valueInput)
         if (keyEnter)
             onHandleBeforePost();
     }, [valueInput, keyEnter]);
@@ -285,7 +288,7 @@ const AmMappingPallet2 = (props) => {
         }
     }, [inputItem]);
     useEffect(() => {
-        if (setInputItemFirst === null) {
+        if (InputItemFirst === null) {
             setInputItemFirst(createComponent(FirstScans));
         }
     }, [InputItemFirst]);
@@ -358,7 +361,7 @@ const AmMappingPallet2 = (props) => {
                     ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
+                    defaultValue={valueInput && valueInput[showComponent.field] ? valueInput[showComponent.field] : showComponent.defaultValue ? showComponent.defaultValue : ""}
                     data={Query}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}
@@ -414,7 +417,7 @@ const AmMappingPallet2 = (props) => {
                 var dataRootFocus = findRootMapping(storageObj);
                 rootFocusID = dataRootFocus.id;
                 rootBaseCode = dataRootFocus.code;
-                
+
                 //onBeforePost custom function
                 if (onBeforePost) {
                     var resInput = {
@@ -431,7 +434,7 @@ const AmMappingPallet2 = (props) => {
                             resValuePosts = { ...dataScan }
                         }
                     } else {
-                        inputClear();
+                        inputClearAll();
                     }
                 } else {
                     dataScan = {
@@ -478,11 +481,12 @@ const AmMappingPallet2 = (props) => {
                 alertDialogRenderer("Please fill your information completely.", "error", true);
             }
         }
+        setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
         setKeyEnter(true);
         setPreAutoPost(true);
-        setscanFirstbarcode(true)
+        // setscanFirstbarcode(true)
     }
 
     const onSubmitToAPI = (resValuePosts) => {
@@ -556,88 +560,114 @@ const AmMappingPallet2 = (props) => {
     }
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
-            inputClear();
+            // inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
-
-                    if (showArea && res.data.areaID) {
-                        GetArea(res.data.areaID);
+                    let checkMVT = false;
+                    
+                    if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                        checkMVT = true;
+                    }else{
+                        let qryStr = queryString.parse(res.data.options);
+                        let OPT_MVT = qryStr[SC.OPT_MVT];
+                        if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                            checkMVT = true;
+                        } 
                     }
-                    if (res.data.code === req.scanCode) {
-                        if (actionValue === 0) {
-                            alertDialogRenderer("Select Pallet Success", "success", true);
-                        }
-                        if (actionValue === 1) {
-                            alertDialogRenderer("Success", "success", true);
-                        }
-                        if (actionValue === 2) {
-                            alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
-                        }
-                        setStorageObj(res.data);
-
-                    } else {
-                        if (actionValue === 0) {
-                            setStorageObj(res.data);
-                            alertDialogRenderer("Select Success", "success", true);
-                        }
-                        if (actionValue === 1) {
-                            setStorageObj(res.data);
-                            alertDialogRenderer("Success", "success", true);
-                        }
-                        if (actionValue === 2) {
-                            if (res.data.mapstos) {
-                                setStorageObj(res.data);
-                                alertDialogRenderer("Remove Pack Success", "success", true);
-
-                            } else {
-                                alertDialogRenderer("Remove Pallet Success", "success", true);
-                                onHandleClear();
-                            }
-                        }
-                    }
-                    if (itemCreate !== undefined) {
-                        let qryStr2 = queryString.parse(res.data.options);
-                        itemCreate.map((x, i) => {
-                            let ele = document.getElementById(x.field);
-                            if (ele) {
-                                if (x.clearInput) {
-                                } else {
-                                    if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                                        valueInput[x.field] = qryStr2[x.field];
-                                        ele.value = qryStr2[x.field];
-                                    }
-                                }
-                            }
+                    if (showOldValue && checkMVT) {
+                        let getOldValue = showOldValue(res.data);
+                        let val = { ...valueInput };
+                        getOldValue.map((x, i) => {
+                            val[x.field] = x.value;
                         });
-                        if (res.data.mapstos.length > 0) {
-                           let mapsto =  res.data.mapstos[0];
-                            itemCreate.map((x, i) => {
-                                let ele = document.getElementById(x.field);
-                                if (ele) {
-                                    if (x.clearInput) {
-                                    } else {
-                                        if(x.field === 'scanCode'){
-                                            if (mapsto.code !== null && mapsto.code !== undefined) {
-                                                valueInput[x.field] = mapsto.code;
-                                                ele.value = mapsto.code;
-                                            }
-                                        }else{
-                                            if (mapsto[x.field] !== null && mapsto[x.field] !== undefined) {
-                                                valueInput[x.field] = mapsto[x.field];
-                                                ele.value = mapsto[x.field];
-                                            }
-                                        }
-                                    }
-                                }
-                            });
+                        console.log(val);
+                        setValueInput(val);
+                    }
+                    inputClearAll();
+                    if (checkMVT) {
+                        if (showArea && res.data.areaID) {
+                            GetArea(res.data.areaID);
                         }
-                        // console.log(valueInput);
+                        if (res.data.code === req.scanCode) {
+                            if (actionValue === 0) {
+                                alertDialogRenderer("Select Pallet Success", "success", true);
+                            }
+                            if (actionValue === 1) {
+                                alertDialogRenderer("Success", "success", true);
+                            }
+                            if (actionValue === 2) {
+                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
+                            }
+                            setStorageObj(res.data);
+
+                        } else {
+                            if (actionValue === 0) {
+                                setStorageObj(res.data);
+                                alertDialogRenderer("Select Success", "success", true);
+                            }
+                            if (actionValue === 1) {
+                                setStorageObj(res.data);
+                                alertDialogRenderer("Success", "success", true);
+                            }
+                            if (actionValue === 2) {
+                                if (res.data.mapstos) {
+                                    setStorageObj(res.data);
+                                    alertDialogRenderer("Remove Pack Success", "success", true);
+
+                                } else {
+                                    alertDialogRenderer("Remove Pallet Success", "success", true);
+                                    onHandleClear();
+                                }
+                            }
+                        }
+                        // if (itemCreate !== undefined) {
+                        //     let qryStr2 = queryString.parse(res.data.options);
+                        //     itemCreate.map((x, i) => {
+                        //         let ele = document.getElementById(x.field);
+                        //         if (ele) {
+                        //             if (x.clearInput) {
+                        //             } else {
+                        //                 if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                        //                     valueInput[x.field] = qryStr2[x.field];
+                        //                     ele.value = qryStr2[x.field];
+                        //                 }
+                        //             }
+                        //         }
+                        //     });
+                        //     if (res.data.mapstos != null && res.data.mapstos.length > 0) {
+                        //         let mapsto = res.data.mapstos[0];
+                        //         itemCreate.map((x, i) => {
+                        //             let ele = document.getElementById(x.field);
+                        //             if (ele) {
+                        //                 if (x.clearInput) {
+                        //                 } else {
+                        //                     if (x.field === 'scanCode') {
+                        //                         if (mapsto.code !== null && mapsto.code !== undefined) {
+                        //                             valueInput[x.field] = mapsto.code;
+                        //                             ele.value = mapsto.code;
+                        //                         }
+                        //                     } else {
+                        //                         if (mapsto[x.field] !== null && mapsto[x.field] !== undefined) {
+                        //                             valueInput[x.field] = mapsto[x.field];
+                        //                             ele.value = mapsto[x.field];
+                        //                         }
+                        //                     }
+                        //                 }
+                        //             }
+                        //         });
+                        //     }
+                        // }
+                    } else {
+                        alertDialogRenderer("Moment Type isn't match.", "error", true);
+                        onHandleClear();
                     }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
+                    inputClear();
                 }
             } else {
                 alertDialogRenderer(res.data._result.message, "error", true);
+                inputClear();
             }
 
         });
@@ -658,7 +688,7 @@ const AmMappingPallet2 = (props) => {
         if (actionValue === 0) {
             //select sto  pallet  sku empty pallet
             Axios.post(window.apipath + apiCreate, req).then((res) => {
-                inputClear();
+                inputClearAll();
                 if (res.data != null) {
                     if (res.data._result.message === "Success") {
                         setStorageObj(res.data);
@@ -673,7 +703,7 @@ const AmMappingPallet2 = (props) => {
 
         } else if (actionValue === 1) {
             Axios.post(window.apipath + apiCreate, req).then((res) => {
-                inputClear();
+                inputClearAll();
                 if (res.data != null) {
                     if (res.data.id) {
                         if (res.data.mapstos !== null && res.data.mapstos.length > 0) {
@@ -701,7 +731,7 @@ const AmMappingPallet2 = (props) => {
         } else if (actionValue === 2) {
 
             Axios.post(window.apipath + apiCreate, req).then((res) => {
-                inputClear();
+                inputClearAll();
                 if (res.data != null) {
                     if (res.data._result.message === "Success") {
                         if (res.data.id) {
@@ -737,6 +767,7 @@ const AmMappingPallet2 = (props) => {
         // console.log(storageObj)
         if (storageObj) {
             setExpanded(true);
+            setscanFirstbarcode(true);
             //<AmListSTORenderer/> �ҡ��ͧ�����ʴ����option => showOptions={true} 
             // �ѧ���蹹����Ѻ��Ѵ��â������ͧ => customOptions={customOptions}  storageObj.areaID
             if (showArea) {
@@ -779,7 +810,7 @@ const AmMappingPallet2 = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus, x.maxLength, x.required)}
+                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput)}
                         </div>
                     }
                 }
@@ -788,7 +819,7 @@ const AmMappingPallet2 = (props) => {
 
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{t(name)} : </LabelH>
@@ -804,7 +835,7 @@ const AmMappingPallet2 = (props) => {
                             inputProps={maxLength ? {
                                 maxLength: maxLength,
                             } : {}}
-                            defaultValue={defaultValue ? defaultValue : ""}
+                            defaultValue={valueInput && valueInput[field] ? clearInput ? "vvv" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
 
@@ -823,7 +854,7 @@ const AmMappingPallet2 = (props) => {
                             placeholder={placeholder}
                             type="number"
                             style={{ width: "330px" }}
-                            defaultValue={defaultValue ? defaultValue : ""}
+                            defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}                            
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         /></div>
                 </FormInline>
@@ -842,7 +873,7 @@ const AmMappingPallet2 = (props) => {
                     ddlMinWidth={335}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={defaultValue ? defaultValue : ""}
+                    defaultValue={valueInput && valueInput[field] != undefined ? valueInput[field] : defaultValue ? defaultValue : ""}
                     queryApi={dataDropDown}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
                     ddlType={typeDropdown}
@@ -873,13 +904,17 @@ const AmMappingPallet2 = (props) => {
             </FormInline>
         } else if (type === "radiogroup") {
             if (visible) {
+                let valRad = defaultValue ? Clone(defaultValue) : {};
+                if (valueInput && valueInput[field]) {
+                    valRad.value = valueInput[field].toString()
+                }
                 return <FormInline> <LabelH>{t(name)} : </LabelH>
                     <AmRadioGroup
                         row={true}
                         name={field}
                         dataValue={fieldLabel}
                         returnDefaultValue={true}
-                        defaultValue={defaultValue || ''}
+                        defaultValue={valRad ? valRad : {}}
                         onChange={(value, obj, element, event) =>
                             onHandleChangeRadio(value, field)
                         }
@@ -903,7 +938,7 @@ const AmMappingPallet2 = (props) => {
             type: storageObj.type
         }
         Axios.post(window.apipath + apiConfirm, reqConfirm).then((res) => {
-            inputClear();
+            inputClearAll();
             if (res.data._result.status !== 0) {
                 if (confirm) {
                     alertDialogRenderer("Receive Pallet Success", "success", true);
@@ -927,12 +962,16 @@ const AmMappingPallet2 = (props) => {
         setDDLWarehouse(null);
         setDDLArea(null);
         setResValuePost(null);
+        setInputItemFirst(null);
         setscanFirstbarcode(false)
     }
     const inputClearAll = () => {
-        // setReqPost({});
-        onClearInput(headerCreate);
-        onClearInput(itemCreate);
+        setInputHeader(null);
+        setInputItem(null);
+        setInputSource(null);
+        setInputItemFirst(null);
+        setDDLWarehouse(null);
+        setDDLArea(null);
     }
     const inputClear = () => {
         // setReqPost({});
@@ -998,7 +1037,7 @@ const AmMappingPallet2 = (props) => {
             </Paper>
             <Paper square className={classnames(classes.paper2, classes['paperBG_' + actionValue])}>
                 <Card className={classes.card}>
-                    {inputSource && inputSource.length > 0 ?
+                    {inputSource && inputSource.length > 0 && actionValue != 2 ?
                         <>
                             <CardContent className={classes.cardContent}>
 
@@ -1098,6 +1137,7 @@ AmMappingPallet2.propTypes = {
     confirmReceiveMapSTO: PropTypes.bool,
     showWarehouseDDL: PropTypes.object,
     showAreaDDL: PropTypes.object,
+    showOldValue: PropTypes.func
 };
 
 AmMappingPallet2.defaultProps = {
