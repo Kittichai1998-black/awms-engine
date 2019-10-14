@@ -102,7 +102,7 @@ const useAreaID = (areaID) => {
 }
 
 const useWCSStatus = () => {
-    const [data, setData] = useState(null);
+    const [data, setData] = useState([]);
     let url = window.apipath + '/dashboard'
     let connection = new signalR.HubConnectionBuilder()
         .withUrl(url, {
@@ -116,7 +116,6 @@ const useWCSStatus = () => {
         connection.start()
             .then(() => {
                 connection.on("alert" , res => {
-                    console.log(res)
                     setData(JSON.parse(res))
                 })
             })
@@ -337,6 +336,7 @@ const Scanbarcode = (props) => {
 
     const onHandleChangeDDL = (value, dataObject, inputID, fieldDataKey) => {
         localStorage.setItem("areaIDs", value);
+        localStorage.setItem("areaCode", dataObject.Code);
         let Area = value
         var databars = { ...databar }
         databars.areaID = Area
@@ -708,12 +708,25 @@ const Scanbarcode = (props) => {
         </CardContent>
     }
 
+    const WCSStatusText = () => {
+        let res = wcsAlert.find(x=> x.AreaCode === localStorage.getItem("areaCode"))
+        if(res !== null && res !== undefined){
+            if(res.ErrorFlag === true)
+                return res.Status + ' : ' + res.Description;
+            else
+                return null;
+        }
+        else
+            return null;
+    }
+
     return (
         <Fullscreen
             enabled={isFullScreen}
             onChange={isFull => setIsFullScreen(isFull)}
         >
             <div style={isFullScreen ? { backgroundColor: '#e4e7ea', height: width_height.height, width: width_height.width, padding: '1em 1.8em 1.8em 2em' } : {}} className="fullscreen">
+                
                 <div className={classes.root}>
                     <Grid
                         container
@@ -754,12 +767,18 @@ const Scanbarcode = (props) => {
                         </Grid>
                     </Grid>
                 </div>
+                
+                <div style={{backgroundColor:"Red",fontSize:"3em", width:"100%", textAlign:"center"}}>
+                    {
+                        WCSStatusText()
+                    }
+                </div>
                 <AmDialogs typePopup={"error"} content={msgDialog} onAccept={(e) => { setStateDialog(e) }} open={stateDialog}></AmDialogs >
                 <AmDialogs typePopup={"success"} content={msgDialogSuc} onAccept={(e) => { setStateDialogSuc(e) }} open={stateDialogSuc}></AmDialogs >
                 <div>
                     <Grid container spacing={24}>
                         <Grid item xs={12} style={{ paddingLeft: "350px", paddingTop: "10px" }}>
-                            <div style={{ paddingTop: "30px" }}>
+                            <div style={{ paddingTop: "15px" }}>
                                 <FormInline>
                                     <Typography variant="h4" component="h3">QR Code : </Typography>
                                     <AmInput style={{ width: "300px" }}

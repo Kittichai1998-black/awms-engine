@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using AWMSEngine.HubService;
 using AWMSEngine.Controllers.V2;
+using AWMSEngine.Engine.V2.General;
 
 namespace ProjectSTA.APIService.ASRS
 {
@@ -18,9 +19,10 @@ namespace ProjectSTA.APIService.ASRS
 
         protected override dynamic ExecuteEngineManual()
         {
-            
+            WCSStatus.TReq req = AMWUtil.Common.ObjectUtil.DynamicToModel<WCSStatus.TReq>(this.RequestVO);
+            var res = new WCSStatus().Execute(this.Logger, this.BuVO, req);
             var hub = (BaseV2Controller)this.ControllerAPI;
-            hub.HubService.Clients.All.SendAsync("alert", "test=xyz");
+            hub.HubService.Clients.All.SendAsync("alert", res);
             //var hub2 = this.BuVO.Hub;
             //hub2.Clients.All.SendAsync("alert", "test=xyz");
             return null;
