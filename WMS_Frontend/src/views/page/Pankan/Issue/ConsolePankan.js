@@ -170,10 +170,8 @@ const ConsolePankan = (props) => {
     }, [customerIds])
 
     useEffect(() => {
-        setdatasSourse([])
-        setreload({})
-
-    }, [issueDoc])
+        setdatasSourse([]);
+    }, [valuesGuide])
 
 
     const onHandleDDLChangeCus = (value, dataObject, inputID, fieldDataKey) => {
@@ -200,6 +198,7 @@ const ConsolePankan = (props) => {
         } else {
 
             if (value !== null || value != undefined) {
+                setdocIds(value)
                 setremark(dataObject.Remark)
                 setvaluesGuide(true)
                 GetDocument(value)

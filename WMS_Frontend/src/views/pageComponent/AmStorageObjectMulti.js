@@ -835,7 +835,7 @@ const AmStorageObjectMulti = props => {
               {props.modifyhold === true ? (
                 <AmButton
                   style={{ marginRight: "5px" }}
-                  styleType="default"
+                  styleType="confirm"
                   onClick={() => {
                     onClickHold(99);
                     setName("Remark HOLD");
@@ -847,7 +847,7 @@ const AmStorageObjectMulti = props => {
               {props.modifyreceived === true ? (
                 <AmButton
                   style={{ marginRight: "5px" }}
-                  styleType="default"
+                  styleType="confirm"
                   onClick={() => {
                     onClickHold(12);
                     setName("Remark RECEIVED");
@@ -859,7 +859,7 @@ const AmStorageObjectMulti = props => {
               {props.modifyQC === true ? (
                 <AmButton
                   style={{ marginRight: "5px" }}
-                  styleType="default"
+                  styleType="confirm"
                   onClick={() => {
                     onClickHold(98);
                     setName("Remark QC");
@@ -868,10 +868,33 @@ const AmStorageObjectMulti = props => {
                   QC
                 </AmButton>
               ) : null}
-
+              {props.modifyQC === true ? (
+                <AmButton
+                  style={{ marginRight: "5px" }}
+                  styleType="confirm"
+                  onClick={() => {
+                    onClickHold(97);
+                    setName("Remark Partial");
+                  }}
+                >
+                  PARTIAL
+                </AmButton>
+              ) : null}
+              {props.modifyQC === true ? (
+                <AmButton
+                  style={{ marginRight: "5px" }}
+                  styleType="confirm"
+                  onClick={() => {
+                    onClickHold(96);
+                    setName("Remark Return");
+                  }}
+                >
+                  RETURN
+                </AmButton>
+              ) : null}
               <AmButton
                 style={{ marginRight: "5px" }}
-                styleType="add"
+                styleType="warning"
                 onClick={() => {
                   FuncRanderRemark();
                   setTypeButton(0);

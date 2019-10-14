@@ -134,7 +134,7 @@ namespace ProjectSTA.Engine.V2.Business.Picking
                                         }
                                         else
                                         { //ถ้ามันมีdocitem ที่ packMasterID ตรงกัน เเต่ ค่า orderno ไม่ตรง = null
-                                            var docMacth = docItems.Find(x => x.Document_ID == docid && x.OrderNo == null);
+                                            var docMacth = docItems.Find(x => x.Document_ID == docid && x.OrderNo == null || x.OrderNo == "");
                                             AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_DocumentItem>(docMacth.ID.Value, this.BuVO,
                                                 new KeyValuePair<string, object>[] {
                                                     new KeyValuePair<string, object>("OrderNo", packs.orderNo)

@@ -42,25 +42,15 @@ namespace AWMSEngine.Engine.V2.Business
             
             var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
 
-            var docItemSto = ADO.DataADO.GetInstant().SelectBy<amt_DocumentItemStorageObject>(
-                    new SQLConditionCriteria[] {
-                        new SQLConditionCriteria("Sou_StorageObject_ID",
-                            string.Join(',', sto.ToTreeList().Where(x => x.type == StorageObjectType.PACK).Select(x => x.id.Value).ToArray()),
-                            SQLOperatorType.IN),
-                        new SQLConditionCriteria("status",EntityStatus.INACTIVE, SQLOperatorType.EQUALS)
-                    }
-                    , this.BuVO);
-
-
-            if (docItemSto.Any(x=>x.Status == EntityStatus.INACTIVE))
-                throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO.PalletCode + " is " + sto.eventStatus.ToString());
-
-
-            
-            var data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto,StorageObjectEventStatus.RECEIVED ,reqVO.LocationID,this.BuVO);
-
-            var stoValidateRes = new ValidateObjectSizeOverLimit().Execute(this.Logger, this.BuVO, data);
+            var data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, reqVO.LocationID, this.BuVO);
             res.data = data;
+            /*if (sto.eventStatus == StorageObjectEventStatus.RECEIVING || sto.eventStatus == StorageObjectEventStatus.RECEIVED)
+            {
+            }
+            else
+            {
+                throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO.PalletCode + " is " + sto.eventStatus.ToString());
+            }*/
             return res;
         }
     }

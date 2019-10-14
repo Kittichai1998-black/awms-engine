@@ -65,7 +65,38 @@ const ReceiveWIPSup = (props) => {
 
         return res;
     }
+    function onOldValue(storageObj) {
+        let oldValue = [];
+        if (storageObj) {
+            let qryStrOpt_root = queryString.parse(storageObj.options);
+            oldValue = [{
+                field: "warehouseID",
+                value: storageObj.warehouseID
+            },
+            {
+                field: "areaID",
+                value: storageObj.areaID
+            },
+            {
+                field: SC.OPT_DONE_DES_EVENT_STATUS,
+                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
+            },{
+                field: SC.OPT_REMARK,
+                value: qryStrOpt_root[SC.OPT_REMARK]
+            }]
 
+            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                let dataMapstos = storageObj.mapstos[0];
+                let qryStrOpt = queryString.parse(dataMapstos.options);
+
+                oldValue.push({
+                    field: SC.OPT_SOU_WAREHOUSE_ID,
+                    value: qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID]
+                });
+            }  
+        }
+        return oldValue;
+    }
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -223,6 +254,7 @@ const ReceiveWIPSup = (props) => {
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={true}
                 setMovementType={"2011"}
+                showOldValue={onOldValue}
             />
         </div>
     );
