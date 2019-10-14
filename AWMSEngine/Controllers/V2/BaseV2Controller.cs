@@ -4,9 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using AMWUtil.Common;
+using AWMSEngine.HubService;
 using AWMSModel.Criteria;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AWMSEngine.Controllers.V2
 {
@@ -14,6 +16,13 @@ namespace AWMSEngine.Controllers.V2
     [ApiController]
     public class BaseV2Controller : ControllerBase
     {
+        public readonly IHubContext<CommonMessageHub> HubService;
+
+        public BaseV2Controller(IHubContext<CommonMessageHub> hubContext)
+        {
+            this.HubService = hubContext;
+        }
+
         [HttpGet("time")]
         public dynamic GetTime()
         {

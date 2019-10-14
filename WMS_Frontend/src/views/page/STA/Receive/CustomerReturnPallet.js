@@ -44,7 +44,7 @@ const CustomerReturnPallet = (props) => {
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true, "clearInput": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -75,7 +75,49 @@ const CustomerReturnPallet = (props) => {
 
         return res;
     }
+    function onOldValue(storageObj) {
+        let oldValue = [];
+        if (storageObj) {
+            let qryStrOpt_root = queryString.parse(storageObj.options);
+            oldValue = [{
+                field: "warehouseID",
+                value: storageObj.warehouseID
+            },
+            {
+                field: "areaID",
+                value: storageObj.areaID
+            },
+            {
+                field: SC.OPT_DONE_DES_EVENT_STATUS,
+                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
+            }, {
+                field: SC.OPT_REMARK,
+                value: qryStrOpt_root[SC.OPT_REMARK]
+            }]
 
+            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                let dataMapstos = storageObj.mapstos[0];
+                let qryStrOpt = queryString.parse(dataMapstos.options);
+
+                oldValue.push({
+                    field: SC.OPT_SOU_CUSTOMER_ID,
+                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                }, {
+                    field: "orderNo",
+                    value: dataMapstos.orderNo
+                }, {
+                    field: "scanCode",
+                    value: dataMapstos.code
+                });
+            } else {
+                oldValue.push({
+                    field: "scanCode",
+                    value: ""
+                });
+            }
+        }
+        return oldValue;
+    }
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -93,7 +135,9 @@ const CustomerReturnPallet = (props) => {
                 if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
                     SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
                 } else {
-                    alertDialogRenderer("Please select source customer before.", "error", true);
+                    if (reqValue.action != 2) {
+                        alertDialogRenderer("Please select source customer before.", "error", true);
+                    }
                 }
 
                 if (reqValue['scanCode']) {
@@ -274,9 +318,11 @@ const CustomerReturnPallet = (props) => {
                     }
                 }
 
-                if (cartonNo && rootID && skuCode && orderNo && SOU_CUSTOMER_ID) {
+                if (cartonNo && rootID && skuCode && orderNo) {
+                    if (reqValue.action != 2 && SOU_CUSTOMER_ID) {
+                        qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
+                    }
 
-                    qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
                     qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
                     // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                     let qryStr1 = queryString.stringify(qryStrOpt)
@@ -286,7 +332,8 @@ const CustomerReturnPallet = (props) => {
                         allowSubmit: true,
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : uri_opt
+                        options: cartonNo === "0" ? null : uri_opt,
+                        validateSKUTypeCodes: ["FG"]
                     };
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
@@ -348,6 +395,7 @@ const CustomerReturnPallet = (props) => {
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 setMovementType={"1012"}
                 autoPost={false}
+                showOldValue={onOldValue}
             />
         </div>
     );

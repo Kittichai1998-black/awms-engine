@@ -45,7 +45,7 @@ const ReceivePallet = (props) => {
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true, "clearInput": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -78,7 +78,50 @@ const ReceivePallet = (props) => {
 
         return res;
     }
+    function onOldValue(storageObj) {
+        console.log(storageObj)
+        let oldValue = [];
+        if (storageObj) {
+            let qryStrOpt_root = queryString.parse(storageObj.options);
+            oldValue = [{
+                field: "warehouseID",
+                value: storageObj.warehouseID
+            },
+            {
+                field: "areaID",
+                value: storageObj.areaID
+            },
+            {
+                field: SC.OPT_DONE_DES_EVENT_STATUS,
+                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
+            }, {
+                field: SC.OPT_REMARK,
+                value: qryStrOpt_root[SC.OPT_REMARK]
+            }]
 
+            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                let dataMapstos = storageObj.mapstos[0];
+                let qryStrOpt = queryString.parse(dataMapstos.options);
+
+                oldValue.push({
+                    field: SC.OPT_SOU_WAREHOUSE_ID,
+                    value: qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID]
+                }, {
+                    field: "orderNo",
+                    value: dataMapstos.orderNo
+                }, {
+                    field: "scanCode",
+                    value: dataMapstos.code
+                });
+            } else {
+                oldValue.push({
+                    field: "scanCode",
+                    value: ""
+                });
+            }
+        }
+        return oldValue;
+    }
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -279,9 +322,10 @@ const ReceivePallet = (props) => {
                     }
                 }
 
-                if (cartonNo && rootID && skuCode && orderNo && SOU_WAREHOUSE_ID) {
-
-                    qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID] = SOU_WAREHOUSE_ID;
+                if (cartonNo && rootID && skuCode && orderNo) {
+                    if (reqValue.action != 2 && SOU_WAREHOUSE_ID) {
+                        qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID] = SOU_WAREHOUSE_ID;
+                    }
                     qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
                     // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                     let qryStr1 = queryString.stringify(qryStrOpt)
@@ -355,6 +399,7 @@ const ReceivePallet = (props) => {
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={false}
                 setMovementType={"1011"}
+                showOldValue={onOldValue}
             />
         </div>
     );

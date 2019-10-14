@@ -61,7 +61,46 @@ const ReceivePallet = (props) => {
         return res;
     }
 
+    function onOldValue(storageObj) {
+        let oldValue = [];
+        if (storageObj) {
+            let qryStrOpt_root = queryString.parse(storageObj.options);
+            oldValue = [{
+                field: "warehouseID",
+                value: storageObj.warehouseID
+            },
+            {
+                field: "areaID",
+                value: storageObj.areaID
+            },
+            {
+                field: SC.OPT_DONE_DES_EVENT_STATUS,
+                value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
+            }, {
+                field: SC.OPT_REMARK,
+                value: qryStrOpt_root[SC.OPT_REMARK]
+            }]
 
+            if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                let dataMapstos = storageObj.mapstos[0];
+                let qryStrOpt = queryString.parse(dataMapstos.options);
+
+                oldValue.push({
+                    field: "orderNo",
+                    value: dataMapstos.orderNo
+                }, {
+                    field: "scanCode",
+                    value: dataMapstos.code
+                });
+            } else {
+                oldValue.push({
+                    field: "scanCode",
+                    value: ""
+                });
+            }
+        }
+        return oldValue;
+    }
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -264,7 +303,8 @@ const ReceivePallet = (props) => {
                         allowSubmit: true,
                         orderNo: orderNo,
                         scanCode: skuCode,
-                        options: cartonNo === "0" ? null : uri_opt
+                        options: cartonNo === "0" ? null : uri_opt,
+                        validateSKUTypeCodes: ["FG"]
                     };
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
@@ -327,6 +367,7 @@ const ReceivePallet = (props) => {
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={false}
                 setMovementType={"1111"}
+                showOldValue={onOldValue}
             />
         </div>
     );

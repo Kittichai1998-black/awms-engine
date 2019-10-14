@@ -9,8 +9,8 @@ i18n
         lng: localStorage.getItem("Lang") ? localStorage.getItem("Lang") : "EN",
         backend: {
             /* translation file path */
-            // loadPath: window.apipath + '/v2/SelectDataMstAPI/?t=Language&q=[{ "f": "Language", "c":"=", "v": "{{lng}}"}]&f=Code,Messages&l=&isCounts=true&apikey=FREE01',
-            loadPath: '../assets/i18n/{{ns}}/{{lng}}.json',
+            loadPath: window.apipath + '/v2/SelectDataMstAPI/?t=Language&q=[{ "f": "Language", "c":"=", "v": "{{lng}}"}]&f=Code,Messages&l=&isCounts=true&apikey=FREE01',
+            // loadPath: '../assets/i18n/{{ns}}/{{lng}}.json',
             // addPath: '../assets/i18n/{{ns}}/{{lng}}.json',
             parse: data => {
                 let data_formated = JSON.parse(data).datas.reduce((dict, item) => {

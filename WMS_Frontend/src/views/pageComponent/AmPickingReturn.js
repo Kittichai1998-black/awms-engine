@@ -241,7 +241,8 @@ const AmPickingReturn = (props) => {
         setVisibleTabMenu,
         useMultiSKU,
         autoPost = true,
-        setMovementType
+        setMovementType,
+        showOldValue
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -373,7 +374,7 @@ const AmPickingReturn = (props) => {
                     ddlMinWidth={336}
                     zIndex={1000}
                     returnDefaultValue={true}
-                    defaultValue={showComponent.defaultValue ? showComponent.defaultValue : ""}
+                    defaultValue={valueInput && valueInput[showComponent.field] ? valueInput[showComponent.field] : showComponent.defaultValue ? showComponent.defaultValue : ""}
                     data={Query}
                     onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, showComponent.field, fieldDataKey, null)}
                     ddlType={showComponent.typeDropdown}
@@ -429,15 +430,7 @@ const AmPickingReturn = (props) => {
                     var dataRootFocus = findRootMapping(bstoData);
                     rootFocusID = dataRootFocus.id;
                     rootBaseCode = dataRootFocus.code;
-                    //
-                    // if (curInput !== SC.OPT_REMARK) {
-                    //     var qryStr2 = queryString.parse(bstoData.options)
-                    //     let eleREMARK = document.getElementById(SC.OPT_REMARK);
-                    //     if (eleREMARK) {
-                    //         eleREMARK.value = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                    //         valueInput[SC.OPT_REMARK] = qryStr2[SC.OPT_REMARK] !== undefined ? qryStr2[SC.OPT_REMARK] : "";
-                    //     }
-                    // }
+                   
                     if (onBeforePost) {
                         var resInput = {
                             ...valueInput,
@@ -453,7 +446,7 @@ const AmPickingReturn = (props) => {
                                 resValuePosts = { ...dataScan }
                             }
                         } else {
-                            inputClear();
+                            inputClearAll();
                         }
                     } else {
                         dataScan = {
@@ -497,10 +490,10 @@ const AmPickingReturn = (props) => {
             } else {
                 if (preAutoPost) {
                     alertDialogRenderer("Please fill your information completely.", "error", true);
-                    setPreAutoPost(false);
                 }
             }
         }
+        setPreAutoPost(false);
     }
     const onPreSubmitToAPI = () => {
         setKeyEnter(true);
@@ -571,47 +564,73 @@ const AmPickingReturn = (props) => {
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
             if (res.data != null) {
-                inputClear();
+                // inputClear();
                 if (res.data._result.message === "Success") {
                     if (res.data.bsto) {
-                        setResData(res.data);
-
-                        if (res.data.bsto.code === req.scanCode) {
-                            if (actionValue === 0) {
-                                alertDialogRenderer("Select Pallet Success", "success", true);
-                            }
-                            if (actionValue === 1) {
-                                alertDialogRenderer("Success", "success", true);
-                            }
-                            if (actionValue === 2) {
-                                alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
-                            }
-
+                        let checkMVT = false;
+                        if (res.data.bsto.mapstos == null || res.data.bsto.mapstos.length === 0) {
+                            checkMVT = true;
                         } else {
-                            if (actionValue === 0) {
-                                alertDialogRenderer("Select Success", "success", true);
-                            }
-                            if (actionValue === 1) {
-                                alertDialogRenderer("Success", "success", true);
-                            }
-                            if (actionValue === 2) {
-                                alertDialogRenderer("Remove Pack Success", "success", true);
+                            let qryStr = queryString.parse(res.data.bsto.options);
+                            let OPT_MVT = qryStr[SC.OPT_MVT];
+                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                                checkMVT = true;
                             }
                         }
-                        if (itemCreate !== undefined) {
-                            let qryStr2 = queryString.parse(res.data.bsto.options);
-                            itemCreate.map((x, i) => {
-                                let ele = document.getElementById(x.field);
-                                if (ele) {
-                                    if (x.clearInput) {
-                                    } else {
-                                        if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                                            valueInput[x.field] = qryStr2[x.field];
-                                            ele.value = qryStr2[x.field];
-                                        }
-                                    }
-                                }
+                        if (showOldValue && checkMVT) {
+                            let getOldValue = showOldValue(res.data.bsto);
+                            let val = { ...valueInput };
+                            getOldValue.map((x, i) => {
+                                val[x.field] = x.value;
                             });
+                            console.log(val);
+                            setValueInput(val);
+                        }
+                        inputClearAll();
+
+                        if (checkMVT) {
+                            setResData(res.data);
+
+                            if (res.data.bsto.code === req.scanCode) {
+                                if (actionValue === 0) {
+                                    alertDialogRenderer("Select Pallet Success", "success", true);
+                                }
+                                if (actionValue === 1) {
+                                    alertDialogRenderer("Success", "success", true);
+                                }
+                                if (actionValue === 2) {
+                                    alertDialogRenderer("Select Pallet Success, Please Scan Pallet Code again for remove this pallet.", "warning", true);
+                                }
+
+                            } else {
+                                if (actionValue === 0) {
+                                    alertDialogRenderer("Select Success", "success", true);
+                                }
+                                if (actionValue === 1) {
+                                    alertDialogRenderer("Success", "success", true);
+                                }
+                                if (actionValue === 2) {
+                                    alertDialogRenderer("Remove Pack Success", "success", true);
+                                }
+                            }
+                            // if (itemCreate !== undefined) {
+                            //     let qryStr2 = queryString.parse(res.data.bsto.options);
+                            //     itemCreate.map((x, i) => {
+                            //         let ele = document.getElementById(x.field);
+                            //         if (ele) {
+                            //             if (x.clearInput) {
+                            //             } else {
+                            //                 if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
+                            //                     valueInput[x.field] = qryStr2[x.field];
+                            //                     ele.value = qryStr2[x.field];
+                            //                 }
+                            //             }
+                            //         }
+                            //     });
+                            // }
+                        } else {
+                            alertDialogRenderer("Moment Type isn't match.", "error", true);
+                            onHandleClear();
                         }
                     } else {
                         alertDialogRenderer("Remove Pallet Success", "success", true);
@@ -619,9 +638,11 @@ const AmPickingReturn = (props) => {
                     }
                 } else {
                     alertDialogRenderer(res.data._result.message, "error", true);
+                    inputClear();
                 }
             } else {
                 alertDialogRenderer(res.data._result.message, "error", true);
+                inputClear();
             }
         });
     }
@@ -686,7 +707,7 @@ const AmPickingReturn = (props) => {
                                 x.fieldLabel, x.placeholder,
                                 x.dataDropDown, x.typeDropdown, x.labelTitle, x.fieldDataKey,
                                 x.defaultValue, x.visible == null || undefined ? true : x.visible,
-                                x.disabled, x.isFocus, x.maxLength, x.required)}
+                                x.disabled, x.isFocus, x.maxLength, x.required, x.clearInput)}
                         </div>
                     }
                 }
@@ -694,7 +715,7 @@ const AmPickingReturn = (props) => {
     };
     const FuncCreateForm = (key, field, type, name,
         fieldLabel, placeholder,
-        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required) => {
+        dataDropDown, typeDropdown, labelTitle, fieldDataKey, defaultValue, visible, disabled, isFocus, maxLength, required, clearInput) => {
         if (type === "input") {
             return (
                 <FormInline><LabelH>{name} : </LabelH>
@@ -710,7 +731,7 @@ const AmPickingReturn = (props) => {
                             inputProps={maxLength ? {
                                 maxLength: maxLength,
                             } : {}}
-                            defaultValue={defaultValue ? defaultValue : ""}
+                            defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onKeyPress={(value, obj, element, event) => onHandleChangeInput(value, null, field, null, event)}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
@@ -727,8 +748,8 @@ const AmPickingReturn = (props) => {
                             disabled={disabled}
                             placeholder={placeholder}
                             type="number"
-                            style={{ width: "330px" }}
-                            defaultValue={defaultValue ? defaultValue : ""}
+                            style={{ width: "330px" }}                            defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
+                            defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
                     </div>
@@ -767,13 +788,17 @@ const AmPickingReturn = (props) => {
             </FormInline>
         } else if (type === "radiogroup") {
             if (visible) {
+                let valRad = defaultValue ? Clone(defaultValue) : {};
+                if (valueInput && valueInput[field]) {
+                    valRad.value = valueInput[field].toString()
+                }
                 return <FormInline> <LabelH>{t(name)} : </LabelH>
                     <AmRadioGroup
                         row={true}
                         name={field}
                         dataValue={fieldLabel}
-                        returnDefaultValue={true}
-                        defaultValue={defaultValue || ''}
+                        returnDefaultValue={true} 
+                        defaultValue={valRad ? valRad : {}}
                         onChange={(value, obj, element, event) =>
                             onHandleChangeRadio(value, field)
                         }
@@ -800,9 +825,10 @@ const AmPickingReturn = (props) => {
         setResValuePost(null);
     }
     const inputClearAll = () => {
-        // setReqPost({});
-        onClearInput(headerCreate);
-        onClearInput(itemCreate);
+        setInputHeader(null);
+        setInputItem(null);
+        setDDLWarehouse(null);
+        setDDLArea(null);
     }
     const inputClear = () => {
         // setReqPost({});
@@ -935,6 +961,7 @@ AmPickingReturn.propTypes = {
     setVisibleTabMenu: PropTypes.array,
     showWarehouseDDL: PropTypes.object,
     showAreaDDL: PropTypes.object,
+    showOldValue: PropTypes.func
 };
 
 AmPickingReturn.defaultProps = {
