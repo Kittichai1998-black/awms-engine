@@ -101,6 +101,47 @@ const useAreaID = (areaID) => {
     return areaIDs;
 }
 
+const useWCSStatus = () => {
+    const [data, setData] = useState(null);
+    let url = window.apipath + '/dashboard'
+    let connection = new signalR.HubConnectionBuilder()
+        .withUrl(url, {
+            skipNegotiation: true,
+            transport: signalR.HttpTransportType.WebSockets //1
+        })
+        // .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    const signalrStart = () => {
+        connection.start()
+            .then(() => {
+                connection.on("alert" , res => {
+                    console.log(res)
+                    setData(JSON.parse(res))
+                })
+            })
+            .catch((err) => {
+                setTimeout(() => signalrStart(), 5000);
+            })
+    };
+    
+    useEffect(() => {
+        signalrStart()
+
+        connection.onclose((err) => {
+            if (err) {
+                signalrStart()
+            }
+        });
+
+        return () => {
+            connection.stop()
+        }
+    }, [])
+
+    return data;
+}
+
 const useDashboardArea = (areaID) => {
     const [data, setData] = useState(null);
     let url = window.apipath + '/dashboard'
@@ -116,12 +157,10 @@ const useDashboardArea = (areaID) => {
         connection.start()
             .then(() => {
                 connection.on("DASHBOARD_PRD_RECIEVE_" + areaID, res => {
-                    console.log(JSON.parse(res))
                     setData(JSON.parse(res))
                 })
             })
             .catch((err) => {
-                console.log(err);
                 setTimeout(() => signalrStart(), 5000);
             })
     };
@@ -210,6 +249,7 @@ const Scanbarcode = (props) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [calHeight, setCalHeight] = useState(0.25);
     const areaIDs = useAreaID(localStorage.getItem("areaIDs"));
+    const wcsAlert = useWCSStatus();
     const data = useDashboardArea(localStorage.getItem("areaIDs"))
     //const { width, height } = useWindowWidth();
     const [area1, setarea1] = useState();
@@ -247,6 +287,10 @@ const Scanbarcode = (props) => {
         label: ""
     }, t)
    const time = clock 
+
+   useEffect(() => {
+    console.log(wcsAlert)
+    }, [wcsAlert])
 
     useEffect(() => {
         setTimeout(() => {
@@ -396,9 +440,11 @@ const Scanbarcode = (props) => {
 
     const RemovePackSto = (baseID, areaID) => {
         Axios.post(window.apipath + '/v2/RemoveFromPalletRecievedAPI', {baseStoID:baseID, areaID:areaID}).then(res => console.log(res))
+        document.getElementById("barcodeLong").focus()
     }
 
     const UnlockGate = (areaGateLoc, side) => {
+        
         setLockGateID(lockGateID.filter(x => x !== areaGateLoc))
         databar.lockGateID = lockGateID
         setdatabar({...databar})
@@ -406,6 +452,8 @@ const Scanbarcode = (props) => {
             setLockStateLeft(false)
         else
             setLockStateRight(false)
+
+        document.getElementById("barcodeLong").focus()
     }
     
     const LockGate = (areaGateLoc, side) => {
@@ -416,6 +464,8 @@ const Scanbarcode = (props) => {
             setLockStateLeft(true)
         else
             setLockStateRight(true)
+        
+        document.getElementById("barcodeLong").focus()
     }
 
     const Scanbar = () => {
@@ -469,12 +519,10 @@ const Scanbarcode = (props) => {
             }
 
         })
-
-
+        document.getElementById("barcodeLong").focus()
     }
 
     useEffect(()=>{
-        console.log(data)
         if(data !== null){
             data.forEach(x=>{
                 if(x.gate === 1){
@@ -832,23 +880,31 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput value={manualAddLeft["code"]}  onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput id="code" value={manualAddLeft["code"]}  onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("left" ,"code", value);
-                                                            }} />
+                                                            }}  onKeyPress={(value, a, b, event)=>{
+                                                                if(event.key === "Enter"){
+                                                                    document.getElementById("orderNo").focus();
+                                                                }
+                                                            }}/>
                                                         </Typography>
                                                     </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput value={manualAddLeft["orderNo"]}  onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput id="orderNo" value={manualAddLeft["orderNo"]}  onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("left" ,"orderNo", value);
-                                                            }} />
+                                                            }}  onKeyPress={(value, a, b, event)=>{
+                                                                if(event.key === "Enter"){
+                                                                    document.getElementById("carton").focus();
+                                                                }
+                                                            }}/>
                                                         </Typography>
                                                     </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput value={manualAddLeft["carton"]}  onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput id="carton" value={manualAddLeft["carton"]}  onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("left" ,"carton", value);
                                                             }} />
                                                         </Typography>
@@ -871,12 +927,13 @@ const Scanbarcode = (props) => {
                                                             
                                                     <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
                                                         MapStoNoDoc(areaGate, "left")
+                                                        setManualAddLeft({});
                                                     }}>Save</AmButton>
                                                     <AmButton style={{marginTop:"10px",width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
-
                                                         UnlockGate(areaGate, "left")
+                                                        setManualAddLeft({});
                                                         }}>Clear</AmButton>
-</div>
+                                                </div>
                                             </Card>
                                         </Flash>}
                                     </div> : null}
@@ -884,7 +941,6 @@ const Scanbarcode = (props) => {
                                 </Card>
                             </div>
                         </Grid>
-
 
                         <Grid item xs={6}>
                             <div style={{ paddingTop: "30px", marginLeft: "5px" }}>
@@ -953,23 +1009,31 @@ const Scanbarcode = (props) => {
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Product :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput value={manualAddRight["code"]} onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput id="code2" value={manualAddRight["code"]} onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("right" ,"code", value);
-                                                            }} />
+                                                            }} onKeyPress={(value, a, b, event)=>{
+                                                                if(event.key === "Enter"){
+                                                                    document.getElementById("orderNo2").focus();
+                                                                }
+                                                            }}/>
                                                         </Typography>
                                                     </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">OrderNo :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput id="orderNo2" value={manualAddRight["orderNo"]} onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("right" ,"orderNo", value);
-                                                            }} />
+                                                            }}  onKeyPress={(value, a, b, event)=>{
+                                                                if(event.key === "Enter"){
+                                                                    document.getElementById("carton2").focus();
+                                                                }
+                                                            }}/>
                                                         </Typography>
                                                     </FormInline>
                                                     <FormInline style={{ paddingTop: "10px" }} >
                                                         <Typography style={{ paddingRight: "10px", }} variant="h5" component="h3">Carton :</Typography >
                                                         <Typography variant="h5" component="h3">
-                                                            <AmInput value={manualAddRight["carton"]} onChangeV2={(value, a, b, event)=>{
+                                                            <AmInput id="carton2" value={manualAddRight["carton"]} onChangeV2={(value, a, b, event)=>{
                                                                 updateNoQRData("right" ,"carton", value);
                                                             }} />
                                                         </Typography>
@@ -989,10 +1053,12 @@ const Scanbarcode = (props) => {
                                                         }
                                                         <div style={{textAlign:"center"}}>
                                                             <AmButton style={{width:"80%", fontSize:"2em"}} styleType="confirm" onClick={()=> {
-                                                                MapStoNoDoc(areaGate2, "right")
+                                                                MapStoNoDoc(areaGate2, "right");
+                                                                setManualAddRight({});
                                                                 }}>Save</AmButton>
                                                             <AmButton style={{marginTop:"10px", width:"80%", fontSize:"2em"}} styleType="delete" onClick={() => {
-                                                                UnlockGate(areaGate2, "right")
+                                                                UnlockGate(areaGate2, "right");
+                                                                setManualAddRight({});
                                                                     }}>Clear</AmButton>
                                                         <br/>
                                                         </div>
