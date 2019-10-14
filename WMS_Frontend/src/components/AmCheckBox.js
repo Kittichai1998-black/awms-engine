@@ -20,7 +20,8 @@ const styles = theme => ({
 const AmCheckBox = props => {
   const [data, setdata] = useState({});
 
-  useEffect(() => {
+    useEffect(() => {
+   if (props.onChange)
     props.onChange(data);
     },[data]);
 
