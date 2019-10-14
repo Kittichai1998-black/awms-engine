@@ -11,6 +11,7 @@ namespace AWMSModel.Constant.StringConst
         public const string KEY_APIKEY = "_APIKEY";
         public const string KEY_APIKEY_INFO = "_APIKEY_INFO";
 
+        public const string KEY_HUB_COMMON = "_HUB_COMMON";
         public const string KEY_REQUEST = "_REQUEST";
         public const string KEY_TEMP = "_TEMP";
         public const string KEY_RESPONSE = "_RESPONSE";
