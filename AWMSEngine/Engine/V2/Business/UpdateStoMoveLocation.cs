@@ -42,15 +42,15 @@ namespace AWMSEngine.Engine.V2.Business
             
             var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.bstosID, StorageObjectType.BASE, false, true, this.BuVO);
 
-            if(sto.eventStatus == StorageObjectEventStatus.RECEIVING || sto.eventStatus == StorageObjectEventStatus.RECEIVED)
+            var data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, reqVO.LocationID, this.BuVO);
+            res.data = data;
+            /*if (sto.eventStatus == StorageObjectEventStatus.RECEIVING || sto.eventStatus == StorageObjectEventStatus.RECEIVED)
             {
-                var data = ADO.StorageObjectADO.GetInstant().UpdateLocationToChild(sto, reqVO.LocationID, this.BuVO);
-                res.data = data;
             }
             else
             {
                 throw new AMWException(this.Logger, AMWExceptionCode.V1001, reqVO.PalletCode + " is " + sto.eventStatus.ToString());
-            }
+            }*/
             return res;
         }
     }
