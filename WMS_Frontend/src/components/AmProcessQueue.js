@@ -122,6 +122,13 @@ const BorderQueu = styled.div`
   display: block;
 `;
 
+
+const BorderGrey= styled.div`
+  display: inline-block;
+  border: 4px solid #9e9e9e;
+  display: block;
+`;
+
 const InputDiv = styled.div`
   margin: 5px;
   @media (max-width: 800px) {
@@ -214,6 +221,7 @@ const AmProcessQueue = props => {
     const [dataConditions, setdataConditions] = useState([]);
     const [docDesWarehouse, setdocDesWarehouse] = useState([]);
     const [docDesCustomer, setdocDesCustomer] = useState([]);
+    const [checkboxDocItems, setcheckboxDocItems] = useState([]);
 
 
     //======== AAI============
@@ -666,7 +674,6 @@ const AmProcessQueue = props => {
 
     //Advance Condition
     const onChangCheckboxCon = (e, indx) => {
-        console.log(e)
         if (e.checked === true) {
             let dataCheckCon = datacheckboxCon;
             datacheckboxCon[e.value] = e.checked;
@@ -679,6 +686,14 @@ const AmProcessQueue = props => {
             dataSource[indx][0][e.value] = e.defaultChecked;
         }
     };
+
+    const onChangCheckboxDocItem = (e, indx) => {
+        if (e.defaultChecked === true) {
+            DataDocumentItem[indx]["CheckDocument"] = e.defaultChecked
+        } else {
+            DataDocumentItem[indx]["CheckDocument"] = e.checked
+        }
+    }
 
     const onChangCheckboxConsFull = (e, v, indx) => {
         datacheckboxCon["FullPallet"] = true;
@@ -737,7 +752,6 @@ const AmProcessQueue = props => {
         dataSource[indx][0]["Reject"] = true;
     };
     const onChangCheckboxStatus = (e, indx) => {
-        console.log(e)
         if (e.checked === true) {
             let dataCheckStatus = datacheckboxStatus;
             datacheckboxStatus[e.value] = e.checked;
@@ -1272,7 +1286,7 @@ const AmProcessQueue = props => {
     };
 
     const addConditions = () => {
-        console.log(DataDocumentItem)
+       
         var filterDocCode = dataQueue.filter(
             x =>
                 x["DataDocumentCode"] ===
@@ -1288,7 +1302,7 @@ const AmProcessQueue = props => {
                     return dfaultS;
                 }
             });
-
+            //setdatasDoc([...datasDoc]);
             datasQ["DataDocdetail"] = dataDetialdoc;
             datasQ["DataDocumentItem"] = [...DataDocumentItem];
             datasQ["DataSource"] = [...dataSource];
@@ -1390,133 +1404,169 @@ const AmProcessQueue = props => {
         setbtnBack(true);
     };
 
+
+
+    const OnclickRemoveAddDocument = (idx) => {
+        datasDoc.splice(idx, 1)
+        setdataQueue([...datasDoc]);
+        setdatasDoc([...datasDoc]);
+
+
+        if (window.project === "AAI") {
+            Axios.get(createQueryString(docQueryAAI)).then(res => {
+                let docSelection = res.data.datas.filter(x => {
+                    return (
+                        [...datasDoc].filter(y => y.DataDocumentCode == x.Code).length ===
+                        0
+                    );
+                });
+                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+            });
+        } else {
+
+            Axios.get(createQueryString(docQuery)).then(res => {
+                let docSelection = res.data.datas.filter(x => {
+                    return (
+                        [...datasDoc].filter(y => y.DataDocumentCode == x.Code).length ===
+                        0
+                    );
+                });
+                setapiDoc(docSelection.map(x => ({ Code: x.Code, value: x.ID })));
+            });
+        } 
+
+    }
+
     const OnclickConfirmQueue = () => {
         dataConfirmQ["processQueues"] = [];
-        datasDoc.forEach((a, idx) => {
+        datasDoc.forEach((a, idx) => {            
             a.DataDocumentItem.forEach(y => {
-                var conditions = [];
-                var orderBys = [];
-                var eventStatuses = [];
+                console.log(y.CheckDocument)
+                if (y.CheckDocument === true) {
+                    var conditions = [];
+                    var orderBys = [];
+                    var eventStatuses = [];
 
-                if (a.DataSorting[0] !== undefined) {
-                    a.DataSorting.filter(x => x.docItemID === y.ID).forEach(
-                        (ds, dsIdx) => {
-                            if (props.docType !== "audit") {
-                                ds.forEach((d, idx) => {
-                                    let sort = {
-                                        fieldName: "psto." + d.By,
-                                        orderByType: d.Order === "FIFO" ? 0 : 1
-                                    };
-                                    orderBys.push(sort);
-                                });
-                            } else {
-                                orderBys = [];
+                    if (a.DataSorting[0] !== undefined) {
+                        a.DataSorting.filter(x => x.docItemID === y.ID).forEach(
+                            (ds, dsIdx) => {
+                                if (props.docType !== "audit") {
+                                    ds.forEach((d, idx) => {
+                                        let sort = {
+                                            fieldName: "psto." + d.By,
+                                            orderByType: d.Order === "FIFO" ? 0 : 1
+                                        };
+                                        orderBys.push(sort);
+                                    });
+                                } else {
+                                    orderBys = [];
+                                }
                             }
-                        }
-                    );
-                }
+                        );
+                    }
 
-                a.DataSource.forEach((co, ins) => {
-                    co.forEach((s, ins) => {
-                        if (s.ID === y.ID) {
-                            let con = {
-                                batch: s.Batch ? s.Batch : null,
-                                lot: s.Lot ? s.Lot : null,
-                                orderNo: s.OrderNo ? s.OrderNo : null,
-                                options: s.Optionsdoc ? s.Optionsdoc : null,
-                                baseQty: s.BaseQuantity ? s.BaseQuantity : null
-                            };
-                            conditions.push(con);
-
+                    a.DataSource.forEach((co, ins) => {
+                        co.forEach((s, ins) => {
                             if (s.ID === y.ID) {
-                                if (y.Receive) {
-                                    eventStatuses.push(12);
-                                }
-                                if (y.Block) {
-                                    eventStatuses.push(99);
-                                }
-                                if (y.QC) {
-                                    eventStatuses.push(98);
-                                }
-                                if (y.Hold) {
-                                    eventStatuses.push(99);
-                                }
-                                if (y.Return) {
-                                    eventStatuses.push(96);
-                                }
-                                if (y.Partial) {
-                                    eventStatuses.push(97);
-                                }
-                                if (y.Reject) {
-                                    eventStatuses.push(24);
+                                let con = {
+                                    batch: s.Batch ? s.Batch : null,
+                                    lot: s.Lot ? s.Lot : null,
+                                    orderNo: s.OrderNo ? s.OrderNo : null,
+                                    options: s.Optionsdoc ? s.Optionsdoc : null,
+                                    baseQty: s.BaseQuantity ? s.BaseQuantity : null
+                                };
+                                conditions.push(con);
+
+                                if (s.ID === y.ID) {
+                                    if (y.Receive) {
+                                        eventStatuses.push(12);
+                                    }
+                                    if (y.Block) {
+                                        eventStatuses.push(99);
+                                    }
+                                    if (y.QC) {
+                                        eventStatuses.push(98);
+                                    }
+                                    if (y.Hold) {
+                                        eventStatuses.push(99);
+                                    }
+                                    if (y.Return) {
+                                        eventStatuses.push(96);
+                                    }
+                                    if (y.Partial) {
+                                        eventStatuses.push(97);
+                                    }
+                                    if (y.Reject) {
+                                        eventStatuses.push(24);
+                                    }
                                 }
                             }
-                        }
+                        });
                     });
-                });
 
-                var RandomCt = null;
-                var RamdonCts = null;
-                if (props.random === true) {
-                    RandomCt = y.Random;
-                    RamdonCts = y.Randoms;
-                } else {
-                    RandomCt = null;
+                    var RandomCt = null;
+                    var RamdonCts = null;
+                    if (props.random === true) {
+                        RandomCt = y.Random;
+                        RamdonCts = y.Randoms;
+                    } else {
+                        RandomCt = null;
+                    }
+                    let processQueuesz = null
+
+
+
+                    if (window.project === "AAI") {
+                        let processQueues = {
+                            docID: a.DataDocumentID,
+                            docItemID: y.ID,
+                            locationCode: y.locationcode ? y.locationcode : null,
+                            baseCode: y.palletcode ? y.palletcode : null,
+                            skuCode: y.palletcode ? null : y.Code ? y.Code : null,
+                            priority: y.PriorityDoc ? y.PriorityDoc : 2,
+                            useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
+                            useExpireDate: y.ExpireDate ? y.ExpireDate : false,
+                            useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
+                            useFullPick: y.FullPallet ? y.FullPallet : false,
+                            baseQty: y.BaseqtyMax
+                                ? y.BaseqtyMax
+                                : y.BaseQuantity
+                                    ? y.BaseQuantity
+                                    : null,
+                            percentRandom: RamdonCts ? RamdonCts : RandomCt,
+                            eventStatuses: eventStatuses,
+                            conditions: conditions,
+                            orderBys: orderBys
+                        };
+                        processQueuesz = processQueues
+
+                    } else {
+                        let processQueues = {
+                            docID: a.DataDocumentID,
+                            docItemID: y.ID,
+                            locationCode: y.locationcode ? y.locationcode : null,
+                            baseCode: y.palletcode ? y.palletcode : null,
+                            skuCode: y.Code ? y.Code : null,
+                            priority: y.PriorityDoc ? y.PriorityDoc : 2,
+                            useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
+                            useExpireDate: y.ExpireDate ? y.ExpireDate : false,
+                            useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
+                            useFullPick: y.FullPallet ? y.FullPallet : false,
+                            baseQty: y.BaseqtyMax
+                                ? y.BaseqtyMax
+                                : y.BaseQuantity
+                                    ? y.BaseQuantity
+                                    : null,
+                            percentRandom: RamdonCts ? RamdonCts : RandomCt,
+                            eventStatuses: eventStatuses,
+                            conditions: conditions,
+                            orderBys: orderBys
+                        };
+                        processQueuesz = processQueues
+                    }
+
+                    dataConfirmQ["processQueues"].push(processQueuesz);
                 }
-                let processQueuesz = null
-
-
-
-                if (window.project === "AAI") {
-                    let processQueues = {
-                        docID: a.DataDocumentID,
-                        docItemID: y.ID,
-                        locationCode: y.locationcode ? y.locationcode : null,
-                        baseCode: y.palletcode ? y.palletcode : null,
-                        skuCode: y.palletcode ? null : y.Code ? y.Code : null,
-                        priority: y.PriorityDoc ? y.PriorityDoc : 2,
-                        useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
-                        useExpireDate: y.ExpireDate ? y.ExpireDate : false,
-                        useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                        useFullPick: y.FullPallet ? y.FullPallet : false,
-                        baseQty: y.BaseqtyMax
-                            ? y.BaseqtyMax
-                            : y.BaseQuantity
-                                ? y.BaseQuantity
-                                : null,
-                        percentRandom: RamdonCts ? RamdonCts : RandomCt,
-                        eventStatuses: eventStatuses,
-                        conditions: conditions,
-                        orderBys: orderBys
-                    };
-                    processQueuesz = processQueues
-
-                } else {
-                    let processQueues = {
-                        docID: a.DataDocumentID,
-                        docItemID: y.ID,
-                        locationCode: y.locationcode ? y.locationcode : null,
-                        baseCode: y.palletcode ? y.palletcode : null,
-                        skuCode: y.Code ? y.Code : null,
-                        priority: y.PriorityDoc ? y.PriorityDoc : 2,
-                        useShelfLifeDate: y.ShelfLifeDate ? y.ShelfLifeDate : false,
-                        useExpireDate: y.ExpireDate ? y.ExpireDate : false,
-                        useIncubateDate: y.IncubateDate ? y.IncubateDate : false,
-                        useFullPick: y.FullPallet ? y.FullPallet : false,
-                        baseQty: y.BaseqtyMax
-                            ? y.BaseqtyMax
-                            : y.BaseQuantity
-                                ? y.BaseQuantity
-                                : null,
-                        percentRandom: RamdonCts ? RamdonCts : RandomCt,
-                        eventStatuses: eventStatuses,
-                        conditions: conditions,
-                        orderBys: orderBys
-                    };
-                    processQueuesz = processQueues
-                }
-
-                dataConfirmQ["processQueues"].push(processQueuesz);
             });
         });
 
@@ -2148,6 +2198,17 @@ const AmProcessQueue = props => {
                                             <div style={{ marginLeft: "10px", marginRight: "10px" }}>
                                                 <BorderAdd>
                                                     <Card>
+                                                        <FormInline>
+                                                        <AmCheckBox
+                                                            value="checkItem"
+                                                            //label="Receive"
+                                                            //checked={x.Recive ? true : RecieveFromDoc ? RecieveFromDoc : null}
+                                                            defaultChecked={true}
+                                                            //disabled={RecieveFromDoc === true ? true : false}
+                                                            onChange={(e, v) =>
+                                                                onChangCheckboxDocItem(e, idx)
+                                                            }
+                                                        ></AmCheckBox>
                                                         <AmButton
                                                             styleType="add_clear"
                                                             style={{ marginLeft: "10px" }}
@@ -2161,7 +2222,8 @@ const AmProcessQueue = props => {
                                                                         : classes.collapse
                                                                 }
                                                             />
-                                                        </AmButton>
+                                                            </AmButton>
+                                                        </FormInline>
                                                         <div style={{ clear: "both" }}></div>
                                                         <Collapse in={toggle[idx]}>
                                                             {toggle[idx] === true ? (
@@ -2187,8 +2249,9 @@ const AmProcessQueue = props => {
                                                                             </Grid>
                                                                             <LabelH>{t("Qty")} :</LabelH>{" "}
                                                                             <label>
-                                                                                {x.Quantity} {x.UnitType_Name} (
-                                        {qtyDocItem[idx]} {x.BaseUnitType_Code})
+                                                                               
+                                                                                {x.Quantity === null ? "-" : x.Quantity  } {x.UnitType_Name} (
+                                        {qtyDocItem[idx] === null ? "-" : qtyDocItem[idx] } {x.BaseUnitType_Code})
                                       </label>
                                                                         </Grid>
                                                                     </FormInline>
@@ -2688,7 +2751,7 @@ const AmProcessQueue = props => {
                     {datasDoc !== [] ? (
                         <Card style={{ overflow: "initial" }}>
                             <div style={{ marginTop: "10px" }}>
-                                <div>
+                                <div>{console.log(datasDoc)}
                                     {datasDoc.map((x, idx) => {
                                         var docs = x;
                                         var dataSOs = x["DataSource"];
@@ -2715,6 +2778,7 @@ const AmProcessQueue = props => {
                                                                     >
                                                                         <div style={{ marginLeft: "15px" }}>
                                                                             <FormInline>
+                                                                             
                                                                                 <LabelHDoc>Document : </LabelHDoc>
                                                                                 <LabelHDoc>
                                                                                     {x.DataDocumentCode}
@@ -2731,6 +2795,26 @@ const AmProcessQueue = props => {
                                                                         </div>
                                                                     </Grid>
                                                                     <Grid item>
+
+                                                                        <AmButton
+                                                                            style={{
+                                                                                width: "100px",
+                                                                                marginRight: "20px"
+                                                                            }}
+                                                                            styleType="confirm_outline"
+                                                                            onClick={() => {
+                                                                                OnclickRemoveAddDocument(
+                                                                                   
+                                                                                    idx
+
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            Remove
+                                    </AmButton>
+
+
+
                                                                         <AmButton
                                                                             style={{
                                                                                 width: "100px",
@@ -2745,7 +2829,7 @@ const AmProcessQueue = props => {
                                                                                 );
                                                                             }}
                                                                         >
-                                                                            Back
+                                                                            Edit
                                     </AmButton>
                                                                     </Grid>
                                                                 </Grid>
@@ -2794,7 +2878,7 @@ const AmProcessQueue = props => {
                                                 </div>
 
                                                 {x.DataDocumentItem.map((y, idxItem) => {
-                                                    console.log(y)
+                                                 
                                                     if (
                                                         datasDoc[idx]["DataSource"][idxItem] !== undefined
                                                     )
@@ -2815,24 +2899,69 @@ const AmProcessQueue = props => {
                                                             <BorderQueu>
                                                                 {" "}
                                                                 <Card>
-                                                                    <AmButton
-                                                                        styleType="info_clear"
-                                                                        style={{ marginLeft: "10px" }}
-                                                                        onClick={() =>
-                                                                            onclickToggelDataQueue(
-                                                                                idx + "T" + idxItem
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {y.Code}: {y.SKUMaster_Name}
-                                                                        <ExpandLessIcon
-                                                                            className={
-                                                                                toggleQueue[idx + "T" + idxItem]
-                                                                                    ? classes.expand
-                                                                                    : classes.collapse
-                                                                            }
-                                                                        />
-                                                                    </AmButton>
+                                                                 
+                                                                    {y.CheckDocument === true ?
+
+                                                                        <FormInline>
+
+                                                                        <AmCheckBox
+
+                                                                            checked={true}
+
+
+                                                                            ></AmCheckBox>
+
+
+
+                                                                            <AmButton
+                                                                                styleType="info_clear"
+                                                                                style={{ marginLeft: "10px" }}
+                                                                                onClick={() =>
+                                                                                    onclickToggelDataQueue(
+                                                                                        idx + "T" + idxItem
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {y.Code}:{y.SKUMaster_Name}
+                                                                                <ExpandLessIcon
+                                                                                    className={
+                                                                                        toggleQueue[idx + "T" + idxItem]
+                                                                                            ? classes.expand
+                                                                                            : classes.collapse
+                                                                                    }
+                                                                                />
+                                                                            </AmButton>
+                                                                        </FormInline>
+
+                                                                        : <FormInline> <AmCheckBox
+
+                                                                            disabled={true}
+                                                                        ></AmCheckBox>
+
+                                                                            <AmButton
+                                                                                styleType="default_clear"
+                                                                                style={{ marginLeft: "10px" }}
+                                                                                onClick={() =>
+                                                                                    onclickToggelDataQueue(
+                                                                                        idx + "T" + idxItem
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                {y.Code}:{y.SKUMaster_Name}
+                                                                                <ExpandLessIcon
+                                                                                    className={
+                                                                                        toggleQueue[idx + "T" + idxItem]
+                                                                                            ? classes.expand
+                                                                                            : classes.collapse
+                                                                                    }
+                                                                                />
+                                                                            </AmButton>
+
+                                                                        </FormInline>
+
+                                                                    }
+                                                                   
+     
 
                                                                     <div style={{ clear: "both" }}></div>
                                                                     <Collapse
@@ -2853,6 +2982,7 @@ const AmProcessQueue = props => {
                                                                                         >
                                                                                             <div style={{ width: "800px" }}>
                                                                                                 {" "}
+                                                                                    
                                                                                                 <LabelH>
                                                                                                     {y.Code} : {y.SKUMaster_Name}
                                                                                                 </LabelH>
@@ -2872,8 +3002,8 @@ const AmProcessQueue = props => {
                                                                                             <div>
                                                                                                 <LabelH>{t("Qty")} :</LabelH>{" "}
                                                                                                 <label>
-                                                                                                    {y.Quantity} {y.UnitType_Name}(
-                                                                                                      {y.BaseqtyMax}{" "}
+                                                                                                    {y.Quantity === null ? "-" : y.Quantity} {y.UnitType_Name}(
+                                                                                                      {y.BaseqtyMax === null ? "-" : y.BaseqtyMax}{" "}
                                                                                                     {y.BaseUnitType_Code} ){" "}
                                                                                                 </label>
                                                                                             </div>
@@ -3172,7 +3302,6 @@ const AmProcessQueue = props => {
                     </AmButton>
                 }
             ></AmDialogConfirm>
-
             <AmDialogConfirm
                 open={openDialogClear}
                 close={a => setopenDialogClear(a)}
