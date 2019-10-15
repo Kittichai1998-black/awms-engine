@@ -54,7 +54,8 @@ const CustomerReturnPallet = Loadable({
   loading: Loading
 });
 const CustomerReturnPalletByBarcode = Loadable({
-  loader: () => import("../../views/page/STA/Receive/CustomerReturnPalletByBarcode"),
+  loader: () =>
+    import("../../views/page/STA/Receive/CustomerReturnPalletByBarcode"),
   loading: Loading
 });
 const ReceiveEmptyPallet = Loadable({
@@ -111,32 +112,162 @@ const LoadingReturnByBarcode = Loadable({
 });
 
 const routes = [
-  { path: "/dashboard/scanreceiveproduct", name: "Scan Receive Product Line", compoment: Scanbarcode, exact: true },
-  { path: "/receive/detail", name: "base5", compoment: DocumentViewSTA, exact: true },
-  { path: "/receive/search", name: "Search GR", compoment: DocumentSearchSTA, exact: true },
-  { path: "/receive/receiveforcustomerByQR", name: "Customers Return", compoment: CustomerReturnPalletByBarcode, exact: true },
-  { path: "/receive/receiveforcustomer", name: "Customers Return", compoment: CustomerReturnPallet, exact: true },
-  { path: "/receive/receivemptypallet", name: "Empty Pallet", compoment: ReceiveEmptyPallet, exact: true },
-  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
-  { path: "/receive/receivefgByQR", name: "Receive FG", compoment: ReceivePalletByBarcode, exact: true },
-  { path: "/receive/receivewipsup", name: "Receive WIP Supplier", compoment: ReceiveWIPSup, exact: true },
-  { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
-  { path: "/issue/loadingreturnByQR", name: "Loading Return", compoment: LoadingReturnByBarcode, exact: true },
-  { path: "/issue/pickingreturn", name: "Picking Return", compoment: PickingReturn, exact: true },
-  { path: "/issue/pickingreturnByQR", name: "Picking Return", compoment: PickingReturnByBarcode, exact: true },
-  { path: "/issue/search", name: "base5", compoment: DocumentSearchGISTA, exact: true },
-  { path: "/issue/createCus", name: "base5", compoment: CreateDocGISTACus, exact: true },
-  { path: "/issue/createWm", name: "base5", compoment: CreateDocGISTAWare, exact: true },
-  { path: "/issue/detail", name: "base5", compoment: DocumentViewGISTA, exact: true },
-  { path: "/dashboard/pickingjobs", name: "TestRedirect", compoment: dashboardPickingJob, exact: true },
-  { path: "/dashboard/countingjobs", name: "TestRedirect", compoment: dashboardCountingJob, exact: true },
-  { path: "/counting/search", name: "base5", compoment: DocumentSearchPISTA, exact: true },
-  { path: "/counting/detail", name: "base5", compoment: DocumentViewPISTA, exact: true },
-  { path: "/counting/create", name: "base5", compoment: CreateDocPISTA, exact: true },
-  { path: "/warehouse/storageobject", name: "base5", compoment: StorageObjectSTA, exact: true },
-  { path: "/counting/adjust", name: "CountingAdj", compoment: CountingAdj, exact: true },
-  { path: "/issue/managequeue", name: "base5", compoment: ProcessQueueGI, exact: true },
-  { path: "/counting/managequeue", name: "base5", compoment: ProcessQueueCT, exact: true },
+  {
+    path: "/dashboard/scanreceiveproduct",
+    name: "Scan Receive Product Line",
+    compoment: Scanbarcode,
+    exact: true
+  },
+  {
+    path: "/receive/detail",
+    name: "base5",
+    compoment: DocumentViewSTA,
+    exact: true
+  },
+  {
+    path: "/receive/search",
+    name: "Search GR",
+    compoment: DocumentSearchSTA,
+    exact: true
+  },
+  {
+    path: "/receive/receiveforcustomerByQR",
+    name: "Customers Return",
+    compoment: CustomerReturnPalletByBarcode,
+    exact: true
+  },
+  {
+    path: "/receive/receiveforcustomer",
+    name: "Customers Return",
+    compoment: CustomerReturnPallet,
+    exact: true
+  },
+  {
+    path: "/receive/receivemptypallet",
+    name: "Empty Pallet",
+    compoment: ReceiveEmptyPallet,
+    exact: true
+  },
+  {
+    path: "/receive/receivefg",
+    name: "Receive FG",
+    compoment: ReceivePallet,
+    exact: true
+  },
+  {
+    path: "/receive/receivefgByQR",
+    name: "Receive FG",
+    compoment: ReceivePalletByBarcode,
+    exact: true
+  },
+  {
+    path: "/receive/receivewipsup",
+    name: "Receive WIP Supplier",
+    compoment: ReceiveWIPSup,
+    exact: true
+  },
+  {
+    path: "/issue/loadingreturn",
+    name: "Loading Return",
+    compoment: LoadingReturn,
+    exact: true
+  },
+  {
+    path: "/issue/loadingreturnByQR",
+    name: "Loading Return",
+    compoment: LoadingReturnByBarcode,
+    exact: true
+  },
+  {
+    path: "/issue/pickingreturn",
+    name: "Picking Return",
+    compoment: PickingReturn,
+    exact: true
+  },
+  {
+    path: "/issue/pickingreturnByQR",
+    name: "Picking Return",
+    compoment: PickingReturnByBarcode,
+    exact: true
+  },
+  {
+    path: "/issue/search",
+    name: "base5",
+    compoment: DocumentSearchGISTA,
+    exact: true
+  },
+  {
+    path: "/issue/createCus",
+    name: "base5",
+    compoment: CreateDocGISTACus,
+    exact: true
+  },
+  {
+    path: "/issue/createWm",
+    name: "base5",
+    compoment: CreateDocGISTAWare,
+    exact: true
+  },
+  {
+    path: "/issue/detail",
+    name: "base5",
+    compoment: DocumentViewGISTA,
+    exact: true
+  },
+  {
+    path: "/dashboard/pickingjobs",
+    name: "TestRedirect",
+    compoment: dashboardPickingJob,
+    exact: true
+  },
+  {
+    path: "/dashboard/countingjobs",
+    name: "TestRedirect",
+    compoment: dashboardCountingJob,
+    exact: true
+  },
+  {
+    path: "/counting/search",
+    name: "base5",
+    compoment: DocumentSearchPISTA,
+    exact: true
+  },
+  {
+    path: "/counting/detail",
+    name: "base5",
+    compoment: DocumentViewPISTA,
+    exact: true
+  },
+  {
+    path: "/counting/create",
+    name: "base5",
+    compoment: CreateDocPISTA,
+    exact: true
+  },
+  {
+    path: "/warehouse/storageobject",
+    name: "base5",
+    compoment: StorageObjectSTA,
+    exact: true
+  },
+  {
+    path: "/counting/adjust",
+    name: "CountingAdj",
+    compoment: CountingAdj,
+    exact: true
+  },
+  {
+    path: "/issue/managequeue",
+    name: "base5",
+    compoment: ProcessQueueGI,
+    exact: true
+  },
+  {
+    path: "/counting/managequeue",
+    name: "base5",
+    compoment: ProcessQueueCT,
+    exact: true
+  }
 ];
 
 export default routes;

@@ -157,6 +157,10 @@ const ReceivePallet = Loadable({
   loader: () => import("../../views/page/STA/Receive/ReceivePallet"),
   loading: Loading
 });
+const LocationSummary = Loadable({
+  loader: () => import("../../views/pageComponent/AmLocationSummary"),
+  loading: Loading
+});
 
 let routes = [
   { path: "/", name: "base", compoment: Home, exact: true },
@@ -201,6 +205,7 @@ let routes = [
   { path: "/wm/issue/manage", name: "base5", compoment: ButtonInputExcel, exact: true },
   { path: "/receive/receivefg", name: "Receive FG", compoment: ReceivePallet, exact: true },
   { path: "/createdoc", name: "Receive FG", compoment: TestCreateDocument, exact: true },
+  { path: "/location_summary", name: "Location Summary", compoment: LocationSummary, exact: true },
 ];
 
 export default routes;
