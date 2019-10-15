@@ -19,7 +19,7 @@ const CustomerQuery = {
     l: 100,
     all: "",
 }
-const CustomerReturnPallet = (props) => {
+const ReceiveFromCustomer = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
@@ -31,7 +31,7 @@ const CustomerReturnPallet = (props) => {
 
     const inputItem = [
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
-        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 20, "required": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
@@ -51,7 +51,8 @@ const CustomerReturnPallet = (props) => {
             ],
             "defaultValue": { value: '96', disabled: true }
         },
-        { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet", "required": true, "clearInput": true }
+        { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet",  "required": true, "clearInput": true }
+
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -65,13 +66,6 @@ const CustomerReturnPallet = (props) => {
             value: qryStr[SC.OPT_CARTON_NO],
             textToolTip: 'Carton No.'
         }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
-
         return res;
     }
     function onOldValue(storageObj) {
@@ -398,4 +392,4 @@ const CustomerReturnPallet = (props) => {
     );
 
 }
-export default CustomerReturnPallet;
+export default ReceiveFromCustomer;

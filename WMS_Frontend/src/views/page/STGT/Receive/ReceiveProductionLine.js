@@ -71,7 +71,7 @@ const ReceiveProductionLine = props => {
       name: "Scan Code",
       placeholder: "Scan Code",
       isFocus: true,
-      maxLength: 26,
+      maxLength: 31,
       required: true,
       clearInput: true
     },
@@ -173,17 +173,24 @@ const ReceiveProductionLine = props => {
         // }
 
         if (reqValue["scanCode"]) {
-          if (reqValue["scanCode"].length === 26) {
+          if (reqValue["scanCode"].length === 31) {
             orderNo = reqValue["scanCode"].substr(0, 7);
-            let skuCode1 = reqValue["scanCode"].substr(7, 15);
+            console.log(reqValue["scanCode"]);
+            console.log(reqValue["scanCode"].length);
+            let skuCode1 = reqValue["scanCode"].substr(7, 20);
+
+            console.log(skuCode1);
             if (skuCode1.includes("@")) {
               skuCode = skuCode1.replace(/\@/g, " ");
             } else {
               skuCode = skuCode1;
             }
             skuCode = skuCode.trim();
-            cartonNo = parseInt(reqValue["scanCode"].substr(22, 4));
+            cartonNo = parseInt(reqValue["scanCode"].substr(27, 4));
 
+            console.log(skuCode);
+            console.log(cartonNo);
+            console.log(orderNo);
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
               let dataMapstos = storageObj.mapstos[0];
               qryStrOpt = queryString.parse(dataMapstos.options);

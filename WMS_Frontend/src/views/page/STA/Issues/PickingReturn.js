@@ -19,7 +19,7 @@ const PickingReturn = (props) => {
     const inputItem = [
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
         { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
-        { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "Carton No.", "clearInput": true, "required": true },
+        { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
@@ -31,15 +31,14 @@ const PickingReturn = (props) => {
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '97', label: "PARTIAL" }
             ],
             "defaultValue": { value: '97', disabled: true }
-        }
-
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet", "required": true, "clearInput": true }
     ]
 
     const [showDialog, setShowDialog] = useState(null);
@@ -313,6 +312,7 @@ const PickingReturn = (props) => {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             } else {
@@ -324,15 +324,7 @@ const PickingReturn = (props) => {
                     }
                 }
             } else {
-                if (reqValue.action === 2) {
-                    if (storageObj.code === reqValue.scanCode) {
-                        resValuePost = { ...reqValue, allowSubmit: true }
-                    } else {
-                        resValuePost = { ...reqValue, allowSubmit: false }
-                    }
-                } else {
-                    resValuePost = { ...reqValue, allowSubmit: false }
-                }
+                resValuePost = { ...reqValue, allowSubmit: false }
             }
         }
         return resValuePost;

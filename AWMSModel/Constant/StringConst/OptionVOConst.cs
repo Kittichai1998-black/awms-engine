@@ -7,13 +7,14 @@ namespace AWMSModel.Constant.StringConst
     public static class OptionVOConst
     {
         public const string OPT_CARTON_NO = "carton_no";
-        public const string OPT_MVT = "mvt";
+        public const string OPT_MVT = "_mvt";
         public const string OPT_AUTO_DOC = "_autodoc";
-        public const string OPT_SOU_CUSTOMER_ID = "sou_customer_id";
-        public const string OPT_SOU_WAREHOUSE_ID = "sou_warehouse_id";
+        public const string OPT_SOU_CUSTOMER_ID = "_sou_customer_id";
+        public const string OPT_SOU_WAREHOUSE_ID = "_sou_warehouse_id";
         public const string OPT_REMARK = "remark";
         public const string OPT_DONE_DES_EVENT_STATUS = "_done_des_estatus";
         public const string OPT_DONE_SOU_EVENT_STATUS = "_done_sou_estatus";
+        public const string OPT_PARENT_DOCUMENT_ID = "_parent_document_id";
         //AAI
         public const string OPT_LGNUM = "lgnum"; 
         public const string OPT_LENUM = "lenum"; 
