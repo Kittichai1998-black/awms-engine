@@ -2497,7 +2497,7 @@ const AmProcessQueue = props => {
 
                                                                                                 <AmCheckBox
                                                                                                     value="Return"
-                                                                                                    label="Return For Customer"
+                                                                                                    label="Returns"
                                                                                                     defaultChecked={true}
                                                                                                     //checked={true}
                                                                                                     onChange={(e, v) =>
@@ -3126,7 +3126,7 @@ const AmProcessQueue = props => {
                                                                                                 <label
                                                                                                     style={{ marginLeft: "15px" }}
                                                                                                 >
-                                                                                                    {y.Return === true ? "Return For Customer" : ""}
+                                                                                                    {y.Return === true ? "Returns" : ""}
                                                                                                 </label>
                                                                                                 <label
                                                                                                     style={{ marginLeft: "15px" }}
