@@ -1123,7 +1123,7 @@ const Clear=()=>{
             currentPage={page}
             exportData={true}
             excelData={excelDataSrouce}
-            renderCustomButtonB4={ <AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{FuncTest();setAddData(true); setDialog(true)}} >{t("Add")}</AmButton>}
+            renderCustomButtonB4={ <div><AmButton  style={{marginRight:"5px"}} styleType="add" onClick={()=>{FuncTest();setAddData(true); setDialog(true)}} >{t("Add")}</AmButton> {props.customButton} </div>}
         />
         <Pagination
               totalSize={totalSize} 
