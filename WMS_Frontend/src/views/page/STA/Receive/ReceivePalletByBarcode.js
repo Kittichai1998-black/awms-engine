@@ -33,9 +33,7 @@ const ReceivePallet = (props) => {
         { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
     const inputItem = [
-        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true, "clearInput": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '98', label: "QC" },
@@ -43,7 +41,8 @@ const ReceivePallet = (props) => {
 
             ],
             "defaultValue": { value: '98' }
-        }
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -82,7 +81,7 @@ const ReceivePallet = (props) => {
             {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
-            },{
+            }, {
                 field: SC.OPT_REMARK,
                 value: qryStrOpt_root[SC.OPT_REMARK]
             }]
@@ -95,7 +94,7 @@ const ReceivePallet = (props) => {
                     field: SC.OPT_SOU_WAREHOUSE_ID,
                     value: qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID]
                 });
-            }  
+            }
         }
         return oldValue;
     }
@@ -120,7 +119,7 @@ const ReceivePallet = (props) => {
                 }
 
                 if (reqValue['scanCode']) {
-                    if (reqValue['scanCode'].length === 26) {
+                    if (reqValue['scanCode'].trim().length === 26) {
                         orderNo = reqValue['scanCode'].substr(0, 7);
                         let skuCode1 = reqValue['scanCode'].substr(7, 15);
                         if (skuCode1.includes('@')) {
@@ -201,6 +200,11 @@ const ReceivePallet = (props) => {
                                 options: cartonNo === "0" ? null : uri_opt,
                                 validateSKUTypeCodes: ["FG"]
                             };
+                            if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                                if (SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0) {
+                                    dataScan.allowSubmit = false;
+                                }
+                            }
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {
                             if (rootID === null) {
@@ -209,6 +213,7 @@ const ReceivePallet = (props) => {
                         }
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }

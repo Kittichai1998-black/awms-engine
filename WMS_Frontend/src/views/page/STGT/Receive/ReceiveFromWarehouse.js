@@ -5,13 +5,12 @@ import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
-
 // const Axios = new apicall()
 
-const CustomerQuery = {
+const WarehouseQuery = {
     queryString: window.apipath + "/v2/SelectDataMstAPI/",
-    t: "Customer",
-    q: '[{ "f": "Status", "c":"<", "v": 2}]',
+    t: "Warehouse",
+    q: '[{ "f": "Status", "c":"=", "v": 1}]',
     f: "*",
     g: "",
     s: "[{'f':'ID','od':'asc'}]",
@@ -19,27 +18,29 @@ const CustomerQuery = {
     l: 100,
     all: "",
 }
-const CustomerReturnPallet = (props) => {
+const ReceiveFromWarehouse = (props) => {
     const { } = props;
 
     const inputWarehouse = { "visible": true, "field": "warehouseID", "typeDropdown": "normal", "name": "Warehouse", "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 1}" };
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'=', 'v': 13}" };
 
     const inputSource = [
-        { "field": SC.OPT_SOU_CUSTOMER_ID, "type": "dropdown", "typeDropdown": "search", "name": "Sou.Customer", "dataDropDown": CustomerQuery, "placeholder": "Select Customer", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "required": true },
+        { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
 
     const inputItem = [
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
-        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
+        { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 20, "required": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '96', label: "RETURN" },
+                { value: '98', label: "QC" },
+                { value: '12', label: "RECEIVED" },
+
             ],
-            "defaultValue": { value: '96', disabled: true }
+            "defaultValue": { value: '98' }
         }
     ]
 
@@ -47,9 +48,11 @@ const CustomerReturnPallet = (props) => {
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
-                { value: '96', label: "RETURN" }
+                { value: '98', label: "QC" },
+                { value: '12', label: "RECEIVED" },
+
             ],
-            "defaultValue": { value: '96', disabled: true }
+            "defaultValue": { value: '98' }
         },
         { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet", "required": true, "clearInput": true }
     ]
@@ -64,13 +67,7 @@ const CustomerReturnPallet = (props) => {
             text: 'CN',
             value: qryStr[SC.OPT_CARTON_NO],
             textToolTip: 'Carton No.'
-        }]
-        // , {
-        // text: 'MVT',
-        // value: QryStrGetValue(value, 'MVT'),
-        // styleAvatar: {
-        //     backgroundColor: '#1769aa'
-        // }
+        }] 
 
         return res;
     }
@@ -99,8 +96,8 @@ const CustomerReturnPallet = (props) => {
                 let qryStrOpt = queryString.parse(dataMapstos.options);
 
                 oldValue.push({
-                    field: SC.OPT_SOU_CUSTOMER_ID,
-                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                    field: SC.OPT_SOU_WAREHOUSE_ID,
+                    value: qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID]
                 }, {
                     field: "orderNo",
                     value: dataMapstos.orderNo
@@ -124,18 +121,18 @@ const CustomerReturnPallet = (props) => {
             let orderNo = null;
             let skuCode = null;
             let cartonNo = null;
-            let SOU_CUSTOMER_ID = null;
+            let SOU_WAREHOUSE_ID = null;
             let rootID = reqValue.rootID;
             let qryStrOpt = {};
 
             let cartonNoList = [];
             let newQty = 0;
             if (storageObj) {
-                if (reqValue[SC.OPT_SOU_CUSTOMER_ID]) {
-                    SOU_CUSTOMER_ID = reqValue[SC.OPT_SOU_CUSTOMER_ID];
+                if (reqValue[SC.OPT_SOU_WAREHOUSE_ID]) {
+                    SOU_WAREHOUSE_ID = reqValue[SC.OPT_SOU_WAREHOUSE_ID];
                 } else {
                     if (reqValue.action != 2) {
-                        alertDialogRenderer("Please select source customer before.", "error", true);
+                        alertDialogRenderer("Please select source warehouse before.", "error", true);
                     }
                 }
 
@@ -202,7 +199,7 @@ const CustomerReturnPallet = (props) => {
                 }
 
 
-                if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
+                if (storageObj.mapstos != null && storageObj.mapstos.length > 0) {
                     let dataMapstos = storageObj.mapstos[0];
                     qryStrOpt = queryString.parse(dataMapstos.options);
 
@@ -318,12 +315,10 @@ const CustomerReturnPallet = (props) => {
                 }
 
                 if (cartonNo && rootID && skuCode && orderNo) {
-                    if (reqValue.action != 2 && SOU_CUSTOMER_ID) {
-                        qryStrOpt[SC.OPT_SOU_CUSTOMER_ID] = SOU_CUSTOMER_ID;
+                    if (reqValue.action != 2 && SOU_WAREHOUSE_ID) {
+                        qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID] = SOU_WAREHOUSE_ID;
                     }
-
                     qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
-                    // qryStr[SC.OPT_DONE_EVENT_STATUS] = "96";
                     let qryStr1 = queryString.stringify(qryStrOpt)
                     let uri_opt = decodeURIComponent(qryStr1);
 
@@ -334,11 +329,11 @@ const CustomerReturnPallet = (props) => {
                         options: cartonNo === "0" ? null : uri_opt,
                         validateSKUTypeCodes: ["FG"]
                     };
-                    if(reqValue.action != 2){ //ไม่ใช่เคสลบ
-                        if(SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0){
+                    if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                        if (SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0) {
                             dataScan.allowSubmit = false;
                         }
-                    } 
+                    }
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {
@@ -362,6 +357,7 @@ const CustomerReturnPallet = (props) => {
         }
         return resValuePost;
     }
+
     const alertDialogRenderer = (message, type, state) => {
         setMsgDialog(message);
         setTypeDialog(type);
@@ -390,12 +386,12 @@ const CustomerReturnPallet = (props) => {
                 customOptions={customOptions}
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
-                setMovementType={"1012"}
                 autoPost={false}
+                setMovementType={"1011"}
                 showOldValue={onOldValue}
             />
         </div>
     );
 
 }
-export default CustomerReturnPallet;
+export default ReceiveFromWarehouse;

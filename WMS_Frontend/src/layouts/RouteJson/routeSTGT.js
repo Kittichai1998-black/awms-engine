@@ -31,11 +31,11 @@ const DocumentViewGRSTGT = Loadable({
 });
 
 const dashboardPickingJob = Loadable({
-    loader: () => import("../../views/page/STGT/Dashboard/DashboardPickingJob"),
+  loader: () => import("../../views/page/STGT/Dashboard/DashboardPickingJob"),
   loading: Loading
 });
 const dashboardCountingJob = Loadable({
-    loader: () => import("../../views/page/STGT/Dashboard/DashboardCountingJob"),
+  loader: () => import("../../views/page/STGT/Dashboard/DashboardCountingJob"),
   loading: Loading
 });
 
@@ -52,32 +52,42 @@ const DocumentSearchPISTGT = Loadable({
   loading: Loading
 });
 const DocumentViewPISTGT = Loadable({
-    loader: () => import("../../views/page/STGT/Audit/DocumentViewPISTGT"),
+  loader: () => import("../../views/page/STGT/Audit/DocumentViewPISTGT"),
   loading: Loading
 });
 
 const StorageObject = Loadable({
-    loader: () => import("../../views/page/STGT/Report/StorageObject"),
-    loading: Loading
+  loader: () => import("../../views/page/STGT/Report/StorageObject"),
+  loading: Loading
 });
 const CurrentInventory = Loadable({
-    loader: () => import("../../views/page/STGT/Report/CurrentInventory"),
-    loading: Loading
+  loader: () => import("../../views/page/STGT/Report/CurrentInventory"),
+  loading: Loading
 });
 const StockCard = Loadable({
-    loader: () => import("../../views/page/STGT/Report/StockCard"),
-    loading: Loading
+  loader: () => import("../../views/page/STGT/Report/StockCard"),
+  loading: Loading
 });
 const StorageObjectView = Loadable({
-    loader: () => import("../../views/page/STGT/Report/StorageObjectView"),
-    loading: Loading
+  loader: () => import("../../views/page/STGT/Report/StorageObjectView"),
+  loading: Loading
 });
 const CurrentBoxSummary = Loadable({
-    loader: () => import("../../views/page/STGT/Report/CurrentBoxSummary"),
-    loading: Loading
+  loader: () => import("../../views/page/STGT/Report/CurrentBoxSummary"),
+  loading: Loading
 });
-
-
+const ReceiveFromCustomer = Loadable({
+  loader: () => import("../../views/page/STGT/Receive/ReceiveFromCustomer"),
+  loading: Loading
+});
+const ReceiveFromWarehouse = Loadable({
+  loader: () => import("../../views/page/STGT/Receive/ReceiveFromWarehouse"),
+  loading: Loading
+}); 
+const LoadingReturn = Loadable({
+  loader: () => import("../../views/page/STGT/Issues/LoadingReturn"),
+  loading: Loading
+});
 const routes = [
   {
     path: "/issue/search",
@@ -150,37 +160,46 @@ const routes = [
     name: "TestRedirect",
     compoment: dashboardCountingJob,
     exact: true
-    },
-    {
-        path: "/warehouse/storageobject",
-        name: "base5",
-        compoment: StorageObject,
-        exact: true
-    },
-    {
-        path: "/report/currentinventory",
-        name: "Current Inventory",
-        compoment: CurrentInventory,
-        exact: true
-    },
-    {
-        path: "/report/stockcard",
-        name: "StockCard",
-        compoment: StockCard,
-        exact: true
-    },
-    {
-        path: "/report/storageobject",
-        name: "base5",
-        compoment: StorageObjectView,
-        exact: true
-    },
-    {
-        path: "/report/currentboxsummary",
-        name: "base5",
-        compoment: CurrentBoxSummary,
-        exact: true
-    }
+  },
+  {
+    path: "/warehouse/storageobject",
+    name: "base5",
+    compoment: StorageObject,
+    exact: true
+  },
+  {
+    path: "/report/currentinventory",
+    name: "Current Inventory",
+    compoment: CurrentInventory,
+    exact: true
+  },
+  {
+    path: "/report/stockcard",
+    name: "StockCard",
+    compoment: StockCard,
+    exact: true
+  },
+  {
+    path: "/report/storageobject",
+    name: "base5",
+    compoment: StorageObjectView,
+    exact: true
+  },
+  {
+    path: "/report/currentboxsummary",
+    name: "base5",
+    compoment: CurrentBoxSummary,
+    exact: true
+  },
+  {
+    path: "/receive/receiveforcustomer",
+    name: "Customers Return",
+    compoment: ReceiveFromCustomer,
+    exact: true
+  },
+  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true }, 
+  { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
+  
 ];
 
 export default routes;
