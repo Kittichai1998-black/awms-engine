@@ -2494,6 +2494,19 @@ const AmProcessQueue = props => {
                                                                                                 >
                                               </AmCheckBox>
 
+
+                                                                                                <AmCheckBox
+                                                                                                    value="Return"
+                                                                                                    label="Returns"
+                                                                                                    defaultChecked={true}
+                                                                                                    //checked={true}
+                                                                                                    onChange={(e, v) =>
+                                                                                                        onChangCheckboxStatus(e, idx)
+                                                                                                    }
+                                                                                                >
+
+                                                                                                </AmCheckBox>
+
                                                                                         </FormInline>
                                                                                     </div>
                                                                                        
@@ -3113,7 +3126,7 @@ const AmProcessQueue = props => {
                                                                                                 <label
                                                                                                     style={{ marginLeft: "15px" }}
                                                                                                 >
-                                                                                                    {y.Return === true ? "Return" : ""}
+                                                                                                    {y.Return === true ? "Returns" : ""}
                                                                                                 </label>
                                                                                                 <label
                                                                                                     style={{ marginLeft: "15px" }}

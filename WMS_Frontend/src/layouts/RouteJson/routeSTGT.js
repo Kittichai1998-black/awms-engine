@@ -88,6 +88,11 @@ const LoadingReturn = Loadable({
   loader: () => import("../../views/page/STGT/Issues/LoadingReturn"),
   loading: Loading
 });
+const ReceiveProductionLine = Loadable({
+  loader: () => import("../../views/page/STGT/Receive/ReceiveProductionLine"),
+  loading: Loading
+});
+
 const routes = [
   {
     path: "/issue/search",
@@ -111,6 +116,12 @@ const routes = [
     path: "/issue/createWM",
     name: "base5",
     compoment: CreateDocGISTGTWM,
+    exact: true
+  },
+  {
+    path: "/receive/productionLine",
+    name: "Search GR",
+    compoment: ReceiveProductionLine,
     exact: true
   },
   {
@@ -190,6 +201,7 @@ const routes = [
     name: "base5",
     compoment: CurrentBoxSummary,
     exact: true
+<<<<<<< HEAD
   },
   {
     path: "/receive/receiveforcustomer",
@@ -200,6 +212,9 @@ const routes = [
   { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true }, 
   { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
   
+=======
+  }
+>>>>>>> a386b5313dc4671ceee52aaca55ac70e044a0f01
 ];
 
 export default routes;
