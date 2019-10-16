@@ -7,14 +7,14 @@ namespace AMWUtil.Common
 {
     public static class ConvertUtil
     {
-        public static string ConvertRangeNumToString(string[] value)
+        public static string ExplodeRangeNum(string[] rangeNums)
         {
             string newValue = "";
             int[] newArray = new int[] { };
-            if (value.Length > 0)
+            if (rangeNums.Length > 0)
             {
-                for (int i = 0; i < value.Length; i++){
-                    newArray = newArray.Concat(TransferToArray(value[i])).ToArray();
+                for (int i = 0; i < rangeNums.Length; i++){
+                    newArray = newArray.Concat(ConvertRangeNumToIntArray(rangeNums[i])).ToArray();
                 }
             }
 
@@ -31,7 +31,7 @@ namespace AMWUtil.Common
             }
             return newValue;
         }
-        public static string ConvertRangeNumToString(string value)
+        public static string ExplodeRangeNum(string value)
         {
             string newValue = "";
             int[] newArray = new int[] { };
@@ -39,11 +39,11 @@ namespace AMWUtil.Common
             if (value.Contains(","))
             {
                 strVal = value.Split(",");
-                return ConvertRangeNumToString(strVal);
+                return ExplodeRangeNum(strVal);
             }
             else
             {
-                newArray = newArray.Concat(TransferToArray(value)).ToArray();
+                newArray = newArray.Concat(ConvertRangeNumToIntArray(value)).ToArray();
             }
 
             for (int i = 0; i < newArray.Length; i++)
@@ -61,7 +61,7 @@ namespace AMWUtil.Common
         }
 
 
-        public static int[] TransferToArray(string value)
+        public static int[] ConvertRangeNumToIntArray(string value)
         {
             List<int> termsList = new List<int>();
             int[] newArray = new int[] { };
@@ -85,13 +85,18 @@ namespace AMWUtil.Common
             return newArray;
         }
 
-        public static string ConvertStringToRangeNum(string value)
+        public static string MergeRangeNum(string value)
         {
             var res = ToRanges(value.Split(',').Select(Int32.Parse).ToList());
             return string.Join(",", res);
         }
+        public static string ConvertToRangeNum(this List<int> values)
+        {
+            var res = ToRanges(values);
+            return string.Join(",", res);
+        }
 
-        public static string[] ToRanges(this List<int> ints)
+        private static string[] ToRanges(this List<int> ints)
         {
             if (ints.Count < 1) return new string[] { };
             ints.Sort();

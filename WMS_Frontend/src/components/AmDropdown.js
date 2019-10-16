@@ -388,7 +388,6 @@ const DropdownComponent = (props) => {
     }
     const onSelectChange = (e) => {
         setOpen(!isOpen)
-        console.log(e)
         if (e) {
             setReturnDefaultValue(false)
             setDefaultVal(null);

@@ -261,7 +261,6 @@ const AmMappingPallet2 = (props) => {
     }
 
     useEffect(() => {
-        console.log(valueInput)
         if (keyEnter)
             onHandleBeforePost();
     }, [valueInput, keyEnter]);
@@ -378,10 +377,7 @@ const AmMappingPallet2 = (props) => {
             itemCreate.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
-                    console.log(ele)
-
                     valueInput[x.field] = ele.value;
-                    console.log(ele.value)
                 }
             })
         } else if (FirstScans !== undefined) {
@@ -389,20 +385,12 @@ const AmMappingPallet2 = (props) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
                     valueInput[x.field] = ele.value;
-                    console.log(ele.value)
                 }
             })
         }
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
-        console.log(field)
-        console.log(value)
-        
         valueInput[field] = value;
-        if (field === SC.OPT_PARENT_DOCUMENT_ID) {
-            console.log(value)
-            
-        }
         setCurInput(field);
         if (field === "warehouseID") {
             setSelWarehouse(value);
@@ -411,6 +399,7 @@ const AmMappingPallet2 = (props) => {
             setKeyEnter(true);
         }
     };
+     
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
         setCurInput(field);
@@ -419,9 +408,7 @@ const AmMappingPallet2 = (props) => {
 
     async function onHandleBeforePost() {
         setKeyEnter(false);
-        //console.log(valueInput)
         //getValueInput();
-        console.log(valueInput)
         //default
         var resValuePosts = null;
         var dataScan = {};
@@ -444,7 +431,6 @@ const AmMappingPallet2 = (props) => {
                     };
                     dataScan = await onBeforePost(resInput, storageObj, curInput);
                     if (dataScan) {
-                        console.log(dataScan)
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
                         }
@@ -472,7 +458,6 @@ const AmMappingPallet2 = (props) => {
                     };
                     dataScan = await onBeforeBasePost(resInput, curInput);
                     if (dataScan) {
-                        console.log(dataScan)
                         if (dataScan.allowSubmit === true) {
                             resValuePosts = { ...dataScan }
                         }
@@ -613,13 +598,13 @@ const AmMappingPallet2 = (props) => {
                             let getOldValue = showOldValue(res.data, valueInput);
                             let val = {};
                             getOldValue.map((x, i) => {
-                                val[x.field] = x.value;
+                                for(let item in valueInput){
+                                    if(item === x.field){
+                                        val[x.field] = x.value;
+                                    }
+                                }
                             }); 
-                            //testArray = 'key1' in obj;
-                            // valueInput.map((x, i) => {
-                            //     if(x.field)
-                            //     val[xv.field] = x.value;
-                            // });
+                            
                             console.log(val);
                             setValueInput(val);
                         }
@@ -881,7 +866,7 @@ const AmMappingPallet2 = (props) => {
                     returnDefaultValue={true}
                     defaultValue={valueInput && valueInput[field] != undefined ? valueInput[field] : defaultValue ? defaultValue : ""}
                     queryApi={dataDropDown}
-                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInput(value, dataObject, field, fieldDataKey, null)}
+                    onChange={(value, dataObject, inputID, fieldDataKey) => onHandleChangeInputBlur(value, dataObject, field, fieldDataKey, null)}
                     ddlType={typeDropdown}
                 /></FormInline>
         } else if (type === "datepicker") {
