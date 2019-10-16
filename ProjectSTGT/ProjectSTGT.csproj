@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\WM\" />
-    <Folder Include="WorkerService\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

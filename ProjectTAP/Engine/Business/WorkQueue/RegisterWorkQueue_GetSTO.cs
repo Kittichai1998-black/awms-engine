@@ -112,7 +112,7 @@ namespace ProjectTAP.Engine.Business.WorkQueue
                         {
                             options = reqVO.mappingPallets[0].options,
                             code = reqVO.baseCode,
-                            qty = "1",
+                            qty = 1,
                             unit = null,
                             orderNo = null,
                             batch = null,
