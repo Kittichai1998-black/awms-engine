@@ -67,7 +67,7 @@ namespace ProjectSTA.Engine.Business
             {
                 if (pstos.FindAll(y => y.ParentStorageObject_ID == x.ID).TrueForAll(y =>
                                     {
-                                        var rangNumInts = ConvertUtil.ConvertRangeNumToIntArray(
+                                        var rangNumInts = RangeNumUtil.ConvertRangeNumToIntArray(
                                                                         y.Options.QryStrGetValue(OptionVOConst.OPT_CARTON_NO)).ToList();
                                         bool a = reqVO.cartonNoFirst <= rangNumInts.Min() && reqVO.cartonNoLast >= rangNumInts.Max();
                                         return a;

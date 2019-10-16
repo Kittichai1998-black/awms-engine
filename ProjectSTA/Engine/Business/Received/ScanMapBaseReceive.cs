@@ -145,7 +145,7 @@ namespace ProjectSTA.Engine.Business.Received
 
                                          //มีค่า CartonNo 
                                             if (optionsCartonNo.Length > 0) {
-                                                var resCartonNo = AMWUtil.Common.ConvertUtil.ExplodeRangeNum(optionsCartonNo);
+                                                var resCartonNo = AMWUtil.Common.RangeNumUtil.ExplodeRangeNum(optionsCartonNo);
                                                 dynamic newCartonNos = null;
                                                 var splitCartonNo = resCartonNo.Split(",");
                                                 int lenSplitCartonNo = splitCartonNo.Length;
@@ -164,7 +164,7 @@ namespace ProjectSTA.Engine.Business.Received
                                                     {
                                                         if (numCarton == lenSplitCartonNo)
                                                         {
-                                                            newCartonNos = AMWUtil.Common.ConvertUtil.MergeRangeNum(resCartonNo + "," + cartonNo.ToString());
+                                                            newCartonNos = AMWUtil.Common.RangeNumUtil.MergeRangeNum(resCartonNo + "," + cartonNo.ToString());
                                                         }
                                                         else {
                                                             continue;

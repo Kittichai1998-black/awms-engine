@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AMWUtil.Common
 {
-    public static class ConvertUtil
+    public static class RangeNumUtil
     {
         public static string ExplodeRangeNum(string[] rangeNums)
         {
