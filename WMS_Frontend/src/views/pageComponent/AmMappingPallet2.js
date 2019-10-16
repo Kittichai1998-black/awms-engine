@@ -219,7 +219,8 @@ const AmMappingPallet2 = (props) => {
         autoPost = true,
         autoDoc,
         setMovementType,
-        showOldValue
+        showOldValue,
+        onBeforeBasePost
     } = props;
 
     const [inputHeader, setInputHeader] = useState([]);
@@ -260,6 +261,7 @@ const AmMappingPallet2 = (props) => {
     }
 
     useEffect(() => {
+        console.log(valueInput)
         if (keyEnter)
             onHandleBeforePost();
     }, [valueInput, keyEnter]);
@@ -376,7 +378,10 @@ const AmMappingPallet2 = (props) => {
             itemCreate.map((x, i) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
+                    console.log(ele)
+
                     valueInput[x.field] = ele.value;
+                    console.log(ele.value)
                 }
             })
         } else if (FirstScans !== undefined) {
@@ -384,12 +389,20 @@ const AmMappingPallet2 = (props) => {
                 let ele = document.getElementById(x.field);
                 if (ele) {
                     valueInput[x.field] = ele.value;
+                    console.log(ele.value)
                 }
             })
         }
     }
     const onHandleChangeInput = (value, dataObject, field, fieldDataKey, event) => {
+        console.log(field)
+        console.log(value)
+        
         valueInput[field] = value;
+        if (field === SC.OPT_PARENT_DOCUMENT_ID) {
+            console.log(value)
+            
+        }
         setCurInput(field);
         if (field === "warehouseID") {
             setSelWarehouse(value);
@@ -406,7 +419,9 @@ const AmMappingPallet2 = (props) => {
 
     async function onHandleBeforePost() {
         setKeyEnter(false);
-        getValueInput();
+        //console.log(valueInput)
+        //getValueInput();
+        console.log(valueInput)
         //default
         var resValuePosts = null;
         var dataScan = {};
@@ -448,14 +463,31 @@ const AmMappingPallet2 = (props) => {
 
             } else {
                 //select / add pallet 
-                dataScan = {
-                    mode: 0,
-                    amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
-                    action: actionValue,
+                if (onBeforeBasePost) {
+                    var resInput = {
+                        ...valueInput,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        mode: 0,
+                        action: actionValue,
+                    };
+                    dataScan = await onBeforeBasePost(resInput, curInput);
+                    if (dataScan) {
+                        console.log(dataScan)
+                        if (dataScan.allowSubmit === true) {
+                            resValuePosts = { ...dataScan }
+                        }
+                    } else {
+                        inputClearAll();
+                    }
+                } else {
+                    dataScan = {
+                        mode: 0,
+                        amount: parseInt(valueInput['amount'], 10) ? parseInt(valueInput['amount'], 10) : 1,
+                        action: actionValue,
+                    }
+                    resValuePosts = { ...valueInput, ...dataScan }
                 }
-                resValuePosts = { ...valueInput, ...dataScan }
             }
-
         }
         if (resValuePosts) {
 
@@ -507,7 +539,7 @@ const AmMappingPallet2 = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            // console.log(resValuePosts);
+            console.log(resValuePosts);
             if (resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
@@ -578,11 +610,16 @@ const AmMappingPallet2 = (props) => {
                             }
                         }
                         if (showOldValue && checkMVT) {
-                            let getOldValue = showOldValue(res.data);
-                            let val = { ...valueInput };
+                            let getOldValue = showOldValue(res.data, valueInput);
+                            let val = {};
                             getOldValue.map((x, i) => {
                                 val[x.field] = x.value;
-                            });
+                            }); 
+                            //testArray = 'key1' in obj;
+                            // valueInput.map((x, i) => {
+                            //     if(x.field)
+                            //     val[xv.field] = x.value;
+                            // });
                             console.log(val);
                             setValueInput(val);
                         }
@@ -832,11 +869,12 @@ const AmMappingPallet2 = (props) => {
             return <FormInline><LabelH>{t(name)} : </LabelH>
                 <AmDropdown
                     id={field}
+                    disabled={disabled}
                     required={required}
                     placeholder={placeholder}
                     fieldDataKey={fieldDataKey}
                     fieldLabel={fieldLabel}
-                    labelPattern=" : "
+                    labelPattern={fieldLabel.length > 1 ? " : " : null}
                     width={335}
                     ddlMinWidth={335}
                     zIndex={1000}

@@ -7,6 +7,18 @@ import queryString from 'query-string'
 import * as SC from '../../../../constant/StringConst'
 // const Axios = new apicall()
 
+const DocumentQuery = {
+    queryString: window.apipath + "/v2/SelectDataViwAPI/",
+    t: "Document",
+    q:
+        '[{ "f": "Status", "c":"=", "v": 1},{ "f": "EventStatus", "c":"=", "v": 10},{ "f": "DocumentType_ID", "c":"=", "v": 1002}]',
+    f: "ID as value, Code as label, ID, Code",
+    g: "",
+    s: "[{'f':'ID','od':'asc'}]",
+    sk: 0,
+    l: 100,
+    all: ""
+};
 const LoadingReturn = (props) => {
     const { } = props;
 
@@ -14,6 +26,8 @@ const LoadingReturn = (props) => {
     const inputArea = { "visible": true, "field": "areaID", "typeDropdown": "normal", "name": "Area", "placeholder": "Select Area", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 13, "customQ": "{ 'f': 'ID', 'c':'in', 'v': '13'}" };
 
     const inputItem = [
+        { "field": SC.OPT_PARENT_DOCUMENT_ID, "type": "dropdown", "typeDropdown": "search", "name": "GI Document", "dataDropDown": DocumentQuery, "placeholder": "Select Good Issue Document", "fieldLabel": ["label"], "fieldDataKey": "value", "required": true, "disabled": true },
+        // { "field": SC.OPT_PARENT_DOCUMENT_ID, "type": "dropdown", "typeDropdown": "search", "name": "GI Document", "dataDropDown": DocumentQuery, "placeholder": "Select Good Issue Document", "fieldLabel": ["Code"], "fieldDataKey": "ID", "required": true, "disabled": true },
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "isFocus": true, "maxLength": 7, "required": true },
         { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
         { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
@@ -28,7 +42,8 @@ const LoadingReturn = (props) => {
     ]
 
     const inputFirst = [
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
+        { "field": SC.OPT_PARENT_DOCUMENT_ID, "type": "dropdown", "typeDropdown": "search", "name": "GI Document", "dataDropDown": DocumentQuery, "placeholder": "Select Good Issue Document", "fieldLabel": ["label"], "fieldDataKey": "value", "required": true },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '97', label: "PARTIAL" }
@@ -50,12 +65,12 @@ const LoadingReturn = (props) => {
             text: 'CN',
             value: qryStr[SC.OPT_CARTON_NO],
             textToolTip: 'Carton No.'
-        }] 
+        }]
 
         return res;
     }
 
-    function onOldValue(storageObj) {
+    function onOldValue(storageObj, valueInput) {
         let oldValue = [];
         if (storageObj) {
             let qryStrOpt_root = queryString.parse(storageObj.options);
@@ -78,6 +93,21 @@ const LoadingReturn = (props) => {
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
                 let dataMapstos = storageObj.mapstos[0];
                 let qryStrOpt = queryString.parse(dataMapstos.options);
+                if (qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID] && qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID].length > 0) {
+                    console.log(qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID])
+                    oldValue.push({
+                        field: SC.OPT_PARENT_DOCUMENT_ID,
+                        value: qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID]
+                    });
+                }else{
+                    if(valueInput[SC.OPT_PARENT_DOCUMENT_ID]){
+                        console.log(valueInput[SC.OPT_PARENT_DOCUMENT_ID])
+                        oldValue.push({
+                            field: SC.OPT_PARENT_DOCUMENT_ID,
+                            value: qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID]
+                        });
+                    }
+                }
 
                 oldValue.push({
                     field: "orderNo",
@@ -95,6 +125,53 @@ const LoadingReturn = (props) => {
         }
         return oldValue;
     }
+    async function onBeforeBasePost(reqValue, curInput) {
+        console.log(reqValue)
+        var resValuePost = null;
+        var dataScan = {};
+        if (reqValue) {
+            let PARENT_DOCUMENT_ID = null;
+            let scanCode = null;
+            if (reqValue[SC.OPT_PARENT_DOCUMENT_ID]) {
+                PARENT_DOCUMENT_ID = reqValue[SC.OPT_PARENT_DOCUMENT_ID];
+            } else {
+                if (reqValue.action != 2) {
+                    alertDialogRenderer("Please select GI Document before.", "error", true);
+                }
+            }
+            if (reqValue['scanCode']) {
+                if (reqValue['scanCode'].trim().length !== 0) {
+                    scanCode = reqValue['scanCode'].trim();
+                } else {
+                    if (curInput === 'scanCode') {
+                        scanCode = null;
+                        alertDialogRenderer("Pallet Code must be value.", "error", true);
+                    }
+                }
+            }
+            let qryStrOpt = reqValue["rootOptions"] && reqValue["rootOptions"].length > 0 ? queryString.parse(reqValue["rootOptions"]) : {};
+             
+            if(PARENT_DOCUMENT_ID){
+                qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID] = PARENT_DOCUMENT_ID;
+            }
+            let qryStr = queryString.stringify(qryStrOpt)
+            let uri_opt = decodeURIComponent(qryStr) || null;
+            dataScan = {
+                allowSubmit: true,
+                rootOptions: uri_opt,
+                scanCode: scanCode
+            }
+            if(reqValue.action != 2){ //ไม่ใช่เคสลบ
+                if(PARENT_DOCUMENT_ID == null || PARENT_DOCUMENT_ID.length === 0){
+                    dataScan.allowSubmit = false;
+                }
+            } 
+            resValuePost = { ...reqValue,  ...dataScan }
+
+        }
+        console.log(resValuePost)
+        return resValuePost;
+    }
     async function onBeforePost(reqValue, storageObj, curInput) {
         var resValuePost = null;
         var dataScan = {};
@@ -102,12 +179,20 @@ const LoadingReturn = (props) => {
             let orderNo = null;
             let skuCode = null;
             let cartonNo = null;
+            let PARENT_DOCUMENT_ID = null;
             let rootID = reqValue.rootID;
             let qryStrOpt = {};
 
             let cartonNoList = [];
             let newQty = 0;
             if (storageObj) {
+                if (reqValue[SC.OPT_PARENT_DOCUMENT_ID]) {
+                    PARENT_DOCUMENT_ID = reqValue[SC.OPT_PARENT_DOCUMENT_ID];
+                } else {
+                    if (reqValue.action != 2) {
+                        alertDialogRenderer("Please select GI Document before.", "error", true);
+                    }
+                }
                 if (reqValue['scanCode']) {
                     if (reqValue['scanCode'].trim().length !== 0) {
                         skuCode = reqValue['scanCode'].trim();
@@ -287,6 +372,9 @@ const LoadingReturn = (props) => {
                 }
 
                 if (cartonNo && rootID && skuCode && orderNo) {
+                    if (reqValue.action != 2 && PARENT_DOCUMENT_ID) {
+                        qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID] = PARENT_DOCUMENT_ID;
+                    }
 
                     qryStrOpt[SC.OPT_CARTON_NO] = cartonNo.toString();
                     // qryStr[SC.OPT_DONE_EVENT_STATUS] = "97";
@@ -300,6 +388,11 @@ const LoadingReturn = (props) => {
                         options: cartonNo === "0" ? null : uri_opt,
                         validateSKUTypeCodes: ["FG"]
                     };
+                    if(reqValue.action != 2){ //ไม่ใช่เคสลบ
+                        if(PARENT_DOCUMENT_ID == null || PARENT_DOCUMENT_ID.length === 0){
+                            dataScan.allowSubmit = false;
+                        }
+                    } 
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {
@@ -355,6 +448,7 @@ const LoadingReturn = (props) => {
                 autoDoc={true}
                 setMovementType={"1111"}
                 showOldValue={onOldValue}
+                onBeforeBasePost={onBeforeBasePost}
             />
         </div>
     );
