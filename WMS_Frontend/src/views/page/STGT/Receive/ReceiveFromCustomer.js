@@ -385,6 +385,7 @@ const ReceiveFromCustomer = (props) => {
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 setMovementType={"1012"}
+                autoDoc={true}
                 autoPost={false}
                 showOldValue={onOldValue}
             />

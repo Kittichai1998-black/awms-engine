@@ -352,6 +352,7 @@ const LoadingReturn = (props) => {
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={false}
+                autoDoc={true}
                 setMovementType={"1111"}
                 showOldValue={onOldValue}
             />

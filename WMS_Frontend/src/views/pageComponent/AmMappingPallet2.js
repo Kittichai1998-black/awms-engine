@@ -217,6 +217,7 @@ const AmMappingPallet2 = (props) => {
         modeMultiSKU = false,
         confirmReceiveMapSTO = false,
         autoPost = true,
+        autoDoc,
         setMovementType,
         showOldValue
     } = props;
@@ -499,6 +500,9 @@ const AmMappingPallet2 = (props) => {
             }
             if (setMovementType !== undefined || null) {
                 qryStrOpt[SC.OPT_MVT] = setMovementType;
+            }
+            if (autoDoc) {
+                qryStrOpt[SC.OPT_AUTO_DOC] = "true"
             }
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
@@ -1110,7 +1114,8 @@ AmMappingPallet2.propTypes = {
     confirmReceiveMapSTO: PropTypes.bool,
     showWarehouseDDL: PropTypes.object,
     showAreaDDL: PropTypes.object,
-    showOldValue: PropTypes.func
+    showOldValue: PropTypes.func,
+    autoDoc: PropTypes.bool
 };
 
 AmMappingPallet2.defaultProps = {

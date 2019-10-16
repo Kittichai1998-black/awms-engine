@@ -387,6 +387,7 @@ const ReceiveFromWarehouse = (props) => {
                 showOptions={true}
                 setVisibleTabMenu={[null, 'Add', 'Remove']}
                 autoPost={false}
+                autoDoc={true}
                 setMovementType={"1011"}
                 showOldValue={onOldValue}
             />
