@@ -90,8 +90,8 @@ namespace ProjectTMC.Engine.Business.WorkQueue
                     WorkQueue_ID = null,
                     Sou_StorageObject_ID = mapsto.mapstos[0].id.Value,
                     Des_StorageObject_ID = mapsto.mapstos[0].id.Value,
-                    Quantity = qtyPack,
-                    BaseQuantity = qtyPack,
+                    Quantity = docGR.Quantity,
+                    BaseQuantity = docGR.BaseQuantity,
                     UnitType_ID = docGR.UnitType_ID.Value,
                     BaseUnitType_ID = docGR.BaseUnitType_ID.Value,
                     Status = EntityStatus.INACTIVE

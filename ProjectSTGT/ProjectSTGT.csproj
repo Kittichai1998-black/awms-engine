@@ -1,18 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\WM\" />
-    <Folder Include="WorkerService\" />
-    <Folder Include="wwwroot\" />
+    <Compile Remove="Controllers\WM\**" />
+    <Content Remove="Controllers\WM\**" />
+    <EmbeddedResource Remove="Controllers\WM\**" />
+    <None Remove="Controllers\WM\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <Folder Include="Controllers\" />
+    <Folder Include="WorkerService\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
