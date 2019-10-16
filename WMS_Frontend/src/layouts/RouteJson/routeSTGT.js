@@ -76,6 +76,18 @@ const CurrentBoxSummary = Loadable({
   loader: () => import("../../views/page/STGT/Report/CurrentBoxSummary"),
   loading: Loading
 });
+const ReceiveFromCustomer = Loadable({
+  loader: () => import("../../views/page/STGT/Receive/ReceiveFromCustomer"),
+  loading: Loading
+});
+const ReceiveFromWarehouse = Loadable({
+  loader: () => import("../../views/page/STGT/Receive/ReceiveFromWarehouse"),
+  loading: Loading
+}); 
+const LoadingReturn = Loadable({
+  loader: () => import("../../views/page/STGT/Issues/LoadingReturn"),
+  loading: Loading
+});
 const ReceiveProductionLine = Loadable({
   loader: () => import("../../views/page/STGT/Receive/ReceiveProductionLine"),
   loading: Loading
@@ -189,7 +201,16 @@ const routes = [
     name: "base5",
     compoment: CurrentBoxSummary,
     exact: true
-  }
+  },
+  {
+    path: "/receive/receiveforcustomer",
+    name: "Customers Return",
+    compoment: ReceiveFromCustomer,
+    exact: true
+  },
+  { path: "/receive/receivefg", name: "Receive FG", compoment: ReceiveFromWarehouse, exact: true }, 
+  { path: "/issue/loadingreturn", name: "Loading Return", compoment: LoadingReturn, exact: true },
+  
 ];
 
 export default routes;

@@ -430,7 +430,7 @@ const AmPickingReturn = (props) => {
                     var dataRootFocus = findRootMapping(bstoData);
                     rootFocusID = dataRootFocus.id;
                     rootBaseCode = dataRootFocus.code;
-                   
+
                     if (onBeforePost) {
                         var resInput = {
                             ...valueInput,
@@ -613,21 +613,6 @@ const AmPickingReturn = (props) => {
                                     alertDialogRenderer("Remove Pack Success", "success", true);
                                 }
                             }
-                            // if (itemCreate !== undefined) {
-                            //     let qryStr2 = queryString.parse(res.data.bsto.options);
-                            //     itemCreate.map((x, i) => {
-                            //         let ele = document.getElementById(x.field);
-                            //         if (ele) {
-                            //             if (x.clearInput) {
-                            //             } else {
-                            //                 if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                            //                     valueInput[x.field] = qryStr2[x.field];
-                            //                     ele.value = qryStr2[x.field];
-                            //                 }
-                            //             }
-                            //         }
-                            //     });
-                            // }
                         } else {
                             alertDialogRenderer("Moment Type isn't match.", "error", true);
                             onHandleClear();
@@ -748,7 +733,7 @@ const AmPickingReturn = (props) => {
                             disabled={disabled}
                             placeholder={placeholder}
                             type="number"
-                            style={{ width: "330px" }}                            defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
+                            style={{ width: "330px" }} defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             defaultValue={valueInput && valueInput[field] ? clearInput ? "" : valueInput[field] : defaultValue ? defaultValue : ""}
                             onBlur={(value, obj, element, event) => onHandleChangeInputBlur(value, null, field, null, event)}
                         />
@@ -797,7 +782,7 @@ const AmPickingReturn = (props) => {
                         row={true}
                         name={field}
                         dataValue={fieldLabel}
-                        returnDefaultValue={true} 
+                        returnDefaultValue={true}
                         defaultValue={valRad ? valRad : {}}
                         onChange={(value, obj, element, event) =>
                             onHandleChangeRadio(value, field)
@@ -897,7 +882,7 @@ const AmPickingReturn = (props) => {
                 <Card className={classes.card}>
                     <CardContent className={classes.cardContent}>
                         <Typography className={classes.title} gutterBottom>
-                            Pallet Information
+                            Location Information
                         </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
@@ -907,6 +892,9 @@ const AmPickingReturn = (props) => {
                     </CardContent>
                     <Divider style={{ marginTop: 5 }} />
                     <CardContent className={classes.cardContent}>
+                        <Typography className={classes.title} gutterBottom>
+                            Pallet Information
+                        </Typography>
                         {inputItem ? inputItem.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}

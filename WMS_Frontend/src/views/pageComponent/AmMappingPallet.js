@@ -217,6 +217,7 @@ const AmMappingPallet = (props) => {
         modeMultiSKU = false,
         confirmReceiveMapSTO = false,
         autoPost = true,
+        autoDoc,
         setMovementType,
         showOldValue,
         modeSelectOnly
@@ -453,7 +454,7 @@ const AmMappingPallet = (props) => {
             }
 
         }
-        // console.log(resValuePosts)
+        console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -497,10 +498,13 @@ const AmMappingPallet = (props) => {
             if (setMovementType !== undefined || null) {
                 qryStrOpt[SC.OPT_MVT] = setMovementType;
             }
+            if (autoDoc) {
+                qryStrOpt[SC.OPT_AUTO_DOC] = "true"
+            }
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            // console.log(resValuePosts);
+            console.log(resValuePosts);
             if (resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
@@ -560,30 +564,32 @@ const AmMappingPallet = (props) => {
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
                     let checkMVT = false;
-                    let qryStr = queryString.parse(res.data.options);
-                    let OPT_MVT = qryStr[SC.OPT_MVT];
-                    if (modeSelectOnly) {
-                        checkMVT = true;
-                    } else {
-                        if (res.data.mapstos == null || res.data.mapstos.length === 0) {
+                    if (res.data.code) {
+                        let qryStr = queryString.parse(res.data.options);
+                        let OPT_MVT = qryStr[SC.OPT_MVT];
+                        if (modeSelectOnly) {
                             checkMVT = true;
                         } else {
-                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                            if (res.data.mapstos == null || res.data.mapstos.length === 0) {
                                 checkMVT = true;
+                            } else {
+                                if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
+                                    checkMVT = true;
+                                }
                             }
                         }
-                    }
-                    if (showOldValue && checkMVT) {
-                        let getOldValue = showOldValue(res.data);
-                        let val = { ...valueInput };
-                        getOldValue.map((x, i) => {
-                            val[x.field] = x.value;
-                        });
-                        setValueInput(val);
-                    } else {
-                        let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
-                        console.log(val);
-                        setValueInput(val);
+                        if (showOldValue && checkMVT) {
+                            let getOldValue = showOldValue(res.data);
+                            let val = { ...valueInput };
+                            getOldValue.map((x, i) => {
+                                val[x.field] = x.value;
+                            });
+                            setValueInput(val);
+                        } else {
+                            let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
+                            console.log(val);
+                            setValueInput(val);
+                        }
                     }
                     inputClearAll();
                     if (checkMVT) {
@@ -631,21 +637,6 @@ const AmMappingPallet = (props) => {
                                 }
                             }
                         }
-                        // if (itemCreate !== undefined) {
-                        //     let qryStr2 = queryString.parse(res.data.options);
-                        //     itemCreate.map((x, i) => {
-                        //         let ele = document.getElementById(x.field);
-                        //         if (ele) {
-                        //             if (x.clearInput) {
-                        //             } else {
-                        //                 if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                        //                     valueInput[x.field] = qryStr2[x.field];
-                        //                     ele.value = qryStr2[x.field];
-                        //                 }
-                        //             }
-                        //         }
-                        //     });
-                        // }
                     } else {
                         alertDialogRenderer("Moment Type isn't match.", "error", true);
                         onHandleClear();
@@ -1027,7 +1018,9 @@ const AmMappingPallet = (props) => {
                     {inputSource && inputSource.length > 0 && actionValue != 2 ?
                         <>
                             <CardContent className={classes.cardContent}>
-
+                                <Typography className={classes.title} gutterBottom>
+                                    Source Information
+                                </Typography>
                                 {inputSource.map((row, idx) => {
                                     return row.component(row, idx)
                                 })}
@@ -1037,7 +1030,7 @@ const AmMappingPallet = (props) => {
                         : null}
                     <CardContent className={classes.cardContent}>
                         <Typography className={classes.title} gutterBottom>
-                            Pallet Information
+                            Location Information
                         </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
@@ -1047,6 +1040,9 @@ const AmMappingPallet = (props) => {
                     </CardContent>
                     <Divider style={{ marginTop: 5 }} />
                     <CardContent className={classes.cardContent}>
+                        <Typography className={classes.title} gutterBottom>
+                            Pallet Information
+                        </Typography>
                         {inputItem ? inputItem.map((row, idx) => {
                             return row.component(row, idx)
                         }) : null}
@@ -1118,7 +1114,8 @@ AmMappingPallet.propTypes = {
     showWarehouseDDL: PropTypes.object,
     showAreaDDL: PropTypes.object,
     showOldValue: PropTypes.func,
-    modeSelectOnly: PropTypes.bool
+    modeSelectOnly: PropTypes.bool,
+    autoDoc: PropTypes.bool
 };
 
 AmMappingPallet.defaultProps = {
