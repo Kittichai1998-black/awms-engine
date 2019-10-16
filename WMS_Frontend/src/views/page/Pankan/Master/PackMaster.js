@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import MasterData from "../../pageComponent/MasterData";
+import MasterData from "../../../pageComponent/MasterData";
 import {
-  apicall,
-  createQueryString
-} from "../../../components/function/CoreFunction";
-import AmEntityStatus from "../../../components/AmEntityStatus";
-
+    apicall,
+    createQueryString
+} from "../../../../components/function/CoreFunction";
+import AmEntityStatus from "../../../../components/AmEntityStatus";
 const Axios = new apicall();
-
 //======================================================================
 const PackMaster = props => {
   const UnitTypeQuery = {

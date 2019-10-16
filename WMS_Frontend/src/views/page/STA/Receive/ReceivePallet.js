@@ -31,7 +31,7 @@ const ReceivePallet = (props) => {
     const inputItem = [
         { "field": "orderNo", "type": "input", "name": "SI (Order No.)", "placeholder": "SI (Order No.)", "maxLength": 7, "isFocus": true, "required": true },
         { "field": "scanCode", "type": "input", "name": "Reorder (SKU Code)", "placeholder": "Reorder (SKU Code)", "maxLength": 15, "required": true },
-        { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "Carton No.", "clearInput": true, "required": true },
+        { "field": "cartonNo", "type": "input", "name": "Carton No.", "placeholder": "ex. 1) 1-100 2) 10-20,30-40 3) 1,2,3,10-15", "clearInput": true, "required": true },
         { "field": "amount", "type": "number", "name": "Quantity", "placeholder": "Quantity", "clearInput": true, "required": true, "disabled": true },
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
         {
@@ -45,8 +45,7 @@ const ReceivePallet = (props) => {
     ]
 
     const inputFirst = [
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "required": true, "clearInput": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '98', label: "QC" },
@@ -54,8 +53,8 @@ const ReceivePallet = (props) => {
 
             ],
             "defaultValue": { value: '98' }
-        }
-
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Pallet", "placeholder": "Scan Pallet", "required": true, "clearInput": true }
     ]
     const [showDialog, setShowDialog] = useState(null);
     const [stateDialog, setStateDialog] = useState(false);
@@ -338,12 +337,18 @@ const ReceivePallet = (props) => {
                         options: cartonNo === "0" ? null : uri_opt,
                         validateSKUTypeCodes: ["FG"]
                     };
+                    if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                        if (SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0) {
+                            dataScan.allowSubmit = false;
+                        }
+                    }
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {
                         alertDialogRenderer("Please scan the pallet before scanning the product.", "error", true);
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if (storageObj.code === reqValue.scanCode) {
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             } else {
@@ -355,15 +360,7 @@ const ReceivePallet = (props) => {
                     }
                 }
             } else {
-                if (reqValue.action === 2) {
-                    if (storageObj.code === reqValue.scanCode) {
-                        resValuePost = { ...reqValue, allowSubmit: true }
-                    } else {
-                        resValuePost = { ...reqValue, allowSubmit: false }
-                    }
-                } else {
-                    resValuePost = { ...reqValue, allowSubmit: false }
-                }
+                resValuePost = { ...reqValue, allowSubmit: false }
             }
         }
         return resValuePost;

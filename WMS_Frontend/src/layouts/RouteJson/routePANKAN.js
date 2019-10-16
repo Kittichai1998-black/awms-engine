@@ -53,6 +53,10 @@ const LoadingEx = Loadable({
   loading: Loading
 });
 
+const SettingSKUMaster = Loadable({
+    loader: () => import("../../views/page/Pankan/Master/SKUMaster"),
+    loading: Loading
+});
 const routes = [
   { path: "/receive/search", name: "base5", compoment: searchGR, exact: true },
   { path: "/receive/detail", name: "base5", compoment: DetailGR, exact: true },
@@ -88,7 +92,9 @@ const routes = [
     exact: true
   },
   { path: "/loading/create", name: "base5", compoment: CreateLD, exact: true },
-  { path: "/loading/loading", name: "base5", compoment: LoadingEx, exact: true }
+    { path: "/loading/loading", name: "base5", compoment: LoadingEx, exact: true },
+    { path: "/mst/sku/manage", name: "base5", compoment: SettingSKUMaster, exact: true }
+
 ];
 
 export default routes;

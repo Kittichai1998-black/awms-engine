@@ -22,15 +22,14 @@ const PickingReturnByBarcode = (props) => {
     //     // { "field": "ActionDateTime", "type": "datepicker", "name": "Action Date/Time", "placeholder": "ActionDateTime" },
     // ]
     const inputItem = [
-        // { "field": "Quantity", "type": "number", "name": "Quantity", "placeholder": "Quantity" },
-        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "isFocus": true, "maxLength": 26, "required": true, "clearInput": true },
-        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark" },
+        { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
                 { value: '97', label: "PARTIAL" }
             ],
             "defaultValue": { value: '97', disabled: true }
-        }
+        },
+        { "field": "scanCode", "type": "input", "name": "Scan Code", "placeholder": "Scan Code", "maxLength": 26, "required": true, "clearInput": true }
     ]
 
     const [showDialog, setShowDialog] = useState(null);
@@ -174,6 +173,7 @@ const PickingReturnByBarcode = (props) => {
                         }
                     } else {
                         if (reqValue.action === 2) {
+                            reqValue.scanCode = reqValue.scanCode.trim();
                             if(storageObj.code === reqValue.scanCode){
                                 resValuePost = { ...reqValue, allowSubmit: true }
                             }

@@ -1,8 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\WM\**" />
+    <Content Remove="Controllers\WM\**" />
+    <EmbeddedResource Remove="Controllers\WM\**" />
+    <None Remove="Controllers\WM\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Engine\Business\EvalTest.cs" />
@@ -10,16 +17,10 @@
 
   <ItemGroup>
     <Folder Include="APIService\ASRS\" />
-    <Folder Include="Controllers\WM\" />
+    <Folder Include="Controllers\" />
     <Folder Include="Engine\General\" />
     <Folder Include="Engine\Validation\" />
     <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
   </ItemGroup>
 
   <ItemGroup>

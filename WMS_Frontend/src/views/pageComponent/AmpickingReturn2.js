@@ -634,44 +634,7 @@ const AmPickingReturn2 = (props) => {
                                     alertDialogRenderer("Remove Pack Success", "success", true);
                                 }
                             }
-                            if (itemCreate !== undefined) {
-                                let qryStr2 = queryString.parse(res.data.bsto.options);
-                                itemCreate.map((x, i) => {
-                                    let ele = document.getElementById(x.field);
-                                    if (ele) {
-                                        if (x.clearInput) {
-                                        } else {
-                                            if (qryStr2[x.field] !== null && qryStr2[x.field] !== undefined) {
-                                                valueInput[x.field] = qryStr2[x.field];
-                                                ele.value = qryStr2[x.field];
-                                            }
-                                        }
-                                    }
-                                });
-                                if (res.data.bsto.mapstos != null && res.data.bsto.mapstos.length > 0) {
-                                    let mapsto = res.data.bsto.mapstos[0];
-                                    itemCreate.map((x, i) => {
-                                        let ele = document.getElementById(x.field);
-                                        if (ele) {
-                                            if (x.clearInput) {
-                                            } else {
-                                                if (x.field === 'scanCode') {
-                                                    if (mapsto.code !== null && mapsto.code !== undefined) {
-                                                        valueInput[x.field] = mapsto.code;
-                                                        ele.value = mapsto.code;
-                                                    }
-                                                } else {
-                                                    if (mapsto[x.field] !== null && mapsto[x.field] !== undefined) {
-                                                        valueInput[x.field] = mapsto[x.field];
-                                                        ele.value = mapsto[x.field];
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                                // console.log(valueInput);
-                            }
+
                         } else {
                             alertDialogRenderer("Moment Type isn't match.", "error", true);
                             onHandleClear();
@@ -944,7 +907,7 @@ const AmPickingReturn2 = (props) => {
                 <Card className={classes.card}>
                     <CardContent className={classes.cardContent}>
                         <Typography className={classes.title} gutterBottom>
-                            Pallet Information
+                            Location Information
                         </Typography>
                         {showWarehouseDDL && showWarehouseDDL.visible ? ddlWarehouse : null}
                         {showAreaDDL && showAreaDDL.visible ? ddlArea : null}
@@ -953,16 +916,24 @@ const AmPickingReturn2 = (props) => {
                         }) : null}
                     </CardContent>
                     <Divider style={{ marginTop: 5 }} />
-                    <div>{newDataShow === null ? <CardContent className={classes.cardContent}>
-                        {InputItemFirst ? InputItemFirst.map((row, idx) => {
-                            return row.component(row, idx)
-                        }) : null}
-                    </CardContent> : null}</div>
-                    <div> {newDataShow ? scanFirstbarcode === true ? <CardContent className={classes.cardContent}>
-                        {inputItem ? inputItem.map((row, idx) => {
-                            return row.component(row, idx)
-                        }) : null}
-                    </CardContent> : null : null}</div>
+                    {newDataShow === null ?
+                        <CardContent className={classes.cardContent}>
+                            <Typography className={classes.title} gutterBottom>
+                                Pallet Information
+                            </Typography>
+                            {InputItemFirst ? InputItemFirst.map((row, idx) => {
+                                return row.component(row, idx)
+                            }) : null}
+                        </CardContent> : null}
+                    {newDataShow ? scanFirstbarcode === true ?
+                        <CardContent className={classes.cardContent}>
+                            <Typography className={classes.title} gutterBottom>
+                                Pallet Information
+                            </Typography>
+                            {inputItem ? inputItem.map((row, idx) => {
+                                return row.component(row, idx)
+                            }) : null}
+                        </CardContent> : null : null}
                     <CardActions>
                         <AmButton styleType="confirm" className={classnames(classes.button)} onClick={() => onPreSubmitToAPI()}>
                             {t('Scan')}
