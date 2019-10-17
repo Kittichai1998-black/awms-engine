@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import { apicall, createQueryString } from '../../components/function/CoreFunction2';
-import { ConvertRangeNumToString, ConvertStringToRangeNum } from '../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum } from '../../components/function/Convert';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -345,11 +345,11 @@ function Test6(props) {
           let val3 = "1-6,9,12-14,23";
           let val4 = "1,2,3,4,5,6,9,12,13,14,23";
           let val5 = "5,4,3,2,1,6,10,12,13,14,23";
-        //   console.log(ConvertRangeNumToString(val1));
-        //   console.log(ConvertRangeNumToString(val2));
-        //   console.log(ConvertRangeNumToString(val3));
-        //   console.log(ConvertStringToRangeNum(val4));
-        //   console.log(ConvertStringToRangeNum(val5));
+        //   console.log(ExplodeRangeNum(val1));
+        //   console.log(ExplodeRangeNum(val2));
+        //   console.log(ExplodeRangeNum(val3));
+        //   console.log(MergeRangeNum(val4));
+        //   console.log(MergeRangeNum(val5));
     }
     return (
         <>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
-import { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/Convert';
 import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'
@@ -109,7 +109,7 @@ const PickingReturnByBarcode = (props) => {
                             }
                             if (rootID && skuCode && orderNo) {
                                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                                let resCartonNo = ExplodeRangeNum(oldOptions);
                                 let splitCartonNo = resCartonNo.split(",").map((x, i) => { return x = parseInt(x) });
                                 let lenSplitCartonNo = splitCartonNo.length;
                                 let numCarton = 0;
@@ -143,7 +143,7 @@ const PickingReturnByBarcode = (props) => {
                                         }
                                         else {
                                             if (numCarton === lenSplitCartonNo) {
-                                                cartonNo = ConvertStringToRangeNum(resCartonNo + "," + cartonNo.toString());
+                                                cartonNo = MergeRangeNum(resCartonNo + "," + cartonNo.toString());
                                             } else {
                                                 continue;
                                             }

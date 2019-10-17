@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
-import { ConvertRangeNumToString, ConvertStringToRangeNum } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum } from '../../../../components/function/Convert';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import * as SC from '../../../../constant/StringConst'

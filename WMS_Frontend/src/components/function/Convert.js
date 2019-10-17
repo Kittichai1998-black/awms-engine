@@ -1,7 +1,7 @@
 // import React, { Component } from 'react';
 // import Axios from 'axios';
 
-function ConvertRangeNumToString(value) {
+function ExplodeRangeNum(value) {
 
     let newvalue = "";
     let newArray = [];
@@ -12,7 +12,7 @@ function ConvertRangeNumToString(value) {
             if (value.length > 0) {
                 value.forEach(element => {
                     // console.log(element)
-                    newArray = newArray.concat(TransferToArray(element));
+                    newArray = newArray.concat(ConvertRangeNumToIntArray(element));
                 });
             }
         } else {
@@ -20,10 +20,10 @@ function ConvertRangeNumToString(value) {
                 strVal = value.split(",");
                 strVal.forEach(element => {
                     if(element != null && element.length > 0)
-                        newArray = newArray.concat(TransferToArray(element));
+                        newArray = newArray.concat(ConvertRangeNumToIntArray(element));
                 });
             } else {
-                newArray = newArray.concat(TransferToArray(value))
+                newArray = newArray.concat(ConvertRangeNumToIntArray(value))
             }
         }
     }
@@ -40,7 +40,7 @@ function ConvertRangeNumToString(value) {
 
     return newvalue;
 }
-function TransferToArray(element) {
+function ConvertRangeNumToIntArray(element) {
     let newArray = [];
     if (element.includes("-")) {
         let eleArray = element.split("-").map((a) => {
@@ -64,7 +64,7 @@ function TransferToArray(element) {
     return newArray;
 }
 
-function ConvertStringToRangeNum(value) {
+function MergeRangeNum(value) {
     let res = ToRanges(value.split(',').map((a) => {
         return a = a ? parseInt(a) : 0;
     }));
@@ -98,4 +98,4 @@ const match = (arr, arr2) => {
     }
     return ret;
 };
-export { ConvertRangeNumToString, ConvertStringToRangeNum, ToRanges, match }
+export { ExplodeRangeNum, MergeRangeNum, ToRanges, match }
