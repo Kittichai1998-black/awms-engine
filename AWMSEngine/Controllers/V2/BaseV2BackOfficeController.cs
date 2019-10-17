@@ -15,8 +15,8 @@ namespace AWMSEngine.Controllers.V2
     [ApiController]
     public class BaseV2BackOfficeController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
-        public BaseV2BackOfficeController(IHostingEnvironment hostingEnvironment)
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        public BaseV2BackOfficeController(IWebHostEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
         }

@@ -40,7 +40,14 @@ namespace ProjectSTGT.Engine.WM
             var getFile = new DirectoryInfo(directoryPath).GetFiles();
             foreach (var file in getFile)
             {
-                //var resxx = FilesAccess.ExcelAccess<TRes>(file.FullName);
+                try
+                {
+                    var res = FilesTypeAccess.ExcelAccess(file);
+                }
+                catch
+                {
+
+                }
             }
         }  
     }
