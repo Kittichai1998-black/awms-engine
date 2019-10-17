@@ -56,9 +56,9 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
 
         protected StorageObjectCriteria GetSto(TReq reqVO)
         {
-            //var res = this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
-            //if(res == null)
-            //{
+            var res = this.ExectProject<TReq, StorageObjectCriteria>(FeatureCode.EXEPJ_RegisterWorkQueue_GetSTO, reqVO);
+            if(res == null)
+            {
                 ////DF Code
                 var sto = ADO.StorageObjectADO.GetInstant().Get(reqVO.baseCode,
                     null, null, false, true, BuVO);
@@ -74,15 +74,15 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                 sto.parentID = _locationASRS.ID.Value;
                 sto.parentType = StorageObjectType.LOCATION;
 
-               var res = sto;
-            //}
+                res = sto;
+            }
             return res;
         }
         protected List<amt_DocumentItem> GetDocumentItemAndDISTO(StorageObjectCriteria sto, TReq reqVO)
         {
-            //var res = this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
-            //if (res == null)
-            //{
+            var res = this.ExectProject<TReqDocumentItemAndDISTO, List<amt_DocumentItem>>(FeatureCode.EXEPJ_RegisterWorkQueue_GetDocumentItemAndDISTO, new TReqDocumentItemAndDISTO() { sto = sto, reqVO = reqVO });
+            if (res == null)
+            {
                 ////DF Code
                 List<amt_DocumentItem> docItems = new List<amt_DocumentItem>();
                 //รับสินค้าใหม่เข้าคลัง, รับเข้าpallet เปล่า, สร้างเอกสารเบิกpallet เปล่า, 
@@ -141,8 +141,8 @@ namespace AWMSEngine.Engine.V2.Business.WorkQueue
                     throw new AMWException(Logger, AMWExceptionCode.V2002, "Can't receive Base Code '" + reqVO.baseCode + "' into ASRS because it has Event Status '" + sto.eventStatus + "'");
                 }
 
-                var res = docItems;
-            //}
+                res = docItems;
+            }
 
             return res;
         }
