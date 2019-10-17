@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import { apicall, createQueryString } from '../../components/function/CoreFunction2';
-import { ExplodeRangeNum, MergeRangeNum } from '../../components/function/RangeNumUtill';
+import { ExplodeRangeNum, MergeRangeNum,ExplodeRangeNumToIntArray,ConvertToRangeNum } from '../../components/function/RangeNumUtill';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
@@ -342,14 +342,22 @@ function Test6(props) {
     const convertData = () => {
         let val1 = ["1-6","9","12-14"];
          let val2 = "1-6";
-          let val3 = "1-6,9,12-14,23";
+          let val3 = "1-6,25,9,12-14,23";
           let val4 = "1,2,3,4,5,6,9,12,13,14,23";
           let val5 = "5,4,3,2,1,6,10,12,13,14,23";
+          let val6 = [5,4,3,2,1,6,10,12,13,14,23];
         //   console.log(ExplodeRangeNum(val1));
         //   console.log(ExplodeRangeNum(val2));
         //   console.log(ExplodeRangeNum(val3));
         //   console.log(MergeRangeNum(val4));
         //   console.log(MergeRangeNum(val5));
+        
+        // console.log(ExplodeRangeNumToIntArray(val1));
+        // console.log(ExplodeRangeNumToIntArray(val2));
+        // console.log(ExplodeRangeNumToIntArray(val3));
+        // console.log(ExplodeRangeNumToIntArray(val4));
+        // console.log(ExplodeRangeNumToIntArray(val5));
+        // console.log(ConvertToRangeNum(val6));
     }
     return (
         <>

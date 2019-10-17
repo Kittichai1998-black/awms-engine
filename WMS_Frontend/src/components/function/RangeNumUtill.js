@@ -1,34 +1,7 @@
-// import React, { Component } from 'react';
-// import Axios from 'axios';
-
 function ExplodeRangeNum(value) {
 
     let newvalue = "";
-    let newArray = [];
-    let strVal = [];
-
-    if (value) {
-        if (Array.isArray(value)) {
-            if (value.length > 0) {
-                value.forEach(element => {
-                    // console.log(element)
-                    newArray = newArray.concat(ConvertRangeNumToIntArray(element));
-                });
-            }
-        } else {
-            if (value.includes(",")) {
-                strVal = value.split(",");
-                strVal.forEach(element => {
-                    if(element != null && element.length > 0)
-                        newArray = newArray.concat(ConvertRangeNumToIntArray(element));
-                });
-            } else {
-                newArray = newArray.concat(ConvertRangeNumToIntArray(value))
-            }
-        }
-    }
-    // console.log(newArray)
-
+    let newArray = ExplodeRangeNumToIntArray(value);
     newArray.forEach((value, index) => {
         if (index === newArray.length - 1) {
             newvalue = newvalue.concat(value);
@@ -36,23 +9,48 @@ function ExplodeRangeNum(value) {
             newvalue = newvalue.concat(value, ',');
         }
     })
-    // console.log(newvalue)
-
     return newvalue;
 }
+
+function ExplodeRangeNumToIntArray(value) {
+    let newArray = [];
+    let strVal = [];
+
+    if (value) {
+        if (Array.isArray(value)) {
+            if (value.length > 0) {
+                value.forEach(element => {
+                    newArray = newArray.concat(ConvertRangeNumToIntArray(element));
+                });
+            }
+        } else {
+            if (value.includes(",")) {
+                strVal = value.split(",");
+                strVal.forEach(element => {
+                    if (element != null && element.length > 0)
+                        newArray = newArray.concat(ConvertRangeNumToIntArray(element));
+                });
+            } else {
+                newArray = newArray.concat(ConvertRangeNumToIntArray(value))
+            }
+        }
+        newArray.sort((a, b) => a - b);
+    }
+    return newArray;
+}
+
 function ConvertRangeNumToIntArray(element) {
     let newArray = [];
     if (element.includes("-")) {
         let eleArray = element.split("-").map((a) => {
             return a = a ? parseInt(a) : 0;
         });
-        // console.log(eleArray)
         let i = eleArray[0];
         let end = eleArray[1];
-        
-        if(end === 0) {
+
+        if (end === 0) {
             newArray.push(i);
-        }else{
+        } else {
             while (i <= end) {
                 newArray.push(i);
                 i++;
@@ -61,6 +59,7 @@ function ConvertRangeNumToIntArray(element) {
     } else {
         newArray.push(Number(element));
     }
+    newArray.sort((a, b) => a - b);
     return newArray;
 }
 
@@ -68,7 +67,11 @@ function MergeRangeNum(value) {
     let res = ToRanges(value.split(',').map((a) => {
         return a = a ? parseInt(a) : 0;
     }));
-    // console.log(res)
+    return res.join();
+}
+
+function ConvertToRangeNum(values) { //values type array
+    var res = ToRanges(values);
     return res.join();
 }
 
@@ -98,4 +101,4 @@ const match = (arr, arr2) => {
     }
     return ret;
 };
-export { ExplodeRangeNum, MergeRangeNum, ToRanges, match }
+export { ExplodeRangeNum, ExplodeRangeNumToIntArray, ConvertToRangeNum, MergeRangeNum, ToRanges, match }
