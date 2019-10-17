@@ -16,7 +16,7 @@ const AmLocationSummary = props => {
     const [dataSide, setDataSide] = useState()
     const [dataDetail, setDataDetail] = useState([])
     const [dataAll, setDataAll] = useState()
-    const refDetail = useRef();
+    // const refDetail = useRef();
     const locationSummary = {
         queryString: window.apipath + "/v2/SelectDataViwAPI/",
         t: "LocationSummary",
@@ -31,13 +31,14 @@ const AmLocationSummary = props => {
 
     let bank = [{}],
         bay = [{}],
-        level = [{}]
+        level = [{}],
+        topTr
 
 
-    useEffect(() => {
-        if (dataDetail.length)
-            refDetail.current.scrollIntoView()
-    }, [dataDetail])
+    // useEffect(() => {
+    //     if (dataDetail.length)
+    //         refDetail.current.scrollIntoView()
+    // }, [dataDetail])
 
     useEffect(() => {
         Axios.get(createQueryString(locationSummary)).then((row) => {
@@ -79,18 +80,18 @@ const AmLocationSummary = props => {
                 padding = "5px",
                 dataT = bank.map((x, xi) => {
                     return (
-                        <tr className={"HoverTable"} onClick={() => clickRow(x.Bank)} key={xi}>{
+                        <tr className={"HoverTable"} onClick={(e) => clickRow(x.Bank, e)} key={xi}>{
                             bay.map((y, yi) => {
                                 let dataFil = dataAll.filter(z => { return z.Bank === x.Bank && z.Bay === y.Bay && z.bsto_Code })
                                 if (xi === 0 && yi && yi % bayPercen_10 === 0) { // header แกน x
-                                    return <td colspan={bayPercen_10} key={yi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{yi}</td>
+                                    return <td colSpan={bayPercen_10} key={yi} style={{ fontSize: "8px", textAlign: "center", borderLeft: "1px solid black", borderRight: "1px solid black" }}>{yi}</td>
                                 } else if (yi === 0 && xi) { // header แกน y
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>{xi}</td>
                                 } else if (yi === 0 && xi === 0) {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Bank\Bay</td>
                                 } else if (yi && xi) {
                                     let color = dataFil.length ? dataFil.length * 0.1 : 0,
-                                        cssBg = `rgba(255, 0, 0, ${color})`
+                                        cssBg = `rgba(210, 105, 30, ${color})`
                                     return (
                                         <td key={yi} style={{
                                             padding: padding,
@@ -107,8 +108,17 @@ const AmLocationSummary = props => {
         }
     }, [dataAll])
 
-    const clickRow = (rowBank) => {
+    const clickRow = (rowBank, e) => {
         if (rowBank) {
+            if (topTr) {
+                topTr.classList.remove("active");
+                // topTr.removeAttribute("style")
+            }
+
+            // e.currentTarget.setAttribute("style", "border: 2px solid yellow;");
+            e.currentTarget.classList.add("active");
+            topTr = e.currentTarget
+
             let padding = "8px",
                 dataS = level.map((x, xi) => {
                     return (
@@ -126,12 +136,12 @@ const AmLocationSummary = props => {
                                     return <td key={yi} style={{ fontSize: "8px", textAlign: "center" }}>Level\Bay</td>
                                 } else {
                                     let color = dataFil.length ? (dataFil.length + 1) * 0.1 : 0,
-                                        cssBg = `rgba(255, 0, 0, ${color})`
+                                        cssBg = `rgba(210, 105, 30, ${color})`
                                     return (
                                         <td
                                             className={"HoverTable"}
                                             key={yi}
-                                            onClick={() => clickData(rowBank, y.Bay, x.Level)}
+                                            onClick={(e) => clickData(rowBank, y.Bay, x.Level, e)}
                                             style={{
                                                 padding: padding,
                                                 backgroundColor: cssBg,
@@ -147,29 +157,38 @@ const AmLocationSummary = props => {
         }
     }
 
-    const clickData = (selBank, selBay, selLevel) => {
-        let dataFil = dataAll.filter(z => { return z.Level === selLevel && z.Bay === selBay && z.Bank === selBank && z.bsto_Code })
-        let dataD = dataFil.map((x, xi) => {
-            return (
-                <Grid key={xi} item xs={6} sm={6} md={6} lg={6} xl={6} ref={xi === 0 ? refDetail : null} >
-                    <Card>
-                        <CardContent>
-                            <p>{x.Code}</p>
-                            <p>{x.bsto_Code}</p>
-                            <p>{x.psto_Code}</p>
-                            <p>{x.psto_Name}</p>
-                            <p>{x.Quantity}</p>
-                            <p>{x.ut_Code}</p>
-                        </CardContent>
-                        {/* <CardActions>
+    const clickData = (selBank, selBay, selLevel, e) => {
+        if (e.currentTarget.style.border.search("black") !== -1) {
+            e.currentTarget.style.border = "2px solid red"
+        }
+        else {
+            e.currentTarget.style.border = "1px solid black"
+        }
 
-                        </CardActions> */}
-                    </Card>
-                </Grid>
-            )
-        })
+        let dataFil = dataAll.filter(z => { return z.Level === selLevel && z.Bay === selBay && z.Bank === selBank && z.bsto_Code })
+        // let dataD = dataFil.map((x, xi) => {
+        //     return (
+        //         <Grid key={xi} item xs={12} sm={12} md={12} lg={12} xl={12}>
+        //             <Card>
+        //                 <CardContent>
+        //                     <p>{x.Code}</p>
+        //                     <p>{x.bsto_Code}</p>
+        //                     <p>{x.psto_Code}</p>
+        //                     <p>{x.psto_Name}</p>
+        //                     <p>{x.Quantity}</p>
+        //                     <p>{x.ut_Code}</p>
+        //                 </CardContent>
+        //                 {/* <CardActions>
+
+        //                 </CardActions> */}
+        //             </Card>
+        //         </Grid>
+        //     )
+        // })
         // setHiddenDetail(!dataD.length)
-        setDataDetail(dataD)
+        console.log(dataFil);
+
+        setDataDetail(dataFil)
     }
 
     return (
@@ -180,38 +199,46 @@ const AmLocationSummary = props => {
                 direction="row"
                 justify="center"
                 alignItems="flex-start">
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ textAlign: "center" }}>
-                    <b style={{ fontSize: "20px" }}>Top View</b>
-                    <div style={{ overflow: "auto", height: (window.innerHeight - 200) / 2, marginLeft: "40px" }}>
-                        <table style={{ align: "center" }} >
-                            <tbody>
-                                {dataTop}
-                            </tbody>
-                        </table>
+                <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                    <div style={{ textAlign: "center" }}>
+                        <b style={{ fontSize: "20px" }}>Detail</b>
                     </div>
+
+
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ textAlign: "center" }}>
-                    <b style={{ fontSize: "20px" }}>Side View</b>
-                    <div style={{ overflow: "auto", height: (window.innerHeight - 200) / 2, marginLeft: "40px" }}>
-                        <table style={{ align: "center" }} >
-                            <tbody>
-                                {dataSide}
-                            </tbody>
-                        </table>
-                    </div>
-                </Grid>
-                {dataDetail.length ? <Aux>
-                    <b style={{ fontSize: "20px" }}>Detail</b>
+                <Grid item xs={9} sm={9} md={9} lg={9} xl={9}>
                     <Grid
                         container
                         // spacing={3}
                         direction="row"
                         justify="center"
                         alignItems="flex-start">
-                        {dataDetail}
                     </Grid>
-                </Aux> : null
-                }
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ textAlign: "center" }}>
+                        <b style={{ fontSize: "20px" }}>Top View</b>
+                        <div id={"divTableTopView"} style={{ height: (window.innerHeight - 200) / 2 }}>
+                            <table align={"center"}>
+                                <tbody>
+                                    {dataTop}
+                                </tbody>
+                            </table>
+                        </div>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ textAlign: "center" }}>
+                        <b style={{ fontSize: "20px" }}>Side View</b>
+                        <div id={"divTableSideView"} style={{ height: (window.innerHeight - 200) / 2 }}>
+                            <table align={"center"}>
+                                <tbody>
+                                    {dataSide}
+                                </tbody>
+                            </table>
+                        </div>
+                    </Grid>
+                </Grid>
+
+
+
+
             </Grid>
         </Aux>
     )
