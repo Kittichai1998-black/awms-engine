@@ -1,4 +1,11 @@
-.HoverTable:hover {
-    background-color: yellow!important;
-    cursor: pointer;
-  }
+.HoverTable:not(:first-child):hover {
+  background-color: yellow!important;
+  cursor: pointer;
+}
+
+table tr td:first-child{
+  position: fixed;
+  margin-left:-40px;
+  width:40px;
+  text-align:right !important;
+}
