@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import { apicall, createQueryString } from '../../components/function/CoreFunction2';
-import { ExplodeRangeNum, MergeRangeNum } from '../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum } from '../../components/function/RangeNumUtill';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';

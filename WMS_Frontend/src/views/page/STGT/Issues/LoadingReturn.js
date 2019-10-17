@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges, match } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmMappingPallet2 from '../../../pageComponent/AmMappingPallet2';
 import AmDialogs from '../../../../components/AmDialogs'

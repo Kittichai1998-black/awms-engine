@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { apicall, createQueryString, Clone } from '../../../../components/function/CoreFunction';
-import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/RangeNumUtill';
 import AmPickingReturn from '../../../pageComponent/AmPickingReturn';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'

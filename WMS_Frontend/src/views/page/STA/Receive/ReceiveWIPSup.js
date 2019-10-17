@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/Convert';
+import { ExplodeRangeNum, MergeRangeNum, ToRanges } from '../../../../components/function/RangeNumUtill';
 import AmMappingPallet from '../../../pageComponent/AmMappingPallet';
 import AmDialogs from '../../../../components/AmDialogs'
 import queryString from 'query-string'

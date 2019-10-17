@@ -4,7 +4,7 @@ import {
   MergeRangeNum,
   ToRanges,
   match
-} from "../../../../components/function/Convert";
+} from "../../../../components/function/RangeNumUtill";
 import AmMappingPallet from "../../../pageComponent/AmMappingPallet";
 import AmMappingPallet2 from "../../../pageComponent/AmMappingPallet2";
 import AmDialogs from "../../../../components/AmDialogs";
