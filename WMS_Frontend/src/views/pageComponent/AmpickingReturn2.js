@@ -332,12 +332,12 @@ const AmPickingReturn2 = (props) => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
             GetWarehouseDDL();
         }
-    }, [ddlWarehouse])
+    }, [ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
             GetAreaDDL(selWarehouse)
         }
-    }, [selWarehouse])
+    }, [selWarehouse, ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (ddlArea === null && selWarehouse) {
             if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
@@ -535,7 +535,7 @@ const AmPickingReturn2 = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            console.log(resValuePosts);
+            // console.log(resValuePosts);
             if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
@@ -607,7 +607,7 @@ const AmPickingReturn2 = (props) => {
                             getOldValue.map((x, i) => {
                                 val[x.field] = x.value;
                             });
-                            console.log(val);
+                            // console.log(val);
                             setValueInput(val);
                         } else {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };

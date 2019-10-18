@@ -303,7 +303,7 @@ const AmMappingPallet2 = (props) => {
     }, [inputSource]);
     useEffect(() => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
-            GetWarehouseDDL();
+        GetWarehouseDDL();
         }
     }, [ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
@@ -523,7 +523,7 @@ const AmMappingPallet2 = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            console.log(resValuePosts);
+            // console.log(resValuePosts);
             if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
@@ -582,6 +582,7 @@ const AmMappingPallet2 = (props) => {
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
                     let checkMVT = false;
+                    let checkDataNull = false;
                     if (res.data.code) {
                         let qryStr = queryString.parse(res.data.options);
                         let OPT_MVT = qryStr[SC.OPT_MVT];
@@ -608,14 +609,15 @@ const AmMappingPallet2 = (props) => {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
                             setValueInput(val);
                         }
-                        inputClearAll();
-                    } else {
+                    } 
+                    else {
                         if (actionValue === 2) {
-                            checkMVT = true;
+                            checkDataNull = true;
                         }
                     }
 
                     if (checkMVT) {
+                        inputClearAll();
                         if (showArea && res.data.areaID) {
                             GetArea(res.data.areaID);
                         }
@@ -645,13 +647,17 @@ const AmMappingPallet2 = (props) => {
                                     setStorageObj(res.data);
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } else {
-                                    alertDialogRenderer("Remove Pallet Success", "success", true);
-                                    onHandleClear();
-                                }
+                                } 
+                                // else {
+                                //     alertDialogRenderer("Remove Pallet Success", "success", true);
+                                //     onHandleClear();
+                                // }
                             }
                         }
                     } else {
+                        if (checkDataNull) {
+                            alertDialogRenderer("Remove Pallet Success", "success", true);
+                        }                          
                         onHandleClear();
                     }
                 } else {

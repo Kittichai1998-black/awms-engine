@@ -320,12 +320,12 @@ const AmPickingReturn = (props) => {
         if (ddlWarehouse === null && showWarehouseDDL && showWarehouseDDL.visible) {
             GetWarehouseDDL();
         }
-    }, [ddlWarehouse])
+    }, [ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
             GetAreaDDL(selWarehouse)
         }
-    }, [selWarehouse])
+    }, [selWarehouse, ddlWarehouse, localStorage.getItem("Lang")])
     useEffect(() => {
         if (ddlArea === null && selWarehouse) {
             if (showAreaDDL && showAreaDDL.visible && selWarehouse) {
@@ -587,7 +587,7 @@ const AmPickingReturn = (props) => {
                             getOldValue.map((x, i) => {
                                 val[x.field] = x.value;
                             });
-                            console.log(val);
+                            // console.log(val);
                             setValueInput(val);
                         } else {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };

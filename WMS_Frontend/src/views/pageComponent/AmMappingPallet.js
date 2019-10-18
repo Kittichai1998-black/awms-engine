@@ -460,7 +460,7 @@ const AmMappingPallet = (props) => {
             }
 
         }
-        console.log(resValuePosts)
+        // console.log(resValuePosts)
         if (resValuePosts) {
 
             setResValuePost(resValuePosts);
@@ -510,7 +510,7 @@ const AmMappingPallet = (props) => {
             let qryStr = queryString.stringify(qryStrOpt)
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
-            console.log(resValuePosts);
+            // console.log(resValuePosts);
             if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
