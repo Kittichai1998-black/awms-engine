@@ -259,7 +259,7 @@ const AmMappingPallet2 = (props) => {
     function handleExpandClick() {
         setExpanded(!expanded);
     }
-
+     
     useEffect(() => {
         if (keyEnter)
             onHandleBeforePost();
@@ -280,7 +280,6 @@ const AmMappingPallet2 = (props) => {
     }, [itemCreate]);
     useEffect(() => {
         if (FirstScans)
-            // console.log(FirstScans)
             setInputItemFirst(createComponent(FirstScans));
     }, [FirstScans]);
     useEffect(() => {
@@ -399,7 +398,7 @@ const AmMappingPallet2 = (props) => {
             setKeyEnter(true);
         }
     };
-     
+
     const onHandleChangeInputBlur = (value, dataObject, field, fieldDataKey, event) => {
         valueInput[field] = value;
         setCurInput(field);
@@ -525,7 +524,7 @@ const AmMappingPallet2 = (props) => {
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
             console.log(resValuePosts);
-            if (resValuePosts.scanCode.length === 0) {
+            if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
                 if (modeEmptyPallet === false) {
@@ -580,36 +579,42 @@ const AmMappingPallet2 = (props) => {
     }
     const scanBarcodeApi = (req) => {
         Axios.post(window.apipath + apiCreate, req).then((res) => {
-            // inputClear();
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
                     let checkMVT = false;
                     if (res.data.code) {
+                        let qryStr = queryString.parse(res.data.options);
+                        let OPT_MVT = qryStr[SC.OPT_MVT];
                         if (res.data.mapstos == null || res.data.mapstos.length === 0) {
                             checkMVT = true;
                         } else {
-                            let qryStr = queryString.parse(res.data.options);
-                            let OPT_MVT = qryStr[SC.OPT_MVT];
-                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
-                                checkMVT = true;
+                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT && setMovementType) {
+                                if (OPT_MVT === setMovementType) {
+                                    checkMVT = true;
+                                } else {
+                                    alertDialogRenderer("Moment Type isn't match.", "error", true);
+                                }
                             }
                         }
+
                         if (showOldValue && checkMVT) {
-                            let getOldValue = showOldValue(res.data, valueInput);
-                            let val = {};
+                            let getOldValue = showOldValue(res.data);
+                            let val = { ...valueInput };
                             getOldValue.map((x, i) => {
-                                for(let item in valueInput){
-                                    if(item === x.field){
-                                        val[x.field] = x.value;
-                                    }
-                                }
-                            }); 
-                            
-                            console.log(val);
+                                val[x.field] = x.value;
+                            });
+                            setValueInput(val);
+                        } else {
+                            let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
                             setValueInput(val);
                         }
+                        inputClearAll();
+                    } else {
+                        if (actionValue === 2) {
+                            checkMVT = true;
+                        }
                     }
-                    inputClearAll();
+
                     if (checkMVT) {
                         if (showArea && res.data.areaID) {
                             GetArea(res.data.areaID);
@@ -646,9 +651,7 @@ const AmMappingPallet2 = (props) => {
                                 }
                             }
                         }
-
                     } else {
-                        alertDialogRenderer("Moment Type isn't match.", "error", true);
                         onHandleClear();
                     }
                 } else {
@@ -1126,6 +1129,7 @@ AmMappingPallet2.propTypes = {
     itemCreate: PropTypes.array,
     FirstScans: PropTypes.array,
     onBeforePost: PropTypes.func,
+    onBeforeBasePost: PropTypes.func,
     apiCreate: PropTypes.string,
     apiConfirm: PropTypes.string,
     customOptions: PropTypes.func,

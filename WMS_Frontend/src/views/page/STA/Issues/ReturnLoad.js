@@ -78,7 +78,13 @@ const ReceivePallet = (props) => {
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             }, {
                 field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "cartonNo",
+                value: ""
+            }, {
+                field: "amount",
+                value: 0
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {

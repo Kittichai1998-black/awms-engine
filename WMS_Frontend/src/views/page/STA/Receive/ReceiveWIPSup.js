@@ -33,7 +33,7 @@ const ReceiveWIPSup = (props) => {
     const inputSource = [
         { "field": SC.OPT_SOU_WAREHOUSE_ID, "type": "dropdown", "typeDropdown": "normal", "name": "Sou.Warehouse", "dataDropDown": WarehouseQuery, "placeholder": "Select Warehouse", "fieldLabel": ["Code", "Name"], "fieldDataKey": "ID", "defaultValue": 1, "required": true },
     ]
-    const inputItem = [ 
+    const inputItem = [
         { "field": SC.OPT_REMARK, "type": "input", "name": "Remark", "placeholder": "Remark", "isFocus": true },
         {
             "field": SC.OPT_DONE_DES_EVENT_STATUS, "type": "radiogroup", "name": "Status", "fieldLabel": [
@@ -79,9 +79,12 @@ const ReceiveWIPSup = (props) => {
             {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
-            },{
+            }, {
                 field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "scanCode",
+                value: ""
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -90,9 +93,9 @@ const ReceiveWIPSup = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_WAREHOUSE_ID,
-                    value: qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_WAREHOUSE_ID])
                 });
-            }  
+            }
         }
         return oldValue;
     }
@@ -198,11 +201,11 @@ const ReceiveWIPSup = (props) => {
                                 options: cartonNo === "0" ? null : uri_opt,
                                 validateSKUTypeCodes: ["WIP"]
                             };
-                            if(reqValue.action != 2){ //ไม่ใช่เคสลบ
-                                if(SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0){
+                            if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                                if (SOU_WAREHOUSE_ID == null || SOU_WAREHOUSE_ID.length === 0) {
                                     dataScan.allowSubmit = false;
                                 }
-                            } 
+                            }
                             resValuePost = { ...reqValue, ...dataScan }
                         } else {
                             if (rootID === null) {

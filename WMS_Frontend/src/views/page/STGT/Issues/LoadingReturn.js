@@ -85,8 +85,14 @@ const LoadingReturn = (props) => {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             }, {
-                field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                field: SC.OPT_REMARK, 
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "cartonNo",
+                value: ""
+            }, {
+                field: "amount",
+                value: 0
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -96,14 +102,14 @@ const LoadingReturn = (props) => {
                     console.log(qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID])
                     oldValue.push({
                         field: SC.OPT_PARENT_DOCUMENT_ID,
-                        value: qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID]
+                        value: parseInt(qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID])
                     });
                 }else{
                     if(valueInput[SC.OPT_PARENT_DOCUMENT_ID]){
                         console.log(valueInput[SC.OPT_PARENT_DOCUMENT_ID])
                         oldValue.push({
                             field: SC.OPT_PARENT_DOCUMENT_ID,
-                            value: qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID]
+                            value: parseInt(qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID])
                         });
                     }
                 }

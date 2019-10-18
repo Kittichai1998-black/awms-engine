@@ -414,7 +414,7 @@ const AmPickingReturn = (props) => {
     };
     async function onHandleBeforePost() {
         setKeyEnter(false);
-        getValueInput();
+        // getValueInput();
 
         var resValuePosts = null;
         var dataScan = {};
@@ -515,7 +515,7 @@ const AmPickingReturn = (props) => {
             let uri_opt = decodeURIComponent(qryStr) || null;
             resValuePosts["rootOptions"] = uri_opt;
             // console.log(resValuePosts);
-            if (resValuePosts.scanCode.length === 0) {
+            if (resValuePosts.scanCode === undefined || resValuePosts.scanCode === null || resValuePosts.scanCode.length === 0) {
                 alertDialogRenderer("Scan Code must be value", "error", true);
             } else {
                 if (actionValue !== 0 && actionValue !== 2 && resData ? resData.bsto : null) {
@@ -568,13 +568,17 @@ const AmPickingReturn = (props) => {
                 if (res.data._result.message === "Success") {
                     if (res.data.bsto) {
                         let checkMVT = false;
+                        let qryStr = queryString.parse(res.data.bsto.options);
+                        let OPT_MVT = qryStr[SC.OPT_MVT];
                         if (res.data.bsto.mapstos == null || res.data.bsto.mapstos.length === 0) {
                             checkMVT = true;
                         } else {
-                            let qryStr = queryString.parse(res.data.bsto.options);
-                            let OPT_MVT = qryStr[SC.OPT_MVT];
-                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT === setMovementType) {
-                                checkMVT = true;
+                            if (OPT_MVT != null && OPT_MVT.length > 0 && OPT_MVT && setMovementType) {
+                                if (OPT_MVT === setMovementType) {
+                                    checkMVT = true;
+                                } else {
+                                    alertDialogRenderer("Moment Type isn't match.", "error", true);
+                                }
                             }
                         }
                         if (showOldValue && checkMVT) {
@@ -584,6 +588,9 @@ const AmPickingReturn = (props) => {
                                 val[x.field] = x.value;
                             });
                             console.log(val);
+                            setValueInput(val);
+                        } else {
+                            let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
                             setValueInput(val);
                         }
                         inputClearAll();
@@ -614,7 +621,6 @@ const AmPickingReturn = (props) => {
                                 }
                             }
                         } else {
-                            alertDialogRenderer("Moment Type isn't match.", "error", true);
                             onHandleClear();
                         }
                     } else {
