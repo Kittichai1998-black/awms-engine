@@ -91,7 +91,13 @@ const CustomerReturnPallet = (props) => {
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             }, {
                 field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "cartonNo",
+                value: ""
+            }, {
+                field: "amount",
+                value: 0
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -100,7 +106,7 @@ const CustomerReturnPallet = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_CUSTOMER_ID,
-                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
                 }, {
                     field: "orderNo",
                     value: dataMapstos.orderNo
@@ -334,11 +340,11 @@ const CustomerReturnPallet = (props) => {
                         options: cartonNo === "0" ? null : uri_opt,
                         validateSKUTypeCodes: ["FG"]
                     };
-                    if(reqValue.action != 2){ //ไม่ใช่เคสลบ
-                        if(SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0){
+                    if (reqValue.action != 2) { //ไม่ใช่เคสลบ
+                        if (SOU_CUSTOMER_ID == null || SOU_CUSTOMER_ID.length === 0) {
                             dataScan.allowSubmit = false;
                         }
-                    } 
+                    }
                     resValuePost = { ...reqValue, ...dataScan }
                 } else {
                     if (rootID === null) {

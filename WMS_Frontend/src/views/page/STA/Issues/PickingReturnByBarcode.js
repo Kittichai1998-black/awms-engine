@@ -69,8 +69,11 @@ const PickingReturnByBarcode = (props) => {
                 field: SC.OPT_DONE_DES_EVENT_STATUS,
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             },{
-                field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                field: SC.OPT_REMARK, 
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            },{
+                field: "scanCode",
+                value: ""
             }]
  
         }

@@ -85,7 +85,13 @@ const ReceiveFromCustomer = (props) => {
                 value: qryStrOpt_root[SC.OPT_DONE_DES_EVENT_STATUS]
             }, {
                 field: SC.OPT_REMARK,
-                value: qryStrOpt_root[SC.OPT_REMARK]
+                value: qryStrOpt_root[SC.OPT_REMARK] ? qryStrOpt_root[SC.OPT_REMARK] : ""
+            }, {
+                field: "cartonNo",
+                value: ""
+            }, {
+                field: "amount",
+                value: 0
             }]
 
             if (storageObj.mapstos !== null && storageObj.mapstos.length > 0) {
@@ -94,7 +100,7 @@ const ReceiveFromCustomer = (props) => {
 
                 oldValue.push({
                     field: SC.OPT_SOU_CUSTOMER_ID,
-                    value: qryStrOpt[SC.OPT_SOU_CUSTOMER_ID]
+                    value: parseInt(qryStrOpt[SC.OPT_SOU_CUSTOMER_ID])
                 }, {
                     field: "orderNo",
                     value: dataMapstos.orderNo
