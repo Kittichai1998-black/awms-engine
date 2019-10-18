@@ -158,7 +158,6 @@ const ReceiveFromWarehouse = (props) => {
                             if (curInput === 'orderNo') {
                                 orderNo = null;
                                 if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                    console.log("scan pallet")
                                 } else {
                                     alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
 
@@ -174,7 +173,6 @@ const ReceiveFromWarehouse = (props) => {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
                             if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                console.log("scan pallet")
                             } else {
                                 alertDialogRenderer("Carton No. must be value.", "error", true);
                             }

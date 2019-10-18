@@ -99,14 +99,12 @@ const LoadingReturn = (props) => {
                 let dataMapstos = storageObj.mapstos[0];
                 let qryStrOpt = queryString.parse(dataMapstos.options);
                 if (qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID] && qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID].length > 0) {
-                    console.log(qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID])
                     oldValue.push({
                         field: SC.OPT_PARENT_DOCUMENT_ID,
                         value: parseInt(qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID])
                     });
                 }else{
                     if(valueInput[SC.OPT_PARENT_DOCUMENT_ID]){
-                        console.log(valueInput[SC.OPT_PARENT_DOCUMENT_ID])
                         oldValue.push({
                             field: SC.OPT_PARENT_DOCUMENT_ID,
                             value: parseInt(qryStrOpt[SC.OPT_PARENT_DOCUMENT_ID])
@@ -173,7 +171,6 @@ const LoadingReturn = (props) => {
             resValuePost = { ...reqValue,  ...dataScan }
 
         }
-        console.log(resValuePost)
         return resValuePost;
     }
     async function onBeforePost(reqValue, storageObj, curInput) {
@@ -213,7 +210,6 @@ const LoadingReturn = (props) => {
                             if (curInput === 'orderNo') {
                                 orderNo = null;
                                 if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                    console.log("scan pallet")
                                 } else {
                                     alertDialogRenderer("SI (Order No.) must be equal 7-digits", "error", true);
 
@@ -229,7 +225,6 @@ const LoadingReturn = (props) => {
                         if (curInput === 'cartonNo') {
                             cartonNo = null;
                             if (reqValue.action != 2 && storageObj.mapstos != null && storageObj.mapstos[0].code === skuCode) {
-                                console.log("scan pallet")
                             } else {
                                 alertDialogRenderer("Carton No. must be value.", "error", true);
                             }
