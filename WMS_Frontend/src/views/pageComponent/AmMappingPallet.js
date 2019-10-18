@@ -570,6 +570,7 @@ const AmMappingPallet = (props) => {
             if (res.data != null) {
                 if (res.data._result.message === "Success") {
                     let checkMVT = false;
+                    let checkDataNull = false;
                     if (res.data.code) {
                         let qryStr = queryString.parse(res.data.options);
                         let OPT_MVT = qryStr[SC.OPT_MVT];
@@ -600,13 +601,13 @@ const AmMappingPallet = (props) => {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
                             setValueInput(val);
                         }
-                        inputClearAll();
                     } else {
                         if (actionValue === 2) {
-                            checkMVT = true;
+                            checkDataNull = true;
                         }
                     }
                     if (checkMVT) {
+                        inputClearAll();
                         if (showArea && res.data.areaID) {
                             GetArea(res.data.areaID);
                         }
@@ -645,13 +646,17 @@ const AmMappingPallet = (props) => {
 
                                     alertDialogRenderer("Remove Pack Success", "success", true);
 
-                                } else {
-                                    alertDialogRenderer("Remove Pallet Success", "success", true);
-                                    onHandleClear();
-                                }
+                                } 
+                                // else {
+                                //     alertDialogRenderer("Remove Pallet Success", "success", true);
+                                //     onHandleClear();
+                                // }
                             }
                         }
                     } else {
+                        if (checkDataNull) {
+                            alertDialogRenderer("Remove Pallet Success", "success", true);
+                        } 
                         onHandleClear();
                     }
                 } else {

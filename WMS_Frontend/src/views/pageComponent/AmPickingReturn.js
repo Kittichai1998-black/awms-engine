@@ -593,9 +593,10 @@ const AmPickingReturn = (props) => {
                             let val = { ...valueInput, [SC.OPT_REMARK]: qryStr[SC.OPT_REMARK] };
                             setValueInput(val);
                         }
-                        inputClearAll();
 
                         if (checkMVT) {
+                            inputClearAll();
+
                             setResData(res.data);
 
                             if (res.data.bsto.code === req.scanCode) {
