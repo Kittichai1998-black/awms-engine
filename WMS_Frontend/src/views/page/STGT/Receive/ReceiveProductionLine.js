@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-  ConvertRangeNumToString,
-  ConvertStringToRangeNum,
+  ExplodeRangeNum,
+  MergeRangeNum,
   ToRanges,
   match
-} from "../../../../components/function/Convert";
+} from "../../../../components/function/RangeNumUtill";
 import AmMappingPallet from "../../../pageComponent/AmMappingPallet";
 import AmMappingPallet2 from "../../../pageComponent/AmMappingPallet2";
 import AmDialogs from "../../../../components/AmDialogs";
@@ -208,7 +208,7 @@ const ReceiveProductionLine = props => {
               }
               if (rootID && skuCode && orderNo) {
                 let oldOptions = qryStrOpt[SC.OPT_CARTON_NO];
-                let resCartonNo = ConvertRangeNumToString(oldOptions);
+                let resCartonNo = ExplodeRangeNum(oldOptions);
                 let splitCartonNo = resCartonNo.split(",").map((x, i) => {
                   return (x = parseInt(x));
                 });
@@ -259,7 +259,7 @@ const ReceiveProductionLine = props => {
                       break;
                     } else {
                       if (numCarton === lenSplitCartonNo) {
-                        cartonNo = ConvertStringToRangeNum(
+                        cartonNo = MergeRangeNum(
                           resCartonNo + "," + cartonNo.toString()
                         );
                       } else {

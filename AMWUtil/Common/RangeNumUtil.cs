@@ -5,18 +5,19 @@ using System.Text;
 
 namespace AMWUtil.Common
 {
-    public static class ConvertUtil
+    public static class RangeNumUtil
     {
-        public static string ConvertRangeNumToString(string[] value)
+        public static string ExplodeRangeNum(string[] rangeNums)
         {
             string newValue = "";
-            int[] newArray = new int[] { };
-            if (value.Length > 0)
-            {
-                for (int i = 0; i < value.Length; i++){
-                    newArray = newArray.Concat(TransferToArray(value[i])).ToArray();
-                }
-            }
+            int[] newArray = ExplodeRangeNumToIntArray(rangeNums);
+            //int[] newArray = new int[] { };
+            //if (rangeNums.Length > 0)
+            //{
+            //    for (int i = 0; i < rangeNums.Length; i++){
+            //        newArray = newArray.Concat(ConvertRangeNumToIntArray(rangeNums[i])).ToArray();
+            //    }
+            //}
 
             for (int i = 0; i < newArray.Length; i++)
             {
@@ -31,37 +32,66 @@ namespace AMWUtil.Common
             }
             return newValue;
         }
-        public static string ConvertRangeNumToString(string value)
+        public static string ExplodeRangeNum(string rangeNums)
         {
             string newValue = "";
+            int[] newArray = ExplodeRangeNumToIntArray(rangeNums);
+
+            //string[] strVal = null;
+            //if (value.Contains(","))
+            //{
+            //    strVal = value.Split(",");
+            //    return ExplodeRangeNum(strVal);
+            //}
+            //else
+            //{
+            //    newArray = newArray.Concat(ConvertRangeNumToIntArray(value)).ToArray();
+            //}
+
+            for (int i = 0; i < newArray.Length; i++)
+            {
+                if (i == newArray.Length - 1)
+                {
+                    newValue = String.Concat(newValue, newArray[i]);
+                }
+                else
+                {
+                    newValue = String.Concat(newValue, newArray[i] + ",");
+                }
+            }
+            return newValue;
+        }
+
+        public static int[] ExplodeRangeNumToIntArray(string[] rangeNums)
+        {
             int[] newArray = new int[] { };
-            string[] strVal = null;
+            if (rangeNums.Length > 0)
+            {
+                for (int i = 0; i < rangeNums.Length; i++)
+                {
+                    newArray = newArray.Concat(ConvertRangeNumToIntArray(rangeNums[i])).ToArray();
+                }
+                Array.Sort(newArray);
+            }
+            return newArray;
+        }
+        public static int[] ExplodeRangeNumToIntArray(string value)
+        {
+            int[] newArray = new int[] { };
+            string[] strVal = new string[] { };
             if (value.Contains(","))
             {
                 strVal = value.Split(",");
-                return ConvertRangeNumToString(strVal);
+                return ExplodeRangeNumToIntArray(strVal);
             }
             else
             {
-                newArray = newArray.Concat(TransferToArray(value)).ToArray();
+                newArray = newArray.Concat(ConvertRangeNumToIntArray(value)).ToArray();
+                Array.Sort(newArray);
             }
-
-            for (int i = 0; i < newArray.Length; i++)
-            {
-                if (i == newArray.Length - 1)
-                {
-                    newValue = String.Concat(newValue, newArray[i]);
-                }
-                else
-                {
-                    newValue = String.Concat(newValue, newArray[i] + ",");
-                }
-            }
-            return newValue;
+            return newArray;
         }
-
-
-        public static int[] TransferToArray(string value)
+        public static int[] ConvertRangeNumToIntArray(string value)
         {
             List<int> termsList = new List<int>();
             int[] newArray = new int[] { };
@@ -75,23 +105,31 @@ namespace AMWUtil.Common
                     termsList.Add(i);
                     i++;
                 }
+                termsList.Sort();
                 newArray = termsList.ToArray();
             }
             else
             {
                 termsList.Add(int.Parse(value));
+                termsList.Sort();
                 newArray = termsList.ToArray();
             }
+
             return newArray;
         }
 
-        public static string ConvertStringToRangeNum(string value)
+        public static string MergeRangeNum(string value)
         {
             var res = ToRanges(value.Split(',').Select(Int32.Parse).ToList());
             return string.Join(",", res);
         }
+        public static string ConvertToRangeNum(this List<int> values)
+        {
+            var res = ToRanges(values);
+            return string.Join(",", res);
+        }
 
-        public static string[] ToRanges(this List<int> ints)
+        private static string[] ToRanges(this List<int> ints)
         {
             if (ints.Count < 1) return new string[] { };
             ints.Sort();

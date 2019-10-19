@@ -18,6 +18,8 @@ namespace ProjectSTA.Engine.Business
         {
             public string skuCode;
             public string orderNo;
+            public int cartonNoFirst;
+            public int cartonNoLast;
             public StorageObjectEventStatus eventStatus;
             public string remark;
         }
@@ -60,13 +62,31 @@ namespace ProjectSTA.Engine.Business
                     new SQLConditionCriteria("Status", EntityStatus.ACTIVE, SQLOperatorType.EQUALS)
                 }, this.BuVO);
 
+            List<long> bstoIDRemoves = new List<long>();
             bstos.ForEach(x =>
             {
-                AWMSEngine.ADO.StorageObjectADO.GetInstant()
-                .UpdateStatusToChild(x.ID.Value, null, EntityStatus.ACTIVE, reqVO.eventStatus, this.BuVO);
-                //x.Options = ObjectUtil.QryStrSetValue(x.Options, OptionVOConst.OPT_REMARK, reqVO.remark);
-                //AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("options", x.Options));
+                if (pstos.FindAll(y => y.ParentStorageObject_ID == x.ID).TrueForAll(y =>
+                                    {
+                                        var rangNumInts = RangeNumUtil.ExplodeRangeNumToIntArray(
+                                                                        y.Options.QryStrGetValue(OptionVOConst.OPT_CARTON_NO)).ToList();
+                                        bool a = reqVO.cartonNoFirst <= rangNumInts.Min() && reqVO.cartonNoLast >= rangNumInts.Max();
+                                        return a;
+                                    }
+                ))
+                {
+                    AWMSEngine.ADO.StorageObjectADO.GetInstant()
+                    .UpdateStatusToChild(x.ID.Value, null, EntityStatus.ACTIVE, reqVO.eventStatus, this.BuVO);
+                    //x.Options = ObjectUtil.QryStrSetValue(x.Options, OptionVOConst.OPT_REMARK, reqVO.remark);
+                    //AWMSEngine.ADO.DataADO.GetInstant().UpdateByID<amt_StorageObject>(x.ID.Value, this.BuVO, new KeyValuePair<string, object>("options", x.Options));
+
+                }
+                else
+                {
+                    bstoIDRemoves.Add(x.ID.Value);
+                }
             });
+            bstoIDRemoves.ForEach(x => pstos.RemoveAll(y => y.ParentStorageObject_ID == x));
+
             pstos.ForEach(x =>
             {
                 x.Options = ObjectUtil.QryStrSetValue(x.Options, OptionVOConst.OPT_REMARK, reqVO.remark);
