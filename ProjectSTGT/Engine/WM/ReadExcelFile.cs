@@ -7,6 +7,8 @@ using System.IO;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
 using AMWUtil.DataAccess;
+using AWMSModel.Entity;
+using AWMSEngine.ADO;
 
 namespace ProjectSTGT.Engine.WM
 {
@@ -46,9 +48,21 @@ namespace ProjectSTGT.Engine.WM
                 }
                 catch
                 {
-
                 }
             }
-        }  
+        }
+
+        private amt_Document CreateDocument(AMWUtil.DataAccess.FilesTypeAccess.ExcelDataResponse excelData)
+        {
+            var doc = new amt_Document();
+            //doc.
+
+
+
+
+
+            //DocumentADO.GetInstant().Create();
+            return null;
+        }
     }
 }
